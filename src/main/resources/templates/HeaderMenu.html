@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" th:fragment="header">
+
+<head>
+	<meta charset="UTF-8">
+	<title>BRRS</title>
+
+	<!-- CSS Dependencies -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/datatables.min.css}">
+	
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	
+	<!-- JS Dependencies -->
+	<script th:src="@{/js/datatables.min.js}"></script>
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+
+	<style>
+		body {
+   font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+
+			</style>
+
+
+
+	<style>
+		
+
+		nav {
+			background-color: #fafafa;
+		}
+
+			#logoutmenu {
+			display: none;
+			position: absolute;
+			z-index: 1031;
+			width: 200px;
+			background-color: #dee2e6;
+			box-shadow: 3px 1px 11px 1px #888888;
+			border-radius: 5px;
+			right: 0px;
+			top: 70px;
+			border: 2px solid #4d8cb9;
+			position: fixed;
+		}
+
+		#ques {
+			margin-top: -54px;
+			float: right;
+			padding: 65px;
+		}
+
+		.logout {
+			color: #2e7bd0;
+		}
+
+		.content {
+			margin-top: 100px;
+		}
+
+		html {
+			zoom: 0.8;
+		}
+
+		label {
+			text-align: left;
+		}
+
+		.modal-backdrop {
+			width: 200vw;
+			height: 200vh;
+		}
+
+		section {
+			padding-left: 15px;
+		}
+
+		.form-control:focus {
+			color: #495057;
+			outline: 0;
+			box-shadow: unset !important;
+		}
+
+		.btn-primary.focus,
+		.btn-primary:focus {
+			box-shadow: unset !important;
+		}
+
+		.nav-link-collapse:after {
+			float: right;
+			content: '\f067';
+			font-family: 'Font Awesome 5 Free';
+			color: red;
+
+			transform: translateY(-50%) rotate(-90deg);
+		}
+
+
+
+		ul {
+			list-style: none
+		}
+
+		li a {
+			color: white;
+		}
+
+		a {
+			text-decoration: none !important;
+		}
+
+		#showmenu1 {
+			width: 50px;
+			height: 50px;
+			/* Maintain the same width and height to create a circular shape */
+			border-radius: 50%;
+			/* Use a border-radius of 50% to create a circle */
+			object-fit: fill;
+			/* Ensure the image covers the circular area without distortion */
+		}
+	</style>
+
+
+	<style>
+		body {
+			overflow-x: hidden;
+			overflow-y: hidden;
+		}
+
+		/* First Layer */
+		.first-layer {
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			/*  padding: 10px 20px;
+    border-bottom: 2px solid #ddd; */
+		}
+
+		.logo img {
+			width: 100px;
+			height: 80px;
+		}
+
+		.user-profile {
+			display: flex;
+			align-items: center;
+		}
+
+		.user-profile img {
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		.user-details {
+			font-family: Calibri, sans-serif;
+			font-size: 14px;
+			font-weight: bold;
+		}
+
+		/* Second Layer */
+		.second-layer {
+			display: flex;
+			justify-content: flex-end;
+			padding: 3px 31%;
+			margin-left: -215px;
+		}
+
+		
+
+		.nav-item {
+			position: relative;
+		}
+
+		.nav-item a {
+			text-decoration: none;
+			color: #333;
+			font-weight: bold;
+		}
+	</style>
+
+
+<style>
+		
+
+
+.nav-links a {
+	color: #354a5f !important;
+	font-weight: bold;
+	
+	/* color: black !important; */
+}
+
+label {
+	color: #354a5f !important;
+	font-weight: bold;
+	border-color:black;
+	/* color: black !important; */
+}
+
+div span {
+	color: #354a5f !important;
+	font-weight: bold;
+	/* color: black !important; */
+}
+
+h3 {
+	color: #354a5f !important;
+	font-weight: bold;
+	/* color: black !important; */
+}
+
+		
+	</style>
+	
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function () {
+    let menuTimeout;
+
+    // Function to show menu
+    function showMenu(menu) {
+        clearTimeout(menuTimeout);
+
+        // Hide all other submenus before showing the new one
+        document.querySelectorAll('.dropdown-submenu .dropdown-menu').forEach(m => {
+            if (m !== menu) {
+                m.style.display = "none";
+            }
+        });
+
+        menu.style.display = "block";
+    }
+
+    // Function to hide menu with delay
+    function hideMenu(menu) {
+        menuTimeout = setTimeout(() => {
+            menu.style.display = "none";
+        }, 200); // 200ms delay
+    }
+
+    // Handle main dropdown menu hover 
+    const mainMenus = document.querySelectorAll('.nav-item.dropdown');
+    mainMenus.forEach(menu => {
+        menu.addEventListener("mouseenter", function () {
+            const dropdownMenu = this.querySelector(".dropdown-menu");
+            if (dropdownMenu) {
+                // Hide all other main dropdowns
+                document.querySelectorAll('.nav-item.dropdown .dropdown-menu').forEach(m => {
+                    if (m !== dropdownMenu) {
+                        m.style.display = "none";
+                    }
+                });
+                showMenu(dropdownMenu);
+            }
+        });
+
+        menu.addEventListener("mouseleave", function () {
+            const dropdownMenu = this.querySelector(".dropdown-menu");
+            if (dropdownMenu) hideMenu(dropdownMenu);
+        });
+    });
+
+    // Handle submenus inside dropdown 
+    const submenus = document.querySelectorAll('.dropdown-submenu');
+    submenus.forEach(submenu => {
+        submenu.addEventListener("mouseenter", function () {
+            const subMenuElement = this.querySelector(".dropdown-menu");
+            if (subMenuElement) showMenu(subMenuElement);
+        });
+
+        submenu.addEventListener("mouseleave", function () {
+            const subMenuElement = this.querySelector(".dropdown-menu");
+            if (subMenuElement) hideMenu(subMenuElement);
+        });
+    });
+
+    // Close all menus when clicking outside
+    document.addEventListener("click", function (e) {
+        if (!e.target.closest(".dropdown")) {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.style.display = "none";
+            });
+        }
+    });
+});
+
+
+
+    </script>
+    
+
+
+
+	<style>
+		body {
+			display: flex;
+			min-height: 100vh;
+		}
+
+
+
+		.logout-btn {
+			margin-top: auto;
+			padding: 12px 20px;
+		}
+	</style>
+
+
+	<style>
+		.user-details {
+			color: #000;
+			text-align: left;
+			font-size: 0.9rem;
+			line-height: 1.6;
+		}
+
+		
+
+		/* Main Navigation Links - Only Visual Effects */
+		.nav-link {
+			display: inline-block;
+			background: linear-gradient(145deg, #ffffff, #f8f9fa);
+			color: white;
+			font-weight: 600;
+			font-size: 14px;
+			 border: 2px solid #6B7A8F;
+			padding: 8px 20px;
+			border-radius: 20px;
+			text-decoration: none;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			cursor: pointer;
+			position: relative;
+			overflow: hidden;
+			
+			/* NO transform changes to prevent position shifts */
+		}
+
+		/* Shine Effect on Hover */
+		.nav-link::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+			transition: left 0.5s;
+			z-index: 1;
+		}
+
+		/* Hover Effects - Only Color and Shadow Changes */
+		.nav-link:hover {
+	background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
+	color: white !important;
+	
+	border-color: rgb(107, 122, 143);
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	/* NO transform to prevent movement */
+}
+
+		.nav-link:hover::before {
+			left: 100%;
+		}
+
+		/* Active/Selected State - 3D Highlight */
+		.nav-link.active {
+			background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
+			color: white;
+			border-color: rgb(107, 122, 143);
+			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+		}
+
+		/* Dropdown Toggle Styles */
+		.dropdown-toggle {
+			display: inline-block;
+			background: linear-gradient(145deg, #ffffff, #f8f9fa);
+			color: #333;
+			font-weight: 600;
+			font-size: 14px;
+			 border: 2px solid #6B7A8F;
+			padding: 8px 20px;
+			border-radius: 20px;
+			text-decoration: none;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			cursor: pointer;
+			position: relative;
+			overflow: hidden;
+			
+		}
+
+		.dropdown-toggle::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
+			transition: left 0.5s;
+			z-index: 1;
+		}
+
+		.dropdown-toggle::after {
+			content: ' ▾';
+			margin-left: 6px;
+			transition: transform 0.3s;
+			position: relative;
+			z-index: 2;
+			font-size: 10px;
+		}
+
+		/* Dropdown Toggle Hover */
+		.dropdown-toggle:hover {
+			background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
+			color: white !important;
+			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+		}
+
+		.dropdown-toggle:hover::before {
+			left: 100%;
+		}
+
+		.dropdown:hover .dropdown-toggle::after {
+			transform: rotate(180deg);
+		}
+
+		/* Active Dropdown Toggle */
+		.dropdown-toggle.active {
+	background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
+	color: white !important;
+		border-color: rgb(107, 122, 143);
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+
+		/* Dropdown Menu - Keep Original Positioning */
+		.dropdown-menu {
+			position: absolute;
+			top: 100%;
+			left: 0;
+			background: rgba(255, 255, 255, 0.98);
+			backdrop-filter: blur(10px);
+			border: 2px solid rgb(107, 122, 143);
+			border-radius: 12px;
+			padding: 8px 0;
+			margin-top: 5px;
+			min-width: 200px;
+			display: none;
+
+			z-index: 1000;
+			list-style: none;
+		}
+
+		/* Dropdown Animation When Shown */
+		.dropdown-menu[style*="block"] {
+			animation: fadeInDown 0.3s ease-out;
+		}
+
+		@keyframes fadeInDown {
+			from {
+				opacity: 0;
+				transform: translateY(-5px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		/* Dropdown Menu Items */
+		.dropdown-menu .nav-item {
+			margin: 0;
+			padding: 0;
+		}
+
+		.dropdown-menu .nav-link {
+			display: block !important;
+			margin: 2px 8px;
+			padding: 8px 15px;
+			border-radius: 8px;
+			font-size: 13px;
+			font-weight: 500;
+			border: 1px solid transparent;
+			background: transparent;
+			box-shadow: none;
+			transition: all 0.2s ease;
+		}
+
+		.dropdown-menu .nav-link::before {
+			display: none;
+		}
+
+		 .dropdown-menu .nav-link:hover {
+			background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
+			color: white;
+			border-color: rgb(107, 122, 143);
+			width:auto;
+			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+		} 
+
+		/* Active Dropdown Menu Item */
+		.dropdown-menu .nav-link.active {
+			background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
+			width:auto;
+			color: white !important;
+		border-color: rgb(107, 122, 143);
+			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+		}
+
+		/* Focus States */
+		.nav-link:focus,
+		.dropdown-toggle:focus {
+			outline: none;
+			
+		}
+
+
+		.nav-link.active,
+		.dropdown-toggle.active {
+			animation: subtlePulse 2s ease-in-out infinite;
+		}
+
+		/* Responsive - Keep Layout Intact */
+		@media (max-width: 768px) {
+			.nav-links {
+				gap: 10px;
+				flex-wrap: wrap;
+			}
+
+			.nav-link,
+			.dropdown-toggle {
+				font-size: 13px;
+				padding: 6px 16px;
+			}
+
+			.dropdown-menu {
+				min-width: 180px;
+				margin-top: 3px;
+			}
+		}
+	</style>
+
+	
+	<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const currentPath = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    const formMode = urlParams.get('formmode');
+    const navLinks = document.querySelectorAll(".nav-link");
+	
+    function activateParentDropdowns(activeLink) {
+		
+        let parentMenu = activeLink.closest('.dropdown-menu');
+        while (parentMenu) {
+            const parentItem = parentMenu.closest('.dropdown-submenu, .nav-item.dropdown');
+            if (parentItem) {
+                const parentToggle = parentItem.querySelector('.dropdown-toggle, .nav-link');
+                if (parentToggle) {
+                    parentToggle.classList.add("active");
+                }
+            }
+            parentMenu = parentMenu.parentElement.closest('.dropdown-menu');
+        }
+    }
+
+    navLinks.forEach(link => {
+        const href = link.getAttribute("href");
+        if (!href || href === "#") return;
+		
+        const linkUrl = new URL(href, window.location.origin); // ✅ Resolve to full URL
+        const linkPath = linkUrl.pathname;
+        //const linkFormMode = linkUrl.searchParams.get('formmode') || link.getAttribute("data-formmode");
+       const linkFormMode = urlParams.get('formmode');
+
+        if (currentPath === linkPath) {
+        	
+            if (formMode || linkFormMode) {
+                if (formMode === linkFormMode) {
+                    link.classList.add("active");
+                    activateParentDropdowns(link);
+                }
+            } else {
+                link.classList.add("active");
+                activateParentDropdowns(link);
+            }
+        }
+    });
+});
+</script>
+	
+	
+<style>
+
+.navbar-container {
+  display: flex;
+  align-items: stretch;
+}
+
+.logo-container {
+  background-color:#488f9d;
+  padding: 10px;
+}
+
+.logo-img {
+  height: 100%;
+  width: 250px;
+  object-fit: cover;
+  max-height: 150px; /* Adjust based on your actual content height */
+}
+
+.right-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.company-title {
+  font-weight: bold;
+  color: #343a40;
+}
+
+.bottom-row {
+  border-top: 1px solid #ddd;
+  margin-top: 4px;
+}
+
+.nav-links {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.nav-item {
+  position: relative;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #333;
+  font-weight: 5000;
+  padding: 6px 12px;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
+  border: 1px solid #ccc;
+  z-index: 1000;
+}
+
+ .nav-item:hover .dropdown-menu {
+  display: none;
+} 
+.logo-container {
+  overflow: hidden;
+  transform: skew(-30deg); /* Skew the container */
+}
+
+.logo-img {
+  transform: skew(20deg);   /* Re-skew the image to appear normal */
+  height:100px;            /* Adjust height as needed */
+  width: auto;
+  padding:10px
+}
+.navbar-container {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.logo-container {
+  background-color: rgb(255, 255, 255) ;
+  padding: 0; /* Remove extra space */
+  overflow: hidden;
+  transform: skew(-30deg);
+  margin-right: -30px; /* Pull right content to cover the skew gap */
+  z-index: 2;
+}
+
+.logo-img {
+  height: 50px;
+  width: auto;
+  padding: 5px;
+  padding-bottom:0;
+}
+
+/* Right side (full height, no space left) */
+.right-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  flex-grow: 1;
+  z-index: 1;
+}
+
+/* Skew only top row */
+.top-row {
+  transform: skew(-30deg);
+  padding: 10px;
+  position: relative;
+}
+
+/* Correct skew for content inside */
+.top-row > * {
+  transform: skew(30deg);
+}
+
+/* Bottom menu stays normal */
+.bottom-row {
+  border-top: 1px solid #ddd;
+  margin-top: 4px;
+}
+
+.company-title {
+  transform: skew(30deg) translateX(-50%) translateY(-50%) !important;
+}
+.nav-link{
+color:white;
+}
+
+
+
+
+/* Add spacing between dropdown items */
+.dropdown-menu li {
+    padding: -8px 12px; /* Adjust vertical and horizontal padding */
+    margin-bottom: 5px; /* Space between items */
+}
+
+/* Remove bottom margin for the last item to avoid extra space */
+.dropdown-menu li:last-child {
+    margin-bottom: 0;
+}
+
+/* Style for links inside dropdown */
+.dropdown-menu a {
+    display: block;
+    color: #354a5f !important;
+    padding: 8px 12px; /* Adjust spacing inside links */
+}
+
+
+.dropdown-submenu > a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    position: relative;
+}
+
+/* Black arrow with proper alignment */
+.dropdown-submenu > a::after {
+    content: ""; /* Thicker right arrow */
+    font-size: 16px; /* Bigger size */
+    color: #354a5f; /* Black color */
+    font-weight: bold;
+    position: absolute;
+    right: 10px;
+    top: 50%; 
+    transform: translateY(-50%) rotate(-90deg);
+}
+
+/* Position the second-level (submenu) */
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu > .dropdown-menu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    margin-top: -12px;
+    margin-left: 10px;
+}
+
+/* Show only the relevant submenu on hover */
+.dropdown-submenu:hover > .dropdown-menu {
+    display: block;
+}
+
+/* Ensure the top-level menu dropdowns show on hover */
+.dropdown:hover > .dropdown-menu {
+    display: block;
+}
+
+
+
+
+
+</style>
+
+<style type="text/css">
+
+
+
+.user-menu {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 30px;
+  font-weight: bold;
+  user-select: none;
+  z-index: 10000;
+}
+
+.three-dots {
+  padding: 0 10px;
+  color: #333;
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  right: 100%;
+  margin-left:-170px;
+  transform: translateX(-10px); 
+  display: none;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  white-space: nowrap;
+  width: max-content; 
+  max-width: 300px; /* Prevent overly wide dropdowns */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+}
+
+.user-menu:hover .user-dropdown-menu {
+  display: block;
+}
+
+.user-info {
+  font-size: 14px;
+  color: #333;
+}
+
+
+
+</style>
+</head>
+
+<body>
+  <nav class="navbar full-navbar">
+    <div class="navbar-container d-flex" style="width:100%">
+      
+      <!-- Logo -->
+      <div class="logo-container">
+        <img th:src="@{/images/bob.jpeg}" alt="Bornfire" class="logo-img">
+      </div>
+
+      <!-- Right content -->
+      <div class="right-content flex-grow-1">
+        <!-- Top row -->
+
+			<div class=" d-flex justify-content-end align-items-center px-2 py-1 position-relative"
+  				th:style="'background-image: url(' + @{/images/rtbg.jpg} + '); background-size: cover; background-position: center; min-height: 35px;'">
+	
+	<!-- Bottom row: Menu -->
+        <div class="px-5 py-1" style="height:40px">
+					<ul class="nav-links d-flex gap-4">
+						<li class="nav-item"><a class="nav-link"
+							th:href="@{/Dashboard}"
+							style=" text-align: center; color: black;">Home</a>
+						</li>
+						<li class="nav-item dropdown" style="text-align: center;">
+    <a href="#" class="dropdown-toggle">Admin</a>
+    <ul class="dropdown-menu">
+        <li>
+            <a href="#" class="nav-link" id="UserProfile" onclick="contentLoad(this)">User Profile</a>
+        </li>
+        <li>
+            <a href="#" class="nav-link" id="AccessandRoles" onclick="contentLoad(this)">Access And Roles</a>
+        </li>
+    </ul>
+</li>
+
+						<li class="nav-item dropdown" style=" text-align: center;">
+							<a href="#" class="dropdown-toggle">BRRS_Reports</a>
+								
+								<ul class="dropdown-menu">
+								
+									
+							<li><a href="#" class="nav-link" id="BRRS" onclick="contentLoad(this)">Monthly</a></li>
+								
+								</ul>
+								
+								
+						</li>
+						
+						
+						<li class="nav-item dropdown" style=" text-align: center;">
+							<a href="#" class="dropdown-toggle">Archival</a>
+								
+								<ul class="dropdown-menu">
+								
+									
+									<li><a href="#" class="nav-link" id="BRRSArchival" onclick="contentLoad(this)">BRRS</a></li>
+									
+								</ul>
+								
+								
+						</li>
+
+						<li class="nav-item dropdown" style=" text-align: center;">
+							<a href="#" class="dropdown-toggle">Audit</a>
+							<ul class="dropdown-menu">
+								
+								<li>
+								<a  href="#" class="nav-link" id="User_Audit"  onclick="contentLoad(this)">User Audit</a>
+								</li>
+								<li>
+								<a href="#" class="nav-link" id="Service_Audit" 
+										onclick="contentLoad(this)">Service Audit</a></li>
+							</ul>
+						</li>
+						
+						<!-- <li class="nav-item dropdown" style=" text-align: center;">
+							<a href="#" class="dropdown-toggle">BRRS Reports</a>
+								<ul class="dropdown-menu">
+								
+								<li class="dropdown-submenu">
+                            		<a href="#" class="nav-link">Fortnightly</a>
+			                            <ul class="dropdown-menu">
+			                                <li><a class="nav-link" >BRF1.12</a></li>
+			                            </ul>
+                        		</li>
+								
+								<li class="dropdown-submenu">
+                            		<a href="#" class="nav-link">Monthly-1</a>
+			                            <ul class="dropdown-menu">
+			                                <li><a class="nav-link" th:href="@{/BRFValidations}" >BRF 1.1</a></li>
+			                                <li><a class="nav-link" >BRF 1.2</a></li>
+			                            </ul>
+                        		</li>
+								
+								</ul>
+								
+								
+						</li> -->
+						
+						
+					</ul>
+				</div>
+	
+   			<!-- Centered Title -->
+			  <!--<h3 class="company-title position-absolute translate-middle-x"
+			    style="top: 50%; left: 40%; font-weight: bold; font-family: 'Arial', cursive; font-size: 1.3rem;">
+			    BCBUAE
+			  </h3> -->
+			
+			  <!-- User info -->
+			  <div class="user-section d-flex flex-column align-items-end ms-auto" style="width: fit-content;">
+			    <!-- <div class="company-small-title text-end" style="font-size: 0.75rem; font-weight: 600; color: #000; margin-right:40px;">
+			      Bornfire Innovations Pvt Ltd
+			    </div> -->
+			    <div class="d-flex align-items-center gap-1" style="font-size: 0.75rem;">
+			      <div class="user-details text-end">
+			        <strong>&nbsp;</strong>  <img th:src="@{/images/Bornfire.png}" style="height:50px" alt="Bornfire">
+			      </div>
+			      <!-- <form th:action="@{/logout}" method="post" class="logout-btn m-0">
+			        <button class="custom-tab-btn btn-outline-danger py-0 px-2" type="submit" style="font-size: 0.75rem;">
+			          <i class="fas fa-sign-out-alt"></i> Logout
+			        </button>
+			      </form> -->
+			      
+			      <!-- Three-dot User Menu -->
+					<div class="dropdown user-menu ms-3">
+					  <div class="three-dots" id="userMenuToggle">⋮</div>
+					  <div class="dropdown-menu user-dropdown-menu">
+					    <div class="user-info px-3 py-2">
+					      <div><strong> <span th:text="${session.USERID}"></span></strong></div>
+					      <div><strong><span th:text="${session.USERNAME}"></span></strong></div>
+					    </div>
+					    <div class="dropdown-divider"></div>
+					    <form th:action="@{/logout}" method="post" class="text-center mb-2">
+					      <button class="custom-tab-btn btn-outline-danger py-0 px-2" type="submit"><i class="fas fa-sign-out-alt"></i>Logout</button>
+					    </form>
+					  </div>
+					</div>
+			
+			      
+			    </div>
+			  </div>
+</div>
+
+
+        
+      </div>
+    </div>
+  </nav>
+  
+  <div class="modal fade" id="loader" data-backdrop="static"
+			data-keyboard="false">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content" style="background: transparent;">
+					<div class="modal-body" style="text-align: center">
+						<div>
+							<img th:src=@{/images/loader.gif} id="bfirelogo"
+								style="width: 153px; height: auto; margin-left: 18px; background-color: transparent;
+								border-color: transparent;"
+								alt="Bornfire">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
+
+<style>
+/* Ensure dropdown menu appears on top */
+.dropdown-menu {
+    z-index: 1050 !important; /* Bootstrap default for modals */
+    position: absolute !important;
+}
+
+/* Make sure parent containers don't hide overflow */
+.navbar,
+.navbar-container,
+.right-content,
+.bottom-row {
+    position: relative;
+    overflow: visible !important;
+    z-index: auto;
+}
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const toggle = document.getElementById('userMenuToggle');
+    const menu = document.querySelector('.user-dropdown-menu');
+    let autoCloseTimeout;
+
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+
+      // Toggle menu visibility
+      if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+        clearTimeout(autoCloseTimeout);
+      } else {
+        menu.style.display = 'block';
+
+       
+        autoCloseTimeout = setTimeout(() => {
+          menu.style.display = 'none';
+        }, 2000);
+      }
+    });
+
+    // Close on outside click
+    document.addEventListener('click', function () {
+      menu.style.display = 'none';
+      clearTimeout(autoCloseTimeout);
+    });
+  });
+</script>
+<script>
+// Called when user clicks on a menu item
+function contentLoad(a) {
+    // Store ID of clicked element in localStorage
+    localStorage.setItem("activeMenuId", a.id);
+
+    // Show loader modal
+    $('#loader').modal('show');
+
+    // Delay navigation slightly so the loader is visible
+    setTimeout(function () {
+        location.href = "/BRRS/" + a.id;
+    }, 300); // You can increase this delay if needed
+}
+
+</script>
+
+<script>
+// This runs on every page load
+document.addEventListener("DOMContentLoaded", function () {
+    const activeId = localStorage.getItem("activeMenuId");
+
+    // Remove all existing active classes
+    document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
+
+    if (activeId) {
+        const activeLink = document.getElementById(activeId);
+        if (activeLink) {
+            activeLink.classList.add("active");
+
+            // Also highlight parent .dropdown-toggle
+            const dropdown = activeLink.closest(".nav-item.dropdown");
+            if (dropdown) {
+                const toggle = dropdown.querySelector(".dropdown-toggle");
+                if (toggle) toggle.classList.add("active");
+            }
+        }
+    }
+});
+</script>
+
+
+
+</html>

@@ -1,0 +1,1561 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<!--
+CREATED BY	: PRAVEEN KUMAR M
+CREATED ON	: 01.08.2025
+PURPOSE		: BWRBRREPORT
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- CSS -->
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+.list-body {
+	padding: 0px;
+}
+.error {
+	color: red;
+	padding-left: 10px;
+}
+.formline {
+	padding-bottom: 15px;
+}
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+#finusertb {
+	width: 460px;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+.table td {
+	background-color: #FFFFFF;
+}
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
+#BRFvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
+.error {
+	color: red;
+	padding-top: 15px;
+}
+.form-control:focus {
+	border-color: #007bff;
+}
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
+	) ~ .form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~ .form-legend {
+	color: #0056b3; /* Darker shade of blue on hover */
+}
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus ) ~ .form-legend {
+	color: #aaa; /* Normal label color */
+}
+</style>
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+.left-arrow-circle:hover i {
+	color: white;
+}
+.white-text span {
+	color: white !important;
+}
+</style>
+<script th:inline="javascript">
+$(document).ready(function() {
+   // hide loader on normal load
+   $('#loader').modal('hide');
+});
+$(window).on('pageshow', function() {
+   // hide loader on back/forward nav
+   $('#loader').modal('hide');
+});
+$(window).on('beforeunload', function() {
+   // hide loader on leaving page
+   $('#loader').modal('hide');
+});
+	
+	function home() {
+       $("#loader").modal("toggle");
+		location.href = 'Dashboard'
+	}
+	function back() {
+       $("#loader").modal("toggle");
+		window.history.back();
+	}
+	
+	//to fetch summary from the database - called from the summary button
+	function showdetails() {
+  
+   var Callurl;
+   	$('#loader').modal('show');
+       Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/
+       location.href = Callurl;
+       	console.log(Callurl);
+  /*  $.ajax({
+       type: 'get',
+       url: Callurl,
+       beforeSend: function () {
+           $('#loader').modal('show'); // 🔄 Show loader
+       },
+       success: function (data) {
+           $('.content').html(data);
+           //$("#detailsbtn").addClass("active");
+           //tablepagination();
+       },
+       complete: function () {
+           $('#loader').modal('hide');
+       },
+       error: function () {
+       	  $('#loader').modal('hide');
+           alert("Something went wrongss. Please try again.");
+        
+       }
+   }); */
+}
+	
+	function showsummary() {
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;								
+		location.href = Callurl;
+	}
+	
+	
+   </script>
+<script>
+function activateTab(tabName) {
+   // Remove 'active' from all buttons
+   document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+       btn.classList.remove('active');
+   });
+   // Add 'active' to selected button
+   if (tabName === 'summary') {
+       document.getElementById('custom-tab-btnSummary').classList.add('active');
+   } else if (tabName === 'Details') {
+       document.getElementById('custom-tab-btnDetails').classList.add('active');
+   }
+}
+window.onload = function() {
+   /* setTimeout(function() {
+       var selectedTab = document.getElementById("selectedTab").value;
+       alert(selectedTab);
+       activateTab(selectedTab);
+   }, 10000); */ // 10,000 milliseconds = 10 seconds
+  
+	var selectedTab = document.getElementById("selectedTab").value;
+   activateTab(selectedTab);
+};
+function downloadfile(button) {
+	var reportid = button.getAttribute('data-reportid');
+	var asondate = button.getAttribute('data-asondate');
+	var fromdate = button.getAttribute('data-fromdate');
+	var todate = button.getAttribute('data-todate');
+	var currency = button.getAttribute('data-currency');
+	var subreportid = button.getAttribute('data-subreportid');
+	var secid = button.getAttribute('data-secid');
+	var dtltype = button.getAttribute('data-dtltype');
+	var filename = button.getAttribute('data-filename');
+	$('#loader').modal('show');
+	$.ajax({
+		url: './downloadExcel?reportid=' + reportid +
+			'&fromdate=' + fromdate +
+			'&asondate=' + asondate +
+			'&todate=' + todate +
+			'&currency=' + currency +
+			'&subreportid=' + subreportid +
+			'&secid=' + secid +
+			'&filename=' + filename,
+		type: 'GET',
+		xhrFields: {
+			responseType: 'blob'
+		},
+		success: function (data) {
+			$('#loader').modal('hide');
+			if (data && data.size > 100) {
+				const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.style.display = 'none';
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				window.URL.revokeObjectURL(url);
+				document.body.removeChild(a);
+				showResultModal('Success', 'The file has been downloaded successfully.');
+			} else {
+				showResultModal('Information', 'No data was available to create a download.');
+			}
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			$('#loader').modal('hide');
+			console.error("Download failed:", textStatus, errorThrown);
+			showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+		}
+	});
+}
+function editRecord(){
+	showResultModal('Alert', 'Development in progress');
+	
+}
+function closemodel(){
+	$('#alert').modal('hide');
+	$('#resultModal').modal('hide');
+	
+}
+function showResultModal(title, message) {
+	// Set the text for the modal elements
+	$('#resultModalLabel').text(title);
+	$('#resultModalBody').text(message);
+	// Show the modal
+	$('#resultModal').modal('show');
+}
+</script>
+<script>
+function downloadDetailfile(button) {
+   const filename = button.getAttribute('data-filename');
+   const fromdate = button.getAttribute('data-fromdate');
+   const todate = button.getAttribute('data-todate');
+   $('#loader').modal('show');
+   const baseUrl = '/BRRS/Reports/';
+   const downloadUrl = baseUrl + 'downloadDetailExcel' +
+       '?filename=' + encodeURIComponent(filename) +
+       '&fromdate=' + encodeURIComponent(fromdate) +
+       '&todate=' + encodeURIComponent(todate);
+   $.ajax({
+       url: downloadUrl,
+       type: 'GET',
+       xhrFields: {
+           responseType: 'blob'
+       },
+       success: function (data) {
+           $('#loader').modal('hide');
+           if (data && data.size > 100) {
+               const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+               const url = window.URL.createObjectURL(blob);
+               const a = document.createElement('a');
+               a.style.display = 'none';
+               a.href = url;
+               a.download = filename + '.xls';
+               document.body.appendChild(a);
+               a.click();
+               a.remove();
+               window.URL.revokeObjectURL(url);
+               showResultModal('Success', filename + ' downloaded successfully.');
+           } else {
+               showResultModal('Information', 'No data was available to create a download or file was empty.');
+           }
+       },
+       error: function (jqXHR, textStatus, errorThrown) {
+           $('#loader').modal('hide');
+           console.error('Download error:', textStatus, errorThrown, jqXHR);
+           let errorMessage = 'An error occurred while downloading the file. Please try again.';
+           if (jqXHR.response) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    errorMessage = reader.result;
+                    showResultModal('Error', errorMessage);
+                };
+                reader.onerror = function() {
+                   showResultModal('Error', 'An unknown error occurred during download.');
+                };
+                reader.readAsText(jqXHR.response);
+                return;
+           }
+           showResultModal('Error', errorMessage);
+       }
+   });
+}
+</script> 
+<script th:inline="javascript">
+function showdetailsbyRowAndColumn(a) {
+   var rowId = a.getAttribute('RowId');
+   var columnId = a.getAttribute('ColumnId');
+   var cellValue = a.textContent || a.innerText;
+   if (cellValue !== '0') {
+       if (confirm('Do you want to open details for Row: ' + rowId + ' and Column: ' + columnId + '?')) {
+           $('#loader').modal('show');
+           var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+           Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+           location.href = Callurl;
+           console.log(Callurl);
+       }
+   } else {
+       alert("No Records available for this selected cell.");
+   }
+}
+</script>
+</head>
+<title>BWRBR</title>
+<body>
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+			<div th:insert="HeaderMenu :: header"></div>
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+							M-SFinP2: Statement of Financial Position (Continued)</h5>
+					</div>
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
+							Date: <span th:text="${asondate}">2025-07-04</span>
+						</span>
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+							th:attr="data-reportid=${reportid},
+                   				 data-asondate=${asondate},
+                   				 data-fromdate=${fromdate},
+                    				 data-todate=${todate},
+                    				 data-currency=${currency}, 
+                    				 data-dtltype=${dtltype},
+                    				 data-filename='MSFinP2.xls',
+					 				 data-type=${type},
+					    			 data-version=${version}"
+									
+							onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+						<button
+						  type="button"
+						  class="custom-tab-btn"
+						  id="custom-tab-btnAdd"
+						  th:if="${displaymode == 'Details'}"
+						  onclick="downloadDetailfile(this);"
+						  th:attr="
+						    data-fromdate=${fromdate},
+						    data-todate=${todate},
+						    data-filename='MSFinP2Detail',
+						  ">
+						  <i class="fa fa-download"></i>
+						</button>
+			 	<!---	<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid},
+                    data-asondate=${asondate},
+                    data-fromdate=${fromdate},
+                    data-todate=${todate},
+                    data-currency=${currency}, 
+                    data-dtltype=${dtltype},
+                    data-filename='BRF2_18'",
+							onclick="editRecord();">
+							<i class="fa fa-download"></i>
+						</button> -->
+					</div>
+				</div>
+			<div th:if="${displaymode == 'summary'}">
+			<div class="row" >
+				<div class="col-sm-12">
+					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
+   					<table class="sticky-header-table table table-bordered table-hover table-sm table-condensed" id="reports" >
+							<thead class="thead-light">
+ 									<tr style="background-color: #b3b6b9 ">
+										
+										<th rowspan="3" style="text-align: left; width:33%;padding-left: 20px;">LIABILITIES</th>
+										<th style="text-align: left;">Cross Reference</th>
+										<th style="text-align: right;">MONTH-END</th>
+										<th style="text-align: right;">AVERAGE*</th>
+									</tr>
+								<!--	</tr>
+									<tr style="background-color: #b3b6b9">
+										<th style="text-align: center; background-color: #b3b6b9"></th>
+										<th style="text-align: center; background-color: #b3b6b9">C0010</th>
+										<th style="text-align: center; background-color: #b3b6b9">C0020</th>
+										<th style="text-align: center; background-color: #b3b6b9">C0030</th>
+									</tr> -->
+								</thead>
+								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+	
+										<tr>
+											<td style="padding-left: 20px; font-weight: bold;" th:text="${report.R10_PRODUCT}"></td>
+											<td style="text-align: right; " th:text="${report.R10_CROSS_REFERENCE}"></td>
+											<td style="text-align: right; " th:text="${report.R10_MONTH_END}"></td>
+											<td style="text-align: right;" th:text="${report.R10_AVERAGE}"></td>
+										</tr>
+										<tr>
+										
+											<td style="padding-left: 20px;" th:text="${report.R11_PRODUCT}"></td>
+										<!--	<td style="text-align: right;"
+												th:text="${report.R11_CROSS_REFERENCE}"></td> -->
+												<td style="text-align: left;">(37) M-DEP1 + (38) M-DEP2</td>
+											<td style="text-align: right;"th:attr="RowId='R11', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R11_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R11', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R11_AVERAGE}"></td>
+										</tr>
+										<tr>
+										
+											<td style="padding-left: 20px;" th:text="${report.R12_PRODUCT}"></td>
+										<!---	<td style="text-align: right;"
+												th:text="${report.R12_CROSS_REFERENCE}"></td> -->
+												<td style="text-align: left;">(37) M-DEP1 + (38) M-DEP3</td>
+											<td style="text-align: right;"th:attr="RowId='R12', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R12_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R12', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R12_AVERAGE}"></td>
+																					</tr>
+										<tr>
+											
+										<td style="padding-left: 20px;" th:text="${report.R13_PRODUCT}"></td>
+									<!--	<td style="text-align: right;"
+											th:text="${report.R13_CROSS_REFERENCE}"></td> -->
+										<td style="text-align: left;">(37) M-DEP1 + (38) M-DEP4</td>
+										<td style="text-align: right;"th:attr="RowId='R13', ColumnId='C3'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R13_MONTH_END}"></td>
+										<td style="text-align: right;"th:attr="RowId='R13', ColumnId='C4'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R13_AVERAGE}"></td>
+										</tr>
+										<tr>
+										
+										<td style="padding-left: 20px;" th:text="${report.R14_PRODUCT}"></td>
+									<!---	<td style="text-align: right;"
+											th:text="${report.R14_CROSS_REFERENCE}"></td> -->
+										<td style="text-align: left;">(37) M-DEP1 + (38) M-DEP5</td>
+										<td style="text-align: right;"th:attr="RowId='R13', ColumnId='C3'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R14_MONTH_END}"></td>
+										<td style="text-align: right;"th:attr="RowId='R14', ColumnId='C4'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R14_AVERAGE}"></td>
+										</tr>
+										<tr>
+											
+											<td style="padding-left: 20px;" th:text="${report.R15_PRODUCT}"></td>
+										<!--	<td style="text-align: right;"
+												th:text="${report.R15_CROSS_REFERENCE}"></td> -->
+											<td style="text-align: left;">(37) M-DEP1 + (38) M-DEP6</td>
+											<td style="text-align: right;"th:attr="RowId='R15', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R15_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R15', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R15_AVERAGE}"></td>
+																					</tr>
+										<tr>
+											
+											<td style="padding-left: 20px;" th:text="${report.R16_PRODUCT}"></td>
+										<!---	<td style="text-align: right;"
+												th:text="${report.R16_CROSS_REFERENCE}"></td> -->
+											<td style="text-align: left;">(37) M-DEP1 / (46) M-SECL</td>
+											<td style="text-align: right;"th:attr="RowId='R16', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R16_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R16', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R16_AVERAGE}"></td>
+											
+											
+										</tr>
+										<tr>
+										
+											<td style="padding-left: 20px; font-weight: bold;" th:text="${report.R17_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R17_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R17_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R17_AVERAGE}"></td>
+											
+										</tr>
+										<tr>
+																					
+										<td style="padding-left: 20px;" th:text="${report.R18_PRODUCT}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R18_CROSS_REFERENCE}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R18_MONTH_END}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R18_AVERAGE}"></td>
+																															</tr>
+										<tr>
+											
+											<td style="padding-left: 20px;" th:text="${report.R19_PRODUCT}"></td>
+										<!--	<td style="text-align: right;"
+												th:text="${report.R19_CROSS_REFERENCE}"></td> -->
+											<td style="text-align: left;">(36) M-AIDP</td>
+											<td style="text-align: right;"th:attr="RowId='R19', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R19_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R19', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R19_AVERAGE}"></td>
+										
+																															</tr>
+										<tr>
+										
+										<td style="padding-left: 20px;" th:text="${report.R20_PRODUCT}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R20_CROSS_REFERENCE}"></td>
+										<td style="text-align: right;"th:attr="RowId='R20', ColumnId='C3'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R20_MONTH_END}"></td>
+										<td style="text-align: right;"th:attr="RowId='R20', ColumnId='C4'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R20_AVERAGE}"></td>
+										</tr>
+										<tr>
+	
+										<td style="padding-left: 20px;" th:text="${report.R21_PRODUCT}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R21_CROSS_REFERENCE}"></td>
+										<td style="text-align: right;"th:attr="RowId='R21', ColumnId='C3'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R21_MONTH_END}"></td>
+										<td style="text-align: right;"th:attr="RowId='R21', ColumnId='C4'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R21_AVERAGE}"></td>																				</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R22_PRODUCT}"></td>
+										<!--	<td style="text-align: right;"
+												th:text="${report.R22_CROSS_REFERENCE}"></td> -->
+											<td style="text-align: left;">(36) M-AIDP</td>	
+											<td style="text-align: right;"
+												th:text="${report.R22_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R22_AVERAGE}"></td>
+																																									</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R23_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R23_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R23', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R23_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R23', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R23_AVERAGE}"></td>																				</tr>
+										
+																															</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R24_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R24_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R24', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R24_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R24', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R24_AVERAGE}"></td>																				</tr>
+											
+																					</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R25_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R25_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R25_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R25_AVERAGE}"></td>
+																					</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R26_PRODUCT}"></td>
+									<!---	<td style="text-align: right;"
+												th:text="${report.R26_CROSS_REFERENCE}"></td>  -->
+											<td style="text-align: left;">(35) M-NOSVOS (nostro)</td>
+											<td style="text-align: right;"
+												th:text="${report.R26_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R26_AVERAGE}"></td>
+																					
+											
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R27_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R27_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R27', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R27_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R27', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R27_AVERAGE}"></td>																				</tr>
+										
+																															</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R28_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R28_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R28', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R28_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R28', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R28_AVERAGE}"></td>																				</tr>
+										
+										</tr>	
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R29_PRODUCT}"></td>
+										<!---	<td style="text-align: right;"
+												th:text="${report.R29_CROSS_REFERENCE}"></td> -->
+											<td style="text-align: left;">(35) M-NOSVOS (nostro)</td>	
+											<td style="text-align: right;"
+												th:text="${report.R29_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R29_AVERAGE}"></td>
+																					
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R30_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R30_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R30', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R30_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R30', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R30_AVERAGE}"></td>																				</tr>
+																						
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R31_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R31_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R31', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R31_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R31', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R31_AVERAGE}"></td>																				</tr>
+											
+																					</tr>
+										<tr>
+										<td style="padding-left: 20px; font-weight: bold;" th:text="${report.R32_PRODUCT}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R32_CROSS_REFERENCE}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R32_MONTH_END}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R32_AVERAGE}"></td>
+																					</tr>
+										<tr>
+										<td style="padding-left: 20px;" th:text="${report.R33_PRODUCT}"></td>
+								<!---		<td style="text-align: right;"
+											th:text="${report.R33_CROSS_REFERENCE}"></td> -->
+										<td style="text-align: left;">(33) M-TBS </td>		
+										<td style="text-align: right;"
+											th:text="${report.R33_MONTH_END}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R33_AVERAGE}"></td>
+																					</tr>
+										<tr>
+										<td style="padding-left: 20px;" th:text="${report.R34_PRODUCT}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R34_CROSS_REFERENCE}"></td>
+										<td style="text-align: right;"th:attr="RowId='R34', ColumnId='C3'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R34_MONTH_END}"></td>
+										<td style="text-align: right;"th:attr="RowId='R34', ColumnId='C4'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R34_AVERAGE}"></td>																				</tr>
+																					</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R35_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R35_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R35', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R35_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R35', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R35_AVERAGE}"></td>																				</tr>
+																															</tr>
+										<tr>
+										<td style="padding-left: 20px;" th:text="${report.R36_PRODUCT}"></td>
+								<!--		<td style="text-align: right;"
+											th:text="${report.R36_CROSS_REFERENCE}"></td> -->
+										<td style="text-align: left;">(46) M-SECL </td>		
+										<td style="text-align: right;"th:attr="RowId='R36', ColumnId='C3'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R36_MONTH_END}"></td>
+										<td style="text-align: right;"th:attr="RowId='R36', ColumnId='C4'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R36_AVERAGE}"></td>																				</tr>
+																					</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R37_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R37_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R37', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R37_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R37', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R37_AVERAGE}"></td>																				</tr>
+																															</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R38_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R38_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R38', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R38_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R38', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R38_AVERAGE}"></td>																				</tr>
+																															</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R39_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R39_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R39', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R39_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R39', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R39_AVERAGE}"></td>																				</tr>
+																															</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R40_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R40_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R40', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R40_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R40', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R40_AVERAGE}"></td>																				</tr>
+																															</tr>
+										<tr>
+										<td style="padding-left: 20px;" th:text="${report.R41_PRODUCT}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R41_CROSS_REFERENCE}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R41_MONTH_END}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R41_AVERAGE}"></td>
+																															</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R42_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R42_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R42', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R42_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R42', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R42_AVERAGE}"></td>																				</tr>
+											
+																					</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R43_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R43_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R43', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R43_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R43', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R43_AVERAGE}"></td>																				</tr>
+										
+											
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R44_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R44_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R44', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R44_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R44', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R44_AVERAGE}"></td>																				</tr>
+										
+																															</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R45_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R45_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R45', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R45_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R45', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R45_AVERAGE}"></td>																				</tr>
+																					
+										</tr>
+										<tr>
+										<td style="padding-left: 20px;" th:text="${report.R46_PRODUCT}"></td>
+									<!---	<td style="text-align: right;"
+											th:text="${report.R46_CROSS_REFERENCE}"></td> -->
+										<td style="text-align: left;">(46) M-SECL </td>
+										<td style="text-align: right;"
+											th:text="${report.R46_MONTH_END}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R46_AVERAGE}"></td>
+																					</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R47_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R47_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R47', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R47_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R47', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R47_AVERAGE}"></td>																				</tr>
+										
+											
+										
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R48_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R48_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R48', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R48_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R48', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R48_AVERAGE}"></td>																				</tr>
+											
+										</tr>
+										<td style="padding-left: 20px;" th:text="${report.R49_PRODUCT}"></td>
+									<!---	<td style="text-align: right;"
+											th:text="${report.R49_CROSS_REFERENCE}"></td> -->
+										<td style="text-align: left;">(41) M-OB </td>
+										<td style="text-align: right;"th:attr="RowId='R49', ColumnId='C3'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R49_MONTH_END}"></td>
+										<td style="text-align: right;"th:attr="RowId='R49', ColumnId='C4'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R49_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R50_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R50_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R50_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R50_AVERAGE}"></td>
+										
+										</tr>
+										
+											
+										
+										<tr>
+										<td style="padding-left: 20px;" th:text="${report.R51_PRODUCT}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R51_CROSS_REFERENCE}"></td>
+										<td style="text-align: right;"th:attr="RowId='R51', ColumnId='C3'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R51_MONTH_END}"></td>
+										<td style="text-align: right;"th:attr="RowId='R51', ColumnId='C4'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R51_AVERAGE}"></td>																				</tr>
+																				</tr>
+										<tr>
+										<td style="padding-left: 20px;" th:text="${report.R52_PRODUCT}"></td>
+										<td style="text-align: right;"
+											th:text="${report.R52_CROSS_REFERENCE}"></td>
+										<td style="text-align: right;"th:attr="RowId='R52', ColumnId='C3'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R52_MONTH_END}"></td>
+										<td style="text-align: right;"th:attr="RowId='R52', ColumnId='C4'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${report.R52_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R53_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R53_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R53', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R53_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R53', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R53_AVERAGE}"></td>																				</tr>
+																				</tr>
+										<tr>
+											
+											<td style="padding-left: 20px;" th:text="${report.R54_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R54_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R54', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R54_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R54', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R54_AVERAGE}"></td>																				</tr>
+																				</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R55_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R55_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R55', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R55_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R55', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R55_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R56_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R56_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R56', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R56_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R56', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R56_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R57_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R57_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R57', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R57_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R57', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R57_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px; font-weight: bold;" th:text="${report.R58_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R58_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R58', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R58_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R58', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R58_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R59_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R59_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R59_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R59_AVERAGE}"></td>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R60_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R60_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R60', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R60_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R60', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R60_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R61_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R61_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R61', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R61_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R61', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R61_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px; font-weight: bold;" th:text="${report.R62_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R62_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R62', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R62_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R62', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R62_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px; font-weight: bold;" th:text="${report.R63_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R63_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R63_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R63_AVERAGE}"></td>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R64_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R64_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R64', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R64_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R64', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R64_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R65_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R65_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R65_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R65_AVERAGE}"></td>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R66_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R66_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R66', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R66_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R66', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R66_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R67_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R67_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R67', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R67_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R67', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R67_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R68_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R68_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R68_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R68_AVERAGE}"></td>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R69_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R69_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R69', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R69_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R69', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R69_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R70_PRODUCT}"></td>
+									<!--		<td style="text-align: right;"
+												th:text="${report.R70_CROSS_REFERENCE}"></td> -->
+											<td style="text-align: left;">(46) M-SECL </td>
+											<td style="text-align: right;"th:attr="RowId='R70', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R70_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R70', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R70_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R71_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R71_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R71', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R71_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R71', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R71_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px; font-weight: bold;" th:text="${report.R72_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R72_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R72_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R72_AVERAGE}"></td>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R73_PRODUCT}"></td>
+										<!---	<td style="text-align: right;"
+												th:text="${report.R73_CROSS_REFERENCE}"></td> -->
+											<td style="text-align: left;">(7) M-CA2 </td>	
+											<td style="text-align: right;"
+												th:text="${report.R73_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R73_AVERAGE}"></td>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R74_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R74_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R74', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R74_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R74', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R74_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R75_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R75_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R75', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R75_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R75', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R75_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R76_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R76_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R76', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R76_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R76', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R76_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R77_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R77_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R77', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R77_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R77', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R77_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R78_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R78_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R78', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R78_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R78', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R78_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											
+											<td style="padding-left: 20px;" th:text="${report.R79_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R79_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"th:attr="RowId='R79', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R79_MONTH_END}"></td>
+											<td style="text-align: right;"th:attr="RowId='R79', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R79_AVERAGE}"></td>																				</tr>
+										</tr>
+										<tr>
+											
+											<td style="padding-left: 20px; font-weight: bold;" th:text="${report.R80_PRODUCT}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R80_CROSS_REFERENCE}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R80_MONTH_END}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R80_AVERAGE}"></td>
+										</tr>
+								
+									</tbody>
+			              </table>
+						
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									id="reportss">
+																	<thead class="thead-light">
+										<tr>
+											<th></th>
+											<th style="text-align: left;">CUST ID</th>
+											<th style="text-align: left;">ACCT NO</th>
+											<th>ACCT NAME</th>
+											<th style="text-align: right;">ACCT BALANCE</th>
+											<th style="text-align: left;">ROWID</th>
+											<th>COLUMNID</th>
+											<th>REPORT_DATE</th>
+										</tr>
+									</thead>
+									<tbody
+										style="font-family: Arial;">
+										<tr th:each="report: ${reportdetails}">
+											<td><a data-toggle="tooltip" class="editrec"
+												title="Click to Edit this Record"> <i
+													class="fas fa-edit" onclick="editRecord(this)"></i>
+											</a></td>
+											<td style="text-align: left;" th:text="${report.custId}"></td>
+											<td style="text-align: left;" th:text="${report.acctNumber}"></td>
+											<td th:text="${report.acctName}"></td>
+										<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
+										<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3)}" style="text-align: right;"></td>
+											<td style="text-align: left;" th:text="${report.rowId}"></td>
+											<td th:text="${report.columnId}"></td>
+											<td
+												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+										</tr>
+									</tbody>
+								</table>
+								<div id="pagination" class="mt-2 text-center"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+<script>
+															  $(document).ready(function () {
+															    $('#reportss').DataTable({
+															      "paging": true,
+															      "pageLength": 10,
+															      "lengthChange": false,
+															      "searching": false,
+															      "ordering": false,
+															      "autoWidth": false,
+															      "language": {
+															       "search": "Search:"
+															      }
+															    });
+															  });
+															</script>
+<!-- <script>
+															  $(document).ready(function () {
+															    $('#BRFvalidation').DataTable({
+															      "paging": true,
+															      "info": false,       // turn off "Showing x of y"
+															      "searching": false,  // turn off search
+															      "ordering": false,   // turn off ordering
+															      "lengthChange": false // hide "Show x entries"
+															    });
+															  });
+															</script> -->
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 820px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+<style>
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+.pagination {
+	margin: 0;
+}
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+.page-link {
+	color: #386276;
+}
+.page-link:hover {
+	color: #2a4a5c;
+}
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+</style>
+</html>
