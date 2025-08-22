@@ -8,5 +8,5 @@ public interface BRRS_M_SFINP2_Detail_Repo extends JpaRepository<BRRS_M_SFINP2_D
 	List<BRRS_M_SFINP2_Detail_Entity> getdatabydateList(Date reportdate);
 	
 	@Query(value = "select * from BRRS_M_SFINP2_DETAILTABLE WHERE REPORT_DATE =?1 and COLUMN_ID =?2 and ROW_ID=?3 ", nativeQuery = true)
-	List<BRRS_M_SFINP2_Detail_Entity> getdatabydateListrow(Date reportdate,String COLUMN_ID, String ROW_ID);
+	List<BRRS_M_SFINP2_Detail_Entity> GetDataByRowIdAndColumnId(String rowId,String ColumnId,Date reportdate);
 }

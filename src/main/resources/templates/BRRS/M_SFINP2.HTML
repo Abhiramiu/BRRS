@@ -266,7 +266,7 @@ $(window).on('beforeunload', function() {
   
    var Callurl;
    	$('#loader').modal('show');
-       Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/
+       Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
        location.href = Callurl;
        	console.log(Callurl);
   /*  $.ajax({
@@ -359,7 +359,7 @@ function downloadfile(button) {
 				a.click();
 				window.URL.revokeObjectURL(url);
 				document.body.removeChild(a);
-				showResultModal('Success', 'The file has been downloaded successfully.');
+				showResultModal('Success', filename + ' downloaded successfully.');
 			} else {
 				showResultModal('Information', 'No data was available to create a download.');
 			}
@@ -393,12 +393,21 @@ function downloadDetailfile(button) {
    const filename = button.getAttribute('data-filename');
    const fromdate = button.getAttribute('data-fromdate');
    const todate = button.getAttribute('data-todate');
+   const currency = button.getAttribute('data-currency');
+   const dtltype = button.getAttribute('data-dtltype');
+   const type = button.getAttribute('data-type');
+   const version = button.getAttribute('data-version');
+   alert(currency);
    $('#loader').modal('show');
    const baseUrl = '/BRRS/Reports/';
    const downloadUrl = baseUrl + 'downloadDetailExcel' +
        '?filename=' + encodeURIComponent(filename) +
        '&fromdate=' + encodeURIComponent(fromdate) +
-       '&todate=' + encodeURIComponent(todate);
+       '&todate=' + encodeURIComponent(todate)+
+	   '&currency=' + encodeURIComponent(currency) +
+	   '&dtltype=' + encodeURIComponent(dtltype) +
+	   '&type=' + encodeURIComponent(type) +
+	   '&version=' + encodeURIComponent(version);
    $.ajax({
        url: downloadUrl,
        type: 'GET',
@@ -512,19 +521,20 @@ function showdetailsbyRowAndColumn(a) {
 							onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
-						<button
-						  type="button"
-						  class="custom-tab-btn"
-						  id="custom-tab-btnAdd"
-						  th:if="${displaymode == 'Details'}"
-						  onclick="downloadDetailfile(this);"
-						  th:attr="
-						    data-fromdate=${fromdate},
-						    data-todate=${todate},
-						    data-filename='MSFinP2Detail',
-						  ">
-						  <i class="fa fa-download"></i>
-						</button>
+						
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+													th:if="${displaymode == 'Details'}" onclick="downloadDetailfile(this);" th:attr="
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+									data-currency=${currency},  
+												data-dtltype=${dtltype}, 
+								    data-filename='MSFinP2Detail',
+									data-type=${type},
+												data-version=${version}
+								  ">
+													<i class="fa fa-download"></i>
+												</button>
+						
 			 	<!---	<button type="button" class="custom-tab-btn"
 							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
 							th:attr="data-reportid=${reportid},

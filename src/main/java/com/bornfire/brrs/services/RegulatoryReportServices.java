@@ -48,7 +48,7 @@ public class RegulatoryReportServices {
 			
 		
 		case "M_SFINP2":
-			repsummary = BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate, currency, dtltype, pageable);
+			repsummary = BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate, currency, dtltype, pageable,type,version);
 			break;
 		}
 		
@@ -69,7 +69,7 @@ public class RegulatoryReportServices {
 		
 			case "M_SFINP2":
 				repdetail = BRRS_M_SFINP2_reportservice.getM_SFINP2currentDtl(reportId, fromdate, todate, currency, dtltype,
-						pageable, Filter);
+						pageable, Filter,type,version);
 				break;
 		}
 		return repdetail;
@@ -89,7 +89,7 @@ public class RegulatoryReportServices {
 
 			case "M_SFINP2":
 				try {
-					repfile = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate, todate, currency, dtltype);
+					repfile = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate, todate, currency, dtltype,type, version);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -105,7 +105,7 @@ public byte[] getDownloadDetailFile(String filename, String fromdate, String tod
 
 		System.out.println("came to common service");
 		if ("MSFinP2Detail".equals(filename)) {
-			return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(filename, fromdate, todate);
+			return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(filename, fromdate, todate,currency, dtltype, type,version);
 		}  else if (filename.equals("BRF1_2Detail")) {
 			return cbuae_brf1_2_reportservice.getBRF1_2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -118,9 +118,9 @@ public byte[] getDownloadDetailFile(String filename, String fromdate, String tod
 
 		List<Object> archivalData = new ArrayList<>();
 		switch (rptcode) {
-		case "BRF1_1":
+		case "M_SFINP2":
 			try {
-				archivalData = cbuae_brf1_1_reportservice.getBRF1_1Archival();
+				archivalData = BRRS_M_SFINP2_reportservice.getM_SFINP2Archival();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
