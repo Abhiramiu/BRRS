@@ -11,6 +11,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -36,6 +39,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -60,6 +65,8 @@ private Environment env;
 @Autowired
 SessionFactory sessionFactory;
 
+@Autowired 
+AuditService auditService;
 	
 	@Autowired
 	BRRS_M_SFINP2_Detail_Repo M_SFINP2_DETAIL_Repo;
@@ -1504,6 +1511,13 @@ public byte[] BRRS_M_SFINP2Excel(String filename,String reportId, String fromdat
 		// Write the final workbook content to the in-memory stream.
 		workbook.write(out);
 		logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+		//audit
+        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attrs != null) {
+            HttpServletRequest request = attrs.getRequest();
+            String userid = (String) request.getSession().getAttribute("USERID");
+            auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SFINP2_SUMMARY", null, "BRRS_M_SFINP2_SUMMARYTABLE");
+        }
 		return out.toByteArray();
 	}
 }
@@ -1647,7 +1661,7 @@ public byte[] getExcelM_SFINP2ARCHIVAL(String filename, String reportId, String 
 			.getdatabydateListarchival(dateformat.parse(todate), version);
 
 	if (dataList.isEmpty()) {
-		logger.warn("Service: No data found for BRF1.1 report. Returning empty result.");
+		logger.warn("Service: No data found for M_SFINP2 report. Returning empty result.");
 		return new byte[0];
 	}
 
@@ -2918,10 +2932,7 @@ int startRow = 10;
 				} else {
 					cell3.setCellValue("");
 					cell3.setCellStyle(textStyle);
-				}
-		
-				
-				
+				}				
 				
 				
 			}
@@ -2936,6 +2947,8 @@ int startRow = 10;
 
 		logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
+		
+        
 		return out.toByteArray();
 	}
 }

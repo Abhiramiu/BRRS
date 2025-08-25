@@ -304,7 +304,7 @@ public class NavigationController {
 	  
 	 
 	  
-	  @RequestMapping(value = "Monthly-1Archival", method = { RequestMethod.GET,RequestMethod.POST })
+	  @RequestMapping(value = "MonthlyArchival", method = { RequestMethod.GET,RequestMethod.POST })
 	  public String brrsArchival(Model md, HttpServletRequest req)
 	  {
 	//String roleId = (String) req.getSession().getAttribute("ROLEID");
@@ -313,7 +313,7 @@ public class NavigationController {
 	System.out.println("count"+rrReportlist.getReportListbrrs().size());
 	  md.addAttribute("reportlist", rrReportlist.getReportListbrrs());
 	  
-	  return "BRRS/BRFArchival";
+	  return "BRRS/BRRSArchival";
 	  
 	  }
 	 
@@ -334,7 +334,7 @@ public class NavigationController {
 		  md.addAttribute("Archivaldata",Archivaldata);
 		  md.addAttribute("reportlist", rrReportlist.getReportListbrrs());
 	  
-	  return "BRF/BRFArchivalform";
+	  return "BRRS/BRRSArchivalform";
 	  
 	  }
 	   	    

@@ -128,7 +128,7 @@ thead th {
 	font-size: 14px;
 	border-radius: 4px;
 }
-#BRFvalidation th, #usertable td {
+#BRRSvalidation th, #usertable td {
 	vertical-align: middle;
 	text-align: left;
 	font-size: 16px;
@@ -472,7 +472,7 @@ function showdetailsbyRowAndColumn(a) {
 }
 </script>
 </head>
-<title>BWRBR</title>
+<title>BRRS</title>
 <body>
 	<div class="container-fluid"
 		style="padding-left: 0px; padding-right: 0px;">
@@ -535,18 +535,7 @@ function showdetailsbyRowAndColumn(a) {
 													<i class="fa fa-download"></i>
 												</button>
 						
-			 	<!---	<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
-							th:attr="data-reportid=${reportid},
-                    data-asondate=${asondate},
-                    data-fromdate=${fromdate},
-                    data-todate=${todate},
-                    data-currency=${currency}, 
-                    data-dtltype=${dtltype},
-                    data-filename='BRF2_18'",
-							onclick="editRecord();">
-							<i class="fa fa-download"></i>
-						</button> -->
+			 	
 					</div>
 				</div>
 			<div th:if="${displaymode == 'summary'}">
@@ -1476,7 +1465,7 @@ function showdetailsbyRowAndColumn(a) {
 															</script>
 <!-- <script>
 															  $(document).ready(function () {
-															    $('#BRFvalidation').DataTable({
+															    $('#BRRSvalidation').DataTable({
 															      "paging": true,
 															      "info": false,       // turn off "Showing x of y"
 															      "searching": false,  // turn off search

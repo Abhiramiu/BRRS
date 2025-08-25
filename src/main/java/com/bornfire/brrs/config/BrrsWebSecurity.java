@@ -238,7 +238,7 @@ public class BrrsWebSecurity extends WebSecurityConfigurerAdapter {
 				request.getSession().setAttribute("BRANCHCODE", user.getBranch_code());
 				request.getSession().setAttribute("BRANCHNAME", user.getBranch_name());
 				
-				auditService.createBusinessAudit(user.getUserid() , "Login",null , null, "BRF_USER_PROFILE_TABLE");				
+				auditService.createBusinessAudit(user.getUserid() , "Login",null , null, "XBRL_USER_PROFILE_TABLE");				
 				
 				response.sendRedirect("Dashboard");
 			}

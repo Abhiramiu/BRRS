@@ -14,16 +14,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Repository
 public interface AuditServicesRep extends JpaRepository<AuditServicesEntity , String>{
-	@Query(value = "select * from BRF_AUDIT ", nativeQuery = true)
+	@Query(value = "select * from BRRS_AUDIT ", nativeQuery = true)
 	List<AuditServicesEntity> getauditService();
 
 		
-		@Query(value = "SELECT * FROM BRF_AUDIT WHERE FUNC_CODE  != 'Login'", nativeQuery = true)
+		@Query(value = "SELECT * FROM BRRS_AUDIT WHERE FUNC_CODE  != 'Login'", nativeQuery = true)
 		List<AuditServicesEntity> getServiceAudit();
-		@Query(value = "SELECT * FROM BRF_AUDIT WHERE FUNC_CODE  = 'Login'", nativeQuery = true)
+		@Query(value = "SELECT * FROM BRRS_AUDIT WHERE FUNC_CODE  = 'Login'", nativeQuery = true)
 		List<AuditServicesEntity> getUserAudit();
 
-		@Query(value = "SELECT change_details FROM BRF_AUDIT  WHERE audit_ref_no = ?1", nativeQuery = true)
+		@Query(value = "SELECT change_details FROM BRRS_AUDIT  WHERE audit_ref_no = ?1", nativeQuery = true)
 		String getchanges(String audit_ref_no);
 
 
