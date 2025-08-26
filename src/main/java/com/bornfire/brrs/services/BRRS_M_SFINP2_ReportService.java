@@ -2962,7 +2962,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 
 		}
 		XSSFWorkbook workbook = new XSSFWorkbook();
-		XSSFSheet sheet = workbook.createSheet("BRRS_M_SFINP2Details");
+		XSSFSheet sheet = workbook.createSheet("MSFinP2Detail");
 
 		// Common border style
 		BorderStyle border = BorderStyle.THIN;
