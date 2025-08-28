@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.bornfire.brrs.entities.AccessAndRoles;
 import com.bornfire.brrs.entities.AccessandRolesRepository;
 import com.bornfire.brrs.entities.BRRSValidationsRepo;
-import com.bornfire.brrs.entities.CBUAE_BRFValidationsRepo;
 import com.bornfire.brrs.entities.RRReport;
 import com.bornfire.brrs.entities.RRReportRepo;
 import com.bornfire.brrs.entities.UserProfile;

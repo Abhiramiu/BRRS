@@ -9,8 +9,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
-@Table(name = "BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY")
-public class BRRS_M_SFINP2_Archival_Summary_Entity {
+@Table(name = "BRRS_M_SFINP2_SUMMARYTABLE")
+public class M_SFINP2_Summary_Entity {
 	public String R10_PRODUCT;
 	public String R10_CROSS_REFERENCE;
 	public BigDecimal R10_MONTH_END;
@@ -2061,7 +2061,7 @@ public class BRRS_M_SFINP2_Archival_Summary_Entity {
 		DEL_FLG = dEL_FLG;
 	}
 	
-	public BRRS_M_SFINP2_Archival_Summary_Entity() {
+	public M_SFINP2_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

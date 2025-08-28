@@ -7,8 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
-@Table(name = "BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL")
-public class BRRS_M_SFINP2_Archival_Detail_Entity {
+@Table(name = "BRRS_M_SFINP2_DETAILTABLE")
+public class M_SFINP2_Detail_Entity {
 	
 	@Id
    @Column(name = "CUST_ID")
@@ -184,7 +184,7 @@ public class BRRS_M_SFINP2_Archival_Detail_Entity {
 	public void setDelFlg(char delFlg) {
 		this.delFlg = delFlg;
 	}
-	public BRRS_M_SFINP2_Archival_Detail_Entity() {
+	public M_SFINP2_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

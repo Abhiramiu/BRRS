@@ -7,6 +7,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -117,8 +118,8 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "subreportid", required = false) String subreportid,
 			@RequestParam(value = "secid", required = false) String secid,
 			@RequestParam(value = "dtltype", required = false) String dtltype,
-			@RequestParam(value = "page", required = false) Optional<Integer> page,
-			@RequestParam(value = "size", required = false) Optional<Integer> size,
+			@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size,
 			@RequestParam(value = "reportingTime", required = false) String reportingTime, Model md) {
 
 		md.addAttribute("reportid", reportid);
@@ -135,8 +136,7 @@ public class BRRS_ReportsController {
 		// md.addAttribute("reportTitle", reportServices.getReportName(reportid));
 		md.addAttribute("displaymode", "detail");
 
-		int currentPage = page.orElse(0);
-		int pageSize = size.orElse(Integer.parseInt(pagesize));
+		
 		try {
 			asondate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(asondate));
 			fromdate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(fromdate));
@@ -147,7 +147,7 @@ public class BRRS_ReportsController {
 
 		// logger.info("Getting ModelandView :" + reportid);
 		ModelAndView mv = regreportServices.getReportDetails(reportid, instancecode, asondate, fromdate, todate,
-				currency, reportingTime, dtltype, subreportid, secid, PageRequest.of(currentPage, pageSize), filter,
+				currency, reportingTime, dtltype, subreportid, secid, PageRequest.of(page, size), filter,
 				type, version);
 
 		return mv;
@@ -202,34 +202,73 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@RequestMapping(value = "downloadDetailExcel", method = RequestMethod.GET)
-	@ResponseBody
-	public ResponseEntity<ByteArrayResource> downloadDetailExcel(@RequestParam("filename") String filename,
-			@RequestParam("fromdate") String fromdate, @RequestParam("todate") String todate,
-			@RequestParam("currency") String currency, @RequestParam("dtltype") String dtltype,
-			@RequestParam("type") String type, @RequestParam("version") String version, Model md) {
+	 @RequestMapping(value = "downloaddetailExcel", method = { RequestMethod.GET, RequestMethod.POST })
+		@ResponseBody
+		public ResponseEntity<ByteArrayResource> detailDownload(HttpServletResponse response,
+				@RequestParam("jobId") String jobId,
+				@RequestParam("filename") String filename
+				)
+				throws SQLException, FileNotFoundException {
 
-		try {
-			System.out.println("came to controller");
-			byte[] data = regreportServices.getDownloadDetailFile(filename, fromdate, todate, currency, dtltype, type,
-					version);
+			response.setContentType("application/octet-stream");
 
-			if (data == null || data.length == 0) {
-				return ResponseEntity.noContent().build();
+			
+			try {
+				byte[] excelData=null;
+				
+					excelData = regreportServices.getReport(jobId);;
+				
+				if (excelData == null || excelData.length == 0) {
+					logger.warn("Controller: Service returned no data. Responding with 204 No Content.");
+					return ResponseEntity.noContent().build();
+				}
+
+				ByteArrayResource resource = new ByteArrayResource(excelData);
+
+				HttpHeaders headers = new HttpHeaders();
+				filename = filename + ".xls";
+				headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+
+				logger.info("Controller: Sending file '{}' to client ({} bytes).", filename, excelData.length);
+				return ResponseEntity.ok().headers(headers).contentLength(excelData.length)
+						.contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(resource);
+
+			} catch (Exception e) {
+				logger.error("Controller ERROR: A critical error occurred during file generation.", e);
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 			}
-
-			ByteArrayResource resource = new ByteArrayResource(data);
-
-			HttpHeaders headers = new HttpHeaders();
-			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename + ".xls");
-
-			return ResponseEntity.ok().headers(headers).contentLength(data.length)
-					.contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(resource);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-	}
-
+	
+	
+	
+	@RequestMapping(value = "/startreport", method = { RequestMethod.GET, RequestMethod.POST })
+    @ResponseBody  // forces raw text instead of HTML view
+    public String startReport(@RequestParam String filename,
+    						@RequestParam("fromdate") String fromdate,
+    						@RequestParam("todate") String todate,
+                            @RequestParam String currency,
+                            @RequestParam("dtltype") String dtltype,
+                            @RequestParam("type") String type, 
+                            @RequestParam(value = "version", required = false) String version) 	
+   {
+        String jobId = UUID.randomUUID().toString();
+        System.out.println("jobid"+jobId);
+        
+		regreportServices.generateReportAsync(jobId, filename, fromdate, todate, dtltype, type, currency, version);
+        //RT_SLSServices.generateReportAsync(jobId, filename, reportdate, currency,version);
+        return jobId;
+    }
+	
+	 @RequestMapping(value = "/checkreport", method = { RequestMethod.GET, RequestMethod.POST })
+	    @ResponseBody  // forces raw text instead of HTML view
+	    public ResponseEntity<String> checkReport(@RequestParam String jobId) {
+	        byte[] report = regreportServices.getReport(jobId);
+	        //System.out.println("Report generation completed for: " + jobId);
+	        if (report == null) {
+	            return ResponseEntity.ok("PROCESSING");
+	        }
+	        return ResponseEntity.ok("READY");
+	    }
+	 
+	 
 }

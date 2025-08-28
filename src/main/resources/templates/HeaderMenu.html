@@ -523,7 +523,38 @@ document.addEventListener("DOMContentLoaded", function () {
 			
 		}
 
-
+		.custom-alert {
+				    position: fixed;
+				    top: 20px;
+				    right: 20px;
+				    min-width: 250px;
+				    max-width: 300px;
+				    padding: 10px 15px;
+				    border-radius: 8px;
+				    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+				    z-index: 9999;
+				    font-size: 14px;
+				    display: flex;
+				    align-items: center;
+				    justify-content: space-between;
+				}
+				
+				.custom-alert p {
+				    margin: 0;
+				    padding: 0;
+				}
+				
+				.custom-alert .close {
+				    background: none;
+				    border: none;
+				    font-size: 18px;
+				    line-height: 1;
+				    cursor: pointer;
+				    color: #000;
+				    padding-left: 10px;
+				}
+				
+				
 		.nav-link.active,
 		.dropdown-toggle.active {
 			animation: subtlePulse 2s ease-in-out infinite;
@@ -864,6 +895,103 @@ color:white;
 
 
 </style>
+<script>
+window.onload = function () {
+    const jobId = sessionStorage.getItem("jobId");
+    if (jobId) {
+        startPolling(jobId);  // ✅ restart polling on every page load
+    }
+};
+
+
+
+function startPolling(jobId) {
+	const alertMsg = document.getElementById("alertMessage");
+    function checkReport() {
+        fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+            .then(res => res.text())
+            .then(status => {
+                if (status === "READY") {
+                	 alertMsg.innerHTML ='Report is ready! Downloading...';
+                	 showAlert();
+                    const filename = sessionStorage.getItem("filename");
+                    downloadDetailfiles(jobId,filename)
+                    sessionStorage.removeItem("jobId");
+                    sessionStorage.removeItem("filename"); 
+                } else {
+                    
+                    alertMsg.innerHTML ='Download Is Processing…';
+                	showAlert();
+                    setTimeout(checkReport, 6000);  // ✅ keeps retrying on every page
+                }
+            })
+            .catch(err => {
+                console.error("Error checking report:", err);
+                alertMsg.innerHTML ='Error checking report:'+err;
+            	showAlert();
+                setTimeout(checkReport, 6000);
+            });
+    }
+
+    checkReport();
+}
+
+function downloadDetailfiles(jobId,filename) {
+	
+	//$('#loader').modal('show');
+	$.ajax({
+		url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
+			'&filename=' + filename,
+		type: 'GET',
+		xhrFields: {
+			responseType: 'blob'
+		},
+		success: function (data) {
+			$('#loader').modal('hide');
+
+			if (data && data.size > 100) {
+				const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.style.display = 'none';
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				window.URL.revokeObjectURL(url);
+				document.body.removeChild(a);
+
+				showResultModal('Success', filename + ' downloaded successfully.');
+			} else {
+				showResultModal('Information', 'No data was available to create a download.');
+			}
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			$('#loader').modal('hide');
+			console.error("Download failed:", textStatus, errorThrown);
+			showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+		}
+	});
+}	
+
+</script>
+
+<script>
+
+function showAlert() {
+    const alertDiv = document.getElementById("autoHideAlert");
+    alertDiv.style.display = "block";   // Show alert
+    setTimeout(() => {
+        hideAlert();                    // Auto-hide after 5 sec
+    }, 7000);
+}
+
+function hideAlert() {
+    const alertDiv = document.getElementById("autoHideAlert");
+    alertDiv.style.display = "none";
+}
+
+</script>
 </head>
 
 <body>
@@ -1031,6 +1159,12 @@ color:white;
 					</div>
 				</div>
 			</div>
+		</div>
+		<div class="alert alert-danger custom-alert" role="alert" id="autoHideAlert" style="display:none;">
+		    <button type="button" class="close" aria-label="Close" onclick="hideAlert()">
+		        <span aria-hidden="true">&times;</span>
+		    </button>
+		    <p id="alertMessage"><i  class="fa fa-check-circle"></i> Download request received</p>
 		</div>
 </body>
 

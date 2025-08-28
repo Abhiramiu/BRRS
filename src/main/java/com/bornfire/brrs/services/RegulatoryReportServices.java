@@ -3,6 +3,7 @@ package com.bornfire.brrs.services;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.transaction.Transactional;
 
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,17 +24,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class RegulatoryReportServices {
 
-	
-	@Autowired
-	CBUAE_BRF1_1_ReportService cbuae_brf1_1_reportservice;
-	
-	@Autowired
-	CBUAE_BRF1_2_ReportService cbuae_brf1_2_reportservice;
-	
 	@Autowired
 	BRRS_M_SFINP2_ReportService BRRS_M_SFINP2_reportservice;
-	
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -44,14 +38,12 @@ public class RegulatoryReportServices {
 		logger.info("Getting View for the Report :" + reportId);
 		switch (reportId) {
 
-		
-			
-		
 		case "M_SFINP2":
-			repsummary = BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate, currency, dtltype, pageable,type,version);
+			repsummary = BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
 			break;
 		}
-		
+
 		return repsummary;
 	}
 
@@ -64,18 +56,14 @@ public class RegulatoryReportServices {
 
 		switch (reportId) {
 
-		
-		
-		
-			case "M_SFINP2":
-				repdetail = BRRS_M_SFINP2_reportservice.getM_SFINP2currentDtl(reportId, fromdate, todate, currency, dtltype,
-						pageable, Filter,type,version);
-				break;
+		case "M_SFINP2":
+			repdetail = BRRS_M_SFINP2_reportservice.getM_SFINP2currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
 		}
 		return repdetail;
 	}
 
-	
 	public byte[] getDownloadFile(String reportId, String filename, String asondate, String fromdate, String todate,
 			String currency, String subreportid, String secid, String dtltype, String reportingTime,
 			String instancecode, String filter, String type, String version) {
@@ -84,33 +72,28 @@ public class RegulatoryReportServices {
 
 		switch (reportId) {
 
-		
-				
-
-			case "M_SFINP2":
-				try {
-					repfile = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate, todate, currency, dtltype,type, version);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-		}	
+		case "M_SFINP2":
+			try {
+				repfile = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		}
 		return repfile;
 	}
 
-	
-public byte[] getDownloadDetailFile(String filename, String fromdate, String todate, String currency,
+	public byte[] getDownloadDetailFile(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 
 		System.out.println("came to common service");
 		if ("MSFinP2Detail".equals(filename)) {
-			return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(filename, fromdate, todate,currency, dtltype, type,version);
-		}  else if (filename.equals("BRF1_2Detail")) {
-			return cbuae_brf1_2_reportservice.getBRF1_2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		
+			return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
 		}
+
 		return new byte[0];
 	}
 
@@ -126,10 +109,41 @@ public byte[] getDownloadDetailFile(String filename, String fromdate, String tod
 				e.printStackTrace();
 			}
 			break;
-			
-		
+
 		}
 		return archivalData;
 	}
+
+	
+	
+	private final ConcurrentHashMap<String, byte[]> jobStorage = new ConcurrentHashMap<>();
+    @Async
+    public void generateReportAsync(String jobId, String filename, String fromdate,String todate, String dtltype,String type,String currency, String version) {
+        System.out.println("Starting report generation for: " + filename);
+		        
+		byte[] fileData =null;
+				
+				if(filename.equals("MSFinP2Detail")) {
+					fileData=BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(filename, fromdate, todate, currency, dtltype, type,version);
+				}
+				
+				
+			
+		if (fileData == null) {
+		    //logger.warn("Excel generation failed or no data for jobId: {}", jobId);
+		    jobStorage.put(jobId, null); 
+		} else {
+		    jobStorage.put(jobId, fileData);
+		}
+
+		System.out.println("Report generation completed for: " + filename);
+    }
+
+    
+    public byte[] getReport(String jobId) {
+    	 //System.out.println("Report generation completed for: " + jobId);
+        return jobStorage.get(jobId);
+    }
+	
 
 }

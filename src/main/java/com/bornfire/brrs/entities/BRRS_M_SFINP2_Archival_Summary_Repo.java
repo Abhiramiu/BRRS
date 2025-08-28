@@ -8,11 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BRRS_M_SFINP2_Archival_Summary_Repo extends JpaRepository<BRRS_M_SFINP2_Archival_Summary_Entity, Date> {
+public interface BRRS_M_SFINP2_Archival_Summary_Repo extends JpaRepository<M_SFINP2_Archival_Summary_Entity, Date> {
 
     @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY order by REPORT_VERSION", nativeQuery = true)
     List<Object> getM_SFINP2archival();
 
     @Query(value = "select * from BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-    List<BRRS_M_SFINP2_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, String report_version);
+    List<M_SFINP2_Archival_Summary_Entity> getdatabydateListarchival(Date report_date, String report_version);
 }
