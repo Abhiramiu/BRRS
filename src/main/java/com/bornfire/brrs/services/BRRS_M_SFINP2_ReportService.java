@@ -211,8 +211,6 @@ public class BRRS_M_SFINP2_ReportService {
 			String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		logger.info("Service: Starting Excel generation process in memory.");
-
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);

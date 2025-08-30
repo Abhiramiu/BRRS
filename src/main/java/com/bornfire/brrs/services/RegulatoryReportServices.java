@@ -27,6 +27,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_SFINP2_ReportService BRRS_M_SFINP2_reportservice;
 
+	@Autowired
+	BRRS_M_IS_ReportService BRRS_M_IS_reportservice;
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -40,6 +43,11 @@ public class RegulatoryReportServices {
 
 		case "M_SFINP2":
 			repsummary = BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+			
+		case "M_IS":
+			repsummary = BRRS_M_IS_reportservice.getM_ISView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 		}
@@ -58,6 +66,11 @@ public class RegulatoryReportServices {
 
 		case "M_SFINP2":
 			repdetail = BRRS_M_SFINP2_reportservice.getM_SFINP2currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
+			
+		case "M_IS":
+			repdetail = BRRS_M_IS_reportservice.getM_IScurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
 		}
@@ -81,6 +94,17 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_IS":
+			try {
+				repfile = BRRS_M_IS_reportservice.BRRS_M_ISExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		}
 		return repfile;
 	}
@@ -91,6 +115,11 @@ public class RegulatoryReportServices {
 		System.out.println("came to common service");
 		if ("MSFinP2Detail".equals(filename)) {
 			return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
+		}
+		
+		if ("MISDetail".equals(filename)) {
+			return BRRS_M_IS_reportservice.BRRS_M_ISDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
 
@@ -104,6 +133,15 @@ public class RegulatoryReportServices {
 		case "M_SFINP2":
 			try {
 				archivalData = BRRS_M_SFINP2_reportservice.getM_SFINP2Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_IS":
+			try {
+				archivalData = BRRS_M_IS_reportservice.getM_ISArchival();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -123,9 +161,13 @@ public class RegulatoryReportServices {
 		        
 		byte[] fileData =null;
 				
-				if(filename.equals("MSFinP2Detail")) {
-					fileData=BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(filename, fromdate, todate, currency, dtltype, type,version);
-				}
+		if (filename.equals("MSFinP2Detail")) {
+		    fileData = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
+		} else if (filename.equals("M_ISDetail")) {
+		    fileData = BRRS_M_IS_reportservice.BRRS_M_ISDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
+		}
+
+				
 				
 				
 			

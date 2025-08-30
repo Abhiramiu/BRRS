@@ -789,7 +789,7 @@ PURPOSE		: BWRBRREPORT
 											<!---	<td style="text-align: right;"
 											th:text="${report.R14_CROSS_REFERENCE}"></td> -->
 											<td style="text-align: left;">(37) M-DEP1 + (38) M-DEP5</td>
-											<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C3'"
+											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R14_MONTH_END}"></td>
 											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C4'"
@@ -849,8 +849,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="text-align: right;" th:attr="RowId='R19', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R19_MONTH_END}"></td>
-											<td style="text-align: right;" th:attr="RowId='R19', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"
+											<td style="text-align: right;" 
 												th:text="${report.R19_AVERAGE}"></td>
 
 										</tr>
@@ -954,7 +953,8 @@ PURPOSE		: BWRBRREPORT
 												th:text="${report.R29_CROSS_REFERENCE}"></td> -->
 											<td style="text-align: left;">(35) M-NOSVOS (nostro)</td>
 											<td style="text-align: right;" th:text="${report.R29_MONTH_END}"></td>
-											<td style="text-align: right;" th:text="${report.R29_AVERAGE}"></td>
+											<td style="text-align: right;"	th:attr="RowId='R29', ColumnId='C4'"
+											onclick="showdetailsbyRowAndColumn(this)" th:text="${report.R29_AVERAGE}"></td>
 
 										</tr>
 										<tr>
@@ -1408,7 +1408,8 @@ PURPOSE		: BWRBRREPORT
 												th:text="${report.R72_PRODUCT}"></td>
 											<td style="text-align: right;" th:text="${report.R72_CROSS_REFERENCE}"></td>
 											<td style="text-align: right;" th:text="${report.R72_MONTH_END}"></td>
-											<td style="text-align: right;" th:text="${report.R72_AVERAGE}"></td>
+											<td style="text-align: right;"	th:attr="RowId='R72', ColumnId='C4'"
+											onclick="showdetailsbyRowAndColumn(this)" th:text="${report.R72_AVERAGE}"></td>
 										</tr>
 										<tr>
 											<td style="padding-left: 20px;" th:text="${report.R73_PRODUCT}"></td>
