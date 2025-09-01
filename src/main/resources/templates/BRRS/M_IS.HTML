@@ -10,8 +10,8 @@ PURPOSE		: BWRBRREPORT
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- CSS -->
-	
-	
+
+
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
@@ -435,11 +435,11 @@ PURPOSE		: BWRBRREPORT
 			$('#resultModal').modal('show');
 		}
 	</script>
-	
-	
-		<script>
-		
-		function startReport(button){
+
+
+	<script>
+
+		function startReport(button) {
 			const alertMsg = document.getElementById("alertMessage");
 			const filename = button.getAttribute('data-filename');
 			const fromdate = button.getAttribute('data-fromdate');
@@ -449,10 +449,10 @@ PURPOSE		: BWRBRREPORT
 			const type = button.getAttribute('data-type');
 			const version = button.getAttribute('data-version');
 			const sessionfilename = sessionStorage.getItem("filename");
-			
-			if(sessionfilename==filename){
-				alertMsg.innerHTML ='Download request already Processing...';
-	       	 	showAlert();
+
+			if (sessionfilename == filename) {
+				alertMsg.innerHTML = 'Download request already Processing...';
+				showAlert();
 				return;
 			}
 
@@ -465,47 +465,47 @@ PURPOSE		: BWRBRREPORT
 				'&dtltype=' + encodeURIComponent(dtltype) +
 				'&type=' + encodeURIComponent(type) +
 				'&version=' + encodeURIComponent(version);
-		    fetch(downloadUrl)  // ✅ no invalid characters now
-		        .then(res => res.text())
-		        .then(jobId => {
+			fetch(downloadUrl)  // ✅ no invalid characters now
+				.then(res => res.text())
+				.then(jobId => {
 
-		        	alertMsg.innerHTML ='Download request received...'+jobId;
-		       	 	showAlert();
-		            sessionStorage.setItem("jobId", jobId);
-		            sessionStorage.setItem("filename", filename);
-		            checkReport(jobId);
-		        });
+					alertMsg.innerHTML = 'Download request received...' + jobId;
+					showAlert();
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+					checkReport(jobId);
+				});
 		}
 
 		function checkReport(jobId) {
 			const alertMsg = document.getElementById("alertMessage");
-		    fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
-		        .then(res => res.text())
-		        .then(status => {
-		            if (status === "READY") {
-		            	alertMsg.innerHTML ='Report is ready! Downloading…';
-		           	 	showAlert();
-		                const filename = sessionStorage.getItem("filename");
-		                downloadDetailfile(jobId,filename)
-		                sessionStorage.removeItem("jobId");
-		                sessionStorage.removeItem("filename");                
-		                
-		            } else {
-		                alertMsg.innerHTML ='Download Is Processing…';
-		            	showAlert();
-		                setTimeout(() => checkReport(jobId), 5000);
-		            }
-		        });
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report is ready! Downloading…';
+						showAlert();
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename)
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+
+					} else {
+						alertMsg.innerHTML = 'Download Is Processing…';
+						showAlert();
+						setTimeout(() => checkReport(jobId), 5000);
+					}
+				});
 		}
 
 
 
-		function downloadDetailfile(jobId,filename) {
-			
+		function downloadDetailfile(jobId, filename) {
+
 			//$('#loader').modal('show');
-			
+
 			$.ajax({
-				url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
 					'&filename=' + filename,
 				type: 'GET',
 				xhrFields: {
@@ -538,14 +538,14 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
-		
 
 
-		</script>
-	
-	
-	
-	
+
+	</script>
+
+
+
+
 	<!--<script>
 		function downloadDetailfile(button) {
 			const filename = button.getAttribute('data-filename');
@@ -611,42 +611,42 @@ PURPOSE		: BWRBRREPORT
 			});
 		}
 	</script>-->
-	
+
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
-					var rowId = a.getAttribute('RowId');
-					var columnId = a.getAttribute('ColumnId');
-					var cellValue = a.textContent || a.innerText;
+			var rowId = a.getAttribute('RowId');
+			var columnId = a.getAttribute('ColumnId');
+			var cellValue = a.textContent || a.innerText;
 
-					if (cellValue !== '0') {
-						// Set dynamic message
-						document.getElementById("cellresultModalLabel").innerText = 
-						    "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+			if (cellValue !== '0') {
+				// Set dynamic message
+				document.getElementById("cellresultModalLabel").innerText =
+					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
 
-						// Show custom modal
-						$('#cellresultModal').modal('show');
+				// Show custom modal
+				$('#cellresultModal').modal('show');
 
-						// Handle Yes button
-						document.querySelector('.yes-btn').onclick = function() {
-							$('#cellresultModal').modal('hide');
-							const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
-						        backdrop: 'static',
-						        keyboard: false
-						    });
-							$('#loader').modal('show');
+				// Handle Yes button
+				document.querySelector('.yes-btn').onclick = function () {
+					$('#cellresultModal').modal('hide');
+					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+						backdrop: 'static',
+						keyboard: false
+					});
+					$('#loader').modal('show');
 
-							var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-							Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
 
-							location.href = Callurl;
-						};
-					} else {
-						showResultModal("Alert", "No Records available for this selected cell.");
-					}
-				}
-				
+					location.href = Callurl;
+				};
+			} else {
+				showResultModal("Alert", "No Records available for this selected cell.");
+			}
+		}
+
 	</script>
-	
+
 </head>
 <title>BRRS</title>
 
@@ -710,22 +710,25 @@ PURPOSE		: BWRBRREPORT
 					</div>
 				</div>
 
-				</div>
+			</div>
 			<div th:if="${displaymode == 'summary'}">
-			<div class="row" >
-				<div class="col-sm-12">
-					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
-   					<table class="sticky-header-table table table-bordered table-hover table-sm table-condensed" id="reports" >
-							<thead class="thead-light">
- 									<tr style="background-color: #b3b6b9 ">
-										
-										<th rowspan="3" style="text-align: left; width:33%;padding-left: 20px;">(5A)  INCOME ON INVESTMENTS AND SECURITIES		</th>
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="table-wrapper table-responsive scrollable-table-container"
+							style="border-right: 1px solid #dee2e6; ">
+							<table class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+								id="reports">
+								<thead class="thead-light">
+									<tr style="background-color: #b3b6b9 ">
+
+										<th rowspan="3" style="text-align: left; width:33%;padding-left: 20px;">(5A)
+											INCOME ON INVESTMENTS AND SECURITIES </th>
 										<th style="text-align: center;">Fair Value (Profit and Loss)</th>
-										<th style="text-align: center;"> Held to Maturity  </th>
+										<th style="text-align: center;"> Held to Maturity </th>
 										<th style="text-align: center;"> Available for Sale</th>
 										<th style="text-align: center;">Total </th>
 									</tr>
-								<!--	</tr>
+									<!--	</tr>
 									<tr style="background-color: #b3b6b9">
 										<th style="text-align: center; background-color: #b3b6b9"></th>
 										<th style="text-align: center; background-color: #b3b6b9">C0010</th>
@@ -734,484 +737,508 @@ PURPOSE		: BWRBRREPORT
 									</tr> -->
 								</thead>
 								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-	
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R10_PRODUCT}"></td>
-											<td style="text-align: right; "th:attr="RowId='R10', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R10_FAIR_VALUE_PROFIT_AND_LOSS}"></td>
-											<td style="text-align: right; "th:attr="RowId='R10', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R10_HELD_TO_MATURITY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R10', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R10_AVAILABLE_FOR_SALE}"></td>
-											<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R10_TOTAL}"></td>
-										</tr>
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R11_PRODUCT}"></td>
-											<td style="text-align: right; "th:attr="RowId='R11', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R11_FAIR_VALUE_PROFIT_AND_LOSS}"></td>
-											<td style="text-align: right; "th:attr="RowId='R11', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R11_HELD_TO_MATURITY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R11', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R11_AVAILABLE_FOR_SALE}"></td>
-											<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R11_TOTAL}"></td>										
-										
-										</tr>
-										<tr>
-										
-											<td style="padding-left: 20px;" th:text="${report.R12_PRODUCT}"></td>
-											<td style="text-align: right; "th:attr="RowId='R12', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R12_FAIR_VALUE_PROFIT_AND_LOSS}"></td>
-											<td style="text-align: right; "th:attr="RowId='R12', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R12_HELD_TO_MATURITY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R12_AVAILABLE_FOR_SALE}"></td>
-											<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R12_TOTAL}"></td>											
-																					</tr>
-										<tr>
-											
-											<td style="padding-left: 20px;" th:text="${report.R13_PRODUCT}"></td>
-											<td style="text-align: right; "th:attr="RowId='R13', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R13_FAIR_VALUE_PROFIT_AND_LOSS}"></td>
-											<td style="text-align: right; "th:attr="RowId='R13', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R13_HELD_TO_MATURITY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R13_AVAILABLE_FOR_SALE}"></td>
-											<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R13_TOTAL}"></td>
-																				
-										<tr>
-										
-											<td style="padding-left: 20px;" th:text="${report.R14_PRODUCT}"></td>
-											<td style="text-align: right; "th:attr="RowId='R14', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R14_FAIR_VALUE_PROFIT_AND_LOSS}"></td>
-											<td style="text-align: right; "th:attr="RowId='R14', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R14_HELD_TO_MATURITY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R14_AVAILABLE_FOR_SALE}"></td>
-											<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R14_TOTAL}"></td>
-																					
-										</tr>
-										<tr>
-											
-											<td style="padding-left: 20px;" th:text="${report.R15_PRODUCT}"></td>
-											<td style="text-align: right; "th:attr="RowId='R15', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R15_FAIR_VALUE_PROFIT_AND_LOSS}"></td>
-											<td style="text-align: right; "th:attr="RowId='R15', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R15_HELD_TO_MATURITY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R15_AVAILABLE_FOR_SALE}"></td>
-											<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R15_TOTAL}"></td>											
-																					</tr>
-										<tr>
-											
-											<td style="padding-left: 20px;" th:text="${report.R16_PRODUCT}"></td>
-											<td style="text-align: right; background-color: 	#ADFF2F; "th:text="${report.R16_FAIR_VALUE_PROFIT_AND_LOSS}"></td>
-											<td style="text-align: right;background-color: 	#ADFF2F; "th:text="${report.R16_HELD_TO_MATURITY}"></td>
-											<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R16_AVAILABLE_FOR_SALE}"></td>
-											<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R16_TOTAL}"></td>																					
-											
-										</tr>
-									</tbody>
-			              </table>
-						 
-						  <table class="sticky-header-table table table-bordered table-hover table-sm table-condensed" id="reports" >
-						  						<thead class="thead-light">
-						  								<tr style="background-color: #b3b6b9 ">
-						  									
-						  									<th rowspan="3" style="text-align: left; width:33%;padding-left: 20px;">(5B)  TYPES OF INVESTMENT SECURITIES AND OTHER INVESTMENTS				</th>
-						  									<th style="text-align: center;"> Held for trading </th>
-						  									<th style="text-align: center;">  Amortised cost   </th>
-						  									<th style="text-align: center;">  Available for sale </th>
-						  									<th style="text-align: center;"> Fair value through  profit & loss   </th>
-															<th style="text-align: center;">  Qualifying for hedge accounting </th>
-															<th style="text-align: center;">  Total  </th>
-						  								</tr>
-						  							<!--	</tr>
-						  								<tr style="background-color: #b3b6b9">
-						  									<th style="text-align: center; background-color: #b3b6b9"></th>
-						  									<th style="text-align: center; background-color: #b3b6b9">C0010</th>
-						  									<th style="text-align: center; background-color: #b3b6b9">C0020</th>
-						  									<th style="text-align: center; background-color: #b3b6b9">C0030</th>
-						  								</tr> -->
-						  							</thead>
-						  							<tbody th:each="report: ${reportsummary1}" style="font-family: Arial;">
-						  									<tr>
-						  										<td style="padding-left: 20px;" th:text="${report.R21_PRODUCT}"></td>
-						  										<td style="text-align: right; "th:attr="RowId='R21', ColumnId='C2'"
-						  											onclick="showdetailsbyRowAndColumn(this)"
-						  											th:text="${report.R21_HELD_FOR_TRADING}"></td>
-						  										<td style="text-align: right; "th:attr="RowId='R21', ColumnId='C3'"
-						  											onclick="showdetailsbyRowAndColumn(this)"
-						  										    th:text="${report.R21_AMORTISED_COST}"></td>
-						  										<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C4'"
-						  											onclick="showdetailsbyRowAndColumn(this)"
-						  										    th:text="${report.R21_AVAILABLE_FOR_SALE}"></td>
-																<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C5'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R21_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-																<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C6'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R21_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-						  										<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R21_TOTAL}"></td>
-						  									</tr>
-						  									<tr>
-																<td style="padding-left: 20px;" th:text="${report.R22_PRODUCT}"></td>
-																<td style="text-align: right; "th:attr="RowId='R22', ColumnId='C2'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R22_HELD_FOR_TRADING}"></td>
-																<td style="text-align: right; "th:attr="RowId='R22', ColumnId='C3'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																    th:text="${report.R22_AMORTISED_COST}"></td>
-																<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C4'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																    th:text="${report.R22_AVAILABLE_FOR_SALE}"></td>
-																<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C5'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R22_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-																<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C6'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R22_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-																<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R22_TOTAL}"></td>						  									
-																
-						  									</tr>
-						  									<tr>
-						  									
-																<td style="padding-left: 20px;" th:text="${report.R23_PRODUCT}"></td>
-																<td style="text-align: right; "th:attr="RowId='R23', ColumnId='C2'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R23_HELD_FOR_TRADING}"></td>
-																<td style="text-align: right; "th:attr="RowId='R23', ColumnId='C3'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																    th:text="${report.R23_AMORTISED_COST}"></td>
-																<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C4'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																    th:text="${report.R23_AVAILABLE_FOR_SALE}"></td>
-																<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C5'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R23_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-																<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C6'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R23_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-																<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R23_TOTAL}"></td>						  												
-						  																				</tr>
-						  									<tr>
-						  										
-																<td style="padding-left: 20px;" th:text="${report.R24_PRODUCT}"></td>
-																<td style="text-align: right; "th:attr="RowId='R24', ColumnId='C2'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R24_HELD_FOR_TRADING}"></td>
-																<td style="text-align: right; "th:attr="RowId='R24', ColumnId='C3'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																    th:text="${report.R24_AMORTISED_COST}"></td>
-																<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C4'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																    th:text="${report.R24_AVAILABLE_FOR_SALE}"></td>
-																<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C5'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R24_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-																<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C6'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R24_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-																<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R24_TOTAL}"></td>						  										
-						  																			
-						  									<tr>
-						  									
-																<td style="padding-left: 20px;" th:text="${report.R25_PRODUCT}"></td>
-																<td style="text-align: right; "th:attr="RowId='R25', ColumnId='C2'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R25_HELD_FOR_TRADING}"></td>
-																<td style="text-align: right; "th:attr="RowId='R25', ColumnId='C3'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																    th:text="${report.R25_AMORTISED_COST}"></td>
-																<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C4'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																    th:text="${report.R25_AVAILABLE_FOR_SALE}"></td>
-																<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C5'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R25_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-																<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C6'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R25_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-																<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R25_TOTAL}"></td>						  									
-						  																				
-						  									</tr>
-						  									<tr>
-						  										
-																<td style="padding-left: 20px;" th:text="${report.R26_PRODUCT}"></td>
-																<td style="text-align: right; "th:attr="RowId='R26', ColumnId='C2'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R26_HELD_FOR_TRADING}"></td>
-																<td style="text-align: right; "th:attr="RowId='R26', ColumnId='C3'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																    th:text="${report.R26_AMORTISED_COST}"></td>
-																<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C4'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																    th:text="${report.R26_AVAILABLE_FOR_SALE}"></td>
-																<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C5'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R26_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-																<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C6'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R26_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-																<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R26_TOTAL}"></td>						  										
-						  																				</tr>
-						  									<tr>
-						  										
-																<td style="padding-left: 20px;" th:text="${report.R27_PRODUCT}"></td>
-																<td style="text-align: right; "th:attr="RowId='R27', ColumnId='C2'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R27_HELD_FOR_TRADING}"></td>
-																<td style="text-align: right; "th:attr="RowId='R27', ColumnId='C3'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																    th:text="${report.R27_AMORTISED_COST}"></td>
-																<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C4'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																    th:text="${report.R27_AVAILABLE_FOR_SALE}"></td>
-																<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C5'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R27_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-																<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C6'"
-																	onclick="showdetailsbyRowAndColumn(this)"
-																	th:text="${report.R27_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-																<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R27_TOTAL}"></td>						  									
-						  										
-						  									</tr>
-															
-															<tr>
-																
-															<td style="padding-left: 20px;" th:text="${report.R28_PRODUCT}"></td>
-															<td style="text-align: right; "th:attr="RowId='R28', ColumnId='C2'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R28_HELD_FOR_TRADING}"></td>
-															<td style="text-align: right; "th:attr="RowId='R28', ColumnId='C3'"
-																onclick="showdetailsbyRowAndColumn(this)"
-															    th:text="${report.R28_AMORTISED_COST}"></td>
-															<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C4'"
-																onclick="showdetailsbyRowAndColumn(this)"
-															    th:text="${report.R28_AVAILABLE_FOR_SALE}"></td>
-															<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C5'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R28_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-															<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C6'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R28_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R28_TOTAL}"></td>						  									
-																
-															</tr>	
-															
-															<tr>
-																
-															<td style="padding-left: 20px;" th:text="${report.R29_PRODUCT}"></td>
-															<td style="text-align: right; "th:attr="RowId='R29', ColumnId='C2'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R29_HELD_FOR_TRADING}"></td>
-															<td style="text-align: right; "th:attr="RowId='R29', ColumnId='C3'"
-																onclick="showdetailsbyRowAndColumn(this)"
-															    th:text="${report.R29_AMORTISED_COST}"></td>
-															<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C4'"
-																onclick="showdetailsbyRowAndColumn(this)"
-															    th:text="${report.R29_AVAILABLE_FOR_SALE}"></td>
-															<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C5'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R29_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-															<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C6'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R29_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R29_TOTAL}"></td>						  									
-																
-															</tr>	
-			
-															<tr>
-																
-															<td style="padding-left: 20px;" th:text="${report.R30_PRODUCT}"></td>
-															<td style="text-align: right; "th:attr="RowId='R30', ColumnId='C2'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R30_HELD_FOR_TRADING}"></td>
-															<td style="text-align: right; "th:attr="RowId='R30', ColumnId='C3'"
-																onclick="showdetailsbyRowAndColumn(this)"
-															    th:text="${report.R30_AMORTISED_COST}"></td>
-															<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C4'"
-																onclick="showdetailsbyRowAndColumn(this)"
-															    th:text="${report.R30_AVAILABLE_FOR_SALE}"></td>
-															<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C5'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R30_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-															<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C6'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R30_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R30_TOTAL}"></td>						  									
-																
-															</tr>	
-															
-															<tr>
-																
-															<td style="padding-left: 20px;" th:text="${report.R31_PRODUCT}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F; "
-																th:text="${report.R31_HELD_FOR_TRADING}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F; "
-															    th:text="${report.R31_AMORTISED_COST}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;"
-															    th:text="${report.R31_AVAILABLE_FOR_SALE}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;"
-																th:text="${report.R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;"
-																th:text="${report.R31_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R31_TOTAL}"></td>						  									
-																
-															</tr>	
-															
-															<tr>
-																
-															<td style="padding-left: 20px;" th:text="${report.R32_PRODUCT}"></td>
-															<td style="text-align: right; "th:attr="RowId='R32', ColumnId='C2'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R32_HELD_FOR_TRADING}"></td>
-															<td style="text-align: right; "th:attr="RowId='R32', ColumnId='C3'"
-																onclick="showdetailsbyRowAndColumn(this)"
-															    th:text="${report.R32_AMORTISED_COST}"></td>
-															<td style="text-align: right;" th:attr="RowId='R32', ColumnId='C4'"
-																onclick="showdetailsbyRowAndColumn(this)"
-															    th:text="${report.R32_AVAILABLE_FOR_SALE}"></td>
-															<td style="text-align: right;" th:attr="RowId='R32', ColumnId='C5'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R32_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-															<td style="text-align: right;" th:attr="RowId='R32', ColumnId='C6'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R32_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R32_TOTAL}"></td>						  									
-																
-															</tr>	
-															
-															<tr>
-																
-															<td style="padding-left: 20px;" th:text="${report.R33_PRODUCT}"></td>
-															<td style="text-align: right; "th:attr="RowId='R33', ColumnId='C2'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R33_HELD_FOR_TRADING}"></td>
-															<td style="text-align: right; "th:attr="RowId='R33', ColumnId='C3'"
-																onclick="showdetailsbyRowAndColumn(this)"
-															    th:text="${report.R33_AMORTISED_COST}"></td>
-															<td style="text-align: right;" th:attr="RowId='R33', ColumnId='C4'"
-																onclick="showdetailsbyRowAndColumn(this)"
-															    th:text="${report.R33_AVAILABLE_FOR_SALE}"></td>
-															<td style="text-align: right;" th:attr="RowId='R33', ColumnId='C5'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R33_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-															<td style="text-align: right;" th:attr="RowId='R33', ColumnId='C6'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R33_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R33_TOTAL}"></td>						  									
-																
-															</tr>
-															
-															<tr>
-																
-															<td style="padding-left: 20px;" th:text="${report.R34_PRODUCT}"></td>
-															<td style="text-align: right; "th:attr="RowId='R34', ColumnId='C2'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R34_HELD_FOR_TRADING}"></td>
-															<td style="text-align: right; "th:attr="RowId='R34', ColumnId='C3'"
-																onclick="showdetailsbyRowAndColumn(this)"
-															    th:text="${report.R34_AMORTISED_COST}"></td>
-															<td style="text-align: right;" th:attr="RowId='R34', ColumnId='C4'"
-																onclick="showdetailsbyRowAndColumn(this)"
-															    th:text="${report.R34_AVAILABLE_FOR_SALE}"></td>
-															<td style="text-align: right;" th:attr="RowId='R34', ColumnId='C5'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R34_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-															<td style="text-align: right;" th:attr="RowId='R34', ColumnId='C6'"
-																onclick="showdetailsbyRowAndColumn(this)"
-																th:text="${report.R34_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R34_TOTAL}"></td>						  									
-																
-															</tr>		
-															
-															<tr>
-																
-															<td style="padding-left: 20px;" th:text="${report.R35_PRODUCT}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;"
-																th:text="${report.R35_HELD_FOR_TRADING}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;"
-															    th:text="${report.R35_AMORTISED_COST}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;"
-															    th:text="${report.R35_AVAILABLE_FOR_SALE}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;"
-																th:text="${report.R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;"
-																th:text="${report.R35_QUALIFYING_FOR_HEDGE_ACCOUNTING}"></td>
-															<td style="text-align: right; background-color: 	#ADFF2F;" th:text="${report.R35_TOTAL}"></td>						  									
-																
-															</tr>																																																																																						
-																																										
-																
-														</tbody>
-																						</table>
 
-																					</div>
-																				</div>
-																			</div>
-																		</div>
-																		<div th:if="${displaymode == 'Details'}">
-																			<div class="row">
-																				<div class="col-sm-12">
-																					<div class="table-responsive scrollable-table-container"
-																						style="border-right: 1px solid #dee2e6;">
-																						<table
-																							class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-																							id="reportss">
-																							<thead class="thead-light">
-																								<tr>
-																									<th></th>
-																									<th style="text-align: left;">CUST ID</th>
-																									<th style="text-align: left;">ACCT NO</th>
-																									<th>ACCT NAME</th>
-																									<th style="text-align: right;">ACCT BALANCE</th>
-																									<th style="text-align: left;">ROWID</th>
-																									<th>COLUMNID</th>
-																									<th>REPORT_DATE</th>
-																								</tr>
-																							</thead>
-																							<tbody style="font-family: Arial;">
-																								<tr th:each="report: ${reportdetails}">
-																									<td><a data-toggle="tooltip" class="editrec"
-																											title="Click to Edit this Record"> <i class="fas fa-edit"
-																												onclick="editRecord(this)"></i>
-																										</a></td>
-																									<td style="text-align: left;" th:text="${report.custId}"></td>
-																									<td style="text-align: left;" th:text="${report.acctNumber}"></td>
-																									<td th:text="${report.acctName}"></td>
-																									<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
-																									<td th:text="${#numbers.formatInteger(report.acctBalanceInpula, 3, 'COMMA')}"
-																									    style="text-align: right;"></td>
-																									<td style="text-align: left;" th:text="${report.rowId}"></td>
-																									<td th:text="${report.columnId}"></td>
-																									<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
-																								</tr>
-																							</tbody>
-																						</table>
-																						<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
-																															   
-																															    
-																															    
-																															<a th:if="${currentPage > 0}"
-																															 th:href="@{'/Reports/' + ${reportid} + '/Details'(
+									<tr>
+										<td style="padding-left: 20px;" th:text="${report.R10_PRODUCT}"></td>
+										<td style="text-align: right; " th:attr="RowId='R10', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${#numbers.formatDecimal(report.R10_FAIR_VALUE_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+										<td style="text-align: right; " th:attr="RowId='R10', ColumnId='C3'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${#numbers.formatDecimal(report.R10_HELD_TO_MATURITY, 1, 'COMMA', 2, 'POINT')}"></td>
+										<td style="text-align: right;" th:attr="RowId='R10', ColumnId='C4'"
+											onclick="showdetailsbyRowAndColumn(this)"
+											th:text="${#numbers.formatDecimal(report.R10_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+										<td style="text-align: right; background-color: 	#ADFF2F;"
+											th:text="${#numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+									</tr>
+									<tr>
+																			<td style="padding-left: 20px;" th:text="${report.R11_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R11', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R11_FAIR_VALUE_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R11', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R11_HELD_TO_MATURITY, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R11', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R11_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R12_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R12', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R12_FAIR_VALUE_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R12', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R12_HELD_TO_MATURITY, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R12_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+																		</tr>
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R13_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R13', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R13_FAIR_VALUE_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R13', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R13_HELD_TO_MATURITY, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R13_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R14_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R14', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R14_FAIR_VALUE_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R14', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R14_HELD_TO_MATURITY, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R14_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R15_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R15', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R15_FAIR_VALUE_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R15', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R15_HELD_TO_MATURITY, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R15_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R15_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+																		</tr>
+																		<tr>
+
+																			<th style="padding-left: 20px;" th:text="${report.R16_PRODUCT}"></th>
+																			<td style="text-align: right; background-color: 	#ADFF2F; "
+																				th:text="${#numbers.formatDecimal(report.R16_FAIR_VALUE_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;background-color: 	#ADFF2F; "
+																				th:text="${#numbers.formatDecimal(report.R16_HELD_TO_MATURITY, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R16_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R16_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+																	</tbody>
+																</table>
+
+																<table class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+																	id="reports">
+																	<thead class="thead-light">
+																		<tr style="background-color: #b3b6b9">
+
+																			<th rowspan="3" style="text-align: left; width:33%;padding-left: 20px;">(5B)
+																				TYPES OF INVESTMENT SECURITIES AND OTHER INVESTMENTS </th>
+																			<th style="text-align: center;"> Held for trading </th>
+																			<th style="text-align: center;"> Amortised cost </th>
+																			<th style="text-align: center;"> Available for sale </th>
+																			<th style="text-align: center;"> Fair value through profit & loss </th>
+																			<th style="text-align: center;"> Qualifying for hedge accounting </th>
+																			<th style="text-align: center; WIDTH:180PX"> Total </th>
+																		</tr>
+																		<!--	</tr>
+															  								<tr style="background-color: #b3b6b9">
+															  									<th style="text-align: center; background-color: #b3b6b9"></th>
+															  									<th style="text-align: center; background-color: #b3b6b9">C0010</th>
+															  									<th style="text-align: center; background-color: #b3b6b9">C0020</th>
+															  									<th style="text-align: center; background-color: #b3b6b9">C0030</th>
+															  								</tr> -->
+																	</thead>
+																	<tbody th:each="report: ${reportsummary1}" style="font-family: Arial;">
+																		<tr>
+																			<td style="padding-left: 20px;" th:text="${report.R21_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R21', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R21_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R21', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R21_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R21_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R21_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R21_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R21_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+																		</tr>
+																		<tr>
+																			<td style="padding-left: 20px;" th:text="${report.R22_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R22', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R22_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R22', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R22_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R22_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R22_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R22_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R22_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R23_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R23', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R23_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R23', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R23_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R23_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R23_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R23_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R23_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+																		</tr>
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R24_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R24', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R24_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R24', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R24_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R24_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R24_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R24_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R24_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R25_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R25', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R25_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R25', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R25_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R25_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R25_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R25_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R25_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R26_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R26', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R26_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R26', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R26_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R26_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R26_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R26_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R26_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+																		</tr>
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R27_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R27', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R27_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R27', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R27_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R27_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R27_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R27_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R27_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R28_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R28', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R28_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R28', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R28_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R28_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R28_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R28_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R28_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R29_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R29', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R29_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R29', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R29_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R29_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R29_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R29_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R29_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R30_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R30', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R30_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R30', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R30_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R30_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R30_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R30_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R30_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R31_PRODUCT}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F; "
+																				th:text="${#numbers.formatDecimal(report.R31_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F; "
+																				th:text="${#numbers.formatDecimal(report.R31_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R31_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R31_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R31_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R32_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R32', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R32_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R32', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R32_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R32', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R32_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R32', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R32_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R32', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R32_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R32_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R33_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R33', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R33_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R33', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R33_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R33', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R33_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R33', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R33_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R33', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R33_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R33_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R34_PRODUCT}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R34', ColumnId='C2'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R34_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; " th:attr="RowId='R34', ColumnId='C3'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R34_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R34', ColumnId='C4'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R34_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R34', ColumnId='C5'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R34_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right;" th:attr="RowId='R34', ColumnId='C6'"
+																				onclick="showdetailsbyRowAndColumn(this)"
+																				th:text="${#numbers.formatDecimal(report.R34_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R34_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+
+																		<tr>
+
+																			<td style="padding-left: 20px;" th:text="${report.R35_PRODUCT}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R35_HELD_FOR_TRADING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R35_AMORTISED_COST, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R35_AVAILABLE_FOR_SALE, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R35_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 2, 'POINT')}"></td>
+																			<td style="text-align: right; background-color: 	#ADFF2F;"
+																				th:text="${#numbers.formatDecimal(report.R35_TOTAL, 1, 'COMMA', 2, 'POINT')}"></td>
+
+																		</tr>
+
+
+								</tbody>
+							</table>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<div th:if="${displaymode == 'Details'}">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="table-responsive scrollable-table-container"
+							style="border-right: 1px solid #dee2e6;">
+							<table class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+								id="reportss">
+								<thead class="thead-light">
+									<tr>
+										<th></th>
+										<th style="text-align: left;">CUST ID</th>
+										<th style="text-align: left;">ACCT NO</th>
+										<th>ACCT NAME</th>
+										<th style="text-align: right;">ACCT BALANCE</th>
+										<th style="text-align: left;">ROWID</th>
+										<th>COLUMNID</th>
+										<th>REPORT_DATE</th>
+									</tr>
+								</thead>
+								<tbody style="font-family: Arial;">
+									<tr th:each="report: ${reportdetails}">
+										<td><a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+												<i class="fas fa-edit" onclick="editRecord(this)"></i>
+											</a></td>
+										<td style="text-align: left;" th:text="${report.custId}"></td>
+										<td style="text-align: left;" th:text="${report.acctNumber}"></td>
+										<td th:text="${report.acctName}"></td>
+										<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
+										<td th:text="${#numbers.formatInteger(report.acctBalanceInpula, 3, 'COMMA')}"
+											style="text-align: right;"></td>
+										<td style="text-align: left;" th:text="${report.rowId}"></td>
+										<td th:text="${report.columnId}"></td>
+										<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+									</tr>
+								</tbody>
+							</table>
+							<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
+
+
+
+								<a th:if="${currentPage > 0}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
 																															    asondate=${asondate},                             
 																															    fromdate=${fromdate},
 																															    todate=${todate},
@@ -1222,16 +1249,14 @@ PURPOSE		: BWRBRREPORT
 																															    page=${currentPage - 100},
 																															    size=100
 																															)}">
-																															    Previous
-																															</a>
-																									
-																															    
-																															    <span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
-																															
-																															    
-																															    <a th:if="${currentPage < (totalPages - 1) * 100}"
-																															    	
-																															    th:href="@{'/Reports/' + ${reportid} + '/Details'(
+									Previous
+								</a>
+
+
+								<span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
+
+
+								<a th:if="${currentPage < (totalPages - 1) * 100}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
 																															    asondate=${asondate},
 																															    fromdate=${fromdate},
 																															    todate=${todate},
@@ -1241,80 +1266,84 @@ PURPOSE		: BWRBRREPORT
 																															    version=${version},
 																															    page=${currentPage + 100},
 																															    size=100
-																															)}">	
-																															    Next
-																															    </a>
-																															</div>
-																						
-																						
-																					</div>
-																				</div>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-															
-															<!-- Custom Cellresult Modal -->
-																<div class="modal fade" id="cellresultModal">
-																  <div class="modal-dialog modal-dialog-centered">
-																    <div class="modal-content">
-																      
-																      <!-- Custom header -->
-																      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-																        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-																          Do you want to open the report?
-																        </div>
-																      </div>
+																															)}">
+									Next
+								</a>
+							</div>
 
-																      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-																        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-																          Cancel
-																        </button>
-																        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-																          Yes
-																        </button>
-																      </div>
-																    </div>
-																  </div>
-																</div>
 
-															
-															<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-																<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-																	<div class="modal-content" style="background: transparent;">
-																		<div class="modal-body" style="text-align: center">
-																			<div>
-																				<img th:src=@{/images/loader.gif} id="bfirelogo"
-																					style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-																					alt="Bornfire">
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-															<!-- Custom Alert/Result Modal (Matches your existing style) -->
-															<div class="modal fade" id="resultModal">
-																<div class="modal-dialog modal-dialog-centered">
-																	<div class="modal-content">
-																		<!-- Your custom styled header -->
-																		<div class="menu-title-header">
-																			<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-																				<!-- Title will be set by JavaScript -->
-																			</div>
-																		</div>
-																		<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-																			<p id="resultModalBody"></p>
-																			<!-- Your custom styled button -->
-																			<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
-																		</div>
-																	</div>
-																</div>
-															</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
 
-														</body>
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
 
-														<!-- <script>
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+						Do you want to open the report?
+					</div>
+				</div>
+
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+						Cancel
+					</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+						Yes
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-bs-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+<!-- <script>
 																													  $(document).ready(function () {
 																													    $('#BRRSvalidation').DataTable({
 																													      "paging": true,
@@ -1326,120 +1355,120 @@ PURPOSE		: BWRBRREPORT
 																													  });
 															
 																												</script> -->
-																												
-																												<style>
-																												  #BRFdet td {
-																												    border: 1px solid #ccc;
-																												    padding: 8px;
-																												  }
 
-																												  #BRFdet {
-																												    border-collapse: collapse;
-																												    width: 100%;
-																												  }
-																												</style>
-																												
-														<style>
-															/* Your existing CSS - this is the correct approach */
-															.scrollable-table-container {
-																/* This is the key: it creates the scroll context */
-																max-height: 590px;
-																/* Or a suitable height like 80vh for responsive design */
-																overflow-y: auto;
-																border: 1px solid #ccc;
-															}
+<style>
+	#BRFdet td {
+		border: 1px solid #ccc;
+		padding: 8px;
+	}
 
-															/* Your existing sticky header CSS, targeting the tr elements within the thead */
-															.scrollable-table-container thead tr:nth-child(1) {
-																position: sticky;
-																top: 0;
-																background-color: #b3b6b9;
-																z-index: 5;
-															}
+	#BRFdet {
+		border-collapse: collapse;
+		width: 100%;
+	}
+</style>
 
-															.scrollable-table-container thead tr:nth-child(2) {
-																position: sticky;
-																top: 36px;
-																/* adjust based on row height */
-																background-color: #b3b6b9;
-																z-index: 4;
-															}
+<style>
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 590px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
 
-															.scrollable-table-container thead tr:nth-child(3) {
-																position: sticky;
-																top: 72px;
-																/* Adjust based on row height */
-																background-color: #b3b6b9;
-																z-index: 3;
-															}
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
 
-															.scrollable-table-container thead tr:nth-child(4) {
-																position: sticky;
-																top: 100px;
-																/* Adjust based on row height */
-																background-color: #b3b6b9;
-																z-index: 2;
-															}
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
 
-															.scrollable-table-container thead tr:nth-child(5) {
-																position: sticky;
-																top: 135px;
-																/* Adjust based on row height */
-																background-color: #b3b6b9;
-																z-index: 1;
-															}
-														</style>
-														<style>
-															.inner {
-																max-height: 600px;
-																/* Adjust height as needed */
-																overflow: auto;
-																border: 1px solid #dee2e6;
-															}
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
 
-															/* Sticky thead */
-															#reports thead th {
-																position: sticky;
-																top: 0;
-																background-color: #f8f9fa;
-																/* Match Bootstrap thead-light */
-																z-index: 2;
-															}
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
 
-															div.dataTables_wrapper div.dataTables_paginate {
-																text-align: right !important;
-																float: right !important;
-																width: auto;
-																margin-top: 10px;
-															}
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
+</style>
+<style>
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
 
-															/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-															div.dataTables_wrapper div.dataTables_info {
-																float: left !important;
-																margin-top: 10px;
-															}
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
 
-															.pagination {
-																margin: 0;
-															}
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
 
-															.page-item.active .page-link {
-																background-color: #386276;
-																border-color: #386276;
-															}
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
 
-															.page-link {
-																color: #386276;
-															}
+	.pagination {
+		margin: 0;
+	}
 
-															.page-link:hover {
-																color: #2a4a5c;
-															}
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
 
-															.form-select {
-																display: inline-block;
-																width: auto;
-															}
-														</style>
+	.page-link {
+		color: #386276;
+	}
 
-														</html>
+	.page-link:hover {
+		color: #2a4a5c;
+	}
+
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
+</style>
+
+</html>
