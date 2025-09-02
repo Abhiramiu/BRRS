@@ -33,6 +33,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_CA5_ReportService BRRS_M_CA5_reportservice;
 	
+	@Autowired
+	BRRS_M_SRWA_12F_ReportService BRRS_M_SRWA_12F_reportservice;
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -58,9 +61,15 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_CA5_reportservice.getM_CA5View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
+		
+		case "M_SRWA_12F":
+			repsummary = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+
 			
 		}
-
+		
 		return repsummary;
 	}
 
@@ -86,6 +95,11 @@ public class RegulatoryReportServices {
 		case "M_CA5":
 			repdetail = BRRS_M_CA5_reportservice.getM_CA5currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
+			break;
+			
+		case "M_SRWA_12F":
+			repdetail = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter);
 			break;
 			
 		}
@@ -129,6 +143,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+		
+		case "M_SRWA_12F":
+			try {
+				repfile = BRRS_M_SRWA_12F_reportservice.BRRS_M_SRWA_12FExcel(filename, reportId, fromdate, todate, currency,
+						dtltype);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 			
 		}
 		return repfile;
@@ -152,7 +176,11 @@ public class RegulatoryReportServices {
 			return BRRS_M_CA5_reportservice.BRRS_M_CA5DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
-
+		
+		if ("M_SRWA_12FDetail".equals(filename)) {
+			return BRRS_M_SRWA_12F_reportservice.BRRS_M_SRWA_12FDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
+		}
+		
 		return new byte[0];
 	}
 
@@ -206,6 +234,8 @@ public class RegulatoryReportServices {
 		    fileData = BRRS_M_IS_reportservice.BRRS_M_ISDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 		} else if (filename.equals("M_CA5Detail")) {
 		    fileData = BRRS_M_CA5_reportservice.BRRS_M_CA5DetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
+		} else if (filename.equals("M_SRWA_12FDetail")) {
+		    fileData = BRRS_M_SRWA_12F_reportservice.BRRS_M_SRWA_12FDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}
 
 				
