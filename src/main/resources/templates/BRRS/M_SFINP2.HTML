@@ -718,14 +718,15 @@ PURPOSE		: BWRBRREPORT
 									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
 									id="reports">
 									<thead class="thead-light">
-										<tr style="background-color: #b3b6b9 ">
-
-											<th rowspan="3" style="text-align: left; width:33%;padding-left: 20px;">
-												LIABILITIES</th>
-											<th style="text-align: left;">Cross Reference</th>
-											<th style="text-align: right;">MONTH-END</th>
-											<th style="text-align: right;">AVERAGE*</th>
+										<tr style="background-color: #b3b6b9;">
+										    <th rowspan="3" style="text-align: left; padding-left: 20px; width: 900px;">
+										        LIABILITIES
+										    </th>
+										    <th style="text-align: left; width: 300px;">Cross Reference</th>
+										    <th style="text-align: right; width: 150px;">MONTH-END</th>
+										    <th style="text-align: right; width: 150px;">AVERAGE*</th>
 										</tr>
+
 										<!--	</tr>
 									<tr style="background-color: #b3b6b9">
 										<th style="text-align: center; background-color: #b3b6b9"></th>
@@ -749,7 +750,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R11_PRODUCT}"></td>
 											<!--	<td style="text-align: right;"
 												th:text="${report.R11_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(37) M-DEP1 + (38) M-DEP2</td>
+											<td style="text-align: left;"> M-DEP1 +  M-DEP2</td>
 											<td style="text-align: right;" th:attr="RowId='R11', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R11_MONTH_END}"></td>
@@ -762,7 +763,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R12_PRODUCT}"></td>
 											<!---	<td style="text-align: right;"
 												th:text="${report.R12_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(37) M-DEP1 + (38) M-DEP3</td>
+											<td style="text-align: left;"> M-DEP1 +  M-DEP3</td>
 											<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R12_MONTH_END}"></td>
@@ -775,7 +776,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R13_PRODUCT}"></td>
 											<!--	<td style="text-align: right;"
 											th:text="${report.R13_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(37) M-DEP1 + (38) M-DEP4</td>
+											<td style="text-align: left;"> M-DEP1 +  M-DEP4</td>
 											<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R13_MONTH_END}"></td>
@@ -788,7 +789,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R14_PRODUCT}"></td>
 											<!---	<td style="text-align: right;"
 											th:text="${report.R14_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(37) M-DEP1 + (38) M-DEP5</td>
+											<td style="text-align: left;"> M-DEP1 +  M-DEP5</td>
 											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R14_MONTH_END}"></td>
@@ -801,7 +802,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R15_PRODUCT}"></td>
 											<!--	<td style="text-align: right;"
 												th:text="${report.R15_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(37) M-DEP1 + (38) M-DEP6</td>
+											<td style="text-align: left;"> M-DEP1 +  M-DEP6</td>
 											<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R15_MONTH_END}"></td>
@@ -814,7 +815,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R16_PRODUCT}"></td>
 											<!---	<td style="text-align: right;"
 												th:text="${report.R16_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(37) M-DEP1 / (46) M-SECL</td>
+											<td style="text-align: left;">M-DEP1 + M-DEP7</td>
 											<td style="text-align: right;" th:attr="RowId='R16', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R16_MONTH_END}"></td>
@@ -845,7 +846,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R19_PRODUCT}"></td>
 											<!--	<td style="text-align: right;"
 												th:text="${report.R19_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(36) M-AIDP</td>
+											<td style="text-align: left;"></td>
 											<td style="text-align: right;" th:attr="RowId='R19', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R19_MONTH_END}"></td>
@@ -856,7 +857,7 @@ PURPOSE		: BWRBRREPORT
 										<tr>
 
 											<td style="padding-left: 20px;" th:text="${report.R20_PRODUCT}"></td>
-											<td style="text-align: right;" th:text="${report.R20_CROSS_REFERENCE}"></td>
+											<td>M-AIDP</td>
 											<td style="text-align: right;" th:attr="RowId='R20', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R20_MONTH_END}"></td>
@@ -867,7 +868,7 @@ PURPOSE		: BWRBRREPORT
 										<tr>
 
 											<td style="padding-left: 20px;" th:text="${report.R21_PRODUCT}"></td>
-											<td style="text-align: right;" th:text="${report.R21_CROSS_REFERENCE}"></td>
+											<td>M-AIDP</td>
 											<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R21_MONTH_END}"></td>
@@ -879,13 +880,13 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R22_PRODUCT}"></td>
 											<!--	<td style="text-align: right;"
 												th:text="${report.R22_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(36) M-AIDP</td>
+											<td style="text-align: left;"></td>
 											<td style="text-align: right;" th:text="${report.R22_MONTH_END}"></td>
 											<td style="text-align: right;" th:text="${report.R22_AVERAGE}"></td>
 										</tr>
 										<tr>
 											<td style="padding-left: 20px;" th:text="${report.R23_PRODUCT}"></td>
-											<td style="text-align: right;" th:text="${report.R23_CROSS_REFERENCE}"></td>
+											<td>M-AIDP</td>
 											<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R23_MONTH_END}"></td>
@@ -897,7 +898,7 @@ PURPOSE		: BWRBRREPORT
 										</tr>
 										<tr>
 											<td style="padding-left: 20px;" th:text="${report.R24_PRODUCT}"></td>
-											<td style="text-align: right;" th:text="${report.R24_CROSS_REFERENCE}"></td>
+											<td>M-AIDP</td>
 											<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R24_MONTH_END}"></td>
@@ -917,7 +918,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R26_PRODUCT}"></td>
 											<!---	<td style="text-align: right;"
 												th:text="${report.R26_CROSS_REFERENCE}"></td>  -->
-											<td style="text-align: left;">(35) M-NOSVOS (nostro)</td>
+											<td style="text-align: left;"></td>
 											<td style="text-align: right;" th:text="${report.R26_MONTH_END}"></td>
 											<td style="text-align: right;" th:text="${report.R26_AVERAGE}"></td>
 
@@ -925,7 +926,7 @@ PURPOSE		: BWRBRREPORT
 										</tr>
 										<tr>
 											<td style="padding-left: 20px;" th:text="${report.R27_PRODUCT}"></td>
-											<td style="text-align: right;" th:text="${report.R27_CROSS_REFERENCE}"></td>
+											<td>M-NOSVOS</td>
 											<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R27_MONTH_END}"></td>
@@ -937,7 +938,7 @@ PURPOSE		: BWRBRREPORT
 										</tr>
 										<tr>
 											<td style="padding-left: 20px;" th:text="${report.R28_PRODUCT}"></td>
-											<td style="text-align: right;" th:text="${report.R28_CROSS_REFERENCE}"></td>
+											<td>M-NOSVOS</td>
 											<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R28_MONTH_END}"></td>
@@ -951,7 +952,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R29_PRODUCT}"></td>
 											<!---	<td style="text-align: right;"
 												th:text="${report.R29_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(35) M-NOSVOS (nostro)</td>
+											<td style="text-align: left;"></td>
 											<td style="text-align: right;" th:text="${report.R29_MONTH_END}"></td>
 											<td style="text-align: right;"	th:attr="RowId='R29', ColumnId='C4'"
 											onclick="showdetailsbyRowAndColumn(this)" th:text="${report.R29_AVERAGE}"></td>
@@ -959,7 +960,7 @@ PURPOSE		: BWRBRREPORT
 										</tr>
 										<tr>
 											<td style="padding-left: 20px;" th:text="${report.R30_PRODUCT}"></td>
-											<td style="text-align: right;" th:text="${report.R30_CROSS_REFERENCE}"></td>
+											<td>M-NOSVOS</td>
 											<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R30_MONTH_END}"></td>
@@ -971,7 +972,7 @@ PURPOSE		: BWRBRREPORT
 										</tr>
 										<tr>
 											<td style="padding-left: 20px;" th:text="${report.R31_PRODUCT}"></td>
-											<td style="text-align: right;" th:text="${report.R31_CROSS_REFERENCE}"></td>
+											<td>M-NOSVOS</td>
 											<td style="text-align: right;" th:attr="RowId='R31', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R31_MONTH_END}"></td>
@@ -992,7 +993,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R33_PRODUCT}"></td>
 											<!---		<td style="text-align: right;"
 											th:text="${report.R33_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(33) M-TBS </td>
+											<td style="text-align: left;"></td>
 											<td style="text-align: right;" th:text="${report.R33_MONTH_END}"></td>
 											<td style="text-align: right;" th:text="${report.R33_AVERAGE}"></td>
 										</tr>
@@ -1022,7 +1023,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R36_PRODUCT}"></td>
 											<!--		<td style="text-align: right;"
 											th:text="${report.R36_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(46) M-SECL </td>
+											<td style="text-align: left;"> M-SECL </td>
 											<td style="text-align: right;" th:attr="RowId='R36', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R36_MONTH_END}"></td>
@@ -1134,7 +1135,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R46_PRODUCT}"></td>
 											<!---	<td style="text-align: right;"
 											th:text="${report.R46_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(46) M-SECL </td>
+											<td style="text-align: left;"> </td>
 											<td style="text-align: right;" th:text="${report.R46_MONTH_END}"></td>
 											<td style="text-align: right;" th:text="${report.R46_AVERAGE}"></td>
 										</tr>
@@ -1167,7 +1168,7 @@ PURPOSE		: BWRBRREPORT
 										<td style="padding-left: 20px;" th:text="${report.R49_PRODUCT}"></td>
 										<!---	<td style="text-align: right;"
 											th:text="${report.R49_CROSS_REFERENCE}"></td> -->
-										<td style="text-align: left;">(41) M-OB </td>
+										<td style="text-align: left;">M-OB </td>
 										<td style="text-align: right;" th:attr="RowId='R49', ColumnId='C3'"
 											onclick="showdetailsbyRowAndColumn(this)" th:text="${report.R49_MONTH_END}">
 										</td>
@@ -1265,7 +1266,7 @@ PURPOSE		: BWRBRREPORT
 										</tr>
 										</tr>
 										<tr>
-											<td style="padding-left: 20px; font-weight: bold;"
+											<td style="padding-left: 20px;"
 												th:text="${report.R58_PRODUCT}"></td>
 											<td style="text-align: right;" th:text="${report.R58_CROSS_REFERENCE}"></td>
 											<td style="text-align: right;" th:attr="RowId='R58', ColumnId='C3'"
@@ -1305,7 +1306,7 @@ PURPOSE		: BWRBRREPORT
 										</tr>
 										</tr>
 										<tr>
-											<td style="padding-left: 20px; font-weight: bold;"
+											<td style="padding-left: 20px;"
 												th:text="${report.R62_PRODUCT}"></td>
 											<td style="text-align: right;" th:text="${report.R62_CROSS_REFERENCE}"></td>
 											<td style="text-align: right;" th:attr="RowId='R62', ColumnId='C3'"
@@ -1317,7 +1318,7 @@ PURPOSE		: BWRBRREPORT
 										</tr>
 										</tr>
 										<tr>
-											<td style="padding-left: 20px; font-weight: bold;"
+											<td style="padding-left: 20px"
 												th:text="${report.R63_PRODUCT}"></td>
 											<td style="text-align: right;" th:text="${report.R63_CROSS_REFERENCE}"></td>
 											<td style="text-align: right;" th:text="${report.R63_MONTH_END}"></td>
@@ -1383,7 +1384,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R70_PRODUCT}"></td>
 											<!--		<td style="text-align: right;"
 												th:text="${report.R70_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(46) M-SECL </td>
+											<td style="text-align: left;"></td>
 											<td style="text-align: right;" th:attr="RowId='R70', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R70_MONTH_END}"></td>
@@ -1415,13 +1416,13 @@ PURPOSE		: BWRBRREPORT
 											<td style="padding-left: 20px;" th:text="${report.R73_PRODUCT}"></td>
 											<!---	<td style="text-align: right;"
 												th:text="${report.R73_CROSS_REFERENCE}"></td> -->
-											<td style="text-align: left;">(7) M-CA2 </td>
+											<td style="text-align: left;"> </td>
 											<td style="text-align: right;" th:text="${report.R73_MONTH_END}"></td>
 											<td style="text-align: right;" th:text="${report.R73_AVERAGE}"></td>
 										</tr>
 										<tr>
 											<td style="padding-left: 20px;" th:text="${report.R74_PRODUCT}"></td>
-											<td style="text-align: right;" th:text="${report.R74_CROSS_REFERENCE}"></td>
+											<td>M-CA2</td>
 											<td style="text-align: right;" th:attr="RowId='R74', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R74_MONTH_END}"></td>
@@ -1432,7 +1433,7 @@ PURPOSE		: BWRBRREPORT
 										</tr>
 										<tr>
 											<td style="padding-left: 20px;" th:text="${report.R75_PRODUCT}"></td>
-											<td style="text-align: right;" th:text="${report.R75_CROSS_REFERENCE}"></td>
+											<td>M-CA2</td>
 											<td style="text-align: right;" th:attr="RowId='R75', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R75_MONTH_END}"></td>
@@ -1454,7 +1455,7 @@ PURPOSE		: BWRBRREPORT
 										</tr>
 										<tr>
 											<td style="padding-left: 20px;" th:text="${report.R77_PRODUCT}"></td>
-											<td style="text-align: right;" th:text="${report.R77_CROSS_REFERENCE}"></td>
+											<td>M-CA2</td>
 											<td style="text-align: right;" th:attr="RowId='R77', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R77_MONTH_END}"></td>
@@ -1464,8 +1465,8 @@ PURPOSE		: BWRBRREPORT
 										</tr>
 										</tr>
 										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R78_PRODUCT}"></td>
-											<td style="text-align: right;" th:text="${report.R78_CROSS_REFERENCE}"></td>
+											<td style="padding-left: 20px;" >(e) Current year's unpublished profits</td>
+											<td>M-CA2</td>
 											<td style="text-align: right;" th:attr="RowId='R78', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												th:text="${report.R78_MONTH_END}"></td>
@@ -1532,7 +1533,7 @@ PURPOSE		: BWRBRREPORT
 											<td style="text-align: left;" th:text="${report.acctNumber}"></td>
 											<td th:text="${report.acctName}"></td>
 											<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
-											<td th:text="${#numbers.formatInteger(report.acctBalanceInpula, 3, 'COMMA')}"
+											<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 3, 3, 'COMMA')}"
 											    style="text-align: right;"></td>
 											<td style="text-align: left;" th:text="${report.rowId}"></td>
 											<td th:text="${report.columnId}"></td>

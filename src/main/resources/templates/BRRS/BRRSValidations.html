@@ -301,8 +301,70 @@ label.error {
 	}
 
 	
-
+	
 	function getReport(a) {
+		    var fromdate = a.getAttribute("data-fromdate");
+		    var todate = a.getAttribute("data-todate");
+		    var asondate = a.getAttribute("data-todate");
+		    var reportid = a.getAttribute("data-rptcode");
+
+		    let showModal = false;
+		    document.querySelectorAll('tbody .userlist').forEach(function (row) {
+		        var cur_status = row.querySelectorAll('td')[4].textContent.trim();
+		        if (cur_status === 'Not ok') {
+		            showModal = true;
+		        }
+		    });
+
+		    const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+		        backdrop: 'static',
+		        keyboard: false
+		    });
+		    const confirmModalEl = document.getElementById('confirmModal');
+		    const confirmModal = bootstrap.Modal.getOrCreateInstance(confirmModalEl);
+		    const validationModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('validationModal'));
+		    const confirmYesBtn = document.getElementById('confirmYes');
+
+		    // ✅ Attach once: focus Yes when modal is shown
+		    confirmModalEl.addEventListener('shown.bs.modal', () => {
+		        confirmYesBtn.focus();
+		    }, { once: true });  // only once
+
+		    function openReport() {
+		        confirmModal.hide();
+		        loader.show();
+		        const type = 'BRRS';
+		        location.href = "Reports/" + reportid +
+		            "?dtltype=report&fromdate=" + fromdate +
+		            "&todate=" + todate +
+		            "&type=" + type +
+		            "&asondate=" + asondate;
+		    }
+
+		    if (showModal) {
+		        validationModal.show();
+		        document.getElementById('confirmGenerateReport').onclick = function () {
+		            validationModal.hide();
+		            confirmModal.show();
+		            confirmYesBtn.onclick = openReport;
+		        };
+		    } else {
+		        confirmModal.show();
+		        confirmYesBtn.onclick = openReport;
+		    }
+		}
+
+
+		$(document).ready(function () {
+		    // Hide loader when validation modal is shown
+		    $('#validationModal').on('shown.bs.modal', function () {
+		        $('#loader').modal('hide');
+		    });
+		});
+
+	
+
+/*	function getReport(a) {
 	    // Show loader
 	    //$('#loader').modal('show');
 
@@ -350,15 +412,15 @@ label.error {
 		    else{
 		    	$('#loader').modal('hide');
 		    }
-	    }
-	    
+	    } 
+	} */
 	    
 
 	    
 
 	   
 	    
-	}
+	
 	
 	$(document).ready(function () {
 	    // Hide loader when validation modal is shown
@@ -509,7 +571,32 @@ label.error {
 	
 
 	
-		
+<!-- Custom Confirm Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Custom styled header -->
+      <div class="menu-title-header">
+        <div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">
+         Do you want to open the report?
+        </div>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+        	
+        <!-- Custom styled buttons -->
+        <div style="margin-top: 15px;">
+          <button type="button" class="custom-tab-btn" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" id="confirmYes" class="custom-tab-btn" style="background-color:#5c7495; color:white;">Yes</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </body>
   <script>
   $(document).ready(function () {
@@ -577,6 +664,7 @@ div.dataTables_filter {
     border-radius: 4px;
     padding: 4px 8px;
   }
+  
 </style>
 
 
