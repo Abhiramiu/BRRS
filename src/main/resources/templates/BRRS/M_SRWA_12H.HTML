@@ -1,0 +1,2679 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: PRAVEEN KUMAR M 
+CREATED ON	: 18.08.2025
+PURPOSE		: BRRSREPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+
+
+<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+
+
+
+
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
+
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
+
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+.table td {
+	background-color: #FFFFFF;
+}
+
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
+
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
+
+#BRFvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
+
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
+
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+
+
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
+
+.error {
+	color: red;
+	padding-top: 15px;
+}
+
+.form-control:focus {
+	border-color: #007bff;
+}
+
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
+	) ~ .form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~ .form-legend {
+	color: #0056b3; /* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus ) ~ .form-legend {
+	color: #aaa; /* Normal label color */
+}
+</style>
+
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.table-cell tbody td:hover {
+        background-color: #f0f0f0; /* Hover color for cell */
+        cursor: pointer;           /* Optional: pointer cursor */
+    }
+	
+	.table-bordered td, 
+	.table-bordered th {
+	     border: 1px solid #000 !important;
+	}
+</style>
+
+
+<script th:inline="javascript">
+
+$(document).ready(function() {
+    // hide loader on normal load
+    $('#loader').modal('hide');
+});
+
+$(window).on('pageshow', function() {
+    // hide loader on back/forward nav
+    $('#loader').modal('hide');
+});
+
+$(window).on('beforeunload', function() {
+    // hide loader on leaving page
+    $('#loader').modal('hide');
+});
+
+	
+
+	function home() {
+        $("#loader").modal("toggle");
+		location.href = 'Dashboard'
+	}
+
+	function back() {
+        $("#loader").modal("toggle");
+
+		window.history.back();
+	}
+	
+	//to fetch summary from the database - called from the summary button
+	function showdetails() {
+    
+    var Callurl;
+    	$('#loader').modal('show');
+        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/ 
+        location.href = Callurl;
+        	console.log(Callurl);
+   /*  $.ajax({
+        type: 'get',
+        url: Callurl,
+        beforeSend: function () {
+            $('#loader').modal('show'); // 🔄 Show loader
+        },
+        success: function (data) {
+            $('.content').html(data);
+            //$("#detailsbtn").addClass("active");
+            //tablepagination();
+        },
+        complete: function () {
+            $('#loader').modal('hide'); 
+        },
+        error: function () {
+        	  $('#loader').modal('hide');
+            alert("Something went wrongss. Please try again.");
+          
+        }
+    }); */
+}
+	
+	function showsummary() {
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;								
+		location.href = Callurl;
+
+	}
+	
+	
+    </script>
+
+<script>
+
+function activateTab(tabName) {
+    // Remove 'active' from all buttons
+    document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Add 'active' to selected button
+    if (tabName === 'summary') {
+        document.getElementById('custom-tab-btnSummary').classList.add('active');
+    } else if (tabName === 'Details') {
+        document.getElementById('custom-tab-btnDetails').classList.add('active');
+    }
+}
+
+window.onload = function() {
+    /* setTimeout(function() {
+        var selectedTab = document.getElementById("selectedTab").value;
+        alert(selectedTab);
+        activateTab(selectedTab);
+    }, 10000); */ // 10,000 milliseconds = 10 seconds
+    
+	var selectedTab = document.getElementById("selectedTab").value;
+    activateTab(selectedTab);
+};
+
+
+function downloadfile(button) {
+	var reportid = button.getAttribute('data-reportid');
+	var asondate = button.getAttribute('data-asondate');
+	var fromdate = button.getAttribute('data-fromdate');
+	var todate = button.getAttribute('data-todate');
+	var currency = button.getAttribute('data-currency');
+	var subreportid = button.getAttribute('data-subreportid');
+	var secid = button.getAttribute('data-secid');
+	var dtltype = button.getAttribute('data-dtltype');
+	var filename = button.getAttribute('data-filename');
+
+	$('#loader').modal('show');
+
+	$.ajax({
+		url: './downloadExcel?reportid=' + reportid +
+			'&fromdate=' + fromdate +
+			'&asondate=' + asondate +
+			'&todate=' + todate +
+			'&currency=' + currency +
+			'&subreportid=' + subreportid +
+			'&secid=' + secid +
+			'&filename=' + filename,
+		type: 'GET',
+		xhrFields: {
+			responseType: 'blob'
+		},
+		success: function (data) {
+			$('#loader').modal('hide');
+
+			if (data && data.size > 100) {
+				const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.style.display = 'none';
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				window.URL.revokeObjectURL(url);
+				document.body.removeChild(a);
+
+				showResultModal('Success', 'The file has been downloaded successfully.');
+			} else {
+				showResultModal('Information', 'No data was available to create a download.');
+			}
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			$('#loader').modal('hide');
+			console.error("Download failed:", textStatus, errorThrown);
+			showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+		}
+	});
+}
+
+function editRecord(){
+	showResultModal('Alert', 'Development in progress');
+	
+}
+function closemodel(){
+	$('#alert').modal('hide');
+	$('#resultModal').modal('hide');
+	
+}
+
+function showResultModal(title, message) {
+	// Set the text for the modal elements
+	$('#resultModalLabel').text(title);
+	$('#resultModalBody').text(message);
+
+	// Show the modal
+	$('#resultModal').modal('show');
+}
+
+</script>
+
+<script>
+
+	function startReport(button){
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+			
+			if(sessionfilename==filename){
+				alertMsg.innerHTML ='Download request already Processing...';
+	       	 	showAlert();
+				return;
+			}
+			
+			alertMsg.innerHTML ='Download request Processing...';
+	   	 	showAlert();
+
+			const baseUrl = '/BRRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+		    fetch(downloadUrl)  // ✅ no invalid characters now
+		        .then(res => res.text())
+		        .then(jobId => {
+
+		        	alertMsg.innerHTML ='Download request received...'+jobId;
+		       	 	showAlert();
+		            sessionStorage.setItem("jobId", jobId);
+		            sessionStorage.setItem("filename", filename);
+		            checkReport(jobId);
+		        });
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+		    fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+		        .then(res => res.text())
+		        .then(status => {
+		            if (status === "READY") {
+		            	alertMsg.innerHTML ='Report is ready! Downloading…';
+		           	 	showAlert();
+		                const filename = sessionStorage.getItem("filename");
+		                downloadDetailfile(jobId,filename)
+		                sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");                
+		                
+		            } else if(status ==="PROCESSING") {
+		                alertMsg.innerHTML ='Download Is Processing…';
+		            	showAlert();
+		                setTimeout(() => checkReport(jobId), 5000);
+		            }
+		            else if(status ==="ERROR") {
+		                alertMsg.innerHTML ='No data was available to create a download.';
+		            	showAlert();
+		            	sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");  
+		            }
+		        });
+		}
+
+
+
+		function downloadDetailfile(jobId,filename) {
+			
+			//$('#loader').modal('show');
+			
+			$.ajax({
+				url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('Success', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+
+</script>
+
+
+<script th:inline="javascript">
+function showdetailsbyRowAndColumn(a) { 
+    var rowId = a.getAttribute('RowId');
+    var columnId = a.getAttribute('ColumnId');
+    var cellValue = a.textContent || a.innerText;
+
+    if (cellValue !== '0') {
+        // Set dynamic message in modal (instead of confirm)
+        document.getElementById("cellresultModalLabel").innerText = 
+            "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+        // Show custom Bootstrap modal
+        $('#cellresultModal').modal('show');
+
+        // Handle Yes button
+        document.querySelector('.yes-btn').onclick = function() {
+            $('#cellresultModal').modal('hide');
+
+            // Show loader
+            const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            $('#loader').modal('show');
+
+            // Build dynamic URL
+            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+            location.href = Callurl;
+        };
+    } else {
+        // Use your custom alert modal instead of window.alert
+        showResultModal("Alert", "No Records available for this selected cell.");
+    }
+}
+</script>
+
+
+
+
+</head>
+
+
+
+<title>BRRS</title>
+<body>
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+ 							M-SRWA 12h - Schedule of Credit Risk Mitigants </h5>
+					</div>
+
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
+							Date: <span th:text="${asondate}">2025-07-04</span>
+						</span>
+
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+							th:attr="data-reportid=${reportid}, 
+                    				 data-asondate=${asondate}, 
+                    				 data-fromdate=${fromdate}, 
+                     				 data-todate=${todate}, 
+                     				 data-currency=${currency},  
+                     				 data-dtltype=${dtltype}, 
+                     				 data-filename='M_SRWA_12h.xls',
+					 				 data-type=${type},
+					    			 data-version=${version}"
+									 
+							onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+						<button
+						  type="button"
+						  class="custom-tab-btn"
+						  id="custom-tab-btnAdd"
+						  th:if="${displaymode == 'Details'}"
+						  onclick="startReport(this);"
+						  th:attr="
+						    data-fromdate=${fromdate},
+						    data-todate=${todate},
+						    data-filename='M_SRWA_12HDetail',
+						  ">
+						  <i class="fa fa-download"></i>
+						</button>
+			 	<!---	<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='BRF2_18'",
+							onclick="editRecord();">
+							<i class="fa fa-download"></i>
+						</button> -->
+					</div>
+				</div>
+
+
+			
+			<div th:if="${displaymode == 'summary'}">
+			<div class="row" >
+				<div class="col-sm-12">
+					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
+    					<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports" >
+						
+							<thead class="thead-light">
+								<tr style="background-color: #b3b6b9;">
+								    <th rowspan="2" style="text-align: center; width:33%; padding-left: 20px;">Credit Risk Mitigant</th>
+								    <th rowspan="2" style="text-align: center;">Issuer</th>
+								    <th rowspan="2" style="text-align: center;">Issues Rating</th>
+								    <th colspan="4" style="text-align: center;">Value of CRM</th>
+								    <th rowspan="2" style="text-align: center;">Standard Supervisory Haircut**</th>
+								    <th rowspan="2" style="text-align: center;">Applicable Risk weight***</th>
+								</tr>
+								<tr>
+								    <th style="text-align: center;">&le; 1 Year</th>
+								    <th style="text-align: center;">&gt; 1 Year, &le; 5 Years</th>
+								    <th style="text-align: center;">&gt; 5 Years</th>
+								    <th style="text-align: center;">Other</th>
+								</tr>
+
+
+
+								</thead>
+
+
+								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+	
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R11_PRODUCT}"></td>  
+											<td style="text-align: right; "
+												th:text="${report.R11_ISSUER }"></td>
+											<td style="text-align: right; background-color: #b3b6b9 "
+												th:text="${report.R11_ISSUES_RATING}"></td>
+											<td style="text-align: right; background-color: #b3b6b9" th:attr="RowId='R11', ColumnId='C4'" 
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R11_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; background-color: #b3b6b9" th:attr="RowId='R11', ColumnId='C5'" 
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R11_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; background-color: #b3b6b9" th:attr="RowId='R11', ColumnId='C6'" 
+												onclick="showdetailsbyRowAndColumn(this)" 
+												th:text="${report.R11_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; background-color: #b3b6b9" 
+												th:text="${report.R11_OTHER}"></td>
+											<td style="text-align: right; background-color: #b3b6b9" 
+												th:text="${report.R11_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; background-color: #b3b6b9" 
+												th:text="${report. R11_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px; text-decoration: underline;" th:text="${report.R12_PRODUCT}"></td>  
+											<td style="text-align: right; "
+												th:text="${report.R12_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R12_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C4'" 
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R12_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C5'" 
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R12_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R12', ColumnId='C6'" 
+												onclick="showdetailsbyRowAndColumn(this)" 
+												th:text="${report.R12_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; " 
+												th:text="${report.R12_OTHER}"></td>
+											<td style="text-align: right;" 
+												th:text="${report.R12_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; " 
+												th:text="${report.R12_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+										
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R13_PRODUCT}"></td>  
+											<td style="text-align: right; "
+												th:text="${report.R13_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R13_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C4'" 
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R13_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C5'" 
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R13_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R13', ColumnId='C6'" 
+												onclick="showdetailsbyRowAndColumn(this)" 
+												th:text="${report.R13_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; " 
+												th:text="${report.R13_OTHER}"></td>
+											<td style="text-align: right;" 
+												th:text="${report.R13_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; " 
+												th:text="${report. R11_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+										
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R14_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R14_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R14_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R14_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R14_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R14', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R14_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R14_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R14_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R14_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R15_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R15_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R15_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R15_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R15_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R15', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R15_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R15_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R15_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R15_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R16_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R16_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R16_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R16', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R16_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R16', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R16_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R16', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R16_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R16_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R16_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R16_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R17_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R17_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R17_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R17', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R17_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R17', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R17_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R17', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R17_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R17_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R17_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R17_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R18_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R18_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R18_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R18', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R18_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R18', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R18_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R18', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R18_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R18_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R18_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R18_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R19_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R19_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R19_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R19', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R19_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R19', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R19_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R19', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R19_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R19_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R19_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R19_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R20_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R20_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R20_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R20', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R20_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R20', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R20_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R20', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R20_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R20_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R20_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R20_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R21_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R21_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R21_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R21_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R21_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R21', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R21_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R21_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R21_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R21_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R22_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R22_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R22_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R22_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R22_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R22', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R22_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R22_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R22_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R22_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R23_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R23_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R23_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R23_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R23_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R23', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R23_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R23_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R23_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R23_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R24_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R24_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R24_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R24_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R24_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R24', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R24_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R24_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R24_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R24_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R25_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R25_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R25_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R25_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R25_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R25', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R25_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R25_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R25_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R25_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R26_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R26_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R26_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R26_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R26_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R26', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R26_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R26_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R26_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R26_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R27_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R27_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R27_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R27_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R27_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R27', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R27_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R27_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R27_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R27_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R28_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R28_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R28_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R28_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R28_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R28', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R28_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R28_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R28_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R28_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R29_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R29_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R29_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R29_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R29_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R29', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R29_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R29_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R29_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R29_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R30_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R30_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R30_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R30_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R30_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R30', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R30_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R30_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R30_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R30_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R31_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R31_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R31_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R31', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R31_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R31', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R31_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R31', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R31_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R31_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R31_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R31_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R32_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R32_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R32_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R32', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R32_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R32', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R32_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R32', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R32_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R32_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R32_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R32_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R33_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R33_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R33_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R33', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R33_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R33', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R33_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R33', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R33_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R33_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R33_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R33_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R34_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R34_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R34_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R34', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R34_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R34', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R34_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R34', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R34_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R34_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R34_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R34_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R35_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R35_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R35_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R35', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R35_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R35', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R35_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R35', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R35_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R35_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R35_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R35_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R36_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R36_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R36_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R36', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R36_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R36', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R36_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R36', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R36_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R36_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R36_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R36_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R37_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R37_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R37_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R37', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R37_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R37', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R37_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R37', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R37_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R37_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R37_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R37_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R38_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R38_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R38_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R38', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R38_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R38', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R38_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R38', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R38_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R38_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R38_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R38_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R39_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R39_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R39_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R39', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R39_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R39', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R39_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R39', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R39_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R39_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R39_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R39_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R40_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R40_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R40_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R40', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R40_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R40', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R40_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R40', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R40_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R40_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R40_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R40_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R41_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R41_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R41_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R41', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R41_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R41', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R41_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R41', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R41_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R41_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R41_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R41_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R42_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R42_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R42_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R42', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R42_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R42', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R42_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R42', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R42_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R42_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R42_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R42_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R43_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R43_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R43_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R43', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R43_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R43', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R43_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R43', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R43_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R43_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R43_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R43_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R44_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R44_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R44_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R44', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R44_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R44', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R44_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R44', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R44_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R44_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R44_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R44_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R45_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R45_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R45_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R45', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R45_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R45', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R45_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R45', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R45_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R45_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R45_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R45_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R46_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R46_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R46_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R46', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R46_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R46', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R46_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R46', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R46_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R46_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R46_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R46_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R47_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R47_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R47_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R47', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R47_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R47', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R47_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R47', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R47_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R47_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R47_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R47_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R48_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R48_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R48_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R48', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R48_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R48', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R48_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R48', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R48_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R48_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R48_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R48_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R49_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R49_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R49_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R49', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R49_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R49', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R49_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R49', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R49_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R49_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R49_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R49_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R50_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R50_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R50_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R50', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R50_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R50', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R50_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R50', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R50_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R50_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R50_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R50_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R51_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R51_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R51_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R51', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R51_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R51', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R51_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R51', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R51_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R51_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R51_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R51_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R52_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R52_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R52_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R52', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R52_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R52', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R52_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R52', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R52_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R52_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R52_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R52_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px; text-decoration: underline;" th:text="${report.R53_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R53_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R53_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R53', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R53_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R53', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R53_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R53', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R53_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R53_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R53_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R53_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R54_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R54_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R54_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R54', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R54_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R54', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R54_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R54', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R54_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R54_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R54_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R54_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R55_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R55_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R55_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R55', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R55_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R55', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R55_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R55', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R55_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R55_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R55_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R55_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R56_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R56_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R56_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R56', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R56_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R56', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R56_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R56', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R56_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R56_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R56_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R56_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R57_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R57_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R57_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R57', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R57_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R57', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R57_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R57', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R57_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R57_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R57_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R57_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R58_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R58_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R58_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R58', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R58_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R58', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R58_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R58', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R58_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R58_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R58_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R58_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R59_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R59_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R59_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R59', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R59_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R59', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R59_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R59', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R59_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R59_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R59_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R59_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R60_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R60_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R60_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R60', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R60_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R60', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R60_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R60', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R60_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R60_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R60_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R60_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R61_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R61_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R61_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R61', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R61_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R61', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R61_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R61', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R61_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R61_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R61_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R61_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R62_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R62_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R62_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R62', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R62_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R62', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R62_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R62', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R62_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R62_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R62_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R62_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R63_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R63_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R63_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R63', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R63_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R63', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R63_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R63', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R63_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R63_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R63_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R63_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R64_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R64_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R64_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R64', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R64_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R64', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R64_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R64', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R64_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R64_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R64_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R64_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R65_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R65_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R65_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R65', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R65_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R65', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R65_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R65', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R65_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R65_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R65_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R65_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R66_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R66_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R66_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R66', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R66_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R66', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R66_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R66', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R66_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R66_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R66_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R66_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R67_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R67_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R67_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R67', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R67_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R67', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R67_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R67', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R67_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R67_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R67_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R67_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R68_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R68_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R68_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R68', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R68_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R68', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R68_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R68', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R68_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R68_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R68_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R68_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R69_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R69_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R69_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R69', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R69_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R69', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R69_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R69', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R69_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R69_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R69_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R69_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R70_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R70_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R70_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R70', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R70_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R70', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R70_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R70', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R70_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R70_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R70_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R70_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R71_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R71_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R71_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R71', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R71_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R71', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R71_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R71', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R71_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R71_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R71_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R71_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R72_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R72_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R72_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R72', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R72_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R72', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R72_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R72', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R72_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R72_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R72_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R72_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R73_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R73_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R73_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R73', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R73_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R73', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R73_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R73', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R73_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R73_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R73_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R73_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R74_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R74_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R74_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R74', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R74_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R74', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R74_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R74', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R74_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R74_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R74_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R74_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R75_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R75_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R75_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R75', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R75_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R75', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R75_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R75', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R75_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R75_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R75_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R75_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R76_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R76_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R76_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R76', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R76_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R76', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R76_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R76', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R76_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R76_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R76_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R76_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R77_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R77_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R77_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R77', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R77_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R77', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R77_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R77', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R77_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R77_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R77_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R77_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R78_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R78_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R78_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R78', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R78_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R78', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R78_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R78', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R78_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R78_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R78_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R78_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R79_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R79_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R79_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R79', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R79_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R79', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R79_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R79', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R79_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R79_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R79_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R79_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px;" th:text="${report.R80_PRODUCT}"></td> 
+											<td style="text-align: right; "
+												th:text="${report.R80_ISSUER }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R80_ISSUES_RATING}"></td>
+											<td style="text-align: right;" th:attr="RowId='R80', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"
+											    th:text="${report.R80_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right;" th:attr="RowId='R80', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R80_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; " th:attr="RowId='R80', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"
+												th:text="${report.R80_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R80_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R80_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R80_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										<tr>
+											<td style="padding-left: 20px; background-color: 	#ADFF2F;" th:text="${report.R81_PRODUCT}"></td> 
+											<td style="text-align: right; background-color: 	#ADFF2F; "
+												th:text="${report.R81_ISSUER }"></td>
+											<td style="text-align: right; background-color: 	#ADFF2F; "
+												th:text="${report.R81_ISSUES_RATING}"></td>
+											<td style="text-align: right; background-color: 	#ADFF2F;" 
+											    th:text="${report.R81_1YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; background-color: 	#ADFF2F;" 
+												th:text="${report.R81_1YR_5YR_VAL_OF_CRM  }"></td>
+											<td style="text-align: right; background-color: 	#ADFF2F; "
+												th:text="${report.R81_5YR_VAL_OF_CRM   }"></td>
+											<td style="text-align: right; "
+												th:text="${report.R81_OTHER}"></td>
+											<td style="text-align: right;"
+												th:text="${report.R81_STD_SUPERVISORY_HAIRCUT}"></td>
+											<td style="text-align: right; "
+												th:text="${report. R81_APPLICABLE_RISK_WEIGHT}"></td>																								
+										</tr>
+
+										
+									
+
+
+
+																			
+										
+																				
+										
+									</tbody>
+										  
+							
+							
+
+						  
+						 						  
+						
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+
+				<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									id="reportss">
+																	<thead class="thead-light">
+										<tr>
+											<th></th>
+											<th>CUST ID</th>
+											<th>ACCT NO</th>
+											<th>ACCT NAME</th>
+											<th style="text-align: right;">ACCT BALANCE</th>
+											<th style="text-align: left";>ROWID</th>
+											<th>COLUMNID</th>
+											<th>REPORT_DATE</th>
+										</tr>
+
+									</thead>
+
+									<tbody 
+										style="font-family: Arial;">
+										<tr th:each="report: ${reportdetails}">
+											<td><a data-toggle="tooltip" class="editrec"
+												title="Click to Edit this Record"> <i
+													class="fas fa-edit" onclick="editRecord(this)"></i>
+											</a></td>
+											<td th:text="${report.custId}"></td>
+											<td th:text="${report.acctNumber}"></td>
+											<td th:text="${report.acctName}"></td>
+										<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
+										<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3)}" style="text-align: right;"></td>
+
+											<td style="text-align: left"; th:text="${report.rowId}"></td>
+											<td th:text="${report.columnId}"></td>
+											<td
+												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+
+										</tr>
+									</tbody>
+								</table>
+								<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
+																																	   
+																																	    
+																																	    
+																																	<a th:if="${currentPage > 0}"
+																																	 th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																																	    asondate=${asondate},                             
+																																	    fromdate=${fromdate},
+																																	    todate=${todate},
+																																	    currency=${currency},
+																																	    dtltype=${dtltype},
+																																	    type=${type},
+																																	    version=${version},
+																																	    page=${currentPage - 100},
+																																	    size=100
+																																	)}">
+																																	    Previous
+																																	</a>
+																											
+																																	    
+																																	    <span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
+																																	
+																																	    
+																																	    <a th:if="${currentPage < (totalPages - 1) * 100}"
+																																	    	
+																																	    th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																																	    asondate=${asondate},
+																																	    fromdate=${fromdate},
+																																	    todate=${todate},
+																																	    currency=${currency},
+																																	    dtltype=${dtltype},
+																																	    type=${type},
+																																	    version=${version},
+																																	    page=${currentPage + 100},
+																																	    size=100
+																																	)}">	
+																																	    Next
+																																	    </a>
+																																	</div>
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+
+
+		</div>
+
+
+
+	</div>
+
+
+
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Custom Cellresult Modal -->
+			<div class="modal fade" id="cellresultModal">
+			  <div class="modal-dialog modal-dialog-centered">
+			    <div class="modal-content">
+			      
+			      <!-- Custom header -->
+			      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+			        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+			          Do you want to open the report?
+			        </div>
+			      </div>
+
+			      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+			        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+			          Cancel
+			        </button>
+			        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+			          Yes
+			        </button>
+			      </div>
+			    </div>
+			  </div>
+			</div>	
+
+
+</body>
+
+
+
+ 
+
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 820px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+
+
+<style>
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+</style>
+
+</html>
