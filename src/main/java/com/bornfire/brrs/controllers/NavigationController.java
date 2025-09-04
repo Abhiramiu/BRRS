@@ -1,6 +1,9 @@
 package com.bornfire.brrs.controllers;
 
+import java.util.Date;
 import java.util.List;
+
+
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,14 +28,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bornfire.brrs.entities.AccessAndRoles;
 import com.bornfire.brrs.entities.AccessandRolesRepository;
+
+import com.bornfire.brrs.entities.BankBranchMasterRepo;
 import com.bornfire.brrs.entities.BRRSValidationsRepo;
+import com.bornfire.brrs.entities.BankBranchMaster;
 import com.bornfire.brrs.entities.RRReport;
 import com.bornfire.brrs.entities.RRReportRepo;
 import com.bornfire.brrs.entities.UserProfile;
 import com.bornfire.brrs.entities.UserProfileRep;
 import com.bornfire.brrs.services.AccessAndRolesServices;
+import com.bornfire.brrs.services.BankBranchService;
 import com.bornfire.brrs.services.LoginServices;
 import com.bornfire.brrs.services.RegulatoryReportServices;
+import com.bornfire.brrs.services.ReportServices;
 
 
 @Controller
@@ -45,6 +54,9 @@ public class NavigationController {
 
 	UserProfileRep UserProfileReps;
 	
+	 @Autowired
+	ReportServices reportServices;
+	 
 	@Autowired
 	RegulatoryReportServices regulatoryreportservices;
 	
@@ -66,7 +78,11 @@ public class NavigationController {
 	AccessandRolesRepository accessandrolesrepository;
 
 
+	@Autowired
+	BankBranchMasterRepo bankBranchMasterRepo;
 	
+	@Autowired
+    private BankBranchService bankBranchService;
 
 	private String pagesize;
 
@@ -301,6 +317,7 @@ public class NavigationController {
 	  
 	  }
 	  
+	  
 	 
 	  
 	  @RequestMapping(value = "MonthlyArchival", method = { RequestMethod.GET,RequestMethod.POST })
@@ -337,7 +354,80 @@ public class NavigationController {
 	  
 	  }
 	   	    
+	 
+		@RequestMapping(value = "ReportMaster", method = RequestMethod.GET)
+		public String reportMaster(Model md, HttpServletRequest req) {
 
+			String userid = (String) req.getSession().getAttribute("USERID");
+			// Logging Navigation
+			loginServices.SessionLogging("REPORTMAST", "M5", req.getSession().getId(), userid, req.getRemoteAddr(),
+					"ACTIVE");
+
+			md.addAttribute("menu", "ReportMaster");
+			md.addAttribute("reportList", reportServices.getReportsMaster());
+			return "BRRS/ReportMaster";
+			
+
+		}
+		
+		@RequestMapping(value = "updateValidity", method = RequestMethod.POST)
+		@ResponseBody
+		public String updateValidity(@RequestParam("rptCode") String rptCode, String valid, HttpServletRequest rq) {
+
+			String userid = (String) rq.getSession().getAttribute("USERID");
+			System.out.println("came to controller");
+			return reportServices.updateValidity(rptCode, valid, userid);
+
+		}
+		
+	@RequestMapping(value = "BranchMaster", method = RequestMethod.GET)
+	 public String branchMaster(@RequestParam(required = false) String formmode,
+		                               @RequestParam(required = false) String solId,
+		                               Model md, HttpServletRequest req) {
+
+		        String userid = (String) req.getSession().getAttribute("USERID");
+		        loginServices.SessionLogging("BRANCHMAST", "M3", req.getSession().getId(),
+		                userid, req.getRemoteAddr(), "ACTIVE");
+
+		        if (formmode == null || formmode.equals("list")) {
+		            md.addAttribute("formmode", "list");
+		            md.addAttribute("branchList", bankBranchMasterRepo.GetAllData());
+		            md.addAttribute("menu", "BANK AND BRANCH MASTER");
+
+		        } else if (formmode.equals("add")) {
+		            md.addAttribute("formmode", "add");
+		            md.addAttribute("branch", new BankBranchMaster());
+
+		        } else if (formmode.equals("edit") || formmode.equals("view") || formmode.equals("delete")) {
+		            BankBranchMaster branch = bankBranchMasterRepo.findById(solId).orElse(null);
+		            md.addAttribute("branch", branch);
+		            md.addAttribute("formmode", formmode);
+		        }
+
+		        return "BRRS/BankBranchMaster";
+		    }
+
+	@PostMapping("/BranchMaster/save")
+	public String saveBranch(@ModelAttribute BankBranchMaster branch, HttpServletRequest req) {
+		        String userId = (String) req.getSession().getAttribute("USERID");
+		        bankBranchService.saveBranch(branch, userId);
+		        return "redirect:/BranchMaster?formmode=list";
+		    }
+
+	@RequestMapping(value = "BranchMaster/delete", method = RequestMethod.POST)
+	@ResponseBody
+	public String deleteBranch(@RequestParam("solId") String solId) {
+	    try {
+	        bankBranchService.softDeleteBranch(solId);
+	        return "SUCCESS";
+	    } catch(Exception e) {
+	        return "ERROR: " + e.getMessage();
+	    }
+	}
+
+
+
+		
 	  @RequestMapping(value = "fort", method = { RequestMethod.GET,RequestMethod.POST })
 	  public String fort(Model md, HttpServletRequest req)
 	  {
@@ -381,4 +471,7 @@ public class NavigationController {
 	  return "BRF/RRReports";
 	  
 	  }
+	
+	
+
 }

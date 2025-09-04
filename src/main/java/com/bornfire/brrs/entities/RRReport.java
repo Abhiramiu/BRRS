@@ -93,7 +93,21 @@ public class RRReport {
 
     @Column(name = "DOMAIN")
     private String domain;
-
+    
+    
+    @Column(name = "REPORT_VALIDITY")
+    private String report_validity;
+    
+    @Column(name = "REPORT_FREQUENCY")
+    private String report_frequency;
+    
+    @Column(name = "LCHG_USER_ID")
+    private String LCHG_USER_ID;
+    
+    @Column(name = "LCHG_TIME")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date LCHG_TIME;
+    
     @Column(name = "DOMAIN_ID")
     private String domainId;
 
@@ -313,11 +327,52 @@ public class RRReport {
 		this.domainId = domainId;
 	}
 
+	
+	public String getReport_validity() {
+		return report_validity;
+	}
+
+	public void setReport_validity(String report_validity) {
+		this.report_validity = report_validity;
+	}
+
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+	
+	
+
+	public String getLCHG_USER_ID() {
+		return LCHG_USER_ID;
+	}
+
+	public void setLCHG_USER_ID(String lCHG_USER_ID) {
+		this.LCHG_USER_ID = lCHG_USER_ID;
+	}
+
+	
+	
+
+	public Date getLCHG_TIME() {
+		return LCHG_TIME;
+	}
+
+	public void setLCHG_TIME(Date lCHG_TIME) {
+		this.LCHG_TIME = lCHG_TIME;
+	}
+
+	
+
 	public RRReport(int srlNo, Date rptStartDate, String rptCode, String rptDescription, String rptType, String detFlg,
 			String rptStatus, Date startDate, Date endDate, String remarks1, String remarks2, String remarks3,
 			String remarks4, String remarks5, String delFlg, String entityFlg, String modifyFlg, String entryUser,
 			String modifyUser, String verifyUser, Date entryDate, Date modifyDate, Date verifyDate,
-			String taxonomyVersion, Date taxonomyDate, String domain, String domainId) {
+			String taxonomyVersion, Date taxonomyDate, String domain, String report_validity, String report_frequency,
+			String lCHG_USER_ID, Date lCHG_TIME, String domainId) {
 		super();
 		this.srlNo = srlNo;
 		this.rptStartDate = rptStartDate;
@@ -345,6 +400,10 @@ public class RRReport {
 		this.taxonomyVersion = taxonomyVersion;
 		this.taxonomyDate = taxonomyDate;
 		this.domain = domain;
+		this.report_validity = report_validity;
+		this.report_frequency = report_frequency;
+		this.LCHG_USER_ID = lCHG_USER_ID;
+		this.LCHG_TIME = lCHG_TIME;
 		this.domainId = domainId;
 	}
 

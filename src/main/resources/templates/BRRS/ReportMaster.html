@@ -1,0 +1,543 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: KRISHNAPANDI MG 
+CREATED ON	: 25.05.2025
+PURPOSE		: Access the Modules by Role
+ -->
+ 
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	    <!-- CSS (Bootstrap, FontAwesome, jQuery UI, DataTables) -->
+	    <link rel="stylesheet" type="text/css"
+	          href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+	          th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+
+	    <link rel="stylesheet" type="text/css"
+	          href="/webjars/font-awesome/5.9.0/css/all.min.css"
+	          th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+
+	    <link rel="stylesheet" type="text/css"
+	          href="/webjars/jquery-ui/1.12.1/jquery-ui.min.css"
+	          th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" />
+
+	    <link rel="stylesheet" type="text/css"
+	          href="/webjars/datatables/1.10.19/css/jquery.dataTables.min.css"
+	          th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
+		
+			<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+		
+		
+	    <!-- Favicon -->
+	    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}" />
+	    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}" />
+
+	    <!-- JavaScript: jQuery must come first -->
+	    <script src="/webjars/jquery/3.4.1/jquery.min.js"
+	            th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+
+	    <script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
+	            th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+
+	    <script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+	            th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+
+	    <script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+	            th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+
+	    <script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	            th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+	    <script src="/webjars/jquery-form/4.2.2/jquery.form.min.js"
+	            th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+
+	    <script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
+	            th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+
+	    <script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
+	            th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+<style>
+        .valids { color: green; }
+        .invalids { color: red; }
+    </style>
+<script th:inline="javascript">
+	
+
+	function home() {
+		location.href = 'Dashboard'
+	}
+
+	function back() {
+		window.history.back();
+	}
+	/* function submitform(a) {
+
+		var checkBoxAdminValue, adminValue, 
+		BRF_Reports, BRF_ReportsValue, 
+		Basel_Reports, Basel_ReportsValue, 
+		Archival, ArchivalValue,
+		Audit_Inquiries, Audit_InquiriesValue,
+		RBR_Reports, RBR_ReportsValue,
+		VAT_Ledger, VAT_LedgerValue,
+		Invoice_Data, Invoice_DataValue;
+	
+		
+		var finalVar = [];
+
+		checkBoxAdminValue = document.querySelector("#Admin:checked");
+		adminValue = (checkBoxAdminValue) ? 'Y' : 'N';
+
+		if (adminValue === "Y") {
+			finalVar.push("Admin");
+		}
+
+		BRF_Reports = document.querySelector("#BRF_Reports:checked");
+		BRF_ReportsValue = (BRF_Reports) ? 'Y' : 'N';
+		if (BRF_ReportsValue === "Y") {
+			finalVar.push("BRF_Reports");
+		}
+		
+		Basel_Reports = document.querySelector("#Basel_Reports:checked");
+		Basel_ReportsValue = (Basel_Reports) ? 'Y' : 'N';
+		if (Basel_ReportsValue === "Y") {
+			finalVar.push("Basel_Reports");
+		}
+		Archival = document.querySelector("#Archival:checked");
+		ArchivalValue = (Archival) ? 'Y' : 'N';
+		if (ArchivalValue === "Y") {
+			finalVar.push("Archival");
+		}
+
+		Audit_Inquiries = document.querySelector("#Audit_Inquiries:checked");
+		Audit_InquiriesValue = (Audit_Inquiries) ? 'Y' : 'N';
+		if (Audit_InquiriesValue === "Y") {
+			finalVar.push("Audit_Inquiries");
+		}
+
+		RBR_Reports = document.querySelector("#RBR_Reports:checked");
+		RBR_ReportsValue = (RBR_Reports) ? 'Y' : 'N';
+		if (RBR_ReportsValue === "Y") {
+			finalVar.push("RBR_Reports");
+		}
+		
+		VAT_Ledger = document.querySelector("#VAT_Ledger:checked");
+		VAT_LedgerValue = (VAT_Ledger) ? 'Y' : 'N';
+		if (VAT_LedgerValue === "Y") {
+			finalVar.push("VAT_Ledger");
+		}
+		
+		Invoice_Data = document.querySelector("#Invoice_Data:checked");
+		Invoice_DataValue = (Invoice_Data) ? 'Y' : 'N';
+		if (Invoice_DataValue === "Y") {
+			finalVar.push("Invoice_Data");
+		}
+		
+		var formmode = a.getAttribute("data-formmode");
+
+		var finalString = finalVar.join(',');
+		var url = "./createAccessRole?formmode=" + formmode 
+				+ "&adminValue="	+ adminValue 
+				+ "&BRF_ReportsValue="	+ BRF_ReportsValue 
+				+ "&Basel_ReportsValue=" + Basel_ReportsValue
+				+ "&ArchivalValue=" + ArchivalValue
+				+ "&Audit_InquiriesValue=" + Audit_InquiriesValue
+				+ "&RBR_ReportsValue=" + RBR_ReportsValue
+				+ "&VAT_LedgerValue=" + VAT_LedgerValue
+				+ "&Invoice_DataValue=" + Invoice_DataValue
+				+ "&finalString=" + finalString;
+
+		$("#IPSAccessRole").attr('action', url);
+
+		var options = {
+			success : showResponse
+		};
+
+		$("#IPSAccessRole").ajaxSubmit(options);
+
+		function showResponse(responseText, statusText, xhr, $form) {
+
+			$("#alertmsg").text(responseText);
+
+			$('#alert').modal("toggle");
+
+		}
+		;
+
+	};
+ */
+ function submitform(a) {
+	    // Get form mode from button attribute
+	    var formmode = a.getAttribute("data-formmode");
+	    console.log('Form mode:', formmode);
+	    
+	    // Get all checkbox values from new menu structure
+	    var checkboxes = {
+	        admin: document.querySelector("#Admin:checked") ? 'Y' : 'N',
+	        RT_Reports: document.querySelector("#RT_Reports:checked") ? 'Y' : 'N'
+	    };
+	    console.log('Checkbox values:', checkboxes);
+	    
+	    // Create finalString of selected options
+	    var finalVar = [];
+	    for (var key in checkboxes) {
+	        if (checkboxes[key] === 'Y') {
+	            finalVar.push(key);
+	        }
+	    }
+	    var finalString = finalVar.join(',');
+	    console.log('Final string:', finalString);
+	    
+	    // Create form data
+	    var formData = new FormData(document.getElementById("IPSAccessRole"));
+	    
+	    // Add additional parameters
+	    formData.append("adminValue", checkboxes.admin);
+	    formData.append("RT_ReportsValue", checkboxes.RT_Reports);
+	    formData.append("finalString", finalString);
+	    
+	    // Submit using standard jQuery AJAX
+	    $.ajax({
+	        url: "./createAccessRole?formmode=" + encodeURIComponent(formmode),
+	        type: "POST",
+	        data: formData,
+	        processData: false,  // Required for FormData
+	        contentType: false,  // Required for FormData
+	        success: function(response) {
+	            console.log('Success response:', response);
+	            $("#alertmsg").text(response);
+	            $('#alert').modal("toggle");
+	            
+	            // Optional: Reset form if needed
+	            if (formmode === 'add') {
+	                document.getElementById("IPSAccessRole").reset();
+	            }
+	        },
+	        error: function(xhr, status, error) {
+	            console.error('AJAX error:', status, error);
+	            $("#alertmsg").text("Error occurred: " + error);
+	            $('#alert').modal("toggle");
+	        }
+	    });
+	    
+	    // Prevent default form submission
+	    return false;
+	}
+	
+ function verifySubmit(a) {
+	    var entryuser = a.getAttribute("data-entry_user");
+	    var modifyuser = a.getAttribute("data-modify_user");
+	    var formmode = a.getAttribute("data-formmode");
+	    var loginuser = /*[[${session.USERID}]]*/ null;
+
+	    if ((modifyuser != null && modifyuser == loginuser) || 
+	        (modifyuser == null && entryuser == loginuser)) {
+	        $("#alertmsg").text("Same user cannot verify");
+	        $('#alert').modal("toggle");
+	        return false;
+	    }
+
+	    // Create form data
+	    var formData = new FormData(document.getElementById("IPSAccessRole"));
+	    
+	    // Submit using standard jQuery AJAX
+	    $.ajax({
+	        url: "./createAccessRole?formmode=" + encodeURIComponent(formmode),
+	        type: "POST",
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        success: function(response) {
+	            $("#alertmsg").text(response);
+	            $('#alert').modal("toggle");
+	        },
+	        error: function(xhr, status, error) {
+	            console.error('AJAX error:', status, error);
+	            $("#alertmsg").text("Error occurred: " + error);
+	            $('#alert').modal("toggle");
+	        }
+	    });
+	    
+	    return false;
+	}
+ function deleteSubmit(a) {
+	    console.log('Delete action initiated');
+	    var formmode = a.getAttribute("data-formmode");
+	    
+	    // Create form data
+	    var formData = new FormData(document.getElementById("IPSAccessRole"));
+	    
+	    // Submit using standard jQuery AJAX
+	    $.ajax({
+	        url: "./createAccessRole?formmode=" + encodeURIComponent(formmode),
+	        type: "POST",
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        success: function(response) {
+	            $("#alertmsg").text(response);
+	            $('#alert').modal("toggle");
+	        },
+	        error: function(xhr, status, error) {
+	            console.error('AJAX error:', status, error);
+	            $("#alertmsg").text("Error occurred: " + error);
+	            $('#alert').modal("toggle");
+	        }
+	    });
+	    
+	    return false;
+	}
+    </script>
+    <script>
+    function addrole(a) {
+		location.href = 'AccessandRoles?formmode=add';
+	}
+    function edit_btn_submit(a) {
+
+		var srlno = a.getAttribute("data-role_id");
+		location.href = 'AccessandRoles?formmode=edit&userid=' + srlno;
+	}
+
+    function list() {
+		location.href = 'AccessandRoles?formmode=list';
+	}
+	function view_btn_submit(a) {
+		var srlno = a.getAttribute("data-role_id");
+
+		location.href = 'AccessandRoles?formmode=view&userid=' + srlno;
+
+	}
+	
+	function verify_btn_submit(a) {
+		var srlno = a.getAttribute("data-role_id");
+
+		location.href = 'AccessandRoles?formmode=verify&userid=' + srlno;
+
+	}
+	function delete_btn_submit(a) {
+		var rollID = a.getAttribute("data-role_id");
+		location.href = 'AccessandRoles?formmode=delete&userid=' + rollID;
+	}
+    </script>
+    <script th:inline="javascript">
+	/*<![CDATA[*/
+
+	$(function() {
+
+		$("#reports").DataTable({
+			
+			"info" : false,
+			"lengthChange" : false,
+			"columns" : [
+				
+				{"title":"Report Id"},
+				{"title":"Report Name"},
+				{"title":"Frequency"},
+				{"title":"Taxonomy Version"},
+				{"title":"Enabled",
+				 "orderable": false},
+				{"title":"Domain"},
+			]
+			
+		});
+
+		
+	})
+
+	function updateValidity(a) {
+
+
+		var rptCode = a.getAttribute("value");
+		var valid;
+		if ($(a).is(":checked")) {
+
+			valid = "Y";
+			alert('checked');
+		} else {
+
+			valid = "N";
+		}
+		;
+
+		var url = "updateValidity?rptCode=" + rptCode + "&valid=" + valid
+		$.ajax({
+			type : 'post',
+			url : url,
+			success : function(data) {
+
+				alert(data);
+			}
+		});
+
+	}
+
+	/*]]>*/
+</script>
+</head>
+<title>BRRS</title>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+	<div th:insert="HeaderMenu :: header"></div>
+	<div  class="col-sm-12">
+	<!-- -------------------User List Starts----------------------------------------------------- -->
+	
+		
+			<div class="col-sm-12">
+				<div class="card" style="width: 100%; margin-left: 2px;">
+					<div class="card-header" style="background-color: #376275;">
+						<div class="float-left" style="color: white;">
+							<h4>REPORTS MASTER</h4>
+						</div>
+					</div>
+					
+						<table class="table table-striped table-bordered table-hover "  
+							id="reports" >
+							
+							 <thead class="thead-light" style="background-color:#e9ecf0">
+								<tr>
+									<th STYLE="text-align:left;">Report Id</th>
+									<th STYLE="text-align:left;">Report Name</th>
+									<th STYLE="text-align:left;">Frequency</th>
+									<th STYLE="text-align:left;">Taxonomy Version</th>
+									<th>Enabled</th>
+									<th>Domain</th>
+								</tr>
+							</thead> 
+							<tbody>
+								<tr th:each="report : ${reportList}">
+									<td th:text="${report.rptCode}"></td>
+									<td th:text="${report.rptDescription}"></td>
+									<td th:text="${report.report_frequency}"></td>
+									<td th:text="${report.taxonomyVersion}"></td>
+									<td><input type="checkbox" th:name="${report.rptCode}"
+										th:value="${report.rptCode}" th:id="${report.rptCode}"
+										th:onchange="updateValidity(this)"
+										th:attr="checked = ${report.report_validity=='Y'} ? true : false ">
+									</td>
+									<td th:text="${report.domainId}"></td>
+								</tr>
+							</tbody>
+						</table>
+				
+						
+					<div class="card-footer text-center">
+							<button type="button" class="custom-tab-btn" id="btnHome"
+							onclick="home();">Home</button>
+							
+
+							<button type="button" class="custom-tab-btn" id="btnBack"
+								onclick="back();">Back</button>
+
+						</div>
+ <!-- Close card-footer -->
+
+				</div> <!-- Close card-body -->
+			</div> <!-- Close card -->
+		</div> <!-- Close col -->
+	</div> <!-- Close row -->	
+		
+		
+			
+	</div>
+	<div class="modal fade" id="alert">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-body" style="text-align: center">
+					<p id="alertmsg"></p>
+					<button type="button" class="btn btn-primary" data-dismiss="modal"
+						onclick="list();">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="datadelete">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-body"
+					style="margin-top: 8px; text-align: center; color: #f15362;">
+					<button type="button" class="close" data-dismiss="modal">×</button>
+					Are you Sure want to delete?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary"
+						onclick="submitformdelete(this);" th:attr="data-formmode=delete">Submit</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="formmsg">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-body"
+					style="margin-top: 8px; text-align: center; color: aliceblue;">
+					<button type="button" class="close" data-dismiss="modal">×</button>
+					<a th:value="${msg}"></a>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary"
+						onclick="submitformdelete(this);" th:attr="data-formmode=delete">Submit</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+</html>
