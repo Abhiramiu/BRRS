@@ -13,9 +13,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Entity
-@Table(name = "BRRS_M_SRWA_12F_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_M_SRWA_12F_DETAILTABLE")
 
-public class M_SRWA_12F_Detail_Entity {
+public class M_SRWA_12F_Archival_Detail_Entity {
 	
 	@Id
     @Column(name = "CUST_ID")
@@ -256,7 +256,7 @@ public class M_SRWA_12F_Detail_Entity {
 		this.delFlg = delFlg;
 	}
 
-	public M_SRWA_12F_Detail_Entity() {
+	public M_SRWA_12F_Archival_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
