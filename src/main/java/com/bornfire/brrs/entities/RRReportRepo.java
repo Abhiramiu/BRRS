@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 public interface RRReportRepo extends JpaRepository<RRReport, Integer> {
@@ -35,4 +36,8 @@ public interface RRReportRepo extends JpaRepository<RRReport, Integer> {
 	
 	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'Q2' ORDER BY rpt_code", nativeQuery = true)
 	List<RRReport> getReportListQuarterly2();
+	
+	@Modifying
+	@Query("update RRReport a set report_validity=?2, lchg_user_id=?3, lchg_time=sysdate where rptCode=?1 ")
+	public int updateValidity(String rptCode, String valid, String userid);
 }

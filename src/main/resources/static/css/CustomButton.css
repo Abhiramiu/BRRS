@@ -42,10 +42,7 @@
 	 background-color:#6B7A8F !important;
     color: white;
 }
-.card-footer{
-	 background-color: #6B7A8F;
-    color: white;
-}
+
 body {
   background-image: url('../images/rtbg.jpg'); /* Adjust path as per your project structure */
   background-size: cover;
