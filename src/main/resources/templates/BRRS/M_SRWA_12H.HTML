@@ -2438,7 +2438,7 @@ function showdetailsbyRowAndColumn(a) {
 											<td th:text="${report.acctNumber}"></td>
 											<td th:text="${report.acctName}"></td>
 										<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
-										<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3)}" style="text-align: right;"></td>
+										<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 2)}" style="text-align: right;"></td>
 
 											<td style="text-align: left"; th:text="${report.rowId}"></td>
 											<td th:text="${report.columnId}"></td>

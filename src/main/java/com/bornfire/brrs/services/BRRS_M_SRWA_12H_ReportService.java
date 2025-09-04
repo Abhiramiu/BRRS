@@ -2784,20 +2784,8 @@ public byte[] BRRS_M_SRWA_12HExcel(String filename,String reportId, String fromd
 				}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-		
-			
+				
+				
 				
 									
 			}
@@ -2857,7 +2845,7 @@ public byte[] BRRS_M_SRWA_12HDetailExcel(String filename, String fromdate, Strin
         // ACCT BALANCE style (right aligned with 3 decimals)
         CellStyle balanceStyle = workbook.createCellStyle();
         balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00"));
         balanceStyle.setBorderTop(border);
         balanceStyle.setBorderBottom(border);
         balanceStyle.setBorderLeft(border);
