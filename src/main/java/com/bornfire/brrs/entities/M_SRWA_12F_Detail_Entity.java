@@ -13,7 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Entity
-@Table(name = "BRRS_M_SRWA_12F_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_M_SRWA_12F_DETAILTABLE")
 
 public class M_SRWA_12F_Detail_Entity {
 	
