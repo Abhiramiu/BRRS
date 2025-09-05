@@ -12,7 +12,7 @@ public interface BRRS_M_SRWA_12H_Detail_Repo extends JpaRepository<M_SRWA_12H_De
 	List<M_SRWA_12H_Detail_Entity> getdatabydateList(Date reportdate);
 	
 	@Query(value = "select * from BRRS_M_SRWA_12H_DETAILTABLE WHERE REPORT_DATE =?1 and COLUMN_ID =?2 and ROW_ID=?3 ", nativeQuery = true)
-	List<M_SRWA_12H_Detail_Entity> getdatabydateListrow(Date reportdate,String COLUMN_ID, String ROW_ID);
+	List<M_SRWA_12H_Detail_Entity> GetDataByRowIdAndColumnId( String ROW_ID,String COLUMN_ID,Date reportdate);
 	
 	@Query(value = "select * from BRRS_M_SRWA_12H_DETAILTABLE where REPORT_DATE=?1 offset ?2 rows fetch next ?3 rows only", nativeQuery = true)
 	List<M_SRWA_12H_Detail_Entity> getdatabydateList(Date reportdate,int startpage,int endpage);

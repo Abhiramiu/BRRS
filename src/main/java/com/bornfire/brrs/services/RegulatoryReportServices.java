@@ -133,7 +133,7 @@ public class RegulatoryReportServices {
 			
 		case "M_SRWA_12H":
 			repdetail = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter);
+					pageable, Filter, type, version);
 			break;
 			
 		case "M_MRC":
@@ -206,7 +206,7 @@ public class RegulatoryReportServices {
 		case "M_SRWA_12H":
 			try {
 				repfile = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId, fromdate, todate, currency,
-						dtltype);
+						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -308,6 +308,15 @@ public class RegulatoryReportServices {
 		case "M_SRWA_12F":
 			try {
 				archivalData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_SRWA_12H":
+			try {
+				archivalData = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
