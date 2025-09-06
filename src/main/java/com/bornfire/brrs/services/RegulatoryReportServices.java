@@ -138,7 +138,7 @@ public class RegulatoryReportServices {
 			
 		case "M_MRC":
 			repdetail = BRRS_M_MRC_reportservice.getM_MRCcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter);
+					pageable, Filter, type, version);
 			break;
 			
 		}
@@ -216,7 +216,7 @@ public class RegulatoryReportServices {
 		case "M_MRC":
 			try {
 				repfile = BRRS_M_MRC_reportservice.BRRS_M_MRCExcel(filename, reportId, fromdate, todate, currency,
-						dtltype);
+						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

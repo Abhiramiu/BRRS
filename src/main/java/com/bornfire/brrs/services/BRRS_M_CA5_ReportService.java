@@ -12,12 +12,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
-
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -38,7 +35,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_CA5_Archival_Detail_Repo;
@@ -47,16 +43,10 @@ import com.bornfire.brrs.entities.BRRS_M_CA5_Archival_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_CA5_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_CA5_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_CA5_Summary_Repo2;
-import com.bornfire.brrs.entities.M_CA5_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
-import com.bornfire.brrs.entities.M_CA5_Summary_Entity2;
 import com.bornfire.brrs.entities.M_CA5_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA5_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA5_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_CA5_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA5_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA5_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_CA5_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity2;
 
