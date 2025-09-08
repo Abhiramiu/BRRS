@@ -1,0 +1,43 @@
+package com.bornfire.brrs.entities;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+
+public interface RRReportMastRepo extends JpaRepository<RRReportMast, Integer> {
+	@Query(value = "select * from BRRS_REPORT_MAST WHERE REMARKS_5 = 'M' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrs();
+	
+	@Query(value = "select * from BRRS_REPORT_MAST WHERE REMARKS_5 = 'M2' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListmonthly2();
+
+	@Query(value = "select * from BRRS_REPORT_MAST WHERE REMARKS_5 = 'M3' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListmonthly3();
+	
+
+	@Query(value = "select * from BRRS_REPORT_MAST WHERE REMARKS_5 = 'HY1' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportHalfYearly1();
+	
+	@Query(value = "select * from BRRS_REPORT_MAST WHERE REMARKS_5 = 'Y1' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportYearly1();
+	
+	
+	@Query(value = "select * from BRRS_REPORT_MAST WHERE REMARKS_5 = 'FN' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListFORTNIGHTLY();
+	
+	@Query(value = "select * from BRRS_REPORT_MAST WHERE RPT_CODE =?1", nativeQuery = true)
+	Optional<RRReport> getParticularReport3(String rptcode);
+	
+	@Query(value = "select * from BRRS_REPORT_MAST where rpt_code=?1", nativeQuery = true)
+	RRReport getReportbyrptcode(String rpt_code);
+	
+	@Query(value = "select * from BRRS_REPORT_MAST WHERE REMARKS_5 = 'Q2' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListQuarterly2();
+	
+	@Modifying
+	@Query("update RRReport a set report_validity=?2, lchg_user_id=?3, lchg_time=sysdate where rptCode=?1 ")
+	public int updateValidity(String rptCode, String valid, String userid);
+}
