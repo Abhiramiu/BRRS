@@ -1034,7 +1034,9 @@ function hideAlert() {
 							th:href="@{/Dashboard}"
 							style=" text-align: center; color: black;">Home</a>
 						</li>
-						<li class="nav-item dropdown" style="text-align: center;">
+						<li class="nav-item dropdown" style="text-align: center;" 
+						th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'admin')}">
+    
     <a href="#" class="dropdown-toggle">Admin</a>
     <ul class="dropdown-menu">
         <li>
@@ -1058,7 +1060,9 @@ function hideAlert() {
     </ul>
 </li>
 
-						<li class="nav-item dropdown" style=" text-align: center;">
+						<li class="nav-item dropdown" style=" text-align: center;"
+						 th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRRS_Reports')}">
+						
 							<a href="#" class="dropdown-toggle">BRRS_Reports</a>
 								
 								<ul class="dropdown-menu">
@@ -1072,7 +1076,9 @@ function hideAlert() {
 						</li>
 						
 						
-						<li class="nav-item dropdown" style=" text-align: center;">
+						<li class="nav-item dropdown" style=" text-align: center;"
+						th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'Archival')}">
+						
 							<a href="#" class="dropdown-toggle">Archival</a>
 								
 								<ul class="dropdown-menu">
@@ -1085,7 +1091,9 @@ function hideAlert() {
 								
 						</li>
 
-						<li class="nav-item dropdown" style=" text-align: center;">
+						<li class="nav-item dropdown" style=" text-align: center;"
+						th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'AUDIT_US')}">
+						
 							<a href="#" class="dropdown-toggle">Audit</a>
 							<ul class="dropdown-menu">
 								

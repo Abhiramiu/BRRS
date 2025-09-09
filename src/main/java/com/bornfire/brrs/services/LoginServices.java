@@ -4,6 +4,7 @@ import java.io.File;
 
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -13,9 +14,13 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.sql.DataSource;
@@ -65,6 +70,9 @@ public class LoginServices {
 	@Autowired
 	DataSource srcdataSource;
 
+	@Autowired
+	AuditService auditservice;
+	
 	@NotNull
 	private String exportpath;
 
@@ -101,89 +109,7 @@ public class LoginServices {
 	 * 
 	 */
 
-	public String addUser(UserProfile userProfile, String formmode, String inputUser) {
-
-		String msg = "";
-
-		try {
-
-			if (formmode.equals("add")) {
-
-				UserProfile up = userProfile;
-				try {
-					String encryptedPassword = PasswordEncryption.getEncryptedPassword(this.password);
-
-					if (up.getLogin_status().equals("Active")) {
-						up.setUser_locked_flg("N");
-					} else {
-						up.setUser_locked_flg("Y");
-					}
-
-					if (up.getUser_status().equals("Active")) {
-						up.setDisable_flg("N");
-					} else {
-						up.setDisable_flg("Y");
-					}
-
-					up.setEntity_flg("N");
-					up.setEntry_time(new Date());
-					up.setEntry_user(inputUser);
-					
-					up.setLogin_flg("N");//To prompt the user for changing the password at first login
-					up.setNo_of_attmp(0);
-					up.setPassword(encryptedPassword);
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				
-				userProfileRep.save(up);
-
-				msg = "User Created Successfully";
-
-			}
-			//When the user data modifed and submitted.
-			else {
-
-				Optional<UserProfile> up = userProfileRep.findById(userProfile.getUserid());
-
-				if (up.isPresent()) {
-
-					userProfile.setPassword(up.get().getPassword());
-
-					if (userProfile.getLogin_status().equals("Active")) {
-						userProfile.setUser_locked_flg("N");
-					} else {
-						userProfile.setUser_locked_flg("Y");
-					}
-
-					if (userProfile.getUser_status().equals("Active")) {
-						userProfile.setDisable_flg("N");
-					} else {
-						userProfile.setDisable_flg("Y");
-					}
-
-					userProfile.setNo_of_attmp(0);
-					userProfile.setEntity_flg("N");
-					userProfile.setModify_user(inputUser);
-					userProfile.setModify_time(new Date());
-
-					userProfileRep.save(userProfile);
-				}
-
-				msg = "User Edited Successfully";
-
-			}
-		} catch (Exception e) {
-			msg = "Error Occured. Please contact Administrator";
-			e.printStackTrace();
-			logger.info(e.getMessage());
-		}
-
-		return msg;
-	}
-
+	
 	
 	public Iterable<UserProfile> getUsersList() {
 
@@ -224,7 +150,7 @@ public String addUser(UserProfile userProfile, String formmode, String inputUser
         if ("add".equalsIgnoreCase(formmode)) {
             UserProfile up = userProfile;
 
-            System.out.println("password is : " + up.getPassword());
+           // System.out.println("password is : " + up.getPassword());
 
             // Encrypt password
             String encryptedPassword = PasswordEncryption.getEncryptedPassword(up.getPassword());
@@ -233,6 +159,17 @@ public String addUser(UserProfile userProfile, String formmode, String inputUser
             up.setUser_locked_flg("Active".equalsIgnoreCase(up.getLogin_status()) ? "N" : "Y");
             up.setDisable_flg("Active".equalsIgnoreCase(up.getUser_status()) ? "N" : "Y");
 
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+			Date date1 = formatter.parse("28-02-2027"); // <-- note full year!
+			Date Disabledate = formatter.parse("21-12-23"); // <-- note full year!
+								
+			up.setAcc_exp_date(date1);
+			
+			up.setLogin_low("00:00");
+			up.setLogin_high("23:59");
+			up.setDisable_start_date(Disabledate);
+			up.setDisable_end_date(Disabledate);
+
             up.setEntity_flg("N");
             up.setEntry_time(new Date());
             up.setEntry_user(inputUser);
@@ -240,6 +177,8 @@ public String addUser(UserProfile userProfile, String formmode, String inputUser
             up.setNo_of_attmp(0);
             up.setLog_in_count("0");
             up.setEmp_name(up.getUsername());
+            
+          //  System.out.println("user name is: "+ up.getUsername());
 
             // Password expiry date
             if (up.getPass_exp_days() != null && !up.getPass_exp_days().trim().isEmpty()) {
@@ -258,7 +197,7 @@ public String addUser(UserProfile userProfile, String formmode, String inputUser
 
             // Final password set
             up.setPassword(encryptedPassword);
-
+            auditservice.createBusinessAudit(userProfile.getUserid(), "ADD", "ADD", null,"XBRL_USER_PROFILE_TABLE");
             // Save the user
             userProfileRep.save(up);
 
@@ -271,7 +210,7 @@ public String addUser(UserProfile userProfile, String formmode, String inputUser
                 }
             }
 
-            // Example audit log ID fetch
+            /*// Example audit log ID fetch
             try {
                 Session hs = sessionFactory.getCurrentSession();
                 BigDecimal srlno = (BigDecimal) hs
@@ -282,13 +221,13 @@ public String addUser(UserProfile userProfile, String formmode, String inputUser
             } catch (Exception e) {
                 System.out.println("Audit logging failed: " + e.getMessage());
             }
-
+*/
             msg = "User Created Successfully";
 
         } else {
             // Form mode is not add, update flow
             Optional<UserProfile> upOptional = userProfileRep.findById(userProfile.getUserid());
-
+            Map<String, String> changeMap = new HashMap<>();
             if (upOptional.isPresent()) {
                 UserProfile up = upOptional.get();
 
@@ -318,7 +257,67 @@ public String addUser(UserProfile userProfile, String formmode, String inputUser
                 userProfile.setEntity_flg("N");
                 userProfile.setModify_user(inputUser);
                 userProfile.setModify_time(new Date());
+                List<String> ignoreFields = Arrays.asList(
+                	    "password", "user_locked_flg", "disable_flg", "pass_exp_date",
+                	    "log_in_count", "entry_user", "entry_time", "no_of_attmp",
+                	    "entity_flg", "modify_user", "modify_time"
+                	);
+                
 
+                UserProfile dbUser = upOptional.get();
+                
+                Map<String, String> changes = new LinkedHashMap<>();
+
+    	        for (Field field : UserProfile.class.getDeclaredFields()) {
+    	            field.setAccessible(true);
+    	            try {
+    	                Object oldValue = field.get(dbUser);
+    	                Object newValue = field.get(userProfile);    
+    	                if ((oldValue == null || oldValue.toString().trim().isEmpty()) &&
+    	                    (newValue == null || newValue.toString().trim().isEmpty())) {
+    	                    continue; 
+    	                }
+
+    	                if (ignoreFields.contains(field.getName()) && newValue == null) {
+    	                    continue; 
+    	                }
+
+    	                if (oldValue instanceof Date || newValue instanceof Date) {
+    	                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    	                    String oldDateStr = (oldValue != null) ? sdf.format(oldValue) : null;
+    	                    String newDateStr = (newValue != null) ? sdf.format(newValue) : null;
+
+    	                    if (Objects.equals(oldDateStr, newDateStr)) {
+    	                        continue; 
+    	                    }
+    	                } else {
+    	                    if (Objects.equals(oldValue, newValue)) {
+    	                        continue; 
+    	                    }
+    	                }
+
+    	                if (newValue == null) {
+    	                    changes.put(field.getName(), "OldValue: " + oldValue + ", NewValue: null");
+    	                } else {
+    	                    changes.put(field.getName(), "OldValue: " + oldValue + ", NewValue: " + newValue);
+    	                }
+
+    	                if (newValue != null) {
+    	                    field.set(dbUser, newValue);
+    	                }
+
+    	            } catch (IllegalAccessException e) {
+    	                System.err.println("Access error for field: " + field.getName() + " - " + e.getMessage());
+    	            }
+    	        }               auditservice.createBusinessAudit(
+                	    userProfile.getUserid(),    // or whatever id you track
+                	    "MODIFY",
+                	    "USER_PROFILE_SCREEN",
+                	    changes,
+                	    "User profile updated"                	    
+                	);
+                
+                
                 userProfileRep.save(userProfile);
                 msg = "User Edited Successfully";
             } else {
@@ -335,49 +334,81 @@ public String addUser(UserProfile userProfile, String formmode, String inputUser
     return msg;
 }
 
-
 	
-	public String verifyUser(UserProfile userProfile, String inputUser) {
-		String msg = "";
+public String verifyUser(UserProfile userProfile, String inputUser) {
+	String msg = "";
 
-		Optional<UserProfile> up = userProfileRep.findById(userProfile.getUserid());
+	Optional<UserProfile> up = userProfileRep.findById(userProfile.getUserid());
+	
 
-		try {
+	try {
 
-			if (up.isPresent()) {
+		if (up.isPresent()) {
 
-				userProfile.setPassword(up.get().getPassword());
+			userProfile.setPassword(up.get().getPassword());
 
-				if (userProfile.getLogin_status().equals("Active")) {
-					userProfile.setUser_locked_flg("N");
-				} else {
-					userProfile.setUser_locked_flg("Y");
-				}
-
-				if (userProfile.getUser_status().equals("Active")) {
-					userProfile.setDisable_flg("N");
-				} else {
-					userProfile.setDisable_flg("Y");
-				}
-
-				userProfile.setNo_of_attmp(0);
-				userProfile.setEntity_flg("Y");
-				userProfile.setLogin_flg("N");
-				userProfile.setAuth_user(inputUser);
-				userProfile.setAuth_time(new Date());
-
-				userProfileRep.save(userProfile);
+			if (userProfile.getLogin_status().equals("Active")) {
+				userProfile.setUser_locked_flg("N");
+			} else {
+				userProfile.setUser_locked_flg("Y");
 			}
 
-			msg = "User Verified Successfully";
-		} catch (Exception e) {
-			logger.info(e.getMessage());
-			e.printStackTrace();
-			msg = "Error Occured. Please contact Administrator";
+			if (userProfile.getUser_status().equals("Active")) {
+				userProfile.setDisable_flg("N");
+			} else {
+				userProfile.setDisable_flg("Y");
+			}
+		    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+			Date Disabledate = formatter.parse("21-12-23"); // <-- note full year!
+			
+			
+			userProfile.setNo_of_attmp(0);
+			userProfile.setEntity_flg("Y");
+			userProfile.setLogin_flg("N");
+			userProfile.setAuth_user(inputUser);
+			userProfile.setAuth_time(new Date());
+			userProfile.setLogin_low("00:00");
+			userProfile.setLogin_high("23:59");
+			userProfile.setDisable_start_date(Disabledate);
+			userProfile.setDisable_end_date(Disabledate);
+			userProfile.setEmp_name(userProfile.getUsername());
+           
+			Date date1 = formatter.parse("28-02-2027"); // <-- note full year!
+								
+			userProfile.setAcc_exp_date(date1);
+
+			 // Password expiry date
+            if (userProfile.getPass_exp_days() != null && !userProfile.getPass_exp_days().trim().isEmpty()) {
+                String localdateval = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                LocalDate date = LocalDate.parse(localdateval);
+                BigDecimal passexpdays = new BigDecimal(userProfile.getPass_exp_days());
+                LocalDate date2 = date.plusDays(passexpdays.intValue());
+                userProfile.setPass_exp_date(new SimpleDateFormat("yyyy-MM-dd").parse(date2.toString()));
+            } else {
+                // Default expiry period: 90 days (optional)
+                String localdateval = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                LocalDate date = LocalDate.parse(localdateval);
+                LocalDate date2 = date.plusDays(90);
+                userProfile.setPass_exp_date(new SimpleDateFormat("yyyy-MM-dd").parse(date2.toString()));
+            }
+
+			
+			auditservice.createBusinessAudit(userProfile.getUserid(), "Verify", "userProfile-verify", null,"XBRL_USER_PROFILE_TABLE");
+			userProfileRep.save(userProfile);
+			
+			
 		}
 
-		return msg;
+		msg = "User Verified Successfully";
+	} catch (Exception e) {
+		logger.info(e.getMessage());
+		e.printStackTrace();
+		msg = "Error Occured. Please contact Administrator";
 	}
+
+	return msg;
+}
+
 
 	public String passwordReset(UserProfile userprofile, String userid) {
 

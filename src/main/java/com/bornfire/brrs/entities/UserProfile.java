@@ -22,7 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "XBRL_USER_PROFILE_TABLE")
+@Table(name = "BOTS_USER_PROFILE_TABLE")
 public class UserProfile implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
@@ -96,12 +96,19 @@ public class UserProfile implements UserDetails {
     private String brf181_login;
     private String	pass_exp_days;
     private String	log_in_count;
+    private String designation;
 
     
     
     
    
-    public String getBrf181_login() {
+    public String getDesignation() {
+		return designation;
+	}
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+	public String getBrf181_login() {
 		return brf181_login;
 	}
 	public void setBrf181_login(String brf181_login) {

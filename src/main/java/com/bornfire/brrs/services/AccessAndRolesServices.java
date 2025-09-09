@@ -3,6 +3,7 @@ package com.bornfire.brrs.services;
 import java.math.BigDecimal;
 
 
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bornfire.brrs.entities.AccessAndRoles;
 import com.bornfire.brrs.entities.AccessandRolesRepository;
+
 
 
 @Service
@@ -50,66 +52,111 @@ public class AccessAndRolesServices {
 	}
 
 	public String addPARAMETER(AccessAndRoles alertparam, String formmode,
-	        String adminValue, String RT_ReportsValue, String finalString,
-	        String USERID) {
+	        String adminValue, String BRRS_ReportsValue, String Archival, 
+	        String auditUsValue, String finalString, String USERID) {
 
 	    String msg = "";
+	    System.out.println("formmode is "+formmode);
+	    System.out.println(alertparam.getRoleId());
+	    
+	    if ("add".equalsIgnoreCase(formmode)) {
 
-	    if (formmode.equals("add")) {
-	        AccessAndRoles up = alertparam;
-	        up.setDel_flg("N");
-	        up.setModify_flg("N");
-	        up.setEntity_flg("N");
-	        up.setAdmin(adminValue);
-	        up.setRTReports(RT_ReportsValue);
-	        up.setEntry_user(USERID);
-	        up.setEntry_time(new Date());
-	        up.setMenulist(finalString);
-	        
-	        accessandrolesrepository.save(up);
+	        alertparam.setDelFlg("N");
+	        alertparam.setModifyFlg("N");
+	        alertparam.setEntityFlg("N");
+	        alertparam.setAdmin(adminValue);
+	        alertparam.setBrrsReports(BRRS_ReportsValue);
+	        alertparam.setARCHIVALS(Archival);
+	        alertparam.setAudit_us(auditUsValue);
+	        alertparam.setEntryUser(USERID);
+	        alertparam.setEntryTime(new Date());
+	        alertparam.setMenulist(finalString);
+
+	        accessandrolesrepository.save(alertparam);
 	        msg = "Role Created Successfully";
-	        
-	    } else if (formmode.equals("edit")) {
-	        System.out.println("came to services for edit the role");
-	        AccessAndRoles up = alertparam;
-	        Optional<AccessAndRoles> user = accessandrolesrepository.findById(alertparam.getRole_id());
-	        AccessAndRoles user1 = user.get();
-	        up.setAdmin(adminValue);
-	        up.setRTReports(RT_ReportsValue);
-	        if (!finalString.equals("")) {
-	            up.setMenulist(finalString);
-	        } else {
-	            up.setMenulist(user.get().getMenulist());
+
+	    } else if ("edit".equalsIgnoreCase(formmode)) {
+
+	        if (alertparam.getRoleId() == null || alertparam.getRoleId().trim().isEmpty()) {
+	            return "Role ID is missing. Cannot edit.";
 	        }
-	        up.setDel_flg("N");
-	        up.setModify_flg("Y");
-	        up.setEntity_flg("N");
-	        up.setEntry_user(user1.getEntry_user());
-	        up.setEntry_time(user1.getEntry_time());
-	        up.setModify_user(USERID);
-	        up.setModify_time(new Date());
-	        accessandrolesrepository.save(up);
+
+	        Optional<AccessAndRoles> user = accessandrolesrepository.findById(alertparam.getRoleId());
+	        if (!user.isPresent()) {
+	            return "Role not found. Cannot edit.";
+	        }
+
+	        AccessAndRoles existing = user.get();
+
+	        alertparam.setAdmin(adminValue);
+	        alertparam.setBrrsReports(BRRS_ReportsValue);
+	        alertparam.setARCHIVALS(Archival);
+	        alertparam.setAudit_us(auditUsValue);
+	        alertparam.setMenulist(finalString.isEmpty() ? existing.getMenulist() : finalString);
+
+	        alertparam.setDelFlg("N");
+	        alertparam.setModifyFlg("Y");
+	        alertparam.setEntityFlg("N");
+	        alertparam.setEntryUser(existing.getEntryUser());
+	        alertparam.setEntryTime(existing.getEntryTime());
+	        alertparam.setModifyUser(USERID);
+	        alertparam.setModifyTime(new Date());
+
+	        accessandrolesrepository.save(alertparam);
 	        msg = "Role Edited Successfully";
-	    } else if (formmode.equals("delete")) {
-	        Optional<AccessAndRoles> user = accessandrolesrepository.findById(alertparam.getRole_id());
-	        AccessAndRoles accessRole = user.get();
-	        accessRole.setDel_flg("Y");
-	        accessRole.setEntity_flg("N");
-	        accessandrolesrepository.save(accessRole);
+
+	    }else if ("delete".equalsIgnoreCase(formmode)) {
+
+	        if (alertparam.getRoleId() == null || alertparam.getRoleId().trim().isEmpty()) {
+	            return "Role ID is missing. Cannot delete.";
+	        }
+
+	        String[] roleIds = alertparam.getRoleId().split(",");
+	        for (String rid : roleIds) {
+	            String trimmedId = rid.trim();
+	            if (trimmedId.isEmpty()) continue;
+
+	            System.out.println("Deleting Role ID -> " + trimmedId);
+
+	            Optional<AccessAndRoles> user = accessandrolesrepository.findById(trimmedId);
+	            if (user.isPresent()) {
+	                accessandrolesrepository.deleteById(trimmedId);
+	                System.out.println("Deleted successfully: " + trimmedId);
+	            } else {
+	                System.out.println("Role not found (already deleted?): " + trimmedId);
+	                // Don’t return, just continue
+	            }
+	        }
+
 	        msg = "Role Deleted Successfully";
-	    } else if (formmode.equals("verify")) {
-	        Optional<AccessAndRoles> user = accessandrolesrepository.findById(alertparam.getRole_id());
-	        AccessAndRoles user1 = user.get();
-	        user1.setDel_flg("N");
-	        user1.setModify_flg("N");
-	        user1.setEntity_flg("Y");
-	        user1.setAuth_user(USERID);
-	        user1.setAuth_time(new Date());
-	        accessandrolesrepository.save(user1);
+	    }
+
+
+	    else if ("verify".equalsIgnoreCase(formmode)) {
+
+	        if (alertparam.getRoleId() == null || alertparam.getRoleId().trim().isEmpty()) {
+	            return "Role ID is missing. Cannot verify.";
+	        }
+
+	        Optional<AccessAndRoles> user = accessandrolesrepository.findById(alertparam.getRoleId());
+	        if (!user.isPresent()) {
+	            return "Role not found. Cannot verify.";
+	        }
+
+	        AccessAndRoles accessRole = user.get();
+	        accessRole.setDelFlg("N");
+	        accessRole.setModifyFlg("N");
+	        accessRole.setEntityFlg("Y");
+	        accessRole.setAuthUser(USERID);
+	        accessRole.setAuthTime(new Date());
+
+	        accessandrolesrepository.save(accessRole);
 	        msg = "Role Verified Successfully";
 	    }
+
 	    return msg;
 	}
+
 
 	public AccessAndRoles getRoleId(String id) {
 		Session session = sessionFactory.getCurrentSession();
@@ -118,6 +165,7 @@ public class AccessAndRolesServices {
 		query.setParameter(1, id);
 		List<AccessAndRoles> result = query.getResultList();
 		if (!result.isEmpty()) {
+			System.out.println(result.get(0).toString());
 			return result.get(0);
 		} else {
 			return new AccessAndRoles();
@@ -148,7 +196,7 @@ public class AccessAndRolesServices {
 		if (count == 0) {
 			Optional<AccessAndRoles> user = accessandrolesrepository.findById(userid);
 			AccessAndRoles reg = user.get();
-			reg.setDel_flg("Y");
+			reg.setDelFlg("Y");
 			accessandrolesrepository.save(reg);
 			msg = "Role Deleted Successfully";
 		} else {

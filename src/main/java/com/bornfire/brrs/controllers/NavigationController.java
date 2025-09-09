@@ -118,7 +118,7 @@ public class NavigationController {
 			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req) {
 
 		String roleId = (String) req.getSession().getAttribute("ROLEID");
-		System.out.println("role id is : " + roleId);
+		//System.out.println("role id is : " + roleId);
 		md.addAttribute("IPSRoleMenu", AccessRoleService.getRoleMenu(roleId));
 
 		if (formmode == null || formmode.equals("list")) {
@@ -158,21 +158,30 @@ public class NavigationController {
 	@RequestMapping(value = "createAccessRole", method = RequestMethod.POST)
 	@ResponseBody
 	public String createAccessRoleEn(@RequestParam("formmode") String formmode,
-			@RequestParam(value = "adminValue", required = false) String adminValue,
-			@RequestParam(value = "RT_ReportsValue", required = false) String RT_ReportsValue,
-			@RequestParam(value = "finalString", required = false) String finalString,
-			@ModelAttribute AccessAndRoles alertparam, Model md, HttpServletRequest rq) {
+	        @RequestParam(value = "adminValue", required = false) String adminValue,
+	        @RequestParam(value = "BRRS_ReportsValue", required = false) String BRRS_ReportsValue,
+	        @RequestParam(value = "Archival", required = false) String Archival,
+	        @RequestParam(value = "auditUsValue", required = false) String auditUsValue,
+	        @RequestParam(value = "finalString", required = false) String finalString,
+	        @ModelAttribute AccessAndRoles alertparam, Model md, HttpServletRequest rq) {
 
-		System.out.println("came to controller");
-		String userid = (String) rq.getSession().getAttribute("USERID");
-		String roleId = (String) rq.getSession().getAttribute("ROLEID");
-		md.addAttribute("IPSRoleMenu", AccessRoleService.getRoleMenu(roleId));
+	    String userid = (String) rq.getSession().getAttribute("USERID");
+	    String roleId = (String) rq.getSession().getAttribute("ROLEID");
+	    md.addAttribute("IPSRoleMenu", AccessRoleService.getRoleMenu(roleId));
 
-		String msg = AccessRoleService.addPARAMETER(alertparam, formmode, adminValue, RT_ReportsValue, finalString,
-				userid);
+	    String msg = AccessRoleService.addPARAMETER(alertparam, formmode, adminValue, BRRS_ReportsValue,
+	    		Archival, auditUsValue, finalString, userid);
 
-		return msg;
+	    return msg;
 	}
+	
+	@GetMapping("/checkRoleExists")
+	@ResponseBody
+	public String checkRoleExists(@RequestParam("roleId") String roleId) {
+	    boolean exists = accessandrolesrepository.findById(roleId).isPresent();
+	    return exists ? "exists" : "not_exists";
+	}
+	
 
 	@RequestMapping(value = "UserProfile", method = { RequestMethod.GET, RequestMethod.POST })
 	public String userprofile(@RequestParam(required = false) String formmode,
@@ -188,6 +197,7 @@ public class NavigationController {
 		String ROLEIDAC = (String) req.getSession().getAttribute("ROLEID");
 		md.addAttribute("RuleIDType", accessandrolesrepository.roleidtype());
 
+		
 		System.out.println("work class is : " + WORKCLASSAC);
 		// Logging Navigation
 		loginServices.SessionLogging("USERPROFILE", "M2", req.getSession().getId(), loginuserid, req.getRemoteAddr(),
@@ -211,13 +221,25 @@ public class NavigationController {
 			md.addAttribute("formmode", formmode);
 			md.addAttribute("userProfile", loginServices.getUser(userid));
 
+		}else if (formmode.equals("view")) {
+
+			md.addAttribute("formmode", formmode);
+			md.addAttribute("userProfile", loginServices.getUser(userid));
+
+		}else if (formmode.equals("delete")) {
+
+			md.addAttribute("formmode", formmode);
+			md.addAttribute("userProfile", loginServices.getUser(userid));
+
 		} else if (formmode.equals("add")) {
 			md.addAttribute("formmode", formmode);
 			md.addAttribute("userProfile", loginServices.getUser(""));
 		} else if (formmode.equals("verify")) {
-
-			md.addAttribute("formmode", formmode);
-			md.addAttribute("userProfile", loginServices.getUser(userid));
+			md.addAttribute("WORKCLASSAC", WORKCLASSAC);
+		    md.addAttribute("ROLEIDAC", ROLEIDAC);
+	        md.addAttribute("formmode", formmode);
+	        md.addAttribute("userProfile", loginServices.getUser(userid));
+			
 
 		} else {
 
@@ -247,6 +269,7 @@ public class NavigationController {
 		String role = (String) rq.getSession().getAttribute("ROLEDESC");
 		String userId = (String) rq.getSession().getAttribute("USERID");
 		String userName = (String) rq.getSession().getAttribute("USERNAME");
+		System.out.println("came to navigation controller ");
 		String msg = loginServices.addUser(userprofile, formmode, userId, userName, mob, role);
 
 		return msg;
@@ -255,8 +278,19 @@ public class NavigationController {
 	@RequestMapping(value = "deleteuser", method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteuser(@RequestParam("formmode") String userid, Model md, HttpServletRequest rq) {
-
+		System.out.println("came to Delete user nav controller");
 		String msg = loginServices.deleteuser(userid);
+
+		return msg;
+
+	}
+
+	
+	@RequestMapping(value = "verifyUser", method = RequestMethod.POST)
+	@ResponseBody
+	public String verifyUser(@ModelAttribute UserProfile userprofile, Model md, HttpServletRequest rq) {
+		String userid = (String) rq.getSession().getAttribute("USERID");
+		String msg = loginServices.verifyUser(userprofile, userid);
 
 		return msg;
 
@@ -307,12 +341,12 @@ public class NavigationController {
 	  {
 	//String roleId = (String) req.getSession().getAttribute("ROLEID");
 	  //String domainid = (String) req.getSession().getAttribute("DOMAINID");
-		  System.out.println("nisha");
+		  
 	  md.addAttribute("menu", "BRRS - BRRS Report");
 	  System.out.println("nisha1");
 	//System.out.println("count"+rrReportlist.getReportListbrrs().size());
 	 md.addAttribute("reportlist", rrReportlist.getReportListbrrs());
-	  System.out.println("nisha2");
+	  
 	  return "BRRS/RRReports";
 	  
 	  }
