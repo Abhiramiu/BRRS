@@ -186,6 +186,7 @@ if (rowId != null && columnId != null) {
 T1Dt1 = M_IS_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
 } else {
 T1Dt1 = M_IS_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+mv.addObject("pagination", "YES");
 }
 
 mv.addObject("reportdetails", T1Dt1);

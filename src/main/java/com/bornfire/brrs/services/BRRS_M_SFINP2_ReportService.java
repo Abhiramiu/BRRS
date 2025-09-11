@@ -164,6 +164,7 @@ public class BRRS_M_SFINP2_ReportService {
 	                T1Dt1 = M_SFINP2_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
 	            } else {
 	                T1Dt1 = M_SFINP2_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+	                mv.addObject("pagination", "YES");
 	            }
 
 	            mv.addObject("reportdetails", T1Dt1);

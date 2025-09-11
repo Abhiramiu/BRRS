@@ -157,6 +157,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 	                T1Dt1 = M_SRWA_12F_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
 	            } else {
 	                T1Dt1 = M_SRWA_12F_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+	                mv.addObject("pagination", "YES");
 	            }
 
 	            mv.addObject("reportdetails", T1Dt1);
