@@ -57,6 +57,11 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_PI_ReportService BRRS_M_PI_reportservice;
 	
+	@Autowired
+	BRRS_M_AIDP_ReportService	BRRS_M_AIDP_ReportService;
+	
+	
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -123,6 +128,10 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 
+		case "M_AIDP":
+			repsummary = BRRS_M_AIDP_ReportService.getM_AIDPView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
 			
 		}
 		
@@ -140,6 +149,11 @@ public class RegulatoryReportServices {
 
 		case "M_SFINP2":
 			repdetail = BRRS_M_SFINP2_reportservice.getM_SFINP2currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
+		
+		case "M_AIDP":
+			repdetail = BRRS_M_AIDP_ReportService.getM_AIDPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
 			
