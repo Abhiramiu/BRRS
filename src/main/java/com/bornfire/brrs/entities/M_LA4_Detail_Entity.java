@@ -58,136 +58,162 @@ public class M_LA4_Detail_Entity {
    private char modifyFlg;
    @Column(name = "DEL_FLG")
    private char delFlg;
-	public String getCustId() {
-		return custId;
-	}
-	public void setCustId(String custId) {
-		this.custId = custId;
-	}
-	public String getAcctNumber() {
-		return acctNumber;
-	}
-	public void setAcctNumber(String acctNumber) {
-		this.acctNumber = acctNumber;
-	}
-	public String getAcctName() {
-		return acctName;
-	}
-	public void setAcctName(String acctName) {
-		this.acctName = acctName;
-	}
-	public String getDataType() {
-		return dataType;
-	}
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
-	}
-	public String getColumnId() {
-		return columnId;
-	}
-	public void setColumnId(String columnId) {
-		this.columnId = columnId;
-	}
-	public String getRowId() {
-		return rowId;
-	}
-	public void setRowId(String rowId) {
-		this.rowId = rowId;
-	}
-	public String getReportRemarks() {
-		return reportRemarks;
-	}
-	public void setReportRemarks(String reportRemarks) {
-		this.reportRemarks = reportRemarks;
-	}
-	public String getModificationRemarks() {
-		return modificationRemarks;
-	}
-	public void setModificationRemarks(String modificationRemarks) {
-		this.modificationRemarks = modificationRemarks;
-	}
-	public String getDataEntryVersion() {
-		return dataEntryVersion;
-	}
-	public void setDataEntryVersion(String dataEntryVersion) {
-		this.dataEntryVersion = dataEntryVersion;
-	}
-	public BigDecimal getAcctBalanceInpula() {
-		return acctBalanceInpula;
-	}
-	public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
-		this.acctBalanceInpula = acctBalanceInpula;
-	}
-	public Date getReportDate() {
-		return reportDate;
-	}
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
-	}
-	public String getReportName() {
-		return reportName;
-	}
-	public void setReportName(String reportName) {
-		this.reportName = reportName;
-	}
-	public String getCreateUser() {
-		return createUser;
-	}
-	public void setCreateUser(String createUser) {
-		this.createUser = createUser;
-	}
-	public Date getCreateTime() {
-		return createTime;
-	}
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-	public String getModifyUser() {
-		return modifyUser;
-	}
-	public void setModifyUser(String modifyUser) {
-		this.modifyUser = modifyUser;
-	}
-	public Date getModifyTime() {
-		return modifyTime;
-	}
-	public void setModifyTime(Date modifyTime) {
-		this.modifyTime = modifyTime;
-	}
-	public String getVerifyUser() {
-		return verifyUser;
-	}
-	public void setVerifyUser(String verifyUser) {
-		this.verifyUser = verifyUser;
-	}
-	public Date getVerifyTime() {
-		return verifyTime;
-	}
-	public void setVerifyTime(Date verifyTime) {
-		this.verifyTime = verifyTime;
-	}
-	public char getEntityFlg() {
-		return entityFlg;
-	}
-	public void setEntityFlg(char entityFlg) {
-		this.entityFlg = entityFlg;
-	}
-	public char getModifyFlg() {
-		return modifyFlg;
-	}
-	public void setModifyFlg(char modifyFlg) {
-		this.modifyFlg = modifyFlg;
-	}
-	public char getDelFlg() {
-		return delFlg;
-	}
-	public void setDelFlg(char delFlg) {
-		this.delFlg = delFlg;
-	}
-	public M_LA4_Detail_Entity() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+   
+   private String segment;
+   private String facility;
+   private String report_name_1;
+   public String getCustId() {
+	return custId;
+   }
+   public void setCustId(String custId) {
+	this.custId = custId;
+   }
+   public String getAcctNumber() {
+	return acctNumber;
+   }
+   public void setAcctNumber(String acctNumber) {
+	this.acctNumber = acctNumber;
+   }
+   public String getAcctName() {
+	return acctName;
+   }
+   public void setAcctName(String acctName) {
+	this.acctName = acctName;
+   }
+   public String getDataType() {
+	return dataType;
+   }
+   public void setDataType(String dataType) {
+	this.dataType = dataType;
+   }
+   public String getColumnId() {
+	return columnId;
+   }
+   public void setColumnId(String columnId) {
+	this.columnId = columnId;
+   }
+   public String getRowId() {
+	return rowId;
+   }
+   public void setRowId(String rowId) {
+	this.rowId = rowId;
+   }
+   public String getReportRemarks() {
+	return reportRemarks;
+   }
+   public void setReportRemarks(String reportRemarks) {
+	this.reportRemarks = reportRemarks;
+   }
+   public String getModificationRemarks() {
+	return modificationRemarks;
+   }
+   public void setModificationRemarks(String modificationRemarks) {
+	this.modificationRemarks = modificationRemarks;
+   }
+   public String getDataEntryVersion() {
+	return dataEntryVersion;
+   }
+   public void setDataEntryVersion(String dataEntryVersion) {
+	this.dataEntryVersion = dataEntryVersion;
+   }
+   public BigDecimal getAcctBalanceInpula() {
+	return acctBalanceInpula;
+   }
+   public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+	this.acctBalanceInpula = acctBalanceInpula;
+   }
+   public Date getReportDate() {
+	return reportDate;
+   }
+   public void setReportDate(Date reportDate) {
+	this.reportDate = reportDate;
+   }
+   public String getReportName() {
+	return reportName;
+   }
+   public void setReportName(String reportName) {
+	this.reportName = reportName;
+   }
+   public String getCreateUser() {
+	return createUser;
+   }
+   public void setCreateUser(String createUser) {
+	this.createUser = createUser;
+   }
+   public Date getCreateTime() {
+	return createTime;
+   }
+   public void setCreateTime(Date createTime) {
+	this.createTime = createTime;
+   }
+   public String getModifyUser() {
+	return modifyUser;
+   }
+   public void setModifyUser(String modifyUser) {
+	this.modifyUser = modifyUser;
+   }
+   public Date getModifyTime() {
+	return modifyTime;
+   }
+   public void setModifyTime(Date modifyTime) {
+	this.modifyTime = modifyTime;
+   }
+   public String getVerifyUser() {
+	return verifyUser;
+   }
+   public void setVerifyUser(String verifyUser) {
+	this.verifyUser = verifyUser;
+   }
+   public Date getVerifyTime() {
+	return verifyTime;
+   }
+   public void setVerifyTime(Date verifyTime) {
+	this.verifyTime = verifyTime;
+   }
+   public char getEntityFlg() {
+	return entityFlg;
+   }
+   public void setEntityFlg(char entityFlg) {
+	this.entityFlg = entityFlg;
+   }
+   public char getModifyFlg() {
+	return modifyFlg;
+   }
+   public void setModifyFlg(char modifyFlg) {
+	this.modifyFlg = modifyFlg;
+   }
+   public char getDelFlg() {
+	return delFlg;
+   }
+   public void setDelFlg(char delFlg) {
+	this.delFlg = delFlg;
+   }
+   public String getSegment() {
+	return segment;
+   }
+   public void setSegment(String segment) {
+	this.segment = segment;
+   }
+   public String getFacility() {
+	return facility;
+   }
+   public void setFacility(String facility) {
+	this.facility = facility;
+   }
+   public String getReport_name_1() {
+	return report_name_1;
+   }
+   public void setReport_name_1(String report_name_1) {
+	this.report_name_1 = report_name_1;
+   }
+   public M_LA4_Detail_Entity() {
+	super();
+	// TODO Auto-generated constructor stub
+   }
+   
+   
+   
+   
 	
 	   
   
