@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.AIDPUpdateDto;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
@@ -284,23 +285,33 @@ public class BRRS_ReportsController {
 	 @Autowired
 	 private BRRS_M_AIDP_ReportService AIDPreportService;
 	 
-	 @RequestMapping(value = "/AIDPupdate", method = { RequestMethod.GET, RequestMethod.POST })
+	 @RequestMapping(value = "/AIDPupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	 @ResponseBody
-	 public ResponseEntity<String> updateReport(
-	     @RequestParam(required = false) 
-	     @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	     @ModelAttribute BRRS_M_AIDP_Summary_Entity1 request,
-	     HttpServletRequest req) {
+	 public ResponseEntity<String> updateAllReports(
+	         @RequestParam(required = false)
+	         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
+	         @ModelAttribute BRRS_M_AIDP_Summary_Entity1 request1,
+	         @ModelAttribute BRRS_M_AIDP_Summary_Entity2 request2,
+	         @ModelAttribute BRRS_M_AIDP_Summary_Entity3 request3,
+	         @ModelAttribute BRRS_M_AIDP_Summary_Entity4 request4
+	 ) {
 	     try {
-	         System.out.println("came to FIRST controller");
-	         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-	        
-	         // ✅ set the asondate into entity
-	         request.setREPORT_DATE(asondate);
+	         System.out.println("Came to single controller");
 
-	         AIDPreportService.updateReport(request);
-	         return ResponseEntity.ok("Updated Successfully");
+	         // set date into all 4 entities
+	         request1.setREPORT_DATE(asondate);
+	         request2.setREPORT_DATE(asondate);
+	         request3.setREPORT_DATE(asondate);
+	         request4.setREPORT_DATE(asondate);
+
+	         // call services
+	         AIDPreportService.updateReport(request1);
+	         AIDPreportService.updateReport2(request2);
+	         AIDPreportService.updateReport3(request3);
+	         AIDPreportService.updateReport4(request4);
+
+	         return ResponseEntity.ok("All Reports Updated Successfully");
 	     } catch (Exception e) {
 	         e.printStackTrace();
 	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -308,76 +319,6 @@ public class BRRS_ReportsController {
 	     }
 	 }
 
-	 @RequestMapping(value = "/AIDPupdate2", method = { RequestMethod.GET, RequestMethod.POST })
-	 @ResponseBody
-	 public ResponseEntity<String> updateReport2(
-	     @RequestParam(required = false) 
-	     @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	     @ModelAttribute BRRS_M_AIDP_Summary_Entity2 request,
-	     HttpServletRequest req) {
 
-	     try {
-	         System.out.println("came to SECOND controller");
-	         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-	        
-	         // ✅ set the asondate into entity
-	         request.setREPORT_DATE(asondate);
-
-	         AIDPreportService.updateReport2(request);
-	         return ResponseEntity.ok("Updated Successfully");
-	     } catch (Exception e) {
-	         e.printStackTrace();
-	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                              .body("Update Failed: " + e.getMessage());
-	     }
-	 }
-	 
-	 @RequestMapping(value = "/AIDPupdate3", method = { RequestMethod.GET, RequestMethod.POST })
-	 @ResponseBody
-	 public ResponseEntity<String> updateReport3(
-	     @RequestParam(required = false) 
-	     @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	     @ModelAttribute BRRS_M_AIDP_Summary_Entity3 request,
-	     HttpServletRequest req) {
-
-	     try {
-	         System.out.println("came to THIRD controller");
-	         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-	       
-	         // ✅ set the asondate into entity
-	         request.setREPORT_DATE(asondate);
-
-	         AIDPreportService.updateReport3(request);
-	         return ResponseEntity.ok("Updated Successfully");
-	     } catch (Exception e) {
-	         e.printStackTrace();
-	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                              .body("Update Failed: " + e.getMessage());
-	     }
-	 }
-	 
-	 @RequestMapping(value = "/AIDPupdate4", method = { RequestMethod.GET, RequestMethod.POST })
-	 @ResponseBody
-	 public ResponseEntity<String> updateReport4(
-	     @RequestParam(required = false) 
-	     @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	     @ModelAttribute BRRS_M_AIDP_Summary_Entity4 request,
-	     HttpServletRequest req) {
-
-	     try {
-	         System.out.println("came to 4TH controller");
-	         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-	         
-	         // ✅ set the asondate into entity
-	         request.setREPORT_DATE(asondate);
-
-	         AIDPreportService.updateReport4(request);
-	         return ResponseEntity.ok("Updated Successfully");
-	     } catch (Exception e) {
-	         e.printStackTrace();
-	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                              .body("Update Failed: " + e.getMessage());
-	     }
-	 }
 
 }
