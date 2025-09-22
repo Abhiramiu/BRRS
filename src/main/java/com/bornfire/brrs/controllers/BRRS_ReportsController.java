@@ -41,7 +41,12 @@ import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity4;
+import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity1;
+import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity2;
+import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity3;
+import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity4;
 import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
+import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 
 @Controller
@@ -317,8 +322,43 @@ public class BRRS_ReportsController {
 	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	                              .body("Update Failed: " + e.getMessage());
 	     }
+	 }	 
+	 
+	 @Autowired
+	 private BRRS_M_UNCONS_INVEST_ReportService UNCreportService;
+	 
+	 @RequestMapping(value = "/UNCupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	 @ResponseBody
+	 public ResponseEntity<String> updateUNCAllReports(
+	         @RequestParam(required = false)
+	         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+	         @ModelAttribute M_UNCONS_INVEST_Summary_Entity1 request1,
+	         @ModelAttribute M_UNCONS_INVEST_Summary_Entity2 request2,
+	         @ModelAttribute M_UNCONS_INVEST_Summary_Entity3 request3,
+	         @ModelAttribute M_UNCONS_INVEST_Summary_Entity4 request4
+	 ) {
+	     try {
+	         System.out.println("Came to single controller");
+
+	         // set date into all 4 entities
+	         request1.setREPORT_DATE(asondate);
+	         request2.setREPORT_DATE(asondate);
+	         request3.setREPORT_DATE(asondate);
+	         request4.setREPORT_DATE(asondate);
+
+	         // call services
+	         UNCreportService.updateReport(request1);
+	         UNCreportService.updateReport2(request2);
+	         UNCreportService.updateReport3(request3);
+	         UNCreportService.updateReport4(request4);
+
+	         return ResponseEntity.ok("All Reports Updated Successfully");
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                              .body("Update Failed: " + e.getMessage());
+	     }
 	 }
-
-
-
+	 
 }
