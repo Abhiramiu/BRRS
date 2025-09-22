@@ -272,6 +272,71 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 	   
 	}
 	
+	public void updateArchivalReport(M_UNCONS_INVEST_Archival_Summary_Entity1 updatedEntity) {
+	    System.out.println("Came to services 1");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
+	    M_UNCONS_INVEST_Archival_Summary_Entity1 existing = M_UNCONS_INVEST_Archival_Summary_Repo1.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+
+	    try {
+	        // 1️⃣ Loop from R11 to R15 and copy fields
+	        for (int i = 11; i <= 15; i++) {
+	            String prefix = "R" + i + "_";
+	            
+
+	            String[] fields = {  "AMOUNT", "PERCENT_OF_CET1_HOLDING", "PERCENT_OF_ADDITIONAL_TIER_1_HOLDING",
+	                                "PERCENT_OF_TIER_2_HOLDING"};
+
+	            for (String field : fields) {
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+	                    Method getter = M_UNCONS_INVEST_Archival_Summary_Entity1.class.getMethod(getterName);
+	                    Method setter = M_UNCONS_INVEST_Archival_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+	                    
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing fields
+	                    continue;
+	                }
+	            }
+	        }
+
+	        // 2️⃣ Handle R15 totals
+	        String[] totalFields = { "AMOUNT", "PERCENT_OF_CET1_HOLDING","PERCENT_OF_ADDITIONAL_TIER_1_HOLDING","PERCENT_OF_TIER_2_HOLDING" };
+	        
+	        for (String field : totalFields) {
+	            String getterName = "getR15_" + field;
+	            String setterName = "setR15_" + field;
+
+	            try {
+	                Method getter = M_UNCONS_INVEST_Archival_Summary_Entity1.class.getMethod(getterName);
+	                Method setter = M_UNCONS_INVEST_Archival_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
+
+	                Object newValue = getter.invoke(updatedEntity);
+	                setter.invoke(existing, newValue);
+
+	            } catch (NoSuchMethodException e) {
+	                // Skip if not present
+	                continue;
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+	    System.out.println("Testing 1");
+	    // 3️⃣ Save updated entity
+	    M_UNCONS_INVEST_Archival_Summary_Repo1.save(existing);
+	   
+	}
+	
 	public void updateReport2(M_UNCONS_INVEST_Summary_Entity2 updatedEntity) {
 	    System.out.println("Came to services 2");
 	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
@@ -315,6 +380,50 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 	    // 3️⃣ Save updated entity
 	    M_UNCONS_INVEST_Summary_Repo2.save(existing);
 	}
+	
+	public void updateArchivalReport2(M_UNCONS_INVEST_Archival_Summary_Entity2 updatedEntity) {
+	    System.out.println("Came to services 2");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
+	    M_UNCONS_INVEST_Archival_Summary_Entity2 existing = M_UNCONS_INVEST_Archival_Summary_Repo2.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+
+	    try {
+	        // 1️⃣ Loop from R11 to R50 and copy fields
+	        for (int i = 22; i <= 24; i++) {
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = { "ACCUULATED_EQUITY_INTEREST_5", "ASSETS", "LIABILITIES",
+	                                "REVENUE", "PROFIT_OR_LOSS", "UNREG_SHARE_OF_LOSS" ,"CUMULATIVE_UNREG_SHARE_OF_LOSS" };
+
+	            for (String field : fields) {
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+	                    Method getter = M_UNCONS_INVEST_Archival_Summary_Entity2.class.getMethod(getterName);
+	                    Method setter = M_UNCONS_INVEST_Archival_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing fields
+	                    continue;
+	                }
+	            }
+	        }
+
+	        
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+	    
+	    // 3️⃣ Save updated entity
+	    M_UNCONS_INVEST_Archival_Summary_Repo2.save(existing);
+	}
 
 	public void updateReport3(M_UNCONS_INVEST_Summary_Entity3 updatedEntity) {
 	    System.out.println("Came to services 3");
@@ -330,6 +439,26 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 	        // Save back
 	        M_UNCONS_INVEST_Summary_Repo3.save(existing);
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error updating report: " + e.getMessage(), e);
+	    }
+	}
+	
+	public void updateArchivalReport3(M_UNCONS_INVEST_Archival_Summary_Entity3 updatedEntity) {
+	    System.out.println("Came to services 3");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
+	    M_UNCONS_INVEST_Archival_Summary_Entity3 existing = M_UNCONS_INVEST_Archival_Summary_Repo3.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+
+	    try {
+	        // ✅ Direct mapping for R29_FAIR_VALUE
+	        existing.setR29_FAIR_VALUE(updatedEntity.getR29_FAIR_VALUE());
+
+	        // Save back
+	        M_UNCONS_INVEST_Archival_Summary_Repo3.save(existing);
 
 	    } catch (Exception e) {
 	        throw new RuntimeException("Error updating report: " + e.getMessage(), e);
@@ -380,6 +509,52 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 	    // 3️⃣ Save updated entity
 	    M_UNCONS_INVEST_Summary_Repo4.save(existing);
 	}
+	
+	public void updateArchivalReport4(M_UNCONS_INVEST_Archival_Summary_Entity4 updatedEntity) {
+	    System.out.println("Came to services 4");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
+	    M_UNCONS_INVEST_Archival_Summary_Entity4 existing = M_UNCONS_INVEST_Archival_Summary_Repo4.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+
+	    try {
+	        // 1️⃣ Loop from R11 to R50 and copy fields
+	        for (int i = 35; i <= 38; i++) {
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = { "COMPANY","JURISDICTION_OF_INCORP_1", "JURISDICTION_OF_INCORP_2", "LINE_OF_BUSINESS", "CURRENCY",
+	                                "SHARE_CAPITAL", "ACCUMULATED_EQUITY_INTEREST" };
+
+	            for (String field : fields) {
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+	                    Method getter = M_UNCONS_INVEST_Archival_Summary_Entity4.class.getMethod(getterName);
+	                    Method setter = M_UNCONS_INVEST_Archival_Summary_Entity4.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing fields
+	                    continue;
+	                }
+	            }
+	        }
+
+	      
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+
+	    // 3️⃣ Save updated entity
+	    M_UNCONS_INVEST_Archival_Summary_Repo4.save(existing);
+	}
+	
+	
 	
 	public List<Object> getM_UNCONS_INVESTArchival() {
 		List<Object> M_UNCONS_INVESTArchivallist = new ArrayList<>();
@@ -1272,10 +1447,10 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
-		List<M_UNCONS_INVEST_Summary_Entity1> dataList = M_UNCONS_INVEST_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
-		List<M_UNCONS_INVEST_Summary_Entity2> dataList1 = M_UNCONS_INVEST_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
-		List<M_UNCONS_INVEST_Summary_Entity3> dataList2 = M_UNCONS_INVEST_Summary_Repo3.getdatabydateList(dateformat.parse(todate));
-		List<M_UNCONS_INVEST_Summary_Entity4> dataList3 = M_UNCONS_INVEST_Summary_Repo4.getdatabydateList(dateformat.parse(todate));
+		List<M_UNCONS_INVEST_Archival_Summary_Entity1> dataList = M_UNCONS_INVEST_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate),version);
+		List<M_UNCONS_INVEST_Archival_Summary_Entity2> dataList1 = M_UNCONS_INVEST_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate),version);
+		List<M_UNCONS_INVEST_Archival_Summary_Entity3> dataList2 = M_UNCONS_INVEST_Archival_Summary_Repo3.getdatabydateListarchival(dateformat.parse(todate),version);
+		List<M_UNCONS_INVEST_Archival_Summary_Entity4> dataList3 = M_UNCONS_INVEST_Archival_Summary_Repo4.getdatabydateListarchival(dateformat.parse(todate),version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_LA1 report. Returning empty result.");
@@ -1346,10 +1521,10 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					M_UNCONS_INVEST_Summary_Entity1 record = dataList.get(i);
-					M_UNCONS_INVEST_Summary_Entity2 record1 = dataList1.get(i);
-					M_UNCONS_INVEST_Summary_Entity3 record2 = dataList2.get(i);
-					M_UNCONS_INVEST_Summary_Entity4 record3 = dataList3.get(i);
+					M_UNCONS_INVEST_Archival_Summary_Entity1 record = dataList.get(i);
+					M_UNCONS_INVEST_Archival_Summary_Entity2 record1 = dataList1.get(i);
+					M_UNCONS_INVEST_Archival_Summary_Entity3 record2 = dataList2.get(i);
+					M_UNCONS_INVEST_Archival_Summary_Entity4 record3 = dataList3.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
