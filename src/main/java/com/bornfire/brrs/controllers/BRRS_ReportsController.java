@@ -42,6 +42,7 @@ import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity4;
+import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity3;
@@ -52,6 +53,11 @@ import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity3;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity4;
 import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
+
+import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
+import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
+
 import com.bornfire.brrs.services.RegulatoryReportServices;
 
 @Controller
@@ -385,5 +391,56 @@ public class BRRS_ReportsController {
 	                              .body("Update Failed: " + e.getMessage());
 	     }
 	 }
+
+
+
+
 	 
+	 
+
+	 @Autowired
+	 private BRRS_M_LA2_ReportService LA2reportService;
+
+	 @RequestMapping(value = "/LA2updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	 @ResponseBody
+	 public ResponseEntity<String> updateLA2AllReports(
+	         @RequestParam(required = false)
+	         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	         
+	         @RequestParam(required = false) String type,
+	         @ModelAttribute M_LA2_Summary_Entity request
+	 ) {
+	     try {
+	         System.out.println("Came to single controller");
+	         System.out.println(type);
+
+	         // set date into all 4 entities
+	         request.setREPORT_DATE(asondate);
+	        
+
+	         if(type.equals("ARCHIVAL")) {
+	        	 M_LA2_Archival_Summary_Entity Archivalrequest = new M_LA2_Archival_Summary_Entity();
+	        	 BeanUtils.copyProperties(request,Archivalrequest);
+	        	
+	        	 LA2reportService.updateArchivalReport(Archivalrequest);
+	        	
+	         }
+	         else {
+	        	// call services
+	        	 LA2reportService.updateReport(request);
+		                	 
+	         }
+	         
+
+	         return ResponseEntity.ok("All Reports Updated Successfully");
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                              .body("Update Failed: " + e.getMessage());
+	     }
+	 }
+
+
+
+	   
 }
