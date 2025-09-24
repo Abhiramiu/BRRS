@@ -177,10 +177,6 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 		
-		case "M_AIDP":
-			repdetail = BRRS_M_AIDP_ReportService.getM_AIDPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
 			
 		case "M_LA4":
 			repdetail = BRRS_M_LA4_reportservice.getM_LA4currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -257,6 +253,16 @@ public class RegulatoryReportServices {
 		case "M_SFINP2":
 			try {
 				repfile = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_AIDP":
+			try {
+				repfile = BRRS_M_AIDP_ReportService.getM_AIDPExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
