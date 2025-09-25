@@ -75,6 +75,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_LA3_ReportService BRRS_M_LA3_reportservice;
 	
+	@Autowired
+	BRRS_M_DEP2_ReportService BRRS_M_DEP2_reportservice;
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -172,6 +175,11 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 			
+		case "M_DEP2":
+			repsummary = BRRS_M_DEP2_reportservice.getM_DEP2View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+			
 
 		}
 		
@@ -255,6 +263,11 @@ public class RegulatoryReportServices {
 			
 		case "M_LA3":
 			repdetail = BRRS_M_LA3_reportservice.getM_LA3currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter,type,version );
+			break;
+			
+		case "M_DEP2":
+			repdetail = BRRS_M_DEP2_reportservice.getM_DEP2currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter,type,version );
 			break;
 			
@@ -430,6 +443,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_DEP2":
+			try {
+				repfile = BRRS_M_DEP2_reportservice.BRRS_M_DEP2Excel(filename, reportId, fromdate, todate, currency,
+						dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		}
 		return repfile;
 	}
@@ -494,6 +517,9 @@ public class RegulatoryReportServices {
 		}
 		if ("M_LA3Detail".equals(filename)) {
 			return BRRS_M_LA3_reportservice.BRRS_M_LA3DetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
+		}
+		if ("M_DEP2Detail".equals(filename)) {
+			return BRRS_M_DEP2_reportservice.BRRS_M_DEP2DetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 		}
 		
 		return new byte[0];
@@ -622,6 +648,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_DEP2":
+			try {
+				archivalData = BRRS_M_DEP2_reportservice.getM_DEP2Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 
 		}
@@ -665,6 +700,8 @@ public class RegulatoryReportServices {
 		    fileData = BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}else if (filename.equals("M_LA3Detail")) {
 		    fileData = BRRS_M_LA3_reportservice.BRRS_M_LA3DetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
+		}else if (filename.equals("M_DEP2Detail")) {
+		    fileData = BRRS_M_DEP2_reportservice.BRRS_M_DEP2DetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}
 		
 		
