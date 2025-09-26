@@ -15,6 +15,9 @@
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
 
 	<!-- JavaScript -->
+	<script th:src="@{/js/xlsx.full.min.js}"></script>
+	<script th:src="@{/js/my-bdgf-script.js}"></script>
+
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
 	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
@@ -27,9 +30,10 @@
 	<style>
 		/* Adjust container below fixed header */
 		.container-fluid {
-			margin-top: 70px;
-			padding: 20px;
-			zoom: 95%;
+			margin-left: 237px;
+			    margin-top: 70px;
+			    padding: 20px;
+				width: 90% !important;
 		}
 
 		/* Back button */
@@ -369,17 +373,17 @@
 	<script>
 
 		function addrole(a) {
-			location.href = 'MCBL?formmode=add';
+			location.href = 'BDGF?formmode=add';
 		}
 
 
 		function list() {
-			location.href = 'MCBL?formmode=list';
+			location.href = 'BDGF?formmode=list';
 		}
 		function view_btn_submit(a) {
 			var tranid = a.getAttribute("data-tran_id");
 
-			location.href = 'MCBL?formmode=view&tranid=' + tranid;
+			location.href = 'BDGF?formmode=view&tranid=' + tranid;
 
 		}
 	
@@ -417,7 +421,7 @@
 			$("#loader1").modal("toggle");
 
 			$.ajax({
-				url: "./addmcbl?reportDate=" + reportDate,
+				url: "./addBDGF?reportDate=" + reportDate,
 				type: "POST",
 				data: formData,
 				processData: false,
@@ -478,9 +482,16 @@
 		}
 	</script>
 
+	<script>
+	function Download_Template() {
+
+		location.href = 'download-template';
+		}
+	</script>
+
 </head>
 
-<title>MCBL</title>
+<title>BDGF</title>
 
 <body>
 	<!-- Header -->
@@ -489,7 +500,7 @@
 	<!-- Main Container -->
 	<div class="container-fluid">
 		<div class="card">
-			<!-- <div class="card-header" th:if="${formmode}=='list'">
+			<div class="card-header" th:if="${formmode}=='list'">
 				<div class="float-left w-50 d-flex align-items-center">
 					<button type="button" class="btn btn-xs me-2" style="background-color: darkorange; width: 50px;"
 						id="btnBack" onclick="back();" title="Back">
@@ -517,9 +528,9 @@
 					</button>
 				</div>
 
-			</div> -->
+			</div>
 
-		<!-- 	<div class="card-body" th:if="${formmode == 'list'}">
+			<div class="card-body" th:if="${formmode == 'list'}">
 
 				<div class="table-responsive">
 					<table class="table table-bordered table-striped table-hover fs-6"
@@ -574,7 +585,7 @@
 				</div>
 
 
-			</div> -->
+			</div>
 			<div
 				th:if="${formmode}=='edit' or ${formmode}=='add' or ${formmode}=='delete' or ${formmode}=='view' or ${formmode}=='verify'">
 				<div class="row">
@@ -582,34 +593,30 @@
 						<div class="card">
 							<div class="card-header">
 								<div class="float-left w-50 d-flex align-items-center">
-									<button type="button" class="custom-tab-btn"
-										id="btnBack"
+									<button type="button" class="btn btn-xs me-3"
+										style="background-color: darkorange; width: 50px;" id="btnBack"
 										onclick="back();" title="Back">
 										<i class="fa fa-arrow-left" style="color: black;"></i>
 									</button>
-
+									<button class="back-btn btn btn-light" type="button" onclick="Download_Template()">
+															<i class="fas fa-download"></i> Download Template
+									</button>
 									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
-										th:if="${formmode}=='edit'">MCBL - Edit</h6>
+										th:if="${formmode}=='edit'">BDGF - Edit</h6>
 									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
-										th:if="${formmode}=='add'">File Upload</h6>
+										th:if="${formmode}=='add'">BDGF - Add</h6>
 									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
-										th:if="${formmode}=='verify'">MCBL - Verfiy</h6>
+										th:if="${formmode}=='verify'">BDGF - Verfiy</h6>
 									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
-										th:if="${formmode}=='view'">MCBL - View</h6>
+										th:if="${formmode}=='view'">BDGF - View</h6>
 									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
-										th:if="${formmode}=='delete'">MCBL - Delete</h6>
+										th:if="${formmode}=='delete'">BDGF - Delete</h6>
 								</div>
 
 								<div class="float-right"
 									style="padding-right: inherit; display: flex; align-items: center; gap: 10px;">
-								<div id="downloadBtnDiv" style="display:none; ">
-								<button class="custom-tab-btn" type="button" onclick="Download_Template()">
-															<i class="fas fa-download"></i> Download Template
-									</button>
-								</div>
-								
-									<button type="button" class="custom-tab-btn"
-										style="border: none;  
+									<button type="button" class="btn btn-xs ms-2"
+										style="background-color: darkorange; border: none;  
 										border-radius: 7px;color: black; display: flex; align-items: center; justify-content: center; width: 48px;height: 37px;" onclick="list();"
 										title="List">
 										<i class="fa fa-list" style="color: black;"></i>
@@ -618,27 +625,7 @@
 
 								</div>
 							</div>
-	<div class="card-body">
-	<form>
-      <div class="row mb-3 align-items-center">
-        <label class="col-sm-2 col-form-label fw-semibold">File Type</label>
-        <div class="col-sm-4">
-          <select id="moduleSelect" class="form-control form-control-sm" onchange="toggleModuleForm();">
-            <option value="" disabled selected>Select</option>
-            <option value="MCBL">MCBL</option>
-            <option value="BDGF">Deposit General Format</option>
-            <option value="BFDB">Format Deposit Book</option>
-            <option value="BLBF">Loan Book Format</option>
-          </select>
-        </div>
-      </div>
-    </form>
-
-
-<div id="bfdbForm" style="display:none;"></div>
-<div id="blbfForm" style="display:none;"></div>
-
-<div id="mcblForm" style="display: none;">
+							<div class="card-body">
 								<form action="#" th:object="${item}" method="post" style="margin: 52px;"
 									autocomplete="off" id="item" th:fragment="finuserapply">
 
@@ -676,7 +663,7 @@
 										<label style="height: 2px;"></label>
 									</div>
 									<div class="row formline">
-										<label class="col-sm-2">MCBL File</label>
+										<label class="col-sm-2">BDGF File</label>
 										<div class="col-sm-3">
 											<input th:if="${formmode}=='add'" type="file" id="file" name="file"
 												class="form-control form-control-sm"/>
@@ -686,100 +673,16 @@
 										<div class="col-sm-2"></div>
 
 									</div>
-		
-		</form>
-
-				
-							
-							
-							<div class="card-footer text-center">
-							
-								<button th:if="${formmode}=='add'" type="button"
-									class="custom-tab-btn" form="item" id="btnSubmit"
-									onclick="submitform(this);"
-									title="Submit">Submit</button>
-								
-							</div>
-		</div>		
-		
-		
-<div id="bdgfForm" style="display:none;">
-
-								
-								<form action="#" th:object="${item}" method="post" style="margin: 52px;"
-									autocomplete="off" id="bdgfitem" th:fragment="finuserapply">
-
-									<div class="row formline">
-										<label class="col-sm-2">Branch Name</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}!='add'" type="hidden" id="id" name="id"
-												th:value="*{id}" />
-
-											<!-- Add Mode -->
-											<select th:if="${formmode}=='add'" id="branch_name1" name="branch_name"
-												class="form-control form-control-sm" required>
-												<option value="" disabled selected>Select</option>
-												<option value="9001">9001</option>
-												<option value="9002">9002</option>
-												<option value="9003">9003</option>
-												<option value="9004">9004</option>
-												<option value="9005">9005</option>
-												<option value="9008">9008</option>
-												<option value="9009">9009</option>
-												<option value="9010">9010</option>
-											</select>
-										</div>
-
-										<div class="col-sm-2"></div>
-										<label class="col-sm-auto">Report Date</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}=='add'" type="date" id="report_date1"
-												name="report_date" class="form-control form-control-sm"
-												maxlength="24" />
-										</div>
-									</div>
-
-									<div class="row formline">
-										<label style="height: 2px;"></label>
-									</div>
-									<div class="row formline">
-										<label class="col-sm-2">BDGF File</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}=='add'" type="file" id="file1" name="file"
-												class="form-control form-control-sm"/>
-
-										</div>
-
-										<div class="col-sm-2"></div>
-
-									</div>
 								</form>
 
-				
-							
-							
+							</div>
 							<div class="card-footer text-center">
-							
 								<button th:if="${formmode}=='add'" type="button"
-									class="custom-tab-btn" form="bdgfitem" id="btnSubmit"
-									onclick="bdgfsubmitform(this);"
-									title="Submit">Submit</button>
+									class="btn btn-xs " form="item" id="btnSubmit"
+									onclick="submitform(this);" style="background-color:darkorange"
+									title="Submit">✔️</button>
 								
 							</div>
-		</div>		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-			</div>
 						</div>
 					</div>
 				</div>
@@ -878,131 +781,5 @@
 	</div>
 
 </body>
-<script>
-function toggleModuleForm() {
-    let selected = document.getElementById("moduleSelect").value;
 
-    // hide all forms first
-    document.getElementById("mcblForm").style.display = "none";
-    document.getElementById("bdgfForm").style.display = "none";
-    document.getElementById("bfdbForm").style.display = "none";
-    document.getElementById("blbfForm").style.display = "none";
-
-    // hide download button initially
-    document.getElementById("downloadBtnDiv").style.display = "none";
-
-    // show selected form + button if BDGF
-    if (selected === "MCBL") {
-        document.getElementById("mcblForm").style.display = "block";
-    } else if (selected === "BDGF") {
-        document.getElementById("bdgfForm").style.display = "block";
-        document.getElementById("downloadBtnDiv").style.display = "block"; // show button
-    } else if (selected === "BFDB") {
-        document.getElementById("bfdbForm").style.display = "block";
-    } else if (selected === "BLBF") {
-        document.getElementById("blbfForm").style.display = "block";
-    }
-}
-
-</script>
-<script>
-	function Download_Template() {
-
-		location.href = 'download-template';
-		}
-	</script>
-<script>
-		function bdgfsubmitform(a) {
-			
-			var requiredFields = ["#branch_name1","#report_date1", "#file1"];
-			var isValid = true;
-			alert(isValid);
-			requiredFields.forEach(function (selector) {
-				var $field = $(selector);
-				if ($field.length) {
-					var value = $field.val(); // could be null for <select>
-					if (value === null || value.trim() === "") {
-						$field.css("border", "2px solid red");
-						isValid = false;
-					} else {
-						$field.css("border", "");
-					}
-				}
-			});
-
-			if (!isValid) return false;
-
-			alert(isValid);
-			var reportDate = document.getElementById("report_date1").value;
-			var form = document.getElementById("bdgfitem");
-			if (!form) {
-				console.error("Form not found!");
-				return false;
-			}
-
-			var formData = new FormData(form);
-
-			$("#loader1").modal("toggle");
-
-			$.ajax({
-				url: "./addBDGF?reportDate=" + reportDate,
-				type: "POST",
-				data: formData,
-				processData: false,
-				contentType: false,
-				success: function (response) {
-					$("#loader1").modal("hide");
-					console.log('Success response:', response);
-					$("#alertmsg").text(response);
-					$('#alert').modal("toggle");
-				},
-				error: function (xhr, status, error) {
-					$("#loader1").modal("hide");
-					console.error('AJAX error:', status, error);
-					$("#alertmsg").text("Error occurred: " + error);
-					$('#alert').modal("toggle");
-				}
-			});
-
-			return false;
-		}
-		function get_list() {
-			var reportDate = document.getElementById("ReportDate1").value;
-			if (reportDate) {
-				window.location.href = './inr_report_branch?date=' + reportDate;
-			}
-		}
-
-		function openConfirmModal() {
-			$('#exampleModal').modal('show');
-		}
-		function download_excel() {
-			var reportDate = $("#ReportDate1").val().trim();
-			if (reportDate === "") {
-				showNotification("Please selected the value date", "info");
-				$("#ReportDate1").focus();
-				return;
-			}
-			showNotification("Downloading report for " + reportDate, "success");
-			$('#exampleModal').modal('hide');
-			window.location.href = './Dwn_INR_Reporting_Branch?reportDate=' + reportDate;
-		}
-		function showNotification(message, type = "info") {
-			const container = document.getElementById("notification-container");
-
-			const notif = document.createElement("div");
-			notif.classList.add("notification", type);
-			notif.innerHTML = `
-						    <span>${message}</span>
-						    <button onclick="this.parentElement.remove()">×</button>
-						  `;
-
-			container.appendChild(notif);
-
-			// Auto remove after 4s
-			setTimeout(() => {
-				notif.remove();
-			}, 4000);
-		}
-	</script>
 </html>

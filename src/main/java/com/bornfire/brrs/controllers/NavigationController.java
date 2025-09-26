@@ -53,6 +53,7 @@ import com.bornfire.brrs.entities.RRReportRepo;
 import com.bornfire.brrs.entities.UserProfile;
 import com.bornfire.brrs.entities.UserProfileRep;
 import com.bornfire.brrs.services.AccessAndRolesServices;
+import com.bornfire.brrs.services.BDGF_Services;
 import com.bornfire.brrs.services.BankBranchService;
 import com.bornfire.brrs.services.LoginServices;
 import com.bornfire.brrs.services.MCBL_Services;
@@ -657,22 +658,22 @@ public class NavigationController {
 
 
 
-	/*@Autowired
+	@Autowired
 	BDGF_Services BDGF_Servicess;
 	
 	
-	 * @PostMapping("addBDGF")
-	 * 
-	 * @ResponseBody public String addBDGF(@ModelAttribute MultipartFile file, Model
-	 * md,String reportDate, HttpServletRequest rq ) {
-	 * logger.info("==> Entered BDGF method"); String userid = (String)
-	 * rq.getSession().getAttribute("USERID"); String username = (String)
-	 * rq.getSession().getAttribute("USERNAME"); try { String msg =
-	 * BDGF_Servicess.addBDGF( file, userid, username,reportDate);
-	 * logger.info("BDGF result: {}", msg); return msg; } catch (Exception e) {
-	 * logger.error("Error occurred while Add BDGF: {}", e.getMessage(), e); return
-	 * "Error Occurred. Please contact Administrator."; } }
-	 */
+	  @PostMapping("addBDGF")
+	  
+	  @ResponseBody public String addBDGF(@ModelAttribute MultipartFile file, Model
+	  md,String reportDate, HttpServletRequest rq ) {
+	  logger.info("==> Entered BDGF method"); String userid = (String)
+	  rq.getSession().getAttribute("USERID"); String username = (String)
+	  rq.getSession().getAttribute("USERNAME"); try { String msg =
+	  BDGF_Servicess.addBDGF( file, userid, username,reportDate);
+	  logger.info("BDGF result: {}", msg); return msg; } catch (Exception e) {
+	  logger.error("Error occurred while Add BDGF: {}", e.getMessage(), e); return
+	  "Error Occurred. Please contact Administrator."; } }
+	 
 	
 	@GetMapping("/download-template")
     public ResponseEntity<byte[]> downloadTemplate() throws Exception {
