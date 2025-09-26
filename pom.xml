@@ -19,6 +19,9 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<!-- <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> -->
+		
+		
+		<log4j2.version>2.23.1</log4j2.version>
 	</properties>
 
 
@@ -144,13 +147,24 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>3.17</version>
+			<version>5.2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>3.17</version>
+			<version>5.2.5</version>
 		</dependency>
+		<dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j2.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j2.version}</version>
+    </dependency>
+    
 		<!-- https://mvnrepository.com/artifact/com.monitorjbl/xlsx-streamer -->
 		<dependency>
 			<groupId>com.monitorjbl</groupId>

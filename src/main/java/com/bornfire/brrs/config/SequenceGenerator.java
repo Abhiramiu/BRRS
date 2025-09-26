@@ -1,8 +1,13 @@
 package com.bornfire.brrs.config;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.bornfire.brrs.entities.AuditServicesRep;
 
 @Component
 public class SequenceGenerator {
@@ -25,6 +30,7 @@ public class SequenceGenerator {
 	
 
 	
+
 	public String generateSeq() {
 
 		StringBuffer randStr = new StringBuffer();
@@ -35,6 +41,22 @@ public class SequenceGenerator {
 			char ch = NUM_LIST.charAt(number);
 			randStr.append(ch);
 		}
+		return randStr.toString();
+	}
+	
+	@Autowired
+	private AuditServicesRep auditServicesRep;
+	
+	public String generateRequestUUId() {
+
+		StringBuffer randStr = new StringBuffer();
+		randStr.append(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+		randStr.append("_");
+		
+		Long request_UUID=auditServicesRep.getAuditRefUUID();
+		
+		randStr.append(String.format("%05d", request_UUID));
+		
 		return randStr.toString();
 	}
 	

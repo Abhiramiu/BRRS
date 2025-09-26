@@ -1,0 +1,810 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<link rel="icon" th:href="@{/images/client_Logo_bkp.png}" type="image/x-icon">
+
+	<!-- CSS -->
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+	<link rel="stylesheet" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" />
+	<link rel="stylesheet" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+
+	<!-- JavaScript -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+	<style>
+		/* Adjust container below fixed header */
+		.container-fluid {
+			margin-top: 70px;
+			padding: 20px;
+			zoom: 95%;
+		}
+
+		/* Back button */
+		.back-btn {
+			background: linear-gradient(145deg, #ffffff, #f5f5f5);
+			color: #333;
+			border: 1px solid #ddd;
+			padding: 8px 16px;
+			border-radius: 8px;
+			cursor: pointer;
+			font-weight: 600;
+			font-size: 14px;
+			transition: all 0.3s ease;
+			box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+		}
+
+		/* Hover effect */
+		.back-btn:hover {
+			background: linear-gradient(145deg, #f0f0f0, orange);
+			color: #000;
+			transform: translateY(-2px) scale(1.05);
+			box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.2);
+		}
+
+		/* Active (when clicked) */
+		.back-btn:active {
+			transform: scale(0.97);
+			box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.15);
+		}
+
+
+		/* Inline form */
+		.inline-form {
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+			padding: 10px 0;
+		}
+
+		/* Flex container for form groups */
+		.formline {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 20px;
+			/* space between fields */
+		}
+
+		/* Form group */
+		.form-group {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			/* space between label and input */
+		}
+
+		/* Labels */
+		.form-group label {
+			white-space: nowrap;
+			font-size: 0.875rem;
+		}
+
+		/* Inputs & selects */
+		.inline-input,
+		.inline-select {
+			border: 1.5px solid #ccc;
+			border-radius: 5px;
+			padding: 4px 8px;
+			width: 200px;
+			/* unified width */
+			transition: border-color 0.3s, box-shadow 0.3s;
+			font-size: 0.875rem;
+		}
+
+		/* Focus effect */
+		.inline-input:focus,
+		.inline-select:focus {
+			border-color: #007bff;
+			box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+			outline: none;
+		}
+
+		/* Inline Date Input */
+		.inline-date {
+			padding: 6px 10px;
+			font-size: 14px;
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+			border: 1px solid #ccc;
+			border-radius: 6px;
+			background-color: #fff;
+			color: #333;
+			transition: all 0.3s ease;
+			outline: none;
+		}
+
+		/* Hover effect */
+		.inline-date:hover {
+			border-color: #888;
+		}
+
+		/* Focus effect */
+		.inline-date:focus {
+			border-color: #4a90e2;
+			/* blue highlight */
+			box-shadow: 0 0 6px rgba(74, 144, 226, 0.5);
+		}
+
+		/* Disabled state */
+		.inline-date:disabled {
+			background-color: #f5f5f5;
+			color: #999;
+			cursor: not-allowed;
+		}
+
+		/* Feedback spans */
+		.feedback {
+			font-size: 0.8rem;
+			color: red;
+		}
+
+		/* Make modal content rounded & elegant */
+		#staticBackdrop .modal-content {
+			border-radius: 15px;
+			border: none;
+			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+			background: #f8f9fa;
+			/* light background */
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+		}
+
+		/* Header */
+		#staticBackdrop .modal-header {
+			background: #34495e;
+			color: white;
+			border-top-left-radius: 15px;
+			border-top-right-radius: 15px;
+			border-bottom: none;
+			padding: 15px 20px;
+			text-align: center;
+		}
+
+		#staticBackdrop .modal-title {
+			font-weight: 600;
+			font-size: 18px;
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+			text-align: center;
+		}
+
+		/* Body */
+		#staticBackdrop .modal-body {
+			padding: 25px;
+			font-weight: 600;
+			font-size: 19px;
+			color: #2c3e50;
+			line-height: 1.5;
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+			text-align: center;
+		}
+
+		/* Footer */
+		#staticBackdrop .modal-footer {
+			border-top: none;
+			padding: 15px 20px;
+			display: flex;
+			justify-content: flex-end;
+			gap: 10px;
+		}
+
+		/* Buttons */
+		#staticBackdrop .btn {
+			border-radius: 8px;
+			padding: 8px 20px;
+			font-size: 14px;
+			font-weight: 500;
+		}
+
+		#staticBackdrop .btn-secondary {
+			background: #95a5a6;
+			border: none;
+		}
+
+		#staticBackdrop .btn-secondary:hover {
+			background: #7f8c8d;
+		}
+
+		#staticBackdrop .btn-primary {
+			background: #e74c3c;
+			border: none;
+		}
+
+		#staticBackdrop .btn-primary:hover {
+			background: #c0392b;
+		}
+
+		#staticBackdrop .modal-dialog {
+			max-width: 500px;
+		}
+
+
+		#notification-container {
+			position: fixed;
+			top: 85px;
+			right: 20px;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			z-index: 9999;
+		}
+
+		.notification {
+			background: black;
+			color: white;
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+			font-weight: 600;
+			padding: 15px 20px;
+			border-radius: 8px;
+			min-width: 250px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			animation: slideIn 0.4s ease, fadeOut 0.5s ease forwards;
+			animation-delay: 0s, 3.5s;
+		}
+
+		.notification.success {
+			border-left: 5px solid #22c55e;
+		}
+
+		.notification.error {
+			border-left: 5px solid #ef4444;
+		}
+
+		.notification.info {
+			border-left: 5px solid #3b82f6;
+		}
+
+		.notification span {
+			flex: 1;
+			margin-right: 10px;
+		}
+
+		.notification button {
+			background: transparent;
+			border: none;
+			color: #888;
+			cursor: pointer;
+			font-size: 18px;
+		}
+
+		.loader {
+			width: fit-content;
+			font-weight: bold;
+			font-family: monospace;
+			font-size: 30px;
+			overflow: hidden;
+		}
+
+		.loader::before {
+			content: "Loading...";
+			color: #0000;
+			text-shadow: 0 0 0 #000, 10ch 0 0 #fff, 20ch 0 0 #000;
+			background: linear-gradient(90deg, #0000 calc(100%/3), #000 0 calc(2*100%/3), #0000 0) left/300% 100%;
+			animation: l23 2s infinite;
+		}
+
+		@keyframes l23 {
+			50% {
+				background-position: center;
+				text-shadow: -10ch 0 0 #000, 0 0 0 #fff, 10ch 0 0 #000
+			}
+
+			100% {
+				background-position: right;
+				text-shadow: -20ch 0 0 #000, -10ch 0 0 #fff, 0 0 0 #000
+			}
+		}
+
+		@keyframes slideIn {
+			from {
+				opacity: 0;
+				transform: translateX(100%);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateX(0);
+			}
+		}
+
+		@keyframes fadeOut {
+			to {
+				opacity: 0;
+				transform: translateX(100%);
+			}
+		}
+
+
+		/* Responsive: stack vertically on small screens */
+		@media (max-width: 768px) {
+			.formline {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+
+			.form-group {
+				width: 100%;
+			}
+
+			.inline-input,
+			.inline-select {
+				width: 100%;
+			}
+		}
+	</style>
+	<style>
+		.orange-loader {
+			border: 6px solid rgba(255, 165, 0, 0.2);
+			/* Light orange background ring */
+			border-top: 6px solid orange;
+			/* Main spinning color */
+			border-radius: 50%;
+			width: 80px;
+			height: 80px;
+			animation: spin 1s linear infinite;
+			margin: auto;
+		}
+
+		@keyframes spin {
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+	</style>
+	<script>
+
+		function addrole(a) {
+			location.href = 'MCBL?formmode=add';
+		}
+
+
+		function list() {
+			location.href = 'MCBL?formmode=list';
+		}
+		function view_btn_submit(a) {
+			var tranid = a.getAttribute("data-tran_id");
+
+			location.href = 'MCBL?formmode=view&tranid=' + tranid;
+
+		}
+	
+	</script>
+	<script>
+		function submitform(a) {
+			var requiredFields = ["#branch_name","#report_date", "#file"];
+			var isValid = true;
+
+			requiredFields.forEach(function (selector) {
+				var $field = $(selector);
+				if ($field.length) {
+					var value = $field.val(); // could be null for <select>
+					if (value === null || value.trim() === "") {
+						$field.css("border", "2px solid red");
+						isValid = false;
+					} else {
+						$field.css("border", "");
+					}
+				}
+			});
+
+			if (!isValid) return false;
+
+
+			var reportDate = document.getElementById("report_date").value;
+			var form = document.getElementById("item");
+			if (!form) {
+				console.error("Form not found!");
+				return false;
+			}
+
+			var formData = new FormData(form);
+
+			$("#loader1").modal("toggle");
+
+			$.ajax({
+				url: "./addmcbl?reportDate=" + reportDate,
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (response) {
+					$("#loader1").modal("hide");
+					console.log('Success response:', response);
+					$("#alertmsg").text(response);
+					$('#alert').modal("toggle");
+				},
+				error: function (xhr, status, error) {
+					$("#loader1").modal("hide");
+					console.error('AJAX error:', status, error);
+					$("#alertmsg").text("Error occurred: " + error);
+					$('#alert').modal("toggle");
+				}
+			});
+
+			return false;
+		}
+		function get_list() {
+			var reportDate = document.getElementById("ReportDate").value;
+			if (reportDate) {
+				window.location.href = './inr_report_branch?date=' + reportDate;
+			}
+		}
+
+		function openConfirmModal() {
+			$('#exampleModal').modal('show');
+		}
+		function download_excel() {
+			var reportDate = $("#ReportDate").val().trim();
+			if (reportDate === "") {
+				showNotification("Please selected the value date", "info");
+				$("#ReportDate").focus();
+				return;
+			}
+			showNotification("Downloading report for " + reportDate, "success");
+			$('#exampleModal').modal('hide');
+			window.location.href = './Dwn_INR_Reporting_Branch?reportDate=' + reportDate;
+		}
+		function showNotification(message, type = "info") {
+			const container = document.getElementById("notification-container");
+
+			const notif = document.createElement("div");
+			notif.classList.add("notification", type);
+			notif.innerHTML = `
+						    <span>${message}</span>
+						    <button onclick="this.parentElement.remove()">×</button>
+						  `;
+
+			container.appendChild(notif);
+
+			// Auto remove after 4s
+			setTimeout(() => {
+				notif.remove();
+			}, 4000);
+		}
+	</script>
+
+</head>
+
+<title>MCBL</title>
+
+<body>
+	<!-- Header -->
+	<div th:insert="HeaderMenu :: header" class="fixed-top"></div>
+
+	<!-- Main Container -->
+	<div class="container-fluid">
+		<div class="card">
+			<!-- <div class="card-header" th:if="${formmode}=='list'">
+				<div class="float-left w-50 d-flex align-items-center">
+					<button type="button" class="btn btn-xs me-2" style="background-color: darkorange; width: 50px;"
+						id="btnBack" onclick="back();" title="Back">
+						<i class="fa fa-arrow-left" style="color: black;"></i>
+					</button>
+
+					<h5 th:text="${menu}" style="font-family: Verdana; font-weight: bold; margin: 0;">
+					</h5>
+				</div>
+				<div class="d-flex nav-buttons float-right align-items-center" style="gap: 10px;">
+					<label for="ReportDate" style="font-family: Verdana, Geneva, Tahoma, sans-serif;">
+						Report Date :
+					</label>
+
+					<input type="date" id="ReportDate" name="ReportDate" class="form-control-inline"
+						th:value="${currentdate}" required onchange="get_list()" />
+
+					<button class="back-btn btn btn-light" type="button" onclick="openConfirmModal()">
+						<i class="fas fa-download"></i> Download
+					</button>
+
+					<button type="button" class="btn btn-xs" style="background-color:darkorange;border:none"
+						onclick="addrole();">
+						<span style="color: orange;" title="Add">➕</span>
+					</button>
+				</div>
+
+			</div> -->
+
+		<!-- 	<div class="card-body" th:if="${formmode == 'list'}">
+
+				<div class="table-responsive">
+					<table class="table table-bordered table-striped table-hover fs-6"
+						style="font-family: Calibri; font-weight: 100;" id="Dealentrytable">
+						<thead class="table-success">
+							<tr>
+								<th>Report date</th>
+								<th>Branch Name</th>
+								<th style="text-align: right;">INR Amount</th>
+								<th>Status</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="item : ${customersplratedetail}">
+								<td th:text="${#dates.format(item.report_date, 'yyyy-MM-dd')}"></td>
+								<td th:text="${item.branch_name}"></td>
+								<td style="text-align: right;" th:text="${item.inr_amount}"></td>
+								<td th:switch="${item?.verify_flg}">
+									<span th:case="'Y'" style="color:green;">Verified</span>
+									<span th:case="'N'" style="color:red;">Unverified</span>
+								</td>
+
+								<td class="text-center">
+									<div class="dropdown">
+										<button class="btn btn-sm btn-light dropdown-toggle" type="button"
+											data-bs-toggle="dropdown" aria-expanded="false">
+											🔨
+										</button>
+										<ul class="dropdown-menu" style="color: white;">
+											<li th:if="${item?.modify_flg} != 'Y'">
+												<a class="dropdown-item" th:attr="data-tran_id=${item?.id}"
+													onclick="edit_btn_submit(this)">📝 Modify</a>
+											</li>
+											<li><a class="dropdown-item" th:attr="data-tran_id=${item?.id}"
+													onclick="view_btn_submit(this)">👁️ View</a>
+											</li>
+											<li><a class="dropdown-item" onclick="delete_btn_submit(this)"
+													th:attr="data-tran_id=${item?.id}">🗑️
+													Delete</a></li>
+											<li th:if="${item?.verify_flg} == 'N'">
+												<a th:attr="data-tran_id=${item?.id}" class="dropdown-item"
+													onclick="verify_btn_submit(this)">✔️ Verify</a>
+											</li>
+										</ul>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
+
+
+			</div> -->
+			<div
+				th:if="${formmode}=='edit' or ${formmode}=='add' or ${formmode}=='delete' or ${formmode}=='view' or ${formmode}=='verify'">
+				<div class="row">
+					<div class="col-sm-12 finuserapply">
+						<div class="card">
+							<div class="card-header">
+								<div class="float-left w-50 d-flex align-items-center">
+									<button type="button" class="btn btn-xs me-2"
+										style="background-color: darkorange; width: 50px;" id="btnBack"
+										onclick="back();" title="Back">
+										<i class="fa fa-arrow-left" style="color: black;"></i>
+									</button>
+
+									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
+										th:if="${formmode}=='edit'">MCBL - Edit</h6>
+									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
+										th:if="${formmode}=='add'">MCBL - Add</h6>
+									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
+										th:if="${formmode}=='verify'">MCBL - Verfiy</h6>
+									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
+										th:if="${formmode}=='view'">MCBL - View</h6>
+									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
+										th:if="${formmode}=='delete'">MCBL - Delete</h6>
+								</div>
+
+								<div class="float-right"
+									style="padding-right: inherit; display: flex; align-items: center; gap: 10px;">
+									<button type="button" class="btn btn-xs ms-2"
+										style="background-color: darkorange; border: none;  
+										border-radius: 7px;color: black; display: flex; align-items: center; justify-content: center; width: 48px;height: 37px;" onclick="list();"
+										title="List">
+										<i class="fa fa-list" style="color: black;"></i>
+									</button>
+
+
+								</div>
+							</div>
+							<div class="card-body">
+								<form action="#" th:object="${item}" method="post" style="margin: 52px;"
+									autocomplete="off" id="item" th:fragment="finuserapply">
+
+
+<div class="row formline">
+    <label class="col-sm-2">Select Module</label>
+    <div class="col-sm-3">
+        <select id="moduleSelect" class="form-control form-control-sm" onchange="toggleModuleForm();">
+            <option value="" disabled selected>Select</option>
+            <option value="MCBL">MCBL</option>
+            <option value="BDGF">BDGF</option>
+            <option value="BFDB">BFDB</option>
+            <option value="BLBF">BLBF</option>
+        </select>
+    </div>
+</div>
+
+
+<div id="mcblForm" style="display: none;">
+									<div class="row formline">
+										<label class="col-sm-2">Branch Name</label>
+										<div class="col-sm-3">
+											<input th:if="${formmode}!='add'" type="hidden" id="id" name="id"
+												th:value="*{id}" />
+
+											<!-- Add Mode -->
+											<select th:if="${formmode}=='add'" id="branch_name" name="branch_name"
+												class="form-control form-control-sm" required>
+												<option value="" disabled selected>Select</option>
+												<option value="9001">9001</option>
+												<option value="9002">9002</option>
+												<option value="9003">9003</option>
+												<option value="9004">9004</option>
+												<option value="9005">9005</option>
+												<option value="9008">9008</option>
+												<option value="9009">9009</option>
+												<option value="9010">9010</option>
+											</select>
+										</div>
+
+										<div class="col-sm-2"></div>
+										<label class="col-sm-auto">Report Date</label>
+										<div class="col-sm-3">
+											<input th:if="${formmode}=='add'" type="date" id="report_date"
+												name="report_date" class="form-control form-control-sm"
+												maxlength="24" />
+										</div>
+									</div>
+
+									<div class="row formline">
+										<label style="height: 2px;"></label>
+									</div>
+									<div class="row formline">
+										<label class="col-sm-2">MCBL File</label>
+										<div class="col-sm-3">
+											<input th:if="${formmode}=='add'" type="file" id="file" name="file"
+												class="form-control form-control-sm"/>
+
+										</div>
+
+										<div class="col-sm-2"></div>
+
+									</div>
+								</form>
+
+							</div>
+							<div class="card-footer text-center">
+								<button th:if="${formmode}=='add'" type="button"
+									class="btn btn-xs " form="item" id="btnSubmit"
+									onclick="submitform(this);" style="background-color:darkorange"
+									title="Submit">✔️</button>
+								
+							</div>
+		</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="notification-container"></div>
+		<!-- Loader Modal -->
+		<div class="modal fade" id="loader" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content" style="background: transparent; border: none; box-shadow: none;">
+					<div class="modal-body d-flex justify-content-center">
+						<div class="loader"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+		<div class="modal fade" id="alert">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-body" style="text-align: center;">
+						<p id="alertmsg"></p>
+						<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="list();"
+							style="background-color:darkorange;border:none;color:black">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="datadelete">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-body" style="margin-top: 8px; text-align: center; color: #f15362;">
+						<button type="button" class="close" data-dismiss="modal">×</button>
+						Are you Sure want to delete?
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" onclick="submitformdelete(this);"
+							th:attr="data-formmode=delete">Submit</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="formmsg">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-body" style="margin-top: 8px; text-align: center; color: aliceblue;">
+						<button type="button" class="close" data-dismiss="modal">×</button>
+						<a th:value="${msg}"></a>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" onclick="submitformdelete(this);"
+							th:attr="data-formmode=delete">Submit</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="loader1" data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content" style="background: transparent; border: none; box-shadow: none;">
+					<div class="modal-body" style="text-align: center">
+						<div class="orange-loader"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="exampleModal" tabindex="-1" data-bs-backdrop="static"
+			aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header" style=" background-color: orange;">
+						<h5 class="modal-title" id="exampleModalLabel"
+							style="font-family: Verdana, Geneva, Tahoma, sans-serif;">
+							Download Customer Special Rate</h5>
+						<button type="button" style="color: red;" class="btn-close" data-bs-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+					<div class="modal-footer justify-content-center">
+
+						<button type="button" id="showAlert" class="btn btn-primary"
+							style="border: none;background-color: darkgray;font-family: Verdana, Geneva, Tahoma, sans-serif;"
+							onclick="download_excel()">Excel</button>
+						<button type="button" id="showAlert" class="btn btn-primary"
+							style="border: none;background-color: darkgray;font-family: Verdana, Geneva, Tahoma, sans-serif;"
+							onclick="download_excel()">Pdf</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+<script>
+function toggleModuleForm() {
+    let selected = document.getElementById("moduleSelect").value;
+
+    // hide all forms first
+    document.getElementById("mcblForm").style.display = "none";
+    document.getElementById("bdgfForm").style.display = "none";
+    // add bfdbForm, blbfForm if you create them later
+
+    // show selected form
+    if (selected === "MCBL") {
+        document.getElementById("mcblForm").style.display = "block";
+    } else if (selected === "BDGF") {
+        document.getElementById("bdgfForm").style.display = "block";
+    } else if (selected === "BFDB") {
+        document.getElementById("bfdbForm").style.display = "block";
+    } else if (selected === "BLBF") {
+        document.getElementById("blbfForm").style.display = "block";
+    }
+}
+</script>
+
+</html>

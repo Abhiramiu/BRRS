@@ -1,5 +1,9 @@
 package com.bornfire.brrs.controllers;
 
+import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -8,13 +12,23 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bornfire.brrs.entities.AccessAndRoles;
 import com.bornfire.brrs.entities.AccessandRolesRepository;
@@ -37,8 +52,10 @@ import com.bornfire.brrs.entities.RRReportRepo;
 import com.bornfire.brrs.entities.UserProfile;
 import com.bornfire.brrs.entities.UserProfileRep;
 import com.bornfire.brrs.services.AccessAndRolesServices;
+import com.bornfire.brrs.services.BDGF_Services;
 import com.bornfire.brrs.services.BankBranchService;
 import com.bornfire.brrs.services.LoginServices;
+import com.bornfire.brrs.services.MCBL_Services;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportServices;
 
@@ -507,5 +524,201 @@ public class NavigationController {
 	  }
 	
 	
+	@RequestMapping(value = "MCBL", method = { RequestMethod.GET, RequestMethod.POST })
+	public String MCBL(@RequestParam(required = false) String formmode,
+			@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
+			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
+			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+		md.addAttribute("activeMenu", "Reports");
+		md.addAttribute("activePage", "CentralBank");
+		 String USERID = (String) req.getSession().getAttribute("USERID");
+	   md.addAttribute("USERID", USERID);
+		logger.info("==> Entered MCBL controller || Formmode: {}", formmode);
 
+		LocalDate today = LocalDate.now();
+		Date defaultDate = java.sql.Date.valueOf(today);
+
+		
+		
+		try {
+			if (formmode == null || formmode.equals("list")) {
+				//List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
+				String currentDateString = null;
+				if (date == null) {
+					// If no date provided → use today's date
+					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(defaultDate);
+					//logger.info("Fetched {} records for default date: {}", customerList.size(), defaultDate);
+					currentDateString = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				} else {
+					// Convert LocalDate param → SQL Date
+					Date sqlDate = java.sql.Date.valueOf(date);
+					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(sqlDate);
+					//logger.info("Fetched {} records for provided date: {}", customerList.size(), sqlDate);
+
+					currentDateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				}
+				md.addAttribute("currentdate", currentDateString);
+				md.addAttribute("menu", "MCBL - List");
+				//md.addAttribute("customersplratedetail", customerList);
+				md.addAttribute("currentdate", currentDateString);
+				md.addAttribute("formmode", "add");
+			} else if (formmode.equals("add")) {
+				md.addAttribute("menu", "MCBL - Add");
+				md.addAttribute("formmode", "add");
+			}  
+
+		} catch (Exception e) {
+			logger.error("Error in  MCBL controller: {}", e.getMessage(), e);
+			md.addAttribute("errorMessage", "Error loading MCBL page. Please contact administrator.");
+		}
+
+		logger.info("<== Exiting MCBL controller");
+		return "MCBL";
+	}
+
+
+
+	@Autowired
+	MCBL_Services MCBL_Servicess;
+	
+	
+	@PostMapping("addmcbl")
+	@ResponseBody
+	public String addmcbl(@ModelAttribute MultipartFile file,
+	                                    Model md,String reportDate,
+	                                    HttpServletRequest rq ) {
+	    logger.info("==> Entered MCBL method");
+	    String userid = (String) rq.getSession().getAttribute("USERID");
+	    String username = (String) rq.getSession().getAttribute("USERNAME");
+	    try {
+	        String msg = MCBL_Servicess.addMCBL( file, userid, username,reportDate);
+	        logger.info("MCBL result: {}", msg);
+	        return msg;
+	    } catch (Exception e) {
+	        logger.error("Error occurred while Add MCBL: {}", e.getMessage(), e);
+	        return "Error Occurred. Please contact Administrator.";
+	    }
+	}
+
+	
+	//BDGF
+	@RequestMapping(value = "BDGF", method = { RequestMethod.GET, RequestMethod.POST })
+	public String BDGF(@RequestParam(required = false) String formmode,
+			@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
+			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
+			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+		md.addAttribute("activeMenu", "Reports");
+		md.addAttribute("activePage", "CentralBank");
+		 String USERID = (String) req.getSession().getAttribute("USERID");
+	   md.addAttribute("USERID", USERID);
+		logger.info("==> Entered BDGF controller || Formmode: {}", formmode);
+
+		LocalDate today = LocalDate.now();
+		Date defaultDate = java.sql.Date.valueOf(today);
+
+		try {
+			if (formmode == null || formmode.equals("list")) {
+				//List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
+				String currentDateString = null;
+				if (date == null) {
+					// If no date provided → use today's date
+					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(defaultDate);
+					//logger.info("Fetched {} records for default date: {}", customerList.size(), defaultDate);
+					currentDateString = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				} else {
+					// Convert LocalDate param → SQL Date
+					Date sqlDate = java.sql.Date.valueOf(date);
+					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(sqlDate);
+					//logger.info("Fetched {} records for provided date: {}", customerList.size(), sqlDate);
+
+					currentDateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				}
+				md.addAttribute("currentdate", currentDateString);
+				md.addAttribute("menu", "Blank Deposit General Format - List");
+				//md.addAttribute("customersplratedetail", customerList);
+				md.addAttribute("currentdate", currentDateString);
+				md.addAttribute("formmode", "list");
+			} else if (formmode.equals("add")) {
+				md.addAttribute("menu", "Blank Deposit General Format - Add");
+				md.addAttribute("formmode", "add");
+			}  
+
+		} catch (Exception e) {
+			logger.error("Error in  BDGF controller: {}", e.getMessage(), e);
+			md.addAttribute("errorMessage", "Error loading BDGF page. Please contact administrator.");
+		}
+
+		logger.info("<== Exiting BDGF controller");
+		return "BDGF";
+	}
+
+
+
+
+	@Autowired
+	BDGF_Services BDGF_Servicess;
+	
+	@PostMapping("addBDGF")
+	@ResponseBody
+	public String addBDGF(@ModelAttribute MultipartFile file,
+	                                    Model md,String reportDate,
+	                                    HttpServletRequest rq ) {
+	    logger.info("==> Entered BDGF method");
+	    String userid = (String) rq.getSession().getAttribute("USERID");
+	    String username = (String) rq.getSession().getAttribute("USERNAME");
+	    try {
+	        String msg = BDGF_Servicess.addBDGF( file, userid, username,reportDate);
+	        logger.info("BDGF result: {}", msg);
+	        return msg;
+	    } catch (Exception e) {
+	        logger.error("Error occurred while Add BDGF: {}", e.getMessage(), e);
+	        return "Error Occurred. Please contact Administrator.";
+	    }
+	}
+	
+	@GetMapping("/download-template")
+    public ResponseEntity<byte[]> downloadTemplate() throws Exception {
+        List<String> headers = Arrays.asList(
+                "SOL ID","S No","A/C No","Customer ID","Customer Name","Open Date",
+                "Amount Deposited","Currency","Period","Rate of Interest","100",
+                "BAL EQUI TO BWP","Outstanding Balance","Oustndng Bal UGX","Maturity Date",
+                "Maturity Amount","Scheme","Cr Pref Int Rate","SEGMENT","REFERENCE DATE",
+                "DIFFERENCE","DAYS","PERIOD","EFFECTIVE INTEREST RATE"
+        );
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("BDGF_Template");
+
+        // Create header row
+        Row headerRow = sheet.createRow(0);
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        headerStyle.setFont(font);
+
+        for (int i = 0; i < headers.size(); i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers.get(i));
+            cell.setCellStyle(headerStyle);
+            sheet.autoSizeColumn(i);
+        }
+
+        // Freeze header row
+        sheet.createFreezePane(0, 1);
+
+        // Write to byte array
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
+
+        HttpHeaders headersResponse = new HttpHeaders();
+        headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BDGF_Template.xlsx");
+        headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+        return ResponseEntity
+                .ok()
+                .headers(headersResponse)
+                .body(out.toByteArray());
+    
+}
 }

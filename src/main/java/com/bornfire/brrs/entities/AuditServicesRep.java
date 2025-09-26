@@ -27,4 +27,7 @@ public interface AuditServicesRep extends JpaRepository<AuditServicesEntity , St
 		String getchanges(String audit_ref_no);
 
 
+		@Query(value = "SELECT BRRS_AUDIT_SEQ.NEXTVAL FROM dual", nativeQuery = true)
+		Long getAuditRefUUID();
+
 }
