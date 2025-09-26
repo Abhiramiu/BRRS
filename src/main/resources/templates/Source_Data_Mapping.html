@@ -468,8 +468,14 @@ PURPOSE		: Source Data Mapping
 															name="currency"  autocomplete="off"
 															required >
 															<option value="">Select</option>
-															<option value="AED">AED</option>
-															<option value="USD">USD</option>
+															    <option value="BWP">BWP</option>
+															    <option value="EUR">EUR</option>
+															    <option value="GBP">GBP</option>
+															    <option value="USD">USD</option>
+															    <option value="INR">INR</option>
+															    <option value="ZAR">ZAR</option>
+															    <option value="AUD">AUD</option>
+															    <option value="CAD">CAD</option>
 														</select>
 													</div>
 													<div class="col-sm-3"
@@ -477,9 +483,15 @@ PURPOSE		: Source Data Mapping
 														<select id="currency" class="form-control form-control-sm"
 														        th:value="*{currency}" th:field="*{currency}"
 														        th:disabled="${formmode}=='verify' OR ${formmode}=='delete' OR ${formmode}=='view'">
-														    <option value="">Select</option>
-														    <option value="AED">AED</option>
-														    <option value="USD">USD</option>
+																<option value="">Select</option>
+																    <option value="BWP">BWP</option>
+																    <option value="EUR">EUR</option>
+																    <option value="GBP">GBP</option>
+																    <option value="USD">USD</option>
+																    <option value="INR">INR</option>
+																    <option value="ZAR">ZAR</option>
+																    <option value="AUD">AUD</option>
+																    <option value="CAD">CAD</option>
 														</select>
 													</div>
 												</div>
