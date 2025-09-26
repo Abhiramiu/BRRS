@@ -4,6 +4,7 @@ import java.util.Date;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,12 +20,16 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.bornfire.brrs.entities.AuditServicesEntity;
 import com.bornfire.brrs.entities.AuditServicesRep;
+import com.bornfire.brrs.entities.MCBL_Main_Entity;
+import com.bornfire.brrs.entities.MCBL_Main_Rep;
 
 @Service
 public class AuditService {
 
 	@Autowired
 	private AuditServicesRep auditServicesRep;
+	@Autowired
+	MCBL_Main_Rep MCBL_Main_Reps;
 
 	public List<AuditServicesEntity> getUserServices() {
 		System.out.println(auditServicesRep.getUserAudit());
@@ -92,5 +97,71 @@ public class AuditService {
 
 	return auditServicesRep.getchanges(audit_ref_no); 
 	}
+	
+	
+	 public String createAccount(String formmode, MCBL_Main_Entity mcblMainEntity, String userid) {
+	        String msg = null;
+
+	        try {
+	            if ("add".equalsIgnoreCase(formmode)) {
+	                // Generate next ID
+	                String maxId = MCBL_Main_Reps.getMaxId();
+	                int id = (maxId != null) ? Integer.parseInt(maxId) + 1 : 1;
+
+	                mcblMainEntity.setId(String.valueOf(id));
+	                mcblMainEntity.setCreate_user(userid);
+	                mcblMainEntity.setCreate_date(new Date());
+	                mcblMainEntity.setModify_flg("N");
+	                mcblMainEntity.setDel_flg("N");
+
+	                MCBL_Main_Reps.save(mcblMainEntity);
+	                msg = "Account added successfully";
+
+	            } else if ("edit".equalsIgnoreCase(formmode)) {
+	                Optional<MCBL_Main_Entity> existingOpt = MCBL_Main_Reps.findById(mcblMainEntity.getId());
+	                if (existingOpt.isPresent()) {
+	                    MCBL_Main_Entity existing = existingOpt.get();
+
+	                    // Update only editable fields
+	                    existing.setGl_code(mcblMainEntity.getGl_code());
+	                    existing.setGl_sub_code(mcblMainEntity.getGl_sub_code());
+	                    existing.setHead_acc_no(mcblMainEntity.getHead_acc_no());
+	                    existing.setCurrency(mcblMainEntity.getCurrency());
+
+	                    existing.setModify_user(userid);
+	                    existing.setModify_date(new Date());
+	                    existing.setModify_flg("Y");
+	                    existing.setDel_flg("N");
+
+	                    MCBL_Main_Reps.save(existing);
+	                    msg = "Account updated successfully";
+	                } else {
+	                    msg = "Error: Account not found for ID " + mcblMainEntity.getId();
+	                }
+
+	            } else if ("delete".equalsIgnoreCase(formmode)) {
+	                Optional<MCBL_Main_Entity> existingOpt = MCBL_Main_Reps.findById(mcblMainEntity.getId());
+	                if (existingOpt.isPresent()) {
+	                    MCBL_Main_Entity existing = existingOpt.get();
+
+	                    existing.setDel_user(userid);
+	                    existing.setDel_date(new Date());
+	                    existing.setDel_flg("Y");
+
+	                    MCBL_Main_Reps.save(existing);
+	                    msg = "Account deleted successfully";
+	                } else {
+	                    msg = "Error: Account not found for ID " + mcblMainEntity.getId();
+	                }
+
+	            } else {
+	                msg = "Invalid formmode: " + formmode;
+	            }
+	        } catch (Exception e) {
+	            msg = "Error: " + e.getMessage();
+	        }
+
+	        return msg;
+	    }
 
 }

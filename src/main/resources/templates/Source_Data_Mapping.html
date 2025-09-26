@@ -1,0 +1,626 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: PRASANTH M 
+CREATED ON	: 26.09.2025
+PURPOSE		: Source Data Mapping
+ -->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<!-- CSS (Bootstrap, FontAwesome, jQuery UI, DataTables) -->
+	<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+		th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+
+	<link rel="stylesheet" type="text/css" href="/webjars/font-awesome/5.9.0/css/all.min.css"
+		th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+
+	<link rel="stylesheet" type="text/css" href="/webjars/jquery-ui/1.12.1/jquery-ui.min.css"
+		th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" />
+
+	<link rel="stylesheet" type="text/css" href="/webjars/datatables/1.10.19/css/jquery.dataTables.min.css"
+		th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
+
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+
+	<script src="https://cdn.jsdelivr.net/jquery.validation/1.19.5/jquery.validate.min.js"></script>
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}" />
+	<link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}" />
+
+	<!-- JavaScript: jQuery must come first -->
+	<script src="/webjars/jquery/3.4.1/jquery.min.js" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+
+	<script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
+		th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+
+	<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+		th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+
+	<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+		th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+	<script src="/webjars/jquery-form/4.2.2/jquery.form.min.js"
+		th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+
+	<script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
+		th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+
+	<script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
+		th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
+
+		.list-body {
+			padding: 0px;
+		}
+
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+
+		.formline {
+			padding-bottom: 15px;
+		}
+
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
+
+		#finusertb {
+			width: 460px;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+
+		.valids {
+			color: green;
+		}
+
+		.invalids {
+			color: red;
+		}
+
+		.error {
+			color: red !important;
+		}
+	</style>
+	<style>
+		/* Make table fully responsive */
+		.table-container {
+			width: 100%;
+			overflow-x: auto;
+		}
+
+		/* Table cell styling */
+		#usertable th,
+		#usertable td {
+			vertical-align: middle;
+			text-align: left;
+			font-size: 16px;
+			padding: 8px 10px;
+		}
+
+		/* Icon styling */
+		.action-icon {
+			font-size: 16px;
+			cursor: pointer;
+			margin-right: 10px;
+			transition: transform 0.2s, color 0.2s;
+		}
+
+		.action-icon:hover {
+			transform: scale(1.2);
+		}
+
+		/* Specific colors */
+		.action-icon.modify {
+			color: blue;
+		}
+
+		.action-icon.view {
+			color: green;
+		}
+
+		.action-icon.delete {
+			color: red;
+		}
+
+		.action-icon.verify {
+			color: orange;
+		}
+
+		/* Ensure word break for long menu lists */
+		#usertable td {
+			word-break: break-word;
+		}
+	</style>
+	<script th:inline="javascript">
+
+
+		function home() {
+			location.href = 'Dashboard'
+		}
+
+		function back() {
+			window.history.back();
+		}
+
+		function submitform(a) {
+			var formmode = a.getAttribute("data-formmode");
+			console.log('Form mode:', formmode);
+			var requiredFields = ["#gl_code","#gl_sub_code", "#head_acc_no","#currency"];
+						var isValid = true;
+
+						requiredFields.forEach(function (selector) {
+							var $field = $(selector);
+							if ($field.length) {
+								var value = $field.val(); // could be null for <select>
+								if (value === null || value.trim() === "") {
+									$field.css("border", "2px solid red");
+									isValid = false;
+								} else {
+									$field.css("border", "");
+								}
+							}
+						});
+
+						if (!isValid) return false;
+
+			var formData = new FormData(document.getElementById("MCBL_List"));
+
+			if ($('#MCBL_List').valid()) {
+				$.ajax({
+					url: "./createAcc?formmode=" + encodeURIComponent(formmode),
+					type: "POST",
+					data: formData,
+					processData: false,
+					contentType: false,
+					success: function (response) {
+						console.log('Success response:', response);
+						$("#alertmsg").text(response);
+						$('#alert').modal("toggle");
+						if (formmode === 'add') {
+							document.getElementById("MCBL_List").reset();
+						}
+					},
+					error: function (xhr, status, error) {
+						console.error('AJAX error:', status, error);
+						$("#alertmsg").text("Error occurred: " + error);
+						$('#alert').modal("toggle");
+					}
+				});
+
+			}
+
+			return false;
+		}
+
+	
+
+		
+
+
+		function deleteSubmit(a) {
+			console.log('Delete action initiated');
+			var formmode = a.getAttribute("data-formmode");
+
+			var formData = new FormData(document.getElementById("MCBL_List"));
+
+			$.ajax({
+				url: "./createAcc?formmode=" + encodeURIComponent(formmode),
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (response) {
+					$("#alertmsg").text(response);
+					$('#alert').modal("toggle");
+				},
+				error: function (xhr, status, error) {
+					console.error('AJAX error:', status, error);
+					$("#alertmsg").text("Error occurred: " + error);
+					$('#alert').modal("toggle");
+				}
+			});
+
+			return false;
+		}
+
+	</script>
+	<script>
+		function addrole(a) {
+			location.href = 'SourceDataMap?formmode=add';
+		}
+		function edit_btn_submit(a) {
+
+			var id = a.getAttribute("data-roleId");
+			location.href = 'SourceDataMap?formmode=edit&id=' + id;
+		}
+
+		function list() {
+			location.href = 'SourceDataMap?formmode=list';
+		}
+		function view_btn_submit(a) {
+			var id = a.getAttribute("data-roleId");
+
+			location.href = 'SourceDataMap?formmode=view&id=' + id;
+
+		}
+
+		function delete_btn_submit(a) {
+			var id = a.getAttribute("data-roleId");
+			location.href = 'SourceDataMap?formmode=delete&id=' + id;
+		}
+	</script>
+</head>
+<title>BRRS</title>
+
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div th:insert="HeaderMenu :: header"></div>
+			<div class="col-sm-12">
+				<!-- -------------------User List Starts----------------------------------------------------- -->
+
+				<div style="padding-right: 0px;padding-left: 0px;" th:if="${formmode}=='list'">
+
+					<div class="card" style="margin-left:10px;margin-right: 10px;">
+						<div class="card-header"
+							style="background-color: #376275; display: flex; align-items: center; justify-content: space-between; padding: 10px 20px;">
+
+							<!-- Left: Back Icon + Title -->
+							<div style="display: flex; align-items: center;" onclick="back();">
+								<!-- Back Icon -->
+								<div class="left-arrow-circle">
+									<i class="fa fa-arrow-left"></i>
+								</div>
+								<!-- Dynamic Title -->
+								<h5 th:text="${menu}"
+									style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;">
+								</h5>
+							</div>
+
+							<!-- Right: Add Button -->
+							<div class="custom-tab-btn-group nav-buttons" style="display: flex; align-items: center;">
+								<button type="button" class="custom-tab-btn" onclick="addrole();">Add</button>
+							</div>
+						</div>
+
+
+
+						<div class="row">
+							<div class="col-12">
+								<div class="table-container" style="max-height: 620px; overflow-y: auto;">
+									<table class="table table-striped table-bordered table-hover" id="usertable">
+										<thead class="thead-light"
+											style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
+											<tr>
+												<th style="width: 10%">GL Code</th>
+												<th style="width: 20%">GL Sub Code</th>
+												<th style="width: 10%">Acc Number</th>
+												<th style="width: 10%">Currency</th>
+												<th style="width: 10%;text-align: center;">Select</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:each="list : ${MCBL_List}" th:id="${list.id}" class="userlist">
+												<td th:text="${list?.gl_code}"></td>
+												<td th:text="${list?.gl_sub_code}"></td>
+												<td th:text="${list?.head_acc_no}"></td>
+												<td th:text="${list?.currency}"></td>
+
+
+												<td style="text-align: center;">
+													<!-- Modify Icon -->
+													<i class="fa fa-edit action-icon modify" title="Modify"
+														th:attr="data-roleId=${list?.id}"
+														onclick="edit_btn_submit(this)"></i>
+
+
+													<!-- View Icon -->
+													<i class="fa fa-eye action-icon view" title="View"
+														th:attr="data-roleId=${list?.id}"
+														onclick="view_btn_submit(this)"></i>
+
+													<!-- Delete Icon -->
+													<i class="fa fa-trash action-icon delete" title="Delete"
+														th:attr="data-roleId=${list?.id}"
+														onclick="delete_btn_submit(this)"></i>
+
+
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+								<div class="card-footer text-center">
+									<button type="button" class="custom-tab-btn" id="btnHome"
+										onclick="home();">Home</button>
+									<button type="button" class="custom-tab-btn" id="btnBack"
+										onclick="back();">Back</button>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-12 finuserapply">
+
+						<div
+							th:if="${formmode}=='edit' OR ${formmode}=='add' OR ${formmode}=='delete' OR ${formmode}=='view' OR ${formmode}=='verify'">
+							<div class="row">
+								<div class="col-sm-12 finuserapply">
+									<div class="card" style="margin-left: 10px;margin-right: 10px;">
+										<div class="card-header" style="background-color: #376275;">
+											<div class="float-left">
+												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;"
+													th:if="${formmode}=='edit'">Source Data Mapping - Edit</h6>
+												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;" th:if="${formmode}=='add'">
+													Source Data Mapping - Add</h6>
+												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;"
+													th:if="${formmode}=='view'">Source Data Mapping - View</h6>
+												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;"
+													th:if="${formmode}=='delete'">Source Data Mapping - Delete</h6>
+											</div>
+										</div>
+
+										<div class="card-body" style="margin-top: -48px;">
+											<form action="#" th:object="${MCBL_List}" method="post"
+												style="margin: 52px;" autocomplete="off" id="MCBL_List"
+												th:fragment="finuserapply">
+
+												<input hidden
+												th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+												  type="text" id="id" name="id" th:field="*{id}" class="form-control form-control-sm" />	
+												
+												<div class="row formline">
+													<label class="col-sm-2">GL Code<span
+															style="color: red !important">*</span></label>
+
+													<div class="col-sm-3">
+														<!-- Dropdown when formmode is 'add' -->
+														<input th:if="${formmode}=='add'" type="text" id="gl_code"
+															name="gl_code" class="form-control form-control-sm"
+															 />
+
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="gl_code" name="gl_code"
+															th:field="*{gl_code}" class="form-control form-control-sm"
+															
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">GL Sub Code <span
+															style="color: red !important">*</span></label>
+
+													<div class="col-sm-3">
+														<!-- Dropdown when formmode is 'add' -->
+														<input th:if="${formmode}=='add'" type="text" id="gl_sub_code"
+															name="gl_sub_code" class="form-control form-control-sm"
+															 />
+
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="gl_sub_code" name="gl_sub_code"
+															th:field="*{gl_sub_code}"
+															class="form-control form-control-sm" 
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+
+												</div>
+
+												<div class="row formline">
+
+													<label class="col-sm-2">Head Acc Number <span
+															style="color: red !important">*</span></label>
+
+													<div class="col-sm-3">
+														<!-- Dropdown when formmode is 'add' -->
+														<input th:if="${formmode}=='add'" type="text" id="head_acc_no"
+															name="head_acc_no" class="form-control form-control-sm"
+															 />
+
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="head_acc_no" name="head_acc_no"
+															th:field="*{head_acc_no}"
+															class="form-control form-control-sm" 
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Currency <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3" th:if="${formmode}=='add'">
+														<select id="currency" class="form-control form-control-sm"
+															name="currency"  autocomplete="off"
+															required >
+															<option value="">Select</option>
+															<option value="AED">AED</option>
+															<option value="USD">USD</option>
+														</select>
+													</div>
+													<div class="col-sm-3"
+														th:if="${formmode}=='edit'OR ${formmode}=='verify' OR ${formmode}=='view' OR ${formmode}=='delete'">
+														<select id="currency" class="form-control form-control-sm"
+														        th:value="*{currency}" th:field="*{currency}"
+														        th:disabled="${formmode}=='verify' OR ${formmode}=='delete' OR ${formmode}=='view'">
+														    <option value="">Select</option>
+														    <option value="AED">AED</option>
+														    <option value="USD">USD</option>
+														</select>
+													</div>
+												</div>
+												<div class="row formline">
+
+													<label style="height: 2px;"></label>
+
+												</div>
+												
+											</form>
+
+										</div>
+										<div class="card-footer text-center">
+											<button type="button" class="custom-tab-btn" id="btnHome"
+												onclick="home();">Home</button>
+											<button th:if="${formmode}=='edit'" type="button" class="custom-tab-btn"
+												form="MCBL_List"
+												th:attr="data-formmode=${formmode}"
+												id="btnSubmit" onclick="submitform(this);">Submit</button>
+											<button th:if="${formmode}=='add'" type="button" class="custom-tab-btn"
+												form="MCBL_List" th:attr="data-formmode=${formmode}" id="btnSubmit"
+												onclick="submitform(this);">Submit</button>
+											<button th:if="${formmode}=='delete'" type="button" class="custom-tab-btn"
+												form="MCBL_List" th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="deleteSubmit(this);">Delete</button>
+
+											<button type="button" class="custom-tab-btn" id="btnBack"
+												onclick="back();">Back</button>
+
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" id="alert">
+				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+					<div class="modal-content">
+						<div class="modal-body" style="text-align: center">
+							<p id="alertmsg"></p>
+							<button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+								onclick="list()">Close</button>
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="modal fade" id="datadelete">
+				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+					<div class="modal-content">
+						<div class="modal-body" style="margin-top: 8px; text-align: center; color: #f15362;">
+							<button type="button" class="close" data-dismiss="modal">×</button>
+							Are you Sure want to delete?
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" onclick="submitformdelete(this);"
+								th:attr="data-formmode=delete">Submit</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" id="formmsg">
+				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+					<div class="modal-content">
+						<div class="modal-body" style="margin-top: 8px; text-align: center; color: aliceblue;">
+							<button type="button" class="close" data-dismiss="modal">×</button>
+							<a th:value="${msg}"></a>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" onclick="submitformdelete(this);"
+								th:attr="data-formmode=delete">Submit</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="alert" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-sm">
+			<div class="modal-content">
+				<div class="modal-body">
+					<p id="alertmsg"></p>
+					<div class="text-center">
+						<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+<Script>
+	function roledesc() {
+		let workClass = document.getElementById("workClass").value;
+		let permissionField = document.getElementById("permissions");
+
+		if (workClass === "C") {
+			permissionField.value = "R";
+			permissionField.setAttribute("disabled", "disabled"); // Make read-only
+		} else {
+			permissionField.removeAttribute("disabled"); // Allow user to choose
+			permissionField.value = ""; // Reset to default
+		}
+	}
+</script>
+<style>
+	.left-arrow-circle {
+		width: 35px;
+		height: 35px;
+		border-radius: 50%;
+		background-color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-right: 10px;
+		transition: background-color 0.3s, transform 0.2s;
+	}
+
+	.left-arrow-circle i {
+		color: rgb(107, 122, 143);
+		font-size: 16px;
+	}
+
+	.left-arrow-circle:hover {
+		background-color: rgb(107, 122, 143);
+		cursor: pointer;
+		transform: scale(1.05);
+		border: 2px solid white;
+	}
+
+	.left-arrow-circle:hover i {
+		color: white;
+	}
+</style>
+
+</html>

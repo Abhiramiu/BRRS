@@ -45,6 +45,7 @@ import com.bornfire.brrs.entities.AccessAndRoles;
 import com.bornfire.brrs.entities.AccessandRolesRepository;
 
 import com.bornfire.brrs.entities.BankBranchMasterRepo;
+import com.bornfire.brrs.entities.MCBL_Main_Rep;
 import com.bornfire.brrs.entities.BRRSValidationsRepo;
 import com.bornfire.brrs.entities.BankBranchMaster;
 import com.bornfire.brrs.entities.RRReport;
@@ -52,7 +53,6 @@ import com.bornfire.brrs.entities.RRReportRepo;
 import com.bornfire.brrs.entities.UserProfile;
 import com.bornfire.brrs.entities.UserProfileRep;
 import com.bornfire.brrs.services.AccessAndRolesServices;
-import com.bornfire.brrs.services.BDGF_Services;
 import com.bornfire.brrs.services.BankBranchService;
 import com.bornfire.brrs.services.LoginServices;
 import com.bornfire.brrs.services.MCBL_Services;
@@ -68,7 +68,9 @@ public class NavigationController {
 	/*
 	 * @PersistenceContext private EntityManager entityManager;
 	 */
-
+	@Autowired
+	MCBL_Main_Rep MCBL_Main_Reps;
+	@Autowired
 	UserProfileRep UserProfileReps;
 	
 	 @Autowired
@@ -655,26 +657,22 @@ public class NavigationController {
 
 
 
-	@Autowired
+	/*@Autowired
 	BDGF_Services BDGF_Servicess;
 	
-	@PostMapping("addBDGF")
-	@ResponseBody
-	public String addBDGF(@ModelAttribute MultipartFile file,
-	                                    Model md,String reportDate,
-	                                    HttpServletRequest rq ) {
-	    logger.info("==> Entered BDGF method");
-	    String userid = (String) rq.getSession().getAttribute("USERID");
-	    String username = (String) rq.getSession().getAttribute("USERNAME");
-	    try {
-	        String msg = BDGF_Servicess.addBDGF( file, userid, username,reportDate);
-	        logger.info("BDGF result: {}", msg);
-	        return msg;
-	    } catch (Exception e) {
-	        logger.error("Error occurred while Add BDGF: {}", e.getMessage(), e);
-	        return "Error Occurred. Please contact Administrator.";
-	    }
-	}
+	
+	 * @PostMapping("addBDGF")
+	 * 
+	 * @ResponseBody public String addBDGF(@ModelAttribute MultipartFile file, Model
+	 * md,String reportDate, HttpServletRequest rq ) {
+	 * logger.info("==> Entered BDGF method"); String userid = (String)
+	 * rq.getSession().getAttribute("USERID"); String username = (String)
+	 * rq.getSession().getAttribute("USERNAME"); try { String msg =
+	 * BDGF_Servicess.addBDGF( file, userid, username,reportDate);
+	 * logger.info("BDGF result: {}", msg); return msg; } catch (Exception e) {
+	 * logger.error("Error occurred while Add BDGF: {}", e.getMessage(), e); return
+	 * "Error Occurred. Please contact Administrator."; } }
+	 */
 	
 	@GetMapping("/download-template")
     public ResponseEntity<byte[]> downloadTemplate() throws Exception {
@@ -721,4 +719,38 @@ public class NavigationController {
                 .body(out.toByteArray());
     
 }
+    
+
+@RequestMapping(value = "SourceDataMap", method = { RequestMethod.GET, RequestMethod.POST })
+	public String SourceDataMap(@RequestParam(required = false) String formmode,
+			@RequestParam(required = false) String id, @RequestParam(required = false) Optional<Integer> page,
+			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req) {
+
+		if (formmode == null || formmode.equals("list")) {
+			md.addAttribute("menu", "Source Data Mapping");
+			md.addAttribute("menuname", "Source Data Mapping");
+			md.addAttribute("formmode", "list");
+			md.addAttribute("MCBL_List", MCBL_Main_Reps.getall());
+		} else if (formmode.equals("add")) {
+			md.addAttribute("menuname", "Source Data Mapping - Add");
+			md.addAttribute("formmode", "add");
+		} else if (formmode.equals("edit")) {
+			md.addAttribute("menuname", "Source Data Mapping - Edit");
+			md.addAttribute("formmode", formmode);
+			md.addAttribute("MCBL_List", MCBL_Main_Reps.getbyid(id));
+		} else if (formmode.equals("view")) {
+			md.addAttribute("menuname", "Source Data Mapping - Inquiry");
+			md.addAttribute("formmode", formmode);
+			md.addAttribute("MCBL_List", MCBL_Main_Reps.getbyid(id));
+
+		}else if (formmode.equals("delete")) {
+			md.addAttribute("menuname", "Source Data Mapping - Delete");
+			md.addAttribute("formmode", formmode);
+			md.addAttribute("MCBL_List", MCBL_Main_Reps.getbyid(id));
+		}
+
+
+		return "Source_Data_Mapping";
+	}
+
 }
