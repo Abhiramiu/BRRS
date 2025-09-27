@@ -352,6 +352,20 @@ PURPOSE		: Source Data Mapping
 											</tr>
 										</tbody>
 									</table>
+									<!-- Pagination Controls -->
+									<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
+									    <a th:if="${currentPage > 0}"
+									       th:href="@{'/SourceDataMap'(formmode='list', page=${currentPage - 1}, size=100)}">
+									        Previous
+									    </a>
+
+									    <span>Page [[${currentPage + 1}]] of [[${totalPages}]]</span>
+
+									    <a th:if="${currentPage < totalPages - 1}"
+									       th:href="@{'/SourceDataMap'(formmode='list', page=${currentPage + 1}, size=100)}">
+									        Next
+									    </a>
+									</div>
 								</div>
 
 								<div class="card-footer text-center">

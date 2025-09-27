@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,7 @@ import com.bornfire.brrs.entities.AccessAndRoles;
 import com.bornfire.brrs.entities.AccessandRolesRepository;
 
 import com.bornfire.brrs.entities.BankBranchMasterRepo;
+import com.bornfire.brrs.entities.MCBL_Main_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
 import com.bornfire.brrs.entities.BRRSValidationsRepo;
 import com.bornfire.brrs.entities.BankBranchMaster;
@@ -722,36 +724,55 @@ public class NavigationController {
 }
     
 
-@RequestMapping(value = "SourceDataMap", method = { RequestMethod.GET, RequestMethod.POST })
-	public String SourceDataMap(@RequestParam(required = false) String formmode,
-			@RequestParam(required = false) String id, @RequestParam(required = false) Optional<Integer> page,
-			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req) {
 
-		if (formmode == null || formmode.equals("list")) {
-			md.addAttribute("menu", "Source Data Mapping");
-			md.addAttribute("menuname", "Source Data Mapping");
-			md.addAttribute("formmode", "list");
-			md.addAttribute("MCBL_List", MCBL_Main_Reps.getall());
-		} else if (formmode.equals("add")) {
-			md.addAttribute("menuname", "Source Data Mapping - Add");
-			md.addAttribute("formmode", "add");
-		} else if (formmode.equals("edit")) {
-			md.addAttribute("menuname", "Source Data Mapping - Edit");
-			md.addAttribute("formmode", formmode);
-			md.addAttribute("MCBL_List", MCBL_Main_Reps.getbyid(id));
-		} else if (formmode.equals("view")) {
-			md.addAttribute("menuname", "Source Data Mapping - Inquiry");
-			md.addAttribute("formmode", formmode);
-			md.addAttribute("MCBL_List", MCBL_Main_Reps.getbyid(id));
+        @RequestMapping(value = "SourceDataMap", method = { RequestMethod.GET, RequestMethod.POST })
+        public String SourceDataMap(
+                @RequestParam(required = false) String formmode,
+                @RequestParam(required = false) String id,
+                @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                @RequestParam(value = "size", required = false, defaultValue = "100") int size,
+                Model md) {
 
-		}else if (formmode.equals("delete")) {
-			md.addAttribute("menuname", "Source Data Mapping - Delete");
-			md.addAttribute("formmode", formmode);
-			md.addAttribute("MCBL_List", MCBL_Main_Reps.getbyid(id));
-		}
+            if (formmode == null || formmode.equals("list")) {
+                md.addAttribute("menu", "Source Data Mapping");
+                md.addAttribute("menuname", "Source Data Mapping");
+                md.addAttribute("formmode", "list");
 
+                int offset = page * size;
+                List<MCBL_Main_Entity> lists = MCBL_Main_Reps.getdatabydateList(offset, size);
 
-		return "Source_Data_Mapping";
-	}
+                // ✅ Declare totalRecords here
+                int totalRecords = MCBL_Main_Reps.countAll();
+                int totalPages = (int) Math.ceil((double) totalRecords / size);
+
+                md.addAttribute("MCBL_List", lists);
+                md.addAttribute("pagination", "YES");
+                md.addAttribute("currentPage", page);
+                md.addAttribute("totalPages", totalPages);
+            }
+ else if (formmode.equals("add")) {
+                md.addAttribute("menuname", "Source Data Mapping - Add");
+                md.addAttribute("formmode", "add");
+
+            } else if (formmode.equals("edit")) {
+                md.addAttribute("menuname", "Source Data Mapping - Edit");
+                md.addAttribute("formmode", "edit");
+                md.addAttribute("MCBL_List", MCBL_Main_Reps.findById(id).orElse(null));
+
+            } else if (formmode.equals("view")) {
+                md.addAttribute("menuname", "Source Data Mapping - Inquiry");
+                md.addAttribute("formmode", "view");
+                md.addAttribute("MCBL_List", MCBL_Main_Reps.findById(id).orElse(null));
+
+            } else if (formmode.equals("delete")) {
+                md.addAttribute("menuname", "Source Data Mapping - Delete");
+                md.addAttribute("formmode", "delete");
+                md.addAttribute("MCBL_List", MCBL_Main_Reps.findById(id).orElse(null));
+            }
+
+            return "Source_Data_Mapping";
+        }
+    
+
 
 }

@@ -9,6 +9,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MCBL_Main_Rep extends JpaRepository<MCBL_Main_Entity, String> {
 	
+
+
+    // Count total records
+    @Query(value = "select count(*) from BRRS_MCBL_MAIN", nativeQuery = true)
+    int countAll();
+    // Paginated fetch
+    @Query(value = "select * from BRRS_MCBL_MAIN offset ?1 rows fetch next ?2 rows only", nativeQuery = true)
+    List<MCBL_Main_Entity> getdatabydateList(int offset, int limit);
+	
 	@Query(value = "SELECT * FROM BRRS_MCBL_MAIN where DEL_FLG='N' ORDER BY ID", nativeQuery = true)
 	List<MCBL_Main_Entity> getall();
 	
