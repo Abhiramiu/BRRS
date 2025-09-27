@@ -414,7 +414,7 @@
 
 			var formData = new FormData(form);
 
-			$("#loader1").modal("toggle");
+			$("#loader").modal("toggle");
 
 			$.ajax({
 				url: "./addmcbl?reportDate=" + reportDate,
@@ -423,7 +423,7 @@
 				processData: false,
 				contentType: false,
 				success: function (response) {
-					$("#loader1").modal("hide");
+					$("#loader").modal("hide");
 					console.log('Success response:', response);
 					$("#alertmsg").text(response);
 					$('#alert').modal("toggle");
@@ -618,11 +618,11 @@
 
 								</div>
 							</div>
-	<div class="card-body">
-	<form>
-      <div class="row mb-3 align-items-center">
-        <label class="col-sm-2 col-form-label fw-semibold">File Type</label>
-        <div class="col-sm-4">
+	<div class="card-body" >
+	<form style="margin-left: 600px;">
+      <div class="row formline">
+        <label class="col-sm-2">File Type</label>
+        <div class="col-sm-3">
           <select id="moduleSelect" class="form-control form-control-sm" onchange="toggleModuleForm();">
             <option value="" disabled selected>Select</option>
             <option value="MCBL">MCBL</option>
@@ -639,9 +639,13 @@
 <div id="blbfForm" style="display:none;"></div>
 
 <div id="mcblForm" style="display: none;">
-								<form action="#" th:object="${item}" method="post" style="margin: 52px;"
+								<form action="#" th:object="${item}" method="post" style="margin-left: 600px;"
 									autocomplete="off" id="item" th:fragment="finuserapply">
 
+									<div class="row formline">
+										<label style="height: 5px;"></label>
+									</div>
+									
 									<div class="row formline">
 										<label class="col-sm-2">Branch Name</label>
 										<div class="col-sm-3">
@@ -652,26 +656,29 @@
 											<select th:if="${formmode}=='add'" id="branch_name" name="branch_name"
 												class="form-control form-control-sm" required>
 												<option value="" disabled selected>Select</option>
-												<option value="9001">9001</option>
-												<option value="9002">9002</option>
-												<option value="9003">9003</option>
-												<option value="9004">9004</option>
-												<option value="9005">9005</option>
-												<option value="9008">9008</option>
-												<option value="9009">9009</option>
-												<option value="9010">9010</option>
+												<option value="9521">9521</option>
+												<option value="9522">9522</option>
+												<option value="9523">9523</option>
+												<option value="9524">9524</option>
 											</select>
 										</div>
 
 										<div class="col-sm-2"></div>
-										<label class="col-sm-auto">Report Date</label>
+										
+									</div>
+<div class="row formline">
+										<label style="height: 2px;"></label>
+									</div>
+									
+									
+									<div class="row formline">
+									<label class="col-sm-2">Report Date</label>
 										<div class="col-sm-3">
 											<input th:if="${formmode}=='add'" type="date" id="report_date"
 												name="report_date" class="form-control form-control-sm"
 												maxlength="24" />
 										</div>
 									</div>
-
 									<div class="row formline">
 										<label style="height: 2px;"></label>
 									</div>
@@ -685,6 +692,10 @@
 
 										<div class="col-sm-2"></div>
 
+									</div>
+									
+									<div class="row formline">
+										<label style="height: 5px;"></label>
 									</div>
 		
 		</form>
@@ -706,9 +717,11 @@
 <div id="bdgfForm" style="display:none;">
 
 								
-								<form action="#" th:object="${item}" method="post" style="margin: 52px;"
+								<form action="#" th:object="${item}" method="post" style="margin-left: 600px;"
 									autocomplete="off" id="bdgfitem" th:fragment="finuserapply">
-
+<div class="row formline">
+										<label style="height: 5px;"></label>
+									</div>
 									<div class="row formline">
 										<label class="col-sm-2">Branch Name</label>
 										<div class="col-sm-3">
@@ -719,30 +732,35 @@
 											<select th:if="${formmode}=='add'" id="branch_name1" name="branch_name"
 												class="form-control form-control-sm" required>
 												<option value="" disabled selected>Select</option>
-												<option value="9001">9001</option>
-												<option value="9002">9002</option>
-												<option value="9003">9003</option>
-												<option value="9004">9004</option>
-												<option value="9005">9005</option>
-												<option value="9008">9008</option>
-												<option value="9009">9009</option>
-												<option value="9010">9010</option>
+												<option value="9521">9521</option>
+												<option value="9522">9522</option>
+												<option value="9523">9523</option>
+												<option value="9524">9524</option>
 											</select>
 										</div>
 
 										<div class="col-sm-2"></div>
-										<label class="col-sm-auto">Report Date</label>
+										
+									</div>
+									
+									<div class="row formline">
+										<label style="height: 2px;"></label>
+									</div>
+									
+									<div class="row formline">
+										<label class="col-sm-2">Report Date</label>
 										<div class="col-sm-3">
 											<input th:if="${formmode}=='add'" type="date" id="report_date1"
 												name="report_date" class="form-control form-control-sm"
 												maxlength="24" />
 										</div>
 									</div>
-
+									
 									<div class="row formline">
 										<label style="height: 2px;"></label>
 									</div>
 									<div class="row formline">
+									
 										<label class="col-sm-2">BDGF File</label>
 										<div class="col-sm-3">
 											<input th:if="${formmode}=='add'" type="file" id="file1" name="file"
@@ -752,6 +770,9 @@
 
 										<div class="col-sm-2"></div>
 
+									</div>
+									<div class="row formline">
+										<label style="height: 5px;"></label>
 									</div>
 								</form>
 
