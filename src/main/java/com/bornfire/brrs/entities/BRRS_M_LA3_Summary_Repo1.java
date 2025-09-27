@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BRRS_M_LA3_Summary_Repo extends JpaRepository<M_LA3_Summary_Entity, Date> {
-	@Query(value = "select * from BRRS_M_LA3_SUMMARYTABLE where report_date = ?1 ", nativeQuery = true)
-	List<M_LA3_Summary_Entity> getdatabydateList(Date rpt_date);
+public interface BRRS_M_LA3_Summary_Repo1 extends JpaRepository<M_LA3_Summary_Entity1, Date> {
+	@Query(value = "select * from BRRS_M_LA3_SUMMARYTABLE1 where report_date = ?1 ", nativeQuery = true)
+	List<M_LA3_Summary_Entity1> getdatabydateList(Date rpt_date);
 
 }

@@ -13,8 +13,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 @Entity
-@Table(name = "BRRS_M_LA3_SUMMARYTABLE")
-public class M_LA3_Summary_Entity {
+@Table(name = "BRRS_M_LA3_ARCHIVALTABLE_SUMMARY1")
+public class M_LA3_Archival_Summary_Entity1{
 	
 
 	// ====== R10 ======
@@ -125,47 +125,7 @@ public class M_LA3_Summary_Entity {
 	private BigDecimal r31_approved_limit;
 	private BigDecimal r31_amount_outstanding;
 
-	// ====== R36 ======
-	private String r36_product;
-	private BigDecimal r36_no_of_ac;
-	private BigDecimal r36_credit_limit;
-	private BigDecimal r36_amount_outstanding;
-
-	// ====== R37 ======
-	private String r37_product;
-	private BigDecimal r37_no_of_ac;
-	private BigDecimal r37_credit_limit;
-	private BigDecimal r37_amount_outstanding;
-
-	// ====== R38 ======
-	private String r38_product;
-	private BigDecimal r38_no_of_ac;
-	private BigDecimal r38_credit_limit;
-	private BigDecimal r38_amount_outstanding;
-
-	// ====== R39 ======
-	private String r39_product;
-	private BigDecimal r39_no_of_ac;
-	private BigDecimal r39_credit_limit;
-	private BigDecimal r39_amount_outstanding;
-
-	// ====== R40 ======
-	private String r40_product;
-	private BigDecimal r40_no_of_ac;
-	private BigDecimal r40_credit_limit;
-	private BigDecimal r40_amount_outstanding;
-
-	// ====== R41 ======
-	private String r41_product;
-	private BigDecimal r41_no_of_ac;
-	private BigDecimal r41_credit_limit;
-	private BigDecimal r41_amount_outstanding;
-
-	// ====== R42 ======
-	private String r42_product;
-	private BigDecimal r42_no_of_ac;
-	private BigDecimal r42_credit_limit;
-	private BigDecimal r42_amount_outstanding;
+	
 
 	    
 	    @Temporal(TemporalType.DATE)
@@ -611,174 +571,6 @@ public class M_LA3_Summary_Entity {
 		public void setR31_amount_outstanding(BigDecimal r31_amount_outstanding) {
 			this.r31_amount_outstanding = r31_amount_outstanding;
 		}
-		public String getR36_product() {
-			return r36_product;
-		}
-		public void setR36_product(String r36_product) {
-			this.r36_product = r36_product;
-		}
-		public BigDecimal getR36_no_of_ac() {
-			return r36_no_of_ac;
-		}
-		public void setR36_no_of_ac(BigDecimal r36_no_of_ac) {
-			this.r36_no_of_ac = r36_no_of_ac;
-		}
-		public BigDecimal getR36_credit_limit() {
-			return r36_credit_limit;
-		}
-		public void setR36_credit_limit(BigDecimal r36_credit_limit) {
-			this.r36_credit_limit = r36_credit_limit;
-		}
-		public BigDecimal getR36_amount_outstanding() {
-			return r36_amount_outstanding;
-		}
-		public void setR36_amount_outstanding(BigDecimal r36_amount_outstanding) {
-			this.r36_amount_outstanding = r36_amount_outstanding;
-		}
-		public String getR37_product() {
-			return r37_product;
-		}
-		public void setR37_product(String r37_product) {
-			this.r37_product = r37_product;
-		}
-		public BigDecimal getR37_no_of_ac() {
-			return r37_no_of_ac;
-		}
-		public void setR37_no_of_ac(BigDecimal r37_no_of_ac) {
-			this.r37_no_of_ac = r37_no_of_ac;
-		}
-		public BigDecimal getR37_credit_limit() {
-			return r37_credit_limit;
-		}
-		public void setR37_credit_limit(BigDecimal r37_credit_limit) {
-			this.r37_credit_limit = r37_credit_limit;
-		}
-		public BigDecimal getR37_amount_outstanding() {
-			return r37_amount_outstanding;
-		}
-		public void setR37_amount_outstanding(BigDecimal r37_amount_outstanding) {
-			this.r37_amount_outstanding = r37_amount_outstanding;
-		}
-		public String getR38_product() {
-			return r38_product;
-		}
-		public void setR38_product(String r38_product) {
-			this.r38_product = r38_product;
-		}
-		public BigDecimal getR38_no_of_ac() {
-			return r38_no_of_ac;
-		}
-		public void setR38_no_of_ac(BigDecimal r38_no_of_ac) {
-			this.r38_no_of_ac = r38_no_of_ac;
-		}
-		public BigDecimal getR38_credit_limit() {
-			return r38_credit_limit;
-		}
-		public void setR38_credit_limit(BigDecimal r38_credit_limit) {
-			this.r38_credit_limit = r38_credit_limit;
-		}
-		public BigDecimal getR38_amount_outstanding() {
-			return r38_amount_outstanding;
-		}
-		public void setR38_amount_outstanding(BigDecimal r38_amount_outstanding) {
-			this.r38_amount_outstanding = r38_amount_outstanding;
-		}
-		public String getR39_product() {
-			return r39_product;
-		}
-		public void setR39_product(String r39_product) {
-			this.r39_product = r39_product;
-		}
-		public BigDecimal getR39_no_of_ac() {
-			return r39_no_of_ac;
-		}
-		public void setR39_no_of_ac(BigDecimal r39_no_of_ac) {
-			this.r39_no_of_ac = r39_no_of_ac;
-		}
-		public BigDecimal getR39_credit_limit() {
-			return r39_credit_limit;
-		}
-		public void setR39_credit_limit(BigDecimal r39_credit_limit) {
-			this.r39_credit_limit = r39_credit_limit;
-		}
-		public BigDecimal getR39_amount_outstanding() {
-			return r39_amount_outstanding;
-		}
-		public void setR39_amount_outstanding(BigDecimal r39_amount_outstanding) {
-			this.r39_amount_outstanding = r39_amount_outstanding;
-		}
-		public String getR40_product() {
-			return r40_product;
-		}
-		public void setR40_product(String r40_product) {
-			this.r40_product = r40_product;
-		}
-		public BigDecimal getR40_no_of_ac() {
-			return r40_no_of_ac;
-		}
-		public void setR40_no_of_ac(BigDecimal r40_no_of_ac) {
-			this.r40_no_of_ac = r40_no_of_ac;
-		}
-		public BigDecimal getR40_credit_limit() {
-			return r40_credit_limit;
-		}
-		public void setR40_credit_limit(BigDecimal r40_credit_limit) {
-			this.r40_credit_limit = r40_credit_limit;
-		}
-		public BigDecimal getR40_amount_outstanding() {
-			return r40_amount_outstanding;
-		}
-		public void setR40_amount_outstanding(BigDecimal r40_amount_outstanding) {
-			this.r40_amount_outstanding = r40_amount_outstanding;
-		}
-		public String getR41_product() {
-			return r41_product;
-		}
-		public void setR41_product(String r41_product) {
-			this.r41_product = r41_product;
-		}
-		public BigDecimal getR41_no_of_ac() {
-			return r41_no_of_ac;
-		}
-		public void setR41_no_of_ac(BigDecimal r41_no_of_ac) {
-			this.r41_no_of_ac = r41_no_of_ac;
-		}
-		public BigDecimal getR41_credit_limit() {
-			return r41_credit_limit;
-		}
-		public void setR41_credit_limit(BigDecimal r41_credit_limit) {
-			this.r41_credit_limit = r41_credit_limit;
-		}
-		public BigDecimal getR41_amount_outstanding() {
-			return r41_amount_outstanding;
-		}
-		public void setR41_amount_outstanding(BigDecimal r41_amount_outstanding) {
-			this.r41_amount_outstanding = r41_amount_outstanding;
-		}
-		public String getR42_product() {
-			return r42_product;
-		}
-		public void setR42_product(String r42_product) {
-			this.r42_product = r42_product;
-		}
-		public BigDecimal getR42_no_of_ac() {
-			return r42_no_of_ac;
-		}
-		public void setR42_no_of_ac(BigDecimal r42_no_of_ac) {
-			this.r42_no_of_ac = r42_no_of_ac;
-		}
-		public BigDecimal getR42_credit_limit() {
-			return r42_credit_limit;
-		}
-		public void setR42_credit_limit(BigDecimal r42_credit_limit) {
-			this.r42_credit_limit = r42_credit_limit;
-		}
-		public BigDecimal getR42_amount_outstanding() {
-			return r42_amount_outstanding;
-		}
-		public void setR42_amount_outstanding(BigDecimal r42_amount_outstanding) {
-			this.r42_amount_outstanding = r42_amount_outstanding;
-		}
 		public Date getReport_date() {
 			return report_date;
 		}
@@ -827,12 +619,11 @@ public class M_LA3_Summary_Entity {
 		public void setDel_flg(String del_flg) {
 			this.del_flg = del_flg;
 		}
-		public M_LA3_Summary_Entity() {
+		public M_LA3_Archival_Summary_Entity1() {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-		
-		
+	
 		
 		
 

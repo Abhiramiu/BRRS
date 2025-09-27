@@ -3,7 +3,7 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,7 +15,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -44,16 +43,18 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.M_LA3_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_LA3_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_M_LA3_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.M_LA3_Detail_Entity;
+import com.bornfire.brrs.entities.BRRS_M_LA3_Archival_Summary_Repo1;
+import com.bornfire.brrs.entities.BRRS_M_LA3_Archival_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_LA3_Detail_Repo;
-import com.bornfire.brrs.entities.M_LA3_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_M_LA3_Summary_Repo;
-
-import java.math.BigDecimal;
+import com.bornfire.brrs.entities.BRRS_M_LA3_Summary_Repo1;
+import com.bornfire.brrs.entities.BRRS_M_LA3_Summary_Repo2;
+import com.bornfire.brrs.entities.M_LA3_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LA3_Detail_Entity;
+import com.bornfire.brrs.entities.M_LA3_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
 
 @Component
 @Service
@@ -73,18 +74,24 @@ public class BRRS_M_LA3_ReportService {
 	BRRS_M_LA3_Detail_Repo M_LA3_DETAIL_Repo;
 
 	@Autowired
-	BRRS_M_LA3_Summary_Repo M_LA3_Summary_Repo;
+	BRRS_M_LA3_Summary_Repo1 M_LA3_Summary_Repo1;
+
+	@Autowired
+	BRRS_M_LA3_Summary_Repo2 M_LA3_Summary_Repo2;
 
 	@Autowired
 	BRRS_M_LA3_Archival_Detail_Repo M_LA3_Archival_Detail_Repo;
 
 	@Autowired
-	BRRS_M_LA3_Archival_Summary_Repo M_LA3_Archival_Summary_Repo;
+	BRRS_M_LA3_Archival_Summary_Repo1 M_LA3_Archival_Summary_Repo1;
+
+	@Autowired
+	BRRS_M_LA3_Archival_Summary_Repo2 M_LA3_Archival_Summary_Repo2;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_LA3View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+	public ModelAndView getM_LA3View(String reportId, String fromdate, String todate, String currency, String dtltype,
+			Pageable pageable, String type, String version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
@@ -92,34 +99,36 @@ public class BRRS_M_LA3_ReportService {
 		int startItem = currentPage * pageSize;
 
 		if (type.equals("ARCHIVAL") & version != null) {
-			List<M_LA3_Archival_Summary_Entity> T1Master = new ArrayList<M_LA3_Archival_Summary_Entity>();
+			List<M_LA3_Archival_Summary_Entity1> T1Master = new ArrayList<M_LA3_Archival_Summary_Entity1>();
+			List<M_LA3_Archival_Summary_Entity2> T1Master1 = new ArrayList<M_LA3_Archival_Summary_Entity2>();
 			try {
 				Date d1 = dateformat.parse(todate);
 
 				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
 				// ", BRF1_REPORT_ENTITY.class)
 				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = M_LA3_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
-
+				T1Master = M_LA3_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate), version);
+				T1Master1 = M_LA3_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 
 			mv.addObject("reportsummary", T1Master);
+			mv.addObject("reportsummary1", T1Master1);
 		} else {
-			List<M_LA3_Summary_Entity> T1Master = new ArrayList<M_LA3_Summary_Entity>();
+			List<M_LA3_Summary_Entity1> T1Master = new ArrayList<M_LA3_Summary_Entity1>();
+			List<M_LA3_Summary_Entity2> T1Master1 = new ArrayList<M_LA3_Summary_Entity2>();
 			try {
 				Date d1 = dateformat.parse(todate);
 
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = M_LA3_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-
+				T1Master = M_LA3_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
+				T1Master1 = M_LA3_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
+				System.out.println("nishaaaa");
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			mv.addObject("reportsummary", T1Master);
+			mv.addObject("reportsummary1", T1Master1);
 		}
 
 		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
@@ -130,86 +139,86 @@ public class BRRS_M_LA3_ReportService {
 	}
 
 	public ModelAndView getM_LA3currentDtl(String reportId, String fromdate, String todate, String currency,
-	        String dtltype, Pageable pageable, String filter, String type, String version) {
+			String dtltype, Pageable pageable, String filter, String type, String version) {
 
-	    int pageSize = pageable != null ? pageable.getPageSize() : 10;
-	    int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-	    int totalPages = 0;
+		int pageSize = pageable != null ? pageable.getPageSize() : 10;
+		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+		int totalPages = 0;
 
-	    ModelAndView mv = new ModelAndView();
-	    Session hs = sessionFactory.getCurrentSession();
+		ModelAndView mv = new ModelAndView();
+		Session hs = sessionFactory.getCurrentSession();
 
-	    try {
-	        Date parsedDate = null;
-	        if (todate != null && !todate.isEmpty()) {
-	            parsedDate = dateformat.parse(todate);
-	        }
+		try {
+			Date parsedDate = null;
+			if (todate != null && !todate.isEmpty()) {
+				parsedDate = dateformat.parse(todate);
+			}
 
-	        String rowId = null;
-	        String columnId = null;
+			String rowId = null;
+			String columnId = null;
 
-	        // ✅ Split filter string into rowId & columnId
-	        if (filter != null && filter.contains(",")) {
-	            String[] parts = filter.split(",");
-	            if (parts.length >= 2) {
-	                rowId = parts[0];
-	                columnId = parts[1];
-	            }
-	        }
+			// ✅ Split filter string into rowId & columnId
+			if (filter != null && filter.contains(",")) {
+				String[] parts = filter.split(",");
+				if (parts.length >= 2) {
+					rowId = parts[0];
+					columnId = parts[1];
+				}
+			}
 
-	        if ("ARCHIVAL".equals(type) && version != null) {
-	            // 🔹 Archival branch
-	            List<M_LA3_Archival_Detail_Entity> T1Dt1;
-	            if (rowId != null && columnId != null) {
-	                T1Dt1 = M_LA3_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
-	            } else {
-	                T1Dt1 = M_LA3_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-	                mv.addObject("pagination", "YES");
-	            }
+			if ("ARCHIVAL".equals(type) && version != null) {
+				// 🔹 Archival branch
+				List<M_LA3_Archival_Detail_Entity> T1Dt1;
+				if (rowId != null && columnId != null) {
+					T1Dt1 = M_LA3_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+				} else {
+					T1Dt1 = M_LA3_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+					mv.addObject("pagination", "YES");
+				}
 
-	            mv.addObject("reportdetails", T1Dt1);
-	            mv.addObject("reportmaster12", T1Dt1);
-	            System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 
-	        } else {
-	            // 🔹 Current branch
-	            List<M_LA3_Detail_Entity> T1Dt1;
-	            if (rowId != null && columnId != null) {
-	                T1Dt1 = M_LA3_DETAIL_Repo.getdatabydateListrow( parsedDate, columnId,rowId);
-	            } else {
-	                T1Dt1 = M_LA3_DETAIL_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
-	                totalPages = M_LA3_DETAIL_Repo.getdatacount(parsedDate);
-	                mv.addObject("pagination", "YES");
-	            }
+			} else {
+				// 🔹 Current branch
+				List<M_LA3_Detail_Entity> T1Dt1;
+				if (rowId != null && columnId != null) {
+					T1Dt1 = M_LA3_DETAIL_Repo.getdatabydateListrow(parsedDate, columnId, rowId);
+				} else {
+					T1Dt1 = M_LA3_DETAIL_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
+					totalPages = M_LA3_DETAIL_Repo.getdatacount(parsedDate);
+					mv.addObject("pagination", "YES");
+				}
 
-	            mv.addObject("reportdetails", T1Dt1);
-	            mv.addObject("reportmaster12", T1Dt1);
-	            System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-	        }
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+			}
 
-	    } catch (ParseException e) {
-	        e.printStackTrace();
-	        mv.addObject("errorMessage", "Invalid date format: " + todate);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
-	    }
+		} catch (ParseException e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Invalid date format: " + todate);
+		} catch (Exception e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+		}
 
-	    // ✅ Common attributes
-	    mv.setViewName("BRRS/M_LA3");
-	    mv.addObject("displaymode", "Details");
-	    mv.addObject("currentPage", currentPage);
-	    System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-	    mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-	    mv.addObject("reportsflag", "reportsflag");
-	    mv.addObject("menu", reportId);
+		// ✅ Common attributes
+		mv.setViewName("BRRS/M_LA3");
+		mv.addObject("displaymode", "Details");
+		mv.addObject("currentPage", currentPage);
+		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("reportsflag", "reportsflag");
+		mv.addObject("menu", reportId);
 
-	    return mv;
+		return mv;
 	}
-
 
 	public byte[] BRRS_M_LA3Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) throws Exception {
+
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
@@ -219,7 +228,8 @@ public class BRRS_M_LA3_ReportService {
 		}
 
 		// Fetch data
-		List<M_LA3_Summary_Entity> dataList = M_LA3_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+		List<M_LA3_Summary_Entity1> dataList = M_LA3_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
+		List<M_LA3_Summary_Entity2> dataList1 = M_LA3_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_LA3 report. Returning empty result.");
@@ -277,17 +287,17 @@ public class BRRS_M_LA3_ReportService {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-int startRow = 9;
-			
+			int startRow = 9;
+
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					M_LA3_Summary_Entity record = dataList.get(i);
-					System.out.println("rownumber="+startRow + i);
+					M_LA3_Summary_Entity1 record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
-					
+
 					Cell cell1 = row.createCell(1);
 					if (record.getR10_no_of_ac() != null) {
 						cell1.setCellValue(record.getR10_no_of_ac().doubleValue());
@@ -296,7 +306,7 @@ int startRow = 9;
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
 					}
-					
+
 					Cell cell2 = row.createCell(2);
 					if (record.getR10_approved_limit() != null) {
 						cell2.setCellValue(record.getR10_approved_limit().doubleValue());
@@ -305,7 +315,7 @@ int startRow = 9;
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					Cell cell3 = row.createCell(3);
 					if (record.getR10_amount_outstanding() != null) {
 						cell3.setCellValue(record.getR10_amount_outstanding().doubleValue());
@@ -314,618 +324,629 @@ int startRow = 9;
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// ====== R11 ======
 					row = sheet.getRow(10);
 					if (row == null) {
-					    row = sheet.createRow(10);
+						row = sheet.createRow(10);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR11_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR11_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR11_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR11_approved_limit() != null) {
-					    cell2.setCellValue(record.getR11_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR11_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR11_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR11_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR11_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R12 ======
 					row = sheet.getRow(11);
 					if (row == null) {
-					    row = sheet.createRow(11);
+						row = sheet.createRow(11);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR12_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR12_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR12_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR12_approved_limit() != null) {
-					    cell2.setCellValue(record.getR12_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR12_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR12_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR12_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR12_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R13 ======
 					row = sheet.getRow(12);
 					if (row == null) {
-					    row = sheet.createRow(12);
+						row = sheet.createRow(12);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR13_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR13_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR13_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR13_approved_limit() != null) {
-					    cell2.setCellValue(record.getR13_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR13_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR13_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR13_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR13_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R14 ======
 					row = sheet.getRow(13);
 					if (row == null) {
-					    row = sheet.createRow(13);
+						row = sheet.createRow(13);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR14_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR14_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR14_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR14_approved_limit() != null) {
-					    cell2.setCellValue(record.getR14_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR14_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR14_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR14_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR14_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R15 ======
 					row = sheet.getRow(14);
 					if (row == null) {
-					    row = sheet.createRow(14);
+						row = sheet.createRow(14);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR15_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR15_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR15_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR15_approved_limit() != null) {
-					    cell2.setCellValue(record.getR15_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR15_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR15_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR15_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR15_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// ====== R21 ======
 					row = sheet.getRow(20);
 					if (row == null) {
-					    row = sheet.createRow(20);
+						row = sheet.createRow(20);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR21_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR21_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR21_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR21_approved_limit() != null) {
-					    cell2.setCellValue(record.getR21_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR21_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR21_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR21_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR21_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R22 ======
 					row = sheet.getRow(21);
 					if (row == null) {
-					    row = sheet.createRow(21);
+						row = sheet.createRow(21);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR22_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR22_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR22_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR22_approved_limit() != null) {
-					    cell2.setCellValue(record.getR22_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR22_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR22_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR22_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR22_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R23 ======
 					row = sheet.getRow(22);
 					if (row == null) {
-					    row = sheet.createRow(22);
+						row = sheet.createRow(22);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR23_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR23_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR23_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR23_approved_limit() != null) {
-					    cell2.setCellValue(record.getR23_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR23_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR23_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR23_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR23_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R24 ======
 					row = sheet.getRow(23);
 					if (row == null) {
-					    row = sheet.createRow(23);
+						row = sheet.createRow(23);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR24_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR24_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR24_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR24_approved_limit() != null) {
-					    cell2.setCellValue(record.getR24_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR24_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR24_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR24_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR24_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R25 ======
 					row = sheet.getRow(24);
 					if (row == null) {
-					    row = sheet.createRow(24);
+						row = sheet.createRow(24);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR25_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR25_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR25_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR25_approved_limit() != null) {
-					    cell2.setCellValue(record.getR25_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR25_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR25_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR25_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR25_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R26 ======
 					row = sheet.getRow(25);
 					if (row == null) {
-					    row = sheet.createRow(25);
+						row = sheet.createRow(25);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR26_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR26_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR26_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR26_approved_limit() != null) {
-					    cell2.setCellValue(record.getR26_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR26_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR26_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR26_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR26_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R27 ======
 					row = sheet.getRow(26);
 					if (row == null) {
-					    row = sheet.createRow(26);
+						row = sheet.createRow(26);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR27_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR27_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR27_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR27_approved_limit() != null) {
-					    cell2.setCellValue(record.getR27_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR27_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR27_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR27_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR27_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R28 ======
 					row = sheet.getRow(27);
 					if (row == null) {
-					    row = sheet.createRow(27);
+						row = sheet.createRow(27);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR28_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR28_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR28_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR28_approved_limit() != null) {
-					    cell2.setCellValue(record.getR28_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR28_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR28_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR28_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR28_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R29 ======
 					row = sheet.getRow(28);
 					if (row == null) {
-					    row = sheet.createRow(28);
+						row = sheet.createRow(28);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR29_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR29_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR29_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR29_approved_limit() != null) {
-					    cell2.setCellValue(record.getR29_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR29_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR29_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR29_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR29_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R30 ======
 					row = sheet.getRow(29);
 					if (row == null) {
-					    row = sheet.createRow(29);
+						row = sheet.createRow(29);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR30_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR30_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR30_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR30_approved_limit() != null) {
-					    cell2.setCellValue(record.getR30_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR30_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR30_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR30_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR30_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
-					
-					// ====== R37 ======
-					row = sheet.getRow(36);
-					if (row == null) {
-					    row = sheet.createRow(36);
-					}
-					cell1 = row.createCell(1);
-					if (record.getR37_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR37_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
-					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
-					}
+				}
 
-					cell2 = row.createCell(2);
-					if (record.getR37_credit_limit() != null) {
-					    cell2.setCellValue(record.getR37_credit_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
-					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
-					}
+				int startRow1 = 35;
+				// dataList1 for entity 2
+				if (!dataList1.isEmpty()) {
+					for (int i = 0; i < dataList1.size(); i++) {
+						M_LA3_Summary_Entity2 record1 = dataList1.get(i);
 
-					cell3 = row.createCell(3);
-					if (record.getR37_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR37_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
-					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
-					}
+						System.out.println("rownumber = " + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
 
-					// ====== R38 ======
-					row = sheet.getRow(37);
-					if (row == null) {
-					    row = sheet.createRow(37);
-					}
-					cell1 = row.createCell(1);
-					if (record.getR38_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR38_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
-					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
-					}
+						// ====== R37 ======
+						row = sheet.getRow(36);
+						if (row == null) {
+							row = sheet.createRow(36);
+						}
+						Cell cell1 = row.createCell(1);
+						if (record1.getR37_NO_OF_AC() != null) {
+							cell1.setCellValue(record1.getR37_NO_OF_AC().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
 
-					cell2 = row.createCell(2);
-					if (record.getR38_credit_limit() != null) {
-					    cell2.setCellValue(record.getR38_credit_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
-					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
-					}
+						Cell cell2 = row.createCell(2);
+						if (record1.getR37_CREDIT_LIMIT() != null) {
+							cell2.setCellValue(record1.getR37_CREDIT_LIMIT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
 
-					cell3 = row.createCell(3);
-					if (record.getR38_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR38_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
-					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
-					}
-					
-					// ====== R40 ======
-					row = sheet.getRow(39);
-					if (row == null) {
-					    row = sheet.createRow(39);
-					}
-					cell1 = row.createCell(1);
-					if (record.getR40_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR40_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
-					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
-					}
+						Cell cell3 = row.createCell(3);
+						if (record1.getR37_AMOUNT_OUTSTANDING() != null) {
+							cell3.setCellValue(record1.getR37_AMOUNT_OUTSTANDING().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
 
-					cell2 = row.createCell(2);
-					if (record.getR40_credit_limit() != null) {
-					    cell2.setCellValue(record.getR40_credit_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
-					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
-					}
+						// ====== R38 ======
+						row = sheet.getRow(37);
+						if (row == null) {
+							row = sheet.createRow(37);
+						}
+						Cell R38cell1 = row.createCell(1);
+						if (record1.getR38_NO_OF_AC() != null) {
+							R38cell1.setCellValue(record1.getR38_NO_OF_AC().doubleValue());
+							R38cell1.setCellStyle(numberStyle);
+						} else {
+							R38cell1.setCellValue("");
+							R38cell1.setCellStyle(textStyle);
+						}
 
-					cell3 = row.createCell(3);
-					if (record.getR40_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR40_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
-					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
-					}
+						Cell R38cell2 = row.createCell(2);
+						if (record1.getR38_CREDIT_LIMIT() != null) {
+							R38cell2.setCellValue(record1.getR38_CREDIT_LIMIT().doubleValue());
+							R38cell2.setCellStyle(numberStyle);
+						} else {
+							R38cell2.setCellValue("");
+							R38cell2.setCellStyle(textStyle);
+						}
 
-					// ====== R41 ======
-					row = sheet.getRow(40);
-					if (row == null) {
-					    row = sheet.createRow(40);
-					}
-					cell1 = row.createCell(1);
-					if (record.getR41_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR41_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
-					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
-					}
+						Cell R38cell3 = row.createCell(3);
+						if (record1.getR38_AMOUNT_OUTSTANDING() != null) {
+							R38cell3.setCellValue(record1.getR38_AMOUNT_OUTSTANDING().doubleValue());
+							R38cell3.setCellStyle(numberStyle);
+						} else {
+							R38cell3.setCellValue("");
+							R38cell3.setCellStyle(textStyle);
+						}
 
-					cell2 = row.createCell(2);
-					if (record.getR41_credit_limit() != null) {
-					    cell2.setCellValue(record.getR41_credit_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
-					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
-					}
+						// ====== R40 ======
+						row = sheet.getRow(39);
+						if (row == null) {
+							row = sheet.createRow(39);
+						}
+						Cell R40cell1 = row.createCell(1);
+						if (record1.getR40_NO_OF_AC() != null) {
+							R40cell1.setCellValue(record1.getR40_NO_OF_AC().doubleValue());
+							R40cell1.setCellStyle(numberStyle);
+						} else {
+							R40cell1.setCellValue("");
+							R40cell1.setCellStyle(textStyle);
+						}
 
-					cell3 = row.createCell(3);
-					if (record.getR41_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR41_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
-					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
-					}
-					
-				
-}
+						Cell R40cell2 = row.createCell(2);
+						if (record1.getR40_CREDIT_LIMIT() != null) {
+							R40cell2.setCellValue(record1.getR40_CREDIT_LIMIT().doubleValue());
+							R40cell2.setCellStyle(numberStyle);
+						} else {
+							R40cell2.setCellValue("");
+							R40cell2.setCellStyle(textStyle);
+						}
 
+						Cell R40cell3 = row.createCell(3);
+						if (record1.getR40_AMOUNT_OUTSTANDING() != null) {
+							R40cell3.setCellValue(record1.getR40_AMOUNT_OUTSTANDING().doubleValue());
+							R40cell3.setCellStyle(numberStyle);
+						} else {
+							R40cell3.setCellValue("");
+							R40cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R41 ======
+						row = sheet.getRow(40);
+						if (row == null) {
+							row = sheet.createRow(40);
+						}
+						Cell R41cell1 = row.createCell(1);
+						if (record1.getR41_NO_OF_AC() != null) {
+							R41cell1.setCellValue(record1.getR41_NO_OF_AC().doubleValue());
+							R41cell1.setCellStyle(numberStyle);
+						} else {
+							R41cell1.setCellValue("");
+							R41cell1.setCellStyle(textStyle);
+						}
+
+						Cell R41cell2 = row.createCell(2);
+						if (record1.getR41_CREDIT_LIMIT() != null) {
+							R41cell2.setCellValue(record1.getR41_CREDIT_LIMIT().doubleValue());
+							R41cell2.setCellStyle(numberStyle);
+						} else {
+							R41cell2.setCellValue("");
+							R41cell2.setCellStyle(textStyle);
+						}
+
+						Cell R41cell3 = row.createCell(3);
+						if (record1.getR41_AMOUNT_OUTSTANDING() != null) {
+							R41cell3.setCellValue(record1.getR41_AMOUNT_OUTSTANDING().doubleValue());
+							R41cell3.setCellStyle(numberStyle);
+						} else {
+							R41cell3.setCellValue("");
+							R41cell3.setCellStyle(textStyle);
+						}
+					}
+				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {
 
@@ -938,8 +959,7 @@ int startRow = 9;
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA3_SUMMARY", null,
-						"BRRS_M_LA3_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA3_SUMMARY", null, "BRRS_M_LA3_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}
@@ -1059,7 +1079,8 @@ int startRow = 9;
 	public List<Object> getM_LA3Archival() {
 		List<Object> M_LA3Archivallist = new ArrayList<>();
 		try {
-			M_LA3Archivallist = M_LA3_Archival_Summary_Repo.getM_LA3archival();
+			M_LA3Archivallist = M_LA3_Archival_Summary_Repo1.getM_LA3archival();
+			M_LA3Archivallist = M_LA3_Archival_Summary_Repo2.getM_LA3archival();
 			System.out.println("countser" + M_LA3Archivallist.size());
 		} catch (Exception e) {
 			// Log the exception
@@ -1078,7 +1099,10 @@ int startRow = 9;
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
-		List<M_LA3_Archival_Summary_Entity> dataList = M_LA3_Archival_Summary_Repo
+		List<M_LA3_Archival_Summary_Entity1> dataList = M_LA3_Archival_Summary_Repo1
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+
+		List<M_LA3_Archival_Summary_Entity2> dataList1 = M_LA3_Archival_Summary_Repo2
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
@@ -1142,17 +1166,18 @@ int startRow = 9;
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 
-int startRow = 9;
-			
+			int startRow = 9;
+
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					M_LA3_Archival_Summary_Entity record = dataList.get(i);
-					System.out.println("rownumber="+startRow + i);
+					M_LA3_Archival_Summary_Entity1 record = dataList.get(i);
+
+					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
-					
+
 					Cell cell1 = row.createCell(1);
 					if (record.getR10_no_of_ac() != null) {
 						cell1.setCellValue(record.getR10_no_of_ac().doubleValue());
@@ -1161,7 +1186,7 @@ int startRow = 9;
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
 					}
-					
+
 					Cell cell2 = row.createCell(2);
 					if (record.getR10_approved_limit() != null) {
 						cell2.setCellValue(record.getR10_approved_limit().doubleValue());
@@ -1170,7 +1195,7 @@ int startRow = 9;
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					Cell cell3 = row.createCell(3);
 					if (record.getR10_amount_outstanding() != null) {
 						cell3.setCellValue(record.getR10_amount_outstanding().doubleValue());
@@ -1179,624 +1204,635 @@ int startRow = 9;
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// ====== R11 ======
 					row = sheet.getRow(10);
 					if (row == null) {
-					    row = sheet.createRow(10);
+						row = sheet.createRow(10);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR11_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR11_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR11_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR11_approved_limit() != null) {
-					    cell2.setCellValue(record.getR11_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR11_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR11_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR11_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR11_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R12 ======
 					row = sheet.getRow(11);
 					if (row == null) {
-					    row = sheet.createRow(11);
+						row = sheet.createRow(11);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR12_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR12_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR12_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR12_approved_limit() != null) {
-					    cell2.setCellValue(record.getR12_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR12_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR12_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR12_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR12_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R13 ======
 					row = sheet.getRow(12);
 					if (row == null) {
-					    row = sheet.createRow(12);
+						row = sheet.createRow(12);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR13_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR13_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR13_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR13_approved_limit() != null) {
-					    cell2.setCellValue(record.getR13_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR13_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR13_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR13_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR13_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R14 ======
 					row = sheet.getRow(13);
 					if (row == null) {
-					    row = sheet.createRow(13);
+						row = sheet.createRow(13);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR14_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR14_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR14_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR14_approved_limit() != null) {
-					    cell2.setCellValue(record.getR14_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR14_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR14_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR14_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR14_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R15 ======
 					row = sheet.getRow(14);
 					if (row == null) {
-					    row = sheet.createRow(14);
+						row = sheet.createRow(14);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR15_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR15_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR15_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR15_approved_limit() != null) {
-					    cell2.setCellValue(record.getR15_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR15_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR15_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR15_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR15_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// ====== R21 ======
 					row = sheet.getRow(20);
 					if (row == null) {
-					    row = sheet.createRow(20);
+						row = sheet.createRow(20);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR21_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR21_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR21_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR21_approved_limit() != null) {
-					    cell2.setCellValue(record.getR21_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR21_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR21_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR21_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR21_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R22 ======
 					row = sheet.getRow(21);
 					if (row == null) {
-					    row = sheet.createRow(21);
+						row = sheet.createRow(21);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR22_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR22_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR22_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR22_approved_limit() != null) {
-					    cell2.setCellValue(record.getR22_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR22_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR22_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR22_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR22_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R23 ======
 					row = sheet.getRow(22);
 					if (row == null) {
-					    row = sheet.createRow(22);
+						row = sheet.createRow(22);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR23_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR23_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR23_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR23_approved_limit() != null) {
-					    cell2.setCellValue(record.getR23_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR23_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR23_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR23_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR23_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R24 ======
 					row = sheet.getRow(23);
 					if (row == null) {
-					    row = sheet.createRow(23);
+						row = sheet.createRow(23);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR24_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR24_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR24_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR24_approved_limit() != null) {
-					    cell2.setCellValue(record.getR24_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR24_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR24_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR24_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR24_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R25 ======
 					row = sheet.getRow(24);
 					if (row == null) {
-					    row = sheet.createRow(24);
+						row = sheet.createRow(24);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR25_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR25_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR25_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR25_approved_limit() != null) {
-					    cell2.setCellValue(record.getR25_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR25_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR25_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR25_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR25_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R26 ======
 					row = sheet.getRow(25);
 					if (row == null) {
-					    row = sheet.createRow(25);
+						row = sheet.createRow(25);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR26_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR26_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR26_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR26_approved_limit() != null) {
-					    cell2.setCellValue(record.getR26_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR26_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR26_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR26_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR26_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R27 ======
 					row = sheet.getRow(26);
 					if (row == null) {
-					    row = sheet.createRow(26);
+						row = sheet.createRow(26);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR27_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR27_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR27_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR27_approved_limit() != null) {
-					    cell2.setCellValue(record.getR27_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR27_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR27_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR27_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR27_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R28 ======
 					row = sheet.getRow(27);
 					if (row == null) {
-					    row = sheet.createRow(27);
+						row = sheet.createRow(27);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR28_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR28_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR28_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR28_approved_limit() != null) {
-					    cell2.setCellValue(record.getR28_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR28_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR28_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR28_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR28_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R29 ======
 					row = sheet.getRow(28);
 					if (row == null) {
-					    row = sheet.createRow(28);
+						row = sheet.createRow(28);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR29_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR29_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR29_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR29_approved_limit() != null) {
-					    cell2.setCellValue(record.getR29_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR29_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR29_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR29_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR29_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
 					// ====== R30 ======
 					row = sheet.getRow(29);
 					if (row == null) {
-					    row = sheet.createRow(29);
+						row = sheet.createRow(29);
 					}
 					cell1 = row.createCell(1);
 					if (record.getR30_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR30_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
+						cell1.setCellValue(record.getR30_no_of_ac().doubleValue());
+						cell1.setCellStyle(numberStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
 					cell2 = row.createCell(2);
 					if (record.getR30_approved_limit() != null) {
-					    cell2.setCellValue(record.getR30_approved_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
+						cell2.setCellValue(record.getR30_approved_limit().doubleValue());
+						cell2.setCellStyle(numberStyle);
 					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
 					}
 
 					cell3 = row.createCell(3);
 					if (record.getR30_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR30_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
+						cell3.setCellValue(record.getR30_amount_outstanding().doubleValue());
+						cell3.setCellStyle(numberStyle);
 					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
-					}
-					
-					// ====== R37 ======
-					row = sheet.getRow(36);
-					if (row == null) {
-					    row = sheet.createRow(36);
-					}
-					cell1 = row.createCell(1);
-					if (record.getR37_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR37_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
-					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
 					}
 
-					cell2 = row.createCell(2);
-					if (record.getR37_credit_limit() != null) {
-					    cell2.setCellValue(record.getR37_credit_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
-					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
-					}
+				}
 
-					cell3 = row.createCell(3);
-					if (record.getR37_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR37_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
-					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
-					}
+				int startRow1 = 35;
+				// dataList1 for entity 2
+				if (!dataList1.isEmpty()) {
+					for (int i = 0; i < dataList1.size(); i++) {
+						M_LA3_Archival_Summary_Entity2 record1 = dataList1.get(i);
 
-					// ====== R38 ======
-					row = sheet.getRow(37);
-					if (row == null) {
-					    row = sheet.createRow(37);
-					}
-					cell1 = row.createCell(1);
-					if (record.getR38_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR38_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
-					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
-					}
+						System.out.println("rownumber = " + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
 
-					cell2 = row.createCell(2);
-					if (record.getR38_credit_limit() != null) {
-					    cell2.setCellValue(record.getR38_credit_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
-					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
-					}
+						// ====== R37 ======
+						row = sheet.getRow(36);
+						if (row == null) {
+							row = sheet.createRow(36);
+						}
+						Cell cell1 = row.createCell(1);
+						if (record1.getR37_NO_OF_AC() != null) {
+							cell1.setCellValue(record1.getR37_NO_OF_AC().doubleValue());
+							cell1.setCellStyle(numberStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
 
-					cell3 = row.createCell(3);
-					if (record.getR38_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR38_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
-					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
-					}
-					
-					// ====== R40 ======
-					row = sheet.getRow(39);
-					if (row == null) {
-					    row = sheet.createRow(39);
-					}
-					cell1 = row.createCell(1);
-					if (record.getR40_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR40_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
-					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
-					}
+						Cell cell2 = row.createCell(2);
+						if (record1.getR37_CREDIT_LIMIT() != null) {
+							cell2.setCellValue(record1.getR37_CREDIT_LIMIT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
 
-					cell2 = row.createCell(2);
-					if (record.getR40_credit_limit() != null) {
-					    cell2.setCellValue(record.getR40_credit_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
-					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
-					}
+						Cell cell3 = row.createCell(3);
+						if (record1.getR37_AMOUNT_OUTSTANDING() != null) {
+							cell3.setCellValue(record1.getR37_AMOUNT_OUTSTANDING().doubleValue());
+							cell3.setCellStyle(numberStyle);
+						} else {
+							cell3.setCellValue("");
+							cell3.setCellStyle(textStyle);
+						}
 
-					cell3 = row.createCell(3);
-					if (record.getR40_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR40_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
-					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
-					}
+						// ====== R38 ======
+						row = sheet.getRow(37);
+						if (row == null) {
+							row = sheet.createRow(37);
+						}
+						Cell R38cell1 = row.createCell(1);
+						if (record1.getR38_NO_OF_AC() != null) {
+							R38cell1.setCellValue(record1.getR38_NO_OF_AC().doubleValue());
+							R38cell1.setCellStyle(numberStyle);
+						} else {
+							R38cell1.setCellValue("");
+							R38cell1.setCellStyle(textStyle);
+						}
 
-					// ====== R41 ======
-					row = sheet.getRow(40);
-					if (row == null) {
-					    row = sheet.createRow(40);
-					}
-					cell1 = row.createCell(1);
-					if (record.getR41_no_of_ac() != null) {
-					    cell1.setCellValue(record.getR41_no_of_ac().doubleValue());
-					    cell1.setCellStyle(numberStyle);
-					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
-					}
+						Cell R38cell2 = row.createCell(2);
+						if (record1.getR38_CREDIT_LIMIT() != null) {
+							R38cell2.setCellValue(record1.getR38_CREDIT_LIMIT().doubleValue());
+							R38cell2.setCellStyle(numberStyle);
+						} else {
+							R38cell2.setCellValue("");
+							R38cell2.setCellStyle(textStyle);
+						}
 
-					cell2 = row.createCell(2);
-					if (record.getR41_credit_limit() != null) {
-					    cell2.setCellValue(record.getR41_credit_limit().doubleValue());
-					    cell2.setCellStyle(numberStyle);
-					} else {
-					    cell2.setCellValue("");
-					    cell2.setCellStyle(textStyle);
-					}
+						Cell R38cell3 = row.createCell(3);
+						if (record1.getR38_AMOUNT_OUTSTANDING() != null) {
+							R38cell3.setCellValue(record1.getR38_AMOUNT_OUTSTANDING().doubleValue());
+							R38cell3.setCellStyle(numberStyle);
+						} else {
+							R38cell3.setCellValue("");
+							R38cell3.setCellStyle(textStyle);
+						}
 
-					cell3 = row.createCell(3);
-					if (record.getR41_amount_outstanding() != null) {
-					    cell3.setCellValue(record.getR41_amount_outstanding().doubleValue());
-					    cell3.setCellStyle(numberStyle);
-					} else {
-					    cell3.setCellValue("");
-					    cell3.setCellStyle(textStyle);
-					}
-					
-				
-}
+						// ====== R40 ======
+						row = sheet.getRow(39);
+						if (row == null) {
+							row = sheet.createRow(39);
+						}
+						Cell R40cell1 = row.createCell(1);
+						if (record1.getR40_NO_OF_AC() != null) {
+							R40cell1.setCellValue(record1.getR40_NO_OF_AC().doubleValue());
+							R40cell1.setCellStyle(numberStyle);
+						} else {
+							R40cell1.setCellValue("");
+							R40cell1.setCellStyle(textStyle);
+						}
 
+						Cell R40cell2 = row.createCell(2);
+						if (record1.getR40_CREDIT_LIMIT() != null) {
+							R40cell2.setCellValue(record1.getR40_CREDIT_LIMIT().doubleValue());
+							R40cell2.setCellStyle(numberStyle);
+						} else {
+							R40cell2.setCellValue("");
+							R40cell2.setCellStyle(textStyle);
+						}
+
+						Cell R40cell3 = row.createCell(3);
+						if (record1.getR40_AMOUNT_OUTSTANDING() != null) {
+							R40cell3.setCellValue(record1.getR40_AMOUNT_OUTSTANDING().doubleValue());
+							R40cell3.setCellStyle(numberStyle);
+						} else {
+							R40cell3.setCellValue("");
+							R40cell3.setCellStyle(textStyle);
+						}
+
+						// ====== R41 ======
+						row = sheet.getRow(40);
+						if (row == null) {
+							row = sheet.createRow(40);
+						}
+						Cell R41cell1 = row.createCell(1);
+						if (record1.getR41_NO_OF_AC() != null) {
+							R41cell1.setCellValue(record1.getR41_NO_OF_AC().doubleValue());
+							R41cell1.setCellStyle(numberStyle);
+						} else {
+							R41cell1.setCellValue("");
+							R41cell1.setCellStyle(textStyle);
+						}
+
+						Cell R41cell2 = row.createCell(2);
+						if (record1.getR41_CREDIT_LIMIT() != null) {
+							R41cell2.setCellValue(record1.getR41_CREDIT_LIMIT().doubleValue());
+							R41cell2.setCellStyle(numberStyle);
+						} else {
+							R41cell2.setCellValue("");
+							R41cell2.setCellStyle(textStyle);
+						}
+
+						Cell R41cell3 = row.createCell(3);
+						if (record1.getR41_AMOUNT_OUTSTANDING() != null) {
+							R41cell3.setCellValue(record1.getR41_AMOUNT_OUTSTANDING().doubleValue());
+							R41cell3.setCellStyle(numberStyle);
+						} else {
+							R41cell3.setCellValue("");
+							R41cell3.setCellStyle(textStyle);
+						}
+					}
+				}
 
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {
 
 			}
-
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
 
@@ -1876,8 +1912,8 @@ int startRow = 9;
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_LA3_Archival_Detail_Entity> reportData = M_LA3_Archival_Detail_Repo
-					.getdatabydateList(parsedToDate, version);
+			List<M_LA3_Archival_Detail_Entity> reportData = M_LA3_Archival_Detail_Repo.getdatabydateList(parsedToDate,
+					version);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -1927,6 +1963,67 @@ int startRow = 9;
 			logger.error("Error generating BRRS_M_LA3Excel", e);
 			return new byte[0];
 		}
+	}
+		
+
+	public void updateReport(M_LA3_Summary_Entity2 request) {
+	    System.out.println("Came to services");
+
+	    M_LA3_Summary_Entity2 existing = M_LA3_Summary_Repo2.findById(request.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE: " + request.getREPORT_DATE()));
+
+	    try {
+	        String[] fields = { "NO_OF_AC", "CREDIT_LIMIT", "AMOUNT_OUTSTANDING" };
+
+	        // 1️⃣ Loop from R37 to R38 and copy fields
+	        for (int i = 37; i <= 38; i++) {
+	            copyFields(request, existing, i, fields);
+	        }
+
+	        // 2️⃣ Loop from R40 to R41 and copy fields
+	        for (int i = 40; i <= 41; i++) {
+	            copyFields(request, existing, i, fields);
+	        }
+
+	        // 3️⃣ Handle R36, R39, and R42 specifically
+	        int[] singleRows = { 36, 39, 42 };
+	        for (int row : singleRows) {
+	            copyFields(request, existing, row, fields);
+	        }
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+
+	    // 4️⃣ Save updated entity
+	    M_LA3_Summary_Repo2.save(existing);
+	}
+
+	/**
+	 * Helper method to copy fields for a given row prefix (Rxx).
+	 */
+	private void copyFields(M_LA3_Summary_Entity2 source, M_LA3_Summary_Entity2 target, int row, String[] fields) {
+	    String prefix = "R" + row + "_";
+
+	    for (String field : fields) {
+	        String getterName = "get" + prefix + field;
+	        String setterName = "set" + prefix + field;
+
+	        try {
+	            Method getter = M_LA3_Summary_Entity2.class.getMethod(getterName);
+	            Method setter = M_LA3_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
+
+	            Object newValue = getter.invoke(source);
+	            setter.invoke(target, newValue);
+
+	        } catch (NoSuchMethodException e) {
+	            // Skip missing fields
+	            continue;
+	        } catch (Exception e) {
+	            throw new RuntimeException("Error copying field " + prefix + field, e);
+	        }
+	    }
 	}
 
 }

@@ -38,15 +38,6 @@ import com.bornfire.brrs.entities.BRRS_M_LA2_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA2_Summary_Repo;
 import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
-import com.bornfire.brrs.entities.M_SFINP2_Summary_Entity;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity3;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity4;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity1;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity2;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity3;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity4;
 
 
 @Component
