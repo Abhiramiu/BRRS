@@ -49,6 +49,7 @@ import com.bornfire.brrs.entities.BankBranchMasterRepo;
 import com.bornfire.brrs.entities.MCBL_Main_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
 import com.bornfire.brrs.entities.BRRSValidationsRepo;
+import com.bornfire.brrs.entities.BRRS_Report_Mast_Rep;
 import com.bornfire.brrs.entities.BankBranchMaster;
 import com.bornfire.brrs.entities.RRReport;
 import com.bornfire.brrs.entities.RRReportRepo;
@@ -71,6 +72,8 @@ public class NavigationController {
 	/*
 	 * @PersistenceContext private EntityManager entityManager;
 	 */
+	@Autowired
+	BRRS_Report_Mast_Rep BRRS_Report_Mast_Reps;
 	@Autowired
 	MCBL_Main_Rep MCBL_Main_Reps;
 	@Autowired
@@ -773,6 +776,37 @@ public class NavigationController {
             return "Source_Data_Mapping";
         }
     
+        @RequestMapping(value = "ReferCodeMast", method = { RequestMethod.GET, RequestMethod.POST })
+        public String ReferCodeMast(
+                @RequestParam(required = false) String formmode,
+                @RequestParam(required = false) String id,
+                @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                @RequestParam(value = "size", required = false, defaultValue = "100") int size,
+                Model md) {
 
+                md.addAttribute("menu", "Reference Code Master");
+                md.addAttribute("menuname", "Referance Code Master");
+                md.addAttribute("formmode", "list");
+
+                int offset = page * size;
+                List<MCBL_Main_Entity> lists = MCBL_Main_Reps.getdatabydateList(offset, size);
+
+                // ✅ Declare totalRecords here
+                int totalRecords = MCBL_Main_Reps.countAll();
+                int totalPages = (int) Math.ceil((double) totalRecords / size);
+
+                List<String> RptCodes = BRRS_Report_Mast_Reps.getALL();
+
+                md.addAttribute("RptCodes", RptCodes);
+                
+                md.addAttribute("MCBL_List", lists);
+                md.addAttribute("pagination", "YES");
+                md.addAttribute("currentPage", page);
+                md.addAttribute("totalPages", totalPages);
+            
+            
+
+            return "Reference_Code_Master.html";
+        }
 
 }
