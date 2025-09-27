@@ -241,10 +241,6 @@ public class RegulatoryReportServices {
 					pageable, Filter);
 			break;
 			
-		case "M_CA3":
-			repdetail = BRRS_M_CA3_reportservice.getM_CA3currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter);
-			break;
 			
 		case "M_PI":
 			repdetail = BRRS_M_PI_reportservice.getM_PIcurrentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -376,7 +372,7 @@ public class RegulatoryReportServices {
 		case "M_CA3":
 			try {
 				repfile = BRRS_M_CA3_reportservice.BRRS_M_CA3Excel(filename, reportId, fromdate, todate, currency,
-						dtltype);
+						dtltype,type,version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -500,9 +496,6 @@ public class RegulatoryReportServices {
 			return BRRS_M_CA1_reportservice.BRRS_M_CA1DetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 		}
 		
-		if ("M_CA3Detail".equals(filename)) {
-			return BRRS_M_CA3_reportservice.BRRS_M_CA3DetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
-		}
 		
 		if ("M_PIDetail".equals(filename)) {
 			return BRRS_M_PI_reportservice.BRRS_M_PIDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
@@ -657,6 +650,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_CA3":
+			try {
+				archivalData = BRRS_M_CA3_reportservice.getM_CA3Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 
 		}
@@ -690,8 +692,6 @@ public class RegulatoryReportServices {
 		    fileData = BRRS_M_SRWA_12C_reportservice.BRRS_M_SRWA_12CDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}else if (filename.equals("M_CA1Detail")) {
 		    fileData = BRRS_M_CA1_reportservice.BRRS_M_CA1DetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
-		}else if (filename.equals("M_CA3Detail")) {
-		    fileData = BRRS_M_CA3_reportservice.BRRS_M_CA3DetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}else if (filename.equals("M_PIDetail")) {
 		    fileData = BRRS_M_PI_reportservice.BRRS_M_PIDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}else if (filename.equals("M_LA1Detail")) {

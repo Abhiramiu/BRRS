@@ -1,565 +1,335 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
-
-<!-- 
-CREATED BY	: SUDEEP HEBSUR
-CREATED ON	: 31.08.2025
-PURPOSE		: BRFREPORT
+<!--
+CREATED BY	: PRAVEEN KUMAR M
+CREATED ON	: 18.09.2025
+PURPOSE		: BWRBRREPORT
 -->
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- CSS -->
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
-<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
-
-<!-- JavaScript -->
-<!-- jQuery core (required first) -->
-
-
-<!-- ✅ Your manually placed jQuery validation
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- CSS -->
+	
+	
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+	<!-- JavaScript -->
+	<!-- jQuery core (required first) -->
+	<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
-
-<!-- jQuery (required first) -->
-<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
-
-<!-- ✅ jQuery Validation -->
-<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
-	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
-
-<!-- Bootstrap + Others -->
-<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
-<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
-<script
-	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
-<script
-	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-
-
-
-<style>
-.btns {
-	float: right;
-	margin: 5px;
-}
-
-.col-sm-5 {
-	padding-bottom: 15px;
-}
-
-.list-body {
-	padding: 0px;
-}
-
-.error {
-	color: red;
-	padding-left: 10px;
-}
-
-.formline {
-	padding-bottom: 15px;
-}
-
-.btn-primary {
-	background-color: #E77400;
-	border-color: #0c0c0c;
-}
-
-.btn-primary:not(:disabled ):not(.disabled ).active, .btn-primary
-:not(:disabled ):not(.disabled ):active, .show>.btn-primary.dropdown-toggle
-	{
-	color: #fff;
-	background-color: #cc000000;
-	border-color: #161617;
-}
-
-#finusertb {
-	width: 460px;
-}
-
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-	padding: 0px;
-}
-</style>
-
-
-
-
-<style>
-div span {
-	font-weight: bold;
-	color: white !important;
-}
-
-.card {
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	border-radius: 8px;
-}
-
-.card-header h5 {
-	font-size: 22px;
-	color: #fff;
-	font-weight: 600;
-}
-
-.nav-tabs .nav-link {
-	font-weight: 500;
-	border: 1px solid #dee2e6;
-	border-bottom: none;
-	border-radius: 4px 4px 0 0;
-	background-color: #f1f1f1;
-	margin-right: 5px;
-}
-
-.nav-tabs .nav-link.active {
-	background-color: #ffffff;
-	border-color: #dee2e6 #dee2e6 #ffffff;
-}
-
-.table-responsive {
-	border: 1px solid #dee2e6;
-	border-radius: 4px;
-}
-
-.table-hover tbody tr:hover {
-	background-color: #f3f6f9;
-}
-
-thead th {
-	position: sticky;
-	top: 0;
-	background-color: #e9ecf0;
-	z-index: 1;
-}
-
-.table td {
-	background-color: #FFFFFF;
-}
-
-.card-footer {
-	padding: 10px;
-	border-top: 1px solid #ccc;
-}
-
-.btn-xs {
-	padding: 4px 12px;
-	font-size: 14px;
-	border-radius: 4px;
-}
-
-#BRFvalidation th, #usertable td {
-	vertical-align: middle;
-	text-align: left;
-	font-size: 16px;
-	font-family: Arial;
-}
-
-.fa-edit:hover {
-	color: #28a745;
-	transform: scale(1.1);
-}
-
-td {
-	border: 1px solid rgb(0, 164, 166);
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-</style>
-
-
-<style>
-.form-group {
-	position: relative;
-	margin-bottom: 1.5rem;
-}
-
-.form-control {
-	width: 100%;
-	border: 2px solid #ccc;
-	border-radius: 8px;
-	font-size: 1rem;
-	outline: none;
-	background: transparent;
-	transition: border-color 0.3s ease, padding-top 0.3s ease;
-}
-
-.error {
-	color: red;
-	padding-top: 15px;
-}
-
-.form-control:focus {
-	border-color: #007bff;
-}
-
-.form-legend {
-	position: absolute;
-	top: 50%;
-	left: 15px;
-	transform: translateY(-50%);
-	font-size: 1rem;
-	color: #aaa;
-	background: white;
-	padding: 0 5px;
-	pointer-events: none;
-	transition: 0.3s ease;
-}
-
-/* When input or select is focused or has a value, move the label up */
-.form-control:focus ~ .form-legend, .form-control:not(:placeholder-shown
-	) ~ .form-legend {
-	top: -8px;
-	font-size: 1rem;
-	color: #007bff;
-}
-
-/* Hover effect when the input/select is focused */
-.form-control:focus:hover ~ .form-legend {
-	color: #0056b3; /* Darker shade of blue on hover */
-}
-
-/* Ensure the label returns to the normal color after focus or hover is removed */
-.form-control:not(:focus ) ~ .form-legend {
-	color: #aaa; /* Normal label color */
-}
-</style>
-
-<style>
-/* Red border for invalid inputs */
-input.error, select.error {
-	border: 2px solid red !important;
-}
-
-/* Error message style */
-label.error {
-	color: red;
-	font-size: 0.85em;
-	margin-top: 5px;
-	display: block;
-}
-
-.underline {
-	text-decoration: underline;
-	color: #08a6f1;
-	cursor: pointer;
-}
-
-.left-arrow-circle {
-	width: 35px;
-	height: 35px;
-	border-radius: 50%;
-	background-color: white;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-right: 10px;
-	transition: background-color 0.3s, transform 0.2s;
-}
-
-.left-arrow-circle i {
-	color: rgb(107, 122, 143);
-}
-
-.left-arrow-circle:hover {
-	background-color: rgb(107, 122, 143);
-	cursor: pointer;
-	transform: scale(1.05);
-	border: 2px solid white;
-}
-
-.left-arrow-circle:hover i {
-	color: white;
-}
-
-.white-text span {
-	color: white !important;
-}
-
-.table-cell tbody td:hover {
-        background-color: #f0f0f0; /* Hover color for cell */
-        cursor: pointer;           /* Optional: pointer cursor */
-    }
-	.table-bordered td, 
-	.table-bordered th {
-	     border: 1px solid #000 !important;
-	}
-</style>
-
-
-<script th:inline="javascript">
-
-$(document).ready(function() {
-    // hide loader on normal load
-    $('#loader').modal('hide');
-});
-
-$(window).on('pageshow', function() {
-    // hide loader on back/forward nav
-    $('#loader').modal('hide');
-});
-
-$(window).on('beforeunload', function() {
-    // hide loader on leaving page
-    $('#loader').modal('hide');
-});
-
-	
-
-	function home() {
-        $("#loader").modal("toggle");
-		location.href = 'Dashboard'
-	}
-
-	function back() {
-        $("#loader").modal("toggle");
-
-		window.history.back();
-	}
-	
-	//to fetch summary from the database - called from the summary button
-	function showdetails() {
-    
-    var Callurl;
-    	$('#loader').modal('show');
-        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/ 
-        location.href = Callurl;
-        	console.log(Callurl);
-   /*  $.ajax({
-        type: 'get',
-        url: Callurl,
-        beforeSend: function () {
-            $('#loader').modal('show'); // 🔄 Show loader
-        },
-        success: function (data) {
-            $('.content').html(data);
-            //$("#detailsbtn").addClass("active");
-            //tablepagination();
-        },
-        complete: function () {
-            $('#loader').modal('hide'); 
-        },
-        error: function () {
-        	  $('#loader').modal('hide');
-            alert("Something went wrongss. Please try again.");
-          
-        }
-    }); */
-}
-	
-	function showsummary() {
-		$('#loader').modal('show');
-		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/							
-		location.href = Callurl;
-
-	}
-    </script>
-
-<script>
-
-function activateTab(tabName) {
-    // Remove 'active' from all buttons
-    document.querySelectorAll('.custom-tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
-    // Add 'active' to selected button
-    if (tabName === 'summary') {
-        document.getElementById('custom-tab-btnSummary').classList.add('active');
-    } else if (tabName === 'Details') {
-        document.getElementById('custom-tab-btnDetails').classList.add('active');
-    }
-}
-
-window.onload = function() {
-    /* setTimeout(function() {
-        var selectedTab = document.getElementById("selectedTab").value;
-        alert(selectedTab);
-        activateTab(selectedTab);
-    }, 10000); */ // 10,000 milliseconds = 10 seconds
-    
-	var selectedTab = document.getElementById("selectedTab").value;
-    activateTab(selectedTab);
-};
-
-
-function downloadfile(button) {
-	var reportid = button.getAttribute('data-reportid');
-	var asondate = button.getAttribute('data-asondate');
-	var fromdate = button.getAttribute('data-fromdate');
-	var todate = button.getAttribute('data-todate');
-	var currency = button.getAttribute('data-currency');
-	var subreportid = button.getAttribute('data-subreportid');
-	var secid = button.getAttribute('data-secid');
-	var dtltype = button.getAttribute('data-dtltype');
-	var filename = button.getAttribute('data-filename');
-	
-	$('#loader').modal('show');
-
-	$.ajax({
-		url: './downloadExcel?reportid=' + reportid +
-			'&fromdate=' + fromdate +
-			'&asondate=' + asondate +
-			'&todate=' + todate +
-			'&currency=' + currency +
-			'&subreportid=' + subreportid +
-			'&secid=' + secid +
-			'&filename=' + filename,
-		type: 'GET',
-		xhrFields: {
-			responseType: 'blob'
-		},
-		success: function (data) {
+	<!-- jQuery (required first) -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+	<!-- ✅ jQuery Validation -->
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	<!-- Bootstrap + Others -->
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
+		.list-body {
+			padding: 0px;
+		}
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+		.formline {
+			padding-bottom: 15px;
+		}
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
+		.btn-primary:not (:disabled):not (.disabled).active,
+		.btn-primary:not (:disabled):not (.disabled):active,
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc000000;
+			border-color: #161617;
+		}
+		#finusertb {
+			width: 460px;
+		}
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+	</style>
+	<style>
+		div span {
+			font-weight: bold;
+			color: white !important;
+		}
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
+		.card-header h5 {
+			font-size: 22px;
+			color: #fff;
+			font-weight: 600;
+		}
+		.nav-tabs .nav-link {
+			font-weight: 500;
+			border: 1px solid #dee2e6;
+			border-bottom: none;
+			border-radius: 4px 4px 0 0;
+			background-color: #f1f1f1;
+			margin-right: 5px;
+		}
+		.nav-tabs .nav-link.active {
+			background-color: #ffffff;
+			border-color: #dee2e6 #dee2e6 #ffffff;
+		}
+		.table-responsive {
+			border: 1px solid #dee2e6;
+			border-radius: 4px;
+		}
+		.table-hover tbody tr:hover {
+			background-color: #f3f6f9;
+		}
+		thead th {
+			position: sticky;
+			top: 0;
+			background-color: #e9ecf0;
+			z-index: 1;
+		}
+		.table td {
+			background-color: #FFFFFF;
+		}
+		.card-footer {
+			padding: 10px;
+			border-top: 1px solid #ccc;
+		}
+		.btn-xs {
+			padding: 4px 12px;
+			font-size: 14px;
+			border-radius: 4px;
+		}
+		#BRRSvalidation th,
+		#usertable td {
+			vertical-align: middle;
+			text-align: left;
+			font-size: 16px;
+			font-family: Arial;
+		}
+		.fa-edit:hover {
+			color: #28a745;
+			transform: scale(1.1);
+		}
+		td {
+			border: 1px solid rgb(0, 164, 166);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	</style>
+	<style>
+		.form-group {
+			position: relative;
+			margin-bottom: 1.5rem;
+		}
+		.form-control {
+			width: 100%;
+			border: 2px solid #ccc;
+			border-radius: 8px;
+			font-size: 1rem;
+			outline: none;
+			background: transparent;
+			transition: border-color 0.3s ease, padding-top 0.3s ease;
+		}
+		.error {
+			color: red;
+			padding-top: 15px;
+		}
+		.form-control:focus {
+			border-color: #007bff;
+		}
+		.form-legend {
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			font-size: 1rem;
+			color: #aaa;
+			background: white;
+			padding: 0 5px;
+			pointer-events: none;
+			transition: 0.3s ease;
+		}
+		/* When input or select is focused or has a value, move the label up */
+		.form-control:focus~.form-legend,
+		.form-control:not (:placeholder-shown)~.form-legend {
+			top: -8px;
+			font-size: 1rem;
+			color: #007bff;
+		}
+		/* Hover effect when the input/select is focused */
+		.form-control:focus:hover~.form-legend {
+			color: #0056b3;
+			/* Darker shade of blue on hover */
+		}
+		/* Ensure the label returns to the normal color after focus or hover is removed */
+		.form-control:not (:focus)~.form-legend {
+			color: #aaa;
+			/* Normal label color */
+		}
+	</style>
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
+		.underline {
+			text-decoration: underline;
+			color: #08a6f1;
+			cursor: pointer;
+		}
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+		.white-text span {
+			color: white !important;
+		}
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
+		.table-bordered td,
+		.table-bordered th {
+			border: 1px solid #000 !important;
+		}
+	</style>
+	<script th:inline="javascript">
+		$(document).ready(function () {
+			// hide loader on normal load
 			$('#loader').modal('hide');
-
-			if (data && data.size > 100) {
-				const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-				const url = window.URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.style.display = 'none';
-				a.href = url;
-				a.download = filename;
-				document.body.appendChild(a);
-				a.click();
-				window.URL.revokeObjectURL(url);
-				document.body.removeChild(a);
-
-				showResultModal('Success', 'The file has been downloaded successfully.');
-			} else {
-				showResultModal('Information', 'No data was available to create a download.');
-			}
-		},
-		error: function (jqXHR, textStatus, errorThrown) {
+		});
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
 			$('#loader').modal('hide');
-			console.error("Download failed:", textStatus, errorThrown);
-			showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+		});
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard'
 		}
-	});
-}
-
-function editRecord(){
-	showResultModal('Alert', 'Development in progress');
-	
-}
-function closemodel(){
-	$('#alert').modal('hide');
-	$('#resultModal').modal('hide');
-	
-}
-
-function showResultModal(title, message) {
-	// Set the text for the modal elements
-	$('#resultModalLabel').text(title);
-	$('#resultModalBody').text(message);
-
-	// Show the modal
-	$('#resultModal').modal('show');
-}
-
-</script>
-
-<script>
-
-	function startReport(button){
-			const alertMsg = document.getElementById("alertMessage");
-			const filename = button.getAttribute('data-filename');
-			const fromdate = button.getAttribute('data-fromdate');
-			const todate = button.getAttribute('data-todate');
-			const currency = button.getAttribute('data-currency');
-			const dtltype = button.getAttribute('data-dtltype');
-			const type = button.getAttribute('data-type');
-			const version = button.getAttribute('data-version');
-			const sessionfilename = sessionStorage.getItem("filename");
-			
-			if(sessionfilename==filename){
-				alertMsg.innerHTML ='Download request already Processing...';
-	       	 	showAlert();
-				return;
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+		//to fetch summary from the database - called from the summary button
+		function showdetails() {
+			 alert("Details page not available for Manual Report");
+		}
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+	</script>
+	<script>
+		function activateTab(tabName) {
+			// Remove 'active' from all buttons
+			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			// Add 'active' to selected button
+			if (tabName === 'summary') {
+				document.getElementById('custom-tab-btnSummary').classList.add('active');
+			} else if (tabName === 'Details') {
+				document.getElementById('custom-tab-btnDetails').classList.add('active');
 			}
-			
-			alertMsg.innerHTML ='Download request Processing...';
-	   	 	showAlert();
-
-			const baseUrl = '/BRRS/Reports/startreport';
-			const downloadUrl = baseUrl +
-				'?filename=' + encodeURIComponent(filename) +
-				'&fromdate=' + encodeURIComponent(fromdate) +
-				'&todate=' + encodeURIComponent(todate) +
-				'&currency=' + encodeURIComponent(currency) +
-				'&dtltype=' + encodeURIComponent(dtltype) +
-				'&type=' + encodeURIComponent(type) +
-				'&version=' + encodeURIComponent(version);
-		    fetch(downloadUrl)  // ✅ no invalid characters now
-		        .then(res => res.text())
-		        .then(jobId => {
-
-		        	alertMsg.innerHTML ='Download request received...'+jobId;
-		       	 	showAlert();
-		            sessionStorage.setItem("jobId", jobId);
-		            sessionStorage.setItem("filename", filename);
-		            checkReport(jobId);
-		        });
 		}
-
-		function checkReport(jobId) {
-			const alertMsg = document.getElementById("alertMessage");
-		    fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
-		        .then(res => res.text())
-		        .then(status => {
-		            if (status === "READY") {
-		            	alertMsg.innerHTML ='Report is ready! Downloading…';
-		           	 	showAlert();
-		                const filename = sessionStorage.getItem("filename");
-		                downloadDetailfile(jobId,filename)
-		                sessionStorage.removeItem("jobId");
-		                sessionStorage.removeItem("filename");                
-		                
-		            } else if(status ==="PROCESSING") {
-		                alertMsg.innerHTML ='Download Is Processing…';
-		            	showAlert();
-		                setTimeout(() => checkReport(jobId), 5000);
-		            }
-		            else if(status ==="ERROR") {
-		                alertMsg.innerHTML ='No data was available to create a download.';
-		            	showAlert();
-		            	sessionStorage.removeItem("jobId");
-		                sessionStorage.removeItem("filename");  
-		            }
-		        });
-		}
-
-
-
-		function downloadDetailfile(jobId,filename) {
-			
-			//$('#loader').modal('show');
-			
+		window.onload = function () {
+			/* setTimeout(function() {
+				var selectedTab = document.getElementById("selectedTab").value;
+				alert(selectedTab);
+				activateTab(selectedTab);
+			}, 10000); */ // 10,000 milliseconds = 10 seconds
+			var selectedTab = document.getElementById("selectedTab").value;
+			activateTab(selectedTab);
+		};
+		function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			$('#loader').modal('show');
 			$.ajax({
-				url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
-					'&filename=' + filename,
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
 				type: 'GET',
 				xhrFields: {
 					responseType: 'blob'
 				},
 				success: function (data) {
 					$('#loader').modal('hide');
-
 					if (data && data.size > 100) {
 						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
@@ -571,8 +341,7 @@ function showResultModal(title, message) {
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
-
-						showResultModal('Success', filename + ' downloaded successfully.');
+						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -584,63 +353,314 @@ function showResultModal(title, message) {
 				}
 			});
 		}
-
-
-</script>
-
-<script th:inline="javascript">
-function showdetailsbyRowAndColumn(a) { 
-    var rowId = a.getAttribute('RowId');
-    var columnId = a.getAttribute('ColumnId');
-    var cellValue = a.textContent || a.innerText;
-
-    if (cellValue !== '0') {
-        // Set dynamic message in modal (instead of confirm)
-        document.getElementById("cellresultModalLabel").innerText = 
-            "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
-
-        // Show custom Bootstrap modal
-        $('#cellresultModal').modal('show');
-
-        // Handle Yes button
-        document.querySelector('.yes-btn').onclick = function() {
-            $('#cellresultModal').modal('hide');
-
-            // Show loader
-            const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
-                backdrop: 'static',
-                keyboard: false
-            });
-            $('#loader').modal('show');
-
-            // Build dynamic URL
-            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
-
-            location.href = Callurl;
-        };
-    } else {
-        // Use your custom alert modal instead of window.alert
-        showResultModal("Alert", "No Records available for this selected cell.");
-    }
+		function editRecord() {
+			showResultModal('Alert', 'Development in progress');
+		}
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+		}
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+	</script>
+	
+	
+		
+	
+	
+	
+	
+	
+	<script>
+	// Show Modify (enable inputs & dropdowns)
+function showmodify(btn) {
+   $(".Show_input").removeAttr("readonly").removeAttr("disabled");
+   
+   // Toggle buttons
+   $("#submitButton").show();
+  
+   // Show Cancel button only when Modify is clicked
+   $("#cancelRecord").show();
+  
+   // Optionally hide the clicked Modify button
+   $(btn).hide();
 }
-</script>
-
-
-
-
+//Cancel / Reset function
+function cancelModify() {
+   if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+       // ✅ Only when user clicks YES
+       location.reload();
+      
+       $(".Show_input").attr("readonly", true).attr("disabled", true);
+     
+       $("#submitButton, #btnBack_edit").hide();
+       $("#btnBack").show();
+       // Hide Cancel button again
+       $("#cancelRecord").hide();
+       // Show all Modify buttons
+       $("#addRecord").show();
+   }
+   // ❌ If user clicks CANCEL, nothing happens
+}
+	
+	</script>
+	
+	<SCRIPT>
+	
+		// Calculating Totals for 20 row
+		function calculateR20Totals() {
+		    let totalAmount = 0;
+		   
+		    for (let i = 10; i <= 19; i++) {
+		        // Get numeric values safely (remove commas, default 0)
+		        let amt   = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
+		       
+		        totalAmount += amt;
+		       
+		    }
+		    // Set totals without forcing decimals
+		    $("#R20_AMOUNT").val(totalAmount);
+			calculateR29Totals();
+		   
+		}
+	
+	
+	// Calculating Totals for 28 row
+			function calculateR28Totals() {
+			    let totalAmount = 0;
+			   
+			    for (let i = 24; i <= 27; i++) {
+			        // Get numeric values safely (remove commas, default 0)
+			        let amt   = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
+			       
+			        totalAmount += amt;
+			       
+			    }
+			    // Set totals without forcing decimals
+			    $("#R28_AMOUNT").val(totalAmount);
+				calculateR29Totals();
+			   
+			}
+		
+		
+		// Calculating Totals for 29 row
+							function calculateR29Totals() {
+							   
+							        // Get numeric values safely (remove commas, default 0)
+							        let amt1   = parseFloat($("#R20_AMOUNT").val()?.replace(/,/g, "")) || 0;
+									let amt2   = parseFloat($("#R28_AMOUNT").val()?.replace(/,/g, "")) || 0;
+									let totalAmount = amt1 + amt2;
+							       
+							    // Set totals without forcing decimals
+							    $("#R29_AMOUNT").val(totalAmount);
+								}
+							   
+							
+						// Call on page load
+						$(document).ready(function() {
+						    calculateR20Totals();
+							calculateR28Totals();
+							calculateR29Totals();
+							// Attach listeners
+							    for (let i = 10; i <= 19; i++) {
+							        $("#R" + i + "_AMOUNT").on("input", function () {
+							            calculateR20Totals();
+							        });
+							    }
+							    for (let i = 24; i <= 27; i++) {
+							        $("#R" + i + "_AMOUNT").on("input", function () {
+							            calculateR28Totals();
+							        });
+							    }
+							});
+				
+							
+							// Calculating Totals for 41 row
+									function calculateR41Totals() {
+									    let totalAmount = 0;
+									   
+									    for (let i = 36; i <= 40; i++) {
+									        // Get numeric values safely (remove commas, default 0)
+									        let amt   = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
+									       
+									        totalAmount += amt;
+									       
+									    }
+									    // Set totals without forcing decimals
+									    $("#R41_AMOUNT").val(totalAmount);
+										calculateR46Totals();
+									   
+									}
+								
+								
+								// Calculating Totals for 46 row
+								function calculateR46Totals() {
+													   
+													        // Get numeric values safely (remove commas, default 0)
+													        let amt1   = parseFloat($("#R41_AMOUNT").val()?.replace(/,/g, "")) || 0;
+															let amt2   = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
+															let totalAmount = amt1 + amt2;
+													       
+													    // Set totals without forcing decimals
+													    $("#R46_AMOUNT").val(totalAmount);
+														}
+													   
+													
+												// Call on page load
+												$(document).ready(function() {
+												    calculateR41Totals();													
+													calculateR46Totals();
+													// Attach listeners
+													    for (let i = 36; i <= 40; i++) {
+													        $("#R" + i + "_AMOUNT").on("input", function () {
+													            calculateR41Totals();
+													        });
+													    }
+														$("#R45_AMOUNT").on("input", function () {
+														        calculateR46Totals();
+														    });
+													   
+													});
+													
+													
+													// Calculating Totals for 55 row
+															function calculateR55Totals() {
+															    let totalAmount = 0;
+															   
+															    for (let i = 50; i <= 54; i++) {
+															        // Get numeric values safely (remove commas, default 0)
+															        let amt   = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
+															       
+															        totalAmount += amt;
+															       
+															    }
+															    // Set totals without forcing decimals
+															    $("#R55_AMOUNT").val(totalAmount);
+																calculateR60Totals();
+															   
+															}
+														
+														
+														// Calculating Totals for 60 row
+														function calculateR60Totals() {
+																			   
+																			        // Get numeric values safely (remove commas, default 0)
+																			        let amt1   = parseFloat($("#R55_AMOUNT").val()?.replace(/,/g, "")) || 0;
+																					let amt2   = parseFloat($("#R59_AMOUNT").val()?.replace(/,/g, "")) || 0;
+																					let totalAmount = amt1 + amt2;
+																			       
+																			    // Set totals without forcing decimals
+																			    $("#R60_AMOUNT").val(totalAmount);
+																				}
+																			   
+																			
+																		// Call on page load
+																		$(document).ready(function() {
+																		    calculateR55Totals();													
+																			calculateR60Totals();
+																			// Attach listeners
+																			    for (let i = 50; i <= 54; i++) {
+																			        $("#R" + i + "_AMOUNT").on("input", function () {
+																			            calculateR55Totals();
+																			        });
+																			    }
+																				$("#R59_AMOUNT").on("input", function () {
+																				        calculateR60Totals();
+																				    });
+																			   
+																			});
+																			
+								
+								
+			
+							
+	
+	
+	</SCRIPT>
+	<script>
+	
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
+	    setTimeout(function () {
+	        location.reload();
+	    }, 300);
+	}
+	
+	function fileuploads(btn) {
+		const asondate = btn.getAttribute("data-todate");
+		const type = btn.getAttribute("data-type");
+		
+		$('#loader').modal('show');
+		// ✅ Step 1: Calculate totals
+	    calculateR20Totals();
+		calculateR28Totals();
+		calculateR29Totals();
+		calculateR41Totals();
+		calculateR46Totals();
+		calculateR55Totals();
+		calculateR60Totals();
+	   
+		// ✅ Step 2: Remove commas from inputs
+			    $("#fileupload input[type='text']").each(function () {
+			        $(this).val($(this).val().replace(/,/g, ''));
+			    });
+			    // ✅ Step 3: Validate form
+			    if (!$("#fileupload").valid()) {
+			        $('#loader').modal('hide');
+			        return;
+			    }
+				
+				// ✅ Step 4: Build one FormData object for all entities
+					    const formData = new FormData();
+					    formData.append("asondate", asondate);
+						formData.append("type", type);
+					    // Append all inputs
+					    $('#fileupload').find(':input').each(function () {
+					        const name = $(this).attr('name');
+					        if (name) {
+					            formData.append(name, $(this).val());
+					        }
+					    });
+						// ✅ Step 5: Send single Ajax request
+							    $.ajax({
+							        url: './CA3updateAll',
+							        type: 'POST',
+							        data: formData,
+							        processData: false,
+							        contentType: false,
+							        dataType: 'text',
+							        success: function () {
+							            $("#resultModalLabel").text("Success");
+							            $("#resultModalBody").text("All reports updated successfully.");
+							            $("#resultModal").modal("show");
+							        },
+							        error: function (jqXHR) {
+							            console.error("Error response:", jqXHR.responseText);
+							            $("#resultModalLabel").text("Error");
+							            $("#resultModalBody").text("Update failed. Check console for details.");
+							            $("#resultModal").modal("show");
+							        },
+							        complete: function () {
+							            $('#loader').modal('hide');
+							        }
+							    });
+							}
+	</script>
 </head>
-
-
-
 <title>BRRS</title>
 <body>
-	<div class="container-fluid"
-		style="padding-left: 0px; padding-right: 0px;">
+	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
 		<div class="row">
-
 			<div th:insert="HeaderMenu :: header"></div>
-
 			<div class="card">
 				<div class="card-header"
 					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
@@ -649,13 +669,11 @@ function showdetailsbyRowAndColumn(a) {
 						<div class="left-arrow-circle">
 							<i class="fa fa-arrow-left"></i>
 						</div>
-
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
 							M-CA3:   REGULATORY ADJUSTMENTS  APPLIED IN THE CALCULATION OF CAPITAL</h5>
 					</div>
-
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
@@ -663,593 +681,734 @@ function showdetailsbyRowAndColumn(a) {
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
 							Date: <span th:text="${asondate}">2025-07-04</span>
 						</span>
-
 						<!-- Buttons -->
-        <input type="hidden" id="selectedTab" th:value="${displaymode}">
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();" th:if="${displaymode == 'Details'}">Summary</button>
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();" th:if="${displaymode == 'summary'}">Details</button>
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
-            th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='M-CA3(Reg.Adjust.).xls',
-                     data-type=${type},
-                     data-version=${version}"
-                     
-            onclick="downloadfile(this);">
-            <i class="fa fa-download"></i>
-        </button>
-        <button
-		  type="button"
-		  class="custom-tab-btn"
-		  id="custom-tab-btnAdd"
-		  th:if="${displaymode == 'Details'}"
-		  onclick="startReport(this);"
-		  th:attr="
-		    data-fromdate=${fromdate},
-		    data-todate=${todate},
-		    data-filename='M_CA3Detail'
-		  ">
-		  <i class="fa fa-download"></i>
-		</button>
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+						
+<!-- Modify button -->
+<button type="button" class="custom-tab-btn"
+       onclick="showmodify(this);"
+       title="Click to EDIT Records"
+		th:if="${type != 'ARCHIVAL'}"
+       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+       id="addRecord">Modify</button>
+<!-- Cancel button (hidden initially) -->
+<button type="button" class="custom-tab-btn"
+       title="Cancel editing"
+       id="cancelRecord"
+       onclick="cancelModify();"
+       style="display: none;">Cancel</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+                  				 data-asondate=${asondate},
+                  				 data-fromdate=${fromdate},
+                   				 data-todate=${todate},
+                   				 data-currency=${currency},
+                   				 data-dtltype=${dtltype},
+                   				 data-filename='M-CA3(Reg.Adjust.).xls',
+					 				 data-type=${type},
+					    			 data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+						
+						
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+									data-currency=${currency}, 
+												data-dtltype=${dtltype},
+								    data-filename='MSFinP2Detail',
+									data-type=${type},
+												data-version=${version}
+								  ">
+							<i class="fa fa-download"></i>
+						</button>
 					</div>
+					
 				</div>
-			
-			<div th:if="${displaymode == 'summary'}">
-			<div class="row" >
-				<div class="col-sm-12">
-					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
-                        <!-- 1st table -->
-						<p style="font-weight: bold;">A.Full decductions</p>
-    					<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reportss" style="table-layout: fixed;">
-                            <colgroup>
-                              <col style="width: 2.5%;" />
-                              <col style="width: 400px;" />	
-                              <col style="width: 100px;" />
-                             </colgroup>
-							<thead class="thead-light">
-  									 <!-- First header row -->
-                                    <tr style="background-color: #b3b6b9">
-                                        <th rowspan="1" style="text-align: center; background-color: #fefeff;">Line</th>
-                                        <th colspan="1" style="text-align: center; background-color: #ffffff;">Item</th>
-                                        <th colspan="1" style="text-align: center; background-color:#ffffff;">Amount(P'000)</th>
-                                    </tr>
-								</thead>
-
-
-								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-
-								         <tr>
-											<td style="text-align: center; font-weight:  bold; ">22</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R10_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R10_AMOUNT}"
-											th:attr="RowId='R10', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>
-											
-											<td style="text-align: center; font-weight:  bold">23</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R11_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R11_AMOUNT}"
-											th:attr="RowId='R11', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>
-											
-											<td style="text-align: center; font-weight:  bold; ">24</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R12_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R12_AMOUNT}"
-											th:attr="RowId='R12', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>
-											
-											<td style="text-align:center; font-weight:  bold; ">25</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R13_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R13_AMOUNT}"
-											th:attr="RowId='R13', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>
-											
-											<td style="text-align: center; font-weight:  bold; ">26</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R14_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R14_AMOUNT}"
-											th:attr="RowId='R14', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>
-											
-											<td style="text-align: center; font-weight:  bold; ">27</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R15_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R15_AMOUNT}"
-											th:attr="RowId='R15', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>
-											
-											<td style="text-align: center; font-weight:  bold; ">28</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R16_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R16_AMOUNT}"
-											th:attr="RowId='R16', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>
-											
-											<td style="text-align: center; font-weight:  bold; ">29</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R17_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R17_AMOUNT}"
-											th:attr="RowId='R17', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>
-											
-											<td style="text-align: center; font-weight:  bold; ">30</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R18_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R18_AMOUNT}"
-											th:attr="RowId='R18', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>
-											
-											<td style="text-align: center; font-weight:  bold; ">31</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R19_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R19_AMOUNT}"
-											th:attr="RowId='R19', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>
-											
-											<td style="text-align: center; font-weight:  bold; ">32</td>
-                                            <td style="text-align: left;font-weight:  bold;" th:text="${report.R20_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R20_AMOUNT}"
-											></td>
-										</tr>
-
-
-
-                                       
-									</tbody>
-
-
-			              </table>
- <!-- 2st table -->
- <div style="display: flex; justify-content: space-between; align-items: center;">
-   <p style="font-weight: bold;">B. Threshold deductions:</p>
-   <p style="font-style: italic; padding-right: 500px;">
-     ( Recognition capped at 10 percent of the bank’s common equity 
-     (after the application of all regulatory adjustments set out under paragraph 4.6)
-   </p>
- </div>
-
-
-						 
-                        <table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reportss" style="table-layout: fixed;">
-                            <colgroup>
-                              <col style="width: 2.5%;" />
-                              <col style="width: 400px;" />
-                              <col style="width: 100px;" />
-                             </colgroup>
-							<thead class="thead-light">
-  									
-                                    <tr style="background-color: #b3b6b9">
-                                       
-                                        <th rowspan="1" style="text-align: center; background-color: #ffffff;">Line</th>
-                                        <th colspan="1" style="text-align: center; background-color: #ffffff;";>Item</th>
-                                        <th colspan="1" style="text-align: center; background-color:#ffffff;">Amount(P'000)</th>
-                                    </tr>    
-
-								</thead>
-
-
-								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-								        <tr>	
-											<td style="text-align: center; font-weight:  bold; ">33</td>
-                                            <td style="text-align: left;font-weight:  normal; white-space: normal; word-wrap: break-word;" th:text="${report.R24_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R24_AMOUNT}"
-											th:attr="RowId='R24', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                          <tr>	
-											<td style="text-align: center; font-weight:  bold; ">34</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R25_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R25_AMOUNT}"
-											th:attr="RowId='R25', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                          <tr>	
-											<td style="text-align: center; font-weight:  bold; ">35</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R26_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R26_AMOUNT}"
-											th:attr="RowId='R26', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                          <tr>	
-											<td style="text-align: center; font-weight:  bold; ">36</td>
-                                            <td style="text-align: left;font-weight:  normal;white-space: normal; word-wrap: break-word;" th:text="${report.R27_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R27_AMOUNT}"
-											th:attr="RowId='R27', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                          <tr>	
-											<td style="text-align: center; font-weight:  bold; ">37</td>
-                                            <td style="text-align: left;font-weight:  bold;" th:text="${report.R28_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R28_AMOUNT}"
-											></td>
-										</tr>
-                                        <tr>	
-											<td style="text-align: center; font-weight:  bold; ">38</td>
-                                            <td style="text-align: left;font-weight:  bold;" th:text="${report.R29_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R29_AMOUNT}"
-											></td>
-										</tr>
-
-                                    
-									</tbody>
-
-
-			              </table>
-						  <p style="color: red; padding-left: 10px; font-weight: bold;">Important note: (1) The amount of the three items (33,34,35) not deducted (threshold amounts) in the calculation of CET1 will be treated as other assets and risk-weighted at 250 percent.</p>
-							<p style="color: red; padding-left: 80px; font-weight: bold;">(2) Line 36: The amount above the 10 percent threshold shall be deducted from CET1, and the amount below threshold shall be risk-weighted as appropriate as per Schedule M-SRWA</p>
- <!-- 3thtable> -->
-						  <p style="font-weight: bold;">2. Regulatory adjustments applied in the calculation of  Additional Tier1 Capital</p>
-							<p style="font-weight: bold;">A.  Full decductions</p>
-                           <table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reportss" style="table-layout: fixed;">
-                            <colgroup>
-                              
-                             
-                              <col style="width: 2.5%;" />
-                              <col style="width: 400px;" />
-                              <col style="width: 100px;" />
-                             </colgroup>
-					<!--		<thead class="thead-light">
-  									
-                                  <tr style="background-color: #b3b6b9">
-                                        <th rowspan="1" style="text-align: center; background-color: #ffffff;"></th>
-                                        <th colspan="1" style="text-align: center; background-color: #ffffff;"></th>
-                                        <th colspan="1" style="text-align: center; background-color:#ffffff;"></th>
-                                    </tr>   
-
-								</thead> -->
-
-
-								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-								       
-                                    <tr>	
-										<td style="text-align: center; font-weight:  bold; ">39</td>
-                                        <td style="text-align: left;font-weight:  normal;" th:text="${report.R36_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;" th:text="${report.R36_AMOUNT}"
-										th:attr="RowId='R36', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">40</td>
-                                        <td style="text-align: left;font-weight:  normal;" th:text="${report.R37_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;" th:text="${report.R37_AMOUNT}"
-										th:attr="RowId='R37', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">41</td>
-                                        <td style="text-align: left;font-weight:  normal;" th:text="${report.R38_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;" th:text="${report.R38_AMOUNT}"
-										th:attr="RowId='R38', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">42</td>
-                                        <td style="text-align: left;font-weight:  normal;" th:text="${report.R39_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;" th:text="${report.R39_AMOUNT}"
-										th:attr="RowId='R39', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">43</td>
-                                        <td style="text-align: left;font-weight:  normal; white-space: normal; word-wrap: break-word;" th:text="${report.R40_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;" th:text="${report.R40_AMOUNT}"
-										th:attr="RowId='R40', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">44</td>
-                                        <td style="text-align: left;font-weight:  bold;" th:text="${report.R41_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R41_AMOUNT}"
-										></td>
-										</tr>
-									</tbody> 
-
-
-			               </table>
-
- <!-- 4st table -->
- <div style="display: flex; justify-content: space-between; align-items: center;">
-   <p style="font-weight: bold;">B. Threshold deductions:</p>
-   <p style="font-style: italic; padding-right: 500px;">
-	( Recognition capped at 10 percent of the bank’scommon equity (after the application of all regulatory adjustments set out under paragraph 4.10)
-   </p>
- </div>
-                           <table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reportss" style="table-layout: fixed;">
-                            <colgroup>
-                              
-                              
-                              <col style="width: 2.5%;" />
-                              <col style="width: 400px;" />
-                              <col style="width: 100px;" />
-                             </colgroup>
-						<!--	<thead class="thead-light">
-                                    <tr style="background-color: #b3b6b9">
-                                        <th rowspan="1" style="text-align: center; background-color: #ffffff;"></th>
-                                        <th colspan="1" style="text-align: center; background-color: #ffffff;"></th>
-                                        <th colspan="1" style="text-align: center; background-color:#ffffff;"></th>
-                                    </tr>    
-
-								</thead> -->
-
-
-								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-								       
-                                    <tr>	
-										<td style="text-align: center; font-weight:  bold; ">45</td>
-                                        <td style="text-align: left;font-weight:  normal;white-space: normal; word-wrap: break-word;" th:text="${report.R44_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;" th:text="${report.R44_AMOUNT}"
-										th:attr="RowId='R44', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">46</td>
-                                        <td style="text-align: left;font-weight:  bold;" th:text="${report.R45_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R45_AMOUNT}"
-										></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">47</td>
-                                        <td style="text-align: left;font-weight:  bold;" th:text="${report.R46_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R46_AMOUNT}"
-										></td>
-										</tr>
-									</tbody>
-
-
-			              </table>
-
- <!-- 5st table -->
-						  <p style="font-weight: bold;">2. Regulatory adjustments applied in the calculation of Tier2 Capital</p>
-							<p style="font-weight: bold;">A. Full decductions</p>
-                           <table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reportss" style="table-layout: fixed;">
-                            <colgroup>
-                              
-                             
-                              <col style="width: 2.5%;" />
-                              <col style="width: 400px;" />
-                              <col style="width: 100px;" />
-                             </colgroup>
-					<!---		<thead class="thead-light">
-                                    <tr style="background-color: #b3b6b9">
-                                        <th rowspan="1" style="text-align: center; background-color: #ffffff;"></th>
-                                        <th colspan="1" style="text-align: center; background-color: #ffffff;"></th>
-                                        <th colspan="1" style="text-align: center; background-color:#ffffff;"></th>
-                                    </tr>    
-
-								</thead> -->
-
-
-								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-								       
-                                    <tr>	
-										<td style="text-align: center; font-weight:  bold; ">48</td>
-                                        <td style="text-align: left;font-weight:  normal;" th:text="${report.R50_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;" th:text="${report.R50_AMOUNT}"
-										th:attr="RowId='R50', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">49</td>
-                                        <td style="text-align: left;font-weight:  normal;" th:text="${report.R51_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;" th:text="${report.R51_AMOUNT}"
-										th:attr="RowId='R51', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">50</td>
-                                        <td style="text-align: left;font-weight:  normal;" th:text="${report.R52_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;" th:text="${report.R52_AMOUNT}"
-										th:attr="RowId='R52', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold;">51</td>
-                                        <td style="text-align: left;font-weight:  normal;" th:text="${report.R53_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;" th:text="${report.R53_AMOUNT}"
-										th:attr="RowId='R53', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">52</td>
-                                        <td style="text-align: left;font-weight:  normal;white-space: normal; word-wrap: break-word;" th:text="${report.R54_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;" th:text="${report.R54_AMOUNT}"
-										th:attr="RowId='R54', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">53</td>
-                                        <td style="text-align: left;font-weight:  bold;" th:text="${report.R55_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R55_AMOUNT}"
-										></td>
-										</tr>
-									</tbody>
-
-
-			              </table>
-
- <!-- 6st table -->		
- <div style="display: flex; justify-content: space-between; align-items: center;">
-   <p style="font-weight: bold;">B. Threshold deductions:</p>
-   <p style="font-style: italic; padding-right: 500px;">
-	( Recognition capped at 10 percent of the bank’scommon equity (after the application of all regulatory adjustments set out under paragraph 4.15)
-   </p>
- </div>
-                           <table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reportss" style="table-layout: fixed;">
-                            <colgroup>
-                              
-                              
-                              <col style="width: 2.5%;" />
-                              <col style="width: 400px;" />
-                              <col style="width: 100px;" />
-                             </colgroup>
-					<!---	<thead class="thead-light">
-                                    <tr style="background-color: #b3b6b9">
-                                        <th rowspan="1" style="text-align: center; background-color: #ffffff;"></th>
-                                        <th colspan="1" style="text-align: center; background-color: #ffffff;"></th>
-                                        <th colspan="1" style="text-align: center; background-color:#ffffff;"></th>
-                                    </tr>    
-
-								</thead> -->
-
-
-								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-								       <tr>	
-										<td style="text-align: center; font-weight:  bold; ">54</td>
-                                        <td style="text-align: left;font-weight:  normal;white-space: normal; word-wrap: break-word;" th:text="${report.R58_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;" th:text="${report.R58_AMOUNT}"
-										th:attr="RowId='R58', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">55</td>
-                                        <td style="text-align: left;font-weight:  bold;" th:text="${report.R59_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R59_AMOUNT}"
-										></td>
-										</tr>
-
-                                        <tr>	
-										<td style="text-align: center; font-weight:  bold; ">56</td>
-                                        <td style="text-align: left;font-weight:  bold;" th:text="${report.R60_PRODUCT}"></td>
-                                        <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R60_AMOUNT}"
-										></td>
-										</tr>
-                                    
-									</tbody>
-
-
-			              </table>
-
-
-
-
-							</div>
-
-
-						</div>
-					</div>
-				</div>
-
-				<div th:if="${displaymode == 'Details'}">
+				<div th:if="${displaymode == 'summary'}">
 					<div class="row">
 						<div class="col-sm-12">
-							<div class="table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6;">
+						<form action="#" method="POST" id="fileupload">
+							<div class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6; ">
 								<table
+								
 									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
 									id="reports">
-									<thead class="thead-light">
+								<thead  class="thead-light">
 										<tr>
-											<th></th>
-											<th>CUST ID</th>
-											<th>ACCT NO</th>
-											<th>ACCT NAME</th>
-											<th style="text-align: right;">ACCT BALANCE</th>
-											<th style="text-align: left;">ROWID</th>
-											<th>COLUMNID</th>
-											<th>REPORT_DATE</th>
+										<th colspan="7" style="text-align: left; padding-left: 20px; ">
+											       A.  Full decductions   </th>
 										</tr>
-
+									  									 <!-- First header row -->
+									                                    <tr style="background-color: #b3b6b9">
+									                                        <th rowspan="1" style="text-align: center; background-color: #fefeff;">Line</th>
+									                                        <th colspan="1" style="text-align: center; background-color: #ffffff;">Item</th>
+									                                        <th colspan="1" style="text-align: center; background-color:#ffffff;">Amount(P'000)</th>
+									                                    </tr>
+															</thead>
+		<tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
+<tr>
+	
+	<td style="text-align: center; font-weight:  bold; ">22</td>
+	<td style="text-align: left;font-weight:  normal;" th:text="${report.R10_PRODUCT}"></td>
+	<td id="ROW10" style="padding-left: 20px; font-weight: bold;">
+	        <input class="display-input Show_input"
+	               type="text"
+	               th:value="${report.R10_AMOUNT != null ? #numbers.formatDecimal(report.R10_AMOUNT, 1, 0, 'POINT') : '0'}"
+	               id="R10_AMOUNT"
+	               name="R10_AMOUNT"
+	               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+	           readonly />
+	    </td>
+</tr>
+<tr>
+	
+	<td style="text-align: center; font-weight:  bold; ">23</td>
+	<td style="text-align: left;font-weight:  normal;" th:text="${report.R11_PRODUCT}"></td>
+	<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
+	        <input class="display-input Show_input"
+	               type="text"
+	               th:value="${report.R11_AMOUNT != null ? #numbers.formatDecimal(report.R11_AMOUNT, 1, 0, 'POINT') : '0'}"
+	               id="R11_AMOUNT"
+	               name="R11_AMOUNT"
+	               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+	           readonly />
+	    </td>
+</tr>
+<tr>
+   <td style="text-align: center; font-weight: bold;">24</td>
+   <td style="text-align: left; font-weight: normal;" th:text="${report.R12_PRODUCT}"></td>
+   <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+       <input class="display-input Show_input"
+              type="text"
+              th:value="${report.R12_AMOUNT != null ? #numbers.formatDecimal(report.R12_AMOUNT, 1, 0, 'POINT') : '0'}"
+              id="R12_AMOUNT"
+              name="R12_AMOUNT"
+              style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+              readonly />
+   </td>
+</tr>
+<tr>
+   <td style="text-align: center; font-weight: bold;">25</td>
+   <td style="text-align: left; font-weight: normal;" th:text="${report.R13_PRODUCT}"></td>
+   <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+       <input class="display-input Show_input"
+              type="text"
+              th:value="${report.R13_AMOUNT != null ? #numbers.formatDecimal(report.R13_AMOUNT, 1, 0, 'POINT') : '0'}"
+              id="R13_AMOUNT"
+              name="R13_AMOUNT"
+              style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+              readonly />
+   </td>
+</tr>
+<tr>
+   <td style="text-align: center; font-weight: bold;">26</td>
+   <td style="text-align: left; font-weight: normal;" th:text="${report.R14_PRODUCT}"></td>
+   <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+       <input class="display-input Show_input"
+              type="text"
+              th:value="${report.R14_AMOUNT != null ? #numbers.formatDecimal(report.R14_AMOUNT, 1, 0, 'POINT') : '0'}"
+              id="R14_AMOUNT"
+              name="R14_AMOUNT"
+              style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+              readonly />
+   </td>
+</tr>
+<tr>
+   <td style="text-align: center; font-weight: bold;">27</td>
+   <td style="text-align: left; font-weight: normal;" th:text="${report.R15_PRODUCT}"></td>
+   <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+       <input class="display-input Show_input"
+              type="text"
+              th:value="${report.R15_AMOUNT != null ? #numbers.formatDecimal(report.R15_AMOUNT, 1, 0, 'POINT') : '0'}"
+              id="R15_AMOUNT"
+              name="R15_AMOUNT"
+              style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+              readonly />
+   </td>
+</tr>
+<tr>
+   <td style="text-align: center; font-weight: bold;">28</td>
+   <td style="text-align: left; font-weight: normal;" th:text="${report.R16_PRODUCT}"></td>
+   <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
+       <input class="display-input Show_input"
+              type="text"
+              th:value="${report.R16_AMOUNT != null ? #numbers.formatDecimal(report.R16_AMOUNT, 1, 0, 'POINT') : '0'}"
+              id="R16_AMOUNT"
+              name="R16_AMOUNT"
+              style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+              readonly />
+   </td>
+</tr>
+<tr>
+   <td style="text-align: center; font-weight: bold;">29</td>
+   <td style="text-align: left; font-weight: normal;" th:text="${report.R17_PRODUCT}"></td>
+   <td id="ROW17" style="padding-left: 20px; font-weight: bold;">
+       <input class="display-input Show_input"
+              type="text"
+              th:value="${report.R17_AMOUNT != null ? #numbers.formatDecimal(report.R17_AMOUNT, 1, 0, 'POINT') : '0'}"
+              id="R17_AMOUNT"
+              name="R17_AMOUNT"
+              style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+              readonly />
+   </td>
+</tr>
+<tr>
+   <td style="text-align: center; font-weight: bold;">30</td>
+   <td style="text-align: left; font-weight: normal;" th:text="${report.R18_PRODUCT}"></td>
+   <td id="ROW18" style="padding-left: 20px; font-weight: bold;">
+       <input class="display-input Show_input"
+              type="text"
+              th:value="${report.R18_AMOUNT != null ? #numbers.formatDecimal(report.R18_AMOUNT, 1, 0, 'POINT') : '0'}"
+              id="R18_AMOUNT"
+              name="R18_AMOUNT"
+              style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+              readonly />
+   </td>
+</tr>
+<tr>
+   <td style="text-align: center; font-weight: bold;">31</td>
+   <td style="text-align: left; font-weight: normal;" th:text="${report.R19_PRODUCT}"></td>
+   <td id="ROW19" style="padding-left: 20px; font-weight: bold;">
+       <input class="display-input Show_input"
+              type="text"
+              th:value="${report.R19_AMOUNT != null ? #numbers.formatDecimal(report.R19_AMOUNT, 1, 0, 'POINT') : '0'}"
+              id="R19_AMOUNT"
+              name="R19_AMOUNT"
+              style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+              readonly />
+   </td>
+</tr>
+<tr>
+   <td style="text-align: center; font-weight: bold;">32</td>
+   <td style="text-align: left; font-weight: normal;" th:text="${report.R20_PRODUCT}"></td>
+   <td id="ROW20" style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+       <input class="display-input Show_input"
+              type="text"
+              id="R20_AMOUNT"
+              name="R20_AMOUNT"
+              style="background-color:#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+              readonly />
+   </td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+	</tbody>
+	
+	<tr>
+	        <td colspan="7" style="text-align: left; font-weight: bold; padding-left: 20px;">
+	            B. Threshold deductions:
+	            <span style="font-weight: normal;padding-left: 20px;">
+	                (Recognition capped at 10 percent of the bank’s common equity
+	                (after the application of all regulatory adjustments set out under paragraph 4.6))
+	            </span>
+	        </td>
+	    </tr>
+	<thead class="thead-light">
+		
+							 <!-- First header row -->
+	                                    <tr style="background-color: #b3b6b9">
+	                                        <th rowspan="1" style="text-align: center; background-color: #fefeff;">Line</th>
+	                                        <th colspan="1" style="text-align: center; background-color: #ffffff;width: 60%;">Item</th>
+	                                        <th colspan="1" style="text-align: center; background-color:#ffffff;">Amount(P'000)</th>
+	                                    </tr>
 									</thead>
-
-									<tbody 
-										style="font-family: Arial;">
-										<tr th:each="report: ${reportdetails}">
-											<td><a data-toggle="tooltip" class="editrec"
-												title="Click to Edit this Record"> <i
-													class="fas fa-edit" onclick="editRecord(this)"></i>
-											</a></td>
-											<td th:text="${report.CUST_ID}"></td>
-											<td th:text="${report.ACCT_NUMBER}"></td>
-											<td th:text="${report.ACCT_NAME}"></td>
-											<td th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_IN_PULA, 1, 2)}" style="text-align: right;"></td>
-											<td style="text-align: left;" th:text="${report.ROW_ID}"></td>
-											<td th:text="${report.COLUMN_ID}"></td>
-											<td
-												th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"></td>
-
-										</tr>
-									</tbody>
+	
+	<tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
+										
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">33</td>
+		    <td style="text-align: left; font-weight: normal; " > Significant investments in the common shares of unconsolidated financial institutions, where a bank <br>
+				 or its subsidiary owns more than 10% common shares of the issuing entity (banks, insurance <br>
+				 and other financial entities) - instead of full deduction, only deduct the excess above the 10% <br>
+				  threshold, the remaining balance below thresholds shall be treated as other assets (para 3.16 <br>
+				   - 3.18 Basel II Guidelines)</td>
+		    <td id="ROW24" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R24_AMOUNT != null ? #numbers.formatDecimal(report.R24_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R24_AMOUNT"
+		               name="R24_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">34</td>
+		    <td style="white-space: normal;  overflow-wrap: break-word;text-align: left; font-weight: normal;" th:text="${report.R25_PRODUCT}"></td>
+		    <td id="ROW25" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R25_AMOUNT != null ? #numbers.formatDecimal(report.R25_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R25_AMOUNT"
+		               name="R25_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">35</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R26_PRODUCT}"></td>
+		    <td id="ROW26" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R26_AMOUNT != null ? #numbers.formatDecimal(report.R26_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R26_AMOUNT"
+		               name="R26_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">36</td>
+		    <td style="text-align: left; font-weight: normal; " > Aggregate non-siginificant investments by the bank or its subsidiary in the equity of other banks and financial institutions, where <br>
+				 the aggregate investment is equal to or greater than 10 percent of the capital of the institution in which the investment is made <br>
+				  -  instead of full deduction, only deduct the excess above the 10% threshold,  the remaining amount below the 10% threshold shall be treated as other assets.</td>
+		    <td id="ROW27" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R27_AMOUNT != null ? #numbers.formatDecimal(report.R27_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R27_AMOUNT"
+		               name="R27_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">37</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R28_PRODUCT}"></td>
+		    <td id="ROW28" style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               id="R28_AMOUNT"
+		               name="R28_AMOUNT"
+		               style="background-color:#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">38</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R29_PRODUCT}"></td>
+		    <td id="ROW29" style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               id="R29_AMOUNT"
+		               name="R29_AMOUNT"
+		               style="background-color:#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		</tr>	
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>	
+									
+	</tbody>
+		
+	<tbody class="thead-light">
+			
+		<tr>
+			<th colspan="3"  style="text-align: left;color: red; padding-left: 20px; ">
+			 Important note: (1) The amount of the three items (33,34,35) not deducted (threshold amounts) in the calculation of CET1 will be treated as other assets and risk-weighted at 250 percent. </th>
+		</tr>
+		<tr>
+			<th colspan="3"  style="text-align: left;color: red; padding-left: 20px; ">
+			(2) Line 36: The amount above the 10 percent threshold shall be deducted from CET1, and the amount below threshold shall be risk-weighted as appropriate as per Schedule M-SRWA </th>
+		</tr>
+		<tr>
+			
+														<th colspan="3" style="text-align: left; padding-left: 20px; ">
+															      2. Regulatory adjustments applied in the calculation of  Additional Tier1 Capital </th>
+														</tr>
+														<tr>
+															<th colspan="3"  style="text-align: left; padding-left: 20px; ">
+															 A.  Full decductions </th>
+														</tr>
+		
+		
+		  									 <!-- First header row -->
+		                                    <tr style="background-color: #b3b6b9">
+		                                        <th rowspan="1" style="text-align: center; background-color: #fefeff;">Line</th>
+		                                        <th colspan="1" style="text-align: center; background-color: #ffffff;">Item</th>
+		                                        <th colspan="1" style="text-align: center; background-color:#ffffff;">Amount(P'000)</th>
+		                                    </tr>
+										</tbody>
+	
+	<tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
+											
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">39</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R36_PRODUCT}"></td>
+		    <td id="ROW36" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R36_AMOUNT != null ? #numbers.formatDecimal(report.R36_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R36_AMOUNT"
+		               name="R36_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">40</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R37_PRODUCT}"></td>
+		    <td id="ROW37" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R37_AMOUNT != null ? #numbers.formatDecimal(report.R37_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R37_AMOUNT"
+		               name="R37_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">41</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R38_PRODUCT}"></td>
+		    <td id="ROW38" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R38_AMOUNT != null ? #numbers.formatDecimal(report.R38_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R38_AMOUNT"
+		               name="R38_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">42</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R39_PRODUCT}"></td>
+		    <td id="ROW39" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R39_AMOUNT != null ? #numbers.formatDecimal(report.R39_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R39_AMOUNT"
+		               name="R39_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">43</td>
+		    <td style="text-align: left; font-weight: normal;" > Significant investments in the common shares of unconsolidated financial institutions, where a bank or its subsidiary owns <br>
+				 more than 10% common shares of the issuing entity (banks, insurance and other financial entities)</td>
+		    <td id="ROW40" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R40_AMOUNT != null ? #numbers.formatDecimal(report.R40_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R40_AMOUNT"
+		               name="R40_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">44</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R41_PRODUCT}"></td>
+		    <td id="ROW41" style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               id="R41_AMOUNT"
+		               name="R41_AMOUNT"
+		               style="background-color:#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+	</tbody>
+	
+	
+	
+	<tbody class="thead-light">
+		
+		<tr>
+														<th  style="text-align: left; padding-left: 20px; ">
+															      B.   Threshold decductions:</th>
+														 <th  style="text-align: left; padding-left: 20px;">
+																  ( Recognition capped at 10 percent of the bank’scommon equity (after the application of all regulatory adjustments set out under paragraph 4.10)</th>
+														</tr>
+														
+			  									 <!-- First header row -->
+			                                    <tr style="background-color: #b3b6b9">
+			                                        <th rowspan="1" style="text-align: center; background-color: #fefeff;">Line</th>
+			                                        <th colspan="1" style="text-align: center; background-color: #ffffff;">Item</th>
+			                                        <th colspan="1" style="text-align: center; background-color:#ffffff;">Amount(P'000)</th>
+			                                    </tr>
+											</tbody>
+	<tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
+										
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">45</td>
+		    <td style="text-align: left; font-weight: normal; word-wrap: break-word; width:150px !important;" > Aggregate non-siginificant investments by the bank or its subsidiary in the equity of other banks and financial institutions, where <br>
+				the aggregate investment is equal to or greater than 10 percent of the capital of the institution in which the investment is made - <br>
+				 instead of full deduction, only deduct the excess above the 10% threshold,  the remaining amount below the 10% threshold shall be treated as other assets.</td>
+		    <td id="ROW44" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R44_AMOUNT != null ? #numbers.formatDecimal(report.R44_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R44_AMOUNT"
+		               name="R44_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">46</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R45_PRODUCT}"></td>
+		    <td id="ROW45" style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R45_AMOUNT != null ? #numbers.formatDecimal(report.R45_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R45_AMOUNT"
+		               name="R45_AMOUNT"
+		               style="background-color:#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">47</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R46_PRODUCT}"></td>
+		    <td id="ROW46" style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               id="R46_AMOUNT"
+		               name="R46_AMOUNT"
+		               style="background-color:#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+	
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>									
+	</tbody>	
+	
+	<thead class="thead-light">
+		
+		<tr>
+														<th  style="text-align: left; padding-left: 20px; ">
+															      B.   Threshold decductions:</th>
+														 <th  style="text-align: left; padding-left: 20px;">
+																 ( Recognition capped at 10 percent of the bank’scommon equity (after the application of all regulatory adjustments set out under paragraph 4.15)</th>
+														</tr>
+			  									 <!-- First header row -->
+			                                    <tr style="background-color: #b3b6b9">
+			                                        <th rowspan="1" style="text-align: center; background-color: #fefeff;">Line</th>
+			                                        <th colspan="1" style="text-align: center; background-color: #ffffff;">Item</th>
+			                                        <th colspan="1" style="text-align: center; background-color:#ffffff;">Amount(P'000)</th>
+			                                    </tr>
+											</thead>
+	<tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
+										
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">48</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R50_PRODUCT}"></td>
+		    <td id="ROW50" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R50_AMOUNT != null ? #numbers.formatDecimal(report.R50_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R50_AMOUNT"
+		               name="R50_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">49</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R51_PRODUCT}"></td>
+		    <td id="ROW51" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R51_AMOUNT != null ? #numbers.formatDecimal(report.R51_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R51_AMOUNT"
+		               name="R51_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">50</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R52_PRODUCT}"></td>
+		    <td id="ROW52" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R52_AMOUNT != null ? #numbers.formatDecimal(report.R52_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R52_AMOUNT"
+		               name="R52_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">51</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R53_PRODUCT}"></td>
+		    <td id="ROW53" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R53_AMOUNT != null ? #numbers.formatDecimal(report.R53_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R53_AMOUNT"
+		               name="R53_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">52</td>
+		    <td style="text-align: left; font-weight: normal;" > Significant investments in the common shares of unconsolidated financial institutions, where a bank or its subsidiary owns more <br> than 10% common shares of the issuing entity (banks, insurance and other financial entities).</td>
+		    <td id="ROW54" style="padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               th:value="${report.R54_AMOUNT != null ? #numbers.formatDecimal(report.R54_AMOUNT, 1, 0, 'POINT') : '0'}"
+		               id="R54_AMOUNT"
+		               name="R54_AMOUNT"
+		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+		    <td style="text-align: center; font-weight: bold;">53</td>
+		    <td style="text-align: left; font-weight: normal;" th:text="${report.R55_PRODUCT}"></td>
+		    <td id="ROW55" style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+		        <input class="display-input Show_input"
+		               type="text"
+		               id="R55_AMOUNT"
+		               name="R55_AMOUNT"
+		               style="background-color:#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+		               readonly />
+		    </td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>									
+	</tbody>	
+	
+	<thead class="thead-light">
+				  									 <!-- First header row -->
+				                                    <tr style="background-color: #b3b6b9">
+				                                        <th rowspan="1" style="text-align: center; background-color: #fefeff;">Line</th>
+				                                        <th colspan="1" style="text-align: center; background-color: #ffffff;">Item</th>
+				                                        <th colspan="1" style="text-align: center; background-color:#ffffff;">Amount(P'000)</th>
+				                                    </tr>
+												</thead>
+		<tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
+											
+			<tr>
+			    <td style="text-align: center; font-weight: bold;">54</td>
+			    <td style="text-align: left; font-weight: normal;" >  Aggregate non-siginificant investments by the bank or its subsidiary in the equity of other banks and financial institutions, where <br>
+					the aggregate investment is equal to or greater than 10 percent of the capital of the institution in which the investment is made - <br>
+					 instead of full deduction, only deduct the excess above the 10% threshold,  the remaining amount below the 10% threshold shall be treated as other assets.</td>
+			    <td id="ROW58" style="padding-left: 20px; font-weight: bold;">
+			        <input class="display-input Show_input"
+			               type="text"
+			               th:value="${report.R58_AMOUNT != null ? #numbers.formatDecimal(report.R58_AMOUNT, 1, 0, 'POINT') : '0'}"
+			               id="R58_AMOUNT"
+			               name="R58_AMOUNT"
+			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			               readonly />
+			    </td>
+			</tr>
+			<tr>
+			    <td style="text-align: center; font-weight: bold;">55</td>
+			    <td style="text-align: left; font-weight: normal;" th:text="${report.R59_PRODUCT}"></td>
+			    <td id="ROW59" style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+			        <input class="display-input Show_input"
+			               type="text"
+			               th:value="${report.R59_AMOUNT != null ? #numbers.formatDecimal(report.R59_AMOUNT, 1, 0, 'POINT') : '0'}"
+			               id="R59_AMOUNT"
+			               name="R59_AMOUNT"
+			               style="background-color:#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			               readonly />
+			    </td>
+			</tr>
+			<tr>
+			    <td style="text-align: center; font-weight: bold;">56</td>
+			    <td style="text-align: left; font-weight: normal;" th:text="${report.R60_PRODUCT}"></td>
+			    <td id="ROW60" style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+			        <input class="display-input Show_input"
+			               type="text"
+			               id="R60_AMOUNT"
+			               name="R60_AMOUNT"
+			               style="background-color:#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			               readonly />
+			    </td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>									
+		</tbody>
+	
+	
+											
 								</table>
-								<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
-																																	   
-																																	    
-																																	    
-																																	<a th:if="${currentPage > 0}"
-																																	 th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																																	    asondate=${asondate},                             
-																																	    fromdate=${fromdate},
-																																	    todate=${todate},
-																																	    currency=${currency},
-																																	    dtltype=${dtltype},
-																																	    type=${type},
-																																	    version=${version},
-																																	    page=${currentPage - 100},
-																																	    size=100
-																																	)}">
-																																	    Previous
-																																	</a>
-																											
-																																	    
-																																	    <span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
-																																	
-																																	    
-																																	    <a th:if="${currentPage < (totalPages - 1) * 100}"
-																																	    	
-																																	    th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																																	    asondate=${asondate},
-																																	    fromdate=${fromdate},
-																																	    todate=${todate},
-																																	    currency=${currency},
-																																	    dtltype=${dtltype},
-																																	    type=${type},
-																																	    version=${version},
-																																	    page=${currentPage + 100},
-																																	    size=100
-																																	)}">	
-																																	    Next
-																																	    </a>
-																																	</div>
+								
 							</div>
-
-
+							<div style="text-align: center; margin-top: 10px;">
+								
+   <button id="submitButton"
+           type="button"
+           class="custom-tab-btn Show_input"
+           form="fileupload"
+           th:attr="data-todate=${asondate},data-type=${type}"
+           onclick="fileuploads(this);"
+           style="display: none;">
+       Submit
+   </button>
+</div>
+							</form>
 						</div>
 					</div>
 				</div>
-
+				
 			</div>
-
-
-
 		</div>
-
-
-
 	</div>
-
-
-
-	<div class="modal fade" id="loader" data-backdrop="static"
-		data-keyboard="false">
-		<div
-			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+	
+	<!-- Custom Cellresult Modal -->
+		<div class="modal fade" id="cellresultModal">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content">
+		     
+		      <!-- Custom header -->
+		      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+		        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+		          Do you want to open the report?
+		        </div>
+		      </div>
+		      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+		        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+		          Cancel
+		        </button>
+		        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+		          Yes
+		        </button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 			<div class="modal-content" style="background: transparent;">
 				<div class="modal-body" style="text-align: center">
 					<div>
@@ -1261,155 +1420,109 @@ function showdetailsbyRowAndColumn(a) {
 			</div>
 		</div>
 	</div>
-
-
-
 	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<!-- Your custom styled header -->
 				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel"
-						style="text-align: center; color: white;">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
 						<!-- Title will be set by JavaScript -->
 					</div>
 				</div>
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()"
-						data-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
 	</div>
-	<!-- Custom Cellresult Modal -->
-			<div class="modal fade" id="cellresultModal">
-			  <div class="modal-dialog modal-dialog-centered">
-			    <div class="modal-content">
-			      
-			      <!-- Custom header -->
-			      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-			        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-			          Do you want to open the report?
-			        </div>
-			      </div>
-
-			      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-			        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-			          Cancel
-			        </button>
-			        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-			          Yes
-			        </button>
-			      </div>
-			    </div>
-			  </div>
-			</div>
-
 </body>
-
-
-
+<!-- <script>
+															  $(document).ready(function () {
+															    $('#BRRSvalidation').DataTable({
+															      "paging": true,
+															      "info": false,       // turn off "Showing x of y"
+															      "searching": false,  // turn off search
+															      "ordering": false,   // turn off ordering
+															      "lengthChange": false // hide "Show x entries"
+															    });
+															  });
+	
+														</script> -->
+														
+														<style>
+														  #BRFdet td {
+														    border: 1px solid #ccc;
+														    padding: 8px;
+														  }
+														  #BRFdet {
+														    border-collapse: collapse;
+														    width: 100%;
+														  }
+														</style>
+													
 <style>
-/* Your existing CSS - this is the correct approach */
-.scrollable-table-container {
-	/* This is the key: it creates the scroll context */
-	max-height: 590px;
-	/* Or a suitable height like 80vh for responsive design */
-	overflow-y: auto;
-	border: 1px solid #ccc;
-}
-
-/* Your existing sticky header CSS, targeting the tr elements within the thead */
-.scrollable-table-container thead tr:nth-child(1) {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9;
-	z-index: 5;
-}
-
-.scrollable-table-container thead tr:nth-child(2) {
-	position: sticky;
-	top: 36px; /* adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 4;
-}
-
-.scrollable-table-container thead tr:nth-child(3) {
-	position: sticky;
-	top: 72px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 3;
-}
-
-.scrollable-table-container thead tr:nth-child(4) {
-	position: sticky;
-	top: 100px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 2;
-}
-
-.scrollable-table-container thead tr:nth-child(5) {
-	position: sticky;
-	top: 135px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 590px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
 </style>
-
-
 <style>
-.inner {
-	max-height: 600px; /* Adjust height as needed */
-	overflow: auto;
-	border: 1px solid #dee2e6;
-}
-
-/* Sticky thead */
-#reports thead th {
-	position: sticky;
-	top: 0;
-	background-color: #f8f9fa; /* Match Bootstrap thead-light */
-	z-index: 2;
-}
-
-div.dataTables_wrapper div.dataTables_paginate {
-	text-align: right !important;
-	float: right !important;
-	width: auto;
-	margin-top: 10px;
-}
-
-/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-div.dataTables_wrapper div.dataTables_info {
-	float: left !important;
-	margin-top: 10px;
-}
-
-.pagination {
-	margin: 0;
-}
-
-.page-item.active .page-link {
-	background-color: #386276;
-	border-color: #386276;
-}
-
-.page-link {
-	color: #386276;
-}
-
-.page-link:hover {
-	color: #2a4a5c;
-}
-
-.form-select {
-	display: inline-block;
-	width: auto;
-}
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
+	.pagination {
+		margin: 0;
+	}
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
+	.page-link {
+		color: #386276;
+	}
+	.page-link:hover {
+		color: #2a4a5c;
+	}
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
 </style>
-
 </html>
+
