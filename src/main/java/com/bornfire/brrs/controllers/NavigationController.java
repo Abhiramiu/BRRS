@@ -13,9 +13,13 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -57,6 +61,8 @@ import com.bornfire.brrs.entities.UserProfile;
 import com.bornfire.brrs.entities.UserProfileRep;
 import com.bornfire.brrs.services.AccessAndRolesServices;
 import com.bornfire.brrs.services.BDGF_Services;
+import com.bornfire.brrs.services.BFDB_Services;
+import com.bornfire.brrs.services.BLBF_Services;
 import com.bornfire.brrs.services.BankBranchService;
 import com.bornfire.brrs.services.LoginServices;
 import com.bornfire.brrs.services.MCBL_Services;
@@ -680,8 +686,8 @@ public class NavigationController {
 	  "Error Occurred. Please contact Administrator."; } }
 	 
 	
-	@GetMapping("/download-template")
-    public ResponseEntity<byte[]> downloadTemplate() throws Exception {
+	@GetMapping("/download-templateBDGF")
+    public ResponseEntity<byte[]> downloadTemplatebdgf() throws Exception {
         List<String> headers = Arrays.asList(
                 "SOL ID","S No","A/C No","Customer ID","Customer Name","Open Date",
                 "Amount Deposited","Currency","Period","Rate of Interest","100",
@@ -808,5 +814,237 @@ public class NavigationController {
 
             return "Reference_Code_Master.html";
         }
+
+
+
+	//BFDB
+
+@RequestMapping(value = "BFDB", method = { RequestMethod.GET, RequestMethod.POST })
+public String BFDB(@RequestParam(required = false) String formmode,
+		@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
+		@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
+		@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+	md.addAttribute("activeMenu", "Reports");
+	md.addAttribute("activePage", "CentralBank");
+	 String USERID = (String) req.getSession().getAttribute("USERID");
+   md.addAttribute("USERID", USERID);
+	logger.info("==> Entered BFDB controller || Formmode: {}", formmode);
+
+	LocalDate today = LocalDate.now();
+
+	try {
+		if (formmode == null || formmode.equals("list")) {
+			
+			md.addAttribute("formmode", "list");
+		} else if (formmode.equals("add")) {
+			md.addAttribute("menu", "Blank Deposit Format Book  - Add");
+			md.addAttribute("formmode", "add");
+		}  
+
+	} catch (Exception e) {
+		logger.error("Error in  BFDB controller: {}", e.getMessage(), e);
+		md.addAttribute("errorMessage", "Error loading BFDB page. Please contact administrator.");
+	}
+
+	logger.info("<== Exiting BFDB controller");
+	return "BFDB";
+}
+
+
+
+
+@Autowired
+BFDB_Services BFDB_Servicess;
+
+@PostMapping("addBFDB")
+@ResponseBody
+public String addbfdb(@ModelAttribute MultipartFile file,
+                                    Model md,String reportDate,
+                                    HttpServletRequest rq ) {
+    logger.info("==> Entered BFDB method");
+    String userid = (String) rq.getSession().getAttribute("USERID");
+    String username = (String) rq.getSession().getAttribute("USERNAME");
+    try {
+        String msg = BFDB_Servicess.addBFDB( file, userid, username,reportDate);
+        logger.info("BFDB result: {}", msg);
+        return msg;
+    } catch (Exception e) {
+        logger.error("Error occurred while Add BFDB: {}", e.getMessage(), e);
+        return "Error Occurred. Please contact Administrator.";
+    }
+}
+
+@GetMapping("/download-templateBFDB")
+public ResponseEntity<byte[]> downloadTemplatebfdb() throws Exception {
+    // 🔹 Updated headers to match BFDB_Entity fields
+	List<String> headers = Arrays.asList("SOL ID", "CUST ID", "GENDER", "ACCOUNT NO", "ACCT NAME", "SCHM_CODE",
+			"SCHM DESC", "ACCT OPN DATE", "ACCT CLS DATE", "BALANCE AS ON", "CCY", "BAL EQUI TO BWP", "INT RATE",
+			"100", "STATUS", "MATURITY DATE", "GL SUB HEAD CODE", "GL SUB HEAD DESC", "TYPE OF ACCOUNTS", "SEGMENT",
+			"PERIOD", "EFFECTIVE INTEREST RATE");
+
+    Workbook workbook = new XSSFWorkbook();
+    Sheet sheet = workbook.createSheet("BFDB_Template");
+
+    // Create header row
+    Row headerRow = sheet.createRow(0);
+    CellStyle headerStyle = workbook.createCellStyle();
+    Font font = workbook.createFont();
+    font.setBold(true);
+    headerStyle.setFont(font);
+
+    for (int i = 0; i < headers.size(); i++) {
+        Cell cell = headerRow.createCell(i);
+        cell.setCellValue(headers.get(i));
+        cell.setCellStyle(headerStyle);
+        sheet.autoSizeColumn(i);
+    }
+
+    // Freeze header row
+    sheet.createFreezePane(0, 1);
+
+    // Write to byte array
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    workbook.write(out);
+    workbook.close();
+
+    HttpHeaders headersResponse = new HttpHeaders();
+    headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BFDB_Template.xlsx");
+    headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+    return ResponseEntity
+            .ok()
+            .headers(headersResponse)
+            .body(out.toByteArray());
+}
+
+
+
+//BLBF
+
+@RequestMapping(value = "BLBF", method = { RequestMethod.GET, RequestMethod.POST })
+public String BLBF(@RequestParam(required = false) String formmode,
+		@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
+		@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
+		@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+	md.addAttribute("activeMenu", "Reports");
+	md.addAttribute("activePage", "CentralBank");
+	 String USERID = (String) req.getSession().getAttribute("USERID");
+   md.addAttribute("USERID", USERID);
+	logger.info("==> Entered BLBF controller || Formmode: {}", formmode);
+
+	LocalDate today = LocalDate.now();
+
+	try {
+		if (formmode == null || formmode.equals("list")) {
+			
+			md.addAttribute("formmode", "list");
+		} else if (formmode.equals("add")) {
+			md.addAttribute("menu", "Blank Loan Book Format - Add");
+			md.addAttribute("formmode", "add");
+		}  
+
+	} catch (Exception e) {
+		logger.error("Error in  BLBF controller: {}", e.getMessage(), e);
+		md.addAttribute("errorMessage", "Error loading BLBF page. Please contact administrator.");
+	}
+
+	logger.info("<== Exiting BLBF controller");
+	return "BLBF";
+}
+
+
+
+
+@Autowired
+BLBF_Services BLBF_Servicess;
+
+
+@PostMapping("addBLBF")
+@ResponseBody
+public String addBLBF(@ModelAttribute MultipartFile file,
+                                    Model md,String reportDate,
+                                    HttpServletRequest rq ) {
+    logger.info("==> Entered BLBF method");
+    String userid = (String) rq.getSession().getAttribute("USERID");
+    String username = (String) rq.getSession().getAttribute("USERNAME");
+    try {
+        String msg = BLBF_Servicess.addBLBF( file, userid, username,reportDate);
+        logger.info("BLBF result: {}", msg);
+        return msg;
+    } catch (Exception e) {
+        logger.error("Error occurred while Add BLBF: {}", e.getMessage(), e);
+        return "Error Occurred. Please contact Administrator.";
+    }
+}
+
+@GetMapping("/download-templateBLBF")
+public ResponseEntity<byte[]> downloadTemplate() throws Exception {
+    // 🔹 Full headers (based on your CREATE TABLE + new fields)
+    List<String> headers = Arrays.asList(
+        "SOL ID", "CUST ID", "ACCOUNT NO", "ACCT NAME", "SCHM_CODE", "SCHM DESC",
+        "ACCT OPN DATE", "APPROVED LIMIT", "SANCTION LIMIT", "DISBURSED AMT",
+        "BALANCE AS ON", "CCY", "BAL EQUI TO BWP", "INT RATE", "100",
+        "ACCRUED INT AMT", "INT OF AUGUST 25", "LAST INTEREST DEBIT DATE",
+        "ACCT CLS FLG", "CLOSE DATE", "GENDER", "CLASSFICATION CODE",
+        "CONSTITUTION CODE", "MATURITY DATE", "GL SUB HEAD CODE", "GL SUB HEAD DESC",
+        "TENOR(MONTH)", "EMI", "SEGMENT", "FACILITY", "PAST DUE", "PAST DUE DAYS",
+        "ASSET", "PROVISION", "UNSECURED", "INT BUCKET", "STAFF", "SMME", "LABOD",
+        "NEW A/C", "UNDRAWN", "SECTOR", "Period", "Effective Interest Rate",
+        "STAGE", "ECL PROVISION"
+    );
+    
+    Workbook workbook = new XSSFWorkbook();
+    Sheet sheet = workbook.createSheet("BLBF_Template");
+    
+    // 🔹 Create unlocked style for all data cells
+    CellStyle unlockedStyle = workbook.createCellStyle();
+    unlockedStyle.setLocked(false);
+    
+    // 🔹 Apply unlocked style to ALL columns by default
+    for (int i = 0; i < headers.size(); i++) {
+        sheet.setDefaultColumnStyle(i, unlockedStyle);
+    }
+    
+    // 🔹 Header Style (Bold + Center + Background Color + LOCKED)
+    CellStyle headerStyle = workbook.createCellStyle();
+    Font font = workbook.createFont();
+    font.setBold(true);
+    headerStyle.setFont(font);
+    headerStyle.setAlignment(HorizontalAlignment.CENTER);
+    headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+    headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+    headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    headerStyle.setLocked(true); // 🔒 Keep header locked
+    
+    // 🔹 Create Header Row
+    Row headerRow = sheet.createRow(0);
+    for (int i = 0; i < headers.size(); i++) {
+        Cell cell = headerRow.createCell(i);
+        cell.setCellValue(headers.get(i));
+        cell.setCellStyle(headerStyle);
+        sheet.autoSizeColumn(i);
+    }
+    
+    // 🔹 Freeze header row
+    sheet.createFreezePane(0, 1);
+    
+    // 🔹 Protect the sheet (without password)
+    sheet.protectSheet("");
+    
+    // 🔹 Write to byte array
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    workbook.write(out);
+    workbook.close();
+    
+    HttpHeaders headersResponse = new HttpHeaders();
+    headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BLBF_Template.xlsx");
+    headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+    
+    return ResponseEntity
+            .ok()
+            .headers(headersResponse)
+            .body(out.toByteArray());
+}
+
 
 }
