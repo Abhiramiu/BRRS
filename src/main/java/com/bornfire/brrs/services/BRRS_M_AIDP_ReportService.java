@@ -51,6 +51,10 @@ import com.bornfire.brrs.entities.BRRS_M_SFINP2_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Summary_Repo;
+import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity1;
+import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity2;
+import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity3;
+import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity4;
 import com.bornfire.brrs.entities.M_SFINP2_Archival_Summary_Entity;
 
 
@@ -114,20 +118,29 @@ public class BRRS_M_AIDP_ReportService {
 		int startItem = currentPage * pageSize;
 
 		if (type.equals("ARCHIVAL") & version != null) {
-			List<M_SFINP2_Archival_Summary_Entity> T1Master = new ArrayList<M_SFINP2_Archival_Summary_Entity>();
+			List<M_AIDP_Archival_Summary_Entity1> T1Master = new ArrayList<M_AIDP_Archival_Summary_Entity1>();
+			List<M_AIDP_Archival_Summary_Entity2> T2Master = new ArrayList<M_AIDP_Archival_Summary_Entity2>();
+			List<M_AIDP_Archival_Summary_Entity3> T3Master = new ArrayList<M_AIDP_Archival_Summary_Entity3>();
+			List<M_AIDP_Archival_Summary_Entity4> T4Master = new ArrayList<M_AIDP_Archival_Summary_Entity4>();
 			try {
 				Date d1 = dateformat.parse(todate);
 
 				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
 				// ", BRF1_REPORT_ENTITY.class)
 				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = M_SFINP2_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+				T1Master = M_AIDP_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate), version);
+				T2Master = M_AIDP_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
+				T3Master = M_AIDP_Archival_Summary_Repo3.getdatabydateListarchival(dateformat.parse(todate), version);
+				T4Master = M_AIDP_Archival_Summary_Repo4.getdatabydateListarchival(dateformat.parse(todate), version);
 
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 
 			mv.addObject("reportsummary", T1Master);
+			mv.addObject("reportsummary2", T2Master);
+			mv.addObject("reportsummary3", T3Master);
+			mv.addObject("reportsummary4", T4Master);
 		} else {
 			List<BRRS_M_AIDP_Summary_Entity1> T1Master = new ArrayList<BRRS_M_AIDP_Summary_Entity1>();
 			List<BRRS_M_AIDP_Summary_Entity2> T2Master = new ArrayList<BRRS_M_AIDP_Summary_Entity2>();
@@ -433,6 +446,14 @@ public class BRRS_M_AIDP_ReportService {
 	public byte[] getM_AIDPExcel(String filename, String reportId, String fromdate, String todate, String currency,
             String dtltype, String type, String version) throws Exception {
 	logger.info("Service: Starting Excel generation process in memory.");
+	System.out.println(type);
+	System.out.println(version);
+	if (type.equals("ARCHIVAL") & version != null) {
+		byte[] ARCHIVALreport = getExcelM_AIDPARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
+				version);
+		return ARCHIVALreport;
+	}
+	
 	
 	System.out.println("came to excel download service");
 	List<BRRS_M_AIDP_Summary_Entity1> dataList = BRRS_M_aidpRepo1.getdatabydateList(dateformat.parse(todate));
@@ -783,5 +804,362 @@ String[] fieldSuffixes3 = {
 	        }
 	    }
 	}
+	
+
+	
+	public byte[] getExcelM_AIDPARCHIVAL(String filename, String reportId, String fromdate, String todate, String currency,
+            String dtltype, String type, String version) throws Exception {
+	logger.info("Service: Starting Excel generation process in memory.");
+
+	System.out.println("came to excel download service");
+	List<M_AIDP_Archival_Summary_Entity1> dataList = M_AIDP_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate), version);
+	List<M_AIDP_Archival_Summary_Entity2> dataList2 = M_AIDP_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
+	List<M_AIDP_Archival_Summary_Entity3> dataList3 = M_AIDP_Archival_Summary_Repo3.getdatabydateListarchival(dateformat.parse(todate), version);
+	List<M_AIDP_Archival_Summary_Entity4> dataList4 = M_AIDP_Archival_Summary_Repo4.getdatabydateListarchival(dateformat.parse(todate), version);
+	
+	if (dataList.isEmpty()) {
+	logger.warn("Service: No data found for BRF7.3 report. Returning empty result.");
+	return new byte[0];
+	}
+	if (dataList2.isEmpty()) {
+	    logger.error("No data found for Entity2 - check query for date: {}", todate);
+	}
+	if (dataList3.isEmpty()) {
+	    logger.error("No data found for Entity3 - check query for date: {}", todate);
+	}
+	if (dataList4.isEmpty()) {
+	    logger.error("No data found for Entity4 - check query for date: {}", todate);
+	}
+	
+	String templateDir = env.getProperty("output.exportpathtemp");
+	Path templatePath = Paths.get(templateDir, filename);
+	
+	logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+	
+	if (!Files.exists(templatePath)) {
+	throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+	}
+	if (!Files.isReadable(templatePath)) {
+	throw new SecurityException("Template file exists but is not readable: " + templatePath.toAbsolutePath());
+	}
+	
+	try (InputStream templateInputStream = Files.newInputStream(templatePath);
+	Workbook workbook = WorkbookFactory.create(templateInputStream);
+	ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+	
+	Sheet sheet = workbook.getSheetAt(0);
+	
+	CreationHelper createHelper = workbook.getCreationHelper();
+	
+	Font font = workbook.createFont();
+	font.setFontHeightInPoints((short) 8);
+	font.setFontName("Arial");
+	
+	CellStyle textStyle = workbook.createCellStyle();
+	textStyle.setBorderBottom(BorderStyle.THIN);
+	textStyle.setBorderTop(BorderStyle.THIN);
+	textStyle.setBorderLeft(BorderStyle.THIN);
+	textStyle.setBorderRight(BorderStyle.THIN);
+	textStyle.setFont(font);
+	
+	CellStyle numberStyle = workbook.createCellStyle();
+	//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("#,##0.000"));
+	numberStyle.setBorderBottom(BorderStyle.THIN);
+	numberStyle.setBorderTop(BorderStyle.THIN);
+	numberStyle.setBorderLeft(BorderStyle.THIN);
+	numberStyle.setBorderRight(BorderStyle.THIN);
+	numberStyle.setFont(font);
+	
+	
+	
+	String[] rowCodesPart1 = {
+		    "R11", "R12", "R13", "R14", "R15",
+		    "R16", "R17", "R18", "R19", "R20",
+		    "R21", "R22", "R23", "R24", "R25",
+		    "R26", "R27", "R28", "R29", "R30",
+		    "R31", "R32", "R33", "R34", "R35",
+		    "R36", "R37", "R38", "R39", "R40",
+		    "R41", "R42", "R43", "R44", "R45",
+		    "R46", "R47", "R48", "R49", "R50"
+		};
+
+	String[] rowCodesPart2 = {
+		    "R56", "R57", "R58", "R59", "R60",
+		    "R61", "R62", "R63", "R64", "R65",
+		    "R66", "R67", "R68", "R69", "R70",
+		    "R71", "R72", "R73", "R74", "R75",
+		    "R76", "R77", "R78", "R79", "R80",
+		    "R81", "R82", "R83", "R84", "R85",
+		    "R86", "R87", "R88", "R89", "R90",
+		    "R91", "R92", "R93", "R94", "R95"
+		};
+
+	String[] rowCodesPart3 = {
+		    "R101", "R102", "R103", "R104", "R105",
+		    "R106", "R107", "R108", "R109", "R110",
+		    "R111", "R112", "R113", "R114", "R115",
+		    "R116", "R117", "R118", "R119", "R120",
+		    "R121", "R122", "R123", "R124", "R125",
+		    "R126", "R127", "R128", "R129", "R130",
+		    "R131", "R132", "R133", "R134", "R135",
+		    "R136", "R137", "R138", "R139", "R140",
+		    "R141"
+		};
+
+	String[] rowCodesPart4 = {
+		    "R147", "R148", "R149", "R150", "R151",
+		    "R152", "R153", "R154", "R155", "R156",
+		    "R157", "R158", "R159", "R160", "R161",
+		    "R162", "R163", "R164", "R165", "R166",
+		    "R167", "R168", "R169", "R170", "R171",
+		    "R172", "R173", "R174", "R175", "R176",
+		    "R177", "R178", "R179", "R180", "R181",
+		    "R182", "R183", "R184", "R185", "R186",
+		    "R187", "R188", "R189", "R190", "R191",
+		    "R192", "R193"
+		};
+
+String[] fieldSuffixes = {
+"NAME_OF_BANK","TYPE_OF_ACC","PURPOSE","CURRENCY","BANK_RATE","AMT_LESS_184_DAYS","AMT_MORE_184_DAYS"    
+};
+
+String[] fieldSuffixes2 = {
+"NAME_OF_BANK","TYPE_OF_ACC","PURPOSE","CURRENCY","BANK_RATE","AMT_DEMAND","AMT_TIME"    
+};
+
+String[] fieldSuffixes3 = {
+"NAME_OF_BANK","COUNTRY","TYPE_OF_ACC","PURPOSE","CURRENCY","BANK_RATE","AMT_DEMAND","AMT_TIME"    
+};
+
+
+	// First set: R11 - R50 at row 11
+	writeRowData01(sheet, dataList, rowCodesPart1, fieldSuffixes, 10, numberStyle, textStyle);
+	
+	// First set: R56 - R95 at row 56
+	writeRowData02(sheet, dataList2, rowCodesPart2, fieldSuffixes, 55, numberStyle, textStyle);
+
+	// Third Set: R101 - R141 at row 101
+	writeRowData03(sheet, dataList3, rowCodesPart3, fieldSuffixes2, 100, numberStyle, textStyle);
+
+	// Fourth Set: R147 - R196 at row 146
+	writeRowData04(sheet, dataList4, rowCodesPart4, fieldSuffixes3, 146, numberStyle, textStyle);
+
+	workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+	workbook.write(out);
+	logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+	
+	return out.toByteArray();
+	}
+}
+	
+	private void writeRowData01(Sheet sheet, List<M_AIDP_Archival_Summary_Entity1> dataList,
+		    String[] rowCodes, String[] fieldSuffixes, int baseRow,
+		    CellStyle numberStyle, CellStyle textStyle) {
+			System.out.println("came to write row data 1 method");
+			
+			for (M_AIDP_Archival_Summary_Entity1 record : dataList) {
+			
+			for (int rowIndex = 0; rowIndex < rowCodes.length; rowIndex++) {
+			  String rowCode = rowCodes[rowIndex];
+			  Row row = sheet.getRow(baseRow + rowIndex);
+			 
+			  if (row == null) row = sheet.createRow(baseRow + rowIndex);
+			
+			  for (int colIndex = 0; colIndex < fieldSuffixes.length; colIndex++) {
+			      String fieldName = rowCode+ "_" + fieldSuffixes[colIndex];
+			   
+			      // 👉 Skip column B (index 1)
+			      int excelColIndex = (colIndex >= 1) ? colIndex + 1 : colIndex;
+
+			      Cell cell = row.createCell(excelColIndex);
+			      try {
+			          Field field = M_AIDP_Archival_Summary_Entity1.class.getDeclaredField(fieldName);
+			          field.setAccessible(true);
+			          Object value = field.get(record);
+			         
+			          if (value == null || "N/A".equals(value.toString().trim())) {
+	                        // ✅ keep cell with style but no value
+	                        cell.setCellValue("");
+	                        cell.setCellStyle(textStyle);
+	                        continue;
+	                    }
+
+			          if (value instanceof BigDecimal) {
+			              cell.setCellValue(((BigDecimal) value).doubleValue());
+			              cell.setCellStyle(numberStyle);
+			          }else if (value instanceof String) {
+			        	    cell.setCellValue((String) value);
+			        	    cell.setCellStyle(textStyle);
+			        	}  else {
+			              cell.setCellValue("");
+			              cell.setCellStyle(textStyle);
+			          }
+			      } catch (NoSuchFieldException | IllegalAccessException e) {
+			          cell.setCellValue("");
+			          cell.setCellStyle(textStyle);
+			          LoggerFactory.getLogger(getClass()).warn("Field not found or inaccessible: {}", fieldName);
+			      }
+			  }
+			}
+			}
+		}
+
+	
+	private void writeRowData02(Sheet sheet, List<M_AIDP_Archival_Summary_Entity2> dataList,
+		    String[] rowCodes, String[] fieldSuffixes, int baseRow,
+		    CellStyle numberStyle, CellStyle textStyle) {
+			System.out.println("came to write row data 1 method");
+			
+			for (M_AIDP_Archival_Summary_Entity2 record : dataList) {
+			
+			for (int rowIndex = 0; rowIndex < rowCodes.length; rowIndex++) {
+			  String rowCode = rowCodes[rowIndex];
+			  Row row = sheet.getRow(baseRow + rowIndex);
+			 
+			  if (row == null) row = sheet.createRow(baseRow + rowIndex);
+			
+			  for (int colIndex = 0; colIndex < fieldSuffixes.length; colIndex++) {
+			      String fieldName = rowCode+ "_" + fieldSuffixes[colIndex];
+			   
+			      // 👉 Skip column B (index 1)
+			      int excelColIndex = (colIndex >= 1) ? colIndex + 1 : colIndex;
+
+			      Cell cell = row.createCell(excelColIndex);
+			      try {
+			          Field field = M_AIDP_Archival_Summary_Entity2.class.getDeclaredField(fieldName);
+			          field.setAccessible(true);
+			          Object value = field.get(record);
+			         
+			          if (value == null || "N/A".equals(value.toString().trim())) {
+	                        // ✅ keep cell with style but no value
+	                        cell.setCellValue("");
+	                        cell.setCellStyle(textStyle);
+	                        continue;
+	                    }
+			          
+			          if (value instanceof BigDecimal) {
+			              cell.setCellValue(((BigDecimal) value).doubleValue());
+			              cell.setCellStyle(numberStyle);
+			          }else if (value instanceof String) {
+			        	    cell.setCellValue((String) value);
+			        	    cell.setCellStyle(textStyle);
+			        	}  else {
+			              cell.setCellValue("");
+			              cell.setCellStyle(textStyle);
+			          }
+			      } catch (NoSuchFieldException | IllegalAccessException e) {
+			          cell.setCellValue("");
+			          cell.setCellStyle(textStyle);
+			          LoggerFactory.getLogger(getClass()).warn("Field not found or inaccessible: {}", fieldName);
+			      }
+			  }
+			}
+			}
+		}
+	
+	private void writeRowData03(Sheet sheet, List<M_AIDP_Archival_Summary_Entity3> dataList,
+		    String[] rowCodes, String[] fieldSuffixes, int baseRow,
+		    CellStyle numberStyle, CellStyle textStyle) {
+			System.out.println("came to write row data 1 method");
+			
+			for (M_AIDP_Archival_Summary_Entity3 record : dataList) {
+			
+			for (int rowIndex = 0; rowIndex < rowCodes.length; rowIndex++) {
+			  String rowCode = rowCodes[rowIndex];
+			  Row row = sheet.getRow(baseRow + rowIndex);
+			 
+			  if (row == null) row = sheet.createRow(baseRow + rowIndex);
+			
+			  for (int colIndex = 0; colIndex < fieldSuffixes.length; colIndex++) {
+			      String fieldName = rowCode+ "_" + fieldSuffixes[colIndex];
+			   
+			      // 👉 Skip column B (index 1)
+			      int excelColIndex = (colIndex >= 1) ? colIndex + 1 : colIndex;
+
+			      Cell cell = row.createCell(excelColIndex);
+			      try {
+			          Field field = M_AIDP_Archival_Summary_Entity3.class.getDeclaredField(fieldName);
+			          field.setAccessible(true);
+			          Object value = field.get(record);
+			         
+			          if (value == null || "N/A".equals(value.toString().trim())) {
+	                        // ✅ keep cell with style but no value
+	                        cell.setCellValue("");
+	                        cell.setCellStyle(textStyle);
+	                        continue;
+	                    }
+
+			          if (value instanceof BigDecimal) {
+			              cell.setCellValue(((BigDecimal) value).doubleValue());
+			              cell.setCellStyle(numberStyle);
+			          }else if (value instanceof String) {
+			        	    cell.setCellValue((String) value);
+			        	    cell.setCellStyle(textStyle);
+			        	}  else {
+			              cell.setCellValue("");
+			              cell.setCellStyle(textStyle);
+			          }
+			      } catch (NoSuchFieldException | IllegalAccessException e) {
+			          cell.setCellValue("");
+			          cell.setCellStyle(textStyle);
+			          LoggerFactory.getLogger(getClass()).warn("Field not found or inaccessible: {}", fieldName);
+			      }
+			  }
+			}
+			}
+		}
+	
+	private void writeRowData04(Sheet sheet, List<M_AIDP_Archival_Summary_Entity4> dataList,
+	        String[] rowCodes, String[] fieldSuffixes, int baseRow,
+	        CellStyle numberStyle, CellStyle textStyle) {
+	    System.out.println("came to write row data 4 method");
+
+	    for (M_AIDP_Archival_Summary_Entity4 record : dataList) {
+
+	        for (int rowIndex = 0; rowIndex < rowCodes.length; rowIndex++) {
+	            String rowCode = rowCodes[rowIndex];
+	            Row row = sheet.getRow(baseRow + rowIndex);
+
+	            if (row == null) row = sheet.createRow(baseRow + rowIndex);
+
+	            for (int colIndex = 0; colIndex < fieldSuffixes.length; colIndex++) {
+	                String fieldName = rowCode + "_" + fieldSuffixes[colIndex];
+
+	                // 👉 Direct mapping, don’t skip B
+	                int excelColIndex = colIndex;
+
+	                Cell cell = row.createCell(excelColIndex);
+	                try {
+	                    Field field = M_AIDP_Archival_Summary_Entity4.class.getDeclaredField(fieldName);
+	                    field.setAccessible(true);
+	                    Object value = field.get(record);
+
+	                    if (value == null || "N/A".equals(value.toString().trim())) {
+	                        cell.setCellValue(""); // keep style, blank value
+	                        cell.setCellStyle(textStyle);
+	                        continue;
+	                    }
+
+	                    if (value instanceof BigDecimal) {
+	                        cell.setCellValue(((BigDecimal) value).doubleValue());
+	                        cell.setCellStyle(numberStyle);
+	                    } else if (value instanceof String) {
+	                        cell.setCellValue((String) value);
+	                        cell.setCellStyle(textStyle);
+	                    } else {
+	                        cell.setCellValue(value.toString());
+	                        cell.setCellStyle(textStyle);
+	                    }
+	                } catch (NoSuchFieldException | IllegalAccessException e) {
+	                    cell.setCellValue("");
+	                    cell.setCellStyle(textStyle);
+	                    LoggerFactory.getLogger(getClass())
+	                        .warn("Field not found or inaccessible: {}", fieldName);
+	                }
+	            }
+	        }
+	    }
+	}
+
 
 }

@@ -473,6 +473,17 @@ public class RegulatoryReportServices {
 			break;
 			
 		
+		case "M_AIDP":
+			try {
+				repfile = BRRS_M_AIDP_ReportService.getM_AIDPExcel(filename, reportId, fromdate, todate, currency,
+						dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		
 			
 		}
 		return repfile;
@@ -542,6 +553,7 @@ public class RegulatoryReportServices {
 		if ("M_PLLDetail".equals(filename)) {
 			return BRRS_M_PLL_reportservice.getM_PLLDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 		}
+		
 		
 		
 		
