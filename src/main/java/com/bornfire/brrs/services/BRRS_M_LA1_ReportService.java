@@ -3,6 +3,7 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,6 +47,7 @@ import com.bornfire.brrs.entities.M_LA1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA1_Summary_Entity;
+import com.bornfire.brrs.entities.ReportLineItemDTO;
 
 @Component
 @Service
@@ -3847,4 +3849,50 @@ public class BRRS_M_LA1_ReportService {
 			return new byte[0];
 		}
 	}
+	
+	 public List<ReportLineItemDTO> getReportData(String reportCode) {
+	        logger.info("Fetching M_LA1 summary data for reportCode={}", reportCode);
+
+	        List<M_LA1_Summary_Entity> entities = BRRS_M_LA1_Summary_Repo.findByReportCode(reportCode);
+	        logger.debug("Found {} records for reportCode={}", entities.size(), reportCode);
+
+	        List<ReportLineItemDTO> lineItems = new ArrayList<>();
+
+	        if (entities.isEmpty()) {
+	            logger.warn("No records found for reportCode={}", reportCode);
+	            return lineItems;
+	        }
+
+	        M_LA1_Summary_Entity entity = entities.get(0); // Assuming one record per reportCode
+
+	        // Loop through all 64 product fields
+	        for (int i = 11; i <= 64; i++) { // start from 11
+	            String fieldName = "r" + i + "_product"; 
+	            try {
+	                Field field = M_LA1_Summary_Entity.class.getDeclaredField(fieldName);
+	                field.setAccessible(true);
+	                String fieldDescription = (String) field.get(entity);
+
+	                if (fieldDescription != null && !fieldDescription.isEmpty()) {
+	                    String reportLabel = "Row" + i; 
+	                    lineItems.add(new ReportLineItemDTO(
+	                            reportCode,
+	                            fieldDescription,
+	                            reportLabel,
+	                            "Header for " + reportLabel,
+	                            "Remarks for " + reportLabel,
+	                            "R" + i
+	                    ));
+	                }
+
+	            } catch (NoSuchFieldException | IllegalAccessException e) {
+	                logger.warn("Could not read field {} for entity: {}", fieldName, entity, e);
+	            }
+	        }
+
+
+
+	        logger.info("Total line items generated: {}", lineItems.size());
+	        return lineItems;
+	    }
 }

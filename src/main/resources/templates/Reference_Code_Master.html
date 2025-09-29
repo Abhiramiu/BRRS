@@ -1,8 +1,8 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 
-<!-- 
-CREATED BY	: PRASANTH M 
-CREATED ON	: 27.09.2025
+<!--
+CREATED BY	: PRASANTH M
+CREATED ON	: 29.09.2025
 PURPOSE		: Referance Code Master
  -->
 
@@ -13,6 +13,7 @@ PURPOSE		: Referance Code Master
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 	<!-- CSS (Bootstrap, FontAwesome, jQuery UI, DataTables) -->
+
 	<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
 		th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
 
@@ -30,10 +31,12 @@ PURPOSE		: Referance Code Master
 	<script src="https://cdn.jsdelivr.net/jquery.validation/1.19.5/jquery.validate.min.js"></script>
 
 	<!-- Favicon -->
+
 	<link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}" />
-	<link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}" />
+	<link rel="icon" type="image/x-xicon" th:href="@{/favicon.ico}" />
 
 	<!-- JavaScript: jQuery must come first -->
+
 	<script src="/webjars/jquery/3.4.1/jquery.min.js" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 
 	<script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
@@ -56,6 +59,7 @@ PURPOSE		: Referance Code Master
 
 	<script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
 		th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
 	<style>
 		.btns {
 			float: right;
@@ -104,6 +108,7 @@ PURPOSE		: Referance Code Master
 			color: red !important;
 		}
 	</style>
+
 	<style>
 		/* Make table fully responsive */
 		.table-container {
@@ -154,6 +159,7 @@ PURPOSE		: Referance Code Master
 			word-break: break-word;
 		}
 	</style>
+
 	<script th:inline="javascript">
 
 
@@ -165,113 +171,78 @@ PURPOSE		: Referance Code Master
 			window.history.back();
 		}
 
-		function submitform(a) {
-			var formmode = a.getAttribute("data-formmode");
-			console.log('Form mode:', formmode);
-			var requiredFields = ["#gl_code", "#gl_sub_code", "#head_acc_no", "#currency"];
-			var isValid = true;
+		// Function to load data based on selected report code
+		function loadReportData(reportCode) {
+		    console.log("loadReportData called with reportCode:", reportCode);
 
-			requiredFields.forEach(function (selector) {
-				var $field = $(selector);
-				if ($field.length) {
-					var value = $field.val(); // could be null for <select>
-					if (value === null || value.trim() === "") {
-						$field.css("border", "2px solid red");
-						isValid = false;
-					} else {
-						$field.css("border", "");
-					}
-				}
-			});
+		    if (!reportCode) {
+		        console.log("No report code selected. Clearing table.");
+		        $('#usertable tbody').empty(); // Clear table if no report code is selected
+		        return;
+		    }
 
-			if (!isValid) return false;
+		    $.ajax({
+		        url: '/BRRS/Reports/getReportDataByCode', 
+		        type: 'GET',
+		        data: { reportCode: reportCode.replace('-', '_') },
+		        beforeSend: function(xhr) {
+		            console.log("AJAX beforeSend: preparing request for reportCode =", reportCode);
+		        },
+		        success: function(data, textStatus, xhr) {
+		            console.log("AJAX success!", data);
+		            populateTable(data); 
+		        },
+		        error: function(xhr, status, error) {
+		            console.error("AJAX error!", status, error);
+		        },
+		        complete: function(xhr, status) {
+		            console.log("AJAX complete. Status:", status);
+		        }
+		    });
+		}
 
-			var formData = new FormData(document.getElementById("MCBL_List"));
 
-			if ($('#MCBL_List').valid()) {
-				$.ajax({
-					url: "./createAcc?formmode=" + encodeURIComponent(formmode),
-					type: "POST",
-					data: formData,
-					processData: false,
-					contentType: false,
-					success: function (response) {
-						console.log('Success response:', response);
-						$("#alertmsg").text(response);
-						$('#alert').modal("toggle");
-						if (formmode === 'add') {
-							document.getElementById("MCBL_List").reset();
-						}
-					},
-					error: function (xhr, status, error) {
-						console.error('AJAX error:', status, error);
-						$("#alertmsg").text("Error occurred: " + error);
-						$('#alert').modal("toggle");
-					}
+		function populateTable(data) {
+			const tbody = $('#usertable tbody');
+			tbody.empty(); // Clear existing rows
+
+			if (data && data.length > 0) {
+				data.forEach((item, index) => {
+					// Extract the row number from the product field (e.g., R11, R12)
+					const rowNumberMatch = item.reportLabel ? item.reportLabel.match(/R(\d+)/) : null;
+					const rowNum = rowNumberMatch ? rowNumberMatch[1] : '';
+
+					let tr = `<tr>
+							<td>${index + 1}</td>
+							<td>${item.fieldDescription || ''}</td>
+							<td>${item.reportLabel || ''}</td>
+							<td>${item.header || ''}</td>
+							<td>${item.remarks || ''}</td>
+						</tr>`;
+					tbody.append(tr);
 				});
-
+			} else {
+				tbody.append('<tr><td colspan="5">No data available for this report code.</td></tr>');
 			}
-
-			return false;
 		}
 
 
-
-
-
-
-		function deleteSubmit(a) {
-			console.log('Delete action initiated');
-			var formmode = a.getAttribute("data-formmode");
-
-			var formData = new FormData(document.getElementById("MCBL_List"));
-
-			$.ajax({
-				url: "./createAcc?formmode=" + encodeURIComponent(formmode),
-				type: "POST",
-				data: formData,
-				processData: false,
-				contentType: false,
-				success: function (response) {
-					$("#alertmsg").text(response);
-					$('#alert').modal("toggle");
-				},
-				error: function (xhr, status, error) {
-					console.error('AJAX error:', status, error);
-					$("#alertmsg").text("Error occurred: " + error);
-					$('#alert').modal("toggle");
-				}
+		$(document).ready(function () {
+			// Trigger data load when the dropdown changes
+			$('#ReportCode').on('change', function () {
+				const selectedReportCode = $(this).val();
+				loadReportData(selectedReportCode);
 			});
 
-			return false;
-		}
+			// Optional: Load data if a report code is pre-selected on page load
+			const initialReportCode = $('#ReportCode').val();
+			if (initialReportCode) {
+				loadReportData(initialReportCode);
+			}
+		});
 
 	</script>
-	<script>
-		function addrole(a) {
-			location.href = 'SourceDataMap?formmode=add';
-		}
-		function edit_btn_submit(a) {
 
-			var id = a.getAttribute("data-roleId");
-			location.href = 'SourceDataMap?formmode=edit&id=' + id;
-		}
-
-		function list() {
-			location.href = 'SourceDataMap?formmode=list';
-		}
-		function view_btn_submit(a) {
-			var id = a.getAttribute("data-roleId");
-
-			location.href = 'SourceDataMap?formmode=view&id=' + id;
-
-		}
-
-		function delete_btn_submit(a) {
-			var id = a.getAttribute("data-roleId");
-			location.href = 'SourceDataMap?formmode=delete&id=' + id;
-		}
-	</script>
 </head>
 <title>BRRS</title>
 
@@ -281,6 +252,7 @@ PURPOSE		: Referance Code Master
 			<div th:insert="HeaderMenu :: header"></div>
 			<div class="col-sm-12">
 				<!-- -------------------User List Starts----------------------------------------------------- -->
+
 
 				<div style="padding-right: 0px;padding-left: 0px;" th:if="${formmode}=='list'">
 
@@ -328,29 +300,19 @@ PURPOSE		: Referance Code Master
 										<thead class="thead-light"
 											style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
 											<tr>
-												<th style="width: 10%">Row Instance</th>
-												<th style="width: 20%">Product Name</th>
-												<th style="width: 10%">Column Instance</th>
-												<th style="width: 10%">12A</th>
-												<th style="width: 10%">12B</th>
-												<th style="width: 10%">MRC</th>
-												<th style="width: 10%">OR1</th>
-												<th style="width: 10%">OR2</th>
+
+												<th style="text-align: left;">SRL_NO</th>
+												<th style="text-align: left;">FIELD DESCRIPTION</th>
+												<th style="text-align: left;">Report Label</th>
+												<th style="text-align: left;">Header</th>
+												<th style="text-align: left;">Remarks</th>
 											</tr>
 										</thead>
 										<tbody>
-										<!--	<tr th:each="list : ${MCBL_List}" th:id="${list.id}" class="userlist">
-												<td th:text="${list?.gl_code}"></td>
-												<td th:text="${list?.gl_sub_code}"></td>
-												<td th:text="${list?.head_acc_no}"></td>
-												<td th:text="${list?.currency}"></td>
-											
-											
-											
-											</tr>-->
+											<!-- Data will be populated here by JavaScript -->
 										</tbody>
 									</table>
-									<!-- Pagination Controls -->
+									<!-- Pagination Controls (remove if not needed with dynamic load) -->
 									<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
 										<a th:if="${currentPage > 0}"
 											th:href="@{'/SourceDataMap'(formmode='list', page=${currentPage - 1}, size=100)}">
@@ -439,7 +401,6 @@ PURPOSE		: Referance Code Master
 			</div>
 		</div>
 	</div>
-
 </body>
 
 <Script>
@@ -456,6 +417,7 @@ PURPOSE		: Referance Code Master
 		}
 	}
 </script>
+
 <style>
 	.left-arrow-circle {
 		width: 35px;
