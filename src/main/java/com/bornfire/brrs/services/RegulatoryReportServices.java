@@ -690,14 +690,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
-		case "M_AIDP":
-			try {
-				archivalData = BRRS_M_AIDP_ReportService.getM_AIDPArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 			
 		case "M_PLL":
 			try {
