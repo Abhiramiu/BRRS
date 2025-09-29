@@ -686,51 +686,70 @@ public class NavigationController {
 	  "Error Occurred. Please contact Administrator."; } }
 	 
 	
-	@GetMapping("/download-templateBDGF")
-    public ResponseEntity<byte[]> downloadTemplatebdgf() throws Exception {
-        List<String> headers = Arrays.asList(
-                "SOL ID","S No","A/C No","Customer ID","Customer Name","Open Date",
-                "Amount Deposited","Currency","Period","Rate of Interest","100",
-                "BAL EQUI TO BWP","Outstanding Balance","Oustndng Bal UGX","Maturity Date",
-                "Maturity Amount","Scheme","Cr Pref Int Rate","SEGMENT","REFERENCE DATE",
-                "DIFFERENCE","DAYS","PERIOD","EFFECTIVE INTEREST RATE"
-        );
+	  @GetMapping("/download-templateBDGF")
+	  public ResponseEntity<byte[]> downloadTemplatebdgf() throws Exception {
+	      List<String> headers = Arrays.asList(
+	              "SOL ID","S No","A/C No","Customer ID","Customer Name","Open Date",
+	              "Amount Deposited","Currency","Period","Rate of Interest","100",
+	              "BAL EQUI TO BWP","Outstanding Balance","Oustndng Bal UGX","Maturity Date",
+	              "Maturity Amount","Scheme","Cr Pref Int Rate","SEGMENT","REFERENCE DATE",
+	              "DIFFERENCE","DAYS","PERIOD","EFFECTIVE INTEREST RATE"
+	      );
 
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("BDGF_Template");
+	      Workbook workbook = new XSSFWorkbook();
+	      Sheet sheet = workbook.createSheet("BDGF_Template");
 
-        // Create header row
-        Row headerRow = sheet.createRow(0);
-        CellStyle headerStyle = workbook.createCellStyle();
-        Font font = workbook.createFont();
-        font.setBold(true);
-        headerStyle.setFont(font);
+	      // Create header row
+	      Row headerRow = sheet.createRow(0);
+	      CellStyle headerStyle = workbook.createCellStyle();
+	      Font font = workbook.createFont();
+	      font.setBold(true);
+	      headerStyle.setFont(font);
 
-        for (int i = 0; i < headers.size(); i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(headers.get(i));
-            cell.setCellStyle(headerStyle);
-            sheet.autoSizeColumn(i);
-        }
+	      // Lock the header cells
+	      headerStyle.setLocked(true);
 
-        // Freeze header row
-        sheet.createFreezePane(0, 1);
+	      for (int i = 0; i < headers.size(); i++) {
+	          Cell cell = headerRow.createCell(i);
+	          cell.setCellValue(headers.get(i));
+	          cell.setCellStyle(headerStyle);
+	          sheet.autoSizeColumn(i);
+	      }
 
-        // Write to byte array
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        workbook.write(out);
-        workbook.close();
+	      // Freeze header row
+	      sheet.createFreezePane(0, 1);
 
-        HttpHeaders headersResponse = new HttpHeaders();
-        headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BDGF_Template.xlsx");
-        headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+	      // Unlock all other cells (so users can edit them)
+	      CellStyle unlockedCellStyle = workbook.createCellStyle();
+	      unlockedCellStyle.setLocked(false);
 
-        return ResponseEntity
-                .ok()
-                .headers(headersResponse)
-                .body(out.toByteArray());
-    
-}
+	      // Apply unlocked style to all other rows (optional, in case you add data later)
+	      for (int r = 1; r < 1000; r++) { // adjust max rows as needed
+	          Row row = sheet.createRow(r);
+	          for (int c = 0; c < headers.size(); c++) {
+	              Cell cell = row.createCell(c);
+	              cell.setCellStyle(unlockedCellStyle);
+	          }
+	      }
+
+	      // Protect the sheet (required for locking cells)
+	      sheet.protectSheet("password"); // you can use any password or leave blank
+
+	      // Write to byte array
+	      ByteArrayOutputStream out = new ByteArrayOutputStream();
+	      workbook.write(out);
+	      workbook.close();
+
+	      HttpHeaders headersResponse = new HttpHeaders();
+	      headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BDGF_Template.xlsx");
+	      headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+	      return ResponseEntity
+	              .ok()
+	              .headers(headersResponse)
+	              .body(out.toByteArray());
+	  }
+
     
 
 
@@ -877,10 +896,13 @@ public String addbfdb(@ModelAttribute MultipartFile file,
 @GetMapping("/download-templateBFDB")
 public ResponseEntity<byte[]> downloadTemplatebfdb() throws Exception {
     // 🔹 Updated headers to match BFDB_Entity fields
-	List<String> headers = Arrays.asList("SOL ID", "CUST ID", "GENDER", "ACCOUNT NO", "ACCT NAME", "SCHM_CODE",
-			"SCHM DESC", "ACCT OPN DATE", "ACCT CLS DATE", "BALANCE AS ON", "CCY", "BAL EQUI TO BWP", "INT RATE",
-			"100", "STATUS", "MATURITY DATE", "GL SUB HEAD CODE", "GL SUB HEAD DESC", "TYPE OF ACCOUNTS", "SEGMENT",
-			"PERIOD", "EFFECTIVE INTEREST RATE");
+    List<String> headers = Arrays.asList(
+        "SOL ID", "CUST ID", "GENDER", "ACCOUNT NO", "ACCT NAME", "SCHM_CODE",
+        "SCHM DESC", "ACCT OPN DATE", "ACCT CLS DATE", "BALANCE AS ON", "CCY",
+        "BAL EQUI TO BWP", "INT RATE", "100", "STATUS", "MATURITY DATE",
+        "GL SUB HEAD CODE", "GL SUB HEAD DESC", "TYPE OF ACCOUNTS", "SEGMENT",
+        "PERIOD", "EFFECTIVE INTEREST RATE"
+    );
 
     Workbook workbook = new XSSFWorkbook();
     Sheet sheet = workbook.createSheet("BFDB_Template");
@@ -892,6 +914,9 @@ public ResponseEntity<byte[]> downloadTemplatebfdb() throws Exception {
     font.setBold(true);
     headerStyle.setFont(font);
 
+    // Lock header cells
+    headerStyle.setLocked(true);
+
     for (int i = 0; i < headers.size(); i++) {
         Cell cell = headerRow.createCell(i);
         cell.setCellValue(headers.get(i));
@@ -901,6 +926,22 @@ public ResponseEntity<byte[]> downloadTemplatebfdb() throws Exception {
 
     // Freeze header row
     sheet.createFreezePane(0, 1);
+
+    // Unlock all other cells (so users can edit them)
+    CellStyle unlockedCellStyle = workbook.createCellStyle();
+    unlockedCellStyle.setLocked(false);
+
+    // Optional: pre-create 1000 editable rows
+    for (int r = 1; r < 1000; r++) {
+        Row row = sheet.createRow(r);
+        for (int c = 0; c < headers.size(); c++) {
+            Cell cell = row.createCell(c);
+            cell.setCellStyle(unlockedCellStyle);
+        }
+    }
+
+    // Protect the sheet (required to enforce locking)
+    sheet.protectSheet("password"); // use any password or leave blank
 
     // Write to byte array
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -979,7 +1020,6 @@ public String addBLBF(@ModelAttribute MultipartFile file,
 
 @GetMapping("/download-templateBLBF")
 public ResponseEntity<byte[]> downloadTemplate() throws Exception {
-    // 🔹 Full headers (based on your CREATE TABLE + new fields)
     List<String> headers = Arrays.asList(
         "SOL ID", "CUST ID", "ACCOUNT NO", "ACCT NAME", "SCHM_CODE", "SCHM DESC",
         "ACCT OPN DATE", "APPROVED LIMIT", "SANCTION LIMIT", "DISBURSED AMT",
@@ -992,20 +1032,13 @@ public ResponseEntity<byte[]> downloadTemplate() throws Exception {
         "NEW A/C", "UNDRAWN", "SECTOR", "Period", "Effective Interest Rate",
         "STAGE", "ECL PROVISION"
     );
+
     
+   
     Workbook workbook = new XSSFWorkbook();
     Sheet sheet = workbook.createSheet("BLBF_Template");
-    
-    // 🔹 Create unlocked style for all data cells
-    CellStyle unlockedStyle = workbook.createCellStyle();
-    unlockedStyle.setLocked(false);
-    
-    // 🔹 Apply unlocked style to ALL columns by default
-    for (int i = 0; i < headers.size(); i++) {
-        sheet.setDefaultColumnStyle(i, unlockedStyle);
-    }
-    
-    // 🔹 Header Style (Bold + Center + Background Color + LOCKED)
+
+    // 🔹 Style for header (locked)
     CellStyle headerStyle = workbook.createCellStyle();
     Font font = workbook.createFont();
     font.setBold(true);
@@ -1014,9 +1047,13 @@ public ResponseEntity<byte[]> downloadTemplate() throws Exception {
     headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
     headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
     headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    headerStyle.setLocked(true); // 🔒 Keep header locked
-    
-    // 🔹 Create Header Row
+    headerStyle.setLocked(true);
+
+    // 🔹 Style for editable cells (unlocked)
+    CellStyle unlockedStyle = workbook.createCellStyle();
+    unlockedStyle.setLocked(false);
+
+    // 🔹 Create Header Row (row 0, locked)
     Row headerRow = sheet.createRow(0);
     for (int i = 0; i < headers.size(); i++) {
         Cell cell = headerRow.createCell(i);
@@ -1024,27 +1061,34 @@ public ResponseEntity<byte[]> downloadTemplate() throws Exception {
         cell.setCellStyle(headerStyle);
         sheet.autoSizeColumn(i);
     }
-    
+
+    // 🔹 Create empty editable rows below header
+    for (int r = 1; r <= 50; r++) {   // 50 editable rows
+        Row row = sheet.createRow(r);
+        for (int c = 0; c < headers.size(); c++) {
+            Cell cell = row.createCell(c);
+            cell.setCellStyle(unlockedStyle); // make editable
+        }
+    }
+
     // 🔹 Freeze header row
     sheet.createFreezePane(0, 1);
-    
-    // 🔹 Protect the sheet (without password)
-    sheet.protectSheet("");
-    
-    // 🔹 Write to byte array
+
+    // 🔹 Protect the sheet (this is REQUIRED for lock to take effect)
+    sheet.protectSheet("123"); // try with a simple password
+
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     workbook.write(out);
     workbook.close();
-    
+
     HttpHeaders headersResponse = new HttpHeaders();
     headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BLBF_Template.xlsx");
     headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-    
+
     return ResponseEntity
             .ok()
             .headers(headersResponse)
             .body(out.toByteArray());
 }
-
 
 }
