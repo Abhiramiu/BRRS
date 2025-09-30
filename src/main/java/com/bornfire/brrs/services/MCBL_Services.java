@@ -6,9 +6,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.sql.DataSource;
@@ -50,29 +52,28 @@ public class MCBL_Services {
     public String addMCBL(MultipartFile file, String userid, String username, String reportDate) {
         long startTime = System.currentTimeMillis();
 
-        try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is);
+        try (InputStream is = file.getInputStream();
+             Workbook workbook = new XSSFWorkbook(is);
              Connection conn = dataSource.getConnection()) {
 
             conn.setAutoCommit(false); // batch mode
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             java.util.Date parsedDate = sdf.parse(reportDate);
-            java.sql.Date sqlReportDate = new java.sql.Date(parsedDate.getTime());  // force sql.Date
-
+            java.sql.Date sqlReportDate = new java.sql.Date(parsedDate.getTime());
 
             Sheet sheet = workbook.getSheet("MCBL");
 
             // --- Step 1: Load main table into Map ---
             List<MCBL_Main_Entity> mainlist = MCBL_Main_Reps.getall();
-           System.out.println("mail list count is : "+ mainlist.size());
+            System.out.println("Main list count: " + mainlist.size());
             Map<String, MCBL_Main_Entity> mainMap = new HashMap<>();
-           
+
             for (MCBL_Main_Entity mainRow : mainlist) {
                 String key = normalizeKey(mainRow.getGl_code(),
                                           mainRow.getGl_sub_code(),
                                           mainRow.getHead_acc_no(),
                                           mainRow.getCurrency());
-                System.out.println("MainMap Key: " + key);
                 mainMap.put(key, mainRow);
             }
 
@@ -98,7 +99,10 @@ public class MCBL_Services {
             int count = 0;
             int skippedCount = 0;
 
-            // --- Step 3: Loop through Excel rows ---
+            // --- Step 3: Track Excel duplicates ---
+            Set<String> processedKeys = new HashSet<>();
+
+            // --- Step 4: Loop through Excel rows ---
             for (int i = 0; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
@@ -107,27 +111,31 @@ public class MCBL_Services {
                 String glSubCode = formatter.formatCellValue(row.getCell(1));
                 String headAccNo = formatter.formatCellValue(row.getCell(2));
                 String description = formatter.formatCellValue(row.getCell(3));
-                String currency = formatter.formatCellValue(row.getCell(5)); // ⚠️ verify column index!
+                String currency = formatter.formatCellValue(row.getCell(5)); // ⚠️ check column index
 
                 String lookupKey = normalizeKey(glCode, glSubCode, headAccNo, currency);
 
-                // Debugging log
+                // --- Skip if not in mainMap ---
                 if (!mainMap.containsKey(lookupKey)) {
                     skippedCount++;
-                    System.out.println("❌ Skipped Row " + i +
-                        " | ExcelKey=" + lookupKey +
-                        " | ExcelRaw=[" + glCode + "," + glSubCode + "," + headAccNo + "," + currency + "]");
+                    System.out.println("❌ Skipped Row " + i + " | Key=" + lookupKey);
                     continue;
-                } else {
-                    System.out.println("✅ Matched Row " + i + " | Key=" + lookupKey);
                 }
 
-             // --- Delete old ---
+                // --- Skip Excel duplicates ---
+                String uniqueKey = lookupKey + "|" + sqlReportDate;
+                if (!processedKeys.add(uniqueKey)) {
+                    skippedCount++;
+                    System.out.println("⚠️ Duplicate Row skipped at index " + i + " | Key=" + uniqueKey);
+                    continue;
+                }
+
+                // --- Delete old ---
                 deleteStmt.setString(1, glCode);
                 deleteStmt.setString(2, glSubCode);
                 deleteStmt.setString(3, headAccNo);
                 deleteStmt.setString(4, currency);
-                deleteStmt.setDate(5, sqlReportDate); // ✅ fixed
+                deleteStmt.setDate(5, sqlReportDate);
                 deleteStmt.executeUpdate();
 
                 // --- Insert new ---
@@ -142,8 +150,8 @@ public class MCBL_Services {
                 insertStmt.setBigDecimal(9, getCellDecimal(row.getCell(8)));
                 insertStmt.setBigDecimal(10, getCellDecimal(row.getCell(9)));
                 insertStmt.setString(11, userid);
-                insertStmt.setDate(12, new java.sql.Date(System.currentTimeMillis())); // ✅ fixed
-                insertStmt.setDate(13, sqlReportDate); // ✅ fixed
+                insertStmt.setDate(12, new java.sql.Date(System.currentTimeMillis()));
+                insertStmt.setDate(13, sqlReportDate);
 
                 insertStmt.addBatch();
                 count++;
@@ -166,6 +174,7 @@ public class MCBL_Services {
             return "Error Occurred while reading Excel: " + e.getMessage();
         }
     }
+
 
 
     private String normalizeKey(String glCode, String glSubCode, String headAccNo, String currency) {
