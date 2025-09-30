@@ -453,7 +453,7 @@ function showmodify(btn) {
 						    fields.forEach(field => {
 						        let selector = `#R${i}_${field}`;
 						        if ($(selector).length) {  // check if element exists
-						            $(selector).css("border", "2px solid #B0B0B0");
+						            $(selector).css("border", "2px solid #630436");
 						        }
 						    });
 						}
@@ -647,7 +647,7 @@ function cancelModify() {
 							        dataType: 'text',
 							        success: function () {
 							            $("#resultModalLabel").text("Success");
-							            $("#resultModalBody").text("All reports updated successfully.");
+							            $("#resultModalBody").text("Updated Successfully");
 							            $("#resultModal").modal("show");
 							        },
 							        error: function (jqXHR) {
@@ -763,13 +763,13 @@ function cancelModify() {
 									</tr>
 					
 										<tr style="background-color: #b3b6b9;">
-										    <th style="text-align: left; padding-left: 20px; width: 900px;">
+										    <th style="background-color: #D8D8D8; text-align: left; padding-left: 20px; width: 900px;">
 										        Subsidiary
 										    </th>
-										    <th style="text-align: left; vertical-align:center; width: 200px;">Amount </th>
-										    <th style="text-align: left; vertical-align:center;width: 150px;">percentage of CET1 holding</th>
-										    <th style="text-align: left; vertical-align:center; width: 150px;">percentage of Additional Tier 1 holding</th>
-										    <th style="text-align: left;vertical-align:center; width: 150px;">percentage of Tier 2 holding</th>
+										    <th style="background-color: #D8D8D8;text-align: left; vertical-align:center; width: 200px;">Amount </th>
+										    <th style="background-color: #D8D8D8;text-align: left; vertical-align:center;width: 150px;">percentage of CET1 holding</th>
+										    <th style="background-color: #D8D8D8;text-align: left; vertical-align:center; width: 150px;">percentage of Additional Tier 1 holding</th>
+										    <th style="background-color: #D8D8D8;text-align: left;vertical-align:center; width: 150px;">percentage of Tier 2 holding</th>
 										    
 										    
 										</tr>
