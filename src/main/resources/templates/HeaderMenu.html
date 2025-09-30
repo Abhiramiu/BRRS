@@ -1069,12 +1069,13 @@ function hideAlert() {
 						<li class="nav-item dropdown" style=" text-align: center;"
 						 th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRRS_Reports')}">
 						
-							<a href="#" class="dropdown-toggle">BRRS_Reports</a>
+							<a href="#" class="dropdown-toggle">Basel_Returns</a>
 								
 								<ul class="dropdown-menu">
 								
 									
-							<li><a href="#" class="nav-link" id="BRRS" onclick="contentLoad(this)">Monthly</a></li>
+							<li><a href="#" class="nav-link" id="BRRS" onclick="contentLoad(this)">Basel Monthly Returns</a></li>
+							<li><a href="#" class="nav-link" id="Quarterly" onclick="contentLoad(this)">Basel Quarterly Returns</a></li>
 								
 								</ul>
 								

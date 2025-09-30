@@ -394,6 +394,7 @@ function getVali(a) {
 			<div class="row">
 				<div class="col-sm-12">
 					<div class="table-container" style="max-height: 620px; ">
+						
 						<table class="table table-striped table-bordered table-hover"
 							id="BRRSvalidation">
 							<thead style="background-color:#e9ecf0; font-family: Arial;">
@@ -487,10 +488,10 @@ function getVali(a) {
 <script>
   $(document).ready(function () {
     $('#BRRSvalidation').DataTable({
-    "pageLength": 15,
+    "pageLength": 10,
       "paging": true,
       "info": false,       // turn off "Showing x of y"
-      "searching": false,  // turn off search
+      "searching": true,  // turn on search
       "ordering": false,   // turn off ordering
       "lengthChange": false // hide "Show x entries"
     });
