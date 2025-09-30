@@ -1,6 +1,6 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 <!--
-CREATED BY	: KRISHNAPANDI MG
+CREATED BY	: NISHANTHINI M
 CREATED ON	: 10.09.2025
 PURPOSE		: BWRBRREPORT
 -->
@@ -311,8 +311,33 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			 alert("Details page not available for Manual Report");
-		}
+    
+    var Callurl;
+    	$('#loader').modal('show');
+        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/ 
+        location.href = Callurl;
+        	console.log(Callurl);
+   /*  $.ajax({
+        type: 'get',
+        url: Callurl,
+        beforeSend: function () {
+            $('#loader').modal('show'); // 🔄 Show loader
+        },
+        success: function (data) {
+            $('.content').html(data);
+            //$("#detailsbtn").addClass("active");
+            //tablepagination();
+        },
+        complete: function () {
+            $('#loader').modal('hide'); 
+        },
+        error: function () {
+        	  $('#loader').modal('hide');
+            alert("Something went wrongss. Please try again.");
+          
+        }
+    }); */
+}
 
 		function showsummary() {
 			$('#loader').modal('show');
@@ -420,19 +445,21 @@ PURPOSE		: BWRBRREPORT
 	<script>
 		// Show Modify (enable inputs & dropdowns)
 	function showmodify(btn) {
-	    $(".Show_input").removeAttr("readonly").removeAttr("disabled");
+    // List of IDs that should ALWAYS remain readonly
+    var readonlyIds = ["R36_NO_OF_AC", "R36_CREDIT_LIMIT", "R36_AMOUNT_OUTSTANDING"];
 
-	   
-	    
-	    // Toggle buttons
-	    $("#submitButton").show();
-	    
-	    // Show Cancel button only when Modify is clicked
-	    $("#cancelRecord").show();
-	    
-	    // Optionally hide the clicked Modify button
-	    $(btn).hide();
-	}
+    // Make all .Show_input editable except the ones in readonlyIds
+    $(".Show_input").each(function () {
+        if (!readonlyIds.includes(this.id)) {
+            $(this).removeAttr("readonly").removeAttr("disabled");
+        }
+    });
+
+    // Toggle buttons
+    $("#submitButton").show();
+    $("#cancelRecord").show();
+    $(btn).hide(); // hide the clicked Modify button
+}
 
 	//Cancel / Reset function
 	function cancelModify() {
@@ -672,7 +699,6 @@ PURPOSE		: BWRBRREPORT
 				<div th:if="${displaymode == 'summary'}">
 									<div class="row">
 										<div class="col-sm-12">
-										<form action="#" method="POST" id="fileupload">
 											<div class="table-wrapper table-responsive scrollable-table-container"
 												style="border-right: 1px solid #dee2e6; ">
 												<table
@@ -960,7 +986,8 @@ PURPOSE		: BWRBRREPORT
 										</tbody>
 									</table>
 
-
+	<form action="#" method="POST" id="fileupload">
+									
 
 									<div style="border-right: 1px solid #dee2e6; ">
 										<table
@@ -990,10 +1017,11 @@ PURPOSE		: BWRBRREPORT
 													<td id="ROW36"
 														style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-														th:value="${report1.R36_NO_OF_AC != null ? #numbers.formatDecimal(report1.R36_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R36_NO_OF_AC" name="R36_NO_OF_AC"
-															style="background-color: 	#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
+       th:value="${report1.R36_NO_OF_AC != null ? #numbers.formatDecimal(report1.R36_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
+       id="R36_NO_OF_AC" name="R36_NO_OF_AC"
+       style="background-color:#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+       readonly disabled />
+
 													</td>
 
 													<td id="ROW36"
@@ -1240,13 +1268,58 @@ PURPOSE		: BWRBRREPORT
 											</div>
 																		</form>
 																	</div>
+				
+												</div>
+												</div>
+												</div>
+												</div>
+												
+												<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light">
+										<tr>
+											<th></th>
+											<th>CUST ID</th>
+											<th>ACCT NO</th>
+											<th >ACCT NAME</th>
+											<th style="text-align: right;"> ACCT BALANCE</th>
+											<th>ROWID</th>
+											<th>COLUMNID</th>
+											<th>REPORT_DATE</th>
+										</tr>
+
+									</thead>
+
+									<tbody 
+										style="font-family: Arial;">
+										<tr th:each="report: ${reportdetails}">
+    <td>
+        <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+            <i class="fas fa-edit" onclick="editRecord(this)"></i>
+        </a>
+    </td>
+    <td th:text="${report.custId ?: 'N/A'}"></td>
+    <td th:text="${report.acctNumber ?: 'N/A'}"></td>
+    <td th:text="${report.acctName ?: 'N/A'}"></td>
+    <td th:text="${report.acctBalanceInpula != null ? #numbers.formatDecimal(report.acctBalanceInpula, 1, 2) : '0.00'}" style="text-align: right;"></td>
+    <td th:text="${report.rowId ?: '-'}"></td>
+    <td th:text="${report.columnId ?: '-'}"></td>
+    <td th:text="${report.reportDate != null ? #dates.format(report.reportDate, 'dd-MM-yyyy') : '-'}"></td>
+</tr>
+
+									</tbody>
+								</table>
 																</div>
 															</div>
 															
 														</div>
 													</div>
-												</div>
-												
 												<!-- Custom Cellresult Modal -->
 													<div class="modal fade" id="cellresultModal">
 													  <div class="modal-dialog modal-dialog-centered">
