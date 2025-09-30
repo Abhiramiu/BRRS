@@ -377,10 +377,26 @@ public class NavigationController {
 	  System.out.println("nisha1");
 	//System.out.println("count"+rrReportlist.getReportListbrrs().size());
 	 md.addAttribute("reportlist", rrReportlist.getReportListbrrs());
+	
 	  
 	  return "BRRS/RRReports";
 	  
 	  }
+	  
+	  @RequestMapping(value = "Quarterly", method = { RequestMethod.GET,RequestMethod.POST })
+	  public String Quarterly(Model md, HttpServletRequest req)
+	  {
+	//String roleId = (String) req.getSession().getAttribute("ROLEID");
+	  //String domainid = (String) req.getSession().getAttribute("DOMAINID");
+	  md.addAttribute("menu", "Quarterly  - BRRS Report");
+	  System.out.println("count"+rrReportlist.getReportListbrrsQ().size());
+	  md.addAttribute("reportlist", rrReportlist.getReportListbrrsQ());
+	  
+	  return "BRRS/RRReports";
+	  
+	  }
+	  
+	  
 	  
 	  
 	 
@@ -524,18 +540,7 @@ public class NavigationController {
 		// md.addAttribute("rpt_date", todate);
 		return "BRF/BRFValidations";
 	}
-	@RequestMapping(value = "Quarterly-2", method = { RequestMethod.GET,RequestMethod.POST })
-	  public String Quarterly2(Model md, HttpServletRequest req)
-	  {
-	//String roleId = (String) req.getSession().getAttribute("ROLEID");
-	  //String domainid = (String) req.getSession().getAttribute("DOMAINID");
-	  md.addAttribute("menu", "Quarterly 2 - BRF Report");
-	System.out.println("count"+rrReportlist.getReportListQuarterly2().size());
-	  md.addAttribute("reportlist", rrReportlist.getReportListQuarterly2());
-	  
-	  return "BRF/RRReports";
-	  
-	  }
+	
 	
 	
 	@RequestMapping(value = "MCBL", method = { RequestMethod.GET, RequestMethod.POST })
@@ -941,7 +946,7 @@ public ResponseEntity<byte[]> downloadTemplatebfdb() throws Exception {
     }
 
     // Protect the sheet (required to enforce locking)
-    sheet.protectSheet("password"); // use any password or leave blank
+//    sheet.protectSheet("password"); // use any password or leave blank
 
     // Write to byte array
     ByteArrayOutputStream out = new ByteArrayOutputStream();
