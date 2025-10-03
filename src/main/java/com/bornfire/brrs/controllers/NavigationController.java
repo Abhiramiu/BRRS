@@ -373,7 +373,7 @@ public class NavigationController {
 	//String roleId = (String) req.getSession().getAttribute("ROLEID");
 	  //String domainid = (String) req.getSession().getAttribute("DOMAINID");
 		  
-	  md.addAttribute("menu", "BRRS - BRRS Report");
+	  md.addAttribute("menu", " Basel Returns- Monthly Reports");
 	  System.out.println("nisha1");
 	//System.out.println("count"+rrReportlist.getReportListbrrs().size());
 	 md.addAttribute("reportlist", rrReportlist.getReportListbrrs());
@@ -388,7 +388,7 @@ public class NavigationController {
 	  {
 	//String roleId = (String) req.getSession().getAttribute("ROLEID");
 	  //String domainid = (String) req.getSession().getAttribute("DOMAINID");
-	  md.addAttribute("menu", "Quarterly  - BRRS Report");
+	  md.addAttribute("menu", "Basel Returns- Quarterly Reports");
 	  System.out.println("count"+rrReportlist.getReportListbrrsQ().size());
 	  md.addAttribute("reportlist", rrReportlist.getReportListbrrsQ());
 	  
@@ -700,20 +700,23 @@ public class NavigationController {
 	              "Maturity Amount","Scheme","Cr Pref Int Rate","SEGMENT","REFERENCE DATE",
 	              "DIFFERENCE","DAYS","PERIOD","EFFECTIVE INTEREST RATE"
 	      );
-
+	     
 	      Workbook workbook = new XSSFWorkbook();
 	      Sheet sheet = workbook.createSheet("BDGF_Template");
 
-	      // Create header row
-	      Row headerRow = sheet.createRow(0);
+	      // 🔹 Header style (locked)
 	      CellStyle headerStyle = workbook.createCellStyle();
 	      Font font = workbook.createFont();
 	      font.setBold(true);
 	      headerStyle.setFont(font);
-
-	      // Lock the header cells
 	      headerStyle.setLocked(true);
 
+	      // 🔹 Unlocked style for data cells
+	      CellStyle unlockedStyle = workbook.createCellStyle();
+	      unlockedStyle.setLocked(false);
+
+	      // 🔹 Create header row
+	      Row headerRow = sheet.createRow(0);
 	      for (int i = 0; i < headers.size(); i++) {
 	          Cell cell = headerRow.createCell(i);
 	          cell.setCellValue(headers.get(i));
@@ -721,24 +724,20 @@ public class NavigationController {
 	          sheet.autoSizeColumn(i);
 	      }
 
-	      // Freeze header row
-	      sheet.createFreezePane(0, 1);
-
-	      // Unlock all other cells (so users can edit them)
-	      CellStyle unlockedCellStyle = workbook.createCellStyle();
-	      unlockedCellStyle.setLocked(false);
-
-	      // Apply unlocked style to all other rows (optional, in case you add data later)
-	      for (int r = 1; r < 1000; r++) { // adjust max rows as needed
+	      // 🔹 Create editable rows (example: 5000 rows available for paste)
+	      for (int r = 1; r < 5000; r++) {
 	          Row row = sheet.createRow(r);
 	          for (int c = 0; c < headers.size(); c++) {
 	              Cell cell = row.createCell(c);
-	              cell.setCellStyle(unlockedCellStyle);
+	              cell.setCellStyle(unlockedStyle);
 	          }
 	      }
 
-	      // Protect the sheet (required for locking cells)
-	      sheet.protectSheet("password"); // you can use any password or leave blank
+	      // 🔹 Freeze header row
+	      sheet.createFreezePane(0, 1);
+
+	      // 🔹 Protect sheet (enforces lock/unlock)
+	      sheet.protectSheet("password");
 
 	      // Write to byte array
 	      ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -754,6 +753,7 @@ public class NavigationController {
 	              .headers(headersResponse)
 	              .body(out.toByteArray());
 	  }
+
 
     
 
@@ -946,7 +946,7 @@ public ResponseEntity<byte[]> downloadTemplatebfdb() throws Exception {
     }
 
     // Protect the sheet (required to enforce locking)
-//    sheet.protectSheet("password"); // use any password or leave blank
+    sheet.protectSheet("password"); // use any password or leave blank
 
     // Write to byte array
     ByteArrayOutputStream out = new ByteArrayOutputStream();

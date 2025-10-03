@@ -310,7 +310,8 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			 alert("Details page not available for Manual Report");
+		
+			 showResultModal('BRRS',' Details page not available for Manual Report');
 		}
 
 		function showsummary() {
@@ -472,12 +473,12 @@ function showmodify(btn) {
 			    fields.forEach(field => {
 			        let selector = `#R${i}_${field}`;
 			        if ($(selector).length) {  // check if element exists
-			            $(selector).css("border", "2px solid #B0B0B0");
+			            $(selector).css("border", "2px solid #630436");
 			        }
 			    });
 			}
 			
-			$("#R29_FAIR_VALUE").css("border", "2px solid #B0B0B0");
+			$("#R29_FAIR_VALUE").css("border", "2px solid #630436");
 			
 			for (let i = 35; i <= 38; i++) {  
 						    let fields = [
@@ -493,7 +494,7 @@ function showmodify(btn) {
 						    fields.forEach(field => {
 						        let selector = `#R${i}_${field}`;
 						        if ($(selector).length) {  // check if element exists
-						            $(selector).css("border", "2px solid #B0B0B0");
+						            $(selector).css("border", "2px solid #630436");
 						        }
 						    });
 						}
@@ -975,38 +976,38 @@ function cancelModify() {
 <tr>
 	
 	<td style="font-weight: normal;padding-left: 30px;">Total</td>
-	<td id="ROW15" style="background-color:#B0B0B0;padding-left: 20px; font-weight: bold;">
+	<td id="ROW15" style="background-color: rgb(107, 122, 143);padding-left: 20px; font-weight: bold;">
 	    <input class="display-input Show_input"
 	           type="text"
 	           id="R15_AMOUNT"
 	           name="R15_AMOUNT"
-	           style="background-color:#B0B0B0; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+	           style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	           readonly />
 	</td>
 	
-	<td id="ROW15" style="background-color:#B0B0B0;padding-left: 20px; font-weight: bold;">
+	<td id="ROW15" style="background-color: rgb(107, 122, 143);padding-left: 20px; font-weight: bold;">
 	    <input class="display-input Show_input"
 	           type="text"
 	           id="R15_PERCENT_OF_CET1_HOLDING"
 	           name="R15_PERCENT_OF_CET1_HOLDING"
-	           style="background-color:#B0B0B0; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+	           style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	           readonly />
 	</td>
 		
-	<td id="ROW15" style="background-color:#B0B0B0;padding-left: 20px; font-weight: bold;">
+	<td id="ROW15" style="background-color: rgb(107, 122, 143); padding-left: 20px; font-weight: bold;">
 	    <input class="display-input Show_input"
 	           type="text"
 	           id="R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
 	           name="R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
-	           style="background-color:#B0B0B0; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+	           style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	           readonly />
 	</td>
-	<td id="ROW15" style="background-color:#B0B0B0;padding-left: 20px; font-weight: bold;">
+	<td id="ROW15" style="background-color: rgb(107, 122, 143);padding-left: 20px; font-weight: bold;">
 	    <input class="display-input Show_input"
 	           type="text"
 	           id="R15_PERCENT_OF_TIER_2_HOLDING"
 	           name="R15_PERCENT_OF_TIER_2_HOLDING"
-	           style="background-color:#B0B0B0; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+	           style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	           readonly />
 	</td>
 
