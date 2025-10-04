@@ -681,13 +681,17 @@
 									
 									
 									<div class="row formline">
-									<label class="col-sm-2">Report Date</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}=='add'" type="date" id="report_date"
-												name="report_date" class="form-control form-control-sm"
-												maxlength="24" />
-										</div>
-									</div>
+    <label class="col-sm-2">Report Date</label>
+    <div class="col-sm-3">
+        <input th:if="${formmode}=='add'" type="date" id="report_date"
+            name="report_date" class="form-control form-control-sm"
+            maxlength="24" />
+        <span class="form-text text-muted" style="font-size: 12px; color: gray;">
+            This date is considered as Report Date
+        </span>
+    </div>
+</div>
+
 									<div class="row formline">
 										<label style="height: 2px;"></label>
 									</div>

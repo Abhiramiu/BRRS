@@ -4,15 +4,8 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
+import java.util.*;
 import javax.sql.DataSource;
 
 import org.apache.poi.ss.usermodel.*;
@@ -26,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bornfire.brrs.config.SequenceGenerator;
-import com.bornfire.brrs.entities.MCBL_Detail_Entity;
 import com.bornfire.brrs.entities.MCBL_Detail_Rep;
 import com.bornfire.brrs.entities.MCBL_Main_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
@@ -35,8 +27,9 @@ import com.bornfire.brrs.entities.MCBL_Main_Rep;
 @Transactional
 public class MCBL_Services {
 
-	@Autowired
-	SequenceGenerator sequence;
+    @Autowired
+    SequenceGenerator sequence;
+
     @Autowired
     private MCBL_Main_Rep MCBL_Main_Reps;
 
@@ -44,19 +37,20 @@ public class MCBL_Services {
     private MCBL_Detail_Rep MCBL_Detail_Reps;
 
     @Autowired
-    private DataSource dataSource; // Inject DataSource for JDBC
-    
+    private DataSource dataSource;
+
     private static final Logger logger = LoggerFactory.getLogger(MCBL_Services.class);
 
     @Transactional
     public String addMCBL(MultipartFile file, String userid, String username, String reportDate) {
         long startTime = System.currentTimeMillis();
+        List<String> validationErrors = new ArrayList<>();
 
         try (InputStream is = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(is);
              Connection conn = dataSource.getConnection()) {
 
-            conn.setAutoCommit(false); // batch mode
+            conn.setAutoCommit(false);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             java.util.Date parsedDate = sdf.parse(reportDate);
@@ -66,14 +60,13 @@ public class MCBL_Services {
 
             // --- Step 1: Load main table into Map ---
             List<MCBL_Main_Entity> mainlist = MCBL_Main_Reps.getall();
-            System.out.println("Main list count: " + mainlist.size());
             Map<String, MCBL_Main_Entity> mainMap = new HashMap<>();
 
             for (MCBL_Main_Entity mainRow : mainlist) {
                 String key = normalizeKey(mainRow.getGl_code(),
-                                          mainRow.getGl_sub_code(),
-                                          mainRow.getHead_acc_no(),
-                                          mainRow.getCurrency());
+                        mainRow.getGl_sub_code(),
+                        mainRow.getHead_acc_no(),
+                        mainRow.getCurrency());
                 mainMap.put(key, mainRow);
             }
 
@@ -83,15 +76,13 @@ public class MCBL_Services {
 
             // --- Step 2: Prepare statements ---
             String deleteSql = "DELETE FROM BRRS_MCBL_DETAIL " +
-                               "WHERE GL_CODE = ? AND GL_SUB_CODE = ? AND HEAD_ACC_NO = ? " +
-                               "AND CURRENCY = ? AND REPORT_DATE = ?";
-
+                    "WHERE GL_CODE = ? AND GL_SUB_CODE = ? AND HEAD_ACC_NO = ? " +
+                    "AND CURRENCY = ? AND REPORT_DATE = ?";
             PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
 
             String insertSql = "INSERT INTO BRRS_MCBL_DETAIL (ID, GL_CODE, GL_SUB_CODE, HEAD_ACC_NO, DESCRIPTION, CURRENCY, " +
-                               "DEBIT_BALANCE, CREDIT_BALANCE, DEBIT_EQUIVALENT, CREDIT_EQUIVALENT, ENTRY_USER, ENTRY_DATE, REPORT_DATE) " +
-                               "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+                    "DEBIT_BALANCE, CREDIT_BALANCE, DEBIT_EQUIVALENT, CREDIT_EQUIVALENT, ENTRY_USER, ENTRY_DATE, REPORT_DATE) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement insertStmt = conn.prepareStatement(insertSql);
 
             DataFormatter formatter = new DataFormatter();
@@ -107,58 +98,71 @@ public class MCBL_Services {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 
-                String glCode = formatter.formatCellValue(row.getCell(0));
-                String glSubCode = formatter.formatCellValue(row.getCell(1));
-                String headAccNo = formatter.formatCellValue(row.getCell(2));
-                String description = formatter.formatCellValue(row.getCell(3));
-                String currency = formatter.formatCellValue(row.getCell(5)); // ⚠️ check column index
+                String glCode = formatter.formatCellValue(row.getCell(0)).trim();
+                String glSubCode = formatter.formatCellValue(row.getCell(1)).trim();
+                String headAccNo = formatter.formatCellValue(row.getCell(2)).trim();
+                String description = formatter.formatCellValue(row.getCell(3)).trim();
+                String currency = formatter.formatCellValue(row.getCell(5)).trim();
 
-                String lookupKey = normalizeKey(glCode, glSubCode, headAccNo, currency);
+                // ✅ Only process if all 4 fields present
+                if (!glCode.isEmpty() && !glSubCode.isEmpty() && !headAccNo.isEmpty() && !currency.isEmpty()) {
 
-                // --- Skip if not in mainMap ---
-                if (!mainMap.containsKey(lookupKey)) {
-                    skippedCount++;
-                    System.out.println("❌ Skipped Row " + i + " | Key=" + lookupKey);
+                    // ✅ Check only if headAccNo is numeric
+                    if (isNumeric(headAccNo)) {
+                        String lookupKey = normalizeKey(glCode, glSubCode, headAccNo, currency);
+
+                        if (!mainMap.containsKey(lookupKey)) {
+                            validationErrors.add("Row " + (i + 1) + ": Account No " + headAccNo + " not found in Main Table.");
+                            skippedCount++;
+                            continue;
+                        }
+
+                        // --- Skip Excel duplicates ---
+                        String uniqueKey = lookupKey + "|" + sqlReportDate;
+                        if (!processedKeys.add(uniqueKey)) {
+                            skippedCount++;
+                            continue;
+                        }
+
+                        // --- Delete old ---
+                        deleteStmt.setString(1, glCode);
+                        deleteStmt.setString(2, glSubCode);
+                        deleteStmt.setString(3, headAccNo);
+                        deleteStmt.setString(4, currency);
+                        deleteStmt.setDate(5, sqlReportDate);
+                        deleteStmt.executeUpdate();
+
+                        // --- Insert new ---
+                        insertStmt.setString(1, UUID.randomUUID().toString());
+                        insertStmt.setString(2, glCode);
+                        insertStmt.setString(3, glSubCode);
+                        insertStmt.setString(4, headAccNo);
+                        insertStmt.setString(5, description);
+                        insertStmt.setString(6, currency);
+                        insertStmt.setBigDecimal(7, getCellDecimal(row.getCell(6)));
+                        insertStmt.setBigDecimal(8, getCellDecimal(row.getCell(7)));
+                        insertStmt.setBigDecimal(9, getCellDecimal(row.getCell(8)));
+                        insertStmt.setBigDecimal(10, getCellDecimal(row.getCell(9)));
+                        insertStmt.setString(11, userid);
+                        insertStmt.setDate(12, new java.sql.Date(System.currentTimeMillis()));
+                        insertStmt.setDate(13, sqlReportDate);
+
+                        insertStmt.addBatch();
+                        count++;
+
+                        if (count % batchSize == 0) {
+                            insertStmt.executeBatch();
+                            conn.commit();
+                        }
+                    } else {
+                        // ✅ headAccNo not numeric → skip silently
+                        skippedCount++;
+                        continue;
+                    }
+
+                } else {
+                    // ✅ Missing mandatory field → skip silently
                     continue;
-                }
-
-                // --- Skip Excel duplicates ---
-                String uniqueKey = lookupKey + "|" + sqlReportDate;
-                if (!processedKeys.add(uniqueKey)) {
-                    skippedCount++;
-                    System.out.println("⚠️ Duplicate Row skipped at index " + i + " | Key=" + uniqueKey);
-                    continue;
-                }
-
-                // --- Delete old ---
-                deleteStmt.setString(1, glCode);
-                deleteStmt.setString(2, glSubCode);
-                deleteStmt.setString(3, headAccNo);
-                deleteStmt.setString(4, currency);
-                deleteStmt.setDate(5, sqlReportDate);
-                deleteStmt.executeUpdate();
-
-                // --- Insert new ---
-                insertStmt.setString(1, java.util.UUID.randomUUID().toString());
-                insertStmt.setString(2, glCode);
-                insertStmt.setString(3, glSubCode);
-                insertStmt.setString(4, headAccNo);
-                insertStmt.setString(5, description);
-                insertStmt.setString(6, currency);
-                insertStmt.setBigDecimal(7, getCellDecimal(row.getCell(6)));
-                insertStmt.setBigDecimal(8, getCellDecimal(row.getCell(7)));
-                insertStmt.setBigDecimal(9, getCellDecimal(row.getCell(8)));
-                insertStmt.setBigDecimal(10, getCellDecimal(row.getCell(9)));
-                insertStmt.setString(11, userid);
-                insertStmt.setDate(12, new java.sql.Date(System.currentTimeMillis()));
-                insertStmt.setDate(13, sqlReportDate);
-
-                insertStmt.addBatch();
-                count++;
-
-                if (count % batchSize == 0) {
-                    insertStmt.executeBatch();
-                    conn.commit();
                 }
             }
 
@@ -166,16 +170,22 @@ public class MCBL_Services {
             conn.commit();
 
             long duration = System.currentTimeMillis() - startTime;
-            return "MCBL Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
-                   ". Time taken: " + duration + " ms";
+
+            String result = "MCBL Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
+                    ". Time taken: " + duration + " ms";
+
+            if (!validationErrors.isEmpty()) {
+                result += " | Accounts not found: " + validationErrors.size() + "\n" +
+                        String.join("\n", validationErrors);
+            }
+
+            return result;
 
         } catch (Exception e) {
             logger.error("Error while processing MCBL Excel: {}", e.getMessage(), e);
             return "Error Occurred while reading Excel: " + e.getMessage();
         }
     }
-
-
 
     private String normalizeKey(String glCode, String glSubCode, String headAccNo, String currency) {
         return safeTrim(glCode) + "|" + safeTrim(glSubCode) + "|" + safeTrim(headAccNo) + "|" + safeTrim(currency);
@@ -204,54 +214,8 @@ public class MCBL_Services {
         }
     }
 
-    private String getCellValue(Cell cell) {
-        if (cell == null) return "";
-
-        try {
-            CellType type = cell.getCellType(); // now returns enum
-            switch (type) {
-                case STRING:
-                    return cell.getStringCellValue().trim();
-                case NUMERIC:
-                    if (DateUtil.isCellDateFormatted(cell)) {
-                        return new SimpleDateFormat("yyyy-MM-dd").format(cell.getDateCellValue());
-                    }
-                    return BigDecimal.valueOf(cell.getNumericCellValue()).toPlainString();
-                case BOOLEAN:
-                    return String.valueOf(cell.getBooleanCellValue());
-                case FORMULA:
-                    FormulaEvaluator evaluator = cell.getSheet().getWorkbook()
-                            .getCreationHelper().createFormulaEvaluator();
-                    CellValue cellValue = evaluator.evaluate(cell);
-                    if (cellValue == null) return "";
-                    switch (cellValue.getCellType()) { // also enum
-                        case STRING:
-                            return cellValue.getStringValue().trim();
-                        case NUMERIC:
-                            return BigDecimal.valueOf(cellValue.getNumberValue()).toPlainString();
-                        case BOOLEAN:
-                            return String.valueOf(cellValue.getBooleanValue());
-                        default:
-                            return "";
-                    }
-                case BLANK:
-                default:
-                    return "";
-            }
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-
-    private BigDecimal parseNumber(String val) {
-        if (val == null || val.trim().isEmpty())
-            return BigDecimal.ZERO;
-        val = val.replace(",", "");
-        try {
-            return new BigDecimal(val);
-        } catch (Exception e) {
-            return BigDecimal.ZERO;
-        }
+    // ✅ Numeric check helper
+    private boolean isNumeric(String str) {
+        return str != null && str.matches("\\d+");
     }
 }
