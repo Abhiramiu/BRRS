@@ -440,7 +440,7 @@ function showmodify(btn) {
 			#R12_AMOUNT, #R12_PERCENT_OF_CET1_HOLDING, #R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, #R12_PERCENT_OF_TIER_2_HOLDING, \
 			#R13_AMOUNT, #R13_PERCENT_OF_CET1_HOLDING, #R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, #R13_PERCENT_OF_TIER_2_HOLDING, \
 			#R14_AMOUNT, #R14_PERCENT_OF_CET1_HOLDING, #R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, #R14_PERCENT_OF_TIER_2_HOLDING")
-			.css("border", "2px solid #B0B0B0");
+			.css("border", "2px solid #d3d3d3");
 
 			for (let i = 11; i <= 14; i++) {  
 						    let fields = [
@@ -454,7 +454,7 @@ function showmodify(btn) {
 						    fields.forEach(field => {
 						        let selector = `#R${i}_${field}`;
 						        if ($(selector).length) {  // check if element exists
-						            $(selector).css("border", "2px solid #630436");
+						            $(selector).css("border", "2px solid #d3d3d3");
 						        }
 						    });
 						}
@@ -473,12 +473,12 @@ function showmodify(btn) {
 			    fields.forEach(field => {
 			        let selector = `#R${i}_${field}`;
 			        if ($(selector).length) {  // check if element exists
-			            $(selector).css("border", "2px solid #630436");
+			            $(selector).css("border", "2px solid #d3d3d3");
 			        }
 			    });
 			}
 			
-			$("#R29_FAIR_VALUE").css("border", "2px solid #630436");
+			$("#R29_FAIR_VALUE").css("border", "2px solid #d3d3d3");
 			
 			for (let i = 35; i <= 38; i++) {  
 						    let fields = [
@@ -494,7 +494,7 @@ function showmodify(btn) {
 						    fields.forEach(field => {
 						        let selector = `#R${i}_${field}`;
 						        if ($(selector).length) {  // check if element exists
-						            $(selector).css("border", "2px solid #630436");
+						            $(selector).css("border", "2px solid #d3d3d3");
 						        }
 						    });
 						}
