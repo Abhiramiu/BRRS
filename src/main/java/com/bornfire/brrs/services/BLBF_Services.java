@@ -167,8 +167,10 @@ public class BLBF_Services {
             conn.commit();
 
             long duration = System.currentTimeMillis() - startTime;
-            return "BLBF Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
+           /* return "BLBF Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
                     ". Time taken: " + duration + " ms";
+*/
+            return "BLBF Added successfully.";
 
         } catch (Exception e) {
             logger.error("Error while processing BLBF Excel: {}", e.getMessage(), e);

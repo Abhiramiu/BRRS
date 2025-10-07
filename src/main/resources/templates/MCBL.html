@@ -517,40 +517,48 @@ function checkReportDate() {
 	</script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const input = document.getElementById("report_date");
-        const today = new Date();
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("report_date");
+    const today = new Date();
 
-        // Current month start and end
-        const firstDayCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const lastDayCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    // ✅ Get the last day of the previous month correctly
+    // Month is 0-indexed, so using (today.getMonth(), 0) gives last day of previous month
+    const lastDayPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
 
-        // Previous month start and end
-        const firstDayPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        const lastDayPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+    // ✅ Format as yyyy-MM-dd (adjusting for timezone)
+    const formattedDate = new Date(
+        lastDayPrevMonth.getTime() - lastDayPrevMonth.getTimezoneOffset() * 60000
+    ).toISOString().split("T")[0];
 
-        // Set min = first day of previous month
-        const minDate = firstDayPrevMonth.toISOString().split("T")[0];
-        // Set max = last day of current month
-        const maxDate = lastDayCurrentMonth.toISOString().split("T")[0];
+    // ✅ Set min, max, and default to last day of previous month
+    input.min = formattedDate;
+    input.max = formattedDate;
+    input.value = formattedDate;
 
-        input.min = minDate;
-        input.max = maxDate;
+    // Prevent manual typing
+    input.addEventListener("keydown", function (e) {
+        e.preventDefault();
     });
+});
 
-    function checkReportDate() {
-        const input = document.getElementById("report_date");
-        const selectedDate = new Date(input.value);
-        const today = new Date();
+function checkReportDate() {
+    const input = document.getElementById("report_date");
+    const today = new Date();
+    const lastDayPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+    const selectedDate = new Date(input.value);
 
-        const firstDayPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        const lastDayCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
-        if (selectedDate < firstDayPrevMonth || selectedDate > lastDayCurrentMonth) {
-            alert("Please select a date only from previous or current month!");
-            input.value = "";
-        }
+    if (selectedDate.getDate() !== lastDayPrevMonth.getDate() ||
+        selectedDate.getMonth() !== lastDayPrevMonth.getMonth() ||
+        selectedDate.getFullYear() !== lastDayPrevMonth.getFullYear()) {
+        alert("You can select only the last day of the previous month!");
+        const formattedDate = new Date(
+            lastDayPrevMonth.getTime() - lastDayPrevMonth.getTimezoneOffset() * 60000
+        ).toISOString().split("T")[0];
+        input.value = formattedDate;
     }
+}
+
+
 </script>
 </head>
 
@@ -693,13 +701,7 @@ function checkReportDate() {
 									</button>
 								</div>
 								
-									<button type="button" class="custom-tab-btn"
-										style="border: none;  
-										border-radius: 7px;color: black; display: flex; align-items: center; justify-content: center; width: 48px;height: 37px;" onclick="list();"
-										title="List">
-										<i class="fa fa-list" style="color: black;"></i>
-									</button>
-
+									
 
 								</div>
 							</div>
@@ -757,19 +759,18 @@ function checkReportDate() {
 	<div class="row formline">
     <label class="col-sm-2">Report Date</label>
     <div class="col-sm-3">
-       <input 
+    <input 
     th:if="${formmode}=='add'" 
     type="date" 
     id="report_date"
     name="report_date" 
     class="form-control form-control-sm"
     maxlength="24" 
-    onchange="validateReportDateRange(); checkReportDate();" 
+    onchange="checkReportDate();" 
 />
 
-        <span class="form-text text-muted" style="font-size: 12px; color: gray;">
-            This date is considered as Report Date
-        </span>
+
+        
     </div>
 </div>
 
@@ -818,7 +819,7 @@ function checkReportDate() {
         </div>
 
         <div class="row formline">
-            <label class="col-sm-2">Branch Name</label>
+            <label class="col-sm-2">Branch Code</label>
             <div class="col-sm-3">
                 <input th:if="${formmode}!='add'" type="hidden" id="id" name="id" th:value="*{id}" />
                 <select th:if="${formmode}=='add'" id="branch_name1" name="branch_name"
@@ -831,7 +832,9 @@ function checkReportDate() {
                 </select>
             </div>
         </div>
-
+<div class="row formline">
+										<label style="height: 5px;"></label>
+									</div>
         <div class="row formline">
             <label class="col-sm-2">File</label>
             <div class="col-sm-3">
@@ -839,6 +842,10 @@ function checkReportDate() {
                     class="form-control form-control-sm" />
             </div>
         </div>
+        <div class="row formline">
+										<label style="height: 5px;"></label>
+									</div>
+		
     </form>
 
     <div class="card-footer text-center">
@@ -856,7 +863,7 @@ function checkReportDate() {
         </div>
 
         <div class="row formline">
-            <label class="col-sm-2">Branch Name</label>
+            <label class="col-sm-2">Branch Code</label>
             <div class="col-sm-3">
                 <input th:if="${formmode}!='add'" type="hidden" id="id" name="id" th:value="*{id}" />
                 <select th:if="${formmode}=='add'" id="branch_name2" name="branch_name"
@@ -869,7 +876,9 @@ function checkReportDate() {
                 </select>
             </div>
         </div>
-
+<div class="row formline">
+										<label style="height: 5px;"></label>
+									</div>
         <div class="row formline">
             <label class="col-sm-2">File</label>
             <div class="col-sm-3">
@@ -877,6 +886,10 @@ function checkReportDate() {
                     class="form-control form-control-sm" />
             </div>
         </div>
+        <div class="row formline">
+										<label style="height: 5px;"></label>
+									</div>
+		
     </form>
 
     <div class="card-footer text-center">
@@ -907,7 +920,9 @@ function checkReportDate() {
                 </select>
             </div>
         </div>
-
+<div class="row formline">
+										<label style="height: 5px;"></label>
+									</div>
         <div class="row formline">
             <label class="col-sm-2">File</label>
             <div class="col-sm-3">
@@ -915,6 +930,10 @@ function checkReportDate() {
                     class="form-control form-control-sm" />
             </div>
         </div>
+        <div class="row formline">
+										<label style="height: 5px;"></label>
+									</div>
+		
     </form>
 
     <div class="card-footer text-center">
@@ -959,8 +978,8 @@ function checkReportDate() {
 				<div class="modal-content">
 					<div class="modal-body" style="text-align: center;">
 						<p id="alertmsg"></p>
-						<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="list();"
-							style="background-color:darkorange;border:none;color:black">Close</button>
+						<button type="button" class="custom-tab-btn" data-dismiss="modal" onclick="list();"
+							>Close</button>
 					</div>
 				</div>
 			</div>

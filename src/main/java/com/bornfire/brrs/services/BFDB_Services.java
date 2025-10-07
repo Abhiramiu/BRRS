@@ -151,8 +151,10 @@ public class BFDB_Services {
             conn.commit();
 
             long duration = System.currentTimeMillis() - startTime;
-            return "BFDB Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
+           /* return "BFDB Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
                     ". Time taken: " + duration + " ms";
+            */
+            return "BFDB Added successfully.";
 
         } catch (Exception e) {
             logger.error("Error while processing BFDB Excel: {}", e.getMessage(), e);

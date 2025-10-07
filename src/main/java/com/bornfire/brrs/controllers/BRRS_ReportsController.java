@@ -7,6 +7,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,15 +30,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.AIDPUpdateDto;
+import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
@@ -57,9 +56,7 @@ import com.bornfire.brrs.services.BRRS_M_CA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
 
 import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
-import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
-import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
@@ -511,5 +508,18 @@ public class BRRS_ReportsController {
 	     }
 	 }
 
-	   
+	 @Autowired
+		private RegulatoryReportServices regulatoryReportServices;
+
+		@RequestMapping(value = "/getReportDataByCode", method = RequestMethod.GET)
+		@ResponseBody
+		public List<ReportLineItemDTO> getReportDataByCode(@RequestParam("reportCode") String reportCode) throws Exception {
+
+			System.out.println("Controller received request for report code = " + reportCode);
+
+			return regulatoryReportServices.getReportDataByCode(reportCode);
+		}
+		
+		
+		
 }

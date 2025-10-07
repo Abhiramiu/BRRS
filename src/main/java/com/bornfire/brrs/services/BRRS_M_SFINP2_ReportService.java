@@ -1,6 +1,8 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,9 +22,12 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
@@ -45,6 +51,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.M_SFINP2_Archival_Detail_Entity;
+import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.M_SFINP2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Archival_Summary_Repo;
@@ -3045,6 +3052,102 @@ public class BRRS_M_SFINP2_ReportService {
 			logger.error("Error generating BRRS_M_SFINP2Excel", e);
 			return new byte[0];
 		}
+	}
+	
+	
+	public List<ReportLineItemDTO> getReportData(String filename) throws Exception {
+		List<ReportLineItemDTO> reportData = new ArrayList<>();
+
+		File file = new File(filename);
+		if (!file.exists()) {
+			throw new Exception("File not found: " + filename);
+		}
+
+		FileInputStream fis = new FileInputStream(file);
+		Workbook workbook = new XSSFWorkbook(fis);
+		Sheet sheet = workbook.getSheetAt(0);
+
+		final int START_ROW_INDEX = 10;
+		final int END_ROW_INDEX = 80;
+
+		Iterator<Row> rowIterator = sheet.iterator();
+		int srlNo = 1;
+
+		while (rowIterator.hasNext()) {
+			Row row = rowIterator.next();
+			int currentRowIndex = row.getRowNum();
+
+			if (currentRowIndex < START_ROW_INDEX) {
+				continue;
+			}
+
+			if (currentRowIndex > END_ROW_INDEX) {
+				break;
+			}
+
+			Cell fieldDescCell = row.getCell(0);
+
+			if (fieldDescCell == null || fieldDescCell.getCellType() == CellType.BLANK) {
+				continue;
+			}
+
+			String fieldDesc = "";
+			try {
+				fieldDesc = fieldDescCell.getStringCellValue();
+			} catch (IllegalStateException e) {
+
+				FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+				CellValue cellValue = evaluator.evaluate(fieldDescCell);
+				if (cellValue != null) {
+					if (cellValue.getCellType() == CellType.STRING) {
+						fieldDesc = cellValue.getStringValue();
+					} else if (cellValue.getCellType() == CellType.NUMERIC) {
+						fieldDesc = String.valueOf(cellValue.getNumberValue());
+					} else if (cellValue.getCellType() == CellType.BOOLEAN) {
+						fieldDesc = String.valueOf(cellValue.getBooleanValue());
+					}
+
+				}
+				if (fieldDesc.isEmpty() && fieldDescCell.getCellType() == CellType.FORMULA) {
+
+					fieldDesc = fieldDescCell.getCellFormula();
+				}
+			} catch (Exception e) {
+				System.err.println("Error reading cell A" + (currentRowIndex + 1) + ": " + e.getMessage());
+				continue;
+			}
+
+			if (fieldDesc == null || fieldDesc.trim().isEmpty()) {
+				continue;
+			}
+
+			ReportLineItemDTO dto = new ReportLineItemDTO();
+			dto.setSrlNo(srlNo++);
+			dto.setFieldDescription(fieldDesc.trim());
+
+			dto.setReportLabel("R" + (currentRowIndex + 1));
+
+			boolean hasFormula = false;
+			for (int i = 0; i < row.getLastCellNum(); i++) {
+				Cell cell = row.getCell(i);
+				if (cell != null && cell.getCellType() == CellType.FORMULA) {
+					hasFormula = true;
+					break;
+				}
+			}
+			dto.setHeader(hasFormula ? "Y" : " ");
+
+			dto.setRemarks("");
+
+			reportData.add(dto);
+		}
+
+		workbook.close();
+		fis.close();
+
+		System.out.println("✅ M_SFINP2 Report data processed (Excel Row " + (START_ROW_INDEX + 1) + " to "
+				+ (END_ROW_INDEX + 1) + "). Total items: " + reportData.size());
+		return reportData;
 	}
 
 }

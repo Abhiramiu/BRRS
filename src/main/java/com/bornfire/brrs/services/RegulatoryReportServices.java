@@ -10,12 +10,15 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.dto.ReportLineItemDTO;
 
 @Component
 @Service
@@ -784,4 +787,36 @@ public class RegulatoryReportServices {
     }
 	
 
+    @Value("${output.exportpathtemp}")
+	private String baseExportPath;
+
+	public List<ReportLineItemDTO> getReportDataByCode(String reportCode) throws Exception {
+		System.out.println("RegulatoryReportServices received request for report code = " + reportCode);
+
+		String specificFilePath = ""; 
+		List<ReportLineItemDTO> reportData = new ArrayList<>();
+
+		switch (reportCode.toUpperCase()) {
+		case "M_LA1":
+			specificFilePath = baseExportPath + "M_LA1.xlsx";
+			System.out.println("Fetching M_LA1 data from: " + specificFilePath);
+			reportData = BRRS_M_LA1_reportservice.getReportData(specificFilePath);
+			break;
+		case "M_SFINP2":
+			System.out.println(reportCode);
+			specificFilePath = baseExportPath + "M_SFINP2.xlsx";
+			System.out.println("Fetching M_SFINP2 data from: " + specificFilePath);
+			reportData = BRRS_M_SFINP2_reportservice.getReportData(specificFilePath);
+			break;
+
+		
+
+		default:
+			System.out.println("No handler found or file path configured for report code: " + reportCode);
+			
+			break;
+		}
+
+		return reportData;
+	}
 }

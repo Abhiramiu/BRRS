@@ -92,7 +92,8 @@ public class BDGF_Services {
             }
 
 
-            return "BDGF Added successfully. Saved: " + savedCount + ", Skipped: " + skippedCount;
+       //     return "BDGF Added successfully. Saved: " + savedCount + ", Skipped: " + skippedCount;
+            return "BDGF Added successfully.";
 
         } catch (Exception e) {
             logger.error("Error while processing BDGF Excel: {}", e.getMessage(), e);

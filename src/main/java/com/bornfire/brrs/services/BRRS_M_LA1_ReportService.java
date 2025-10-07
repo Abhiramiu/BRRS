@@ -1,6 +1,8 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -11,14 +13,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
@@ -47,10 +53,11 @@ import com.bornfire.brrs.entities.M_LA1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA1_Summary_Entity;
-import com.bornfire.brrs.entities.ReportLineItemDTO;
+import com.bornfire.brrs.dto.ReportLineItemDTO;
 
 @Component
 @Service
+
 
 public class BRRS_M_LA1_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_LA1_ReportService.class);
@@ -3850,7 +3857,7 @@ public class BRRS_M_LA1_ReportService {
 		}
 	}
 	
-	 public List<ReportLineItemDTO> getReportData(String reportCode) {
+	/* public List<ReportLineItemDTO> getReportData(String reportCode) {
 	        logger.info("Fetching M_LA1 summary data for reportCode={}", reportCode);
 
 	        List<M_LA1_Summary_Entity> entities = BRRS_M_LA1_Summary_Repo.findByReportCode(reportCode);
@@ -3895,4 +3902,100 @@ public class BRRS_M_LA1_ReportService {
 	        logger.info("Total line items generated: {}", lineItems.size());
 	        return lineItems;
 	    }
+	 
+	 */
+	 public List<ReportLineItemDTO> getReportData(String filename) throws Exception {
+			List<ReportLineItemDTO> reportData = new ArrayList<>();
+
+			File file = new File(filename);
+			if (!file.exists()) {
+				throw new Exception("File not found: " + filename);
+			}
+
+			FileInputStream fis = new FileInputStream(file);
+			Workbook workbook = new XSSFWorkbook(fis);
+			Sheet sheet = workbook.getSheetAt(0);
+
+			final int START_ROW_INDEX = 10;
+			final int END_ROW_INDEX = 63;
+
+			Iterator<Row> rowIterator = sheet.iterator();
+			int srlNo = 1;
+
+			while (rowIterator.hasNext()) {
+				Row row = rowIterator.next();
+				int currentRowIndex = row.getRowNum();
+
+				if (currentRowIndex < START_ROW_INDEX) {
+					continue;
+				}
+
+				if (currentRowIndex > END_ROW_INDEX) {
+					break;
+				}
+
+				Cell fieldDescCell = row.getCell(0);
+
+				if (fieldDescCell == null || fieldDescCell.getCellType() == CellType.BLANK) {
+					continue;
+				}
+
+				String fieldDesc = "";
+				try {
+					fieldDesc = fieldDescCell.getStringCellValue();
+				} catch (IllegalStateException e) {
+
+					FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+					CellValue cellValue = evaluator.evaluate(fieldDescCell);
+					if (cellValue != null) {
+						if (cellValue.getCellType() == CellType.STRING) {
+							fieldDesc = cellValue.getStringValue();
+						} else if (cellValue.getCellType() == CellType.NUMERIC) {
+							fieldDesc = String.valueOf(cellValue.getNumberValue());
+						} else if (cellValue.getCellType() == CellType.BOOLEAN) {
+							fieldDesc = String.valueOf(cellValue.getBooleanValue());
+						}
+
+					}
+					if (fieldDesc.isEmpty() && fieldDescCell.getCellType() == CellType.FORMULA) {
+
+						fieldDesc = fieldDescCell.getCellFormula();
+					}
+				} catch (Exception e) {
+					System.err.println("Error reading cell A" + (currentRowIndex + 1) + ": " + e.getMessage());
+					continue;
+				}
+
+				if (fieldDesc == null || fieldDesc.trim().isEmpty()) {
+					continue;
+				}
+
+				ReportLineItemDTO dto = new ReportLineItemDTO();
+				dto.setSrlNo(srlNo++);
+				dto.setFieldDescription(fieldDesc.trim());
+
+				dto.setReportLabel("R" + (currentRowIndex + 1));
+
+				boolean hasFormula = false;
+				for (int i = 0; i < row.getLastCellNum(); i++) {
+					Cell cell = row.getCell(i);
+					if (cell != null && cell.getCellType() == CellType.FORMULA) {
+						hasFormula = true;
+						break;
+					}
+				}
+				dto.setHeader(hasFormula ? "Y" : " ");
+
+				dto.setRemarks("");
+
+				reportData.add(dto);
+			}
+
+			workbook.close();
+			fis.close();
+
+			System.out.println("✅ M_LA1 Report data processed (Excel Row " + (START_ROW_INDEX + 1) + " to "
+					+ (END_ROW_INDEX + 1) + "). Total items: " + reportData.size());
+			return reportData;
+		}
 }

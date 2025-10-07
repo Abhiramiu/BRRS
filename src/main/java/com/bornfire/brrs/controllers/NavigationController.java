@@ -792,7 +792,7 @@ public class NavigationController {
     	      );
     	     
     	      Workbook workbook = new XSSFWorkbook();
-    	      Sheet sheet = workbook.createSheet("BDGF_Template");
+    	      Sheet sheet = workbook.createSheet("DEPOSIT GENERAL");
 
     	      // 🔹 Header style (locked)
     	      CellStyle headerStyle = workbook.createCellStyle();
@@ -835,7 +835,7 @@ public class NavigationController {
     	      workbook.close();
 
     	      HttpHeaders headersResponse = new HttpHeaders();
-    	      headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BDGF_Template.xlsx");
+    	      headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=DEPOSIT GENERAL.xls");
     	      headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
     	      return ResponseEntity
@@ -916,7 +916,7 @@ public ResponseEntity<byte[]> downloadTemplatebfdb() throws Exception {
     );
 
     Workbook workbook = new XSSFWorkbook();
-    Sheet sheet = workbook.createSheet("BFDB_Template");
+    Sheet sheet = workbook.createSheet("DEPOSIT BOOK");
 
     // Create header row
     Row headerRow = sheet.createRow(0);
@@ -960,7 +960,7 @@ public ResponseEntity<byte[]> downloadTemplatebfdb() throws Exception {
     workbook.close();
 
     HttpHeaders headersResponse = new HttpHeaders();
-    headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BFDB_Template.xlsx");
+    headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=DEPOSIT BOOK.xls");
     headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
     return ResponseEntity
@@ -1047,7 +1047,7 @@ public ResponseEntity<byte[]> downloadTemplate() throws Exception {
     
    
     Workbook workbook = new XSSFWorkbook();
-    Sheet sheet = workbook.createSheet("BLBF_Template");
+    Sheet sheet = workbook.createSheet("LOAN BOOK");
 
     // 🔹 Style for header (locked)
     CellStyle headerStyle = workbook.createCellStyle();
@@ -1093,7 +1093,7 @@ public ResponseEntity<byte[]> downloadTemplate() throws Exception {
     workbook.close();
 
     HttpHeaders headersResponse = new HttpHeaders();
-    headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BLBF_Template.xlsx");
+    headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=LOAN BOOK.xls");
     headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
     return ResponseEntity
