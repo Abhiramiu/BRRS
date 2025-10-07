@@ -43,22 +43,16 @@ public class BFDB_Services {
 
    
     @Transactional
-    public String addBFDB(MultipartFile file, String userid, String username, String reportDate) {
+    public String addBFDB(MultipartFile file, String userid, String username) {
         long startTime = System.currentTimeMillis();
 
         try (InputStream is = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(is);
              Connection conn = dataSource.getConnection()) {
 
-            conn.setAutoCommit(false); // batch mode
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            java.util.Date parsedDate = sdf.parse(reportDate);
-            java.sql.Date sqlReportDate = new java.sql.Date(parsedDate.getTime());
+            conn.setAutoCommit(false);
 
             Sheet sheet = workbook.getSheetAt(0);
-
-            // Prepare evaluator & formatter
             DataFormatter formatter = new DataFormatter();
             FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
@@ -76,70 +70,67 @@ public class BFDB_Services {
             int count = 0;
             int skippedCount = 0;
 
-            // Loop through rows (skip header row 0)
+            // Loop through rows (skip header)
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 
-                // Skip truly empty rows (use formatter + evaluator so formulas producing empty strings are handled)
-                boolean emptyRow = true;
-                short lastCell = row.getLastCellNum();
-                if (lastCell < 0) continue;
-                for (int cn = 0; cn < lastCell; cn++) {
+                // ✅ Skip truly empty rows
+                boolean isEmpty = true;
+                for (int cn = 0; cn < row.getLastCellNum(); cn++) {
                     Cell cell = row.getCell(cn);
-                    String cellText = formatter.formatCellValue(cell, evaluator).trim();
-                    if (!cellText.isEmpty()) {
-                        emptyRow = false;
+                    if (cell != null && !formatter.formatCellValue(cell, evaluator).trim().isEmpty()) {
+                        isEmpty = false;
                         break;
                     }
                 }
-                if (emptyRow) continue;
+                if (isEmpty) continue;
 
                 try {
                     int col = 0;
 
-                    // Use helpers that evaluate formulas and parse values
                     String custId = getCellString(row.getCell(1), formatter, evaluator);
-                    // if custId missing skip
                     if (custId == null || custId.isEmpty()) {
                         skippedCount++;
-                        logger.warn("Skipping row {} because CUST_ID is empty after evaluation", i);
                         continue;
                     }
 
-                    insertStmt.setString(++col, custId);                                            // CUST_ID
-                    insertStmt.setString(++col, getCellString(row.getCell(0), formatter, evaluator)); // SOL_ID
-                    insertStmt.setString(++col, getCellString(row.getCell(2), formatter, evaluator)); // GENDER
-                    insertStmt.setString(++col, getCellString(row.getCell(3), formatter, evaluator)); // ACCOUNT_NO
-                    insertStmt.setString(++col, getCellString(row.getCell(4), formatter, evaluator)); // ACCT_NAME
-                    insertStmt.setString(++col, getCellString(row.getCell(5), formatter, evaluator)); // SCHM_CODE
-                    insertStmt.setString(++col, getCellString(row.getCell(6), formatter, evaluator)); // SCHM_DESC
+                    insertStmt.setString(++col, custId);
+                    insertStmt.setString(++col, getCellString(row.getCell(0), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(2), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(3), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(4), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(5), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(6), formatter, evaluator));
 
-                    insertStmt.setDate(++col, getCellDate(row.getCell(7), formatter, evaluator));   // ACCT_OPN_DATE
-                    insertStmt.setDate(++col, getCellDate(row.getCell(8), formatter, evaluator));   // ACCT_CLS_DATE
-                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(9), formatter, evaluator)); // BALANCE_AS_ON
+                    insertStmt.setDate(++col, getCellDate(row.getCell(7), formatter, evaluator));
+                    insertStmt.setDate(++col, getCellDate(row.getCell(8), formatter, evaluator));
+                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(9), formatter, evaluator));
 
-                    insertStmt.setString(++col, getCellString(row.getCell(10), formatter, evaluator)); // CCY
-                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(11), formatter, evaluator)); // BAL_EQUI_TO_BWP
-                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(12), formatter, evaluator)); // INT_RATE
-                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(13), formatter, evaluator)); // HUNDRED
-                    insertStmt.setString(++col, getCellString(row.getCell(14), formatter, evaluator)); // STATUS
-                    insertStmt.setDate(++col, getCellDate(row.getCell(15), formatter, evaluator));     // MATURITY_DATE
-                    insertStmt.setString(++col, getCellString(row.getCell(16), formatter, evaluator)); // GL_SUB_HEAD_CODE
-                    insertStmt.setString(++col, getCellString(row.getCell(17), formatter, evaluator)); // GL_SUB_HEAD_DESC
-                    insertStmt.setString(++col, getCellString(row.getCell(18), formatter, evaluator)); // TYPE_OF_ACCOUNTS
-                    insertStmt.setString(++col, getCellString(row.getCell(19), formatter, evaluator)); // SEGMENT
-                    insertStmt.setString(++col, getCellString(row.getCell(20), formatter, evaluator)); // PERIOD
-                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(21), formatter, evaluator)); // EFFECTIVE_INT_RATE
-                    insertStmt.setString(++col, getCellString(row.getCell(22), formatter, evaluator)); // BRANCH_NAME
-                    insertStmt.setString(++col, getCellString(row.getCell(23), formatter, evaluator)); // BRANCH_CODE
+                    insertStmt.setString(++col, getCellString(row.getCell(10), formatter, evaluator));
+                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(11), formatter, evaluator));
+                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(12), formatter, evaluator));
+                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(13), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(14), formatter, evaluator));
+                    insertStmt.setDate(++col, getCellDate(row.getCell(15), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(16), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(17), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(18), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(19), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(20), formatter, evaluator));
+                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(21), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(22), formatter, evaluator));
+                    insertStmt.setString(++col, getCellString(row.getCell(23), formatter, evaluator));
+
+                    // ✅ Get report date from Excel (e.g., last column index 24)
+                    java.sql.Date reportDateFromExcel = getCellDate(row.getCell(24), formatter, evaluator);
+                    insertStmt.setDate(++col, reportDateFromExcel);
 
                     // audit fields
-                    insertStmt.setDate(++col, sqlReportDate);                                  // REPORT_DATE
-                    insertStmt.setDate(++col, new java.sql.Date(System.currentTimeMillis()));  // ENTRY_DATE
-                    insertStmt.setString(++col, userid);                                       // ENTRY_USER
-                    insertStmt.setString(++col, "N");                                          // DEL_FLG
-                    insertStmt.setString(++col, "Y");                                          // ENTRY_FLG
+                    insertStmt.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
+                    insertStmt.setString(++col, userid);
+                    insertStmt.setString(++col, "N");
+                    insertStmt.setString(++col, "Y");
 
                     insertStmt.addBatch();
                     count++;
@@ -147,7 +138,6 @@ public class BFDB_Services {
                     if (count % batchSize == 0) {
                         insertStmt.executeBatch();
                         conn.commit();
-                        // important: clear evaluator cache for large files
                         evaluator.clearAllCachedResultValues();
                     }
 
@@ -169,6 +159,7 @@ public class BFDB_Services {
             return "Error Occurred while reading Excel: " + e.getMessage();
         }
     }
+
 
     /* ---------------- helper methods ---------------- */
 

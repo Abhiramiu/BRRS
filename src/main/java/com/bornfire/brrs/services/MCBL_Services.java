@@ -171,12 +171,15 @@ public class MCBL_Services {
 
             long duration = System.currentTimeMillis() - startTime;
 
-            String result = "MCBL Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
-                    ". Time taken: " + duration + " ms";
+          /*  String result = "MCBL Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
+                    ". Time taken: " + duration + " ms";*/
+
+            String result = "MCBL Added successfully. ";
 
             if (!validationErrors.isEmpty()) {
-                result += " | Accounts not found: " + validationErrors.size() + "\n" +
-                        String.join("\n", validationErrors);
+            	result += "Accounts not found: " + validationErrors.size() + "\n\n"
+            	        + String.join("\n", validationErrors) + "\n";
+
             }
 
             return result;

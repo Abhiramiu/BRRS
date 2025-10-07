@@ -384,6 +384,44 @@
 		}
 	
 	</script>
+	
+	<script>
+function checkReportDate() {
+	alert('check');
+    var reportDate = $("#report_date").val();
+
+    if (!reportDate) {
+        alert("Please select a Report Date first.");
+        return;
+    }
+
+    $("#loader").modal("show"); // show loader
+
+    $.ajax({
+        url: "./checkReportDate",
+        type: "
+        GET",
+        data: { report_date: reportDate },
+        success: function (exists) {
+            $("#loader").modal("hide");
+
+            if (exists === true) {
+                alert("There is already data for this Report Date.");
+                $("#report_date").val("");
+            }
+        },
+        error: function (xhr, status, error) {
+            $("#loader").modal("hide");
+            console.error("Error checking report date:", status, error);
+            alert("Error checking report date!");
+        }
+    });
+}
+</script>
+
+
+
+	
 	<script>
 		function submitform(a) {
 			var requiredFields = ["#branch_name","#report_date", "#file"];
@@ -478,6 +516,42 @@
 		}
 	</script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const input = document.getElementById("report_date");
+        const today = new Date();
+
+        // Current month start and end
+        const firstDayCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDayCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+        // Previous month start and end
+        const firstDayPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const lastDayPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+
+        // Set min = first day of previous month
+        const minDate = firstDayPrevMonth.toISOString().split("T")[0];
+        // Set max = last day of current month
+        const maxDate = lastDayCurrentMonth.toISOString().split("T")[0];
+
+        input.min = minDate;
+        input.max = maxDate;
+    });
+
+    function checkReportDate() {
+        const input = document.getElementById("report_date");
+        const selectedDate = new Date(input.value);
+        const today = new Date();
+
+        const firstDayPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const lastDayCurrentMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+        if (selectedDate < firstDayPrevMonth || selectedDate > lastDayCurrentMonth) {
+            alert("Please select a date only from previous or current month!");
+            input.value = "";
+        }
+    }
+</script>
 </head>
 
 <title>MCBL</title>
@@ -680,17 +754,25 @@
 									</div>
 									
 									
-									<div class="row formline">
+	<div class="row formline">
     <label class="col-sm-2">Report Date</label>
     <div class="col-sm-3">
-        <input th:if="${formmode}=='add'" type="date" id="report_date"
-            name="report_date" class="form-control form-control-sm"
-            maxlength="24" />
+       <input 
+    th:if="${formmode}=='add'" 
+    type="date" 
+    id="report_date"
+    name="report_date" 
+    class="form-control form-control-sm"
+    maxlength="24" 
+    onchange="validateReportDateRange(); checkReportDate();" 
+/>
+
         <span class="form-text text-muted" style="font-size: 12px; color: gray;">
             This date is considered as Report Date
         </span>
     </div>
 </div>
+
 
 									<div class="row formline">
 										<label style="height: 2px;"></label>
@@ -727,238 +809,119 @@
 		</div>		
 		
 		
+<!-- ===== BDGF Form ===== -->
 <div id="bdgfForm" style="display:none;">
+    <form action="#" th:object="${item}" method="post" style="margin-left: 600px;"
+        autocomplete="off" id="bdgfitem" th:fragment="finuserapply">
+        <div class="row formline">
+            <label style="height: 5px;"></label>
+        </div>
 
-								
-								<form action="#" th:object="${item}" method="post" style="margin-left: 600px;"
-									autocomplete="off" id="bdgfitem" th:fragment="finuserapply">
-<div class="row formline">
-										<label style="height: 5px;"></label>
-									</div>
-									<div class="row formline">
-										<label class="col-sm-2">Branch Name</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}!='add'" type="hidden" id="id" name="id"
-												th:value="*{id}" />
+        <div class="row formline">
+            <label class="col-sm-2">Branch Name</label>
+            <div class="col-sm-3">
+                <input th:if="${formmode}!='add'" type="hidden" id="id" name="id" th:value="*{id}" />
+                <select th:if="${formmode}=='add'" id="branch_name1" name="branch_name"
+                    class="form-control form-control-sm" required>
+                    <option value="" disabled selected>Select</option>
+                    <option value="9521">9521</option>
+                    <option value="9522">9522</option>
+                    <option value="9523">9523</option>
+                    <option value="9524">9524</option>
+                </select>
+            </div>
+        </div>
 
-											<!-- Add Mode -->
-											<select th:if="${formmode}=='add'" id="branch_name1" name="branch_name"
-												class="form-control form-control-sm" required>
-												<option value="" disabled selected>Select</option>
-												<option value="9521">9521</option>
-												<option value="9522">9522</option>
-												<option value="9523">9523</option>
-												<option value="9524">9524</option>
-											</select>
-										</div>
+        <div class="row formline">
+            <label class="col-sm-2">File</label>
+            <div class="col-sm-3">
+                <input th:if="${formmode}=='add'" type="file" id="file1" name="file"
+                    class="form-control form-control-sm" />
+            </div>
+        </div>
+    </form>
 
-										<div class="col-sm-2"></div>
-										
-									</div>
-									
-									<div class="row formline">
-										<label style="height: 2px;"></label>
-									</div>
-									
-									<div class="row formline">
-										<label class="col-sm-2">Report Date</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}=='add'" type="date" id="report_date1"
-												name="report_date" class="form-control form-control-sm"
-												maxlength="24" />
-										</div>
-									</div>
-									
-									<div class="row formline">
-										<label style="height: 2px;"></label>
-									</div>
-									<div class="row formline">
-									
-										<label class="col-sm-2">File</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}=='add'" type="file" id="file1" name="file"
-												class="form-control form-control-sm"/>
-
-										</div>
-
-										<div class="col-sm-2"></div>
-
-									</div>
-									<div class="row formline">
-										<label style="height: 5px;"></label>
-									</div>
-								</form>
-
-				
-							
-							
-							<div class="card-footer text-center">
-							
-								<button th:if="${formmode}=='add'" type="button"
-									class="custom-tab-btn" form="bdgfitem" id="btnSubmit"
-									onclick="bdgfsubmitform(this);"
-									title="Submit">Submit</button>
-								
-							</div>
-		</div>		
-		
-		
-<div id="bfdbForm" style="display:none;">
-
-
-<form action="#" th:object="${item}" method="post" style="margin-left: 600px;"
-									autocomplete="off" id="bfdbitem" th:fragment="finuserapply">
-<div class="row formline">
-										<label style="height: 5px;"></label>
-									</div>
-									<div class="row formline">
-										<label class="col-sm-2">Branch Name</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}!='add'" type="hidden" id="id" name="id"
-												th:value="*{id}" />
-
-											<!-- Add Mode -->
-											<select th:if="${formmode}=='add'" id="branch_name2" name="branch_name"
-												class="form-control form-control-sm" required>
-												<option value="" disabled selected>Select</option>
-												<option value="9521">9521</option>
-												<option value="9522">9522</option>
-												<option value="9523">9523</option>
-												<option value="9524">9524</option>
-											</select>
-										</div>
-
-										<div class="col-sm-2"></div>
-										
-									</div>
-									
-									<div class="row formline">
-										<label style="height: 2px;"></label>
-									</div>
-									
-									<div class="row formline">
-										<label class="col-sm-2">Report Date</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}=='add'" type="date" id="report_date2"
-												name="report_date" class="form-control form-control-sm"
-												maxlength="24" />
-										</div>
-									</div>
-									
-									<div class="row formline">
-										<label style="height: 2px;"></label>
-									</div>
-									<div class="row formline">
-									
-										<label class="col-sm-2">File</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}=='add'" type="file" id="file2" name="file"
-												class="form-control form-control-sm"/>
-
-										</div>
-
-										<div class="col-sm-2"></div>
-
-									</div>
-									<div class="row formline">
-										<label style="height: 5px;"></label>
-									</div>
-								</form>
-
-				
-							
-							
-							<div class="card-footer text-center">
-							
-								<button th:if="${formmode}=='add'" type="button"
-									class="custom-tab-btn" form="bfdbitem" id="btnSubmit"
-									onclick="submitformbfdb(this);"
-									title="Submit">Submit</button>
-								
-							</div>
-
-
+    <div class="card-footer text-center">
+        <button th:if="${formmode}=='add'" type="button" class="custom-tab-btn" form="bdgfitem"
+            id="btnSubmit" onclick="bdgfsubmitform(this);" title="Submit">Submit</button>
+    </div>
 </div>
 
+<!-- ===== BFDB Form ===== -->
+<div id="bfdbForm" style="display:none;">
+    <form action="#" th:object="${item}" method="post" style="margin-left: 600px;"
+        autocomplete="off" id="bfdbitem" th:fragment="finuserapply">
+        <div class="row formline">
+            <label style="height: 5px;"></label>
+        </div>
 
+        <div class="row formline">
+            <label class="col-sm-2">Branch Name</label>
+            <div class="col-sm-3">
+                <input th:if="${formmode}!='add'" type="hidden" id="id" name="id" th:value="*{id}" />
+                <select th:if="${formmode}=='add'" id="branch_name2" name="branch_name"
+                    class="form-control form-control-sm" required>
+                    <option value="" disabled selected>Select</option>
+                    <option value="9521">9521</option>
+                    <option value="9522">9522</option>
+                    <option value="9523">9523</option>
+                    <option value="9524">9524</option>
+                </select>
+            </div>
+        </div>
 
+        <div class="row formline">
+            <label class="col-sm-2">File</label>
+            <div class="col-sm-3">
+                <input th:if="${formmode}=='add'" type="file" id="file2" name="file"
+                    class="form-control form-control-sm" />
+            </div>
+        </div>
+    </form>
 
+    <div class="card-footer text-center">
+        <button th:if="${formmode}=='add'" type="button" class="custom-tab-btn" form="bfdbitem"
+            id="btnSubmit" onclick="submitformbfdb(this);" title="Submit">Submit</button>
+    </div>
+</div>
+
+<!-- ===== BLBF Form ===== -->
 <div id="blbfForm" style="display:none;">
+    <form action="#" th:object="${item}" method="post" style="margin-left: 600px;"
+        autocomplete="off" id="blbfitem" th:fragment="finuserapply">
+        <div class="row formline">
+            <label style="height: 5px;"></label>
+        </div>
 
+        <div class="row formline">
+            <label class="col-sm-2">Branch Name</label>
+            <div class="col-sm-3">
+                <input th:if="${formmode}!='add'" type="hidden" id="id" name="id" th:value="*{id}" />
+                <select th:if="${formmode}=='add'" id="branch_name3" name="branch_name"
+                    class="form-control form-control-sm" required>
+                    <option value="" disabled selected>Select</option>
+                    <option value="9521">9521</option>
+                    <option value="9522">9522</option>
+                    <option value="9523">9523</option>
+                    <option value="9524">9524</option>
+                </select>
+            </div>
+        </div>
 
-<form action="#" th:object="${item}" method="post" style="margin-left: 600px;"
-									autocomplete="off" id="blbfitem" th:fragment="finuserapply">
-<div class="row formline">
-										<label style="height: 5px;"></label>
-									</div>
-									<div class="row formline">
-										<label class="col-sm-2">Branch Name</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}!='add'" type="hidden" id="id" name="id"
-												th:value="*{id}" />
+        <div class="row formline">
+            <label class="col-sm-2">File</label>
+            <div class="col-sm-3">
+                <input th:if="${formmode}=='add'" type="file" id="file3" name="file"
+                    class="form-control form-control-sm" />
+            </div>
+        </div>
+    </form>
 
-											<!-- Add Mode -->
-											<select th:if="${formmode}=='add'" id="branch_name3" name="branch_name"
-												class="form-control form-control-sm" required>
-												<option value="" disabled selected>Select</option>
-												<option value="9521">9521</option>
-												<option value="9522">9522</option>
-												<option value="9523">9523</option>
-												<option value="9524">9524</option>
-											</select>
-										</div>
-
-										<div class="col-sm-2"></div>
-										
-									</div>
-									
-									<div class="row formline">
-										<label style="height: 2px;"></label>
-									</div>
-									
-									<div class="row formline">
-										<label class="col-sm-2">Report Date</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}=='add'" type="date" id="report_date3"
-												name="report_date" class="form-control form-control-sm"
-												maxlength="24" />
-										</div>
-									</div>
-									
-									<div class="row formline">
-										<label style="height: 2px;"></label>
-									</div>
-									<div class="row formline">
-									
-										<label class="col-sm-2">File</label>
-										<div class="col-sm-3">
-											<input th:if="${formmode}=='add'" type="file" id="file3" name="file"
-												class="form-control form-control-sm"/>
-
-										</div>
-
-										<div class="col-sm-2"></div>
-
-									</div>
-									<div class="row formline">
-										<label style="height: 5px;"></label>
-									</div>
-								</form>
-
-				
-							
-							
-							<div class="card-footer text-center">
-							
-								<button th:if="${formmode}=='add'" type="button"
-									class="custom-tab-btn" form="blbfitem" id="btnSubmit"
-									onclick="submitformBLBF(this);"
-									title="Submit">Submit</button>
-								
-							</div>
-
-
-</div>		
+    <div class="card-footer text-center">
+        <button th:if="${formmode}=='add'" type="button" class="custom-tab-btn" form="blbfitem"
+            id="btnSubmit" onclick="submitformBLBF(this);" title="Submit">Submit</button>
+    </div>
+</div>
 		
 		
 		
@@ -1108,100 +1071,7 @@ function toggleModuleForm() {
 		location.href = 'download-templateBDGF';
 		}
 	</script>
-<script>
-		function bdgfsubmitform(a) {
-			
-			var requiredFields = ["#branch_name1","#report_date1", "#file1"];
-			var isValid = true;
-			
-			requiredFields.forEach(function (selector) {
-				var $field = $(selector);
-				if ($field.length) {
-					var value = $field.val(); // could be null for <select>
-					if (value === null || value.trim() === "") {
-						$field.css("border", "2px solid red");
-						isValid = false;
-					} else {
-						$field.css("border", "");
-					}
-				}
-			});
 
-			if (!isValid) return false;
-
-			var reportDate = document.getElementById("report_date1").value;
-			var form = document.getElementById("bdgfitem");
-			if (!form) {
-				console.error("Form not found!");
-				return false;
-			}
-
-			var formData = new FormData(form);
-
-			$("#loader").modal("toggle");
-
-			$.ajax({
-				url: "./addBDGF?reportDate=" + reportDate,
-				type: "POST",
-				data: formData,
-				processData: false,
-				contentType: false,
-				success: function (response) {
-					$("#loader").modal("hide");
-					console.log('Success response:', response);
-					$("#alertmsg").text(response);
-					$('#alert').modal("toggle");
-				},
-				error: function (xhr, status, error) {
-					$("#loader").modal("hide");
-					console.error('AJAX error:', status, error);
-					$("#alertmsg").text("Error occurred: " + error);
-					$('#alert').modal("toggle");
-				}
-			});
-
-			return false;
-		}
-		function get_list() {
-			var reportDate = document.getElementById("ReportDate1").value;
-			if (reportDate) {
-				window.location.href = './inr_report_branch?date=' + reportDate;
-			}
-		}
-
-		function openConfirmModal() {
-			$('#exampleModal').modal('show');
-		}
-		function download_excel() {
-			var reportDate = $("#ReportDate1").val().trim();
-			if (reportDate === "") {
-				showNotification("Please selected the value date", "info");
-				$("#ReportDate1").focus();
-				return;
-			}
-			showNotification("Downloading report for " + reportDate, "success");
-			$('#exampleModal').modal('hide');
-			window.location.href = './Dwn_INR_Reporting_Branch?reportDate=' + reportDate;
-		}
-		function showNotification(message, type = "info") {
-			const container = document.getElementById("notification-container");
-
-			const notif = document.createElement("div");
-			notif.classList.add("notification", type);
-			notif.innerHTML = `
-						    <span>${message}</span>
-						    <button onclick="this.parentElement.remove()">×</button>
-						  `;
-
-			container.appendChild(notif);
-
-			// Auto remove after 4s
-			setTimeout(() => {
-				notif.remove();
-			}, 4000);
-		}
-	</script>
-	
 	
 	
 	
@@ -1211,101 +1081,6 @@ function toggleModuleForm() {
 		location.href = 'download-templateBFDB';
 		}
 	</script>
-	<script>
-		function submitformbfdb(a) {
-			var requiredFields = ["#branch_name2","#report_date2", "#file2"];
-			var isValid = true;
-
-			requiredFields.forEach(function (selector) {
-				var $field = $(selector);
-				if ($field.length) {
-					var value = $field.val(); // could be null for <select>
-					if (value === null || value.trim() === "") {
-						$field.css("border", "2px solid red");
-						isValid = false;
-					} else {
-						$field.css("border", "");
-					}
-				}
-			});
-
-			if (!isValid) return false;
-			alert(isValid);
-
-			var reportDate = document.getElementById("report_date2").value;
-			var form = document.getElementById("bfdbitem"); // was "item"
-
-			if (!form) {
-				console.error("Form not found!");
-				return false;
-			}
-
-			var formData = new FormData(form);
-
-			$("#loader").modal("toggle");
-
-			$.ajax({
-				url: "./addBFDB?reportDate=" + reportDate,
-				type: "POST",
-				data: formData,
-				processData: false,
-				contentType: false,
-				success: function (response) {
-					$("#loader").modal("hide");
-					console.log('Success response:', response);
-					$("#alertmsg").text(response);
-					$('#alert').modal("toggle");
-				},
-				error: function (xhr, status, error) {
-					$("#loader").modal("hide");
-					console.error('AJAX error:', status, error);
-					$("#alertmsg").text("Error occurred: " + error);
-					$('#alert').modal("toggle");
-				}
-			});
-
-			return false;
-		}
-		function get_list() {
-			var reportDate = document.getElementById("ReportDate").value;
-			if (reportDate) {
-				window.location.href = './inr_report_branch?date=' + reportDate;
-			}
-		}
-
-		function openConfirmModal() {
-			$('#exampleModal').modal('show');
-		}
-		function download_excel() {
-			var reportDate = $("#ReportDate").val().trim();
-			if (reportDate === "") {
-				showNotification("Please selected the value date", "info");
-				$("#ReportDate").focus();
-				return;
-			}
-			showNotification("Downloading report for " + reportDate, "success");
-			$('#exampleModal').modal('hide');
-			window.location.href = './Dwn_INR_Reporting_Branch?reportDate=' + reportDate;
-		}
-		function showNotification(message, type = "info") {
-			const container = document.getElementById("notification-container");
-
-			const notif = document.createElement("div");
-			notif.classList.add("notification", type);
-			notif.innerHTML = `
-						    <span>${message}</span>
-						    <button onclick="this.parentElement.remove()">×</button>
-						  `;
-
-			container.appendChild(notif);
-
-			// Auto remove after 4s
-			setTimeout(() => {
-				notif.remove();
-			}, 4000);
-		}
-	</script>
-	
 	
 	
 	
@@ -1318,97 +1093,98 @@ function toggleModuleForm() {
 		}
 	</script>
 	
-	<script>
-		function submitformBLBF(a) {
-			var requiredFields = ["#branch_name3","#report_date3", "#file3"];
-			var isValid = true;
+	<!-- ===== JS SECTION ===== -->
+<script>
+function bdgfsubmitform() {
+    var requiredFields = ["#branch_name1", "#file1"];
+    var isValid = validateFields(requiredFields);
+    if (!isValid) return false;
 
-			requiredFields.forEach(function (selector) {
-				var $field = $(selector);
-				if ($field.length) {
-					var value = $field.val(); // could be null for <select>
-					if (value === null || value.trim() === "") {
-						$field.css("border", "2px solid red");
-						isValid = false;
-					} else {
-						$field.css("border", "");
-					}
-				}
-			});
+    var form = document.getElementById("bdgfitem");
+    var formData = new FormData(form);
 
-			if (!isValid) return false;
+    $("#loader").modal("toggle");
+
+    $.ajax({
+        url: "./addBDGF",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: handleSuccess,
+        error: handleError
+    });
+}
+
+function submitformbfdb() {
+    var requiredFields = ["#branch_name2", "#file2"];
+    var isValid = validateFields(requiredFields);
+    if (!isValid) return false;
+
+    var form = document.getElementById("bfdbitem");
+    var formData = new FormData(form);
+
+    $("#loader").modal("toggle");
+
+    $.ajax({
+        url: "./addBFDB",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: handleSuccess,
+        error: handleError
+    });
+}
+
+function submitformBLBF() {
+    var requiredFields = ["#branch_name3", "#file3"];
+    var isValid = validateFields(requiredFields);
+    if (!isValid) return false;
+
+    var form = document.getElementById("blbfitem");
+    var formData = new FormData(form);
+
+    $("#loader").modal("toggle");
+
+    $.ajax({
+        url: "./addBLBF",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: handleSuccess,
+        error: handleError
+    });
+}
+
+function validateFields(fields) {
+    var isValid = true;
+    fields.forEach(function (selector) {
+        var $field = $(selector);
+        var value = $field.val();
+        if (!value || value.trim() === "") {
+            $field.css("border", "2px solid red");
+            isValid = false;
+        } else {
+            $field.css("border", "");
+        }
+    });
+    return isValid;
+}
 
 
-			var reportDate = document.getElementById("report_date3").value;
-			var form = document.getElementById("blbfitem");
-			if (!form) {
-				console.error("Form not found!");
-				return false;
-			}
+function handleSuccess(response) {
+    $("#loader").modal("hide");
+    $("#alertmsg").text(response);
+    $('#alert').modal("toggle");
+}
 
-			var formData = new FormData(form);
-
-			$("#loader").modal("toggle");
-
-			$.ajax({
-				url: "./addBLBF?reportDate=" + reportDate,
-				type: "POST",
-				data: formData,
-				processData: false,
-				contentType: false,
-				success: function (response) {
-					$("#loader").modal("hide");
-					console.log('Success response:', response);
-					$("#alertmsg").text(response);
-					$('#alert').modal("toggle");
-				},
-				error: function (xhr, status, error) {
-					$("#loader").modal("hide");
-					console.error('AJAX error:', status, error);
-					$("#alertmsg").text("Error occurred: " + error);
-					$('#alert').modal("toggle");
-				}
-			});
-
-			return false;
-		}
-		function get_list() {
-			var reportDate = document.getElementById("ReportDate").value;
-			if (reportDate) {
-				window.location.href = './inr_report_branch?date=' + reportDate;
-			}
-		}
-
-		function openConfirmModal() {
-			$('#exampleModal').modal('show');
-		}
-		function download_excel() {
-			var reportDate = $("#ReportDate").val().trim();
-			if (reportDate === "") {
-				showNotification("Please selected the value date", "info");
-				$("#ReportDate").focus();
-				return;
-			}
-			showNotification("Downloading report for " + reportDate, "success");
-			$('#exampleModal').modal('hide');
-			window.location.href = './Dwn_INR_Reporting_Branch?reportDate=' + reportDate;
-		}
-		function showNotification(message, type = "info") {
-			const container = document.getElementById("notification-container");
-
-			const notif = document.createElement("div");
-			notif.classList.add("notification", type);
-			notif.innerHTML = `
-						    <span>${message}</span>
-						    <button onclick="this.parentElement.remove()">×</button>
-						  `;
-
-			container.appendChild(notif);
-
-			// Auto remove after 4s
-			setTimeout(() => {
-				notif.remove();
-			}, 4000);
-		}
-	</script>
+function handleError(xhr, status, error) {
+    $("#loader").modal("hide");
+    console.error('AJAX error:', status, error);
+    $("#alertmsg").text("Error occurred: " + error);
+    $('#alert').modal("toggle");
+}
+</script>
 </html>

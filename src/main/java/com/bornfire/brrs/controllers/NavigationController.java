@@ -542,219 +542,6 @@ public class NavigationController {
 	}
 	
 	
-	
-	@RequestMapping(value = "MCBL", method = { RequestMethod.GET, RequestMethod.POST })
-	public String MCBL(@RequestParam(required = false) String formmode,
-			@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
-			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
-			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-		md.addAttribute("activeMenu", "Reports");
-		md.addAttribute("activePage", "CentralBank");
-		 String USERID = (String) req.getSession().getAttribute("USERID");
-	   md.addAttribute("USERID", USERID);
-		logger.info("==> Entered MCBL controller || Formmode: {}", formmode);
-
-		LocalDate today = LocalDate.now();
-		Date defaultDate = java.sql.Date.valueOf(today);
-
-		
-		
-		try {
-			if (formmode == null || formmode.equals("list")) {
-				//List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
-				String currentDateString = null;
-				if (date == null) {
-					// If no date provided → use today's date
-					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(defaultDate);
-					//logger.info("Fetched {} records for default date: {}", customerList.size(), defaultDate);
-					currentDateString = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				} else {
-					// Convert LocalDate param → SQL Date
-					Date sqlDate = java.sql.Date.valueOf(date);
-					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(sqlDate);
-					//logger.info("Fetched {} records for provided date: {}", customerList.size(), sqlDate);
-
-					currentDateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				}
-				md.addAttribute("currentdate", currentDateString);
-				md.addAttribute("menu", "MCBL - List");
-				//md.addAttribute("customersplratedetail", customerList);
-				md.addAttribute("currentdate", currentDateString);
-				md.addAttribute("formmode", "add");
-			} else if (formmode.equals("add")) {
-				md.addAttribute("menu", "MCBL - Add");
-				md.addAttribute("formmode", "add");
-			}  
-
-		} catch (Exception e) {
-			logger.error("Error in  MCBL controller: {}", e.getMessage(), e);
-			md.addAttribute("errorMessage", "Error loading MCBL page. Please contact administrator.");
-		}
-
-		logger.info("<== Exiting MCBL controller");
-		return "MCBL";
-	}
-
-
-
-	@Autowired
-	MCBL_Services MCBL_Servicess;
-	
-	
-	@PostMapping("addmcbl")
-	@ResponseBody
-	public String addmcbl(@ModelAttribute MultipartFile file,
-	                                    Model md,String reportDate,
-	                                    HttpServletRequest rq ) {
-	    logger.info("==> Entered MCBL method");
-	    String userid = (String) rq.getSession().getAttribute("USERID");
-	    String username = (String) rq.getSession().getAttribute("USERNAME");
-	    try {
-	        String msg = MCBL_Servicess.addMCBL( file, userid, username,reportDate);
-	        logger.info("MCBL result: {}", msg);
-	        return msg;
-	    } catch (Exception e) {
-	        logger.error("Error occurred while Add MCBL: {}", e.getMessage(), e);
-	        return "Error Occurred. Please contact Administrator.";
-	    }
-	}
-
-	
-	//BDGF
-	@RequestMapping(value = "BDGF", method = { RequestMethod.GET, RequestMethod.POST })
-	public String BDGF(@RequestParam(required = false) String formmode,
-			@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
-			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
-			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-		md.addAttribute("activeMenu", "Reports");
-		md.addAttribute("activePage", "CentralBank");
-		 String USERID = (String) req.getSession().getAttribute("USERID");
-	   md.addAttribute("USERID", USERID);
-		logger.info("==> Entered BDGF controller || Formmode: {}", formmode);
-
-		LocalDate today = LocalDate.now();
-		Date defaultDate = java.sql.Date.valueOf(today);
-
-		try {
-			if (formmode == null || formmode.equals("list")) {
-				//List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
-				String currentDateString = null;
-				if (date == null) {
-					// If no date provided → use today's date
-					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(defaultDate);
-					//logger.info("Fetched {} records for default date: {}", customerList.size(), defaultDate);
-					currentDateString = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				} else {
-					// Convert LocalDate param → SQL Date
-					Date sqlDate = java.sql.Date.valueOf(date);
-					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(sqlDate);
-					//logger.info("Fetched {} records for provided date: {}", customerList.size(), sqlDate);
-
-					currentDateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				}
-				md.addAttribute("currentdate", currentDateString);
-				md.addAttribute("menu", "Blank Deposit General Format - List");
-				//md.addAttribute("customersplratedetail", customerList);
-				md.addAttribute("currentdate", currentDateString);
-				md.addAttribute("formmode", "list");
-			} else if (formmode.equals("add")) {
-				md.addAttribute("menu", "Blank Deposit General Format - Add");
-				md.addAttribute("formmode", "add");
-			}  
-
-		} catch (Exception e) {
-			logger.error("Error in  BDGF controller: {}", e.getMessage(), e);
-			md.addAttribute("errorMessage", "Error loading BDGF page. Please contact administrator.");
-		}
-
-		logger.info("<== Exiting BDGF controller");
-		return "BDGF";
-	}
-
-
-
-
-	@Autowired
-	BDGF_Services BDGF_Servicess;
-	
-	
-	  @PostMapping("addBDGF")
-	  
-	  @ResponseBody public String addBDGF(@ModelAttribute MultipartFile file, Model
-	  md,String reportDate, HttpServletRequest rq ) {
-	  logger.info("==> Entered BDGF method"); String userid = (String)
-	  rq.getSession().getAttribute("USERID"); String username = (String)
-	  rq.getSession().getAttribute("USERNAME"); try { String msg =
-	  BDGF_Servicess.addBDGF( file, userid, username,reportDate);
-	  logger.info("BDGF result: {}", msg); return msg; } catch (Exception e) {
-	  logger.error("Error occurred while Add BDGF: {}", e.getMessage(), e); return
-	  "Error Occurred. Please contact Administrator."; } }
-	 
-	
-	  @GetMapping("/download-templateBDGF")
-	  public ResponseEntity<byte[]> downloadTemplatebdgf() throws Exception {
-	      List<String> headers = Arrays.asList(
-	              "SOL ID","S No","A/C No","Customer ID","Customer Name","Open Date",
-	              "Amount Deposited","Currency","Period","Rate of Interest","100",
-	              "BAL EQUI TO BWP","Outstanding Balance","Oustndng Bal UGX","Maturity Date",
-	              "Maturity Amount","Scheme","Cr Pref Int Rate","SEGMENT","REFERENCE DATE",
-	              "DIFFERENCE","DAYS","PERIOD","EFFECTIVE INTEREST RATE"
-	      );
-	     
-	      Workbook workbook = new XSSFWorkbook();
-	      Sheet sheet = workbook.createSheet("BDGF_Template");
-
-	      // 🔹 Header style (locked)
-	      CellStyle headerStyle = workbook.createCellStyle();
-	      Font font = workbook.createFont();
-	      font.setBold(true);
-	      headerStyle.setFont(font);
-	      headerStyle.setLocked(true);
-
-	      // 🔹 Unlocked style for data cells
-	      CellStyle unlockedStyle = workbook.createCellStyle();
-	      unlockedStyle.setLocked(false);
-
-	      // 🔹 Create header row
-	      Row headerRow = sheet.createRow(0);
-	      for (int i = 0; i < headers.size(); i++) {
-	          Cell cell = headerRow.createCell(i);
-	          cell.setCellValue(headers.get(i));
-	          cell.setCellStyle(headerStyle);
-	          sheet.autoSizeColumn(i);
-	      }
-
-	      // 🔹 Create editable rows (example: 5000 rows available for paste)
-	      for (int r = 1; r < 5000; r++) {
-	          Row row = sheet.createRow(r);
-	          for (int c = 0; c < headers.size(); c++) {
-	              Cell cell = row.createCell(c);
-	              cell.setCellStyle(unlockedStyle);
-	          }
-	      }
-
-	      // 🔹 Freeze header row
-	      sheet.createFreezePane(0, 1);
-
-	      // 🔹 Protect sheet (enforces lock/unlock)
-	      sheet.protectSheet("password");
-
-	      // Write to byte array
-	      ByteArrayOutputStream out = new ByteArrayOutputStream();
-	      workbook.write(out);
-	      workbook.close();
-
-	      HttpHeaders headersResponse = new HttpHeaders();
-	      headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BDGF_Template.xlsx");
-	      headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-
-	      return ResponseEntity
-	              .ok()
-	              .headers(headersResponse)
-	              .body(out.toByteArray());
-	  }
-
-
     
 
 
@@ -840,6 +627,224 @@ public class NavigationController {
         }
 
 
+    	
+    	@RequestMapping(value = "MCBL", method = { RequestMethod.GET, RequestMethod.POST })
+    	public String MCBL(@RequestParam(required = false) String formmode,
+    			@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
+    			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
+    			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    		md.addAttribute("activeMenu", "Reports");
+    		md.addAttribute("activePage", "CentralBank");
+    		 String USERID = (String) req.getSession().getAttribute("USERID");
+    	   md.addAttribute("USERID", USERID);
+    		logger.info("==> Entered MCBL controller || Formmode: {}", formmode);
+
+    		LocalDate today = LocalDate.now();
+    		Date defaultDate = java.sql.Date.valueOf(today);
+
+    		
+    		
+    		try {
+    			if (formmode == null || formmode.equals("list")) {
+    				//List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
+    				String currentDateString = null;
+    				if (date == null) {
+    					// If no date provided → use today's date
+    					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(defaultDate);
+    					//logger.info("Fetched {} records for default date: {}", customerList.size(), defaultDate);
+    					currentDateString = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    				} else {
+    					// Convert LocalDate param → SQL Date
+    					Date sqlDate = java.sql.Date.valueOf(date);
+    					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(sqlDate);
+    					//logger.info("Fetched {} records for provided date: {}", customerList.size(), sqlDate);
+
+    					currentDateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    				}
+    				md.addAttribute("currentdate", currentDateString);
+    				md.addAttribute("menu", "MCBL - List");
+    				//md.addAttribute("customersplratedetail", customerList);
+    				md.addAttribute("currentdate", currentDateString);
+    				md.addAttribute("formmode", "add");
+    			} else if (formmode.equals("add")) {
+    				md.addAttribute("menu", "MCBL - Add");
+    				md.addAttribute("formmode", "add");
+    			}  
+
+    		} catch (Exception e) {
+    			logger.error("Error in  MCBL controller: {}", e.getMessage(), e);
+    			md.addAttribute("errorMessage", "Error loading MCBL page. Please contact administrator.");
+    		}
+
+    		logger.info("<== Exiting MCBL controller");
+    		return "MCBL";
+    	}
+
+
+
+    	@Autowired
+    	MCBL_Services MCBL_Servicess;
+    	
+    	
+    	@PostMapping("addmcbl")
+    	@ResponseBody
+    	public String addmcbl(@ModelAttribute MultipartFile file,
+    	                                    Model md,String reportDate,
+    	                                    HttpServletRequest rq ) {
+    	    logger.info("==> Entered MCBL method");
+    	    String userid = (String) rq.getSession().getAttribute("USERID");
+    	    String username = (String) rq.getSession().getAttribute("USERNAME");
+    	    try {
+    	        String msg = MCBL_Servicess.addMCBL( file, userid, username,reportDate);
+    	        logger.info("MCBL result: {}", msg);
+    	        return msg;
+    	    } catch (Exception e) {
+    	        logger.error("Error occurred while Add MCBL: {}", e.getMessage(), e);
+    	        return "Error Occurred. Please contact Administrator.";
+    	    }
+    	}
+
+    	
+    	//BDGF
+    	@RequestMapping(value = "BDGF", method = { RequestMethod.GET, RequestMethod.POST })
+    	public String BDGF(@RequestParam(required = false) String formmode,
+    			@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
+    			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
+    			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    		md.addAttribute("activeMenu", "Reports");
+    		md.addAttribute("activePage", "CentralBank");
+    		 String USERID = (String) req.getSession().getAttribute("USERID");
+    	   md.addAttribute("USERID", USERID);
+    		logger.info("==> Entered BDGF controller || Formmode: {}", formmode);
+
+    		LocalDate today = LocalDate.now();
+    		Date defaultDate = java.sql.Date.valueOf(today);
+
+    		try {
+    			if (formmode == null || formmode.equals("list")) {
+    				//List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
+    				String currentDateString = null;
+    				if (date == null) {
+    					// If no date provided → use today's date
+    					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(defaultDate);
+    					//logger.info("Fetched {} records for default date: {}", customerList.size(), defaultDate);
+    					currentDateString = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    				} else {
+    					// Convert LocalDate param → SQL Date
+    					Date sqlDate = java.sql.Date.valueOf(date);
+    					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(sqlDate);
+    					//logger.info("Fetched {} records for provided date: {}", customerList.size(), sqlDate);
+
+    					currentDateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    				}
+    				md.addAttribute("currentdate", currentDateString);
+    				md.addAttribute("menu", "Blank Deposit General Format - List");
+    				//md.addAttribute("customersplratedetail", customerList);
+    				md.addAttribute("currentdate", currentDateString);
+    				md.addAttribute("formmode", "list");
+    			} else if (formmode.equals("add")) {
+    				md.addAttribute("menu", "Blank Deposit General Format - Add");
+    				md.addAttribute("formmode", "add");
+    			}  
+
+    		} catch (Exception e) {
+    			logger.error("Error in  BDGF controller: {}", e.getMessage(), e);
+    			md.addAttribute("errorMessage", "Error loading BDGF page. Please contact administrator.");
+    		}
+
+    		logger.info("<== Exiting BDGF controller");
+    		return "BDGF";
+    	}
+
+
+
+
+    	@Autowired
+    	BDGF_Services BDGF_Servicess;
+    	
+    	
+    	@PostMapping("addBDGF")
+    	@ResponseBody
+    	public String addBDGF(@ModelAttribute MultipartFile file, Model md, HttpServletRequest rq) {
+    	    logger.info("==> Entered BDGF method");
+
+    	    String userid = (String) rq.getSession().getAttribute("USERID");
+    	    String username = (String) rq.getSession().getAttribute("USERNAME");
+
+    	    try {
+    	        String msg = BDGF_Servicess.addBDGF(file, userid, username);
+    	        logger.info("BDGF result: {}", msg);
+    	        return msg;
+    	    } catch (Exception e) {
+    	        logger.error("Error occurred while Add BDGF: {}", e.getMessage(), e);
+    	        return "Error Occurred. Please contact Administrator.";
+    	    }
+    	}
+    	
+    	  @GetMapping("/download-templateBDGF")
+    	  public ResponseEntity<byte[]> downloadTemplatebdgf() throws Exception {
+    	      List<String> headers = Arrays.asList(
+    	              "SOL ID","S No","A/C No","Customer ID","Customer Name","Open Date",
+    	              "Amount Deposited","Currency","Period","Rate of Interest","100",
+    	              "BAL EQUI TO BWP","Outstanding Balance","Oustndng Bal UGX","Maturity Date",
+    	              "Maturity Amount","Scheme","Cr Pref Int Rate","SEGMENT","REFERENCE DATE",
+    	              "DIFFERENCE","DAYS","PERIOD","EFFECTIVE INTEREST RATE","REPORT DATE"
+    	      );
+    	     
+    	      Workbook workbook = new XSSFWorkbook();
+    	      Sheet sheet = workbook.createSheet("BDGF_Template");
+
+    	      // 🔹 Header style (locked)
+    	      CellStyle headerStyle = workbook.createCellStyle();
+    	      Font font = workbook.createFont();
+    	      font.setBold(true);
+    	      headerStyle.setFont(font);
+    	      headerStyle.setLocked(true);
+
+    	      // 🔹 Unlocked style for data cells
+    	      CellStyle unlockedStyle = workbook.createCellStyle();
+    	      unlockedStyle.setLocked(false);
+
+    	      // 🔹 Create header row
+    	      Row headerRow = sheet.createRow(0);
+    	      for (int i = 0; i < headers.size(); i++) {
+    	          Cell cell = headerRow.createCell(i);
+    	          cell.setCellValue(headers.get(i));
+    	          cell.setCellStyle(headerStyle);
+    	          sheet.autoSizeColumn(i);
+    	      }
+
+    	      // 🔹 Create editable rows (example: 5000 rows available for paste)
+    	      for (int r = 1; r < 5000; r++) {
+    	          Row row = sheet.createRow(r);
+    	          for (int c = 0; c < headers.size(); c++) {
+    	              Cell cell = row.createCell(c);
+    	              cell.setCellStyle(unlockedStyle);
+    	          }
+    	      }
+
+    	      // 🔹 Freeze header row
+    	      sheet.createFreezePane(0, 1);
+
+    	      // 🔹 Protect sheet (enforces lock/unlock)
+    	      sheet.protectSheet("password");
+
+    	      // Write to byte array
+    	      ByteArrayOutputStream out = new ByteArrayOutputStream();
+    	      workbook.write(out);
+    	      workbook.close();
+
+    	      HttpHeaders headersResponse = new HttpHeaders();
+    	      headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=BDGF_Template.xlsx");
+    	      headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+    	      return ResponseEntity
+    	              .ok()
+    	              .headers(headersResponse)
+    	              .body(out.toByteArray());
+    	  }
+
+
 
 	//BFDB
 
@@ -882,14 +887,14 @@ BFDB_Services BFDB_Servicess;
 
 @PostMapping("addBFDB")
 @ResponseBody
-public String addbfdb(@ModelAttribute MultipartFile file,
-                                    Model md,String reportDate,
-                                    HttpServletRequest rq ) {
+public String addBFDB(@ModelAttribute MultipartFile file, Model md, HttpServletRequest rq) {
     logger.info("==> Entered BFDB method");
+
     String userid = (String) rq.getSession().getAttribute("USERID");
     String username = (String) rq.getSession().getAttribute("USERNAME");
+
     try {
-        String msg = BFDB_Servicess.addBFDB( file, userid, username,reportDate);
+        String msg = BFDB_Servicess.addBFDB(file, userid, username);
         logger.info("BFDB result: {}", msg);
         return msg;
     } catch (Exception e) {
@@ -897,6 +902,7 @@ public String addbfdb(@ModelAttribute MultipartFile file,
         return "Error Occurred. Please contact Administrator.";
     }
 }
+
 
 @GetMapping("/download-templateBFDB")
 public ResponseEntity<byte[]> downloadTemplatebfdb() throws Exception {
@@ -906,7 +912,7 @@ public ResponseEntity<byte[]> downloadTemplatebfdb() throws Exception {
         "SCHM DESC", "ACCT OPN DATE", "ACCT CLS DATE", "BALANCE AS ON", "CCY",
         "BAL EQUI TO BWP", "INT RATE", "100", "STATUS", "MATURITY DATE",
         "GL SUB HEAD CODE", "GL SUB HEAD DESC", "TYPE OF ACCOUNTS", "SEGMENT",
-        "PERIOD", "EFFECTIVE INTEREST RATE"
+        "PERIOD", "EFFECTIVE INTEREST RATE","REPORT DATE"
     );
 
     Workbook workbook = new XSSFWorkbook();
@@ -1004,17 +1010,16 @@ public String BLBF(@RequestParam(required = false) String formmode,
 @Autowired
 BLBF_Services BLBF_Servicess;
 
-
 @PostMapping("addBLBF")
 @ResponseBody
-public String addBLBF(@ModelAttribute MultipartFile file,
-                                    Model md,String reportDate,
-                                    HttpServletRequest rq ) {
+public String addBLBF(@ModelAttribute MultipartFile file, Model md, HttpServletRequest rq) {
     logger.info("==> Entered BLBF method");
+
     String userid = (String) rq.getSession().getAttribute("USERID");
     String username = (String) rq.getSession().getAttribute("USERNAME");
+
     try {
-        String msg = BLBF_Servicess.addBLBF( file, userid, username,reportDate);
+        String msg = BLBF_Servicess.addBLBF(file, userid, username);
         logger.info("BLBF result: {}", msg);
         return msg;
     } catch (Exception e) {
@@ -1022,6 +1027,7 @@ public String addBLBF(@ModelAttribute MultipartFile file,
         return "Error Occurred. Please contact Administrator.";
     }
 }
+
 
 @GetMapping("/download-templateBLBF")
 public ResponseEntity<byte[]> downloadTemplate() throws Exception {
@@ -1035,7 +1041,7 @@ public ResponseEntity<byte[]> downloadTemplate() throws Exception {
         "TENOR(MONTH)", "EMI", "SEGMENT", "FACILITY", "PAST DUE", "PAST DUE DAYS",
         "ASSET", "PROVISION", "UNSECURED", "INT BUCKET", "STAFF", "SMME", "LABOD",
         "NEW A/C", "UNDRAWN", "SECTOR", "Period", "Effective Interest Rate",
-        "STAGE", "ECL PROVISION"
+        "STAGE", "ECL PROVISION","REPORT DATE"
     );
 
     

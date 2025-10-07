@@ -28,25 +28,27 @@ public class BDGF_Services {
 
     private static final Logger logger = LoggerFactory.getLogger(BDGF_Services.class);
 
-    public String addBDGF(MultipartFile file, String userid, String username, String reportDate) {
+    public String addBDGF(MultipartFile file, String userid, String username) {
         try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = sdf.parse(reportDate);
             Sheet sheet = workbook.getSheetAt(0);
 
             int savedCount = 0, skippedCount = 0;
 
-            // Skip header row (row 0), start from row 1
+            // Skip header (row 0)
+         // Skip header (row 0)
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 
+                // 🔸 Check if the row is completely empty
+                if (isRowEmpty(row)) {
+                    break; // stop processing further
+                }
+
                 try {
                     BDGF_Entity detail = new BDGF_Entity();
 
-                    // Example: adjust cell indexes as per your Excel layout
                     detail.setSol_id(getString(row.getCell(0)));
-                    //detail.setS_no(getBigDecimal(row.getCell(1)));
                     detail.setAcc_no(getString(row.getCell(2)));
                     detail.setCustomer_id(getString(row.getCell(3)));
                     detail.setCustomer_name(getString(row.getCell(4)));
@@ -70,8 +72,11 @@ public class BDGF_Services {
                     detail.setPeriod_days(getBigDecimal(row.getCell(22)));
                     detail.setEffective_int_rate(getBigDecimal(row.getCell(23)));
 
-                    // Audit fields
-                    detail.setReport_date(date);
+                    // ✅ Read report date from Excel
+                    Date reportDateFromExcel = getDate(row.getCell(24));
+
+                    // 🔹 Audit fields
+                    detail.setReport_date(reportDateFromExcel);
                     detail.setEntry_date(new Date());
                     detail.setEntry_user(userid);
                     detail.setDel_flg("N");
@@ -86,6 +91,7 @@ public class BDGF_Services {
                 }
             }
 
+
             return "BDGF Added successfully. Saved: " + savedCount + ", Skipped: " + skippedCount;
 
         } catch (Exception e) {
@@ -93,6 +99,7 @@ public class BDGF_Services {
             return "Error Occurred while reading Excel: " + e.getMessage();
         }
     }
+
 
     // 🔹 Helper methods to safely parse Excel cells
     private String getString(Cell cell) {
@@ -130,4 +137,18 @@ public class BDGF_Services {
             }
         }
     }
+    
+    
+    private boolean isRowEmpty(Row row) {
+        if (row == null) return true;
+        for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++) {
+            Cell cell = row.getCell(c);
+            if (cell != null && cell.getCellType() != CellType.BLANK) {
+                String value = cell.toString().trim();
+                if (!value.isEmpty()) return false;
+            }
+        }
+        return true;
+    }
+
 }
