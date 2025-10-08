@@ -1133,11 +1133,11 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 							</ul>
 						</li>
 						
-						<li class="nav-item dropdown" style=" text-align: center;"
+						<li class="nav-item" style=" text-align: center;"
 						th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'AUDIT_US')}">
 						
-							<a href="#" class="dropdown-toggle">File Upload</a>
-							<ul class="dropdown-menu">
+							<a href="#" class="dropdown-toggle" id="MCBL"  onclick="contentLoad(this)">File Upload</a>
+							<!-- <ul class="dropdown-menu">
 								
 								<li>
 								<a  href="#" class="nav-link" id="MCBL"  onclick="contentLoad(this)">File Upload</a>
@@ -1151,7 +1151,7 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 								<li>
 								<a  href="#" class="nav-link" id="BLBF"  onclick="contentLoad(this)">BLBF</a>
 								</li>
-							</ul>
+							</ul> -->
 						</li>
 						
 						

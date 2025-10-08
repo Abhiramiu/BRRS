@@ -1,5 +1,7 @@
 package com.bornfire.brrs.controllers;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.bornfire.brrs.entities.BRRS_Report_Mast_Rep;
 import com.bornfire.brrs.entities.MCBL_Detail_Rep;
 import com.bornfire.brrs.entities.MCBL_Main_Entity;
 import com.bornfire.brrs.services.AuditService;
@@ -23,6 +26,9 @@ public class Rest_Controller {
 	@Autowired
 	AuditService AuditServices;
 
+	@Autowired
+	BRRS_Report_Mast_Rep BRRS_Report_Mast_Reps;
+	
 	@Autowired
 	private MCBL_Detail_Rep mcblDetailRep;
 
@@ -50,6 +56,15 @@ public class Rest_Controller {
         return msg;
     }
     
+    @GetMapping("/getRptName")
+    @ResponseBody
+    public String getRptNameByCode(@RequestParam("rptCode") String rptCode) {
+    	List<String> rptNames = BRRS_Report_Mast_Reps.getRptName(rptCode);
+        if (rptNames != null && !rptNames.isEmpty()) {
+            return rptNames.get(0); // return the first matching name
+        }
+        return "";
+    }
 
    
 	

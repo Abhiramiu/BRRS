@@ -554,8 +554,8 @@ public class NavigationController {
                 Model md) {
 
             if (formmode == null || formmode.equals("list")) {
-                md.addAttribute("menu", "Source Data Mapping");
-                md.addAttribute("menuname", "Source Data Mapping");
+                md.addAttribute("menu", "MCBL Main");
+                md.addAttribute("menuname", "MCBL Main");
                 md.addAttribute("formmode", "list");
 
                 int offset = page * size;
@@ -571,21 +571,21 @@ public class NavigationController {
                 md.addAttribute("totalPages", totalPages);
             }
  else if (formmode.equals("add")) {
-                md.addAttribute("menuname", "Source Data Mapping - Add");
+                md.addAttribute("menuname", "MCBL Main- Add");
                 md.addAttribute("formmode", "add");
 
             } else if (formmode.equals("edit")) {
-                md.addAttribute("menuname", "Source Data Mapping - Edit");
+                md.addAttribute("menuname", "MCBL Main- Edit");
                 md.addAttribute("formmode", "edit");
                 md.addAttribute("MCBL_List", MCBL_Main_Reps.findById(id).orElse(null));
 
             } else if (formmode.equals("view")) {
-                md.addAttribute("menuname", "Source Data Mapping - Inquiry");
+                md.addAttribute("menuname", "MCBL Main- Inquiry");
                 md.addAttribute("formmode", "view");
                 md.addAttribute("MCBL_List", MCBL_Main_Reps.findById(id).orElse(null));
 
             } else if (formmode.equals("delete")) {
-                md.addAttribute("menuname", "Source Data Mapping - Delete");
+                md.addAttribute("menuname", "MCBL Main- Delete");
                 md.addAttribute("formmode", "delete");
                 md.addAttribute("MCBL_List", MCBL_Main_Reps.findById(id).orElse(null));
             }
@@ -612,9 +612,11 @@ public class NavigationController {
                 int totalRecords = MCBL_Main_Reps.countAll();
                 int totalPages = (int) Math.ceil((double) totalRecords / size);
 
-                List<String> RptCodes = BRRS_Report_Mast_Reps.getALL();
+                List<String> RptCodes = BRRS_Report_Mast_Reps.getRptCode();
+                
 
                 md.addAttribute("RptCodes", RptCodes);
+               
                 
                 md.addAttribute("MCBL_List", lists);
                 md.addAttribute("pagination", "YES");
@@ -626,6 +628,8 @@ public class NavigationController {
             return "Reference_Code_Master.html";
         }
 
+
+        
 
     	
     	@RequestMapping(value = "MCBL", method = { RequestMethod.GET, RequestMethod.POST })

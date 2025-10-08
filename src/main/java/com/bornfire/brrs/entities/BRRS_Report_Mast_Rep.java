@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 public interface BRRS_Report_Mast_Rep extends JpaRepository<BRRS_Report_Mast_Entity, BigDecimal> {
 	
 	@Query(value = "SELECT rpt_code FROM BRRS_REPORT_MAST ORDER BY srl_no", nativeQuery = true)
-	List<String> getALL();
+	List<String> getRptCode();
 
+	@Query(value = "SELECT rpt_description FROM BRRS_REPORT_MAST where rpt_code=?1 ", nativeQuery = true)
+	List<String> getRptName(String rpdCode);
 
 }
