@@ -1,0 +1,1711 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: GOPIKA B
+CREATED ON	: 16.09.2025
+PURPOSE		: BRRSREPORT
+-->
+
+<html
+  lang="en"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- CSS -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}"
+    />
+    <link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+    <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+    <!-- JavaScript -->
+    <!-- jQuery core (required first) -->
+
+    <!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+
+    <!-- jQuery (required first) -->
+    <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+    <!-- ✅ jQuery Validation -->
+    <script
+      src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+      th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"
+    ></script>
+
+    <!-- Bootstrap + Others -->
+    <script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+    <script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+    <script
+      th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"
+    ></script>
+    <script
+      th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"
+    ></script>
+
+    <style>
+      .btns {
+        float: right;
+        margin: 5px;
+      }
+
+      .col-sm-5 {
+        padding-bottom: 15px;
+      }
+
+      .list-body {
+        padding: 0px;
+      }
+
+      .error {
+        color: red;
+        padding-left: 10px;
+      }
+
+      .formline {
+        padding-bottom: 15px;
+      }
+
+      .btn-primary {
+        background-color: #e77400;
+        border-color: #0c0c0c;
+      }
+
+      .btn-primary:not (:disabled):not (.disabled).active,
+      .btn-primary:not (:disabled):not (.disabled):active,
+      .show > .btn-primary.dropdown-toggle {
+        color: #fff;
+        background-color: #cc000000;
+        border-color: #161617;
+      }
+
+      #finusertb {
+        width: 460px;
+      }
+
+      .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0px;
+      }
+    </style>
+
+    <style>
+      tr{
+        max-height:5px;
+      }
+      div span {
+        font-weight: bold;
+        color: white !important;
+      }
+
+      .card {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+
+      .card-header h5 {
+        font-size: 22px;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .nav-tabs .nav-link {
+        font-weight: 500;
+        border: 1px solid #dee2e6;
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+        background-color: #f1f1f1;
+        margin-right: 5px;
+      }
+
+      .nav-tabs .nav-link.active {
+        background-color: #ffffff;
+        border-color: #dee2e6 #dee2e6 #ffffff;
+      }
+
+      .table-responsive {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+      }
+
+      .table-hover tbody tr:hover {
+        background-color: #f3f6f9;
+      }
+
+      thead th {
+        position: sticky;
+        top: 0;
+        background-color: #e9ecf0;
+        z-index: 1;
+      }
+
+      .table td {
+        background-color: #ffffff;
+      }
+
+      .card-footer {
+       
+        border-top: 1px solid #ccc;
+      }
+
+      .btn-xs {
+        padding: 4px 12px;
+        font-size: 14px;
+        border-radius: 4px;
+      }
+
+      #BRFvalidation th,
+      #usertable td {
+        vertical-align: middle;
+        text-align: left;
+        font-size: 16px;
+        font-family: Arial;
+      }
+
+      .fa-edit:hover {
+        color: #28a745;
+        transform: scale(1.1);
+      }
+
+      td {
+        border: 1px solid rgb(0, 164, 166);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    </style>
+
+    <style>
+      .form-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+      }
+
+      .form-control {
+        width: 100%;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+        outline: none;
+        background: transparent;
+        transition: border-color 0.3s ease, padding-top 0.3s ease;
+      }
+
+      .error {
+        color: red;
+        padding-top: 15px;
+      }
+
+      .form-control:focus {
+        border-color: #007bff;
+      }
+
+      .form-legend {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        color: #aaa;
+        background: white;
+        padding: 0 5px;
+        pointer-events: none;
+        transition: 0.3s ease;
+      }
+
+      /* When input or select is focused or has a value, move the label up */
+      .form-control:focus ~ .form-legend,
+      .form-control:not (:placeholder-shown) ~ .form-legend {
+        top: -8px;
+        font-size: 1rem;
+        color: #007bff;
+      }
+
+      /* Hover effect when the input/select is focused */
+      .form-control:focus:hover ~ .form-legend {
+        color: #0056b3;
+        /* Darker shade of blue on hover */
+      }
+
+      /* Ensure the label returns to the normal color after focus or hover is removed */
+      .form-control:not (:focus) ~ .form-legend {
+        color: #aaa;
+        /* Normal label color */
+      }
+    </style>
+
+    <style>
+      /* Red border for invalid inputs */
+      input.error,
+      select.error {
+        border: 2px solid red !important;
+      }
+
+      /* Error message style */
+      label.error {
+        color: red;
+        font-size: 0.85em;
+        margin-top: 5px;
+        display: block;
+      }
+
+      .underline {
+        text-decoration: underline;
+        color: #08a6f1;
+        cursor: pointer;
+      }
+
+      .left-arrow-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        transition: background-color 0.3s, transform 0.2s;
+      }
+
+      .left-arrow-circle i {
+        color: rgb(107, 122, 143);
+      }
+
+      .left-arrow-circle:hover {
+        background-color: rgb(107, 122, 143);
+        cursor: pointer;
+        transform: scale(1.05);
+        border: 2px solid white;
+      }
+
+      .left-arrow-circle:hover i {
+        color: white;
+      }
+
+      .white-text span {
+        color: white !important;
+      }
+
+      .table-cell tbody td:hover {
+        background-color: #f0f0f0;
+        /* Hover color for cell */
+        cursor: pointer;
+        /* Optional: pointer cursor */
+      }
+
+      .table-bordered td,
+      .table-bordered th {
+        border: 1px solid #000 !important;
+      }
+
+      .left{
+        text-align:right;
+      }
+      #color{
+        background-color:#92D050;
+        color: black;
+        font-weight: bold;
+      }
+      
+    </style>
+
+ <style>
+  #currencyTable {
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+   
+  }
+
+  #currencyTable th, 
+  #currencyTable td {
+    border: 1px solid black; 
+    padding: 6px;
+    
+  }
+
+  #currencyTable tr {
+    border: 1px solid black;
+  }
+
+  #currencyTable thead th {
+     background-color: white; 
+  }
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    
+}
+
+.table-container {
+    display: flex;
+    padding:50px;
+    gap: 600px; 
+    justify-content: left;
+    margin-left: 10px;
+}
+
+.data-table {
+    border-collapse: collapse;
+    width: auto;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid #000000;
+    padding: 1px 15px;
+    text-align: right;
+    white-space: nowrap; 
+}
+
+.data-table th {
+    background-color: #ffffff;
+    font-weight: bold;
+    text-align: center;
+}
+
+.currency-cell {
+    text-align: left !important;
+}
+
+.total-row {
+    background-color: #ffffff; 
+    font-weight: bold;
+}
+
+.total-cell {
+    text-align: left !important;
+}
+
+.total-value {
+    text-align: right !important;
+}
+
+.import-header, .investment-header, .other-header, .res-header, .nonres-header {
+    text-align: center;
+}
+
+.header-cell {
+    text-align: left;
+    font-weight: normal;
+}
+.table-heading{
+  font-weight: bold;
+  padding-bottom: 20px;
+}
+
+</style>
+
+    <script th:inline="javascript">
+
+      $(document).ready(function () {
+      	// hide loader on normal load
+      	$('#loader').modal('hide');
+      });
+
+      $(window).on('pageshow', function () {
+      	// hide loader on back/forward nav
+      	$('#loader').modal('hide');
+      });
+
+      $(window).on('beforeunload', function () {
+      	// hide loader on leaving page
+      	$('#loader').modal('hide');
+      });
+
+
+
+      function home() {
+      	$("#loader").modal("toggle");
+      	location.href = 'Dashboard'
+      }
+
+      function back() {
+      	$("#loader").modal("toggle");
+
+      	window.history.back();
+      }
+
+      //to fetch summary from the database - called from the summary button
+       function showdetails() {
+
+					var Callurl;
+					$('#loader').modal('show');
+					Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+						location.href = Callurl;
+					console.log(Callurl);
+      	/*  $.ajax({
+      		 type: 'get',
+      		 url: Callurl,
+      		 beforeSend: function () {
+      			 $('#loader').modal('show'); // 🔄 Show loader
+      		 },
+      		 success: function (data) {
+      			 $('.content').html(data);
+      			 //$("#detailsbtn").addClass("active");
+      			 //tablepagination();
+      		 },
+      		 complete: function () {
+      			 $('#loader').modal('hide');
+      		 },
+      		 error: function () {
+      			   $('#loader').modal('hide');
+      			 alert("Something went wrongss. Please try again.");
+
+      		 }
+      	 }); */
+      }
+
+     function showsummary() {
+							var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
+							loader.show();
+							var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
+								location.href = Callurl;
+
+						}
+    </script>
+
+    <script>
+      function activateTab(tabName) {
+        // Remove 'active' from all buttons
+        document.querySelectorAll(".custom-tab-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+
+        // Add 'active' to selected button
+        if (tabName === "summary") {
+          document
+            .getElementById("custom-tab-btnSummary")
+            .classList.add("active");
+        } else if (tabName === "Details") {
+          document
+            .getElementById("custom-tab-btnDetails")
+            .classList.add("active");
+        }
+      }
+
+      window.onload = function () {
+        /* setTimeout(function() {
+				var selectedTab = document.getElementById("selectedTab").value;
+				alert(selectedTab);
+				activateTab(selectedTab);
+			}, 10000); */ // 10,000 milliseconds = 10 seconds
+
+        var selectedTab = document.getElementById("selectedTab").value;
+        activateTab(selectedTab);
+      };
+
+      function downloadfile(button) {
+        var reportid = button.getAttribute("data-reportid");
+        var asondate = button.getAttribute("data-asondate");
+        var fromdate = button.getAttribute("data-fromdate");
+        var todate = button.getAttribute("data-todate");
+        var currency = button.getAttribute("data-currency");
+        var subreportid = button.getAttribute("data-subreportid");
+        var secid = button.getAttribute("data-secid");
+        var dtltype = button.getAttribute("data-dtltype");
+        var filename = button.getAttribute("data-filename");
+
+        $("#loader").modal("show");
+
+        $.ajax({
+          url:
+            "./downloadExcel?reportid=" +
+            reportid +
+            "&fromdate=" +
+            fromdate +
+            "&asondate=" +
+            asondate +
+            "&todate=" +
+            todate +
+            "&currency=" +
+            currency +
+            "&subreportid=" +
+            subreportid +
+            "&secid=" +
+            secid +
+            "&filename=" +
+            filename,
+          type: "GET",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (data) {
+            $("#loader").modal("hide");
+
+            if (data && data.size > 100) {
+              const blob = new Blob([data], {
+                type: "application/vnd.ms-excel",
+              });
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.style.display = "none";
+              a.href = url;
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              window.URL.revokeObjectURL(url);
+              document.body.removeChild(a);
+
+              showResultModal(
+                "BRRS",
+                "The file has been downloaded successfully."
+              );
+            } else {
+              showResultModal(
+                "Information",
+                "No data was available to create a download."
+              );
+            }
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            $("#loader").modal("hide");
+            console.error("Download failed:", textStatus, errorThrown);
+            showResultModal(
+              "Error",
+              "An error occurred while downloading the file. Please try again."
+            );
+          },
+        });
+      }
+
+      function editRecord() {
+        showResultModal("Alert", "Development in progress");
+      }
+      function closemodel() {
+        $("#alert").modal("hide");
+        $("#resultModal").modal("hide");
+      }
+
+      function showResultModal(title, message) {
+        // Set the text for the modal elements
+        $("#resultModalLabel").text(title);
+        $("#resultModalBody").text(message);
+
+        // Show the modal
+        $("#resultModal").modal("show");
+      }
+    </script>
+
+    <script>
+      function startReport(button) {
+        const alertMsg = document.getElementById("alertMessage");
+        const filename = button.getAttribute("data-filename");
+        const fromdate = button.getAttribute("data-fromdate");
+        const todate = button.getAttribute("data-todate");
+        const currency = button.getAttribute("data-currency");
+        const dtltype = button.getAttribute("data-dtltype");
+        const type = button.getAttribute("data-type");
+        const version = button.getAttribute("data-version");
+        const sessionfilename = sessionStorage.getItem("filename");
+
+        if (sessionfilename == filename) {
+          alertMsg.innerHTML = "Download request already Processing...";
+          showAlert();
+          return;
+        }
+
+        alertMsg.innerHTML = "Download request Processing...";
+        showAlert();
+
+        const baseUrl = "/BCDRS/Reports/startreport";
+        const downloadUrl =
+          baseUrl +
+          "?filename=" +
+          encodeURIComponent(filename) +
+          "&fromdate=" +
+          encodeURIComponent(fromdate) +
+          "&todate=" +
+          encodeURIComponent(todate) +
+          "&currency=" +
+          encodeURIComponent(currency) +
+          "&dtltype=" +
+          encodeURIComponent(dtltype) +
+          "&type=" +
+          encodeURIComponent(type) +
+          "&version=" +
+          encodeURIComponent(version);
+        fetch(downloadUrl) // ✅ no invalid characters now
+          .then((res) => res.text())
+          .then((jobId) => {
+            alertMsg.innerHTML = "Download request received..." + jobId;
+            showAlert();
+            sessionStorage.setItem("jobId", jobId);
+            sessionStorage.setItem("filename", filename);
+            checkReport(jobId);
+          });
+      }
+
+      function checkReport(jobId) {
+        const alertMsg = document.getElementById("alertMessage");
+        fetch("/BCDRS/Reports/checkreport?jobId=" + encodeURIComponent(jobId))
+          .then((res) => res.text())
+          .then((status) => {
+            if (status === "READY") {
+              alertMsg.innerHTML = "Report is ready! Downloading…";
+              showAlert();
+              const filename = sessionStorage.getItem("filename");
+              downloadDetailfile(jobId, filename);
+              sessionStorage.removeItem("jobId");
+              sessionStorage.removeItem("filename");
+            } else if (status === "PROCESSING") {
+              alertMsg.innerHTML = "Download Is Processing…";
+              showAlert();
+              setTimeout(() => checkReport(jobId), 5000);
+            } else if (status === "ERROR") {
+              alertMsg.innerHTML =
+                "No data was available to create a download.";
+              showAlert();
+              sessionStorage.removeItem("jobId");
+              sessionStorage.removeItem("filename");
+            }
+          });
+      }
+
+      function downloadDetailfile(jobId, filename) {
+        //$('#loader').modal('show');
+
+        $.ajax({
+          url:
+            "/BCDRS/Reports/downloaddetailExcel?jobId=" +
+            jobId +
+            "&filename=" +
+            filename,
+          type: "GET",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (data) {
+            $("#loader").modal("hide");
+
+            if (data && data.size > 100) {
+              const blob = new Blob([data], {
+                type: "application/vnd.ms-excel",
+              });
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.style.display = "none";
+              a.href = url;
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              window.URL.revokeObjectURL(url);
+              document.body.removeChild(a);
+
+              showResultModal(
+                "BRRS",
+                filename + " downloaded successfully."
+              );
+            } else {
+              showResultModal(
+                "Information",
+                "No data was available to create a download."
+              );
+            }
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            $("#loader").modal("hide");
+            console.error("Download failed:", textStatus, errorThrown);
+            showResultModal(
+              "Error",
+              "An error occurred while downloading the file. Please try again."
+            );
+          },
+        });
+      }
+    </script>
+
+    <script th:inline="javascript">
+      function showdetailsbyRowAndColumn(a) {
+        var rowId = a.getAttribute("RowId");
+        var columnId = a.getAttribute("ColumnId");
+        var cellValue = a.textContent || a.innerText;
+
+        if (cellValue !== "0") {
+          // Set dynamic message in modal (instead of confirm)
+          document.getElementById("cellresultModalLabel").innerText =
+            "Do you want to open details for Row: " +
+            rowId +
+            " and Column: " +
+            columnId +
+            "?";
+
+          // Show custom Bootstrap modal
+          $("#cellresultModal").modal("show");
+
+          // Handle Yes button
+          document.querySelector(".yes-btn").onclick = function () {
+            $("#cellresultModal").modal("hide");
+
+            // Show loader
+            const loader = bootstrap.Modal.getOrCreateInstance(
+              document.getElementById("loader"),
+              {
+                backdrop: "static",
+                keyboard: false,
+              }
+            );
+            $("#loader").modal("show");
+
+            // Build dynamic URL
+            var Callurl =
+              /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+            location.href = Callurl;
+          };
+        } else {
+          // Use your custom alert modal instead of window.alert
+          showResultModal(
+            "Alert",
+            "No Records available for this selected cell."
+          );
+        }
+      }
+    </script>
+  </head>
+
+  <title>BRRS</title>
+
+  <body>
+    <div class="container-fluid" style="padding-left: 0px; padding-right: 0px">
+      <div class="row">
+        <div th:insert="HeaderMenu :: header"></div>
+
+        <div class="card">
+          <divclass="card-header"
+            style="
+              background-color: rgb(107, 122, 143);
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            "
+          >
+            <div style="display: flex; align-items: center" onclick="back();">
+              <!-- ⬅️ Left circular arrow -->
+              <div class="left-arrow-circle">
+                <i class="fa fa-arrow-left"></i>
+              </div>
+
+              <!-- Title -->
+              <h5
+                style="
+                  font-family: arial;
+                  font-size: 20px;
+                  padding-top: 10px;
+                  font-weight: bold;
+                  color: white;
+                "
+              >  M-DEP3:  FOREIGN CURRENCY DEPOSITS</h5>
+            </div>
+
+            <div
+              class="custom-tab-btn-group nav-buttons"
+              style="display: flex; color: white; align-items: center"
+            >
+              <!-- 📅 Date -->
+              <span
+                class="white-text"
+                style="
+                  color: white !important;
+                  font-size: 16px;
+                  margin-right: 20px;
+                "
+                >Report Date: <span th:text="${asondate}">2025-07-04</span>
+              </span>
+
+              <!-- Buttons -->
+              <input type="hidden" id="selectedTab" th:value="${displaymode}" />
+              <button
+                type="button"
+                class="custom-tab-btn"
+                id="custom-tab-btnSummary"
+                onclick="showsummary();"
+                th:if="${displaymode == 'Details'}"
+              >
+                Summary
+              </button>
+              <button
+                type="button"
+                class="custom-tab-btn"
+                id="custom-tab-btnDetails"
+                onclick="showdetails();"
+                th:if="${displaymode == 'summary'}"
+              >
+                Details
+              </button>
+              <button
+                type="button"
+                class="custom-tab-btn"
+                id="custom-tab-btnAdd"
+                th:if="${displaymode == 'summary'}"
+                th:attr="data-reportid=${reportid}, 
+                    				 data-asondate=${asondate}, 
+                    				 data-fromdate=${fromdate}, 
+                     				 data-todate=${todate}, 
+                     				 data-currency=${currency},  
+                     				 data-dtltype=${dtltype}, 
+                     				 data-filename='M_DEP3.xls',
+					 				 data-type=${type},
+					    			 data-version=${version}"
+                onclick="downloadfile(this);"
+              >
+                <i class="fa fa-download"></i>
+              </button>
+              <button
+                type="button"
+                class="custom-tab-btn"
+                id="custom-tab-btnAdd"
+                th:if="${displaymode == 'Details'}"
+                onclick="startReport(this);"
+                th:attr="
+						    data-fromdate=${fromdate},
+						    data-todate=${todate},
+						    data-filename='M_DEP3Detail',
+                 data-type=${type},
+		            data-version=${version}
+						  "
+              >
+                <i class="fa fa-download"></i>
+              </button>
+              <!---	<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='BRF2_18'",
+							onclick="editRecord();">
+							<i class="fa fa-download"></i>
+						</button> -->
+            </div>
+          </div>
+
+          <div th:if="${displaymode == 'summary'}">
+            <div class="row">
+              <div class="col-sm-12">
+                <div
+                  class="table-wrapper table-responsive scrollable-table-container "
+                  style="border-right: 1px solid #ffffff;"
+                >
+                  <table class="table table-bordered table-hover table-sm" >
+                    <body>
+
+
+
+  <table id="currencyTable">
+    <thead>
+      <tr>
+        <th rowspan="2">(39A) FOREIGN CURRENCY ACCOUNTS  BY CURRENCY </th>
+        <th colspan="3">Exchange Rates</th>
+        <th rowspan="2">Current</th>
+        <th rowspan="2">Call</th>
+        <th rowspan="2">Savings</th>
+        <th colspan="2">Notice (Days)</th>
+        <th colspan="7">Fixed Deposits (Months)</th>
+        <th rowspan="2">Certificates of Deposit</th>
+        <th rowspan="2">Total</th>
+        <th rowspan="2"> Pula Equivalent</th>
+        <th rowspan="2">Average pula Equivalent</th>
+      </tr>
+      <tr>
+        <th>Buy</th>
+        <th>Mid</th>
+        <th>Sell</th>
+        <th>0-31</th>
+        <th>32-88</th>
+        <th style="background-color: peachpuff;">91 Day</th>
+        <th style="background-color: peachpuff;">1-2</th>
+        <th>4-6</th>
+        <th>7-12</th>
+        <th>13-18</th>
+        <th>19-24</th>
+        <th>Over 24</th>
+      </tr>
+    </thead>
+    <tbody style="font-family: Arial"th:each="reportsummary: ${reportsummary}">
+                     <tr>
+        <td th:text="${reportsummary.r11_foreign_curr_acc_by_curr}" style="text-align: left;"></td>
+        <td th:text="${reportsummary.r11_ex_rate_buy}"th:attr="RowId='R11', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_ex_rate_mid}"   th:attr="RowId='R11', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_ex_rate_sell}"  th:attr="RowId='R11', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_current}"  th:attr="RowId='R11', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_call}" th:attr="RowId='R11', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+         <td th:text="${reportsummary.r11_savings}"th:attr="RowId='R11', ColumnId='C7'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r11_notice_0to31}"  th:attr="RowId='R11', ColumnId='C8'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_notice_32to88}"   th:attr="RowId='R11', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_fix_depo_91_day_depo}"  th:attr="RowId='R11', ColumnId='C10'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_fix_depo_1to2}"  th:attr="RowId='R11', ColumnId='C11'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_fix_depo_4to6}"  th:attr="RowId='R11', ColumnId='C12'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_fix_depo_7to12}"   th:attr="RowId='R11', ColumnId='C13'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_fix_depo_13to18}"  th:attr="RowId='R11', ColumnId='C14'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_fix_depo_19to24}"  th:attr="RowId='R11', ColumnId='C15'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_fix_depo_over24}"  ></td>
+         <td th:text="${reportsummary.r11_cer_of_depo}"th:attr="RowId='R11', ColumnId='C17'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r11_total}" id="color"></td>
+        <td th:text="${reportsummary.r11_pula_equivalent}"   th:attr="RowId='R11', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r11_avg_pula_equivalent}"  th:attr="RowId='R11', ColumnId='C20'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+    </tr>
+                         <tr>
+        <td th:text="${reportsummary.r12_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+        <td th:text="${reportsummary.r12_ex_rate_buy}"th:attr="RowId='R12', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_ex_rate_mid}"   th:attr="RowId='R12', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_ex_rate_sell}"  th:attr="RowId='R12', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_current}"  th:attr="RowId='R12', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_call}" th:attr="RowId='R12', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+         <td th:text="${reportsummary.r12_savings}"th:attr="RowId='R12', ColumnId='C7'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r12_notice_0to31}"  th:attr="RowId='R12', ColumnId='C8'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_notice_32to88}"   th:attr="RowId='R12', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_fix_depo_91_day_depo}"  th:attr="RowId='R12', ColumnId='C10'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_fix_depo_1to2}"  th:attr="RowId='R12', ColumnId='C11'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_fix_depo_4to6}"  th:attr="RowId='R12', ColumnId='C12'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_fix_depo_7to12}"   th:attr="RowId='R12', ColumnId='C13'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_fix_depo_13to18}"  th:attr="RowId='R12', ColumnId='C14'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_fix_depo_19to24}"  th:attr="RowId='R12', ColumnId='C15'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_fix_depo_over24}"  ></td>
+         <td th:text="${reportsummary.r12_cer_of_depo}"th:attr="RowId='R12', ColumnId='C17'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r12_total}" id="color"></td>
+        <td th:text="${reportsummary.r12_pula_equivalent}"   th:attr="RowId='R12', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r12_avg_pula_equivalent}"  th:attr="RowId='R12', ColumnId='C20'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+    </tr>
+    <tr>
+        <td th:text="${reportsummary.r13_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+        <td th:text="${reportsummary.r13_ex_rate_buy}"th:attr="RowId='R13', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_ex_rate_mid}"   th:attr="RowId='R13', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_ex_rate_sell}"  th:attr="RowId='R13', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_current}"  th:attr="RowId='R13', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_call}" th:attr="RowId='R13', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+         <td th:text="${reportsummary.r13_savings}"th:attr="RowId='R13', ColumnId='C7'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r13_notice_0to31}"  th:attr="RowId='R13', ColumnId='C8'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_notice_32to88}"   th:attr="RowId='R13', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_fix_depo_91_day_depo}"  th:attr="RowId='R13', ColumnId='C10'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_fix_depo_1to2}"  th:attr="RowId='R13', ColumnId='C11'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_fix_depo_4to6}"  th:attr="RowId='R13', ColumnId='C12'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_fix_depo_7to12}"   th:attr="RowId='R13', ColumnId='C13'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_fix_depo_13to18}"  th:attr="RowId='R13', ColumnId='C14'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_fix_depo_19to24}"  th:attr="RowId='R13', ColumnId='C15'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_fix_depo_over24}"  ></td>
+         <td th:text="${reportsummary.r13_cer_of_depo}"th:attr="RowId='R13', ColumnId='C17'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r13_total}" id="color"></td>
+        <td th:text="${reportsummary.r13_pula_equivalent}"   th:attr="RowId='R13', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r13_avg_pula_equivalent}"  th:attr="RowId='R13', ColumnId='C20'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+    </tr>
+    <tr>
+        <td th:text="${reportsummary.r14_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+        <td th:text="${reportsummary.r14_ex_rate_buy}"th:attr="RowId='R14', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_ex_rate_mid}"   th:attr="RowId='R14', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_ex_rate_sell}"  th:attr="RowId='R14', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_current}"  th:attr="RowId='R14', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_call}" th:attr="RowId='R14', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+         <td th:text="${reportsummary.r14_savings}"th:attr="RowId='R14', ColumnId='C7'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r14_notice_0to31}"  th:attr="RowId='R14', ColumnId='C8'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_notice_32to88}"   th:attr="RowId='R14', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_fix_depo_91_day_depo}"  th:attr="RowId='R14', ColumnId='C10'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_fix_depo_1to2}"  th:attr="RowId='R14', ColumnId='C11'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_fix_depo_4to6}"  th:attr="RowId='R14', ColumnId='C12'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_fix_depo_7to12}"   th:attr="RowId='R14', ColumnId='C13'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_fix_depo_13to18}"  th:attr="RowId='R14', ColumnId='C14'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_fix_depo_19to24}"  th:attr="RowId='R14', ColumnId='C15'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_fix_depo_over24}"  ></td>
+         <td th:text="${reportsummary.r14_cer_of_depo}"th:attr="RowId='R14', ColumnId='C17'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r14_total}" id="color"></td>
+        <td th:text="${reportsummary.r14_pula_equivalent}"   th:attr="RowId='R14', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r14_avg_pula_equivalent}"  th:attr="RowId='R14', ColumnId='C20'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+    </tr>
+    <tr>
+        <td th:text="${reportsummary.r15_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+        <td th:text="${reportsummary.r15_ex_rate_buy}"th:attr="RowId='R15', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_ex_rate_mid}"   th:attr="RowId='R15', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_ex_rate_sell}"  th:attr="RowId='R15', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_current}"  th:attr="RowId='R15', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_call}" th:attr="RowId='R15', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+         <td th:text="${reportsummary.r15_savings}"th:attr="RowId='R15', ColumnId='C7'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r15_notice_0to31}"  th:attr="RowId='R15', ColumnId='C8'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_notice_32to88}"   th:attr="RowId='R15', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_fix_depo_91_day_depo}"  th:attr="RowId='R15', ColumnId='C10'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_fix_depo_1to2}"  th:attr="RowId='R15', ColumnId='C11'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_fix_depo_4to6}"  th:attr="RowId='R15', ColumnId='C12'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_fix_depo_7to12}"   th:attr="RowId='R15', ColumnId='C13'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_fix_depo_13to18}"  th:attr="RowId='R15', ColumnId='C14'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_fix_depo_19to24}"  th:attr="RowId='R15', ColumnId='C15'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_fix_depo_over24}"  ></td>
+         <td th:text="${reportsummary.r15_cer_of_depo}"th:attr="RowId='R15', ColumnId='C17'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r15_total}" id="color"></td>
+        <td th:text="${reportsummary.r15_pula_equivalent}"   th:attr="RowId='R15', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r15_avg_pula_equivalent}"  th:attr="RowId='R15', ColumnId='C20'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+    </tr>
+    <tr>
+        <td th:text="${reportsummary.r16_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+        <td th:text="${reportsummary.r16_ex_rate_buy}"th:attr="RowId='R16', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_ex_rate_mid}"   th:attr="RowId='R16', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_ex_rate_sell}"  th:attr="RowId='R16', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_current}"  th:attr="RowId='R16', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_call}" th:attr="RowId='R16', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+         <td th:text="${reportsummary.r16_savings}"th:attr="RowId='R16', ColumnId='C7'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r16_notice_0to31}"  th:attr="RowId='R16', ColumnId='C8'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_notice_32to88}"   th:attr="RowId='R16', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_fix_depo_91_day_depo}"  th:attr="RowId='R16', ColumnId='C10'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_fix_depo_1to2}"  th:attr="RowId='R16', ColumnId='C11'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_fix_depo_4to6}"  th:attr="RowId='R16', ColumnId='C12'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_fix_depo_7to12}"   th:attr="RowId='R16', ColumnId='C13'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_fix_depo_13to18}"  th:attr="RowId='R16', ColumnId='C14'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_fix_depo_19to24}"  th:attr="RowId='R16', ColumnId='C15'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_fix_depo_over24}"  ></td>
+         <td th:text="${reportsummary.r16_cer_of_depo}"th:attr="RowId='R16', ColumnId='C17'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r16_total}" id="color"></td>
+        <td th:text="${reportsummary.r16_pula_equivalent}"   th:attr="RowId='R16', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r16_avg_pula_equivalent}"  th:attr="RowId='R16', ColumnId='C20'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+    </tr>
+    <tr>
+        <td th:text="${reportsummary.r17_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+        <td th:text="${reportsummary.r17_ex_rate_buy}"th:attr="RowId='R17', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r17_ex_rate_mid}"   th:attr="RowId='R17', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r17_ex_rate_sell}"  th:attr="RowId='R17', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+      
+        <td th:text="${reportsummary.r17_current}"id="color" ></td>
+        <td th:text="${reportsummary.r17_call}" id="color"></td>
+        <td th:text="${reportsummary.r17_savings} "id="color"></td>
+        <td th:text="${reportsummary.r17_notice_0to31}"id="color"></td>
+        <td th:text="${reportsummary.r17_notice_32to88}"id="color"></td>
+        <td th:text="${reportsummary.r17_fix_depo_91_day_depo}"id="color"></td>
+        <td th:text="${reportsummary.r17_fix_depo_1to2}"id="color" ></td>
+        <td th:text="${reportsummary.r17_fix_depo_4to6}" id="color"></td>
+        <td th:text="${reportsummary.r17_fix_depo_7to12}"id="color" ></td>
+        <td th:text="${reportsummary.r17_fix_depo_13to18}"id="color"></td>
+        <td th:text="${reportsummary.r17_fix_depo_19to24}"id="color" ></td>
+        <td th:text="${reportsummary.r17_fix_depo_over24}" id="color" ></td>
+        <td th:text="${reportsummary.r17_cer_of_depo}"id="color"></td>
+        <td th:text="${reportsummary.r17_total}"id="color"></td>
+        <td th:text="${reportsummary.r17_pula_equivalent}"id="color"></td>
+        <td th:text="${reportsummary.r17_avg_pula_equivalent}"id="color"></td>
+    
+    </tr>
+     <tr>
+        <td th:text="${reportsummary.r18_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+        <td th:text="${reportsummary.r18_ex_rate_buy}"th:attr="RowId='R18', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_ex_rate_mid}"   th:attr="RowId='R18', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_ex_rate_sell}"  th:attr="RowId='R18', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_current}"  th:attr="RowId='R18', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_call}" th:attr="RowId='R18', ColumnId='C6'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+         <td th:text="${reportsummary.r18_savings}"th:attr="RowId='R18', ColumnId='C7'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r18_notice_0to31}"  th:attr="RowId='R18', ColumnId='C8'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_notice_32to88}"   th:attr="RowId='R18', ColumnId='C9'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_fix_depo_91_day_depo}"  th:attr="RowId='R18', ColumnId='C10'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_fix_depo_1to2}"  th:attr="RowId='R18', ColumnId='C11'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_fix_depo_4to6}"  th:attr="RowId='R18', ColumnId='C12'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_fix_depo_7to12}"   th:attr="RowId='R18', ColumnId='C13'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_fix_depo_13to18}"  th:attr="RowId='R18', ColumnId='C14'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_fix_depo_19to24}"  th:attr="RowId='R18', ColumnId='C15'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_fix_depo_over24}"  ></td>
+         <td th:text="${reportsummary.r18_cer_of_depo}"th:attr="RowId='R18', ColumnId='C17'"
+												onclick="showdetailsbyRowAndColumn(this)" ></td>
+        <td th:text="${reportsummary.r18_total}"></td>
+        <td th:text="${reportsummary.r18_pula_equivalent}"   th:attr="RowId='R18', ColumnId='C19'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary.r18_avg_pula_equivalent}"  th:attr="RowId='R18', ColumnId='C20'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+    </tr>
+    </tbody>
+                  </table>
+                </div>
+                   </div>
+                  
+           <div class="table-container">
+
+    <figure>
+        <figcaption class="table-heading">(39 B) PURPOSE OF FOREIGN CURRENCY <br>ACCOUNTS (P'000)					
+</figcaption>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <td></td>
+                    <th class="import-header">Import</th>
+                    <th class="investment-header">Investment</th>
+                    <th class="other-header">Other</th>
+                </tr>
+            </thead>
+               <tbody style="font-family: Arial"th:each="reportsummary1: ${reportsummary1}">
+                     <tr>
+        <td th:text="${reportsummary1.r28_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+          <td th:text="${reportsummary1.r28_import}"   th:attr="RowId='R28', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary1.r28_investment}"  th:attr="RowId='R28', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+                         <td th:text="${reportsummary1.r28_other}"  th:attr="RowId='R28', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                     </tr>
+                 <tr>
+        <td th:text="${reportsummary1.r29_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+          <td th:text="${reportsummary1.r29_import}"   th:attr="RowId='r29', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary1.r29_investment}"  th:attr="RowId='r29', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+                         <td th:text="${reportsummary1.r29_other}"  th:attr="RowId='r29', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                     </tr>
+                       <tr>
+        <td th:text="${reportsummary1.r30_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+          <td th:text="${reportsummary1.r30_import}"   th:attr="RowId='R30', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary1.r30_investment}"  th:attr="RowId='R30', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+                         <td th:text="${reportsummary1.r30_other}"  th:attr="RowId='R30', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                     </tr>
+                       <tr>
+        <td th:text="${reportsummary1.r31_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+          <td th:text="${reportsummary1.r31_import}"   th:attr="RowId='R31', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary1.r31_investment}"  th:attr="RowId='R31', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+                         <td th:text="${reportsummary1.r31_other}"  th:attr="RowId='R31', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                     </tr>
+
+                       <tr>
+        <td th:text="${reportsummary1.r32_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+          <td th:text="${reportsummary1.r32_import}"   th:attr="RowId='R32', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary1.r32_investment}"  th:attr="RowId='R32', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+                         <td th:text="${reportsummary1.r32_other}"  th:attr="RowId='R32', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                     </tr>
+                       <tr>
+        <td th:text="${reportsummary1.r33_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+          <td th:text="${reportsummary1.r33_import}"   th:attr="RowId='R33', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary1.r33_investment}"  th:attr="RowId='R33', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+                         <td th:text="${reportsummary1.r33_other}"  th:attr="RowId='R33', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                     </tr>
+
+                       <tr>
+        <td th:text="${reportsummary1.r34_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+          <td th:text="${reportsummary1.r34_import}"   th:attr="RowId='R34', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
+        <td th:text="${reportsummary1.r34_investment}"  th:attr="RowId='R34', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
+                         <td th:text="${reportsummary1.r34_other}"  th:attr="RowId='R34', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
+
+                     </tr>
+            </tbody>
+        </table>
+    </figure>
+
+    <figure>
+        <figcaption class="table-heading">(39C)HOLDERS OF FOREIGN CURRENCY <br> ACCOUNTS - RESIDENT/NON-RESIDENT (P'000)								
+</figcaption>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <td></td>
+                    <th class="res-header">Residents</th>
+                    <th class="nonres-header">Non-residents</th>
+                </tr>
+            </thead>
+            <tbody style="font-family: Arial"th:each="reportsummary2: ${reportsummary2}">
+        <tr>
+        <td th:text="${reportsummary2.r28_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+        <td th:text="${reportsummary2.r28_residents}"   th:attr="RowId='R28', ColumnId='C9'"onclick="showdetailsbyRowAndColumn(this)"></td>
+        <td th:text="${reportsummary2.r28_non_residents}"   th:attr="RowId='R28', ColumnId='C10'"onclick="showdetailsbyRowAndColumn(this)"></td>
+        </tr>
+    <tr>
+    <td th:text="${reportsummary2.r29_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+    <td th:text="${reportsummary2.r29_residents}" th:attr="RowId='R29', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td th:text="${reportsummary2.r29_non_residents}" th:attr="RowId='R29', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+<tr>
+    <td th:text="${reportsummary2.r30_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+    <td th:text="${reportsummary2.r30_residents}" th:attr="RowId='R30', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td th:text="${reportsummary2.r30_non_residents}" th:attr="RowId='R30', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+<tr>
+    <td th:text="${reportsummary2.r31_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+    <td th:text="${reportsummary2.r31_residents}" th:attr="RowId='R31', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td th:th:text="${reportsummary2.r31_non_residents}" th:attr="RowId='R31', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+<tr>
+    <td th:text="${reportsummary2.r32_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+    <td th:text="${reportsummary2.r32_residents}" th:attr="RowId='R32', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td th:text="${reportsummary2.r32_non_residents}" th:attr="RowId='R32', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+<tr>
+    <td th:text="${reportsummary2.r33_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+    <td th:text="${reportsummary2.r33_residents}" th:attr="RowId='R33', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td th:text="${reportsummary2.r33_non_residents}" th:attr="RowId='R33', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+<tr>
+    <td th:text="${reportsummary2.r34_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+    <td th:text="${reportsummary2.r34_residents}" th:attr="RowId='R34', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
+    <td th:text="${reportsummary2.r34_non_residents}" th:attr="RowId='R34', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
+</tr>
+            </tbody>
+        </table>
+    </figure>
+
+</div>
+            
+          </div>
+          </div></div>
+          
+     
+
+        
+        
+<!-- ------------------- -->
+<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-responsive scrollable-table-container "
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									id="reportss">
+									<thead class="thead-light">
+										<tr>
+											<th></th>
+											<th>CUST_ID</th>
+											<th>ACCT_NUMBER</th>
+											<th>ACCT_NAME</th>
+											<th style="text-align: right;">ACCT_BALANCE_IN_PULA</th>
+											<th>ROW_ID</th>
+											<th>COLUMN_ID</th>
+											<th>REPORT_DATE</th>
+										</tr>
+
+									</thead>
+
+									<tbody style="font-family: Arial;">
+										<tr th:each="report: ${reportdetails}">
+											<td><a data-toggle="tooltip" class="editrec"
+												title="Click to Edit this Record"> <i
+													class="fas fa-edit" onclick="editRecord(this)"></i>
+											</a></td>
+											<td th:text="${report.custId}"></td>
+											<td th:text="${report.acctNumber}"></td>
+											<td th:text="${report.acctName}"></td>
+                      <!-- ✅ fixed: use acctBalanceInpula -->
+    <td style="text-align: right;"
+        th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3, 'POINT')}"></td>
+											<td style="text-align: left;" th:text="${report.rowId}"></td>
+											<td th:text="${report.columnId}"></td>
+											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+
+										</tr>
+									</tbody>
+								</table>
+
+								<div style="margin-top: 20px; text-align: center;"
+									th:if="${pagination=='YES'}">
+
+
+
+									<a th:if="${currentPage > 0}"
+										th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																	    asondate=${asondate},                             
+																	    fromdate=${fromdate},
+																	    todate=${todate},
+																	    currency=${currency},
+																	    dtltype=${dtltype},
+																	    type=${type},
+																	    version=${version},
+																	    page=${currentPage - 100},
+																	    size=100
+																	)}">
+										Previous </a> <span>Page [[${currentPage / 100 + 1}]] of
+										[[${totalPages}]]</span> <a
+										th:if="${currentPage < (totalPages - 1) * 100}"
+										th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																	    asondate=${asondate},
+																	    fromdate=${fromdate},
+																	    todate=${todate},
+																	    currency=${currency},
+																	    dtltype=${dtltype},
+																	    type=${type},
+																	    version=${version},
+																	    page=${currentPage + 100},
+																	    size=100
+																	)}">
+										Next </a>
+								</div>
+
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="loader"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="background: transparent">
+          <div class="modal-body" style="text-align: center">
+            <div>
+              <img th:src=@{/images/loader.gif} id="bfirelogo" style="width:
+              153px; height: auto; margin-left: 18px; background-color:
+              transparent; border-color: transparent;" alt="Bornfire">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Alert/Result Modal (Matches your existing style) -->
+    <div class="modal fade" id="resultModal">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Your custom styled header -->
+          <div class="menu-title-header">
+            <div
+              class="modal-title"
+              id="resultModalLabel"
+              style="text-align: center; color: white"
+            >
+              <!-- Title will be set by JavaScript -->
+            </div>
+          </div>
+          <div class="modal-body" style="text-align: center; font-size: 1.1rem">
+            <p id="resultModalBody"></p>
+            <!-- Your custom styled button -->
+            <button
+              type="button"
+              class="custom-tab-btn"
+              onclick="closemodel()"
+              data-dismiss="modal"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Cellresult Modal -->
+    <div class="modal fade" id="cellresultModal">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Custom header -->
+          <div
+            class="menu-title-header"
+            style="
+              background-color: #6c7a91;
+              padding: 8px;
+              border-radius: 5px 5px 0 0;
+            "
+          >
+            <div
+              class="modal-title"
+              id="cellresultModalLabel"
+              style="text-align: center; color: white"
+            >
+              Do you want to open the report?
+            </div>
+          </div>
+
+          <div class="modal-body" style="text-align: center; font-size: 1.1rem">
+            <button
+              type="button"
+              class="custom-tab-btn cancel-btn"
+              data-bs-dismiss="modal"
+              style="
+                margin-right: 10px;
+                border: 2px solid #6c7a91;
+                background: white;
+                color: black;
+                border-radius: 20px;
+                padding: 5px 15px;
+              "
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="custom-tab-btn yes-btn"
+              style="
+                background: #6c7a91;
+                color: white;
+                border: none;
+                border-radius: 20px;
+                padding: 5px 20px;
+              "
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <style>
+   
+    .scrollable-table-container {
+      max-height: 700px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+    }
+
+    /* Your existing sticky header CSS, targeting the tr elements within the thead */
+    .scrollable-table-container thead tr:nth-child(1) {
+      position: sticky;
+      top: 0;
+      background-color: #b3b6b9;
+      z-index: 5;
+    }
+
+    .scrollable-table-container thead tr:nth-child(2) {
+      position: sticky;
+      top: 36px;
+      /* adjust based on row height */
+      background-color: #b3b6b9;
+      z-index: 4;
+    }
+
+    .scrollable-table-container thead tr:nth-child(3) {
+      position: sticky;
+      top: 72px;
+      /* Adjust based on row height */
+      background-color: #b3b6b9;
+      z-index: 3;
+    }
+
+    .scrollable-table-container thead tr:nth-child(4) {
+      position: sticky;
+      top: 100px;
+      /* Adjust based on row height */
+      background-color: #b3b6b9;
+      z-index: 2;
+    }
+
+    .scrollable-table-container thead tr:nth-child(5) {
+      position: sticky;
+      top: 135px;
+      /* Adjust based on row height */
+      background-color: #b3b6b9;
+      z-index: 1;
+    }
+  </style>
+
+  <style>
+    .inner {
+      max-height: 600px;
+      /* Adjust height as needed */
+      overflow: auto;
+      border: 1px solid #dee2e6;
+    }
+
+    /* Sticky thead */
+    #reports thead th {
+      position: sticky;
+      top: 0;
+      background-color: #ffffff;
+      /* Match Bootstrap thead-light */
+      z-index: 2;
+    }
+
+    div.dataTables_wrapper div.dataTables_paginate {
+      text-align: right !important;
+      float: right !important;
+      width: auto;
+      margin-top: 10px;
+    }
+
+    /* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+    div.dataTables_wrapper div.dataTables_info {
+      float: left !important;
+      margin-top: 10px;
+    }
+
+    .pagination {
+      margin: 0;
+    }
+
+    .page-item.active .page-link {
+      background-color: #386276;
+      border-color: #386276;
+    }
+
+    .page-link {
+      color: #386276;
+    }
+
+    .page-link:hover {
+      color: #2a4a5c;
+    }
+
+    .form-select {
+      display: inline-block;
+      width: auto;
+    }
+  </style>
+</html>

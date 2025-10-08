@@ -82,6 +82,9 @@ public class RegulatoryReportServices {
 	BRRS_M_DEP2_ReportService BRRS_M_DEP2_reportservice;
 	
 	@Autowired
+	BRRS_M_DEP3_ReportService BRRS_M_DEP3_reportservice;
+	
+	@Autowired
 	BRRS_M_PLL_ReportService BRRS_M_PLL_reportservice;
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
@@ -191,6 +194,11 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 			
+		case "M_DEP3":
+			repsummary = BRRS_M_DEP3_reportservice.getM_DEP3View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+			
 
 		}
 		
@@ -280,6 +288,11 @@ public class RegulatoryReportServices {
 			
 		case "M_PLL":
 			repdetail = BRRS_M_PLL_reportservice.getM_PLLcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter,type,version );
+			break;
+			
+		case "M_DEP3":
+			repdetail = BRRS_M_DEP3_reportservice.getM_DEP3currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter,type,version );
 			break;
 			
@@ -475,6 +488,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_DEP3":
+			try {
+				repfile = BRRS_M_DEP3_reportservice.BRRS_M_DEP3Excel(filename, reportId, fromdate, todate, currency,
+						dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		
 		case "M_AIDP":
 			try {
@@ -555,6 +578,9 @@ public class RegulatoryReportServices {
 		}
 		if ("M_PLLDetail".equals(filename)) {
 			return BRRS_M_PLL_reportservice.getM_PLLDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
+		}
+		if ("M_DEP3Detail".equals(filename)) {
+			return BRRS_M_DEP3_reportservice.BRRS_M_DEP3DetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 		}
 		
 		
@@ -722,6 +748,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_DEP3":
+			try {
+				archivalData = BRRS_M_DEP3_reportservice.getM_DEP3Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 
 		}
@@ -767,6 +802,8 @@ public class RegulatoryReportServices {
 		    fileData = BRRS_M_DEP2_reportservice.BRRS_M_DEP2DetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}else if (filename.equals("M_PLLDetail")) {
 		    fileData = BRRS_M_PLL_reportservice.getM_PLLDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
+		}else if (filename.equals("M_DEP3Detail")) {
+		    fileData = BRRS_M_DEP3_reportservice.BRRS_M_DEP3DetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}
 		
 		
