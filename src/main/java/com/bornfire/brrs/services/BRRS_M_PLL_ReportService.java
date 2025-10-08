@@ -54,8 +54,9 @@ import com.bornfire.brrs.entities.BRRS_M_PLL_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_PLL_Detail_Repo;
 import com.bornfire.brrs.entities.M_PLL_Summary_Entity;
-import com.bornfire.brrs.entities.M_SFINP2_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_SFINP2_Detail_Entity;
+import com.bornfire.brrs.entities.M_PLL_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
+import com.bornfire.brrs.entities.M_PLL_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_PLL_Summary_Repo;
 
 @Component
@@ -233,8 +234,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 		}
 
 		// Fetch data
-
-		List<M_PLL_Summary_Entity> dataList =BRRS_M_PLL_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
+		List<M_PLL_Summary_Entity> dataList = BRRS_M_PLL_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_PLL report. Returning empty result.");
@@ -246,15 +246,14 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 		System.out.println(filename);
 		Path templatePath = Paths.get(templateDir, templateFileName);
 		System.out.println(templatePath);
-		
+
 		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
 		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
 			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
 		}
+
 		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
 			throw new SecurityException(
 					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
 		}
@@ -264,7 +263,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
 				Workbook workbook = WorkbookFactory.create(templateInputStream);
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
 			Sheet sheet = workbook.getSheetAt(0);
 
 			// --- Style Definitions ---
@@ -276,27 +274,25 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 			dateStyle.setBorderTop(BorderStyle.THIN);
 			dateStyle.setBorderLeft(BorderStyle.THIN);
 			dateStyle.setBorderRight(BorderStyle.THIN);
-
 			CellStyle textStyle = workbook.createCellStyle();
 			textStyle.setBorderBottom(BorderStyle.THIN);
 			textStyle.setBorderTop(BorderStyle.THIN);
 			textStyle.setBorderLeft(BorderStyle.THIN);
 			textStyle.setBorderRight(BorderStyle.THIN);
-			
+
 			// Create the font
 			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short)8); // size 8
-			font.setFontName("Arial");    
-
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
 			CellStyle numberStyle = workbook.createCellStyle();
-			//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
 			numberStyle.setBorderBottom(BorderStyle.THIN);
 			numberStyle.setBorderTop(BorderStyle.THIN);
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-
+			
 			int startRow = 11;
 
 			if (!dataList.isEmpty()) {
@@ -1065,7 +1061,7 @@ public List<Object> getM_PLLArchival() {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-	int startRow = 12;
+	int startRow = 11;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {

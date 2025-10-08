@@ -75,12 +75,12 @@ PURPOSE		: BRRS_M_PLLREPORT
 	border-color: #0c0c0c;
 }
 
-.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
-	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
-	{
-	color: #fff;
-	background-color: #cc000000;
-	border-color: #161617;
+.btn-primary:not(:disabled):not(.disabled).active,
+.btn-primary:not(:disabled):not(.disabled):active,
+.show > .btn-primary.dropdown-toggle {
+  color: #fff;
+  background-color: #cc0000; /* fixed from #cc000000 (too many zeros) */
+  border-color: #161617;
 }
 
 #finusertb {
@@ -290,13 +290,15 @@ label.error {
 	color: white !important;
 }
 .table-cell tbody td:hover {
-        background-color: #f0f0f0; /* Hover color for cell */
-        cursor: pointer;           /* Optional: pointer cursor */
-    }
+    background-color: #f0f0f0; /* Hover color for cell */
+    cursor: pointer;           /* Optional: pointer cursor */
+}
+
 .table-bordered td, 
 .table-bordered th {
-     border: 1px solid #000 !important;
+    border: 1px solid #000 !important;
 }
+
 
 
 </style>
@@ -375,7 +377,7 @@ $(window).on('beforeunload', function() {
 	
 	function showsummary() {
 		$('#loader').modal('show');
-		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;								
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/								
 		location.href = Callurl;
 
 	}
