@@ -90,6 +90,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_IRB_ReportService brrs_m_irb_reportService;
 	
+	@Autowired
+	BRRS_M_LIQ_ReportService BRRS_M_LIQ_reportservice;
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -206,6 +209,11 @@ public class RegulatoryReportServices {
                 repsummary = brrs_m_irb_reportService.getM_IRBView(reportId, fromdate, todate, currency, dtltype,
                         pageable, type, version);
                 break;	
+                
+		case "M_LIQ":
+			repsummary = BRRS_M_LIQ_reportservice.getM_LIQView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
 			
 
 		}
@@ -301,6 +309,11 @@ public class RegulatoryReportServices {
 			
 		case "M_DEP3":
 			repdetail = BRRS_M_DEP3_reportservice.getM_DEP3currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter,type,version );
+			break;
+			
+		case "M_LIQ":
+			repdetail = BRRS_M_LIQ_reportservice.getM_LIQcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter,type,version );
 			break;
 			
@@ -530,6 +543,16 @@ public class RegulatoryReportServices {
 	                e.printStackTrace();
 	            }
 	            break;	
+	            
+		case "M_LIQ":
+			try {
+				repfile = BRRS_M_LIQ_reportservice.getM_LIQExcel(filename, reportId, fromdate, todate, currency,
+						dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 			
 		
 			
@@ -607,6 +630,9 @@ public class RegulatoryReportServices {
 		if ("M_IRBDetail".equals(filename)) {
 	            return brrs_m_irb_reportService.BRRS_M_IRBDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 	        }
+		if ("M_LIQDetail".equals(filename)) {
+			return BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
+		}
 		
 		
 		
@@ -791,6 +817,15 @@ public class RegulatoryReportServices {
 	                    e.printStackTrace();
 	                }
 	                break;	
+	                
+		case "M_LIQ":
+			try {
+				archivalData = BRRS_M_LIQ_reportservice.getM_LIQArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 
 		}
@@ -840,7 +875,9 @@ public class RegulatoryReportServices {
 		    fileData = BRRS_M_DEP3_reportservice.BRRS_M_DEP3DetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}else if (filename.equals("M_IRBDetail")) {
 	            fileData = brrs_m_irb_reportService.BRRS_M_IRBDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
-	        }
+	    }else if (filename.equals("M_LIQDetail")) {
+		    fileData = BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
+		}
 		
 		
 		if (fileData == null) {
