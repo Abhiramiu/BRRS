@@ -446,7 +446,7 @@ PURPOSE		: BWRBRREPORT
 		// Show Modify (enable inputs & dropdowns)
 	function showmodify(btn) {
     // List of IDs that should ALWAYS remain readonly
-    var readonlyIds = ["R36_NO_OF_AC", "R36_CREDIT_LIMIT", "R36_AMOUNT_OUTSTANDING"];
+    var readonlyIds = ["R36_NO_OF_AC", "R36_CREDIT_LIMIT", "R36_AMOUNT_OUTSTANDING" ,"R39_NO_OF_AC", "R39_CREDIT_LIMIT", "R39_AMOUNT_OUTSTANDING","R42_NO_OF_AC", "R42_CREDIT_LIMIT", "R42_AMOUNT_OUTSTANDING"];
 
     // Make all .Show_input editable except the ones in readonlyIds
     $(".Show_input").each(function () {
@@ -454,6 +454,8 @@ PURPOSE		: BWRBRREPORT
             $(this).removeAttr("readonly").removeAttr("disabled");
         }
     });
+	
+	$("#R37_NO_OF_AC, #R37_CREDIT_LIMIT, #R37_AMOUNT_OUTSTANDING,#R38_NO_OF_AC, #R38_CREDIT_LIMIT, #R38_AMOUNT_OUTSTANDING,#R40_NO_OF_AC, #R40_CREDIT_LIMIT, #R40_AMOUNT_OUTSTANDING,#R41_NO_OF_AC, #R41_CREDIT_LIMIT, #R41_AMOUNT_OUTSTANDING ").css({"background-color": "#d3d3d3"});
 
     // Toggle buttons
     $("#submitButton").show();
@@ -803,13 +805,13 @@ PURPOSE		: BWRBRREPORT
 										<tr>
 											<td style="text-align: left;" th:attr="RowId='R16', ColumnId='C1'"
 												th:text="${report.r16_product}"></td>
-											<td style="background-color: #9ACD32; text-align: right;"
+											<td style="background-color: rgb(107, 122, 143); text-align: right; color: white;"
 												th:attr="RowId='R16', ColumnId='C2'" th:text="${report.r16_no_of_ac}">
 											</td>
-											<td style="background-color: #9ACD32; text-align: right;"
+											<td style="background-color: rgb(107, 122, 143); text-align: right;color: white;"
 												th:attr="RowId='R16', ColumnId='C3'"
 												th:text="${report.r16_approved_limit}"></td>
-											<td style="background-color: #9ACD32; text-align: right;"
+											<td style="background-color: rgb(107, 122, 143); text-align: right;color: white;"
 												th:attr="RowId='R16', ColumnId='C4'"
 												th:text="${report.r16_amount_outstanding}"></td>
 										</tr>
@@ -825,17 +827,19 @@ PURPOSE		: BWRBRREPORT
 										<thead class="thead-light"
 											style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
 											<tr style="background-color: black; ">
+											
+												
 												<thead class="thead-light">
 													<tr style="background-color: #b3b6b9 ">
 
-														<th rowspan="1" style="text-align: left;">(26B) LOANS AND
-															ADVANCES BY MATURITY </th>
+														<th rowspan="1" style="text-align: left; width: 750px;"> 	(26B) LOANS AND ADVANCES BY MATURITY  </th>
 														<th style="text-align: center;">No. of A/Cs</th>
 														<th style="text-align: center;"> Approved Limit </th>
 														<th style="text-align: center;">Amount Outstanding</th>
 
 													</tr>
 												</thead>
+
 
 										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 
@@ -973,13 +977,13 @@ PURPOSE		: BWRBRREPORT
 											<tr>
 												<td style="text-align: left;" th:attr="RowId='R31', ColumnId='C1'"
 													th:text="${report.r31_product}"></td>
-												<td style="background-color: #9ACD32; text-align: right;"
+												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
 													th:attr="RowId='R31', ColumnId='C2'"
 													th:text="${report.r31_no_of_ac}"></td>
-												<td style="background-color: #9ACD32; text-align: right;"
+												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
 													th:attr="RowId='R31', ColumnId='C3'"
 													th:text="${report.r31_approved_limit}"></td>
-												<td style="background-color: #9ACD32; text-align: right;"
+												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
 													th:attr="RowId='R31', ColumnId='C4'"
 													th:text="${report.r31_amount_outstanding}"></td>
 											</tr>
@@ -999,10 +1003,10 @@ PURPOSE		: BWRBRREPORT
 													<thead class="thead-light">
 														<tr style="background-color: #b3b6b9 ">
 
-															<th style="text-align: left;"> (26C) ANALYSIS OF
+															<th style="text-align: left; width: 750px;"> (26C) ANALYSIS OF
 																CREDIT CARDS </th>
-															<th style="text-align: center;">No. of A/Cs</th>
-															<th style="text-align: center;"> Approved Limit </th>
+															<th style="text-align: center;width: 265px;">No. of A/Cs</th>
+															<th style="text-align: center;width: 350px;"> Approved Limit </th>
 															<th style="text-align: center;">Amount Outstanding</th>
 
 														</tr>
@@ -1015,31 +1019,31 @@ PURPOSE		: BWRBRREPORT
 													<th>(a) Resident (sum of line (a) (1) and (2)):</th>
 
 													<td id="ROW36"
-														style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
        th:value="${report1.R36_NO_OF_AC != null ? #numbers.formatDecimal(report1.R36_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
        id="R36_NO_OF_AC" name="R36_NO_OF_AC"
-       style="background-color:#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+       style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
        readonly disabled />
 
 													</td>
 
 													<td id="ROW36"
-														style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 														th:value="${report1.R36_CREDIT_LIMIT != null ? #numbers.formatDecimal(report1.R36_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R36_CREDIT_LIMIT" name="R36_CREDIT_LIMIT"
-															style="background-color: 	#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 															readonly />
 													</td>
 
 													<td id="ROW36"
-														style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 														th:value="${report1.R36_AMOUNT_OUTSTANDING != null ? #numbers.formatDecimal(report1.R36_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R36_AMOUNT_OUTSTANDING"
 															name="R36_AMOUNT_OUTSTANDING"
-															style="background-color: 	#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 															readonly />
 													</td>
 
@@ -1051,7 +1055,7 @@ PURPOSE		: BWRBRREPORT
 												<tr>
 
 													<td>1. Individuals </td>
-													<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
+													<td id="ROW37" style="padding-left: 20px; font-weight: bold;text-align: right;">
 																	        <input class="display-input Show_input"
 																	               type="text"
 																	               th:value="${report1.R37_NO_OF_AC != null ? #numbers.formatDecimal(report1.R37_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1062,7 +1066,7 @@ PURPOSE		: BWRBRREPORT
 																	    </td>
 
 
-													<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
+													<td id="ROW37" style="padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 															th:value="${report1.R37_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R37_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R37_CREDIT_LIMIT" name="R37_CREDIT_LIMIT"
@@ -1070,7 +1074,7 @@ PURPOSE		: BWRBRREPORT
 															readonly />
 													</td>
 
-													<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
+													<td id="ROW37" style="padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 															th:value="${report1.R37_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R37_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R37_AMOUNT_OUTSTANDING"
@@ -1085,7 +1089,7 @@ PURPOSE		: BWRBRREPORT
 												<tr>
 
 													<td>2. Corporate </td>
-													<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
+													<td id="ROW38" style="padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 															th:value="${report1.R38_NO_OF_AC!= null ? #numbers.formatDecimal(report1.R38_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R38_NO_OF_AC" name="R38_NO_OF_AC"
@@ -1093,7 +1097,7 @@ PURPOSE		: BWRBRREPORT
 															readonly />
 													</td>
 
-													<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
+													<td id="ROW38" style="padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 															th:value="${report1.R38_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R38_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R38_CREDIT_LIMIT" name="R38_CREDIT_LIMIT"
@@ -1101,7 +1105,7 @@ PURPOSE		: BWRBRREPORT
 															readonly />
 													</td>
 
-													<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
+													<td id="ROW38" style="padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 															th:value="${report1.R38_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R38_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R38_AMOUNT_OUTSTANDING"
@@ -1115,30 +1119,30 @@ PURPOSE		: BWRBRREPORT
 													<th>(b) Non- Resident (sum of line (a) (1) and (2)):</th>
 
 													<td id="ROW39"
-														style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 														th:value="${report1.R39_NO_OF_AC != null ? #numbers.formatDecimal(report1.R39_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R39_NO_OF_AC" name="R39_NO_OF_AC"
-															style="background-color: 	#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 															readonly />
 													</td>
 
 													<td id="ROW39"
-														style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 														th:value="${report1.R39_CREDIT_LIMIT != null ? #numbers.formatDecimal(report1.R39_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R39_CREDIT_LIMIT" name="R39_CREDIT_LIMIT"
-															style="background-color: 	#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 															readonly />
 													</td>
 
 													<td id="ROW39"
-														style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 														th:value="${report1.R39_AMOUNT_OUTSTANDING != null ? #numbers.formatDecimal(report1.R39_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R39_AMOUNT_OUTSTANDING"
 															name="R39_AMOUNT_OUTSTANDING"
-															style="background-color: 	#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 															readonly />
 													</td>
 
@@ -1150,7 +1154,7 @@ PURPOSE		: BWRBRREPORT
 												<tr>
 
 													<td>Agriculture, Forestry, Fishing </td>
-													<td id="ROW40" style="padding-left: 20px; font-weight: bold;">
+													<td id="ROW40" style="padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 															th:value="${report1.R40_NO_OF_AC!= null ? #numbers.formatDecimal(report1.R40_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R40_NO_OF_AC" name="R40_NO_OF_AC"
@@ -1158,7 +1162,7 @@ PURPOSE		: BWRBRREPORT
 															readonly />
 													</td>
 
-													<td id="ROW40" style="padding-left: 20px; font-weight: bold;">
+													<td id="ROW40" style="padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 															th:value="${report1.R40_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R40_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R40_CREDIT_LIMIT" name="R40_CREDIT_LIMIT"
@@ -1166,7 +1170,7 @@ PURPOSE		: BWRBRREPORT
 															readonly />
 													</td>
 
-													<td id="ROW40" style="padding-left: 20px; font-weight: bold;">
+													<td id="ROW40" style="padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 															th:value="${report1.R40_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R40_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R40_AMOUNT_OUTSTANDING"
@@ -1181,7 +1185,7 @@ PURPOSE		: BWRBRREPORT
 												<tr>
 
 													<td>Agriculture, Forestry, Fishing </td>
-													<td id="ROW41" style="padding-left: 20px; font-weight: bold;">
+													<td id="ROW41" style="padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 															th:value="${report1.R41_NO_OF_AC!= null ? #numbers.formatDecimal(report1.R41_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R41_NO_OF_AC" name="R41_NO_OF_AC"
@@ -1189,7 +1193,7 @@ PURPOSE		: BWRBRREPORT
 															readonly />
 													</td>
 
-													<td id="ROW41" style="padding-left: 20px; font-weight: bold;">
+													<td id="ROW41" style="padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 															th:value="${report1.R41_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R41_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R41_CREDIT_LIMIT" name="R41_CREDIT_LIMIT"
@@ -1197,7 +1201,7 @@ PURPOSE		: BWRBRREPORT
 															readonly />
 													</td>
 
-													<td id="ROW41" style="padding-left: 20px; font-weight: bold;">
+													<td id="ROW41" style="padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 															th:value="${report1.R41_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R41_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R41_AMOUNT_OUTSTANDING"
@@ -1212,30 +1216,30 @@ PURPOSE		: BWRBRREPORT
 													<th>Total</th>
 
 													<td id="ROW42"
-														style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 														th:value="${report1.R42_NO_OF_AC!= null ? #numbers.formatDecimal(report1.R42_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R42_NO_OF_AC" name="R42_NO_OF_AC"
-															style="background-color: 	#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 															readonly />
 													</td>
 
 													<td id="ROW42"
-														style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 														th:value="${report1.R42_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R42_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R42_CREDIT_LIMIT" name="R42_CREDIT_LIMIT"
-															style="background-color: 	#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 															readonly />
 													</td>
 
 													<td id="ROW42"
-														style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
 														<input class="display-input Show_input" type="text"
 														th:value="${report1.R42_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R42_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
 															id="R42_AMOUNT_OUTSTANDING"
 															name="R42_AMOUNT_OUTSTANDING"
-															style="background-color: 	#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 															readonly />
 													</td>
 
