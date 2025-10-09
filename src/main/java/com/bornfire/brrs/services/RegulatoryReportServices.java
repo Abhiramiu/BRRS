@@ -87,6 +87,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_PLL_ReportService BRRS_M_PLL_reportservice;
 	
+	@Autowired
+	BRRS_M_IRB_ReportService brrs_m_irb_reportService;
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -199,6 +202,11 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 			
+		case "M_IRB":
+                repsummary = brrs_m_irb_reportService.getM_IRBView(reportId, fromdate, todate, currency, dtltype,
+                        pageable, type, version);
+                break;	
+			
 
 		}
 		
@@ -295,6 +303,10 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_M_DEP3_reportservice.getM_DEP3currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter,type,version );
 			break;
+			
+		case "M_IRB":
+	            repdetail = brrs_m_irb_reportService.getM_IRBcurrentDtl(reportId, fromdate, todate, currency, dtltype,	
+	            		pageable, Filter,type,version );
 			
 		}
 		return repdetail;
@@ -509,6 +521,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_IRB":
+	            try {
+	                repfile = brrs_m_irb_reportService.BRRS_M_PIExcel(filename, reportId, fromdate, todate, currency,
+	                        dtltype,type,version);
+	            } catch (Exception e) {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+	            }
+	            break;	
+			
 		
 			
 		}
@@ -582,6 +604,9 @@ public class RegulatoryReportServices {
 		if ("M_DEP3Detail".equals(filename)) {
 			return BRRS_M_DEP3_reportservice.BRRS_M_DEP3DetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 		}
+		if ("M_IRBDetail".equals(filename)) {
+	            return brrs_m_irb_reportService.BRRS_M_IRBDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
+	        }
 		
 		
 		
@@ -757,6 +782,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_IRB":
+	                try {
+	                    archivalData = brrs_m_irb_reportService.getM_IRBArchival();
+	                } catch (Exception e) {
+	                    // TODO Auto-generated catch block
+	                    e.printStackTrace();
+	                }
+	                break;	
 
 
 		}
@@ -804,7 +838,9 @@ public class RegulatoryReportServices {
 		    fileData = BRRS_M_PLL_reportservice.getM_PLLDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}else if (filename.equals("M_DEP3Detail")) {
 		    fileData = BRRS_M_DEP3_reportservice.BRRS_M_DEP3DetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
-		}
+		}else if (filename.equals("M_IRBDetail")) {
+	            fileData = brrs_m_irb_reportService.BRRS_M_IRBDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
+	        }
 		
 		
 		if (fileData == null) {
