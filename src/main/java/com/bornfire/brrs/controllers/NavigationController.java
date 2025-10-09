@@ -785,70 +785,7 @@ public class NavigationController {
     	    }
     	}
     	
-    	  @GetMapping("/download-templateBDGF")
-    	  public ResponseEntity<byte[]> downloadTemplatebdgf() throws Exception {
-    	      List<String> headers = Arrays.asList(
-    	              "SOL ID","S No","A/C No","Customer ID","Customer Name","Open Date",
-    	              "Amount Deposited","Currency","Period","Rate of Interest","100",
-    	              "BAL EQUI TO BWP","Outstanding Balance","Oustndng Bal UGX","Maturity Date",
-    	              "Maturity Amount","Scheme","Cr Pref Int Rate","SEGMENT","REFERENCE DATE",
-    	              "DIFFERENCE","DAYS","PERIOD","EFFECTIVE INTEREST RATE","REPORT DATE"
-    	      );
-    	     
-    	      Workbook workbook = new XSSFWorkbook();
-    	      Sheet sheet = workbook.createSheet("DEPOSIT GENERAL");
-
-    	      // 🔹 Header style (locked)
-    	      CellStyle headerStyle = workbook.createCellStyle();
-    	      Font font = workbook.createFont();
-    	      font.setBold(true);
-    	      headerStyle.setFont(font);
-    	      headerStyle.setLocked(true);
-
-    	      // 🔹 Unlocked style for data cells
-    	      CellStyle unlockedStyle = workbook.createCellStyle();
-    	      unlockedStyle.setLocked(false);
-
-    	      // 🔹 Create header row
-    	      Row headerRow = sheet.createRow(0);
-    	      for (int i = 0; i < headers.size(); i++) {
-    	          Cell cell = headerRow.createCell(i);
-    	          cell.setCellValue(headers.get(i));
-    	          cell.setCellStyle(headerStyle);
-    	          sheet.autoSizeColumn(i);
-    	      }
-
-    	      // 🔹 Create editable rows (example: 5000 rows available for paste)
-    	      for (int r = 1; r < 5000; r++) {
-    	          Row row = sheet.createRow(r);
-    	          for (int c = 0; c < headers.size(); c++) {
-    	              Cell cell = row.createCell(c);
-    	              cell.setCellStyle(unlockedStyle);
-    	          }
-    	      }
-
-    	      // 🔹 Freeze header row
-    	      sheet.createFreezePane(0, 1);
-
-    	      // 🔹 Protect sheet (enforces lock/unlock)
-    	      sheet.protectSheet("password");
-
-    	      // Write to byte array
-    	      ByteArrayOutputStream out = new ByteArrayOutputStream();
-    	      workbook.write(out);
-    	      workbook.close();
-
-    	      HttpHeaders headersResponse = new HttpHeaders();
-    	      headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=DEPOSIT GENERAL.xls");
-    	      headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-
-    	      return ResponseEntity
-    	              .ok()
-    	              .headers(headersResponse)
-    	              .body(out.toByteArray());
-    	  }
-
-
+    	
 
 	//BFDB
 
@@ -908,70 +845,7 @@ public String addBFDB(@ModelAttribute MultipartFile file, Model md, HttpServletR
 }
 
 
-@GetMapping("/download-templateBFDB")
-public ResponseEntity<byte[]> downloadTemplatebfdb() throws Exception {
-    // 🔹 Updated headers to match BFDB_Entity fields
-    List<String> headers = Arrays.asList(
-        "SOL ID", "CUST ID", "GENDER", "ACCOUNT NO", "ACCT NAME", "SCHM_CODE",
-        "SCHM DESC", "ACCT OPN DATE", "ACCT CLS DATE", "BALANCE AS ON", "CCY",
-        "BAL EQUI TO BWP", "INT RATE", "100", "STATUS", "MATURITY DATE",
-        "GL SUB HEAD CODE", "GL SUB HEAD DESC", "TYPE OF ACCOUNTS", "SEGMENT",
-        "PERIOD", "EFFECTIVE INTEREST RATE","REPORT DATE"
-    );
 
-    Workbook workbook = new XSSFWorkbook();
-    Sheet sheet = workbook.createSheet("DEPOSIT BOOK");
-
-    // Create header row
-    Row headerRow = sheet.createRow(0);
-    CellStyle headerStyle = workbook.createCellStyle();
-    Font font = workbook.createFont();
-    font.setBold(true);
-    headerStyle.setFont(font);
-
-    // Lock header cells
-    headerStyle.setLocked(true);
-
-    for (int i = 0; i < headers.size(); i++) {
-        Cell cell = headerRow.createCell(i);
-        cell.setCellValue(headers.get(i));
-        cell.setCellStyle(headerStyle);
-        sheet.autoSizeColumn(i);
-    }
-
-    // Freeze header row
-    sheet.createFreezePane(0, 1);
-
-    // Unlock all other cells (so users can edit them)
-    CellStyle unlockedCellStyle = workbook.createCellStyle();
-    unlockedCellStyle.setLocked(false);
-
-    // Optional: pre-create 1000 editable rows
-    for (int r = 1; r < 1000; r++) {
-        Row row = sheet.createRow(r);
-        for (int c = 0; c < headers.size(); c++) {
-            Cell cell = row.createCell(c);
-            cell.setCellStyle(unlockedCellStyle);
-        }
-    }
-
-    // Protect the sheet (required to enforce locking)
-    sheet.protectSheet("password"); // use any password or leave blank
-
-    // Write to byte array
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    workbook.write(out);
-    workbook.close();
-
-    HttpHeaders headersResponse = new HttpHeaders();
-    headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=DEPOSIT BOOK.xls");
-    headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-
-    return ResponseEntity
-            .ok()
-            .headers(headersResponse)
-            .body(out.toByteArray());
-}
 
 
 
@@ -1032,43 +906,26 @@ public String addBLBF(@ModelAttribute MultipartFile file, Model md, HttpServletR
     }
 }
 
-
-@GetMapping("/download-templateBLBF")
-public ResponseEntity<byte[]> downloadTemplate() throws Exception {
-    List<String> headers = Arrays.asList(
-        "SOL ID", "CUST ID", "ACCOUNT NO", "ACCT NAME", "SCHM_CODE", "SCHM DESC",
-        "ACCT OPN DATE", "APPROVED LIMIT", "SANCTION LIMIT", "DISBURSED AMT",
-        "BALANCE AS ON", "CCY", "BAL EQUI TO BWP", "INT RATE", "100",
-        "ACCRUED INT AMT", "INT OF AUGUST 25", "LAST INTEREST DEBIT DATE",
-        "ACCT CLS FLG", "CLOSE DATE", "GENDER", "CLASSFICATION CODE",
-        "CONSTITUTION CODE", "MATURITY DATE", "GL SUB HEAD CODE", "GL SUB HEAD DESC",
-        "TENOR(MONTH)", "EMI", "SEGMENT", "FACILITY", "PAST DUE", "PAST DUE DAYS",
-        "ASSET", "PROVISION", "UNSECURED", "INT BUCKET", "STAFF", "SMME", "LABOD",
-        "NEW A/C", "UNDRAWN", "SECTOR", "Period", "Effective Interest Rate",
-        "STAGE", "ECL PROVISION","REPORT DATE"
-    );
-
-    
-   
+private ResponseEntity<byte[]> createExcelTemplate(String sheetName, String fileName, List<String> headers) throws Exception {
     Workbook workbook = new XSSFWorkbook();
-    Sheet sheet = workbook.createSheet("LOAN BOOK");
+    Sheet sheet = workbook.createSheet(sheetName);
 
-    // 🔹 Style for header (locked)
+    // 🔹 Header style (bold, centered, grey background)
     CellStyle headerStyle = workbook.createCellStyle();
-    Font font = workbook.createFont();
-    font.setBold(true);
-    headerStyle.setFont(font);
+    Font headerFont = workbook.createFont();
+    headerFont.setBold(true);
+    headerStyle.setFont(headerFont);
     headerStyle.setAlignment(HorizontalAlignment.CENTER);
     headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
     headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
     headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
     headerStyle.setLocked(true);
 
-    // 🔹 Style for editable cells (unlocked)
+    // 🔹 Unlocked style for data cells
     CellStyle unlockedStyle = workbook.createCellStyle();
     unlockedStyle.setLocked(false);
 
-    // 🔹 Create Header Row (row 0, locked)
+    // 🔹 Create header row
     Row headerRow = sheet.createRow(0);
     for (int i = 0; i < headers.size(); i++) {
         Cell cell = headerRow.createCell(i);
@@ -1077,33 +934,76 @@ public ResponseEntity<byte[]> downloadTemplate() throws Exception {
         sheet.autoSizeColumn(i);
     }
 
-    // 🔹 Create empty editable rows below header
-    for (int r = 1; r <= 50; r++) {   // 50 editable rows
+    // 🔹 Create a few editable rows for user entry
+    for (int r = 1; r <= 100; r++) {  // 100 editable rows
         Row row = sheet.createRow(r);
         for (int c = 0; c < headers.size(); c++) {
             Cell cell = row.createCell(c);
-            cell.setCellStyle(unlockedStyle); // make editable
+            cell.setCellStyle(unlockedStyle);
         }
     }
 
     // 🔹 Freeze header row
     sheet.createFreezePane(0, 1);
 
-    // 🔹 Protect the sheet (this is REQUIRED for lock to take effect)
-    sheet.protectSheet("123"); // try with a simple password
+    // 🔹 Protect sheet to enforce lock/unlock
+    sheet.protectSheet("123");
 
+    // 🔹 Write workbook to byte array
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     workbook.write(out);
     workbook.close();
 
     HttpHeaders headersResponse = new HttpHeaders();
-    headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=LOAN BOOK.xls");
+    headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
     headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
     return ResponseEntity
             .ok()
             .headers(headersResponse)
             .body(out.toByteArray());
+}
+
+
+@GetMapping("/download-templateBDGF")
+public ResponseEntity<byte[]> downloadTemplateBDGF() throws Exception {
+    List<String> headers = Arrays.asList(
+        "SOL ID","S No","A/C No","Customer ID","Customer Name","Open Date",
+        "Amount Deposited","Currency","Period","Rate of Interest","100",
+        "BAL EQUI TO BWP","Outstanding Balance","Oustndng Bal UGX","Maturity Date",
+        "Maturity Amount","Scheme","Cr Pref Int Rate","SEGMENT","REFERENCE DATE",
+        "DIFFERENCE","DAYS","PERIOD","EFFECTIVE INTEREST RATE","REPORT DATE"
+    );
+    return createExcelTemplate("DEPOSIT GENERAL", "DEPOSIT GENERAL.xls", headers);
+}
+
+@GetMapping("/download-templateBFDB")
+public ResponseEntity<byte[]> downloadTemplateBFDB() throws Exception {
+    List<String> headers = Arrays.asList(
+        "SOL ID", "CUST ID", "GENDER", "ACCOUNT NO", "ACCT NAME", "SCHM_CODE",
+        "SCHM DESC", "ACCT OPN DATE", "ACCT CLS DATE", "BALANCE AS ON", "CCY",
+        "BAL EQUI TO BWP", "INT RATE", "100", "STATUS", "MATURITY DATE",
+        "GL SUB HEAD CODE", "GL SUB HEAD DESC", "TYPE OF ACCOUNTS", "SEGMENT",
+        "PERIOD", "EFFECTIVE INTEREST RATE","REPORT DATE"
+    );
+    return createExcelTemplate("DEPOSIT BOOK", "DEPOSIT BOOK.xls", headers);
+}
+
+@GetMapping("/download-templateBLBF")
+public ResponseEntity<byte[]> downloadTemplateBLBF() throws Exception {
+    List<String> headers = Arrays.asList(
+        "SOL ID", "CUST ID", "ACCOUNT NO", "ACCT NAME", "SCHM_CODE", "SCHM DESC",
+        "ACCT OPN DATE", "APPROVED LIMIT", "SANCTION LIMIT", "DISBURSED AMT",
+        "BALANCE AS ON", "CCY", "BAL EQUI TO BWP", "INT RATE", "100",
+        "ACCRUED INT AMT", "MONTHLY INTEREST", "LAST INTEREST DEBIT DATE",
+        "ACCT CLS FLG", "CLOSE DATE", "GENDER", "CLASSFICATION CODE",
+        "CONSTITUTION CODE", "MATURITY DATE", "GL SUB HEAD CODE", "GL SUB HEAD DESC",
+        "TENOR(MONTH)", "EMI", "SEGMENT", "FACILITY", "PAST DUE", "PAST DUE DAYS",
+        "ASSET", "PROVISION", "UNSECURED", "INT BUCKET", "STAFF", "SMME", "LABOD",
+        "NEW A/C", "UNDRAWN", "SECTOR", "Period", "Effective Interest Rate",
+        "STAGE", "ECL PROVISION","REPORT DATE"
+    );
+    return createExcelTemplate("LOAN BOOK", "LOAN BOOK.xls", headers);
 }
 
 }

@@ -233,9 +233,12 @@ PURPOSE		: Referance Code Master
 		    // Add default "Select" option first
 		    rowLabelSelect.append('<option value="">Select Row Label</option>');
 
+		    // Object to store mapping: reportLabel -> fieldDescription
+		    const labelToFieldDesc = {};
+
 		    if (data && data.length > 0) {
 		        data.forEach((item, index) => {
-		            // Extract the row number from the product field (e.g., R11, R12)
+		            // Extract the row number from the reportLabel (e.g., R11, R12)
 		            const rowNumberMatch = item.reportLabel ? item.reportLabel.match(/R(\d+)/) : null;
 		            const rowNum = rowNumberMatch ? rowNumberMatch[1] : '';
 
@@ -254,12 +257,22 @@ PURPOSE		: Referance Code Master
 		                rowLabelSelect.append(
 		                    `<option value="${item.reportLabel}">${item.reportLabel}</option>`
 		                );
+
+		                // Store mapping
+		                labelToFieldDesc[item.reportLabel] = item.fieldDescription || '';
 		            }
 		        });
 		    } else {
 		        tbody.append('<tr><td colspan="5">No data available for this report code.</td></tr>');
 		    }
+
+		    // 🔹 When row label changes, update field description input
+		    rowLabelSelect.off('change').on('change', function () {
+		        const selectedLabel = $(this).val();
+		        $('#fieldDescription').val(labelToFieldDesc[selectedLabel] || '');
+		    });
 		}
+
 
 
 
@@ -376,7 +389,7 @@ function showSegmentFields() {
     </div>
 
     <label class="col-sm-1">Report Name</label>
-    <div class="col-sm-2">
+    <div class="col-sm-3">
         <input type="text" id="ReportName" name="ReportName"
             class="form-control form-control-sm" autocomplete="off"
             readonly>
@@ -429,7 +442,7 @@ function showSegmentFields() {
 
    
 
-    <div class="row">
+ <div class="row">
  <div class="container mt-3">
     <!-- Row Label + Segment -->
     <div class="row mb-2 align-items-center">
@@ -444,9 +457,9 @@ function showSegmentFields() {
 
     <!-- Field Description -->
     <label class="col-sm-1">Field Description</label>
-    <div class="col-sm-2">
+    <div class="col-sm-3">
         <input type="text" id="fieldDescription" class="form-control form-control-sm"
-               placeholder="Enter field description">
+               placeholder="Enter field description" readonly>
     </div>
 
     <!-- Source -->

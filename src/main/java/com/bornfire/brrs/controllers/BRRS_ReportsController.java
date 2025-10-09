@@ -314,8 +314,7 @@ public class BRRS_ReportsController {
 	         @ModelAttribute BRRS_M_AIDP_Summary_Entity4 request4
 	 ) {
 	     try {
-	         System.out.println("Came to single controller");
-
+	         
 	         // set date into all 4 entities
 	         request1.setREPORT_DATE(asondate);
 	         request2.setREPORT_DATE(asondate);
