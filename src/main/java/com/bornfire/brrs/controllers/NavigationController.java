@@ -50,8 +50,10 @@ import com.bornfire.brrs.entities.AccessAndRoles;
 import com.bornfire.brrs.entities.AccessandRolesRepository;
 
 import com.bornfire.brrs.entities.BankBranchMasterRepo;
+import com.bornfire.brrs.entities.MCBL_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
+import com.bornfire.brrs.entities.MCBL_Rep;
 import com.bornfire.brrs.entities.BRRSValidationsRepo;
 import com.bornfire.brrs.entities.BRRS_Report_Mast_Rep;
 import com.bornfire.brrs.entities.BankBranchMaster;
@@ -85,6 +87,11 @@ public class NavigationController {
 	@Autowired
 	UserProfileRep UserProfileReps;
 	
+	
+	 @Autowired
+	 private MCBL_Rep mcblRep;
+	 
+	 
 	 @Autowired
 	ReportServices reportServices;
 	 
@@ -649,7 +656,7 @@ public class NavigationController {
     		
     		
     		try {
-    			if (formmode == null || formmode.equals("list")) {
+    			if (formmode == null || formmode.equals("add")) {
     				//List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
     				String currentDateString = null;
     				if (date == null) {
@@ -670,9 +677,11 @@ public class NavigationController {
     				//md.addAttribute("customersplratedetail", customerList);
     				md.addAttribute("currentdate", currentDateString);
     				md.addAttribute("formmode", "add");
-    			} else if (formmode.equals("add")) {
-    				md.addAttribute("menu", "MCBL - Add");
-    				md.addAttribute("formmode", "add");
+    			} else if (formmode.equals("list")) {
+    				List<Date> reportDates = mcblRep.findDistinctReportDates();
+    			    md.addAttribute("reportDates", reportDates);
+    				md.addAttribute("menu", "File Upload - List");
+    				md.addAttribute("formmode", "list");
     			}  
 
     		} catch (Exception e) {
@@ -684,6 +693,28 @@ public class NavigationController {
     		return "MCBL";
     	}
 
+
+
+    	//Getting Details by report date for view and download for MCBL IN FILE UPLOAD
+    	@GetMapping("/fetchMCBLRecords")
+    	public String fetchMCBLRecords(@RequestParam String reportDate, Model md) {
+    	    System.out.println("Came to controller with report date: " + reportDate);
+
+    	    // Fetch records from repository
+    	    List<MCBL_Entity> lists = mcblRep.findRecordsByReportDate(reportDate);
+
+    	    // Add data to model
+    	    md.addAttribute("MCBL_List", lists);
+    	    md.addAttribute("selectedReportDate", reportDate);
+    	    
+    	    List<Date> reportDates = mcblRep.findDistinctReportDates();
+		    md.addAttribute("reportDates", reportDates);
+		    
+		    
+    	    md.addAttribute("formmode", "list");
+    	    // Return the same view (page name)
+    	    return "MCBL"; // change this to your actual HTML/Thymeleaf page name
+    	}
 
 
     	@Autowired
@@ -1005,5 +1036,6 @@ public ResponseEntity<byte[]> downloadTemplateBLBF() throws Exception {
     );
     return createExcelTemplate("LOAN BOOK", "LOAN BOOK.xls", headers);
 }
+
 
 }

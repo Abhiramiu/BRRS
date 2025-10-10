@@ -932,7 +932,7 @@ function cancelModify() {
 	            dataType: 'text',
 	            success: function () {
 	                $("#resultModalLabel").text("Success");
-	                $("#resultModalBody").text("All reports updated successfully.");
+	                $("#resultModalBody").text("Updated successfully.");
 	                $("#resultModal").modal("show");
 	            },
 	            error: function (jqXHR) {
@@ -1087,7 +1087,7 @@ function cancelModify() {
 												style="text-align: left; background-color: #b3b6b9; font-weight: bold;">(3A)
 												Statutory Liquid Assets</th>
 											<th rowspan="1"
-												style="text-align: center; background-color: #b3b6b9; font-weight: bold;">TOTAL</th>
+												style="text-align: right; background-color: #b3b6b9; width:400px;font-weight: bold;">TOTAL</th>
 										</tr>
 
 
@@ -1473,8 +1473,8 @@ function cancelModify() {
 											<td style="text-align: left; font-weight: bold;"
 												th:text="${report?.r30_product ?: ''}"></td>
 
-											<td style="text-align: right;"
-												th:text="${report?.r30_total ?: ''}"
+											<td style="text-align: right; width:400px;"
+												th:text="${report?.r30_total ?: ''}" 
 												th:attr="RowId='R30', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 

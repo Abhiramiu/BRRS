@@ -58,31 +58,17 @@ public class MCBL_Services {
 
             Sheet sheet = workbook.getSheet("MCBL");
 
-            // --- Step 1: Load main table into Map ---
-            List<MCBL_Main_Entity> mainlist = MCBL_Main_Reps.getall();
-            Map<String, MCBL_Main_Entity> mainMap = new HashMap<>();
-
-            for (MCBL_Main_Entity mainRow : mainlist) {
-                String key = normalizeKey(mainRow.getGl_code(),
-                        mainRow.getGl_sub_code(),
-                        mainRow.getHead_acc_no(),
-                        mainRow.getCurrency());
-                mainMap.put(key, mainRow);
-            }
-
-            if (mainMap.isEmpty()) {
-                return "No data in Main Table, skipping processing.";
-            }
+            // --- Step 1: Removed Main Table comparison ---
 
             // --- Step 2: Prepare statements ---
-            String deleteSql = "DELETE FROM BRRS_MCBL_DETAIL " +
+            String deleteSql = "DELETE FROM BRRS_MCBL " +
                     "WHERE GL_CODE = ? AND GL_SUB_CODE = ? AND HEAD_ACC_NO = ? " +
                     "AND CURRENCY = ? AND REPORT_DATE = ?";
             PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
 
-            String insertSql = "INSERT INTO BRRS_MCBL_DETAIL (ID, GL_CODE, GL_SUB_CODE, HEAD_ACC_NO, DESCRIPTION, CURRENCY, " +
+            String insertSql = "INSERT INTO BRRS_MCBL (GL_CODE, GL_SUB_CODE, HEAD_ACC_NO, DESCRIPTION, CURRENCY, " +
                     "DEBIT_BALANCE, CREDIT_BALANCE, DEBIT_EQUIVALENT, CREDIT_EQUIVALENT, ENTRY_USER, ENTRY_DATE, REPORT_DATE) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement insertStmt = conn.prepareStatement(insertSql);
 
             DataFormatter formatter = new DataFormatter();
@@ -107,15 +93,8 @@ public class MCBL_Services {
                 // ✅ Only process if all 4 fields present
                 if (!glCode.isEmpty() && !glSubCode.isEmpty() && !headAccNo.isEmpty() && !currency.isEmpty()) {
 
-                    // ✅ Check only if headAccNo is numeric
-                    if (isNumeric(headAccNo)) {
+                    if (isNumeric(headAccNo) || isString(headAccNo)) {
                         String lookupKey = normalizeKey(glCode, glSubCode, headAccNo, currency);
-
-                        if (!mainMap.containsKey(lookupKey)) {
-                            validationErrors.add("Row " + (i + 1) + ": Account No " + headAccNo + " not found in Main Table.");
-                            skippedCount++;
-                            continue;
-                        }
 
                         // --- Skip Excel duplicates ---
                         String uniqueKey = lookupKey + "|" + sqlReportDate;
@@ -133,19 +112,18 @@ public class MCBL_Services {
                         deleteStmt.executeUpdate();
 
                         // --- Insert new ---
-                        insertStmt.setString(1, UUID.randomUUID().toString());
-                        insertStmt.setString(2, glCode);
-                        insertStmt.setString(3, glSubCode);
-                        insertStmt.setString(4, headAccNo);
-                        insertStmt.setString(5, description);
-                        insertStmt.setString(6, currency);
-                        insertStmt.setBigDecimal(7, getCellDecimal(row.getCell(6)));
-                        insertStmt.setBigDecimal(8, getCellDecimal(row.getCell(7)));
-                        insertStmt.setBigDecimal(9, getCellDecimal(row.getCell(8)));
-                        insertStmt.setBigDecimal(10, getCellDecimal(row.getCell(9)));
-                        insertStmt.setString(11, userid);
-                        insertStmt.setDate(12, new java.sql.Date(System.currentTimeMillis()));
-                        insertStmt.setDate(13, sqlReportDate);
+                        insertStmt.setString(1, glCode);
+                        insertStmt.setString(2, glSubCode);
+                        insertStmt.setString(3, headAccNo);
+                        insertStmt.setString(4, description);
+                        insertStmt.setString(5, currency);
+                        insertStmt.setBigDecimal(6, getCellDecimal(row.getCell(6)));
+                        insertStmt.setBigDecimal(7, getCellDecimal(row.getCell(7)));
+                        insertStmt.setBigDecimal(8, getCellDecimal(row.getCell(8)));
+                        insertStmt.setBigDecimal(9, getCellDecimal(row.getCell(9)));
+                        insertStmt.setString(10, userid);
+                        insertStmt.setDate(11, new java.sql.Date(System.currentTimeMillis()));
+                        insertStmt.setDate(12, sqlReportDate);
 
                         insertStmt.addBatch();
                         count++;
@@ -171,15 +149,14 @@ public class MCBL_Services {
 
             long duration = System.currentTimeMillis() - startTime;
 
-          /*  String result = "MCBL Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
+            /*String result = "MCBL Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
                     ". Time taken: " + duration + " ms";*/
 
-            String result = "MCBL Added successfully. ";
-
+            String result = "MCBL Added successfully.";
+            		
             if (!validationErrors.isEmpty()) {
-            	result += "Accounts not found: " + validationErrors.size() + "\n\n"
-            	        + String.join("\n", validationErrors) + "\n";
-
+                result += "\n\nAccounts not found: " + validationErrors.size() + "\n"
+                        + String.join("\n", validationErrors);
             }
 
             return result;
@@ -190,6 +167,12 @@ public class MCBL_Services {
         }
     }
 
+
+    private boolean isString(String value) {
+        return value != null && value.matches("[a-zA-Z]+");
+    }
+
+    
     private String normalizeKey(String glCode, String glSubCode, String headAccNo, String currency) {
         return safeTrim(glCode) + "|" + safeTrim(glSubCode) + "|" + safeTrim(headAccNo) + "|" + safeTrim(currency);
     }

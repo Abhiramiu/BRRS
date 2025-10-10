@@ -1,5 +1,6 @@
 package com.bornfire.brrs.controllers;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bornfire.brrs.entities.BRRS_Report_Mast_Rep;
 import com.bornfire.brrs.entities.MCBL_Detail_Rep;
+import com.bornfire.brrs.entities.MCBL_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Entity;
+import com.bornfire.brrs.entities.MCBL_Rep;
 import com.bornfire.brrs.services.AuditService;
 
 @RestController
@@ -32,7 +35,9 @@ public class Rest_Controller {
 	@Autowired
 	private MCBL_Detail_Rep mcblDetailRep;
 
-	
+	 @Autowired
+	 private MCBL_Rep mcblRep;
+	 
 	@GetMapping("/checkReportDate")
     @ResponseBody
     public boolean checkReportDate(@RequestParam("report_date") String reportDate) {
@@ -66,6 +71,7 @@ public class Rest_Controller {
         return "";
     }
 
-   
+
+
 	
 }

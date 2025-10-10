@@ -372,7 +372,9 @@
 			location.href = 'MCBL?formmode=add';
 		}
 
-
+		function back() {
+			window.history.back();
+		}
 		function list() {
 			location.href = 'MCBL?formmode=list';
 		}
@@ -560,6 +562,19 @@ function checkReportDate() {
 
 
 </script>
+<script>
+$(document).ready(function() {
+    $("#FileType, #ReportDate").change(function() {
+        var fileType = $("#FileType").val();
+        var reportDate = $("#ReportDate").val();
+
+        if (fileType === "MCBL" && reportDate !== "") {
+            window.location.href = "./fetchMCBLRecords?reportDate=" + reportDate;
+        }
+    });
+});
+</script>
+
 </head>
 
 <title>MCBL</title>
@@ -571,92 +586,115 @@ function checkReportDate() {
 	<!-- Main Container -->
 	<div class="container-fluid">
 		<div class="card">
-			<!-- <div class="card-header" th:if="${formmode}=='list'">
-				<div class="float-left w-50 d-flex align-items-center">
-					<button type="button" class="btn btn-xs me-2" style="background-color: darkorange; width: 50px;"
-						id="btnBack" onclick="back();" title="Back">
-						<i class="fa fa-arrow-left" style="color: black;"></i>
-					</button>
+			
+			
 
-					<h5 th:text="${menu}" style="font-family: Verdana; font-weight: bold; margin: 0;">
-					</h5>
-				</div>
-				<div class="d-flex nav-buttons float-right align-items-center" style="gap: 10px;">
-					<label for="ReportDate" style="font-family: Verdana, Geneva, Tahoma, sans-serif;">
-						Report Date :
-					</label>
+				<div class="row" th:if="${formmode == 'list'}">
+					<div class="col-sm-12 finuserapply">
+						<div class="card">
+							<div class="card-header">
+							
+							<div class="float-left w-50 d-flex align-items-center">
+									<button type="button" class="custom-tab-btn"
+										id="btnBack"
+										onclick="back();" title="Back">
+										<i class="fa fa-arrow-left" style="color: black;"></i>
+									</button>
 
-					<input type="date" id="ReportDate" name="ReportDate" class="form-control-inline"
-						th:value="${currentdate}" required onchange="get_list()" />
+									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
+										th:if="${formmode}=='list'">File upload - List</h6>
+									
+								</div>
+							
+							</div>
+							
+							<div class="card-body">
 
-					<button class="back-btn btn btn-light" type="button" onclick="openConfirmModal()">
-						<i class="fas fa-download"></i> Download
-					</button>
+   <!-- Dropdowns -->
+<div class="row formline" style="margin-bottom:0px;">
+    <div class="col-sm-auto"></div>
 
-					<button type="button" class="btn btn-xs" style="background-color:darkorange;border:none"
-						onclick="addrole();">
-						<span style="color: orange;" title="Add">➕</span>
-					</button>
-				</div>
+    <label class="col-sm-1">File Type</label>
+    <div class="col-sm-2">
+        <select id="FileType" class="form-control form-control-sm" name="FileType" autocomplete="off" required>
+            <option value="">Select File Type</option>
+            <option value="MCBL">MCBL</option>
+            <option value="LOAD_BOOK">LOAD BOOK</option>
+            <option value="DEPOSIT_GENERAL">DEPOSIT GENERAL</option>
+            <option value="DEPOSIT_BOOK">DEPOSIT BOOK</option>
+        </select>
+    </div>
 
-			</div> -->
+    <label class="col-sm-1">Report Date</label>
+    <div class="col-sm-3">
+        <select id="ReportDate" name="ReportDate" class="form-control form-control-sm">
+            <option value="">-- Select Report Date --</option>
+            <th:block th:each="date : ${reportDates}">
+                <option th:value="${#dates.format(date, 'yyyy-MM-dd')}"
+                        th:text="${#dates.format(date, 'dd-MM-yyyy')}"></option>
+            </th:block>
+        </select>
+    </div>
+</div>
 
-		<!-- 	<div class="card-body" th:if="${formmode == 'list'}">
 
-				<div class="table-responsive">
-					<table class="table table-bordered table-striped table-hover fs-6"
-						style="font-family: Calibri; font-weight: 100;" id="Dealentrytable">
-						<thead class="table-success">
-							<tr>
-								<th>Report date</th>
-								<th>Branch Name</th>
-								<th style="text-align: right;">INR Amount</th>
-								<th>Status</th>
-								<th>Action</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="item : ${customersplratedetail}">
-								<td th:text="${#dates.format(item.report_date, 'yyyy-MM-dd')}"></td>
-								<td th:text="${item.branch_name}"></td>
-								<td style="text-align: right;" th:text="${item.inr_amount}"></td>
-								<td th:switch="${item?.verify_flg}">
-									<span th:case="'Y'" style="color:green;">Verified</span>
-									<span th:case="'N'" style="color:red;">Unverified</span>
-								</td>
-
-								<td class="text-center">
-									<div class="dropdown">
-										<button class="btn btn-sm btn-light dropdown-toggle" type="button"
-											data-bs-toggle="dropdown" aria-expanded="false">
-											🔨
-										</button>
-										<ul class="dropdown-menu" style="color: white;">
-											<li th:if="${item?.modify_flg} != 'Y'">
-												<a class="dropdown-item" th:attr="data-tran_id=${item?.id}"
-													onclick="edit_btn_submit(this)">📝 Modify</a>
-											</li>
-											<li><a class="dropdown-item" th:attr="data-tran_id=${item?.id}"
-													onclick="view_btn_submit(this)">👁️ View</a>
-											</li>
-											<li><a class="dropdown-item" onclick="delete_btn_submit(this)"
-													th:attr="data-tran_id=${item?.id}">🗑️
-													Delete</a></li>
-											<li th:if="${item?.verify_flg} == 'N'">
-												<a th:attr="data-tran_id=${item?.id}" class="dropdown-item"
-													onclick="verify_btn_submit(this)">✔️ Verify</a>
-											</li>
-										</ul>
+<div class="row formline">
+										<label style="height: 2px;"></label>
 									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+	
 
+
+
+    <!-- Table Section -->
+   <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+  <table class="table table-bordered table-sm" id="mcblTable" style="margin-bottom: 0;">
+    <thead class="table-light" style="position: sticky; top: 0; z-index: 2;">
+      <tr>
+        <th>GL Code</th>
+        <th>GL Sub Code</th>
+        <th>Head Acc No</th>
+        <th>Description</th>
+        <th>Currency</th>
+        <th class="text-end">Debit Balance</th>
+        <th class="text-end">Credit Balance</th>
+        <th class="text-end">Debit Equivalent</th>
+        <th class="text-end">Credit Equivalent</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="record : ${MCBL_List}">
+        <td th:text="${record.gl_code}"></td>
+        <td th:text="${record.gl_sub_code}"></td>
+        <td th:text="${record.head_acc_no}"></td>
+        <td th:text="${record.description}"></td>
+        <td th:text="${record.currency}"></td>
+        <td class="text-end" th:text="${record.debit_balance}"></td>
+        <td class="text-end" th:text="${record.credit_balance}"></td>
+        <td class="text-end" th:text="${record.debit_equivalent}"></td>
+        <td class="text-end" th:text="${record.credit_equivalent}"></td>
+       
+      </tr>
+
+
+      <tr th:if="${MCBL_List == null or #lists.isEmpty(MCBL_List)}">
+        <td colspan="11" class="text-center">No records found</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
+</div>
+
+						</div>
+					</div>
 				</div>
+				
 
 
-			</div> -->
+			
 			<div
 				th:if="${formmode}=='edit' or ${formmode}=='add' or ${formmode}=='delete' or ${formmode}=='view' or ${formmode}=='verify'">
 				<div class="row">
@@ -671,15 +709,15 @@ function checkReportDate() {
 									</button>
 
 									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
-										th:if="${formmode}=='edit'">MCBL - Edit</h6>
+										th:if="${formmode}=='edit'">File upload - Edit</h6>
 									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
 										th:if="${formmode}=='add'">File Upload</h6>
 									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
-										th:if="${formmode}=='verify'">MCBL - Verfiy</h6>
+										th:if="${formmode}=='verify'">File upload - Verfiy</h6>
 									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
-										th:if="${formmode}=='view'">MCBL - View</h6>
+										th:if="${formmode}=='view'">File upload - View</h6>
 									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
-										th:if="${formmode}=='delete'">MCBL - Delete</h6>
+										th:if="${formmode}=='delete'">File upload - Delete</h6>
 								</div>
 
 								<div class="float-right"
@@ -699,8 +737,13 @@ function checkReportDate() {
 								<button class="custom-tab-btn" type="button" onclick="Download_TemplateBLBF()">
 															<i class="fas fa-download"></i> Download Template
 									</button>
-								</div>
 								
+							
+        
+								</div>
+								<button class="custom-tab-btn" type="button" title="View List" onclick="list()">
+           					 <i class="fa fa-list"></i>
+       						 </button>
 									
 
 								</div>
@@ -732,7 +775,7 @@ function checkReportDate() {
 									</div>
 									
 									<div class="row formline">
-										<label class="col-sm-2">Branch Name</label>
+										<label class="col-sm-2">Branch Code</label>
 										<div class="col-sm-3">
 											<input th:if="${formmode}!='add'" type="hidden" id="id" name="id"
 												th:value="*{id}" />
@@ -907,7 +950,7 @@ function checkReportDate() {
         </div>
 
         <div class="row formline">
-            <label class="col-sm-2">Branch Name</label>
+            <label class="col-sm-2">Branch Code</label>
             <div class="col-sm-3">
                 <input th:if="${formmode}!='add'" type="hidden" id="id" name="id" th:value="*{id}" />
                 <select th:if="${formmode}=='add'" id="branch_name3" name="branch_name"
