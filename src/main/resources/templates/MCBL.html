@@ -619,7 +619,7 @@ $(document).ready(function() {
         <select id="FileType" class="form-control form-control-sm" name="FileType" autocomplete="off" required>
             <option value="">Select File Type</option>
             <option value="MCBL">MCBL</option>
-            <option value="LOAD_BOOK">LOAD BOOK</option>
+            <option value="LOAN_BOOK">LOAN BOOK</option>
             <option value="DEPOSIT_GENERAL">DEPOSIT GENERAL</option>
             <option value="DEPOSIT_BOOK">DEPOSIT BOOK</option>
         </select>
@@ -659,6 +659,7 @@ $(document).ready(function() {
         <th class="text-end">Credit Balance</th>
         <th class="text-end">Debit Equivalent</th>
         <th class="text-end">Credit Equivalent</th>
+        <th>Report Date</th>
         
       </tr>
     </thead>
@@ -673,7 +674,8 @@ $(document).ready(function() {
         <td class="text-end" th:text="${record.credit_balance}"></td>
         <td class="text-end" th:text="${record.debit_equivalent}"></td>
         <td class="text-end" th:text="${record.credit_equivalent}"></td>
-       
+       	<td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
+
       </tr>
 
 
