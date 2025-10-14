@@ -7,14 +7,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import org.slf4j.Logger;
@@ -54,137 +53,137 @@ public class BFDB_Services {
     @Transactional
     public String addBFDB(MultipartFile file, String userid, String username) {
         long startTime = System.currentTimeMillis();
+        int savedCount = 0, skippedCount = 0;
         int batchSize = 500;
-        int count = 0;
-        int skippedCount = 0;
 
         try (InputStream is = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(is);
              Connection conn = dataSource.getConnection()) {
 
             conn.setAutoCommit(false);
-
             Sheet sheet = workbook.getSheetAt(0);
             DataFormatter formatter = new DataFormatter();
             FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
-            // JDBC Insert SQL
             String insertSql = "INSERT INTO BRRS_BFDB (" +
-                    "CUST_ID, GENDER, ACCOUNT_NO, ACCT_NAME, SCHM_CODE, SCHM_DESC, " +
+                    "SOL_ID,CUST_ID, GENDER, ACCOUNT_NO, ACCT_NAME, SCHM_CODE, SCHM_DESC, " +
                     "ACCT_OPN_DATE, ACCT_CLS_DATE, BALANCE_AS_ON, CCY, BAL_EQUI_TO_BWP, " +
                     "INT_RATE, HUNDRED, STATUS, MATURITY_DATE, GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, " +
                     "TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INT_RATE, " +
-                    "REPORT_DATE, ENTRY_DATE, ENTRY_USER, DEL_FLG, ENTRY_FLG) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "REPORT_DATE, ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG" +
+                    ") VALUES (" + String.join(",", Collections.nCopies(27, "?")) + ")";
 
-            PreparedStatement insertStmt = conn.prepareStatement(insertSql);
+            PreparedStatement stmt = conn.prepareStatement(insertSql);
+            int count = 0;
 
+            // === Loop through Excel rows ===
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 
-                // Skip empty row
-                boolean isEmpty = true;
+                // Skip empty rows
+                boolean emptyRow = true;
                 for (int cn = 0; cn < row.getLastCellNum(); cn++) {
-                    Cell cell = row.getCell(cn);
-                    if (cell != null && !formatter.formatCellValue(cell, evaluator).trim().isEmpty()) {
-                        isEmpty = false;
+                    if (!formatter.formatCellValue(row.getCell(cn), evaluator).trim().isEmpty()) {
+                        emptyRow = false;
                         break;
                     }
                 }
-                if (isEmpty) continue;
+                if (emptyRow) continue;
 
                 try {
-                    // --- Read Excel cells ---
-                    String custId = getCellString(row.getCell(0), formatter, evaluator);
-                    if (custId == null || custId.isEmpty()) {
-                        skippedCount++;
-                        continue;
-                    }
-
                     int col = 0;
-                    insertStmt.setString(++col, custId); // CUST_ID
-                    insertStmt.setString(++col, getCellString(row.getCell(1), formatter, evaluator)); // GENDER
-                    insertStmt.setString(++col, getCellString(row.getCell(2), formatter, evaluator)); // ACCOUNT_NO
-                    insertStmt.setString(++col, getCellString(row.getCell(3), formatter, evaluator)); // ACCT_NAME
-                    insertStmt.setString(++col, getCellString(row.getCell(4), formatter, evaluator)); // SCHM_CODE
-                    insertStmt.setString(++col, getCellString(row.getCell(5), formatter, evaluator)); // SCHM_DESC
-                    insertStmt.setDate(++col, getCellDate(row.getCell(6), formatter, evaluator)); // ACCT_OPN_DATE
-                    insertStmt.setDate(++col, getCellDate(row.getCell(7), formatter, evaluator)); // ACCT_CLS_DATE
-                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(8), formatter, evaluator)); // BALANCE_AS_ON
-                    insertStmt.setString(++col, getCellString(row.getCell(9), formatter, evaluator)); // CCY
-                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(10), formatter, evaluator)); // BAL_EQUI_TO_BWP
-                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(11), formatter, evaluator)); // INT_RATE
-                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(12), formatter, evaluator)); // 100
-                    insertStmt.setString(++col, getCellString(row.getCell(13), formatter, evaluator)); // STATUS
-                    insertStmt.setDate(++col, getCellDate(row.getCell(14), formatter, evaluator)); // MATURITY_DATE
-                    insertStmt.setString(++col, getCellString(row.getCell(15), formatter, evaluator)); // GL_SUB_HEAD_CODE
-                    insertStmt.setString(++col, getCellString(row.getCell(16), formatter, evaluator)); // GL_SUB_HEAD_DESC
-                    insertStmt.setString(++col, getCellString(row.getCell(17), formatter, evaluator)); // TYPE
-                    insertStmt.setString(++col, getCellString(row.getCell(18), formatter, evaluator)); // SEGMENT
-                    insertStmt.setString(++col, getCellString(row.getCell(19), formatter, evaluator)); // PERIOD
-                    insertStmt.setBigDecimal(++col, getCellDecimal(row.getCell(20), formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
+                    
+                    stmt.setString(++col, getCellStringSafe(row, 0, formatter, evaluator));  // SOL_ID
+                    stmt.setString(++col, getCellStringSafe(row, 1, formatter, evaluator));  // CUST_ID
+                    stmt.setString(++col, getCellStringSafe(row, 2, formatter, evaluator));  // GENDER
+                    stmt.setString(++col, getCellStringSafe(row, 3, formatter, evaluator));  // ACCOUNT_NO
+                    stmt.setString(++col, getCellStringSafe(row, 4, formatter, evaluator));  // ACCT_NAME
+                    stmt.setString(++col, getCellStringSafe(row, 5, formatter, evaluator));  // SCHM_CODE
+                    stmt.setString(++col, getCellStringSafe(row, 6, formatter, evaluator));  // SCHM_DESC
 
-                    java.sql.Date reportDateFromExcel = getCellDate(row.getCell(6), formatter, evaluator); // Use ACCT_OPN_DATE as report date
-                    insertStmt.setDate(++col, reportDateFromExcel); // REPORT_DATE
-                    insertStmt.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
-                    insertStmt.setString(++col, userid); // ENTRY_USER
-                    insertStmt.setString(++col, "N"); // DEL_FLG
-                    insertStmt.setString(++col, "Y"); // ENTRY_FLG
+                    stmt.setDate(++col, getCellDateSafe(row, 7, formatter, evaluator));      // ACCT_OPN_DATE
+                    stmt.setDate(++col, getCellDateSafe(row, 8, formatter, evaluator));      // ACCT_CLS_DATE
+                    
+                    stmt.setBigDecimal(++col, getCellDecimalSafe(row, 9, formatter, evaluator)); // BALANCE_AS_ON
+                    stmt.setString(++col, getCellStringSafe(row, 10, formatter, evaluator));  // CCY
+                    stmt.setBigDecimal(++col, getCellDecimalSafe(row, 11, formatter, evaluator)); // BAL_EQUI_TO_BWP
+                    stmt.setBigDecimal(++col, getCellDecimalSafe(row, 12, formatter, evaluator)); // INT_RATE
+                    stmt.setBigDecimal(++col, getCellDecimalSafe(row, 13, formatter, evaluator)); // HUNDRED
+                    stmt.setString(++col, getCellStringSafe(row, 14, formatter, evaluator));  // STATUS
+                    stmt.setDate(++col, getCellDateSafe(row, 15, formatter, evaluator));      // MATURITY_DATE
+                    stmt.setString(++col, getCellStringSafe(row, 16, formatter, evaluator));  // GL_SUB_HEAD_CODE
+                    stmt.setString(++col, getCellStringSafe(row, 17, formatter, evaluator));  // GL_SUB_HEAD_DESC
+                    stmt.setString(++col, getCellStringSafe(row, 18, formatter, evaluator));  // TYPE_OF_ACCOUNTS
+                    stmt.setString(++col, getCellStringSafe(row, 19, formatter, evaluator));  // SEGMENT
+                    stmt.setString(++col, getCellStringSafe(row, 20, formatter, evaluator));  // PERIOD
+                    stmt.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // EFFECTIVE_INT_RATE
 
-                    insertStmt.addBatch();
+                    stmt.setDate(++col, getCellDateSafe(row, 22, formatter, evaluator));      // REPORT_DATE
+                 
+                    stmt.setDate(++col, new java.sql.Date(System.currentTimeMillis()));       // ENTRY_DATE
+                    stmt.setString(++col, userid);                                            // ENTRY_USER
+                    stmt.setString(++col, "Y");                                               // ENTRY_FLG
+                    stmt.setString(++col, "N");                                               // DEL_FLG
 
-                    // --- Create Master Entity ---
-                    BrrsGeneralMasterEntity masterEntity = new BrrsGeneralMasterEntity();
-                    masterEntity.setId(sequence.generateRequestUUId());
-                    masterEntity.setFile_type("BFDB");
-                    masterEntity.setCustomer_id(custId);
-                    masterEntity.setGender(getCellString(row.getCell(1), formatter, evaluator));
-                    masterEntity.setAcc_no(getCellString(row.getCell(2), formatter, evaluator));
-                    masterEntity.setCustomer_name(getCellString(row.getCell(3), formatter, evaluator));
-                    masterEntity.setSchm_code(getCellString(row.getCell(4), formatter, evaluator));
-                    masterEntity.setSchm_desc(getCellString(row.getCell(5), formatter, evaluator));
-                    masterEntity.setOpen_date(getCellDate(row.getCell(6), formatter, evaluator));
-                    masterEntity.setAcct_cls_date(getCellDate(row.getCell(7), formatter, evaluator));
-                    masterEntity.setAmount_deposited(getCellDecimal(row.getCell(8), formatter, evaluator));
-                    masterEntity.setCurrency(getCellString(row.getCell(9), formatter, evaluator));
-                    masterEntity.setBal_equi_to_bwp(getCellDecimal(row.getCell(10), formatter, evaluator));
-                    masterEntity.setRate_of_interest(getCellDecimal(row.getCell(11), formatter, evaluator));
-                    masterEntity.setHundred(getCellDecimal(row.getCell(12), formatter, evaluator));
-                    masterEntity.setStatus(getCellString(row.getCell(13), formatter, evaluator));
-                    masterEntity.setMaturity_date(getCellDate(row.getCell(14), formatter, evaluator));
-                    masterEntity.setGl_sub_head_code(getCellString(row.getCell(15), formatter, evaluator));
-                    masterEntity.setGl_sub_head_desc(getCellString(row.getCell(16), formatter, evaluator));
-                    masterEntity.setType_of_accounts(getCellString(row.getCell(17), formatter, evaluator));
-                    masterEntity.setSegment(getCellString(row.getCell(18), formatter, evaluator));
-                    masterEntity.setPeriod(getCellString(row.getCell(19), formatter, evaluator));
-                    masterEntity.setEffective_int_rate(getCellDecimal(row.getCell(20), formatter, evaluator));
-                    masterEntity.setEntry_date(new Date());
-                    masterEntity.setEntry_user(userid);
-                    masterEntity.setDel_flg("N");
-                    masterEntity.setEntry_flg("Y");
+                    stmt.addBatch();
 
-                    BrrsGeneralMasterRepos.save(masterEntity);
+                    // === Master Entity ===
+                    BrrsGeneralMasterEntity master = new BrrsGeneralMasterEntity();
+                    master.setId(sequence.generateRequestUUId());
+                    master.setFile_type("BFDB");
 
-                    count++;
+                    master.setSol_id(getCellString(row.getCell(0), formatter, evaluator));
+                    master.setCustomer_id(getCellString(row.getCell(1), formatter, evaluator));
+                    master.setGender(getCellString(row.getCell(2), formatter, evaluator));
+                    master.setAcc_no(getCellString(row.getCell(3), formatter, evaluator));
+                    master.setCustomer_name(getCellString(row.getCell(4), formatter, evaluator));
+                    master.setSchm_code(getCellString(row.getCell(5), formatter, evaluator));
+                    master.setSchm_desc(getCellString(row.getCell(6), formatter, evaluator));
+                    master.setOpen_date(getCellDate(row.getCell(7), formatter, evaluator));
+                    master.setAcct_cls_date(getCellDate(row.getCell(8), formatter, evaluator));
+                   
+                    master.setBalance_as_on(getCellDecimal(row.getCell(9), formatter, evaluator));
+                    master.setCurrency(getCellString(row.getCell(10), formatter, evaluator));
+                    master.setBal_equi_to_bwp(getCellDecimal(row.getCell(11), formatter, evaluator));
+                    master.setRate_of_interest(getCellDecimal(row.getCell(12), formatter, evaluator));
+                    master.setHundred(getCellDecimal(row.getCell(13), formatter, evaluator));
+                    master.setStatus(getCellString(row.getCell(14), formatter, evaluator));
+                    master.setMaturity_date(getCellDate(row.getCell(15), formatter, evaluator));
+                    master.setGl_sub_head_code(getCellString(row.getCell(16), formatter, evaluator));
+                    master.setGl_sub_head_desc(getCellString(row.getCell(17), formatter, evaluator));
+                    master.setType_of_accounts(getCellString(row.getCell(18), formatter, evaluator));
+                    master.setSegment(getCellString(row.getCell(19), formatter, evaluator));
+                    master.setPeriod(getCellString(row.getCell(20), formatter, evaluator));
+                    master.setEffective_int_rate(getCellDecimal(row.getCell(21), formatter, evaluator));
+                    master.setReport_date(getCellDate(row.getCell(22), formatter, evaluator));
 
-                    if (count % batchSize == 0) {
-                        insertStmt.executeBatch();
+                    master.setEntry_date(new Date());
+                    master.setEntry_user(userid);
+                    master.setDel_flg("N");
+                    master.setEntry_flg("Y");
+
+                    BrrsGeneralMasterRepos.save(master);
+
+                    savedCount++;
+
+                    if (++count % batchSize == 0) {
+                        stmt.executeBatch();
                         conn.commit();
                         evaluator.clearAllCachedResultValues();
                     }
 
-                } catch (Exception rowEx) {
+                } catch (Exception ex) {
                     skippedCount++;
-                    logger.error("Skipping row {} due to error: {}", i, rowEx.getMessage(), rowEx);
+                    logger.error("Skipping row {} due to error: {}", i, ex.getMessage(), ex);
                 }
             }
 
-            insertStmt.executeBatch();
+            stmt.executeBatch();
             conn.commit();
 
             long duration = System.currentTimeMillis() - startTime;
-            return "BFDB Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
+            return "BFDB Added successfully. Saved: " + savedCount + ", Skipped: " + skippedCount +
                     ". Time taken: " + duration + " ms";
 
         } catch (Exception e) {
@@ -194,6 +193,43 @@ public class BFDB_Services {
     }
 
 
+    private String getCellStringSafe(Row row, int index, DataFormatter formatter, FormulaEvaluator evaluator) {
+        Cell cell = row.getCell(index);
+        if (cell == null) return null;
+        return formatter.formatCellValue(cell, evaluator).trim();
+    }
+
+    private java.sql.Date getCellDateSafe(Row row, int colIndex, DataFormatter formatter, FormulaEvaluator evaluator) {
+        try {
+            Cell cell = row.getCell(colIndex);
+            if (cell == null) return null;
+
+            if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+                return new java.sql.Date(cell.getDateCellValue().getTime());
+            } else {
+                // Parse text in dd-MM-yyyy format
+                String text = formatter.formatCellValue(cell, evaluator).trim();
+                if (text.isEmpty()) return null;
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy"); // match Excel format
+                return new java.sql.Date(sdf.parse(text).getTime());
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+
+    private BigDecimal getCellDecimalSafe(Row row, int index, DataFormatter formatter, FormulaEvaluator evaluator) {
+        Cell cell = row.getCell(index);
+        if (cell == null) return null;
+        try {
+            return new BigDecimal(formatter.formatCellValue(cell, evaluator).replaceAll(",", "").trim());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
     /* ---------------- helper methods ---------------- */
 
     private String getCellString(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator) {
