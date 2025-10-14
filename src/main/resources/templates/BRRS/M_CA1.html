@@ -6,478 +6,478 @@ CREATED ON	: 31.08.2025
 PURPOSE		: BRFREPORT
 -->
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- CSS -->
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
-<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
 
-<!-- JavaScript -->
-<!-- jQuery core (required first) -->
+	<!-- JavaScript -->
+	<!-- jQuery core (required first) -->
 
 
-<!-- ✅ Your manually placed jQuery validation
+	<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
 
-<!-- jQuery (required first) -->
-<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
-
-<!-- ✅ jQuery Validation -->
-<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
-	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
-
-<!-- Bootstrap + Others -->
-<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
-<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
-<script
-	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
-<script
-	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-
-
-
-<style>
-.btns {
-	float: right;
-	margin: 5px;
-}
-
-.col-sm-5 {
-	padding-bottom: 15px;
-}
-
-.list-body {
-	padding: 0px;
-}
-
-.error {
-	color: red;
-	padding-left: 10px;
-}
-
-.formline {
-	padding-bottom: 15px;
-}
-
-.btn-primary {
-	background-color: #E77400;
-	border-color: #0c0c0c;
-}
-
-.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
-	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
-	{
-	color: #fff;
-	background-color: #cc000000;
-	border-color: #161617;
-}
-
-#finusertb {
-	width: 460px;
-}
-
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-	padding: 0px;
-}
-</style>
-
-
-
-
-<style>
-div span {
-	font-weight: bold;
-	color: white !important;
-}
-
-.card {
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	border-radius: 8px;
-}
-
-.card-header h5 {
-	font-size: 22px;
-	color: #fff;
-	font-weight: 600;
-}
-
-.nav-tabs .nav-link {
-	font-weight: 500;
-	border: 1px solid #dee2e6;
-	border-bottom: none;
-	border-radius: 4px 4px 0 0;
-	background-color: #f1f1f1;
-	margin-right: 5px;
-}
-
-.nav-tabs .nav-link.active {
-	background-color: #ffffff;
-	border-color: #dee2e6 #dee2e6 #ffffff;
-}
-
-.table-responsive {
-	border: 1px solid #dee2e6;
-	border-radius: 4px;
-}
-
-.table-hover tbody tr:hover {
-	background-color: #f3f6f9;
-}
-
-thead th {
-	position: sticky;
-	top: 0;
-	background-color: #e9ecf0;
-	z-index: 1;
-}
-
-.table td {
-	background-color: #FFFFFF;
-}
-
-.card-footer {
-	padding: 10px;
-	border-top: 1px solid #ccc;
-}
-
-.btn-xs {
-	padding: 4px 12px;
-	font-size: 14px;
-	border-radius: 4px;
-}
-
-#BRFvalidation th, #usertable td {
-	vertical-align: middle;
-	text-align: left;
-	font-size: 16px;
-	font-family: Arial;
-}
-
-.fa-edit:hover {
-	color: #28a745;
-	transform: scale(1.1);
-}
-
-td {
-	border: 1px solid rgb(0, 164, 166);
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-</style>
-
-
-<style>
-.form-group {
-	position: relative;
-	margin-bottom: 1.5rem;
-}
-
-.form-control {
-	width: 100%;
-	border: 2px solid #ccc;
-	border-radius: 8px;
-	font-size: 1rem;
-	outline: none;
-	background: transparent;
-	transition: border-color 0.3s ease, padding-top 0.3s ease;
-}
-
-.error {
-	color: red;
-	padding-top: 15px;
-}
-
-.form-control:focus {
-	border-color: #007bff;
-}
-
-.form-legend {
-	position: absolute;
-	top: 50%;
-	left: 15px;
-	transform: translateY(-50%);
-	font-size: 1rem;
-	color: #aaa;
-	background: white;
-	padding: 0 5px;
-	pointer-events: none;
-	transition: 0.3s ease;
-}
-
-/* When input or select is focused or has a value, move the label up */
-.form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
-	) ~ .form-legend {
-	top: -8px;
-	font-size: 1rem;
-	color: #007bff;
-}
-
-/* Hover effect when the input/select is focused */
-.form-control:focus:hover ~ .form-legend {
-	color: #0056b3; /* Darker shade of blue on hover */
-}
-
-/* Ensure the label returns to the normal color after focus or hover is removed */
-.form-control:not (:focus ) ~ .form-legend {
-	color: #aaa; /* Normal label color */
-}
-</style>
-
-<style>
-/* Red border for invalid inputs */
-input.error, select.error {
-	border: 2px solid red !important;
-}
-
-/* Error message style */
-label.error {
-	color: red;
-	font-size: 0.85em;
-	margin-top: 5px;
-	display: block;
-}
-
-.underline {
-	text-decoration: underline;
-	color: #08a6f1;
-	cursor: pointer;
-}
-
-.left-arrow-circle {
-	width: 35px;
-	height: 35px;
-	border-radius: 50%;
-	background-color: white;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-right: 10px;
-	transition: background-color 0.3s, transform 0.2s;
-}
-
-.left-arrow-circle i {
-	color: rgb(107, 122, 143);
-}
-
-.left-arrow-circle:hover {
-	background-color: rgb(107, 122, 143);
-	cursor: pointer;
-	transform: scale(1.05);
-	border: 2px solid white;
-}
-
-.left-arrow-circle:hover i {
-	color: white;
-}
-
-.white-text span {
-	color: white !important;
-}
-
-.table-cell tbody td:hover {
-        background-color: #f0f0f0; /* Hover color for cell */
-        cursor: pointer;           /* Optional: pointer cursor */
-    }
-	
-	.table-bordered td, 
-	.table-bordered th {
-	     border: 1px solid #000 !important;
-	}
-</style>
-
-
-<script th:inline="javascript">
-
-$(document).ready(function() {
-    // hide loader on normal load
-    $('#loader').modal('hide');
-});
-
-$(window).on('pageshow', function() {
-    // hide loader on back/forward nav
-    $('#loader').modal('hide');
-});
-
-$(window).on('beforeunload', function() {
-    // hide loader on leaving page
-    $('#loader').modal('hide');
-});
-
-	
-
-	function home() {
-        $("#loader").modal("toggle");
-		location.href = 'Dashboard'
-	}
-
-	function back() {
-        $("#loader").modal("toggle");
-
-		window.history.back();
-	}
-	
-	//to fetch summary from the database - called from the summary button
-	function showdetails() {
-    
-    var Callurl;
-    	$('#loader').modal('show');
-        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/ 
-        location.href = Callurl;
-        	console.log(Callurl);
-   /*  $.ajax({
-        type: 'get',
-        url: Callurl,
-        beforeSend: function () {
-            $('#loader').modal('show'); // 🔄 Show loader
-        },
-        success: function (data) {
-            $('.content').html(data);
-            //$("#detailsbtn").addClass("active");
-            //tablepagination();
-        },
-        complete: function () {
-            $('#loader').modal('hide'); 
-        },
-        error: function () {
-        	  $('#loader').modal('hide');
-            alert("Something went wrongss. Please try again.");
-          
-        }
-    }); */
-}
-	
-	function showsummary() {
-		$('#loader').modal('show');
-		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;								
-		location.href = Callurl;
-
-	}
-    </script>
-
-<script>
-
-function activateTab(tabName) {
-    // Remove 'active' from all buttons
-    document.querySelectorAll('.custom-tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
-    // Add 'active' to selected button
-    if (tabName === 'summary') {
-        document.getElementById('custom-tab-btnSummary').classList.add('active');
-    } else if (tabName === 'Details') {
-        document.getElementById('custom-tab-btnDetails').classList.add('active');
-    }
-}
-
-window.onload = function() {
-    /* setTimeout(function() {
-        var selectedTab = document.getElementById("selectedTab").value;
-        alert(selectedTab);
-        activateTab(selectedTab);
-    }, 10000); */ // 10,000 milliseconds = 10 seconds
-    
-	var selectedTab = document.getElementById("selectedTab").value;
-    activateTab(selectedTab);
-};
-
-
-function downloadfile(button) {
-	var reportid = button.getAttribute('data-reportid');
-	var asondate = button.getAttribute('data-asondate');
-	var fromdate = button.getAttribute('data-fromdate');
-	var todate = button.getAttribute('data-todate');
-	var currency = button.getAttribute('data-currency');
-	var subreportid = button.getAttribute('data-subreportid');
-	var secid = button.getAttribute('data-secid');
-	var dtltype = button.getAttribute('data-dtltype');
-	var filename = button.getAttribute('data-filename');
-	
-	$('#loader').modal('show');
-
-	$.ajax({
-		url: './downloadExcel?reportid=' + reportid +
-			'&fromdate=' + fromdate +
-			'&asondate=' + asondate +
-			'&todate=' + todate +
-			'&currency=' + currency +
-			'&subreportid=' + subreportid +
-			'&secid=' + secid +
-			'&filename=' + filename,
-		type: 'GET',
-		xhrFields: {
-			responseType: 'blob'
-		},
-		success: function (data) {
-			$('#loader').modal('hide');
-
-			if (data && data.size > 100) {
-				const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-				const url = window.URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.style.display = 'none';
-				a.href = url;
-				a.download = filename;
-				document.body.appendChild(a);
-				a.click();
-				window.URL.revokeObjectURL(url);
-				document.body.removeChild(a);
-
-				showResultModal('BRRS', filename + ' downloaded successfully.');
-			} else {
-				showResultModal('Information', 'No data was available to create a download.');
-			}
-		},
-		error: function (jqXHR, textStatus, errorThrown) {
-			$('#loader').modal('hide');
-			console.error("Download failed:", textStatus, errorThrown);
-			showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+	<!-- jQuery (required first) -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+	<!-- ✅ jQuery Validation -->
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+	<!-- Bootstrap + Others -->
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
 		}
-	});
-}
 
-function editRecord(){
-	showResultModal('Alert', 'Development in progress');
-	
-}
-function closemodel(){
-	$('#alert').modal('hide');
-	$('#resultModal').modal('hide');
-	
-}
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
 
-function showResultModal(title, message) {
-	// Set the text for the modal elements
-	$('#resultModalLabel').text(title);
-	$('#resultModalBody').text(message);
+		.list-body {
+			padding: 0px;
+		}
 
-	// Show the modal
-	$('#resultModal').modal('show');
-}
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
 
-</script>
+		.formline {
+			padding-bottom: 15px;
+		}
 
-<script>
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
 
-	function startReport(button){
+		.btn-primary:not (:disabled):not (.disabled).active,
+		.btn-primary:not (:disabled):not (.disabled):active,
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc000000;
+			border-color: #161617;
+		}
+
+		#finusertb {
+			width: 460px;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+	</style>
+
+
+
+
+	<style>
+		div span {
+			font-weight: bold;
+			color: white !important;
+		}
+
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
+
+		.card-header h5 {
+			font-size: 22px;
+			color: #fff;
+			font-weight: 600;
+		}
+
+		.nav-tabs .nav-link {
+			font-weight: 500;
+			border: 1px solid #dee2e6;
+			border-bottom: none;
+			border-radius: 4px 4px 0 0;
+			background-color: #f1f1f1;
+			margin-right: 5px;
+		}
+
+		.nav-tabs .nav-link.active {
+			background-color: #ffffff;
+			border-color: #dee2e6 #dee2e6 #ffffff;
+		}
+
+		.table-responsive {
+			border: 1px solid #dee2e6;
+			border-radius: 4px;
+		}
+
+		.table-hover tbody tr:hover {
+			background-color: #f3f6f9;
+		}
+
+		thead th {
+			position: sticky;
+			top: 0;
+			background-color: #e9ecf0;
+			z-index: 1;
+		}
+
+		.table td {
+			background-color: #FFFFFF;
+		}
+
+		.card-footer {
+			padding: 10px;
+			border-top: 1px solid #ccc;
+		}
+
+		.btn-xs {
+			padding: 4px 12px;
+			font-size: 14px;
+			border-radius: 4px;
+		}
+
+		#BRFvalidation th,
+		#usertable td {
+			vertical-align: middle;
+			text-align: left;
+			font-size: 16px;
+			font-family: Arial;
+		}
+
+		.fa-edit:hover {
+			color: #28a745;
+			transform: scale(1.1);
+		}
+
+		td {
+			border: 1px solid rgb(0, 164, 166);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	</style>
+
+
+	<style>
+		.form-group {
+			position: relative;
+			margin-bottom: 1.5rem;
+		}
+
+		.form-control {
+			width: 100%;
+			border: 2px solid #ccc;
+			border-radius: 8px;
+			font-size: 1rem;
+			outline: none;
+			background: transparent;
+			transition: border-color 0.3s ease, padding-top 0.3s ease;
+		}
+
+		.error {
+			color: red;
+			padding-top: 15px;
+		}
+
+		.form-control:focus {
+			border-color: #007bff;
+		}
+
+		.form-legend {
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			font-size: 1rem;
+			color: #aaa;
+			background: white;
+			padding: 0 5px;
+			pointer-events: none;
+			transition: 0.3s ease;
+		}
+
+		/* When input or select is focused or has a value, move the label up */
+		.form-control:focus~.form-legend,
+		.form-control:not (:placeholder-shown)~.form-legend {
+			top: -8px;
+			font-size: 1rem;
+			color: #007bff;
+		}
+
+		/* Hover effect when the input/select is focused */
+		.form-control:focus:hover~.form-legend {
+			color: #0056b3;
+			/* Darker shade of blue on hover */
+		}
+
+		/* Ensure the label returns to the normal color after focus or hover is removed */
+		.form-control:not (:focus)~.form-legend {
+			color: #aaa;
+			/* Normal label color */
+		}
+	</style>
+
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
+
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
+
+		.underline {
+			text-decoration: underline;
+			color: #08a6f1;
+			cursor: pointer;
+		}
+
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
+
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
+
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
+
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+
+		.white-text span {
+			color: white !important;
+		}
+
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
+
+		.table-bordered td,
+		.table-bordered th {
+			border: 1px solid #000 !important;
+		}
+	</style>
+
+
+	<script th:inline="javascript">
+
+		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+		});
+
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
+			$('#loader').modal('hide');
+		});
+
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+
+
+
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard'
+		}
+
+		function back() {
+			$("#loader").modal("toggle");
+
+			window.history.back();
+		}
+
+		//to fetch summary from the database - called from the summary button
+		function showdetails() {
+
+			var Callurl;
+			$('#loader').modal('show');
+			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/
+				location.href = Callurl;
+			console.log(Callurl);
+			/*  $.ajax({
+				 type: 'get',
+				 url: Callurl,
+				 beforeSend: function () {
+					 $('#loader').modal('show'); // 🔄 Show loader
+				 },
+				 success: function (data) {
+					 $('.content').html(data);
+					 //$("#detailsbtn").addClass("active");
+					 //tablepagination();
+				 },
+				 complete: function () {
+					 $('#loader').modal('hide'); 
+				 },
+				 error: function () {
+					   $('#loader').modal('hide');
+					 alert("Something went wrongss. Please try again.");
+				   
+				 }
+			 }); */
+		}
+
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			location.href = Callurl;
+
+		}
+	</script>
+
+	<script>
+
+		function activateTab(tabName) {
+			// Remove 'active' from all buttons
+			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+
+			// Add 'active' to selected button
+			if (tabName === 'summary') {
+				document.getElementById('custom-tab-btnSummary').classList.add('active');
+			} else if (tabName === 'Details') {
+				document.getElementById('custom-tab-btnDetails').classList.add('active');
+			}
+		}
+
+		window.onload = function () {
+			/* setTimeout(function() {
+				var selectedTab = document.getElementById("selectedTab").value;
+				alert(selectedTab);
+				activateTab(selectedTab);
+			}, 10000); */ // 10,000 milliseconds = 10 seconds
+
+			var selectedTab = document.getElementById("selectedTab").value;
+			activateTab(selectedTab);
+		};
+
+
+		function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+		function editRecord() {
+			showResultModal('Alert', 'Development in progress');
+
+		}
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}
+
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+
+	</script>
+
+	<script>
+
+		function startReport(button) {
 			const alertMsg = document.getElementById("alertMessage");
 			const filename = button.getAttribute('data-filename');
 			const fromdate = button.getAttribute('data-fromdate');
@@ -487,15 +487,15 @@ function showResultModal(title, message) {
 			const type = button.getAttribute('data-type');
 			const version = button.getAttribute('data-version');
 			const sessionfilename = sessionStorage.getItem("filename");
-			
-			if(sessionfilename==filename){
-				alertMsg.innerHTML ='Download request already Processing...';
-	       	 	showAlert();
+
+			if (sessionfilename == filename) {
+				alertMsg.innerHTML = 'Download request already Processing...';
+				showAlert();
 				return;
 			}
-			
-			alertMsg.innerHTML ='Download request Processing...';
-	   	 	showAlert();
+
+			alertMsg.innerHTML = 'Download request Processing...';
+			showAlert();
 
 			const baseUrl = '/BRRS/Reports/startreport';
 			const downloadUrl = baseUrl +
@@ -506,53 +506,53 @@ function showResultModal(title, message) {
 				'&dtltype=' + encodeURIComponent(dtltype) +
 				'&type=' + encodeURIComponent(type) +
 				'&version=' + encodeURIComponent(version);
-		    fetch(downloadUrl)  // ✅ no invalid characters now
-		        .then(res => res.text())
-		        .then(jobId => {
+			fetch(downloadUrl)  // ✅ no invalid characters now
+				.then(res => res.text())
+				.then(jobId => {
 
-		        	alertMsg.innerHTML ='Download request received...'+jobId;
-		       	 	showAlert();
-		            sessionStorage.setItem("jobId", jobId);
-		            sessionStorage.setItem("filename", filename);
-		            checkReport(jobId);
-		        });
+					alertMsg.innerHTML = 'Download request received...' + jobId;
+					showAlert();
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+					checkReport(jobId);
+				});
 		}
 
 		function checkReport(jobId) {
 			const alertMsg = document.getElementById("alertMessage");
-		    fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
-		        .then(res => res.text())
-		        .then(status => {
-		            if (status === "READY") {
-		            	alertMsg.innerHTML ='Report is ready! Downloading…';
-		           	 	showAlert();
-		                const filename = sessionStorage.getItem("filename");
-		                downloadDetailfile(jobId,filename)
-		                sessionStorage.removeItem("jobId");
-		                sessionStorage.removeItem("filename");                
-		                
-		            } else if(status ==="PROCESSING") {
-		                alertMsg.innerHTML ='Download Is Processing…';
-		            	showAlert();
-		                setTimeout(() => checkReport(jobId), 5000);
-		            }
-		            else if(status ==="ERROR") {
-		                alertMsg.innerHTML ='No data was available to create a download.';
-		            	showAlert();
-		            	sessionStorage.removeItem("jobId");
-		                sessionStorage.removeItem("filename");  
-		            }
-		        });
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report is ready! Downloading…';
+						showAlert();
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename)
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+
+					} else if (status === "PROCESSING") {
+						alertMsg.innerHTML = 'Download Is Processing…';
+						showAlert();
+						setTimeout(() => checkReport(jobId), 5000);
+					}
+					else if (status === "ERROR") {
+						alertMsg.innerHTML = 'No data was available to create a download.';
+						showAlert();
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					}
+				});
 		}
 
 
 
-		function downloadDetailfile(jobId,filename) {
-			
+		function downloadDetailfile(jobId, filename) {
+
 			//$('#loader').modal('show');
-			
+
 			$.ajax({
-				url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
 					'&filename=' + filename,
 				type: 'GET',
 				xhrFields: {
@@ -587,45 +587,45 @@ function showResultModal(title, message) {
 		}
 
 
-</script>
+	</script>
 
-<script th:inline="javascript">
-function showdetailsbyRowAndColumn(a) { 
-    var rowId = a.getAttribute('RowId');
-    var columnId = a.getAttribute('ColumnId');
-    var cellValue = a.textContent || a.innerText;
+	<script th:inline="javascript">
+		function showdetailsbyRowAndColumn(a) {
+			var rowId = a.getAttribute('RowId');
+			var columnId = a.getAttribute('ColumnId');
+			var cellValue = a.textContent || a.innerText;
 
-    if (cellValue !== '0') {
-        // Set dynamic message in modal (instead of confirm)
-        document.getElementById("cellresultModalLabel").innerText = 
-            "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+			if (cellValue !== '0') {
+				// Set dynamic message in modal (instead of confirm)
+				document.getElementById("cellresultModalLabel").innerText =
+					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
 
-        // Show custom Bootstrap modal
-        $('#cellresultModal').modal('show');
+				// Show custom Bootstrap modal
+				$('#cellresultModal').modal('show');
 
-        // Handle Yes button
-        document.querySelector('.yes-btn').onclick = function() {
-            $('#cellresultModal').modal('hide');
+				// Handle Yes button
+				document.querySelector('.yes-btn').onclick = function () {
+					$('#cellresultModal').modal('hide');
 
-            // Show loader
-            const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
-                backdrop: 'static',
-                keyboard: false
-            });
-            $('#loader').modal('show');
+					// Show loader
+					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+						backdrop: 'static',
+						keyboard: false
+					});
+					$('#loader').modal('show');
 
-            // Build dynamic URL
-            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+					// Build dynamic URL
+					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
 
-            location.href = Callurl;
-        };
-    } else {
-        // Use your custom alert modal instead of window.alert
-        showResultModal("Alert", "No Records available for this selected cell.");
-    }
-}
-</script>
+					location.href = Callurl;
+				};
+			} else {
+				// Use your custom alert modal instead of window.alert
+				showResultModal("Alert", "No Records available for this selected cell.");
+			}
+		}
+	</script>
 
 
 
@@ -635,9 +635,9 @@ function showdetailsbyRowAndColumn(a) {
 
 
 <title>BRRS</title>
+
 <body>
-	<div class="container-fluid"
-		style="padding-left: 0px; padding-right: 0px;">
+	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
 		<div class="row">
 
 			<div th:insert="HeaderMenu :: header"></div>
@@ -654,7 +654,7 @@ function showdetailsbyRowAndColumn(a) {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							M-CA1:   CAPITAL ADEQUACY FRAMEWORK</h5>
+							M-CA1: CAPITAL ADEQUACY FRAMEWORK</h5>
 					</div>
 
 					<div class="custom-tab-btn-group nav-buttons"
@@ -666,11 +666,13 @@ function showdetailsbyRowAndColumn(a) {
 						</span>
 
 						<!-- Buttons -->
-        <input type="hidden" id="selectedTab" th:value="${displaymode}">
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();" th:if="${displaymode == 'Details'}">Summary</button>
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();" th:if="${displaymode == 'summary'}">Details</button>
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
-            th:attr="data-reportid=${reportid}, 
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
                      data-todate=${todate}, 
@@ -678,211 +680,248 @@ function showdetailsbyRowAndColumn(a) {
                      data-dtltype=${dtltype}, 
                      data-filename='M_CA1.xls',
                      data-type=${type},
-                     data-version=${version}"
-                     
-            onclick="downloadfile(this);">
-            <i class="fa fa-download"></i>
-        </button>
-        <button
-		  type="button"
-		  class="custom-tab-btn"
-		  id="custom-tab-btnAdd"
-		  th:if="${displaymode == 'Details'}"
-		  onclick="startReport(this);"
-		  th:attr="
+                     data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 		    data-fromdate=${fromdate},
 		    data-todate=${todate},
 		    data-filename='M_CA1Detail'
 		  ">
-		  <i class="fa fa-download"></i>
-		</button>
+							<i class="fa fa-download"></i>
+						</button>
 					</div>
 				</div>
-			
-			<div th:if="${displaymode == 'summary'}">
-			<div class="row" >
-				<div class="col-sm-12">
-					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
-    					<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reportss" style="table-layout: fixed;">
-                            <colgroup>
-                             
-                              <col style="width: 60px;" />
-                              <col style="width: 33%;" />
-                              <col style="width: 200px;" />
-                              <col style="width: 400px;" />
-                             </colgroup>
-							<thead class="thead-light">
-  									 <!-- First header row -->
-                                    <tr style="background-color: #b3b6b9">
-                                        <!-- <th rowspan="2" style="text-align: center; background-color: #b3b6b9">ROW</th> -->
-                                        <th rowspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
-                                        <th rowspan="1" style="text-align: left; width:33%; background-color: #D8D8D8;">Ref para</th>
-                                        <th colspan="1" style="text-align: center; background-color: #D8D8D8;">Item</th>
-                                        <th colspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
-                                        
-									</tr>
-                                    <!-- Second row: technical column IDs under above headers -->
-                                     <!-- <tr style="background-color: #b3b6b9">
+
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6; ">
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reportss" style="table-layout: fixed;">
+									<colgroup>
+
+										<col style="width: 60px;" />
+										<col style="width: 33%;" />
+										<col style="width: 200px;" />
+										<col style="width: 400px;" />
+									</colgroup>
+									<thead class="thead-light">
+										<!-- First header row -->
+										<tr style="background-color: #b3b6b9">
+											<!-- <th rowspan="2" style="text-align: center; background-color: #b3b6b9">ROW</th> -->
+											<th rowspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
+											<th rowspan="1"
+												style="text-align: left; width:33%; background-color: #D8D8D8;">Ref para
+											</th>
+											<th colspan="1" style="text-align: center; background-color: #D8D8D8;">Item
+											</th>
+											<th colspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
+
+										</tr>
+										<!-- Second row: technical column IDs under above headers -->
+										<!-- <tr style="background-color: #b3b6b9">
                                         <th style="text-align: center; background-color: #b3b6b9">C10</th>
                                         <th style="text-align: center; background-color: #b3b6b9">C20</th>
                                         <th style="text-align: center; background-color: #b3b6b9">C30</th>
                                     </tr> -->
 
-								</thead>
+									</thead>
 
 
-								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-								        <tr>
+									<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">9</td> -->
 											<td style="text-align: right; font-weight:  normal; ">1</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R9_REF_PARM}"></td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R9_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight: normal;background-color: rgb(107, 122, 143);color: white;" 
-											  th:text="${#numbers.formatDecimal(report.R9_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											th:attr="RowId='R9', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R9_REF_PARM}"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R9_PRODUCT}"></td>
+											<td style="text-align: right;font-weight: normal;background-color: rgb(107, 122, 143);color: white;"
+												th:text="${#numbers.formatDecimal(report.R9_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												th:attr="RowId='R9', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-                                        <tr>
+										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">10</td> -->
 											<td style="text-align: right; font-weight:  normal; ">2</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R10_REF_PARM}"></td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R10_PRODUCT}"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R10_REF_PARM}"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R10_PRODUCT}"></td>
 											<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143);color: white;"
-											    th:text="${#numbers.formatDecimal(report.R10_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											    th:attr="RowId='R10', ColumnId='C3'"
-											    onclick="showdetailsbyRowAndColumn(this)">
+												th:text="${#numbers.formatDecimal(report.R10_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												th:attr="RowId='R10', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)">
 											</td>
 
 										</tr>
 
-                                        <tr>
+										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">11</td> -->
 											<td style="text-align: right; font-weight:  normal; ">3</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R11_REF_PARM}"></td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R11_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
-										  th:text="${#numbers.formatDecimal(report.R11_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											th:attr="RowId='R11', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R11_REF_PARM}"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R11_PRODUCT}"></td>
+											<td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
+												th:text="${#numbers.formatDecimal(report.R11_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												th:attr="RowId='R11', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-                                        <tr>
+										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">12</td> -->
 											<td style="text-align: right; font-weight: normal; ">4</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R12_REF_PARM}"></td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R12_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
-											th:text="${#numbers.formatDecimal(report.R12_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											th:attr="RowId='R12', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R12_REF_PARM}"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R12_PRODUCT}"></td>
+											<td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
+												th:text="${#numbers.formatDecimal(report.R12_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												th:attr="RowId='R12', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-                                        <tr>
+										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">13</td> -->
 											<td style="text-align: right; font-weight:  normal; ">5</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R13_REF_PARM}"></td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R13_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
-											  th:text="${#numbers.formatDecimal(report.R13_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											th:attr="RowId='R13', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R13_REF_PARM}"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R13_PRODUCT}"></td>
+											<td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
+												th:text="${#numbers.formatDecimal(report.R13_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												th:attr="RowId='R13', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-                                        <tr>
+										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">14</td> -->
 											<td style="text-align: right; font-weight:  normal; ">6</td>
-                                            <td style="text-align: left;font-weight: bold;" th:text="${report.R14_REF_PARM}"></td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R14_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
-											  th:text="${#numbers.formatDecimal(report.R14_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											th:attr="RowId='R14', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: left;font-weight: bold;"
+												th:text="${report.R14_REF_PARM}"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R14_PRODUCT}"></td>
+											<td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
+												th:text="${#numbers.formatDecimal(report.R14_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												th:attr="RowId='R14', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-                                       
+
 									</tbody>
 
 
-			              </table>
+								</table>
 
-                        <table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reportss" style="table-layout: fixed;">
-                            <colgroup>
-                              
-                              <col style="width: 60px;" />
-                              <col style="width: 33%;" />
-                              <col style="width: 200px;" />
-                              <col style="width: 400px;" />
-                             </colgroup>
-							<thead class="thead-light">
-  									 <!-- First header row -->
-                                    <tr style="background-color: #b3b6b9">
-                                        <!-- <th rowspan="2" style="text-align: center; background-color: #b3b6b9;">ROW</th> -->
-                                        <th rowspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
-                                        <th rowspan="1" style="text-align: left; width:33%; background-color: #D8D8D8;">Ref Para</th>
-                                        <th colspan="1" style="text-align: center; background-color: #D8D8D8;";>Item</th>
-                                        <th colspan="1" style="text-align: right; background-color: #D8D8D8;">Amount(P'000)</th>
-                                    </tr>    
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reportss" style="table-layout: fixed;">
+									<colgroup>
 
-                                    <!-- Second row: technical column IDs under above headers -->
-                                     <!-- <tr style="background-color: #b3b6b9">
+										<col style="width: 60px;" />
+										<col style="width: 33%;" />
+										<col style="width: 200px;" />
+										<col style="width: 400px;" />
+									</colgroup>
+									<thead class="thead-light">
+										<!-- First header row -->
+										<tr style="background-color: #b3b6b9">
+											<!-- <th rowspan="2" style="text-align: center; background-color: #b3b6b9;">ROW</th> -->
+											<th rowspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
+											<th rowspan="1"
+												style="text-align: left; width:33%; background-color: #D8D8D8;">Ref Para
+											</th>
+											<th colspan="1" style="text-align: center; background-color: #D8D8D8;" ;>
+												Item</th>
+											<th colspan="1" style="text-align: right; background-color: #D8D8D8;">
+												Amount(P'000)</th>
+										</tr>
+
+										<!-- Second row: technical column IDs under above headers -->
+										<!-- <tr style="background-color: #b3b6b9">
                                         <th style="text-align: center; background-color: #b3b6b9">C10</th>
                                         <th style="text-align: center; background-color: #b3b6b9">C20</th>
                                         <th style="text-align: center; background-color: #b3b6b9">C30</th>
                                     </tr> -->
 
-								</thead>
+									</thead>
 
 
-								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-								        <tr>
+									<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">17</td> -->
 											<td style="text-align: right; font-weight:  normal; ">7</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R17_REF_PARM}"></td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R17_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
-											  th:text="${#numbers.formatDecimal(report.R17_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											th:attr="RowId='R17', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R17_REF_PARM}"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R17_PRODUCT}"></td>
+											<td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
+												th:text="${#numbers.formatDecimal(report.R17_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												th:attr="RowId='R17', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-                                        <tr>
+										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">18</td> -->
 											<td style="text-align: right; font-weight:  normal; ">8</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R18_REF_PARM}"></td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R18_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
-											  th:text="${#numbers.formatDecimal(report.R18_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											th:attr="RowId='R18', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R18_REF_PARM}"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R18_PRODUCT}"></td>
+											<td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
+												th:text="${#numbers.formatDecimal(report.R18_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												th:attr="RowId='R18', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-                                        <tr>
+										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">19</td> -->
 											<td style="text-align: right; font-weight:  normal; ">9</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R19_REF_PARM}"></td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R19_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
-											  th:text="${#numbers.formatDecimal(report.R19_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											th:attr="RowId='R19', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R19_REF_PARM}"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R19_PRODUCT}"></td>
+											<td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
+												th:text="${#numbers.formatDecimal(report.R19_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												th:attr="RowId='R19', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-                                        <tr>
+										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">20</td> -->
 											<td style="text-align: right; font-weight:  normal; ">10</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R20_REF_PARM}"></td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R20_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
-											  th:text="${#numbers.formatDecimal(report.R20_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											th:attr="RowId='R20', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R20_REF_PARM}"></td>
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R20_PRODUCT}"></td>
+											<td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
+												th:text="${#numbers.formatDecimal(report.R20_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												th:attr="RowId='R20', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
-                                        <tr>
+										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">13</td> -->
 											<td style="text-align: right; font-weight:  normal; ">11</td>
-                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R21_REF_PARM}"></td>
-                                            <td style="text-align: left;font-weight:  bold;" th:text="${report.R21_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight: normal;background-color: rgb(107, 122, 143);color: white;" 
-											  th:text="${#numbers.formatDecimal(report.R21_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-											th:attr="RowId='R21', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-										</tr>                                       
+											<td style="text-align: left;font-weight:  normal;"
+												th:text="${report.R21_REF_PARM}"></td>
+											<td style="text-align: left;font-weight:  bold;"
+												th:text="${report.R21_PRODUCT}"></td>
+											<td style="text-align: right;font-weight: normal;background-color: rgb(107, 122, 143);color: white;"
+												th:text="${#numbers.formatDecimal(report.R21_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												th:attr="RowId='R21', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
 									</tbody>
 
 
-			              </table>
+								</table>
 
 							</div>
 
@@ -904,7 +943,7 @@ function showdetailsbyRowAndColumn(a) {
 											<th></th>
 											<th>CUST ID</th>
 											<th>ACCT NO</th>
-											<th >ACCT NAME</th>
+											<th>ACCT NAME</th>
 											<th style="text-align: right;"> ACCT BALANCE</th>
 											<th>ROWID</th>
 											<th>COLUMNID</th>
@@ -913,31 +952,29 @@ function showdetailsbyRowAndColumn(a) {
 
 									</thead>
 
-									<tbody 
-										style="font-family: Arial;">
+									<tbody style="font-family: Arial;">
 										<tr th:each="report: ${reportdetails}">
 											<td><a data-toggle="tooltip" class="editrec"
-												title="Click to Edit this Record"> <i
-													class="fas fa-edit" onclick="editRecord(this)"></i>
-											</a></td>
+													title="Click to Edit this Record"> <i class="fas fa-edit"
+														onclick="editRecord(this)"></i>
+												</a></td>
 											<td th:text="${report.CUST_ID}"></td>
 											<td th:text="${report.ACCT_NUMBER}"></td>
 											<td th:text="${report.ACCT_NAME}"></td>
-											<td th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_IN_PULA, 1, 2)}" style="text-align: right;"></td>
+											<td th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_IN_PULA, 1, 2)}"
+												style="text-align: right;"></td>
 											<td th:text="${report.ROW_ID}"></td>
 											<td th:text="${report.COLUMN_ID}"></td>
-											<td
-												th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"></td>
+											<td th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"></td>
 
 										</tr>
 									</tbody>
 								</table>
 								<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
-																																	   
-																																	    
-																																	    
-																																	<a th:if="${currentPage > 0}"
-																																	 th:href="@{'/Reports/' + ${reportid} + '/Details'(
+
+
+
+									<a th:if="${currentPage > 0}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
 																																	    asondate=${asondate},                             
 																																	    fromdate=${fromdate},
 																																	    todate=${todate},
@@ -948,16 +985,14 @@ function showdetailsbyRowAndColumn(a) {
 																																	    page=${currentPage - 100},
 																																	    size=100
 																																	)}">
-																																	    Previous
-																																	</a>
-																											
-																																	    
-																																	    <span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
-																																	
-																																	    
-																																	    <a th:if="${currentPage < (totalPages - 1) * 100}"
-																																	    	
-																																	    th:href="@{'/Reports/' + ${reportid} + '/Details'(
+										Previous
+									</a>
+
+
+									<span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
+
+
+									<a th:if="${currentPage < (totalPages - 1) * 100}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
 																																	    asondate=${asondate},
 																																	    fromdate=${fromdate},
 																																	    todate=${todate},
@@ -967,10 +1002,10 @@ function showdetailsbyRowAndColumn(a) {
 																																	    version=${version},
 																																	    page=${currentPage + 100},
 																																	    size=100
-																																	)}">	
-																																	    Next
-																																	    </a>
-																																	</div>
+																																	)}">
+										Next
+									</a>
+								</div>
 							</div>
 
 
@@ -990,10 +1025,8 @@ function showdetailsbyRowAndColumn(a) {
 
 
 
-	<div class="modal fade" id="loader" data-backdrop="static"
-		data-keyboard="false">
-		<div
-			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 			<div class="modal-content" style="background: transparent;">
 				<div class="modal-body" style="text-align: center">
 					<div>
@@ -1014,147 +1047,153 @@ function showdetailsbyRowAndColumn(a) {
 			<div class="modal-content">
 				<!-- Your custom styled header -->
 				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel"
-						style="text-align: center; color: white;">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
 						<!-- Title will be set by JavaScript -->
 					</div>
 				</div>
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()"
-						data-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- Custom Cellresult Modal -->
-			<div class="modal fade" id="cellresultModal">
-			  <div class="modal-dialog modal-dialog-centered">
-			    <div class="modal-content">
-			      
-			      <!-- Custom header -->
-			      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-			        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-			          Do you want to open the report?
-			        </div>
-			      </div>
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
 
-			      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-			        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-			          Cancel
-			        </button>
-			        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-			          Yes
-			        </button>
-			      </div>
-			    </div>
-			  </div>
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+						Do you want to open the report?
+					</div>
+				</div>
+
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+						Cancel
+					</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+						Yes
+					</button>
+				</div>
 			</div>
+		</div>
+	</div>
 
 </body>
 
 
 
 <style>
-/* Your existing CSS - this is the correct approach */
-.scrollable-table-container {
-	/* This is the key: it creates the scroll context */
-	max-height: 590px;
-	/* Or a suitable height like 80vh for responsive design */
-	overflow-y: auto;
-	border: 1px solid #ccc;
-}
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 590px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
 
-/* Your existing sticky header CSS, targeting the tr elements within the thead */
-.scrollable-table-container thead tr:nth-child(1) {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9;
-	z-index: 5;
-}
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
 
-.scrollable-table-container thead tr:nth-child(2) {
-	position: sticky;
-	top: 36px; /* adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 4;
-}
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
 
-.scrollable-table-container thead tr:nth-child(3) {
-	position: sticky;
-	top: 72px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 3;
-}
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
 
-.scrollable-table-container thead tr:nth-child(4) {
-	position: sticky;
-	top: 100px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 2;
-}
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
 
-.scrollable-table-container thead tr:nth-child(5) {
-	position: sticky;
-	top: 135px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
 </style>
 
 
 <style>
-.inner {
-	max-height: 600px; /* Adjust height as needed */
-	overflow: auto;
-	border: 1px solid #dee2e6;
-}
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
 
-/* Sticky thead */
-#reports thead th {
-	position: sticky;
-	top: 0;
-	background-color: #f8f9fa; /* Match Bootstrap thead-light */
-	z-index: 2;
-}
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
 
-div.dataTables_wrapper div.dataTables_paginate {
-	text-align: right !important;
-	float: right !important;
-	width: auto;
-	margin-top: 10px;
-}
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
 
-/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-div.dataTables_wrapper div.dataTables_info {
-	float: left !important;
-	margin-top: 10px;
-}
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
 
-.pagination {
-	margin: 0;
-}
+	.pagination {
+		margin: 0;
+	}
 
-.page-item.active .page-link {
-	background-color: #386276;
-	border-color: #386276;
-}
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
 
-.page-link {
-	color: #386276;
-}
+	.page-link {
+		color: #386276;
+	}
 
-.page-link:hover {
-	color: #2a4a5c;
-}
+	.page-link:hover {
+		color: #2a4a5c;
+	}
 
-.form-select {
-	display: inline-block;
-	width: auto;
-}
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
 </style>
 
 </html>
