@@ -19,9 +19,7 @@ public class MCBL_Entity {
 
 	// In @Entity
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "brrs_mcbl_seq")
-	@SequenceGenerator(name = "brrs_mcbl_seq", sequenceName = "BRRS_MCBL_SEQ", allocationSize = 1)
-	private Long id;
+	private String id;
 
 
 
@@ -76,10 +74,10 @@ public class MCBL_Entity {
     public String getGl_code() {
         return gl_code;
     }
-    public Long getId() {
+    public String getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public void setGl_code(String gl_code) {

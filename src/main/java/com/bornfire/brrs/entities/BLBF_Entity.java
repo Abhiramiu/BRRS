@@ -9,9 +9,11 @@ import java.util.Date;
 @Table(name = "BRRS_BLBF")
 public class BLBF_Entity {
 
-	@Id
+	
 	private String	cust_id;
 	private String	sol_id;
+	
+	@Id
 	private String	account_no;
 	private String	acct_name;
 	private String	schm_code;
@@ -44,7 +46,7 @@ public class BLBF_Entity {
 	private BigDecimal	emi;
 	private String	segment;
 	private String	facility;
-	private BigDecimal	past_due;
+	private String	past_due;
 	private BigDecimal	past_due_days;
 	private String	asset;
 	private BigDecimal	provision;
@@ -258,10 +260,10 @@ public class BLBF_Entity {
 	public void setFacility(String facility) {
 		this.facility = facility;
 	}
-	public BigDecimal getPast_due() {
+	public String getPast_due() {
 		return past_due;
 	}
-	public void setPast_due(BigDecimal past_due) {
+	public void setPast_due(String past_due) {
 		this.past_due = past_due;
 	}
 	public BigDecimal getPast_due_days() {
