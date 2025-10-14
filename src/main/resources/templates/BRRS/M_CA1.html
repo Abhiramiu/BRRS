@@ -441,7 +441,7 @@ function downloadfile(button) {
 				window.URL.revokeObjectURL(url);
 				document.body.removeChild(a);
 
-				showResultModal('Success', 'The file has been downloaded successfully.');
+				showResultModal('BRRS', filename + ' downloaded successfully.');
 			} else {
 				showResultModal('Information', 'No data was available to create a download.');
 			}
@@ -676,7 +676,7 @@ function showdetailsbyRowAndColumn(a) {
                      data-todate=${todate}, 
                      data-currency=${currency},  
                      data-dtltype=${dtltype}, 
-                     data-filename='M-CA1(Capital Summary).xls',
+                     data-filename='M_CA1.xls',
                      data-type=${type},
                      data-version=${version}"
                      
@@ -715,10 +715,10 @@ function showdetailsbyRowAndColumn(a) {
   									 <!-- First header row -->
                                     <tr style="background-color: #b3b6b9">
                                         <!-- <th rowspan="2" style="text-align: center; background-color: #b3b6b9">ROW</th> -->
-                                        <th rowspan="1" style="text-align: center; background-color: #fefeff"></th>
-                                        <th rowspan="1" style="text-align: left; width:33%; background-color: #ffffff">Ref para</th>
-                                        <th colspan="1" style="text-align: center; background-color: #ffffff;">Item</th>
-                                        <th colspan="1" style="text-align: center; background-color:#ffffff;"></th>
+                                        <th rowspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
+                                        <th rowspan="1" style="text-align: left; width:33%; background-color: #D8D8D8;">Ref para</th>
+                                        <th colspan="1" style="text-align: center; background-color: #D8D8D8;">Item</th>
+                                        <th colspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
                                         
 									</tr>
                                     <!-- Second row: technical column IDs under above headers -->
@@ -737,7 +737,8 @@ function showdetailsbyRowAndColumn(a) {
 											<td style="text-align: right; font-weight:  normal; ">1</td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R9_REF_PARM}"></td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R9_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight: normal;background-color: 	#ADFF2F;" th:text="${report.R9_AMOUNT}"
+                                            <td style="text-align: right;font-weight: normal;background-color: rgb(107, 122, 143);color: white;" 
+											  th:text="${#numbers.formatDecimal(report.R9_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 											th:attr="RowId='R9', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -746,8 +747,12 @@ function showdetailsbyRowAndColumn(a) {
 											<td style="text-align: right; font-weight:  normal; ">2</td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R10_REF_PARM}"></td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R10_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R10_AMOUNT}"
-											th:attr="RowId='R10', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143);color: white;"
+											    th:text="${#numbers.formatDecimal(report.R10_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											    th:attr="RowId='R10', ColumnId='C3'"
+											    onclick="showdetailsbyRowAndColumn(this)">
+											</td>
+
 										</tr>
 
                                         <tr>
@@ -755,7 +760,8 @@ function showdetailsbyRowAndColumn(a) {
 											<td style="text-align: right; font-weight:  normal; ">3</td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R11_REF_PARM}"></td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R11_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R11_AMOUNT}"
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
+										  th:text="${#numbers.formatDecimal(report.R11_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 											th:attr="RowId='R11', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -764,7 +770,8 @@ function showdetailsbyRowAndColumn(a) {
 											<td style="text-align: right; font-weight: normal; ">4</td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R12_REF_PARM}"></td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R12_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R12_AMOUNT}"
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
+											th:text="${#numbers.formatDecimal(report.R12_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 											th:attr="RowId='R12', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -773,7 +780,8 @@ function showdetailsbyRowAndColumn(a) {
 											<td style="text-align: right; font-weight:  normal; ">5</td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R13_REF_PARM}"></td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R13_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R13_AMOUNT}"
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
+											  th:text="${#numbers.formatDecimal(report.R13_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 											th:attr="RowId='R13', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -782,7 +790,9 @@ function showdetailsbyRowAndColumn(a) {
 											<td style="text-align: right; font-weight:  normal; ">6</td>
                                             <td style="text-align: left;font-weight: bold;" th:text="${report.R14_REF_PARM}"></td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R14_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R14_AMOUNT}"></td>
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
+											  th:text="${#numbers.formatDecimal(report.R14_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											th:attr="RowId='R14', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
                                        
@@ -803,10 +813,10 @@ function showdetailsbyRowAndColumn(a) {
   									 <!-- First header row -->
                                     <tr style="background-color: #b3b6b9">
                                         <!-- <th rowspan="2" style="text-align: center; background-color: #b3b6b9;">ROW</th> -->
-                                        <th rowspan="1" style="text-align: center; background-color: #ffffff;"></th>
-                                        <th rowspan="1" style="text-align: left; width:33%; background-color: #ffffff">Ref Para</th>
-                                        <th colspan="1" style="text-align: center; background-color: #ffffff;";>Item</th>
-                                        <th colspan="1" style="text-align: center; background-color:#ffffff;">Amount(P'000)</th>
+                                        <th rowspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
+                                        <th rowspan="1" style="text-align: left; width:33%; background-color: #D8D8D8;">Ref Para</th>
+                                        <th colspan="1" style="text-align: center; background-color: #D8D8D8;";>Item</th>
+                                        <th colspan="1" style="text-align: right; background-color: #D8D8D8;">Amount(P'000)</th>
                                     </tr>    
 
                                     <!-- Second row: technical column IDs under above headers -->
@@ -825,7 +835,8 @@ function showdetailsbyRowAndColumn(a) {
 											<td style="text-align: right; font-weight:  normal; ">7</td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R17_REF_PARM}"></td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R17_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R17_AMOUNT}"
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
+											  th:text="${#numbers.formatDecimal(report.R17_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 											th:attr="RowId='R17', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -834,7 +845,8 @@ function showdetailsbyRowAndColumn(a) {
 											<td style="text-align: right; font-weight:  normal; ">8</td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R18_REF_PARM}"></td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R18_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R18_AMOUNT}"
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
+											  th:text="${#numbers.formatDecimal(report.R18_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 											th:attr="RowId='R18', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -843,7 +855,8 @@ function showdetailsbyRowAndColumn(a) {
 											<td style="text-align: right; font-weight:  normal; ">9</td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R19_REF_PARM}"></td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R19_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R19_AMOUNT}"
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
+											  th:text="${#numbers.formatDecimal(report.R19_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 											th:attr="RowId='R19', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -852,7 +865,8 @@ function showdetailsbyRowAndColumn(a) {
 											<td style="text-align: right; font-weight:  normal; ">10</td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R20_REF_PARM}"></td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R20_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R20_AMOUNT}"
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
+											  th:text="${#numbers.formatDecimal(report.R20_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 											th:attr="RowId='R20', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -861,7 +875,8 @@ function showdetailsbyRowAndColumn(a) {
 											<td style="text-align: right; font-weight:  normal; ">11</td>
                                             <td style="text-align: left;font-weight:  normal;" th:text="${report.R21_REF_PARM}"></td>
                                             <td style="text-align: left;font-weight:  bold;" th:text="${report.R21_PRODUCT}"></td>
-                                            <td style="text-align: right;font-weight: normal;background-color: 	#ADFF2F;" th:text="${report.R21_AMOUNT}"
+                                            <td style="text-align: right;font-weight: normal;background-color: rgb(107, 122, 143);color: white;" 
+											  th:text="${#numbers.formatDecimal(report.R21_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 											th:attr="RowId='R21', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>                                       
 									</tbody>

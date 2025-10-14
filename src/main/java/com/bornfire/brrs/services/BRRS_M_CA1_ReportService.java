@@ -165,7 +165,7 @@ public byte[] BRRS_M_CA1Excel(String filename,String reportId, String fromdate, 
 		List<M_CA1_Summary_Entity> dataList =BRRS_M_CA1_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for BRF2.4 report. Returning empty result.");
+			logger.warn("Service: No data found for CA1 report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -174,15 +174,14 @@ public byte[] BRRS_M_CA1Excel(String filename,String reportId, String fromdate, 
 		System.out.println(filename);
 		Path templatePath = Paths.get(templateDir, templateFileName);
 		System.out.println(templatePath);
-		
+
 		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
 		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
 			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
 		}
+
 		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
 			throw new SecurityException(
 					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
 		}
@@ -192,7 +191,6 @@ public byte[] BRRS_M_CA1Excel(String filename,String reportId, String fromdate, 
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
 				Workbook workbook = WorkbookFactory.create(templateInputStream);
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
 			Sheet sheet = workbook.getSheetAt(0);
 
 			// --- Style Definitions ---
@@ -204,28 +202,26 @@ public byte[] BRRS_M_CA1Excel(String filename,String reportId, String fromdate, 
 			dateStyle.setBorderTop(BorderStyle.THIN);
 			dateStyle.setBorderLeft(BorderStyle.THIN);
 			dateStyle.setBorderRight(BorderStyle.THIN);
-
 			CellStyle textStyle = workbook.createCellStyle();
 			textStyle.setBorderBottom(BorderStyle.THIN);
 			textStyle.setBorderTop(BorderStyle.THIN);
 			textStyle.setBorderLeft(BorderStyle.THIN);
 			textStyle.setBorderRight(BorderStyle.THIN);
-			
+
 			// Create the font
 			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short)8); // size 8
-			font.setFontName("Arial");    
-
+			font.setFontHeightInPoints((short) 8); // size 8
+			font.setFontName("Arial");
 			CellStyle numberStyle = workbook.createCellStyle();
-			//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
 			numberStyle.setBorderBottom(BorderStyle.THIN);
 			numberStyle.setBorderTop(BorderStyle.THIN);
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-
 			int startRow = 8;
+
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
