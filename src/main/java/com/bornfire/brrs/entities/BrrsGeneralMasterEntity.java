@@ -88,7 +88,7 @@ public class BrrsGeneralMasterEntity {
     private BigDecimal	tenor_month;
     private BigDecimal	emi;
     private String	facility;
-    private BigDecimal	past_due;
+    private String	past_due;
     private BigDecimal	past_due_days;
     private String	asset;
     private BigDecimal	provision;
@@ -494,10 +494,10 @@ public class BrrsGeneralMasterEntity {
 	public void setFacility(String facility) {
 		this.facility = facility;
 	}
-	public BigDecimal getPast_due() {
+	public String getPast_due() {
 		return past_due;
 	}
-	public void setPast_due(BigDecimal past_due) {
+	public void setPast_due(String past_due) {
 		this.past_due = past_due;
 	}
 	public BigDecimal getPast_due_days() {
