@@ -56,6 +56,21 @@ public class BDGF_Entity {
 	private String	modify_flg;
 	private String	verify_flg;
 	private String	del_flg;
+	   private BigDecimal residual_tenure;
+	   private String sls_bucket;
+	    
+		public String getSls_bucket() {
+		return sls_bucket;
+	}
+	   public void setSls_bucket(String sls_bucket) {
+		   this.sls_bucket = sls_bucket;
+	   }
+		public BigDecimal getResidual_tenure() {
+			return residual_tenure;
+		}
+		public void setResidual_tenure(BigDecimal residual_tenure) {
+			this.residual_tenure = residual_tenure;
+		}
 	public BigDecimal getS_no() {
 		return s_no;
 	}

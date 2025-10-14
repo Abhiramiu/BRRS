@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.bornfire.brrs.config.SequenceGenerator;
 import com.bornfire.brrs.entities.MCBL_Detail_Rep;
-import com.bornfire.brrs.entities.MCBL_Main_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
 
 @Service
@@ -58,28 +57,37 @@ public class MCBL_Services {
 
             Sheet sheet = workbook.getSheet("MCBL");
 
-            // --- Step 1: Removed Main Table comparison ---
-
-            // --- Step 2: Prepare statements ---
+            // Prepare delete statements
             String deleteSql = "DELETE FROM BRRS_MCBL " +
                     "WHERE GL_CODE = ? AND GL_SUB_CODE = ? AND HEAD_ACC_NO = ? " +
                     "AND CURRENCY = ? AND REPORT_DATE = ?";
             PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
 
+            String deleteGeneralSql = "DELETE FROM BRRS_GENERAL_MASTER_TABLE " +
+                    "WHERE GL_CODE = ? AND GL_SUB_CODE = ? AND HEAD_ACC_NO = ? " +
+                    "AND CURRENCY = ? AND REPORT_DATE = ? AND FILE_TYPE = 'MCBL'";
+            PreparedStatement deleteGeneralStmt = conn.prepareStatement(deleteGeneralSql);
+
+            // Prepare insert statements
             String insertSql = "INSERT INTO BRRS_MCBL (GL_CODE, GL_SUB_CODE, HEAD_ACC_NO, DESCRIPTION, CURRENCY, " +
                     "DEBIT_BALANCE, CREDIT_BALANCE, DEBIT_EQUIVALENT, CREDIT_EQUIVALENT, ENTRY_USER, ENTRY_DATE, REPORT_DATE) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement insertStmt = conn.prepareStatement(insertSql);
+
+            String insertGeneralSql = "INSERT INTO BRRS_GENERAL_MASTER_TABLE (" +
+            	    "ID, FILE_TYPE, GL_CODE, GL_SUB_CODE, HEAD_ACC_NO, DESCRIPTION, CURRENCY, " +
+            	    "DEBIT_BALANCE, CREDIT_BALANCE, DEBIT_EQUIVALENT, CREDIT_EQUIVALENT, " +
+            	    "ENTRY_USER, ENTRY_DATE, REPORT_DATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            PreparedStatement insertGeneralStmt = conn.prepareStatement(insertGeneralSql);
 
             DataFormatter formatter = new DataFormatter();
             int batchSize = 500;
             int count = 0;
             int skippedCount = 0;
 
-            // --- Step 3: Track Excel duplicates ---
             Set<String> processedKeys = new HashSet<>();
 
-            // --- Step 4: Loop through Excel rows ---
             for (int i = 0; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
@@ -90,20 +98,18 @@ public class MCBL_Services {
                 String description = formatter.formatCellValue(row.getCell(3)).trim();
                 String currency = formatter.formatCellValue(row.getCell(5)).trim();
 
-                // ✅ Only process if all 4 fields present
                 if (!glCode.isEmpty() && !glSubCode.isEmpty() && !headAccNo.isEmpty() && !currency.isEmpty()) {
 
                     if (isNumeric(headAccNo) || isString(headAccNo)) {
                         String lookupKey = normalizeKey(glCode, glSubCode, headAccNo, currency);
-
-                        // --- Skip Excel duplicates ---
                         String uniqueKey = lookupKey + "|" + sqlReportDate;
+
                         if (!processedKeys.add(uniqueKey)) {
                             skippedCount++;
                             continue;
                         }
 
-                        // --- Delete old ---
+                        // Delete old records
                         deleteStmt.setString(1, glCode);
                         deleteStmt.setString(2, glSubCode);
                         deleteStmt.setString(3, headAccNo);
@@ -111,7 +117,14 @@ public class MCBL_Services {
                         deleteStmt.setDate(5, sqlReportDate);
                         deleteStmt.executeUpdate();
 
-                        // --- Insert new ---
+                        deleteGeneralStmt.setString(1, glCode);
+                        deleteGeneralStmt.setString(2, glSubCode);
+                        deleteGeneralStmt.setString(3, headAccNo);
+                        deleteGeneralStmt.setString(4, currency);
+                        deleteGeneralStmt.setDate(5, sqlReportDate);
+                        deleteGeneralStmt.executeUpdate();
+
+                        // Insert new MCBL record
                         insertStmt.setString(1, glCode);
                         insertStmt.setString(2, glSubCode);
                         insertStmt.setString(3, headAccNo);
@@ -124,36 +137,54 @@ public class MCBL_Services {
                         insertStmt.setString(10, userid);
                         insertStmt.setDate(11, new java.sql.Date(System.currentTimeMillis()));
                         insertStmt.setDate(12, sqlReportDate);
-
                         insertStmt.addBatch();
+
+                        // Insert into General Master
+
+                        insertGeneralStmt.setString(1, sequence.generateRequestUUId()); // ID
+                        insertGeneralStmt.setString(2, "MCBL");                         // FILE_TYPE
+                        insertGeneralStmt.setString(3, glCode);                         // GL_CODE
+                        insertGeneralStmt.setString(4, glSubCode);                      // GL_SUB_CODE
+                        insertGeneralStmt.setString(5, headAccNo);                      // HEAD_ACC_NO
+                        insertGeneralStmt.setString(6, description);                    // DESCRIPTION
+                        insertGeneralStmt.setString(7, currency);                       // CURRENCY
+                        insertGeneralStmt.setBigDecimal(8, getCellDecimal(row.getCell(6))); // DEBIT_BALANCE
+                        insertGeneralStmt.setBigDecimal(9, getCellDecimal(row.getCell(7))); // CREDIT_BALANCE
+                        insertGeneralStmt.setBigDecimal(10, getCellDecimal(row.getCell(8))); // DEBIT_EQUIVALENT
+                        insertGeneralStmt.setBigDecimal(11, getCellDecimal(row.getCell(9))); // CREDIT_EQUIVALENT
+                        insertGeneralStmt.setString(12, userid);                           // ENTRY_USER
+                        insertGeneralStmt.setDate(13, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
+                        insertGeneralStmt.setDate(14, sqlReportDate);                     // REPORT_DATE
+
+                        insertGeneralStmt.addBatch();
+
+
                         count++;
 
                         if (count % batchSize == 0) {
                             insertStmt.executeBatch();
+                            insertGeneralStmt.executeBatch();
                             conn.commit();
                         }
+
                     } else {
-                        // ✅ headAccNo not numeric → skip silently
                         skippedCount++;
-                        continue;
                     }
 
                 } else {
-                    // ✅ Missing mandatory field → skip silently
-                    continue;
+                    skippedCount++;
                 }
             }
 
+            // Execute remaining batches
             insertStmt.executeBatch();
+            insertGeneralStmt.executeBatch();
             conn.commit();
 
             long duration = System.currentTimeMillis() - startTime;
+            String result = "MCBL Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
+                    ". Time taken: " + duration + " ms";
 
-            /*String result = "MCBL Added successfully. Saved: " + count + ", Skipped: " + skippedCount +
-                    ". Time taken: " + duration + " ms";*/
-
-            String result = "MCBL Added successfully.";
-            		
             if (!validationErrors.isEmpty()) {
                 result += "\n\nAccounts not found: " + validationErrors.size() + "\n"
                         + String.join("\n", validationErrors);
@@ -167,12 +198,14 @@ public class MCBL_Services {
         }
     }
 
-
     private boolean isString(String value) {
         return value != null && value.matches("[a-zA-Z]+");
     }
 
-    
+    private boolean isNumeric(String str) {
+        return str != null && str.matches("\\d+");
+    }
+
     private String normalizeKey(String glCode, String glSubCode, String headAccNo, String currency) {
         return safeTrim(glCode) + "|" + safeTrim(glSubCode) + "|" + safeTrim(headAccNo) + "|" + safeTrim(currency);
     }
@@ -198,10 +231,5 @@ public class MCBL_Services {
             default:
                 return BigDecimal.ZERO;
         }
-    }
-
-    // ✅ Numeric check helper
-    private boolean isNumeric(String str) {
-        return str != null && str.matches("\\d+");
     }
 }
