@@ -472,6 +472,7 @@ PURPOSE		: BWRBRREPORT
 			}
 			$("#R44_AMOUNT").css({"background-color": "#d3d3d3"});
 
+
 			for (let i = 50; i <= 54; i++) {
 				let fields = [
 					"AMOUNT",
@@ -489,6 +490,27 @@ PURPOSE		: BWRBRREPORT
 
 
 			$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
+
+
+			
+			for (let i = 50; i <= 54; i++) {
+							let fields = [
+								"AMOUNT",
+
+
+							];
+
+							fields.forEach(field => {
+								let selector = `#R${i}_${field}`;
+								if ($(selector).length) {  // check if element exists
+									$(selector).css({"background-color": "#d3d3d3"});
+								}
+							});
+						}
+
+		
+			$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
+			
 
 			// Show Cancel button only when Modify is clicked
 			$("#cancelRecord").show();
@@ -1281,8 +1303,12 @@ PURPOSE		: BWRBRREPORT
 													<br>
 													instead of full deduction, only deduct the excess above the 10%
 													threshold, the remaining amount below the 10% threshold shall be
+
 													treated as other assets.
 												</td>
+
+													treated as other assets.</td>
+
 												<td id="ROW44" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R44_AMOUNT != null ? #numbers.formatDecimal(report.R44_AMOUNT,1, 0, 'POINT') : '0'}"
@@ -1453,8 +1479,12 @@ PURPOSE		: BWRBRREPORT
 													<br>
 													instead of full deduction, only deduct the excess above the 10%
 													threshold, the remaining amount below the 10% threshold shall be
+
 													treated as other assets.
 												</td>
+
+													treated as other assets.</td>
+
 												<td id="ROW58" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R58_AMOUNT != null ? #numbers.formatDecimal(report.R58_AMOUNT,1, 0, 'POINT') : '0'}"
@@ -1502,10 +1532,21 @@ PURPOSE		: BWRBRREPORT
 								</div>
 								<div style="text-align: center; margin-top: 10px;">
 
+
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
 										form="fileupload" th:attr="data-todate=${asondate},data-type=${type}"
 										onclick="fileuploads(this);" style="display: none;">
 										Submit
+
+									<button id="submitButton" 
+									        type="button"
+									        class="custom-tab-btn Show_input" 
+									        form="fileupload"
+									        th:attr="data-todate=${asondate},data-type=${type}" 
+									        onclick="fileuploads(this);" 
+									        style="display: none;">
+									    Submit
+
 									</button>
 								</div>
 							</form>

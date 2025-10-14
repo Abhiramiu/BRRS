@@ -47,10 +47,410 @@ PURPOSE		: BRFREPORT
 
 
 
+
 	<style>
 		.btns {
 			float: right;
 			margin: 5px;
+
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+
+
+
+
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
+
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
+
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+.table td {
+	background-color: #FFFFFF;
+}
+
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
+
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
+
+#BRFvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
+
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
+
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+
+
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
+
+.error {
+	color: red;
+	padding-top: 15px;
+}
+
+.form-control:focus {
+	border-color: #007bff;
+}
+
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
+	) ~ .form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~ .form-legend {
+	color: #0056b3; /* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus ) ~ .form-legend {
+	color: #aaa; /* Normal label color */
+}
+</style>
+
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.table-cell tbody td:hover {
+        background-color: #f0f0f0; /* Hover color for cell */
+        cursor: pointer;           /* Optional: pointer cursor */
+    }
+	
+	.table-bordered td, 
+	.table-bordered th {
+	     border: 1px solid #000 !important;
+	}
+</style>
+
+
+<script th:inline="javascript">
+
+$(document).ready(function() {
+    // hide loader on normal load
+    $('#loader').modal('hide');
+});
+
+$(window).on('pageshow', function() {
+    // hide loader on back/forward nav
+    $('#loader').modal('hide');
+});
+
+$(window).on('beforeunload', function() {
+    // hide loader on leaving page
+    $('#loader').modal('hide');
+});
+
+	
+
+	function home() {
+        $("#loader").modal("toggle");
+		location.href = 'Dashboard'
+	}
+
+	function back() {
+        $("#loader").modal("toggle");
+
+		window.history.back();
+	}
+	
+	//to fetch summary from the database - called from the summary button
+	function showdetails() {
+    
+    var Callurl;
+    	$('#loader').modal('show');
+        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/ 
+        location.href = Callurl;
+        	console.log(Callurl);
+   /*  $.ajax({
+        type: 'get',
+        url: Callurl,
+        beforeSend: function () {
+            $('#loader').modal('show'); // 🔄 Show loader
+        },
+        success: function (data) {
+            $('.content').html(data);
+            //$("#detailsbtn").addClass("active");
+            //tablepagination();
+        },
+        complete: function () {
+            $('#loader').modal('hide'); 
+        },
+        error: function () {
+        	  $('#loader').modal('hide');
+            alert("Something went wrongss. Please try again.");
+          
+        }
+    }); */
+}
+	
+	function showsummary() {
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;								
+		location.href = Callurl;
+
+	}
+    </script>
+
+<script>
+
+function activateTab(tabName) {
+    // Remove 'active' from all buttons
+    document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Add 'active' to selected button
+    if (tabName === 'summary') {
+        document.getElementById('custom-tab-btnSummary').classList.add('active');
+    } else if (tabName === 'Details') {
+        document.getElementById('custom-tab-btnDetails').classList.add('active');
+    }
+}
+
+window.onload = function() {
+    /* setTimeout(function() {
+        var selectedTab = document.getElementById("selectedTab").value;
+        alert(selectedTab);
+        activateTab(selectedTab);
+    }, 10000); */ // 10,000 milliseconds = 10 seconds
+    
+	var selectedTab = document.getElementById("selectedTab").value;
+    activateTab(selectedTab);
+};
+
+
+function downloadfile(button) {
+	var reportid = button.getAttribute('data-reportid');
+	var asondate = button.getAttribute('data-asondate');
+	var fromdate = button.getAttribute('data-fromdate');
+	var todate = button.getAttribute('data-todate');
+	var currency = button.getAttribute('data-currency');
+	var subreportid = button.getAttribute('data-subreportid');
+	var secid = button.getAttribute('data-secid');
+	var dtltype = button.getAttribute('data-dtltype');
+	var filename = button.getAttribute('data-filename');
+	
+	$('#loader').modal('show');
+
+	$.ajax({
+		url: './downloadExcel?reportid=' + reportid +
+			'&fromdate=' + fromdate +
+			'&asondate=' + asondate +
+			'&todate=' + todate +
+			'&currency=' + currency +
+			'&subreportid=' + subreportid +
+			'&secid=' + secid +
+			'&filename=' + filename,
+		type: 'GET',
+		xhrFields: {
+			responseType: 'blob'
+		},
+		success: function (data) {
+			$('#loader').modal('hide');
+
+			if (data && data.size > 100) {
+				const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.style.display = 'none';
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				window.URL.revokeObjectURL(url);
+				document.body.removeChild(a);
+
+				showResultModal('BRRS', filename + ' downloaded successfully.');
+			} else {
+				showResultModal('Information', 'No data was available to create a download.');
+			}
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			$('#loader').modal('hide');
+			console.error("Download failed:", textStatus, errorThrown);
+			showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+
 		}
 
 		.col-sm-5 {
@@ -694,6 +1094,7 @@ PURPOSE		: BRFREPORT
 					</div>
 				</div>
 
+
 				<div th:if="${displaymode == 'summary'}">
 					<div class="row">
 						<div class="col-sm-12">
@@ -724,6 +1125,33 @@ PURPOSE		: BRFREPORT
 										</tr>
 										<!-- Second row: technical column IDs under above headers -->
 										<!-- <tr style="background-color: #b3b6b9">
+
+			
+			<div th:if="${displaymode == 'summary'}">
+			<div class="row" >
+				<div class="col-sm-12">
+					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
+    					<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reportss" style="table-layout: fixed;">
+                            <colgroup>
+                             
+                              <col style="width: 60px;" />
+                              <col style="width: 33%;" />
+                              <col style="width: 200px;" />
+                              <col style="width: 400px;" />
+                             </colgroup>
+							<thead class="thead-light">
+  									 <!-- First header row -->
+                                    <tr style="background-color: #b3b6b9">
+                                        <!-- <th rowspan="2" style="text-align: center; background-color: #b3b6b9">ROW</th> -->
+                                        <th rowspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
+                                        <th rowspan="1" style="text-align: left; width:33%; background-color: #D8D8D8;">Ref para</th>
+                                        <th colspan="1" style="text-align: center; background-color: #D8D8D8;">Item</th>
+                                        <th colspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
+                                        
+									</tr>
+                                    <!-- Second row: technical column IDs under above headers -->
+                                     <!-- <tr style="background-color: #b3b6b9">
+
                                         <th style="text-align: center; background-color: #b3b6b9">C10</th>
                                         <th style="text-align: center; background-color: #b3b6b9">C20</th>
                                         <th style="text-align: center; background-color: #b3b6b9">C30</th>
@@ -736,6 +1164,7 @@ PURPOSE		: BRFREPORT
 										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">9</td> -->
 											<td style="text-align: right; font-weight:  normal; ">1</td>
+
 											<td style="text-align: left;font-weight:  normal;"
 												th:text="${report.R9_REF_PARM}"></td>
 											<td style="text-align: left;font-weight:  normal;"
@@ -744,11 +1173,19 @@ PURPOSE		: BRFREPORT
 												th:text="${#numbers.formatDecimal(report.R9_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 												th:attr="RowId='R9', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R9_REF_PARM}"></td>
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R9_PRODUCT}"></td>
+                                            <td style="text-align: right;font-weight: normal;background-color: rgb(107, 122, 143);color: white;" 
+											  th:text="${#numbers.formatDecimal(report.R9_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											th:attr="RowId='R9', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+
 										</tr>
 
 										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">10</td> -->
 											<td style="text-align: right; font-weight:  normal; ">2</td>
+
 											<td style="text-align: left;font-weight:  normal;"
 												th:text="${report.R10_REF_PARM}"></td>
 											<td style="text-align: left;font-weight:  normal;"
@@ -757,6 +1194,14 @@ PURPOSE		: BRFREPORT
 												th:text="${#numbers.formatDecimal(report.R10_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 												th:attr="RowId='R10', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)">
+
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R10_REF_PARM}"></td>
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R10_PRODUCT}"></td>
+											<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143);color: white;"
+											    th:text="${#numbers.formatDecimal(report.R10_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											    th:attr="RowId='R10', ColumnId='C3'"
+											    onclick="showdetailsbyRowAndColumn(this)">
+
 											</td>
 
 										</tr>
@@ -764,6 +1209,7 @@ PURPOSE		: BRFREPORT
 										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">11</td> -->
 											<td style="text-align: right; font-weight:  normal; ">3</td>
+
 											<td style="text-align: left;font-weight:  normal;"
 												th:text="${report.R11_REF_PARM}"></td>
 											<td style="text-align: left;font-weight:  normal;"
@@ -772,11 +1218,19 @@ PURPOSE		: BRFREPORT
 												th:text="${#numbers.formatDecimal(report.R11_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 												th:attr="RowId='R11', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R11_REF_PARM}"></td>
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R11_PRODUCT}"></td>
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
+										  th:text="${#numbers.formatDecimal(report.R11_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											th:attr="RowId='R11', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+
 										</tr>
 
 										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">12</td> -->
 											<td style="text-align: right; font-weight: normal; ">4</td>
+
 											<td style="text-align: left;font-weight:  normal;"
 												th:text="${report.R12_REF_PARM}"></td>
 											<td style="text-align: left;font-weight:  normal;"
@@ -785,11 +1239,19 @@ PURPOSE		: BRFREPORT
 												th:text="${#numbers.formatDecimal(report.R12_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 												th:attr="RowId='R12', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R12_REF_PARM}"></td>
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R12_PRODUCT}"></td>
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
+											th:text="${#numbers.formatDecimal(report.R12_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											th:attr="RowId='R12', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+
 										</tr>
 
 										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">13</td> -->
 											<td style="text-align: right; font-weight:  normal; ">5</td>
+
 											<td style="text-align: left;font-weight:  normal;"
 												th:text="${report.R13_REF_PARM}"></td>
 											<td style="text-align: left;font-weight:  normal;"
@@ -798,11 +1260,19 @@ PURPOSE		: BRFREPORT
 												th:text="${#numbers.formatDecimal(report.R13_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 												th:attr="RowId='R13', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R13_REF_PARM}"></td>
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R13_PRODUCT}"></td>
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
+											  th:text="${#numbers.formatDecimal(report.R13_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											th:attr="RowId='R13', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+
 										</tr>
 
 										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">14</td> -->
 											<td style="text-align: right; font-weight:  normal; ">6</td>
+
 											<td style="text-align: left;font-weight: bold;"
 												th:text="${report.R14_REF_PARM}"></td>
 											<td style="text-align: left;font-weight:  normal;"
@@ -811,6 +1281,13 @@ PURPOSE		: BRFREPORT
 												th:text="${#numbers.formatDecimal(report.R14_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 												th:attr="RowId='R14', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                                            <td style="text-align: left;font-weight: bold;" th:text="${report.R14_REF_PARM}"></td>
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R14_PRODUCT}"></td>
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
+											  th:text="${#numbers.formatDecimal(report.R14_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											th:attr="RowId='R14', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+
 										</tr>
 
 
@@ -819,10 +1296,30 @@ PURPOSE		: BRFREPORT
 
 								</table>
 
+
 								<table
 									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 									id="reportss" style="table-layout: fixed;">
 									<colgroup>
+
+                        <table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reportss" style="table-layout: fixed;">
+                            <colgroup>
+                              
+                              <col style="width: 60px;" />
+                              <col style="width: 33%;" />
+                              <col style="width: 200px;" />
+                              <col style="width: 400px;" />
+                             </colgroup>
+							<thead class="thead-light">
+  									 <!-- First header row -->
+                                    <tr style="background-color: #b3b6b9">
+                                        <!-- <th rowspan="2" style="text-align: center; background-color: #b3b6b9;">ROW</th> -->
+                                        <th rowspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
+                                        <th rowspan="1" style="text-align: left; width:33%; background-color: #D8D8D8;">Ref Para</th>
+                                        <th colspan="1" style="text-align: center; background-color: #D8D8D8;";>Item</th>
+                                        <th colspan="1" style="text-align: right; background-color: #D8D8D8;">Amount(P'000)</th>
+                                    </tr>    
+
 
 										<col style="width: 60px;" />
 										<col style="width: 33%;" />
@@ -857,6 +1354,7 @@ PURPOSE		: BRFREPORT
 										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">17</td> -->
 											<td style="text-align: right; font-weight:  normal; ">7</td>
+
 											<td style="text-align: left;font-weight:  normal;"
 												th:text="${report.R17_REF_PARM}"></td>
 											<td style="text-align: left;font-weight:  normal;"
@@ -865,11 +1363,19 @@ PURPOSE		: BRFREPORT
 												th:text="${#numbers.formatDecimal(report.R17_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 												th:attr="RowId='R17', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R17_REF_PARM}"></td>
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R17_PRODUCT}"></td>
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;"
+											  th:text="${#numbers.formatDecimal(report.R17_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											th:attr="RowId='R17', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+
 										</tr>
 
 										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">18</td> -->
 											<td style="text-align: right; font-weight:  normal; ">8</td>
+
 											<td style="text-align: left;font-weight:  normal;"
 												th:text="${report.R18_REF_PARM}"></td>
 											<td style="text-align: left;font-weight:  normal;"
@@ -878,11 +1384,19 @@ PURPOSE		: BRFREPORT
 												th:text="${#numbers.formatDecimal(report.R18_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 												th:attr="RowId='R18', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R18_REF_PARM}"></td>
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R18_PRODUCT}"></td>
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
+											  th:text="${#numbers.formatDecimal(report.R18_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											th:attr="RowId='R18', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+
 										</tr>
 
 										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">19</td> -->
 											<td style="text-align: right; font-weight:  normal; ">9</td>
+
 											<td style="text-align: left;font-weight:  normal;"
 												th:text="${report.R19_REF_PARM}"></td>
 											<td style="text-align: left;font-weight:  normal;"
@@ -891,11 +1405,19 @@ PURPOSE		: BRFREPORT
 												th:text="${#numbers.formatDecimal(report.R19_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 												th:attr="RowId='R19', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R19_REF_PARM}"></td>
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R19_PRODUCT}"></td>
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
+											  th:text="${#numbers.formatDecimal(report.R19_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											th:attr="RowId='R19', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+
 										</tr>
 
 										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">20</td> -->
 											<td style="text-align: right; font-weight:  normal; ">10</td>
+
 											<td style="text-align: left;font-weight:  normal;"
 												th:text="${report.R20_REF_PARM}"></td>
 											<td style="text-align: left;font-weight:  normal;"
@@ -904,11 +1426,19 @@ PURPOSE		: BRFREPORT
 												th:text="${#numbers.formatDecimal(report.R20_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
 												th:attr="RowId='R20', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R20_REF_PARM}"></td>
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R20_PRODUCT}"></td>
+                                            <td style="text-align: right;font-weight:  normal;background-color: rgb(107, 122, 143);color: white;" 
+											  th:text="${#numbers.formatDecimal(report.R20_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											th:attr="RowId='R20', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+
 										</tr>
 
 										<tr>
 											<!-- <td style="text-align: center; background-color: #b3b6b9;">13</td> -->
 											<td style="text-align: right; font-weight:  normal; ">11</td>
+
 											<td style="text-align: left;font-weight:  normal;"
 												th:text="${report.R21_REF_PARM}"></td>
 											<td style="text-align: left;font-weight:  bold;"
@@ -918,6 +1448,14 @@ PURPOSE		: BRFREPORT
 												th:attr="RowId='R21', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
+
+                                            <td style="text-align: left;font-weight:  normal;" th:text="${report.R21_REF_PARM}"></td>
+                                            <td style="text-align: left;font-weight:  bold;" th:text="${report.R21_PRODUCT}"></td>
+                                            <td style="text-align: right;font-weight: normal;background-color: rgb(107, 122, 143);color: white;" 
+											  th:text="${#numbers.formatDecimal(report.R21_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+											th:attr="RowId='R21', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>                                       
+
 									</tbody>
 
 
