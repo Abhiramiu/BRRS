@@ -1,26 +1,37 @@
 package com.bornfire.brrs.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.sql.DataSource;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bornfire.brrs.config.SequenceGenerator;
 import com.bornfire.brrs.entities.MCBL_Detail_Rep;
+
+import com.bornfire.brrs.entities.MCBL_Entity;
+import com.bornfire.brrs.entities.MCBL_Main_Entity;
+
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
+import com.bornfire.brrs.entities.MCBL_Rep;
 
 @Service
 @Transactional
@@ -36,6 +47,9 @@ public class MCBL_Services {
     private MCBL_Detail_Rep MCBL_Detail_Reps;
 
     @Autowired
+	private MCBL_Rep mcblRep;
+    
+    @Autowired
     private DataSource dataSource;
 
     private static final Logger logger = LoggerFactory.getLogger(MCBL_Services.class);
@@ -45,9 +59,17 @@ public class MCBL_Services {
         long startTime = System.currentTimeMillis();
         List<String> validationErrors = new ArrayList<>();
 
+        if (file == null || file.isEmpty()) {
+            return "Error: Uploaded file is empty!";
+        }
+        
         try (InputStream is = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(is);
              Connection conn = dataSource.getConnection()) {
+        	
+        	if (workbook.getNumberOfSheets() == 0) {
+                return "Error: Excel file has no sheets!";
+            }
 
             conn.setAutoCommit(false);
 
@@ -56,6 +78,10 @@ public class MCBL_Services {
             java.sql.Date sqlReportDate = new java.sql.Date(parsedDate.getTime());
 
             Sheet sheet = workbook.getSheet("MCBL");
+
+            if (sheet == null) {
+                return "Error: First sheet is missing! Sheet Name should be MCBL";
+            }
 
             // Prepare delete statements
             String deleteSql = "DELETE FROM BRRS_MCBL " +
@@ -90,6 +116,11 @@ public class MCBL_Services {
 
             for (int i = 0; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
+                if (row == null) {
+                    System.out.println("Skipping empty row: " + i);
+                    continue;
+                }
+                
                 if (row == null) continue;
 
                 String glCode = formatter.formatCellValue(row.getCell(0)).trim();
@@ -140,7 +171,6 @@ public class MCBL_Services {
                         insertStmt.addBatch();
 
                         // Insert into General Master
-
                         insertGeneralStmt.setString(1, sequence.generateRequestUUId()); // ID
                         insertGeneralStmt.setString(2, "MCBL");                         // FILE_TYPE
                         insertGeneralStmt.setString(3, glCode);                         // GL_CODE
@@ -232,4 +262,135 @@ public class MCBL_Services {
                 return BigDecimal.ZERO;
         }
     }
+
+
+    
+  
+    
+    
+    
+    private final ConcurrentHashMap<String, byte[]> jobStorage = new ConcurrentHashMap<>();
+
+    @Async
+    public void generateReportAsync(String jobId, String filename, String todate) {
+        System.out.println("Starting report generation for: " + filename);
+        byte[] fileData = generateMCBLExcel(filename, todate);
+        jobStorage.put(jobId, fileData != null ? fileData : null);
+        System.out.println("Report generation completed for: " + filename);
+    }
+
+    public byte[] getReport(String jobId) {
+        return jobStorage.get(jobId);
+    }
+
+    public byte[] generateMCBLExcel(String filename, String todate) {
+        try {
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet("MCBL_Report");
+
+            // ================= Header Style =================
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerStyle.setFont(headerFont);
+            headerStyle.setBorderTop(BorderStyle.THIN);
+            headerStyle.setBorderBottom(BorderStyle.THIN);
+            headerStyle.setBorderLeft(BorderStyle.THIN);
+            headerStyle.setBorderRight(BorderStyle.THIN);
+            headerStyle.setAlignment(HorizontalAlignment.CENTER);
+
+            // ================= Balance / Amount Style =================
+            CellStyle balanceStyle = workbook.createCellStyle();
+            balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+            balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+            balanceStyle.setBorderTop(BorderStyle.THIN);
+            balanceStyle.setBorderBottom(BorderStyle.THIN);
+            balanceStyle.setBorderLeft(BorderStyle.THIN);
+            balanceStyle.setBorderRight(BorderStyle.THIN);
+
+            // ================= General Data Style =================
+            CellStyle dataCellStyle = workbook.createCellStyle();
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderLeft(BorderStyle.THIN);
+            dataCellStyle.setBorderRight(BorderStyle.THIN);
+
+            // ================= Headers =================
+            String[] headers = {"GL Code","GL Sub Code","Head Acc No","Description","Currency",
+                                "Debit Balance","Credit Balance","Debit Equivalent","Credit Equivalent","Report Date"};
+            XSSFRow headerRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+                sheet.setColumnWidth(i, 5000);
+            }
+
+            // ================= Fetch data from DB =================
+            List<MCBL_Entity> dataList = mcblRep.findRecordsByReportDate(todate);
+
+            if (dataList != null && !dataList.isEmpty()) {
+                int rowIndex = 1;
+                for (MCBL_Entity rec : dataList) {
+                    XSSFRow row = sheet.createRow(rowIndex++);
+
+                    // Text / Date cells
+                    Cell cell0 = row.createCell(0);
+                    cell0.setCellValue(rec.getGl_code());
+                    cell0.setCellStyle(dataCellStyle);
+
+                    Cell cell1 = row.createCell(1);
+                    cell1.setCellValue(rec.getGl_sub_code());
+                    cell1.setCellStyle(dataCellStyle);
+
+                    Cell cell2 = row.createCell(2);
+                    cell2.setCellValue(rec.getHead_acc_no());
+                    cell2.setCellStyle(dataCellStyle);
+
+                    Cell cell3 = row.createCell(3);
+                    cell3.setCellValue(rec.getDescription());
+                    cell3.setCellStyle(dataCellStyle);
+
+                    Cell cell4 = row.createCell(4);
+                    cell4.setCellValue(rec.getCurrency());
+                    cell4.setCellStyle(dataCellStyle);
+
+                    // Numeric / Amount cells
+                    Cell debitCell = row.createCell(5);
+                    debitCell.setCellValue(rec.getDebit_balance() != null ? rec.getDebit_balance().doubleValue() : 0);
+                    debitCell.setCellStyle(balanceStyle);
+
+                    Cell creditCell = row.createCell(6);
+                    creditCell.setCellValue(rec.getCredit_balance() != null ? rec.getCredit_balance().doubleValue() : 0);
+                    creditCell.setCellStyle(balanceStyle);
+
+                    Cell debitEqCell = row.createCell(7);
+                    debitEqCell.setCellValue(rec.getDebit_equivalent() != null ? rec.getDebit_equivalent().doubleValue() : 0);
+                    debitEqCell.setCellStyle(balanceStyle);
+
+                    Cell creditEqCell = row.createCell(8);
+                    creditEqCell.setCellValue(rec.getCredit_equivalent() != null ? rec.getCredit_equivalent().doubleValue() : 0);
+                    creditEqCell.setCellStyle(balanceStyle);
+
+                    // Report Date cell
+                    Cell cell9 = row.createCell(9);
+                    cell9.setCellValue(
+                        rec.getReport_date() != null ? new SimpleDateFormat("dd-MM-yyyy").format(rec.getReport_date()) : ""
+                    );
+                    cell9.setCellStyle(dataCellStyle);
+                }
+            }
+
+            // ================= Write to ByteArray =================
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            workbook.write(bos);
+            workbook.close();
+            return bos.toByteArray();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new byte[0];
+        }
+    }
+
 }

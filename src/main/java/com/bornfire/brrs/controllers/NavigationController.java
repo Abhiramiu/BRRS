@@ -1,19 +1,24 @@
 package com.bornfire.brrs.controllers;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -22,6 +27,8 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -48,7 +55,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.bornfire.brrs.entities.AccessAndRoles;
 import com.bornfire.brrs.entities.AccessandRolesRepository;
-
+import com.bornfire.brrs.entities.BDGF_Entity;
+import com.bornfire.brrs.entities.BDGF_Rep;
+import com.bornfire.brrs.entities.BFDB_Entity;
+import com.bornfire.brrs.entities.BFDB_Rep;
+import com.bornfire.brrs.entities.BLBF_Entity;
+import com.bornfire.brrs.entities.BLBF_Rep;
 import com.bornfire.brrs.entities.BankBranchMasterRepo;
 import com.bornfire.brrs.entities.MCBL_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Entity;
@@ -91,6 +103,18 @@ public class NavigationController {
 	 @Autowired
 	 private MCBL_Rep mcblRep;
 	 
+	@Autowired
+    MCBL_Services MCBL_Servicess;
+    	
+		
+	 @Autowired
+	 BDGF_Rep  bdgfRep;
+	 
+	 @Autowired
+	 BFDB_Rep  bfdbRep;
+	 
+	 @Autowired
+	 BLBF_Rep  blbfRep;
 	 
 	 @Autowired
 	ReportServices reportServices;
@@ -694,10 +718,41 @@ public class NavigationController {
     	}
 
 
+    	@GetMapping("/getReportDatesByFileType")
+    	@ResponseBody
+    	public List<String> getReportDatesByFileType(@RequestParam String fileType) {
+    	    List<Date> reportDates = new ArrayList<>();
+
+    	    switch (fileType) {
+    	        case "MCBL":
+    	            reportDates = mcblRep.findDistinctReportDates();
+    	            break;
+    	        case "DEPOSIT_GENERAL":
+    	            reportDates = bdgfRep.findDistinctReportDates();
+    	            break;
+    	        case "LOAN_BOOK":
+    	            reportDates = blbfRep.findDistinctReportDates();
+    	            break;
+    	        
+    	        case "DEPOSIT_BOOK":
+    	            reportDates = bfdbRep.findDistinctReportDates();
+    	            break;
+    	    }
+
+    	    // Convert Date -> formatted String
+    	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    	    return reportDates.stream()
+    	            .map(sdf::format)
+    	            .collect(Collectors.toList());
+    	}
+
+
 
     	//Getting Details by report date for view and download for MCBL IN FILE UPLOAD
-    	@GetMapping("/fetchMCBLRecords")
-    	public String fetchMCBLRecords(@RequestParam String reportDate, Model md) {
+    	/*@GetMapping("/fetchMCBLRecords")
+    	public String fetchMCBLRecords(@RequestParam String reportDate,
+    			 @RequestParam(required = false) String fileType,
+    			 Model md) {
     	    System.out.println("Came to controller with report date: " + reportDate);
 
     	    // Fetch records from repository
@@ -710,16 +765,95 @@ public class NavigationController {
     	    List<Date> reportDates = mcblRep.findDistinctReportDates();
 		    md.addAttribute("reportDates", reportDates);
 		    
+		    md.addAttribute("selectedFileType", fileType); // add this
 		    
     	    md.addAttribute("formmode", "list");
     	    // Return the same view (page name)
     	    return "MCBL"; // change this to your actual HTML/Thymeleaf page name
     	}
-
-
-    	@Autowired
-    	MCBL_Services MCBL_Servicess;
+*/
     	
+    	@GetMapping("/fetchRecords")
+    	public String fetchRecords(@RequestParam String reportDate,
+    	                           @RequestParam String fileType,
+    	                           Model md) {
+    	    System.out.println("Fetching records for type: " + fileType + " and date: " + reportDate);
+
+    	    md.addAttribute("selectedReportDate", reportDate);
+    	    md.addAttribute("selectedFileType", fileType);
+    	    md.addAttribute("formmode", "list");
+
+    	    switch (fileType) {
+    	        case "MCBL":
+    	            List<MCBL_Entity> mcblList = mcblRep.findRecordsByReportDate(reportDate);
+    	            md.addAttribute("MCBL_List", mcblList);
+    	            List<Date> mcblDates = mcblRep.findDistinctReportDates();
+    	            md.addAttribute("reportDates", mcblDates);
+    	            break;
+
+    	        case "DEPOSIT_GENERAL":
+    	            List<BDGF_Entity> bdgfList = bdgfRep.findRecordsByReportDate(reportDate);
+    	            md.addAttribute("BDGF_List", bdgfList);
+    	            List<Date> bdgfDates = bdgfRep.findDistinctReportDates();
+    	            md.addAttribute("reportDates", bdgfDates);
+    	            break;
+
+    	        case "DEPOSIT_BOOK":
+    	            List<BFDB_Entity> bfdbList = bfdbRep.findRecordsByReportDate(reportDate);
+    	            md.addAttribute("BFDB_List", bfdbList);
+    	            List<Date> bfdbDates = bfdbRep.findDistinctReportDates();
+    	            md.addAttribute("reportDates", bfdbDates);
+    	            break;
+
+    	        case "LOAN_BOOK":
+    	            List<BLBF_Entity> blbfList = blbfRep.findRecordsByReportDate(reportDate);
+    	            md.addAttribute("BLBF_List", blbfList);
+    	            List<Date> blbfDates = blbfRep.findDistinctReportDates();
+    	            md.addAttribute("reportDates", blbfDates);
+    	            break;
+    	    }
+
+    	    return "MCBL"; // all tables in one page
+    	}
+
+
+
+    	// Start async report
+    	@GetMapping("/startreport")
+    	@ResponseBody
+    	public String startReport(@RequestParam String filename,
+    	                          @RequestParam String todate) {
+    	    String jobId = UUID.randomUUID().toString();
+    	    MCBL_Servicess.generateReportAsync(jobId, filename, todate);
+    	    return jobId; // now returned as plain text
+    	}
+
+
+        // Check report status
+        @GetMapping("/checkreport")
+        public ResponseEntity<String> checkReport(@RequestParam String jobId) {
+            byte[] report = MCBL_Servicess.getReport(jobId);
+            if (report == null) {
+                return ResponseEntity.ok("PROCESSING");
+            }
+            return ResponseEntity.ok("READY");
+        }
+
+        // Download the generated Excel
+        @GetMapping("/downloaddetailExcel")
+        public ResponseEntity<byte[]> downloadDetailExcel(@RequestParam String jobId,
+                                                          @RequestParam String filename) {
+            byte[] data = MCBL_Servicess.getReport(jobId);
+            if (data == null || data.length == 0) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename + ".xlsx")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(data);
+        }
+    	 
+    
     	
     	@PostMapping("addmcbl")
     	@ResponseBody

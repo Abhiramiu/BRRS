@@ -519,62 +519,150 @@ function checkReportDate() {
 	</script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const input = document.getElementById("report_date");
-    const today = new Date();
-
-    // ✅ Get the last day of the previous month correctly
-    // Month is 0-indexed, so using (today.getMonth(), 0) gives last day of previous month
-    const lastDayPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-
-    // ✅ Format as yyyy-MM-dd (adjusting for timezone)
-    const formattedDate = new Date(
-        lastDayPrevMonth.getTime() - lastDayPrevMonth.getTimezoneOffset() * 60000
-    ).toISOString().split("T")[0];
-
-    // ✅ Set min, max, and default to last day of previous month
-    input.min = formattedDate;
-    input.max = formattedDate;
-    input.value = formattedDate;
-
-    // Prevent manual typing
-    input.addEventListener("keydown", function (e) {
-        e.preventDefault();
-    });
-});
-
-function checkReportDate() {
-    const input = document.getElementById("report_date");
-    const today = new Date();
-    const lastDayPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-    const selectedDate = new Date(input.value);
-
-    if (selectedDate.getDate() !== lastDayPrevMonth.getDate() ||
-        selectedDate.getMonth() !== lastDayPrevMonth.getMonth() ||
-        selectedDate.getFullYear() !== lastDayPrevMonth.getFullYear()) {
-        alert("You can select only the last day of the previous month!");
-        const formattedDate = new Date(
-            lastDayPrevMonth.getTime() - lastDayPrevMonth.getTimezoneOffset() * 60000
-        ).toISOString().split("T")[0];
-        input.value = formattedDate;
-    }
-}
-
-
-</script>
-<script>
 $(document).ready(function() {
-    $("#FileType, #ReportDate").change(function() {
-        var fileType = $("#FileType").val();
-        var reportDate = $("#ReportDate").val();
+    $("#FileType").change(function() {
+        var fileType = $(this).val();
 
-        if (fileType === "MCBL" && reportDate !== "") {
-            window.location.href = "./fetchMCBLRecords?reportDate=" + reportDate;
+        // clear current report dates
+        $("#ReportDate").empty().append('<option value="">-- Select Report Date --</option>');
+
+        if (fileType !== "") {
+            $.ajax({
+                url: 'getReportDatesByFileType',  // controller endpoint
+                type: 'GET',
+                data: { fileType: fileType },
+                success: function(dates) {
+                    $("#ReportDate").empty().append('<option value="">-- Select Report Date --</option>');
+                    $.each(dates, function(index, formattedDate) {
+                        var displayDate = formattedDate.split('-').reverse().join('-'); // dd-MM-yyyy
+                        $("#ReportDate").append('<option value="' + formattedDate + '">' + displayDate + '</option>');
+                    });
+                },
+                error: function() {
+                    alert("Error fetching report dates!");
+                }
+            });
         }
     });
 });
 </script>
+<script>
+$(document).ready(function() {
+	$("#FileType, #ReportDate").change(function() {
+	    var fileType = $("#FileType").val();
+	    var reportDate = $("#ReportDate").val();
 
+	    if (fileType !== "" && reportDate !== "") {
+	        window.location.href = "fetchRecords?fileType=" + fileType + "&reportDate=" + reportDate;
+	    }
+	});
+
+});
+</script>
+
+
+<script>
+document.getElementById("downloadMCBLBtn").addEventListener("click", function() {
+    const reportDate = document.getElementById("ReportDate").value;
+    if (!reportDate) {
+        alert("Please select a Report Date before downloading.");
+        return;
+    }
+
+    // Construct download URL
+    const downloadUrl = `/downloadMCBLExcel?reportDate=${encodeURIComponent(reportDate)}`;
+
+    // Trigger file download
+    window.location.href = downloadUrl;
+});
+</script>
+<script>
+function startReport(button) {
+    const alertMsg = document.getElementById("alertMessage");
+    const filename = button.getAttribute('data-filename');
+    const todate = button.getAttribute('data-todate');
+    
+    const sessionfilename = sessionStorage.getItem("filename");
+    
+    if(sessionfilename == filename){
+        alertMsg.innerHTML ='Download request already processing...';
+        showAlert();
+        return;
+    }
+    
+    alertMsg.innerHTML ='Download request processing...';
+    showAlert();
+
+    const baseUrl = 'startreport';
+    const downloadUrl = baseUrl +
+        '?filename=' + encodeURIComponent(filename) +
+        '&todate=' + encodeURIComponent(todate);
+
+    fetch(downloadUrl)
+        .then(res => res.text())
+        .then(jobId => {
+            alertMsg.innerHTML ='Download request received: ' + jobId;
+            showAlert();
+            sessionStorage.setItem("jobId", jobId);
+            sessionStorage.setItem("filename", filename);
+            checkReport(jobId);
+        });
+}
+
+function checkReport(jobId) {
+    const alertMsg = document.getElementById("alertMessage");
+    fetch('checkreport?jobId=' + encodeURIComponent(jobId))
+        .then(res => res.text())
+        .then(status => {
+            if (status === "READY") {
+                alertMsg.innerHTML ='Report is ready! Downloading…';
+                showAlert();
+                const filename = sessionStorage.getItem("filename");
+                downloadDetailfile(jobId, filename)
+                sessionStorage.removeItem("jobId");
+                sessionStorage.removeItem("filename");                
+            } else if(status === "PROCESSING") {
+                alertMsg.innerHTML ='Download is processing…';
+                showAlert();
+                setTimeout(() => checkReport(jobId), 5000);
+            } else if(status === "ERROR") {
+                alertMsg.innerHTML ='No data available to create a download.';
+                showAlert();
+                sessionStorage.removeItem("jobId");
+                sessionStorage.removeItem("filename");  
+            }
+        });
+}
+
+function downloadDetailfile(jobId, filename) {
+    $.ajax({
+        url: 'downloaddetailExcel?jobId=' + jobId + '&filename=' + filename,
+        type: 'GET',
+        xhrFields: { responseType: 'blob' },
+        success: function (data) {
+            if (data && data.size > 100) {
+                const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename + '.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                showResultModal('Success', filename + ' downloaded successfully.');
+            } else {
+                showResultModal('Information', 'No data available to create a download.');
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error("Download failed:", textStatus, errorThrown);
+            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+        }
+    });
+}
+</script>
 </head>
 
 <title>MCBL</title>
@@ -592,25 +680,44 @@ $(document).ready(function() {
 				<div class="row" th:if="${formmode == 'list'}">
 					<div class="col-sm-12 finuserapply">
 						<div class="card">
-							<div class="card-header">
-							
-							<div class="float-left w-50 d-flex align-items-center">
-									<button type="button" class="custom-tab-btn"
-										id="btnBack"
-										onclick="back();" title="Back">
-										<i class="fa fa-arrow-left" style="color: black;"></i>
-									</button>
+							<div class="card-header d-flex justify-content-between align-items-center">
 
-									<h6 style="font-family: Verdana; font-weight: bold; margin: 0;font-size: 1.25rem;"
-										th:if="${formmode}=='list'">File upload - List</h6>
-									
-								</div>
-							
-							</div>
+  <!-- Left Section -->
+  <div class="d-flex align-items-center">
+    <button type="button" class="custom-tab-btn"
+      id="btnBack"
+      onclick="back();" title="Back">
+      <i class="fa fa-arrow-left" style="color: black;"></i>
+    </button>
+
+    <h6 style="font-family: Verdana; font-weight: bold; margin: 0; font-size: 1.25rem;"
+      th:if="${formmode}=='list'">
+      File upload - List
+    </h6>
+  </div>
+
+  <!-- Right Section -->
+  <div>
+    <button
+      type="button"
+      class="custom-tab-btn"
+      id="downloadMCBLBtn"
+      th:if="${selectedFileType == 'MCBL'}"
+      onclick="startReport(this);"
+      th:attr="
+        data-todate=${selectedReportDate},
+        data-filename='MCBL'
+      ">
+      <i class="fa fa-download"></i> Download Excel
+    </button>
+  </div>
+
+</div>
+
 							
 							<div class="card-body">
 
-   <!-- Dropdowns -->
+ <!-- Dropdowns -->
 <div class="row formline" style="margin-bottom:0px;">
     <div class="col-sm-auto"></div>
 
@@ -618,10 +725,10 @@ $(document).ready(function() {
     <div class="col-sm-2">
         <select id="FileType" class="form-control form-control-sm" name="FileType" autocomplete="off" required>
             <option value="">Select File Type</option>
-            <option value="MCBL">MCBL</option>
-            <option value="LOAN_BOOK">LOAN BOOK</option>
-            <option value="DEPOSIT_GENERAL">DEPOSIT GENERAL</option>
-            <option value="DEPOSIT_BOOK">DEPOSIT BOOK</option>
+            <option value="MCBL" th:selected="${selectedFileType == 'MCBL'}">MCBL</option>
+            <option value="LOAN_BOOK" th:selected="${selectedFileType == 'LOAN_BOOK'}">LOAN BOOK</option>
+            <option value="DEPOSIT_GENERAL" th:selected="${selectedFileType == 'DEPOSIT_GENERAL'}">DEPOSIT GENERAL</option>
+            <option value="DEPOSIT_BOOK" th:selected="${selectedFileType == 'DEPOSIT_BOOK'}">DEPOSIT BOOK</option>
         </select>
     </div>
 
@@ -629,13 +736,10 @@ $(document).ready(function() {
     <div class="col-sm-3">
         <select id="ReportDate" name="ReportDate" class="form-control form-control-sm">
             <option value="">-- Select Report Date --</option>
-            <th:block th:each="date : ${reportDates}">
-                <option th:value="${#dates.format(date, 'yyyy-MM-dd')}"
-                        th:text="${#dates.format(date, 'dd-MM-yyyy')}"></option>
-            </th:block>
         </select>
     </div>
 </div>
+
 
 
 <div class="row formline">
@@ -646,45 +750,141 @@ $(document).ready(function() {
 
 
     <!-- Table Section -->
-   <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-  <table class="table table-bordered table-sm" id="mcblTable" style="margin-bottom: 0;">
+ <!-- ================== MCBL TABLE ================== -->
+<div th:if="${selectedFileType == 'MCBL'}">
+  
+  <!-- Header row with download button -->
+  <div class="d-flex justify-content-between align-items-center mb-2">
+   
+    
+  </div>
+
+  <!-- Table -->
+  <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-bordered table-sm" id="mcblTable" style="margin-bottom: 0;">
+      <thead class="table-light" style="position: sticky; top: 0; z-index: 2;">
+        <tr>
+          <th>GL Code</th>
+          <th>GL Sub Code</th>
+          <th>Head Acc No</th>
+          <th>Description</th>
+          <th>Currency</th>
+          <th class="text-end">Debit Balance</th>
+          <th class="text-end">Credit Balance</th>
+          <th class="text-end">Debit Equivalent</th>
+          <th class="text-end">Credit Equivalent</th>
+          <th>Report Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="record : ${MCBL_List}">
+          <td th:text="${record.gl_code}"></td>
+          <td th:text="${record.gl_sub_code}"></td>
+          <td th:text="${record.head_acc_no}"></td>
+          <td th:text="${record.description}"></td>
+          <td th:text="${record.currency}"></td>
+          <td class="text-end" th:text="${#numbers.formatInteger(record.debit_balance,3,'COMMA')}"></td>
+          <td class="text-end" th:text="${#numbers.formatInteger(record.credit_balance,3,'COMMA')}"></td>
+          <td class="text-end" th:text="${#numbers.formatInteger(record.debit_equivalent,3,'COMMA')}"></td>
+          <td class="text-end" th:text="${#numbers.formatInteger(record.credit_equivalent,3,'COMMA')}"></td>
+          <td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(MCBL_List)}">
+          <td colspan="10" class="text-center">No records found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+
+<!-- ================== DEPOSIT GENERAL (BDGF) ================== -->
+<div th:if="${selectedFileType == 'DEPOSIT_GENERAL'}" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+  <table class="table table-bordered table-sm">
     <thead class="table-light" style="position: sticky; top: 0; z-index: 2;">
       <tr>
-        <th>GL Code</th>
-        <th>GL Sub Code</th>
-        <th>Head Acc No</th>
-        <th>Description</th>
+        <th>Account No</th>
+        <th>Customer Name</th>
         <th>Currency</th>
-        <th class="text-end">Debit Balance</th>
-        <th class="text-end">Credit Balance</th>
-        <th class="text-end">Debit Equivalent</th>
-        <th class="text-end">Credit Equivalent</th>
+        <th class="text-end">Outstanding Balance</th>
+        <th>Maturity Date</th>
         <th>Report Date</th>
-        
       </tr>
     </thead>
     <tbody>
-      <tr th:each="record : ${MCBL_List}">
-        <td th:text="${record.gl_code}"></td>
-        <td th:text="${record.gl_sub_code}"></td>
-        <td th:text="${record.head_acc_no}"></td>
-        <td th:text="${record.description}"></td>
+      <tr th:each="record : ${BDGF_List}">
+        <td th:text="${record.acc_no}"></td>
+        <td th:text="${record.customer_name}"></td>
         <td th:text="${record.currency}"></td>
-        <td class="text-end" th:text="${record.debit_balance}"></td>
-        <td class="text-end" th:text="${record.credit_balance}"></td>
-        <td class="text-end" th:text="${record.debit_equivalent}"></td>
-        <td class="text-end" th:text="${record.credit_equivalent}"></td>
-       	<td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
-
+        <td class="text-end" th:text="${#numbers.formatInteger(record.outstanding_balance,3,'COMMA')}"></td>
+        <td th:text="${#dates.format(record.maturity_date, 'dd-MM-yyyy')}"></td>
+        <td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
       </tr>
-
-
-      <tr th:if="${MCBL_List == null or #lists.isEmpty(MCBL_List)}">
-        <td colspan="11" class="text-center">No records found</td>
+      <tr th:if="${#lists.isEmpty(BDGF_List)}">
+        <td colspan="6" class="text-center">No records found</td>
       </tr>
     </tbody>
   </table>
 </div>
+
+
+<!-- ================== DEPOSIT BOOK (BFDB) ================== -->
+<div th:if="${selectedFileType == 'DEPOSIT_BOOK'}" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+  <table class="table table-bordered table-sm">
+    <thead class="table-light">
+      <tr>
+        <th>Account No</th>
+        <th>Account Name</th>
+        <th>Currency</th>
+        <th class="text-end">Balance As On</th>
+        <th>Report Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="record : ${BFDB_List}">
+        <td th:text="${record.account_no}"></td>
+        <td th:text="${record.acct_name}"></td>
+        <td th:text="${record.ccy}"></td>
+        <td class="text-end" th:text="${#numbers.formatInteger(record.balance_as_on,3,'COMMA')}"></td>
+        <td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(BFDB_List)}">
+        <td colspan="5" class="text-center">No records found</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ================== LOAN BOOK (BLBF) ================== -->
+<div th:if="${selectedFileType == 'LOAN_BOOK'}" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+  <table class="table table-bordered table-sm">
+    <thead class="table-light">
+      <tr>
+        <th>Account No</th>
+        <th>Account Name</th>
+        <th>Currency</th>
+        <th class="text-end">Balance As On</th>
+        <th>Report Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="record : ${BLBF_List}">
+        <td th:text="${record.account_no}"></td>
+        <td th:text="${record.acct_name}"></td>
+        <td th:text="${record.ccy}"></td>
+        <td class="text-end" th:text="${#numbers.formatInteger(record.balance_as_on,3,'COMMA')}"></td>
+        <td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(BLBF_List)}">
+        <td colspan="5" class="text-center">No records found</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 
 
 
@@ -1023,7 +1223,7 @@ $(document).ready(function() {
 				<div class="modal-content">
 					<div class="modal-body" style="text-align: center;">
 						<p id="alertmsg"></p>
-						<button type="button" class="custom-tab-btn" data-dismiss="modal" onclick="list();"
+						<button type="button" class="custom-tab-btn" data-dismiss="modal" onclick="addrole();"
 							>Close</button>
 					</div>
 				</div>

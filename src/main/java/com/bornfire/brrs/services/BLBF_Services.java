@@ -69,11 +69,12 @@ public class BLBF_Services {
             	    "APPROVED_LIMIT, SANCTION_LIMIT, DISBURSED_AMT, BALANCE_AS_ON, CCY, BAL_EQUI_TO_BWP, " +
             	    "INT_RATE, HUNDRED, ACCRUED_INT_AMT, INT_OF_AUG_25, LAST_INTEREST_DEBIT_DATE, " +
             	    "ACCT_CLS_FLG, CLOSE_DATE, GENDER, CLASSIFICATION_CODE, CONSTITUTION_CODE, MATURITY_DATE, " +
-            	    "GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, TENOR_MONTH, EMI, SEGMENT, FACILITY, PAST_DUE, ASSET, " +
+            	    "GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, TENOR_MONTH, EMI, SEGMENT, FACILITY, PAST_DUE,PAST_DUE_DAYS, ASSET, " +
             	    "PROVISION, UNSECURED, INT_BUCKET, STAFF, SMME, LABOD, NEW_AC, UNDRAWN, SECTOR, PERIOD, " +
-            	    "EFFECTIVE_INTEREST_RATE, ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG" +
-            	    ") VALUES (" + String.join(",", Collections.nCopies(47, "?")) + ")";
+            	    "EFFECTIVE_INTEREST_RATE,STAGE,ECL_PROVISION,REPORT_DATE, ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG" +
+            	    ") VALUES (" + String.join(",", Collections.nCopies(51, "?")) + ")";
 
+            
 
             PreparedStatement stmt = conn.prepareStatement(insertSql);
             int count = 0;
@@ -117,18 +118,24 @@ public class BLBF_Services {
                     stmt.setDate(++col, getCellDateSafe(row, 17, formatter, evaluator)); // LAST_INTEREST_DEBIT_DATE
                     stmt.setString(++col, getCellStringSafe(row, 18, formatter, evaluator)); // ACCT_CLS_FLG
                     stmt.setDate(++col, getCellDateSafe(row, 19, formatter, evaluator)); // CLOSE_DATE
-                    stmt.setString(++col, getCellStringSafe(row, 21, formatter, evaluator)); // GENDER
+                    stmt.setString(++col, getCellStringSafe(row, 20, formatter, evaluator)); // GENDER
                     
-                    stmt.setString(++col, getCellStringSafe(row, 22, formatter, evaluator)); // CLASSIFICATION_CODE
-                    stmt.setString(++col, getCellStringSafe(row, 23, formatter, evaluator)); // CONSTITUTION_CODE
-                    stmt.setDate(++col, getCellDateSafe(row, 24, formatter, evaluator)); // MATURITY_DATE
-                    stmt.setString(++col, getCellStringSafe(row, 25, formatter, evaluator)); // GL_SUB_HEAD_CODE
-                    stmt.setString(++col, getCellStringSafe(row, 26, formatter, evaluator)); // GL_SUB_HEAD_DESC
-                    stmt.setBigDecimal(++col, getCellDecimalSafe(row, 27, formatter, evaluator)); // TENOR_MONTH
-                    stmt.setBigDecimal(++col, getCellDecimalSafe(row, 28, formatter, evaluator)); // EMI
-                    stmt.setString(++col, getCellStringSafe(row, 29, formatter, evaluator)); // SEGMENT
-                    stmt.setString(++col, getCellStringSafe(row, 30, formatter, evaluator)); // FACILITY
-                    stmt.setBigDecimal(++col, getCellDecimalSafe(row, 31, formatter, evaluator)); // PAST_DUE
+                    stmt.setString(++col, getCellStringSafe(row, 21, formatter, evaluator)); // CLASSIFICATION_CODE
+                    stmt.setString(++col, getCellStringSafe(row, 22, formatter, evaluator)); // CONSTITUTION_CODE
+                    stmt.setDate(++col, getCellDateSafe(row, 23, formatter, evaluator)); // MATURITY_DATE
+                    stmt.setString(++col, getCellStringSafe(row, 24, formatter, evaluator)); // GL_SUB_HEAD_CODE
+                    stmt.setString(++col, getCellStringSafe(row, 25, formatter, evaluator)); // GL_SUB_HEAD_DESC
+                    stmt.setBigDecimal(++col, getCellDecimalSafe(row, 26, formatter, evaluator)); // TENOR_MONTH
+                    stmt.setBigDecimal(++col, getCellDecimalSafe(row, 27, formatter, evaluator)); // EMI
+                    stmt.setString(++col, getCellStringSafe(row, 28, formatter, evaluator)); // SEGMENT
+                    
+                    
+                    
+                    stmt.setString(++col, getCellStringSafe(row, 29, formatter, evaluator)); // FACILITY
+                    stmt.setString(++col, getCellStringSafe(row, 30, formatter, evaluator)); // PAST_DUE
+                    stmt.setBigDecimal(++col, getCellDecimalSafe(row, 31, formatter, evaluator)); // PAST_DUE_DAYS
+                  
+                    
                     stmt.setString(++col, getCellStringSafe(row, 32, formatter, evaluator)); // ASSET
                     stmt.setBigDecimal(++col, getCellDecimalSafe(row, 33, formatter, evaluator)); // PROVISION
                     stmt.setString(++col, getCellStringSafe(row, 34, formatter, evaluator)); // UNSECURED
@@ -141,7 +148,12 @@ public class BLBF_Services {
                     stmt.setString(++col, getCellStringSafe(row, 41, formatter, evaluator)); // SECTOR
                     stmt.setString(++col, getCellStringSafe(row, 42, formatter, evaluator)); // PERIOD
                     stmt.setBigDecimal(++col, getCellDecimalSafe(row, 43, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
-
+                    
+                    stmt.setString(++col, getCellStringSafe(row, 44, formatter, evaluator)); // Stage
+                    stmt.setBigDecimal(++col, getCellDecimalSafe(row, 45, formatter, evaluator)); // ECL_PROVISON
+                    stmt.setDate(++col, getCellDateSafe(row, 46, formatter, evaluator)); // Report_DATE
+                    
+                    
                     // Audit fields
                     stmt.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
                     stmt.setString(++col, userid);
@@ -162,11 +174,13 @@ public class BLBF_Services {
                     masterEntity.setAcct_name(getCellString(row.getCell(3), formatter, evaluator));
                     masterEntity.setSchm_code(getCellString(row.getCell(4), formatter, evaluator));
                     masterEntity.setSchm_desc(getCellString(row.getCell(5), formatter, evaluator));
-                    masterEntity.setOpen_date(getCellDate(row.getCell(6), formatter, evaluator));
+                    
+                    masterEntity.setAcct_opn_date(getCellDate(row.getCell(6), formatter, evaluator));
                     masterEntity.setApproved_limit(getCellDecimal(row.getCell(7), formatter, evaluator));
                     masterEntity.setSanction_limit(getCellDecimal(row.getCell(8), formatter, evaluator));
                     masterEntity.setDisbursed_amt(getCellDecimal(row.getCell(9), formatter, evaluator));
                     masterEntity.setBalance_as_on(getCellDecimal(row.getCell(10), formatter, evaluator));
+                    
                     masterEntity.setCcy(getCellString(row.getCell(11), formatter, evaluator));
                     masterEntity.setBal_equi_to_bwp(getCellDecimal(row.getCell(12), formatter, evaluator));
                     masterEntity.setInt_rate(getCellDecimal(row.getCell(13), formatter, evaluator));
@@ -176,19 +190,25 @@ public class BLBF_Services {
                     masterEntity.setLast_interest_debit_date(getCellDate(row.getCell(17), formatter, evaluator));
                     masterEntity.setAcct_cls_flg(getCellString(row.getCell(18), formatter, evaluator));
                     masterEntity.setAcct_cls_date(getCellDate(row.getCell(19), formatter, evaluator));
-                    masterEntity.setSanction_limit(getCellDecimal(row.getCell(20), formatter, evaluator));
+                    //masterEntity.setSanction_limit(getCellDecimal(row.getCell(20), formatter, evaluator));
                     
-                    masterEntity.setGender(getCellString(row.getCell(21), formatter, evaluator));
-                    masterEntity.setClassification_code(getCellString(row.getCell(22), formatter, evaluator));
-                    masterEntity.setConstitution_code(getCellString(row.getCell(23), formatter, evaluator));
-                    masterEntity.setMaturity_date(getCellDate(row.getCell(24), formatter, evaluator));
-                    masterEntity.setGl_sub_head_code(getCellString(row.getCell(25), formatter, evaluator));
-                    masterEntity.setGl_sub_head_desc(getCellString(row.getCell(26), formatter, evaluator));
-                    masterEntity.setTenor_month(getCellDecimal(row.getCell(27), formatter, evaluator));
-                    masterEntity.setEmi(getCellDecimal(row.getCell(28), formatter, evaluator));
-                    masterEntity.setSegment(getCellString(row.getCell(29), formatter, evaluator));
-                    masterEntity.setFacility(getCellString(row.getCell(30), formatter, evaluator));
-                    masterEntity.setPast_due(getCellDecimal(row.getCell(31), formatter, evaluator));
+                    masterEntity.setGender(getCellString(row.getCell(20), formatter, evaluator));
+                   
+                    masterEntity.setClassification_code(getCellString(row.getCell(21), formatter, evaluator));
+                    masterEntity.setConstitution_code(getCellString(row.getCell(22), formatter, evaluator));
+                    
+                    masterEntity.setMaturity_date(getCellDate(row.getCell(23), formatter, evaluator));
+                    masterEntity.setGl_sub_head_code(getCellString(row.getCell(24), formatter, evaluator));
+                    masterEntity.setGl_sub_head_desc(getCellString(row.getCell(25), formatter, evaluator));
+                   
+                    masterEntity.setTenor_month(getCellDecimal(row.getCell(26), formatter, evaluator));
+                    masterEntity.setEmi(getCellDecimal(row.getCell(27), formatter, evaluator));
+                    
+                    masterEntity.setSegment(getCellString(row.getCell(28), formatter, evaluator));
+                    masterEntity.setFacility(getCellString(row.getCell(29), formatter, evaluator));
+                    masterEntity.setPast_due(getCellString(row.getCell(30), formatter, evaluator));
+                    masterEntity.setPast_due_days(getCellDecimal(row.getCell(31), formatter, evaluator));
+                    
                     masterEntity.setAsset(getCellString(row.getCell(32), formatter, evaluator));
                     masterEntity.setProvision(getCellDecimal(row.getCell(33), formatter, evaluator));
                     masterEntity.setUnsecured(getCellString(row.getCell(34), formatter, evaluator));
@@ -201,7 +221,8 @@ public class BLBF_Services {
                     masterEntity.setSector(getCellString(row.getCell(41), formatter, evaluator));
                     masterEntity.setPeriod(getCellString(row.getCell(42), formatter, evaluator));
                     masterEntity.setEffective_interest_rate(getCellDecimal(row.getCell(43), formatter, evaluator));
-
+                    masterEntity.setReport_date(getCellDate(row.getCell(44), formatter, evaluator));
+                    
                     // Audit fields
                     masterEntity.setEntry_date(new Date());
                     masterEntity.setEntry_user(userid);
