@@ -311,7 +311,8 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			 alert("Details page not available for Manual Report");
+			showResultModal('BRRS',' Details page not available for Manual Report');
+
 		}
 
 		function showsummary() {
@@ -421,7 +422,26 @@ PURPOSE		: BWRBRREPORT
 	<script>
 	// Show Modify (enable inputs & dropdowns)
 function showmodify(btn) {
-    $(".Show_input").removeAttr("readonly").removeAttr("disabled");
+	var readonlyIds = ["R26_TOTAL"];
+		
+		$(".Show_input").each(function () {
+			        if (!readonlyIds.includes(this.id)) {
+			            $(this).removeAttr("readonly").removeAttr("disabled");
+			        }
+			    });
+				for (let i = 11; i <= 25; i++) {  
+							    let fields = [
+								"TOTAL",
+								
+							    ];
+
+							    fields.forEach(field => {
+							        let selector = `#R${i}_${field}`;
+							        if ($(selector).length) {  // check if element exists
+							            $(selector).css({"background-color": "#d3d3d3"});
+							        }
+							    });
+							}
 
    
     
@@ -562,7 +582,7 @@ function cancelModify() {
 	        dataType: 'text',
 	        success: function () {
 	            $("#resultModalLabel").text("Success");
-	            $("#resultModalBody").text("All reports updated successfully.");
+	            $("#resultModalBody").text("Updated Successfully");
 	            $("#resultModal").modal("show");
 	        },
 	        error: function (jqXHR) {
@@ -675,17 +695,17 @@ function cancelModify() {
 									id="reports">
 									<thead class="thead-light">
 									<tr>
-									<th colspan="7" style="text-align: left; padding-left: 20px; width: 900px;">
+									<th colspan="7" style="text-align: left; padding-left: 20px; width: 900px;padding: 8px;">
 										       DUE FROM AFFLIATED DOMESTIC BANKS </th>
 									</tr>
 					
 										<tr style="background-color: #b3b6b9;">
-										    <th colspan="2" style="text-align: left; padding-left: 20px; width: 1000px;">
+										    <th colspan="2" style="text-align: left; padding-left: 20px; width: 1000px;padding: 8px;">
 												Sector Analysis of public non-financial corporations </th>
 										</tr>
 										<tr>
-										    <th style="text-align: left; vertical-align:center; width: 200px;">INDUSTRY</th>
-										    <th style="text-align: center; vertical-align:center;width: 150px;">Total</th>
+										    <th style="text-align: left; vertical-align:center; width: 700px;">INDUSTRY</th>
+										    <th style="text-align: right; vertical-align:center;width: 150px;">Total</th>
 										   
 										</tr>
 
@@ -700,7 +720,7 @@ function cancelModify() {
 	  
 	<td>Agriculture, Forestry, Fishing </td>
 
-	 <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+	 <td id="ROW12" style="padding-left: 20px; font-weight: bold;text-align: right;">
 	    <input class="display-input Show_input"
 	           type="text"
 	           th:value="${report.R12_TOTAL != null ? #numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -717,7 +737,7 @@ function cancelModify() {
 <tr>
 	<td>Mining and Quarying </td>
 
-    <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+    <td id="ROW13" style="padding-left: 20px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -730,7 +750,7 @@ function cancelModify() {
 <tr>
 	<td>Mining and Quarying </td>
 
-    <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+    <td id="ROW14" style="padding-left: 20px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -744,7 +764,7 @@ function cancelModify() {
 <tr>
 	<td>Mining and Quarying</td>
 
-    <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+    <td id="ROW15" style="padding-left: 20px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R15_TOTAL != null ? #numbers.formatDecimal(report.R15_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -760,7 +780,7 @@ function cancelModify() {
 <tr>
 	<td>Commercial real estate </td>
 
-    <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
+    <td id="ROW16" style="padding-left: 20px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R16_TOTAL != null ? #numbers.formatDecimal(report.R16_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -774,7 +794,7 @@ function cancelModify() {
 <tr>
 	<td>Electricity</td>
 
-    <td id="ROW17" style="padding-left: 20px; font-weight: bold;">
+    <td id="ROW17" style="padding-left: 20px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R17_TOTAL != null ? #numbers.formatDecimal(report.R17_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -788,7 +808,7 @@ function cancelModify() {
 <tr>
 	<td>Water </td>
 
-    <td id="ROW18" style="padding-left: 20px; font-weight: bold;">
+    <td id="ROW18" style="padding-left: 20px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R18_TOTAL != null ? #numbers.formatDecimal(report.R18_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -802,7 +822,7 @@ function cancelModify() {
 <tr>
 	<td>Telecommunication and post</td>
 
-    <td id="ROW19" style="padding-left: 20px; font-weight: bold;">
+    <td id="ROW19" style="padding-left: 20px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R19_TOTAL != null ? #numbers.formatDecimal(report.R19_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -816,7 +836,7 @@ function cancelModify() {
 <tr>
 	<td>Tourism and hotels </td>
 
-    <td id="ROW20" style="padding-left: 20px; font-weight: bold;">
+    <td id="ROW20" style="padding-left: 20px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R20_TOTAL != null ? #numbers.formatDecimal(report.R20_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -830,7 +850,7 @@ function cancelModify() {
 <tr>
 	<td>Transport and storage </td>
 
-    <td id="ROW21" style="padding-left: 21px; font-weight: bold;">
+    <td id="ROW21" style="padding-left: 21px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R21_TOTAL != null ? #numbers.formatDecimal(report.R21_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -844,7 +864,7 @@ function cancelModify() {
 <tr>
 	<td>Trade, restaurants and bars</td>
 
-    <td id="ROW22" style="padding-left: 22px; font-weight: bold;">
+    <td id="ROW22" style="padding-left: 22px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R22_TOTAL != null ? #numbers.formatDecimal(report.R22_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -858,7 +878,7 @@ function cancelModify() {
 <tr>
 	<td>Business services</td>
 
-    <td id="ROW23" style="padding-left: 23px; font-weight: bold;">
+    <td id="ROW23" style="padding-left: 23px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R23_TOTAL != null ? #numbers.formatDecimal(report.R23_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -872,7 +892,7 @@ function cancelModify() {
 <tr>
 	<td>Other community, social and personal services</td>
 
-    <td id="ROW24" style="padding-left: 24px; font-weight: bold;">
+    <td id="ROW24" style="padding-left: 24px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R24_TOTAL != null ? #numbers.formatDecimal(report.R24_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -886,7 +906,7 @@ function cancelModify() {
 <tr>
 	<td>Others (specify)*</td>
 
-    <td id="ROW25" style="padding-left: 25px; font-weight: bold;">
+    <td id="ROW25" style="padding-left: 25px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.R25_TOTAL != null ? #numbers.formatDecimal(report.R25_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -901,12 +921,12 @@ function cancelModify() {
 <tr>
     <th>TOTAL</th>
 
- <td id="ROW26" style="background-color:#ADFF2F;padding-left: 20px; font-weight: bold;">
+ <td id="ROW26" style="background-color: rgb(107, 122, 143);color: white;padding-left: 20px; font-weight: bold;text-align: right;">
     <input class="display-input Show_input"
            type="text"
            id="R26_TOTAL"
            name="R26_TOTAL"
-           style="background-color: 	#ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
            readonly />
 </td>
 
