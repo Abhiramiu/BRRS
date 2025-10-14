@@ -308,8 +308,9 @@ PURPOSE		: BWRBRREPORT
 		}
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			alert("Details page not available for Manual Report");
-		}
+				
+					 showResultModal('BRRS',' Details page not available for Manual Report');
+				}
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
