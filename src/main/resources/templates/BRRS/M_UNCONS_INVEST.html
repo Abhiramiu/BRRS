@@ -835,7 +835,7 @@ function cancelModify() {
 	<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
 	        <input class="display-input Show_input"
 	               type="text"
-	               th:value="${report.r12_AMOUNT != null ? #numbers.formatDecimal(report.R12_AMOUNT, 1, 0, 'POINT') : '0'}"
+	               th:value="${report.r12_AMOUNT != null ? #numbers.formatDecimal(report.R12_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
 	               id="R12_AMOUNT"
 	               name="r12_AMOUNT"
 	               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"

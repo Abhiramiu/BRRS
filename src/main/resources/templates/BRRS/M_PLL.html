@@ -515,7 +515,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 			alertMsg.innerHTML = 'Download request Processing...';
 			showAlert();
 
-			const baseUrl = '/BCDRS/Reports/startreport';
+			const baseUrl = '/BRRS/Reports/startreport';
 			const downloadUrl = baseUrl +
 				'?filename=' + encodeURIComponent(filename) +
 				'&fromdate=' + encodeURIComponent(fromdate) +
@@ -538,7 +538,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 		function checkReport(jobId) {
 			const alertMsg = document.getElementById("alertMessage");
-			fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
 				.then(res => res.text())
 				.then(status => {
 					if (status === "READY") {
@@ -570,7 +570,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 			//$('#loader').modal('show');
 
 			$.ajax({
-				url: '/BCDRS/Reports/downloaddetailExcel?jobId=' + jobId +
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
 					'&filename=' + filename,
 				type: 'GET',
 				xhrFields: {
@@ -721,7 +721,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 					<div class="col-sm-12">
 						<!-- <h5 style = "font-weight:bold;color:black;">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT<br>(1) MONTHLY SCHEDULE M-SP: STATEMENT OF FINANCIAL POSITION AS AT<br>(P'000)<br> </h5> -->
 						<div class="table-wrapper table-responsive scrollable-table-container"
-							style="border-right: 1px solid #dee2e6;max-height:560px; overflow-y: auto;">
+							style="border-right: 1px solid #dee2e6;max-height:700px; overflow-y: auto;">
 							<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 								id="reports">
 								<thead class="thead-light"

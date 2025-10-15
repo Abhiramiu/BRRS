@@ -12,7 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_LA5_DETAILTABLE")
 public class M_LA5_Detail_Entity {
-	@Id
+	
     @Column(name = "CUST_ID")
     private String custId;
 
@@ -43,7 +43,7 @@ public class M_LA5_Detail_Entity {
     @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
     private BigDecimal acctBalanceInpula;
 
-
+    @Id
     @Column(name = "REPORT_DATE")
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date reportDate;

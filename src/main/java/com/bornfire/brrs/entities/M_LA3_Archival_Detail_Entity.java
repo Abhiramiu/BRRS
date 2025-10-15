@@ -14,7 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_M_LA3_ARCHIVALTABLE_DETAIL")
 public class M_LA3_Archival_Detail_Entity {
 	
-	@Id
+	
 	   @Column(name = "CUST_ID")
 	   private String custId;
 	   @Column(name = "ACCT_NUMBER")
@@ -36,6 +36,7 @@ public class M_LA3_Archival_Detail_Entity {
 	   private String dataEntryVersion;
 	   @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
 	   private BigDecimal acctBalanceInpula;
+	   @Id
 	   @Column(name = "REPORT_DATE")
 	   @DateTimeFormat(pattern = "dd-MM-yyyy")
 	   private Date reportDate;
