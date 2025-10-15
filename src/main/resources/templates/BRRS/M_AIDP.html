@@ -425,7 +425,13 @@ PURPOSE		: BWRBRREPORT
 	<script>
 	// Show Modify (enable inputs & dropdowns)
 function showmodify(btn) {
-    $(".Show_input").removeAttr("readonly").removeAttr("disabled");
+	var readonlyIds = ["R51_AMT_LESS_184_DAYS", "R51_AMT_MORE_184_DAYS", "R96_AMT_LESS_184_DAYS" ,"R96_AMT_MORE_184_DAYS"];
+		
+		$(".Show_input").each(function () {
+			        if (!readonlyIds.includes(this.id)) {
+			            $(this).removeAttr("readonly").removeAttr("disabled");
+			        }
+			    });
 
     for (let i = 11; i <= 50; i++) {
         $("#R" + i + "_TYPE_OF_ACC_TEXT").hide();	//R11_TYPE_OF_ACC_TEXT
@@ -15134,16 +15140,16 @@ function cancelModify() {
 									</tr>
 					
 										<tr style="background-color: #b3b6b9;">
-										    <th style="background-color: #D8D8D8;text-align: left; padding-left: 20px; width: 900px;">
+										    <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle; padding-left: 20px; width: 900px;">
 										        Name of Bank
 										    </th>
-										    <th style="background-color: #D8D8D8;text-align: left; vertical-align:center; width: 200px;">Type of account</th>
-										    <th style="background-color: #D8D8D8;text-align: left; vertical-align:center; width: 150px;">Country</th>
-										    <th style="background-color: #D8D8D8;text-align: left; vertical-align:center;width: 150px;">Purpose</th>
-										    <th style="background-color: #D8D8D8;text-align: left; vertical-align:center; width: 150px;">Currency</th>
-										    <th style="background-color: #D8D8D8;text-align: left;vertical-align:center; width: 150px;">Bank Rating, e.g, AAA, AA or A1</th>
-										    <th style="background-color: #D8D8D8;text-align: right; width: 150px;">Amount (on demand or less than 184 days)</th>
-										    <th style="background-color: #D8D8D8;text-align: right; width: 150px;">Amount (more than 184 days)</th>
+										    <th style="background-color: #D8D8D8;text-align: left; vertical-align:middle; width: 200px;">Type of account</th>
+										    <th style="background-color: #D8D8D8;text-align: left; vertical-align:middle; width: 150px;">Country</th>
+										    <th style="background-color: #D8D8D8;text-align: left; vertical-align:middle;width: 150px;">Purpose</th>
+										    <th style="background-color: #D8D8D8;text-align: left; vertical-align:middle; width: 150px;">Currency</th>
+										    <th style="background-color: #D8D8D8;text-align: left;vertical-align:middle; width: 150px;">Bank Rating, e.g, AAA, AA or A1</th>
+										    <th style="background-color: #D8D8D8;text-align: right;vertical-align:middle; width: 150px;">Amount (on demand or less than 184 days)</th>
+										    <th style="background-color: #D8D8D8;text-align: right;vertical-align:middle; width: 150px;">Amount (more than 184 days)</th>
 										    
 										</tr>
 
