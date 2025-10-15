@@ -111,14 +111,7 @@ PURPOSE		: Source Data Mapping
 			overflow-x: auto;
 		}
 
-		/* Table cell styling */
-		#usertable th,
-		#usertable td {
-			vertical-align: middle;
-			text-align: left;
-			font-size: 16px;
-			padding: 8px 10px;
-		}
+
 
 		/* Icon styling */
 		.action-icon {
@@ -149,8 +142,26 @@ PURPOSE		: Source Data Mapping
 			color: orange;
 		}
 
+		/* Table cell styling */
+		#MCBLLIST th,
+		#MCBLLIST td,
+		#BLBFLIST th,
+		#BLBFLIST td,
+		#BDGFLIST th,
+		#BDGFLIST td,
+		#BFDBLIST th,
+		#BFDBLIST td {
+			vertical-align: middle;
+			text-align: left;
+			font-size: 16px;
+			padding: 8px 10px;
+		}
+
 		/* Ensure word break for long menu lists */
-		#usertable td {
+		#MCBLLIST td,
+		#BLBFLIST td,
+		#BDGFLIST td,
+		#BFDBLIST td {
 			word-break: break-word;
 		}
 	</style>
@@ -165,59 +176,71 @@ PURPOSE		: Source Data Mapping
 			window.history.back();
 		}
 
-		function submitform(a) {
-			var formmode = a.getAttribute("data-formmode");
+
+
+
+		function submitform(btn) {
+			const formmode = btn.getAttribute("data-formmode");
+			const type = btn.getAttribute("data-type");
 			console.log('Form mode:', formmode);
-			var requiredFields = ["#gl_code","#gl_sub_code", "#head_acc_no","#currency"];
-						var isValid = true;
 
-						requiredFields.forEach(function (selector) {
-							var $field = $(selector);
-							if ($field.length) {
-								var value = $field.val(); // could be null for <select>
-								if (value === null || value.trim() === "") {
-									$field.css("border", "2px solid red");
-									isValid = false;
-								} else {
-									$field.css("border", "");
-								}
-							}
-						});
+			// Fields to validate (you can modify this list as per your form)
+			const requiredFields = [
+				"#gl_code", "#gl_sub_code", "#head_acc_no",
+				"#currency", "#description", "#debit_balance",
+				"#credit_balance", "#debit_equivalent",
+				"#credit_equivalent", "#report_date"
+			];
 
-						if (!isValid) return false;
+			let isValid = true;
 
-			var formData = new FormData(document.getElementById("MCBL_List"));
-
-			if ($('#MCBL_List').valid()) {
-				$.ajax({
-					url: "./createAcc?formmode=" + encodeURIComponent(formmode),
-					type: "POST",
-					data: formData,
-					processData: false,
-					contentType: false,
-					success: function (response) {
-						console.log('Success response:', response);
-						$("#alertmsg").text(response);
-						$('#alert').modal("toggle");
-						if (formmode === 'add') {
-							document.getElementById("MCBL_List").reset();
-						}
-					},
-					error: function (xhr, status, error) {
-						console.error('AJAX error:', status, error);
-						$("#alertmsg").text("Error occurred: " + error);
-						$('#alert').modal("toggle");
+			requiredFields.forEach(selector => {
+				const field = document.querySelector(selector);
+				if (field) {
+					const value = field.value?.trim();
+					if (!value) {
+						field.style.border = "2px solid red";
+						isValid = false;
+					} else {
+						field.style.border = "";
 					}
-				});
+				}
+			});
 
-			}
+			if (!isValid) return false;
+
+			const form = document.getElementById("MCBL_List");
+			const formData = new FormData(form);
+
+			$.ajax({
+				url: "./createAcc?formmode=" + encodeURIComponent(formmode) + "&type=" + encodeURIComponent(type),
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (response) {
+					console.log('Success response:', response);
+					$("#alertmsg").text(response);
+					$('#alert').modal("toggle");
+
+					if (formmode === 'add') {
+						form.reset();
+					}
+				},
+				error: function (xhr, status, error) {
+					console.error('AJAX error:', status, error);
+					$("#alertmsg").text("Error occurred: " + error);
+					$('#alert').modal("toggle");
+				}
+			});
 
 			return false;
 		}
 
-	
 
-		
+
+
+
 
 
 		function deleteSubmit(a) {
@@ -248,7 +271,7 @@ PURPOSE		: Source Data Mapping
 
 	</script>
 	<script>
-		function addrole(a) {
+		function add_btn_submit(a) {
 			location.href = 'SourceDataMap?formmode=add';
 		}
 		function edit_btn_submit(a) {
@@ -271,6 +294,82 @@ PURPOSE		: Source Data Mapping
 			var id = a.getAttribute("data-roleId");
 			location.href = 'SourceDataMap?formmode=delete&id=' + id;
 		}
+	</script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			// Function to show the table based on selected fileType
+			function showTable(fileType) {
+				// List of all table container IDs
+				const allTables = ["MCBLLIST", "BLBFLIST", "BDGFLIST", "BFDBLIST"];
+
+				// Hide all tables first
+				allTables.forEach(id => {
+					const tableDiv = document.getElementById(id);
+					if (tableDiv) {
+						tableDiv.style.display = "none";
+					}
+				});
+
+				// Show the correct table based on fileType
+				if (fileType === "MCBL") {
+					const table = document.getElementById("MCBLLIST");
+					if (table) table.style.display = "block";
+				} else if (fileType === "BLBF") {
+					const table = document.getElementById("BLBFLIST");
+					if (table) table.style.display = "block";
+				} else if (fileType === "BDGF") {
+					const table = document.getElementById("BDGFLIST");
+					if (table) table.style.display = "block";
+				} else if (fileType === "BFDB") {
+					const table = document.getElementById("BFDBLIST");
+					if (table) table.style.display = "block";
+				}
+			}
+
+			// Get dropdown
+			const fileTypeSelect = document.getElementById("FileType");
+
+			if (fileTypeSelect) {
+				// On first page load → get the selected value (including after reload)
+				const selectedType = fileTypeSelect.value || "";
+
+				// Show table immediately for current value
+				showTable(selectedType);
+
+				// On dropdown change → switch tables instantly
+				fileTypeSelect.addEventListener("change", function () {
+					showTable(this.value);
+				});
+			}
+		});
+	</script>
+	
+
+	
+	<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const tables = ["MCBLs", "BLBFs", "BDGFs", "BFDBs"];
+	    const fileTypeSelect = document.getElementById("FileType_add");
+
+		function showTable() {
+		    const selected = fileTypeSelect.value;
+
+		    tables.forEach(id => {
+		        const table = document.getElementById(id);
+		        if (table) table.style.display = "none";
+		    });
+
+		    const selectedTable = document.getElementById(selected);
+		    if (selectedTable) selectedTable.style.display = "block";
+		}
+
+
+	    // Show the default table on page load
+	    showTable();
+
+	    // Update table whenever dropdown changes
+	    fileTypeSelect.addEventListener("change", showTable);
+	});
 	</script>
 </head>
 <title>BRRS</title>
@@ -298,134 +397,302 @@ PURPOSE		: Source Data Mapping
 								<h5 th:text="${menu}"
 									style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;">
 								</h5>
-							</div>
 
+							</div>
 							<!-- Right: Add Button -->
 							<div class="custom-tab-btn-group nav-buttons" style="display: flex; align-items: center;">
-								<button type="button" class="custom-tab-btn" onclick="addrole();">Add</button>
+								<button type="button" class="custom-tab-btn" onclick="add_btn_submit();">Add</button>
 							</div>
 						</div>
+						<br>
+						<!-- Dropdowns -->
 
 
+						<form th:action="@{/SourceDataMap}" method="get" id="filterForm">
+							<div class="row formline" style="margin-bottom:0px;">
+								<div class="col-sm-auto"></div>
 
-						<div class="row">
-							<div class="col-12">
-								<div class="table-container" style="max-height: 620px; overflow-y: auto;">
-									<table class="table table-striped table-bordered table-hover" id="usertable">
-										<thead class="thead-light"
-											style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
-											<tr>
-												<th style="width: 10%">GL Code</th>
-												<th style="width: 20%">GL Sub Code</th>
-												<th style="width: 10%">Acc Number</th>
-												<th style="width: 10%">Currency</th>
-												<th style="width: 10%;text-align: center;">Select</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr th:each="list : ${MCBL_List}" th:id="${list.id}" class="userlist">
-												<td th:text="${list?.gl_code}"></td>
-												<td th:text="${list?.gl_sub_code}"></td>
-												<td th:text="${list?.head_acc_no}"></td>
-												<td th:text="${list?.currency}"></td>
-
-
-												<td style="text-align: center;">
-													<!-- Modify Icon -->
-													<i class="fa fa-edit action-icon modify" title="Modify"
-														th:attr="data-roleId=${list?.id}"
-														onclick="edit_btn_submit(this)"></i>
-
-
-													<!-- View Icon -->
-													<i class="fa fa-eye action-icon view" title="View"
-														th:attr="data-roleId=${list?.id}"
-														onclick="view_btn_submit(this)"></i>
-
-													<!-- Delete Icon -->
-													<i class="fa fa-trash action-icon delete" title="Delete"
-														th:attr="data-roleId=${list?.id}"
-														onclick="delete_btn_submit(this)"></i>
-
-
-												</td>
-											</tr>
-										</tbody>
-									</table>
-									<!-- Pagination Controls -->
-									<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
-									    <a th:if="${currentPage > 0}"
-									       th:href="@{'/SourceDataMap'(formmode='list', page=${currentPage - 1}, size=100)}">
-									        Previous
-									    </a>
-
-									    <span>Page [[${currentPage + 1}]] of [[${totalPages}]]</span>
-
-									    <a th:if="${currentPage < totalPages - 1}"
-									       th:href="@{'/SourceDataMap'(formmode='list', page=${currentPage + 1}, size=100)}">
-									        Next
-									    </a>
-									</div>
+								<!-- File Type -->
+								<label class="col-sm-1">File Type</label>
+								<div class="col-sm-2">
+									<select id="FileType" name="fileType" class="form-control form-control-sm" required
+										onchange="document.getElementById('filterForm').submit()">
+										<option value="">Select File Type</option>
+										<option value="MCBL" th:selected="${#strings.equals(fileType,'MCBL')}">MCBL
+										</option>
+										<option value="BLBF" th:selected="${#strings.equals(fileType,'BLBF')}">LOAN BOOK
+										</option>
+										<option value="BDGF" th:selected="${#strings.equals(fileType,'BDGF')}">DEPOSIT
+											GENERAL</option>
+										<option value="BFDB" th:selected="${#strings.equals(fileType,'BFDB')}">DEPOSIT
+											BOOK</option>
+									</select>
 								</div>
 
-								<div class="card-footer text-center">
-									<button type="button" class="custom-tab-btn" id="btnHome"
-										onclick="home();">Home</button>
-									<button type="button" class="custom-tab-btn" id="btnBack"
-										onclick="back();">Back</button>
+								<!-- Report Date -->
+								<label class="col-sm-1">Report Date</label>
+								<div class="col-sm-2">
+									<input type="date" id="ReportDate" name="reportDate"
+										class="form-control form-control-sm" th:value="${reportDate}"
+										onchange="document.getElementById('filterForm').submit()" />
 								</div>
 							</div>
-						</div>
+						</form>
 
+
+						<!-- Table -->
+						<div class="table-container" style="max-height: 620px; overflow-y: auto;">
+
+							<!-------------------------------------------------------MCBL List -Start----------------------------------->
+							<table class="table table-striped table-bordered table-hover" id="MCBLLIST">
+								<thead class="thead-light"
+									style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
+									<tr>
+										<th style="width: 10%;text-align: left;">GL Code</th>
+										<th style="width: 10%;text-align: left;">GL Sub Head Code</th>
+										<th style="width: 10%">Account Number</th>
+										<th style="width: 10%;text-align: center;">Currency</th>
+										<th style="width: 20%">Description</th>
+										<th style="width: 10%;text-align: center;">Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="list : ${list}" th:id="${list.id}" class="userlist">
+										<td th:text="${list?.gl_code}"></td>
+										<td th:text="${list?.gl_sub_code}"></td>
+										<td th:text="${list?.head_acc_no}"></td>
+										<td style="text-align: center;" th:text="${list?.currency}"></td>
+										<td style="text-align: left;" th:text="${list?.description}"></td>
+										<td style="text-align: center;">
+
+											<i class="fa fa-edit action-icon modify" title="Modify"
+												th:attr="data-roleId=${list?.id}" onclick="edit_btn_submit(this)"></i>
+											<i class="fa fa-eye action-icon view" title="View"
+												th:attr="data-roleId=${list?.id}" onclick="view_btn_submit(this)"></i>
+											<i class="fa fa-trash action-icon delete" title="Delete"
+												th:attr="data-roleId=${list?.id}" onclick="delete_btn_submit(this)"></i>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+
+							<!-------------------------------------------------------MCBL List -End----------------------------------->
+
+							<!-------------------------------------------------------BLBF List -Start----------------------------------->
+							<table class="table table-striped table-bordered table-hover" id="BLBFLIST"
+								style="display: none;">
+								<thead class="thead-light"
+									style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
+									<tr>
+										<th style="width: 7%;text-align: center;">Cust Id</th>
+										<th style="width: 10%">Acc Number</th>
+										<th style="width: 10%;text-align: center;">Account Name</th>
+										<th style="width: 10%">Schema Code</th>
+										<th style="width: 10%;text-align: center;">Schema Desc</th>
+										<th style="width: 5%">Currency</th>
+										<th style="width: 10%;text-align: center;">Constitution Code</th>
+										<th style="width: 10%;text-align: center;">GL Sub Head code</th>
+										<th style="width: 15%;text-align: center;">GL Sub head code desc</th>
+										<th style="width: 10%;text-align: center;">Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="list : ${list}" th:id="${list.id}" class="userlist">
+										<td th:text="${list?.customer_id}"></td>
+										<td style="text-align: center;" th:text="${list?.acc_no}"></td>
+										<td style="text-align: left;" th:text="${list?.acct_name}"></td>
+										<td style="text-align: left;" th:text="${list?.schm_code}"></td>
+										<td style="text-align: left;" th:text="${list?.schm_desc}"></td>
+										<td style="text-align: left;" th:text="${list?.ccy}"></td>
+										<td style="text-align: left;" th:text="${list?.constitution_code}"></td>
+										<td style="text-align: left;" th:text="${list?.gl_sub_head_code}"></td>
+										<td style="text-align: left;" th:text="${list?.gl_sub_head_desc}"></td>
+										<td style="text-align: center;">
+											<i class="fa fa-edit action-icon modify" title="Modify"
+												th:attr="data-roleId=${list?.id}" onclick="edit_btn_submit(this)"></i>
+											<i class="fa fa-eye action-icon view" title="View"
+												th:attr="data-roleId=${list?.id}" onclick="view_btn_submit(this)"></i>
+											<i class="fa fa-trash action-icon delete" title="Delete"
+												th:attr="data-roleId=${list?.id}" onclick="delete_btn_submit(this)"></i>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+
+							<!-------------------------------------------------------BLBF List -end----------------------------------->
+							<!-------------------------------------------------------BDGF List -Start----------------------------------->
+							<table class="table table-striped table-bordered table-hover" id="BDGFLIST"
+								style="display: none;">
+								<thead class="thead-light"
+									style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
+									<tr>
+										<th style="width: 7%;text-align: left;">Cust Id</th>
+										<th style="width: 7%;text-align: left;">Sol Id</th>
+										<th style="width: 10%;text-align: left;">Acc Number</th>
+										<th style="width: 10%;text-align: left;">Account Name</th>
+										<th style="width: 10%;text-align: center;">Open Date</th>
+										<th style="width: 10%;text-align: right;">Deposit Amount</th>
+										<th style="width: 5%;text-align: center;">Currency</th>
+										<th style="width: 10%;text-align: center;">Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="list : ${list}" th:id="${list.id}" class="userlist">
+										<td style="text-align: left;" th:text="${list?.customer_id}"></td>
+										<td style="text-align: left;" th:text="${list?.sol_id}"></td>
+										<td style="text-align: left;" th:text="${list?.acc_no}"></td>
+										<td style="text-align: left;" th:text="${list?.customer_name}"></td>
+										<td style="text-align: center;"
+											th:text="${list.open_date != null ? #dates.format(list.open_date, 'dd-MM-yyyy') : ''}">
+										</td>
+										<td style="text-align: right;" th:text="${list?.amount_deposited}"></td>
+										<td style="text-align: center;" th:text="${list?.currency}"></td>
+										<td style="text-align: center;">
+											<i class="fa fa-edit action-icon modify" title="Modify"
+												th:attr="data-roleId=${list?.id}" onclick="edit_btn_submit(this)"></i>
+											<i class="fa fa-eye action-icon view" title="View"
+												th:attr="data-roleId=${list?.id}" onclick="view_btn_submit(this)"></i>
+											<i class="fa fa-trash action-icon delete" title="Delete"
+												th:attr="data-roleId=${list?.id}" onclick="delete_btn_submit(this)"></i>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+
+							<!-------------------------------------------------------BDGF List -end----------------------------------->
+							<!-------------------------------------------------------BFDB List -Start----------------------------------->
+							<table class="table table-striped table-bordered table-hover" id="BFDBLIST"
+								style="display: none;">
+								<thead class="thead-light"
+									style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
+									<tr>
+										<th style="width: 7%;text-align: center;">Cust Id</th>
+										<th style="width: 10%">Acc Number</th>
+										<th style="width: 10%;text-align: center;">Account Name</th>
+										<th style="width: 10%">Schema Code</th>
+										<th style="width: 10%;text-align: center;">Schema Desc</th>
+										<th style="width: 5%">Currency</th>
+										<th style="width: 10%;text-align: center;">Constitution Code</th>
+										<th style="width: 10%;text-align: center;">GL Sub Head code</th>
+										<th style="width: 15%;text-align: center;">GL Sub head code desc</th>
+										<th style="width: 10%;text-align: center;">Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="list : ${list}" th:id="${list.id}" class="userlist">
+										<td th:text="${list?.cust_id}"></td>
+										<td style="text-align: center;" th:text="${list?.account_no}"></td>
+										<td style="text-align: left;" th:text="${list?.acct_name}"></td>
+										<td style="text-align: left;" th:text="${list?.schm_code}"></td>
+										<td style="text-align: left;" th:text="${list?.schm_desc}"></td>
+										<td style="text-align: left;" th:text="${list?.ccy}"></td>
+										<td style="text-align: left;" th:text="${list?.constitution_code}"></td>
+										<td style="text-align: left;" th:text="${list?.gl_sub_head_code}"></td>
+										<td style="text-align: left;" th:text="${list?.gl_sub_head_desc}"></td>
+										<td style="text-align: center;">
+											<i class="fa fa-edit action-icon modify" title="Modify"
+												th:attr="data-roleId=${list?.id}" onclick="edit_btn_submit(this)"></i>
+											<i class="fa fa-eye action-icon view" title="View"
+												th:attr="data-roleId=${list?.id}" onclick="view_btn_submit(this)"></i>
+											<i class="fa fa-trash action-icon delete" title="Delete"
+												th:attr="data-roleId=${list?.id}" onclick="delete_btn_submit(this)"></i>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+
+							<!-------------------------------------------------------BFDB List -end----------------------------------->
+
+							<div class="card-footer text-center">
+								<button type="button" class="custom-tab-btn" id="btnHome"
+									onclick="home();">Home</button>
+								<button type="button" class="custom-tab-btn" id="btnBack"
+									onclick="back();">Back</button>
+							</div>
+							<!-- Pagination -->
+							<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
+								<a th:if="${currentPage > 0}"
+									th:href="@{'/SourceDataMap'(formmode='list', page=${currentPage - 1}, size=100, fileType=${fileType}, reportDate=${reportDate})}">
+									Previous
+								</a>
+
+								<span style="margin: 0 10px;">Page [[${currentPage + 1}]] of [[${totalPages}]]</span>
+
+								<a th:if="${currentPage < totalPages - 1}"
+									th:href="@{'/SourceDataMap'(formmode='list', page=${currentPage + 1}, size=100, fileType=${fileType}, reportDate=${reportDate})}">
+									Next
+								</a>
+							</div>
+						</div>
 					</div>
 				</div>
 
+
+
+
+
+
 				<div class="row">
 					<div class="col-sm-12 finuserapply">
-
 						<div
-							th:if="${formmode}=='edit' OR ${formmode}=='add' OR ${formmode}=='delete' OR ${formmode}=='view' OR ${formmode}=='verify'">
+							th:if="${formmode}=='edit' OR  ${formmode}=='add' OR ${formmode}=='delete' OR ${formmode}=='view' OR ${formmode}=='verify'">
 							<div class="row">
 								<div class="col-sm-12 finuserapply">
+									<!-----------------------------------------------------MCBL Edit Start------------------------------------>
 									<div class="card" style="margin-left: 10px;margin-right: 10px;">
 										<div class="card-header" style="background-color: #376275;">
 											<div class="float-left">
 												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;"
-													th:if="${formmode}=='edit'">MCBL Main - Edit</h6>
-												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;" th:if="${formmode}=='add'">
-													MCBL Main - Add</h6>
+													th:if="${formmode}=='add'"></h6>
 												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;"
-													th:if="${formmode}=='view'">MCBL Main - View</h6>
+													th:if="${formmode}=='edit'">MCBL - Edit</h6>
 												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;"
-													th:if="${formmode}=='delete'">MCBL Main - Delete</h6>
+													th:if="${formmode}=='view'">MCBL - View</h6>
+												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;"
+													th:if="${formmode}=='delete'">MCBL - Delete</h6>
+											</div>
+										</div>
+										<br>
+										<div class="row" th:if="${formmode}=='add'">
+											<div class="col-sm-auto"></div>
+											<!-- File Type -->
+											<label class="col-sm-auto">File Type</label>
+											<div class="col-sm-2">
+												<select id="FileType_add" name="FileType_add" class="form-control form-control-sm" required>
+												    <option value="MCBLs" selected>MCBL</option>
+												    <option value="BLBFs">LOAN BOOK</option>
+												    <option value="BDGFs">DEPOSIT GENERAL</option>
+												    <option value="BFDBs">DEPOSIT BOOK</option>
+												</select>
 											</div>
 										</div>
 
-										<div class="card-body" style="margin-top: -48px;">
-											<form action="#" th:object="${MCBL_List}" method="post"
-												style="margin: 52px;" autocomplete="off" id="MCBL_List"
-												th:fragment="finuserapply">
+										<div class="card-body" style="margin-top: -48px; max-height: 500px; overflow-y: auto;" id="MCBLs">
 
+
+											<form action="#" th:object="${list}" method="post" style="margin: 52px;"
+												autocomplete="off" id="MCBL_List" th:fragment="finuserapply">
 												<input hidden
-												th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
-												  type="text" id="id" name="id" th:field="*{id}" class="form-control form-control-sm" />	
-												
+													th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+													type="text" id="id" name="id" th:field="*{id}"
+													class="form-control form-control-sm" />
+												<input hidden
+													th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+													type="text" id="file_type" name="file_type" th:field="*{file_type}"
+													class="form-control form-control-sm" />
+
 												<div class="row formline">
 													<label class="col-sm-2">GL Code<span
 															style="color: red !important">*</span></label>
 
 													<div class="col-sm-3">
-														<!-- Dropdown when formmode is 'add' -->
 														<input th:if="${formmode}=='add'" type="text" id="gl_code"
-															name="gl_code" class="form-control form-control-sm"
-															 />
-
+															name="gl_code" class="form-control form-control-sm" />
 														<!-- Dropdown with selected value and readonly for other modes -->
 														<input
 															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
 															type="text" id="gl_code" name="gl_code"
 															th:field="*{gl_code}" class="form-control form-control-sm"
-															
 															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
 													</div>
 
@@ -434,87 +701,1979 @@ PURPOSE		: Source Data Mapping
 															style="color: red !important">*</span></label>
 
 													<div class="col-sm-3">
-														<!-- Dropdown when formmode is 'add' -->
 														<input th:if="${formmode}=='add'" type="text" id="gl_sub_code"
-															name="gl_sub_code" class="form-control form-control-sm"
-															 />
+															name="gl_sub_code" class="form-control form-control-sm" />
 
 														<!-- Dropdown with selected value and readonly for other modes -->
 														<input
 															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
 															type="text" id="gl_sub_code" name="gl_sub_code"
 															th:field="*{gl_sub_code}"
-															class="form-control form-control-sm" 
+															class="form-control form-control-sm"
 															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
 													</div>
 													<div class="col-sm-1"></div>
 												</div>
+
 												<div class="row formline">
 													<label style="height: 2px;"></label>
-
 												</div>
 
 												<div class="row formline">
-
 													<label class="col-sm-2">Head Acc Number <span
 															style="color: red !important">*</span></label>
-
 													<div class="col-sm-3">
-														<!-- Dropdown when formmode is 'add' -->
 														<input th:if="${formmode}=='add'" type="text" id="head_acc_no"
-															name="head_acc_no" class="form-control form-control-sm"
-															 />
+															name="head_acc_no" class="form-control form-control-sm" />
 
 														<!-- Dropdown with selected value and readonly for other modes -->
 														<input
 															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
 															type="text" id="head_acc_no" name="head_acc_no"
 															th:field="*{head_acc_no}"
-															class="form-control form-control-sm" 
+															class="form-control form-control-sm"
 															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
 													</div>
-
 													<div class="col-sm-1"></div>
 													<label class="col-sm-2">Currency <span
 															style="color: red !important">*</span></label>
 													<div class="col-sm-3" th:if="${formmode}=='add'">
 														<select id="currency" class="form-control form-control-sm"
-															name="currency"  autocomplete="off"
-															required >
+															name="currency">
 															<option value="">Select</option>
-															    <option value="BWP">BWP</option>
-															    <option value="EUR">EUR</option>
-															    <option value="GBP">GBP</option>
-															    <option value="USD">USD</option>
-															    <option value="INR">INR</option>
-															    <option value="ZAR">ZAR</option>
-															    <option value="AUD">AUD</option>
-															    <option value="CAD">CAD</option>
+															<option value="BWP">BWP</option>
+															<option value="EUR">EUR</option>
+															<option value="GBP">GBP</option>
+															<option value="USD">USD</option>
+															<option value="INR">INR</option>
+															<option value="ZAR">ZAR</option>
+															<option value="AUD">AUD</option>
+															<option value="CAD">CAD</option>
 														</select>
 													</div>
 													<div class="col-sm-3"
 														th:if="${formmode}=='edit'OR ${formmode}=='verify' OR ${formmode}=='view' OR ${formmode}=='delete'">
 														<select id="currency" class="form-control form-control-sm"
-														        th:value="*{currency}" th:field="*{currency}"
-														        th:disabled="${formmode}=='verify' OR ${formmode}=='delete' OR ${formmode}=='view'">
-																<option value="">Select</option>
-																    <option value="BWP">BWP</option>
-																    <option value="EUR">EUR</option>
-																    <option value="GBP">GBP</option>
-																    <option value="USD">USD</option>
-																    <option value="INR">INR</option>
-																    <option value="ZAR">ZAR</option>
-																    <option value="AUD">AUD</option>
-																    <option value="CAD">CAD</option>
+															th:value="*{currency}" th:field="*{currency}"
+															th:disabled="${formmode}=='verify' OR ${formmode}=='delete' OR ${formmode}=='view'">
+															<option value="">Select</option>
+															<option value="BWP">BWP</option>
+															<option value="EUR">EUR</option>
+															<option value="GBP">GBP</option>
+															<option value="USD">USD</option>
+															<option value="INR">INR</option>
+															<option value="ZAR">ZAR</option>
+															<option value="AUD">AUD</option>
+															<option value="CAD">CAD</option>
 														</select>
 													</div>
 												</div>
-												<div class="row formline">
 
+												<div class="row formline">
 													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2">Description <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="description"
+															name="description" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="description" name="description"
+															th:field="*{description}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Report Date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="date" id="report_date"
+															name="report_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="report_date" name="report_date"
+															th:field="*{report_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2">Debit Balance <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="debit_balance" name="debit_balance"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="debit_balance" name="debit_balance"
+															th:field="*{debit_balance}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Credit Balance <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="credit_balance" name="credit_balance"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="credit_balance" name="credit_balance"
+															th:field="*{credit_balance}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2">Debit Equivalent <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="debit_equivalent" name="debit_equivalent"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="debit_equivalent" name="debit_equivalent"
+															th:field="*{debit_equivalent}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Credit Equivalent <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="credit_equivalent" name="credit_equivalent"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="credit_equivalent"
+															name="credit_equivalent" th:field="*{credit_equivalent}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+											</form>
+										</div>
+										<!-----------------------------------------------------MCBL Edit end------------------------------------>
+
+
+										<!-----------------------------------------------------BLBF Edit Start------------------------------------>
+
+
+
+										<div class="card-body" style="margin-top: -48px; display: none;max-height: 600px; overflow-y: auto;" id="BLBFs">
+
+											<form action="#" th:object="${list}" method="post" style="margin: 52px;"
+												autocomplete="off" id="MCBL_List" th:fragment="finuserapply">
+												<input hidden
+													th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+													type="text" id="id" name="id" th:field="*{id}"
+													class="form-control form-control-sm" />
+												<input hidden
+													th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+													type="text" id="file_type" name="file_type" th:field="*{file_type}"
+													class="form-control form-control-sm" />
+
+												<div class="row formline">
+													<label class="col-sm-2">Sol Id<span
+															style="color: red !important">*</span></label>
+
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="sol_id"
+															name="sol_id" class="form-control form-control-sm" />
+
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="sol_id" name="sol_id" th:field="*{sol_id}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Customer Id<span
+															style="color: red !important">*</span></label>
+
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="cust_id"
+															name="cust_id" class="form-control form-control-sm" />
+
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="cust_id" name="cust_id"
+															th:field="*{cust_id}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2"> Account Number <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="account_no"
+															name="account_no" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="account_no" name="account_no"
+															th:field="*{account_no}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Account Name <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="acct_name"
+															name="acct_name" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="acct_name" name="acct_name"
+															th:field="*{acct_name}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2">Schema Code <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="schm_code"
+															name="schm_code" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="schm_code" name="schm_code"
+															th:field="*{schm_code}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Report Date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="date" id="report_date"
+															name="report_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="report_date" name="report_date"
+															th:field="*{report_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2"> Schema Description <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="schm_desc"
+															name="schm_desc" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="schm_desc" name="schm_desc"
+															th:field="*{schm_desc}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Account Open date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="date" id="acct_opn_date"
+															name="acct_opn_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="acct_opn_date" name="acct_opn_date"
+															th:field="*{acct_name}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2"> Approved Limit <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="approved_limit" name="approved_limit"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="approved_limit" name="approved_limit"
+															th:field="*{approved_limit}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Sanction Limit <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="sanction_limit" name="sanction_limit"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="sanction_limit" name="sanction_limit"
+															th:field="*{sanction_limit}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2"> Disbursed Amount <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="disbursed_amt" name="disbursed_amt"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="disbursed_amt" name="disbursed_amt"
+															th:field="*{disbursed_amt}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Balance As On <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="balance_as_on" name="balance_as_on"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="balance_as_on" name="balance_as_on"
+															th:field="*{balance_as_on}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2"> Currency <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3" th:if="${formmode}=='add'">
+														<select id="ccy" class="form-control form-control-sm"
+															name="ccy">
+															<option value="">Select</option>
+															<option value="BWP">BWP</option>
+															<option value="EUR">EUR</option>
+															<option value="GBP">GBP</option>
+															<option value="USD">USD</option>
+															<option value="INR">INR</option>
+															<option value="ZAR">ZAR</option>
+															<option value="AUD">AUD</option>
+															<option value="CAD">CAD</option>
+														</select>
+													</div>
+
+													<div class="col-sm-3"
+														th:if="${formmode}=='edit'OR ${formmode}=='verify' OR ${formmode}=='view' OR ${formmode}=='delete'">
+														<select id="ccy" class="form-control form-control-sm"
+															th:value="*{ccy}" th:field="*{ccy}"
+															th:disabled="${formmode}=='verify' OR ${formmode}=='delete' OR ${formmode}=='view'">
+															<option value="">Select</option>
+															<option value="BWP">BWP</option>
+															<option value="EUR">EUR</option>
+															<option value="GBP">GBP</option>
+															<option value="USD">USD</option>
+															<option value="INR">INR</option>
+															<option value="ZAR">ZAR</option>
+															<option value="AUD">AUD</option>
+															<option value="CAD">CAD</option>
+														</select>
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Bal Equi To BWP <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="bal_equi_to_bwp" name="bal_equi_to_bwp"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="bal_equi_to_bwp" name="bal_equi_to_bwp"
+															th:field="*{bal_equi_to_bwp}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Int Rate <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number" id="int_rate"
+															name="int_rate" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="int_rate" name="int_rate"
+															th:field="*{int_rate}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">100 <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="hundred"
+															name="hundred" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="hundred" name="hundred"
+															th:field="*{hundred}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Accrued Int Amount <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="accrued_int_amt" name="accrued_int_amt"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="accrued_int_amt" name="accrued_int_amt"
+															th:field="*{accrued_int_amt}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Monthly Interest <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="int_of_aug_25" name="int_of_aug_25"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="int_of_aug_25" name="int_of_aug_25"
+															th:field="*{int_of_aug_25}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Last Interest Debit Date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="date"
+															id="last_interest_debit_date"
+															name="last_interest_debit_date"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="last_interest_debit_date"
+															name="last_interest_debit_date"
+															th:field="*{last_interest_debit_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Account Close Flag <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="acct_cls_flg" name="acct_cls_flg"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="acct_cls_flg" name="acct_cls_flg"
+															th:field="*{acct_cls_flg}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Close Date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="date" id="close_date"
+															name="close_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="close_date" name="close_date"
+															th:field="*{close_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Gender <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="gender"
+															name="gender" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="gender" name="gender" th:field="*{gender}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Classification Code <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text"
+															id="classification_code" name="classification_code"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="classification_code"
+															name="classification_code" th:field="*{classification_code}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Constitution Code <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text"
+															id="constitution_code" name="constitution_code"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="constitution_code" name="constitution_code"
+															th:field="*{constitution_code}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Maturity Date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="date" id="maturity_date"
+															name="maturity_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="maturity_date" name="maturity_date"
+															th:field="*{maturity_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">GL Sub Head Code <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text"
+															id="gl_sub_head_code" name="gl_sub_head_code"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="gl_sub_head_code" name="gl_sub_head_code"
+															th:field="*{gl_sub_head_code}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> GL Sub Head Desc <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text"
+															id="gl_sub_head_desc" name="gl_sub_head_desc"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="gl_sub_head_desc" name="gl_sub_head_desc"
+															th:field="*{gl_sub_head_desc}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Tenor (Month)<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="tenor_month"
+															name="tenor_month" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="tenor_month" name="tenor_month"
+															th:field="*{tenor_month}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> EMI <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number" id="emi"
+															name="emi" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="emi" name="emi" th:field="*{emi}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Segment<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="segment"
+															name="segment" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="segment" name="segment"
+															th:field="*{segment}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Facility <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="facility"
+															name="facility" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="facility" name="facility"
+															th:field="*{facility}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Past Due<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="past_due"
+															name="past_due" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="past_due" name="past_due"
+															th:field="*{past_due}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Past Due Days <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="past_due_days" name="past_due_days"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="past_due_days" name="past_due_days"
+															th:field="*{past_due_days}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Asset<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="asset"
+															name="asset" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="asset" name="asset" th:field="*{asset}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Provision <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number" id="provision"
+															name="provision" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="provision" name="provision"
+															th:field="*{provision}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Unsecured<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="unsecured"
+															name="unsecured" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="unsecured" name="unsecured"
+															th:field="*{unsecured}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Int Bucket <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="int_bucket"
+															name="int_bucket" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="int_bucket" name="int_bucket"
+															th:field="*{int_bucket}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Staff<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="staff"
+															name="staff" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="staff" name="staff" th:field="*{staff}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> SMME <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="smme"
+															name="smme" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="smme" name="smme" th:field="*{smme}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Labod<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="labod"
+															name="labod" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="labod" name="labod" th:field="*{labod}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> New A/C <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="new_ac"
+															name="new_ac" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="new_ac" name="new_ac" th:field="*{new_ac}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Undrawn<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="undrawn"
+															name="undrawn" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="undrawn" name="undrawn"
+															th:field="*{undrawn}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Sector <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="sector"
+															name="sector" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="sector" name="sector" th:field="*{sector}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Period<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="period"
+															name="period" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="period" name="period" th:field="*{period}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Effective Interest Rate <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="effective_interest_rate" name="effective_interest_rate"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="effective_interest_rate"
+															name="effective_interest_rate"
+															th:field="*{effective_interest_rate}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Stage<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="stage"
+															name="stage" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="stage" name="stage" th:field="*{stage}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> ECL Provision<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="ecl_provision" name="ecl_provision"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="ecl_provision" name="ecl_provision"
+															th:field="*{ecl_provision}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Report Date<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="date" id="report_date"
+															name="report_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="report_date" name="report_date"
+															th:field="*{report_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+											</form>
+
+										</div>
+
+										<!-----------------------------------------------------BLBF Edit end------------------------------------>
+										<!-----------------------------------------------------BDGF Edit Start------------------------------------>
+
+
+										<div class="card-body" style="margin-top: -48px;display: none;max-height: 600px; overflow-y: auto;" id="BDGFs">
+
+											<form action="#" th:object="${list}" method="post" style="margin: 52px;"
+												autocomplete="off" id="MCBL_List" th:fragment="finuserapply">
+												<input hidden
+													th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+													type="text" id="id" name="id" th:field="*{id}"
+													class="form-control form-control-sm" />
+												<input hidden
+													th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+													type="text" id="file_type" name="file_type" th:field="*{file_type}"
+													class="form-control form-control-sm" />
+
+												<div class="row formline">
+													<label class="col-sm-2">Sol Id<span
+															style="color: red !important">*</span></label>
+
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="sol_id"
+															name="sol_id" class="form-control form-control-sm" />
+
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="sol_id" name="sol_id" th:field="*{sol_id}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Customer Id<span
+															style="color: red !important">*</span></label>
+
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="customer_id"
+															name="customer_id" class="form-control form-control-sm" />
+
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="customer_id" name="customer_id"
+															th:field="*{customer_id}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2"> Account Number <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="acc_no"
+															name="acc_no" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="acc_no" name="acc_no" th:field="*{acc_no}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Customer Name <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="customer_name"
+															name="customer_name" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="customer_name" name="customer_name"
+															th:field="*{customer_name}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2"> Open Date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="date" id="open_date"
+															name="open_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="open_date" name="open_date"
+															th:field="*{open_date}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2"> Amount Deposited <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="amount_deposited" name="amount_deposited"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="amount_deposited" name="amount_deposited"
+															th:field="*{amount_deposited}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Currency <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3" th:if="${formmode}=='add'">
+														<select id="currency" class="form-control form-control-sm"
+															name="currency">
+															<option value="">Select</option>
+															<option value="BWP">BWP</option>
+															<option value="EUR">EUR</option>
+															<option value="GBP">GBP</option>
+															<option value="USD">USD</option>
+															<option value="INR">INR</option>
+															<option value="ZAR">ZAR</option>
+															<option value="AUD">AUD</option>
+															<option value="CAD">CAD</option>
+														</select>
+													</div>
+
+													<div class="col-sm-3"
+														th:if="${formmode}=='edit'OR ${formmode}=='verify' OR ${formmode}=='view' OR ${formmode}=='delete'">
+														<select id="currency" class="form-control form-control-sm"
+															th:value="*{currency}" th:field="*{currency}"
+															th:disabled="${formmode}=='verify' OR ${formmode}=='delete' OR ${formmode}=='view'">
+															<option value="">Select</option>
+															<option value="BWP">BWP</option>
+															<option value="EUR">EUR</option>
+															<option value="GBP">GBP</option>
+															<option value="USD">USD</option>
+															<option value="INR">INR</option>
+															<option value="ZAR">ZAR</option>
+															<option value="AUD">AUD</option>
+															<option value="CAD">CAD</option>
+														</select>
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Bal Equi To BWP <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="bal_equi_to_bwp" name="bal_equi_to_bwp"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="bal_equi_to_bwp" name="bal_equi_to_bwp"
+															th:field="*{bal_equi_to_bwp}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Period<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="period"
+															name="period" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="period" name="period" th:field="*{period}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">100 <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="hundred"
+															name="hundred" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="hundred" name="hundred"
+															th:field="*{hundred}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Rate Of Interest <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="rate_of_interest" name="rate_of_interest"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="rate_of_interest" name="rate_of_interest"
+															th:field="*{rate_of_interest}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Outstanding Balance <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="outstanding_balance" name="outstanding_balance"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="outstanding_balance"
+															name="outstanding_balance" th:field="*{outstanding_balance}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Outstanding Balance UGX <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="oustndng_bal_ugx" name="oustndng_bal_ugx"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="oustndng_bal_ugx" name="oustndng_bal_ugx"
+															th:field="*{oustndng_bal_ugx}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Maturity Date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="date" id="maturity_date"
+															name="maturity_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="maturity_date" name="maturity_date"
+															th:field="*{maturity_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Maturity Amount <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="maturity_amount" name="maturity_amount"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="maturity_amount" name="maturity_amount"
+															th:field="*{maturity_amount}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Scheme <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="scheme"
+															name="scheme" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="scheme" name="scheme" th:field="*{scheme}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Cr Pref Int Rate <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="cr_pref_int_rate" name="cr_pref_int_rate"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="cr_pref_int_rate" name="cr_pref_int_rate"
+															th:field="*{cr_pref_int_rate}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Segment <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="segment"
+															name="segment" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="segment" name="segment"
+															th:field="*{segment}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Referance Date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="date"
+															id="reference_date" name="reference_date"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="reference_date" name="reference_date"
+															th:field="*{reference_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Difference <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="difference"
+															name="difference" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="difference" name="difference"
+															th:field="*{difference}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Days <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode} == 'add'" type="number" id="days"
+															name="days" class="form-control form-control-sm" />
+
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="days" name="days" th:field="*{days}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Period<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="period_days"
+															name="period_days" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="period_days" name="period_days"
+															th:field="*{period_days}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Effective Interest Rate <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="effective_int_rate" name="effective_int_rate"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="effective_int_rate"
+															name="effective_int_rate" th:field="*{effective_int_rate}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Report Date<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="date" id="report_date"
+															name="report_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="report_date" name="report_date"
+															th:field="*{report_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+											</form>
+
+										</div>
+
+										<!-----------------------------------------------------BDGF Edit end------------------------------------>
+										<!-----------------------------------------------------BFDB Edit Start------------------------------------>
+
+
+										<div class="card-body" style="margin-top: -48px;display: none;max-height: 600px; overflow-y: auto;" id="BFDBs">
+
+
+											<form action="#" th:object="${list}" method="post" style="margin: 52px;"
+												autocomplete="off" id="MCBL_List" th:fragment="finuserapply">
+												<input hidden
+													th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+													type="text" id="id" name="id" th:field="*{id}"
+													class="form-control form-control-sm" />
+												<input hidden
+													th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+													type="text" id="file_type" name="file_type" th:field="*{file_type}"
+													class="form-control form-control-sm" />
+
+												<div class="row formline">
+													<label class="col-sm-2">Sol Id<span
+															style="color: red !important">*</span></label>
+
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="sol_id"
+															name="sol_id" class="form-control form-control-sm" />
+
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="sol_id" name="sol_id" th:field="*{sol_id}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Customer Id<span
+															style="color: red !important">*</span></label>
+
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="cust_id"
+															name="cust_id" class="form-control form-control-sm" />
+
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="cust_id" name="cust_id"
+															th:field="*{cust_id}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2"> Account Number <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="account_no"
+															name="account_no" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="account_no" name="account_no"
+															th:field="*{account_no}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Account Name <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="acct_name"
+															name="acct_name" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="acct_name" name="acct_name"
+															th:field="*{acct_name}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2"> Open Date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="date" id="acct_opn_date"
+															name="acct_opn_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="acct_opn_date" name="acct_opn_date"
+															th:field="*{acct_opn_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2"> Gender <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="gender"
+															name="gender" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="gender" name="gender" th:field="*{gender}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Currency <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3" th:if="${formmode}=='add'">
+														<select id="ccy" class="form-control form-control-sm"
+															name="ccy">
+															<option value="">Select</option>
+															<option value="BWP">BWP</option>
+															<option value="EUR">EUR</option>
+															<option value="GBP">GBP</option>
+															<option value="USD">USD</option>
+															<option value="INR">INR</option>
+															<option value="ZAR">ZAR</option>
+															<option value="AUD">AUD</option>
+															<option value="CAD">CAD</option>
+														</select>
+													</div>
+
+													<div class="col-sm-3"
+														th:if="${formmode}=='edit'OR ${formmode}=='verify' OR ${formmode}=='view' OR ${formmode}=='delete'">
+														<select id="ccy" class="form-control form-control-sm"
+															th:value="*{ccy}" th:field="*{ccy}"
+															th:disabled="${formmode}=='verify' OR ${formmode}=='delete' OR ${formmode}=='view'">
+															<option value="">Select</option>
+															<option value="BWP">BWP</option>
+															<option value="EUR">EUR</option>
+															<option value="GBP">GBP</option>
+															<option value="USD">USD</option>
+															<option value="INR">INR</option>
+															<option value="ZAR">ZAR</option>
+															<option value="AUD">AUD</option>
+															<option value="CAD">CAD</option>
+														</select>
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Bal Equi To BWP <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="bal_equi_to_bwp" name="bal_equi_to_bwp"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="bal_equi_to_bwp" name="bal_equi_to_bwp"
+															th:field="*{bal_equi_to_bwp}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2">Schema Code <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="schm_code"
+															name="schm_code" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="schm_code" name="schm_code"
+															th:field="*{schm_code}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Report Date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="date" id="report_date"
+															name="report_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="report_date" name="report_date"
+															th:field="*{report_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2"> Schema Description <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="schm_desc"
+															name="schm_desc" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="schm_desc" name="schm_desc"
+															th:field="*{schm_desc}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Account Colse date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="date" id="acct_cls_date"
+															name="acct_cls_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="acct_cls_date" name="acct_cls_date"
+															th:field="*{acct_cls_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2"> Period<span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="period"
+															name="period" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="period" name="period" th:field="*{period}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">100 <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number" id="hundred"
+															name="hundred" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="hundred" name="hundred"
+															th:field="*{hundred}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2">Int Rate <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number" id="int_rate"
+															name="int_rate" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="int_rate" name="int_rate"
+															th:field="*{int_rate}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Balance As On <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="number"
+															id="balance_as_on" name="balance_as_on"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="balance_as_on" name="balance_as_on"
+															th:field="*{balance_as_on}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Status <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text" id="status"
+															name="status" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="status" name="status" th:field="*{status}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Maturity Date <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="date" id="maturity_date"
+															name="maturity_date" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="date" id="maturity_date" name="maturity_date"
+															th:field="*{maturity_date}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+
+
+
+												<div class="row formline">
+													<label class="col-sm-2"> Type of Accounts <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text"
+															id="type_of_accounts" name="type_of_accounts"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="type_of_accounts" name="type_of_accounts"
+															th:field="*{type_of_accounts}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">Segment <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text" id="segment"
+															name="segment" class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="segment" name="segment"
+															th:field="*{segment}" class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+
+												<div class="row formline">
+													<label class="col-sm-2"> Effective Interest Rate <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="number"
+															id="effective_int_rate" name="effective_int_rate"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="number" id="effective_int_rate"
+															name="effective_int_rate" th:field="*{effective_int_rate}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+
+													<div class="col-sm-1"></div>
+													<label class="col-sm-2">GL Sub Head Code <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+														<input th:if="${formmode}=='add'" type="text"
+															id="gl_sub_head_code" name="gl_sub_head_code"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="gl_sub_head_code" name="gl_sub_head_code"
+															th:field="*{gl_sub_head_code}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+												</div>
+												<div class="row formline">
+													<label style="height: 2px;"></label>
+												</div>
+												<div class="row formline">
+													<label class="col-sm-2"> GL Sub Head Desc <span
+															style="color: red !important">*</span></label>
+													<div class="col-sm-3">
+
+														<input th:if="${formmode}=='add'" type="text"
+															id="gl_sub_head_desc" name="gl_sub_head_desc"
+															class="form-control form-control-sm" />
+														<!-- Dropdown with selected value and readonly for other modes -->
+														<input
+															th:if="${formmode}=='edit' OR ${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'"
+															type="text" id="gl_sub_head_desc" name="gl_sub_head_desc"
+															th:field="*{gl_sub_head_desc}"
+															class="form-control form-control-sm"
+															th:disabled="${formmode}=='view' OR ${formmode}=='verify' OR ${formmode}=='delete'" />
+													</div>
+
+													<div class="col-sm-1"></div>
 
 												</div>
-												
+
 											</form>
 
 										</div>
@@ -522,20 +2681,21 @@ PURPOSE		: Source Data Mapping
 											<button type="button" class="custom-tab-btn" id="btnHome"
 												onclick="home();">Home</button>
 											<button th:if="${formmode}=='edit'" type="button" class="custom-tab-btn"
-												form="MCBL_List"
-												th:attr="data-formmode=${formmode}"
+												form="MCBL_List" th:attr="data-formmode=${formmode},data-type=${'BFDB'}"
 												id="btnSubmit" onclick="submitform(this);">Submit</button>
-											<button th:if="${formmode}=='add'" type="button" class="custom-tab-btn"
-												form="MCBL_List" th:attr="data-formmode=${formmode}" id="btnSubmit"
-												onclick="submitform(this);">Submit</button>
 											<button th:if="${formmode}=='delete'" type="button" class="custom-tab-btn"
-												form="MCBL_List" th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="deleteSubmit(this);">Delete</button>
+												form="MCBL_List" th:attr="data-formmode=${formmode},data-type=${'BFDB'}"
+												id="btnSubmit" onclick="deleteSubmit(this);">Delete</button>
 
 											<button type="button" class="custom-tab-btn" id="btnBack"
 												onclick="back();">Back</button>
 
 										</div>
 									</div>
+									<!-----------------------------------------------------BFDB Edit end------------------------------------>
+
+
+
 								</div>
 							</div>
 						</div>

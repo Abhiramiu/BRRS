@@ -20,16 +20,23 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.bornfire.brrs.entities.AuditServicesEntity;
 import com.bornfire.brrs.entities.AuditServicesRep;
+import com.bornfire.brrs.entities.BrrsGeneralMasterEntity;
+import com.bornfire.brrs.entities.BrrsGeneralMasterRepo;
+import com.bornfire.brrs.entities.MCBL_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
+import com.bornfire.brrs.entities.MCBL_Rep;
 
 @Service
 public class AuditService {
-
+	@Autowired
+	BrrsGeneralMasterRepo BrrsGeneralMasterRepos;
 	@Autowired
 	private AuditServicesRep auditServicesRep;
 	@Autowired
 	MCBL_Main_Rep MCBL_Main_Reps;
+	@Autowired
+	MCBL_Rep MCBL_Reps;
 
 	public List<AuditServicesEntity> getUserServices() {
 		System.out.println(auditServicesRep.getUserAudit());
@@ -99,64 +106,90 @@ public class AuditService {
 	}
 	
 	
-	 public String createAccount(String formmode, MCBL_Main_Entity mcblMainEntity, String userid) {
+	 public String createAccount(String formmode,String type, BrrsGeneralMasterEntity old, String userid) {
 	        String msg = null;
 
 	        try {
-	            if ("add".equalsIgnoreCase(formmode)) {
-	                // Generate next ID
-	                String maxId = MCBL_Main_Reps.getMaxId();
-	                int id = (maxId != null) ? Integer.parseInt(maxId) + 1 : 1;
-
-	                mcblMainEntity.setId(String.valueOf(id));
-	                mcblMainEntity.setCreate_user(userid);
-	                mcblMainEntity.setCreate_date(new Date());
-	                mcblMainEntity.setModify_flg("N");
-	                mcblMainEntity.setDel_flg("N");
-
-	                MCBL_Main_Reps.save(mcblMainEntity);
-	                msg = "Account added successfully";
-
-	            } else if ("edit".equalsIgnoreCase(formmode)) {
-	                Optional<MCBL_Main_Entity> existingOpt = MCBL_Main_Reps.findById(mcblMainEntity.getId());
+	        	if(type.equals("MCBL")) {
+	             if ("edit".equalsIgnoreCase(formmode)) {
+	                Optional<BrrsGeneralMasterEntity> existingOpt = BrrsGeneralMasterRepos.findById(old.getId());
 	                if (existingOpt.isPresent()) {
-	                    MCBL_Main_Entity existing = existingOpt.get();
+	                	BrrsGeneralMasterEntity existing = existingOpt.get();
 
-	                    // Update only editable fields
-	                    existing.setGl_code(mcblMainEntity.getGl_code());
-	                    existing.setGl_sub_code(mcblMainEntity.getGl_sub_code());
-	                    existing.setHead_acc_no(mcblMainEntity.getHead_acc_no());
-	                    existing.setCurrency(mcblMainEntity.getCurrency());
-
+	                    // Update Master Table
+	                    existing.setGl_code(old.getGl_code());
+	                    existing.setGl_sub_code(old.getGl_sub_code());
+	                    existing.setHead_acc_no(old.getHead_acc_no());
+	                    existing.setCurrency(old.getCurrency());
+	                    existing.setDescription(old.getDescription());
+	                    existing.setDebit_balance(old.getDebit_balance());
+	                    existing.setCredit_balance(old.getCredit_balance());
+	                    existing.setDebit_equivalent(old.getDebit_equivalent());
+	                    existing.setCredit_equivalent(old.getCredit_equivalent());
+	                    existing.setReport_date(old.getReport_date());
 	                    existing.setModify_user(userid);
 	                    existing.setModify_date(new Date());
 	                    existing.setModify_flg("Y");
 	                    existing.setDel_flg("N");
 
-	                    MCBL_Main_Reps.save(existing);
-	                    msg = "Account updated successfully";
+	                    BrrsGeneralMasterRepos.save(existing);
+	                    
+	                    //Update MCBl Table
+	                    
+	                    Optional<MCBL_Entity> existingOpt1 = MCBL_Reps.findById(old.getId());
+		                if (existingOpt1.isPresent()) {
+		                	MCBL_Entity existing1 = existingOpt1.get();
+
+		                    // Update Master Table
+		                    existing1.setGl_code(old.getGl_code());
+		                    existing1.setGl_sub_code(old.getGl_sub_code());
+		                    existing1.setHead_acc_no(old.getHead_acc_no());
+		                    existing1.setCurrency(old.getCurrency());
+		                    existing1.setDescription(old.getDescription());
+		                    existing1.setDebit_balance(old.getDebit_balance());
+		                    existing1.setCredit_balance(old.getCredit_balance());
+		                    existing1.setDebit_equivalent(old.getDebit_equivalent());
+		                    existing1.setCredit_equivalent(old.getCredit_equivalent());
+		                    existing1.setReport_date(old.getReport_date());
+
+		                    MCBL_Reps.save(existing1);
+		                    
+		                    //Update MCBl Table
+		                    msg = "MCBL updated successfully";
+		                } else {
+		                }
 	                } else {
-	                    msg = "Error: Account not found for ID " + mcblMainEntity.getId();
+	                    msg = "Error: MCBL not found for ID " + old.getId();
 	                }
 
 	            } else if ("delete".equalsIgnoreCase(formmode)) {
-	                Optional<MCBL_Main_Entity> existingOpt = MCBL_Main_Reps.findById(mcblMainEntity.getId());
+	                Optional<BrrsGeneralMasterEntity> existingOpt = BrrsGeneralMasterRepos.findById(old.getId());
 	                if (existingOpt.isPresent()) {
-	                    MCBL_Main_Entity existing = existingOpt.get();
-
-	                    existing.setDel_user(userid);
-	                    existing.setDel_date(new Date());
+	                	BrrsGeneralMasterEntity existing = existingOpt.get();
 	                    existing.setDel_flg("Y");
-
-	                    MCBL_Main_Reps.save(existing);
-	                    msg = "Account deleted successfully";
+	                    BrrsGeneralMasterRepos.save(existing);
+	                    msg = "MCBL deleted successfully";
 	                } else {
-	                    msg = "Error: Account not found for ID " + mcblMainEntity.getId();
+	                    msg = "Error: MCBL not found for ID " + old.getId();
+	                }
+	                Optional<MCBL_Entity> existingOpt1 = MCBL_Reps.findById(old.getId());
+	                if (existingOpt1.isPresent()) {
+	                	MCBL_Entity existing = existingOpt1.get();
+	                    MCBL_Reps.delete(existing);
+	                    msg = "MCBL deleted successfully";
+	                } else {
 	                }
 
 	            } else {
 	                msg = "Invalid formmode: " + formmode;
 	            }
+	             
+	        	}else if(type.equals("BDGF")) {
+	        		
+	        		
+	        		
+	        		
+	        	}
 	        } catch (Exception e) {
 	            msg = "Error: " + e.getMessage();
 	        }

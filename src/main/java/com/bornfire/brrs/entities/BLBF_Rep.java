@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface BLBF_Rep extends JpaRepository<BLBF_Entity, String> {
 	
-	@Query(value = "SELECT * FROM BRRS_BLBF WHERE report_date=? ORDER BY id", nativeQuery = true)
+	@Query(value = "SELECT * FROM BRRS_BLBF WHERE report_date=?", nativeQuery = true)
 	List<BLBF_Entity> Getcurrentdaydetail(Date Report_date);
 
 

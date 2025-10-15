@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bornfire.brrs.entities.BRRS_Report_Mast_Rep;
+import com.bornfire.brrs.entities.BrrsGeneralMasterEntity;
 import com.bornfire.brrs.entities.MCBL_Detail_Rep;
 import com.bornfire.brrs.entities.MCBL_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Entity;
@@ -49,7 +50,8 @@ public class Rest_Controller {
     @PostMapping("createAcc")
     public String createAccessRoleEn(
             @RequestParam("formmode") String formmode,
-            @ModelAttribute MCBL_Main_Entity mcblMainEntity,
+            @RequestParam("type") String type,
+            @ModelAttribute BrrsGeneralMasterEntity BrrsGeneralMasterEntity,
             Model md,
             HttpServletRequest rq) {
 
@@ -57,7 +59,7 @@ public class Rest_Controller {
 
         logger.info("Form mode: {}, User: {}", formmode, userid);
 
-        String msg = AuditServices.createAccount(formmode, mcblMainEntity, userid);
+        String msg = AuditServices.createAccount(formmode,type, BrrsGeneralMasterEntity, userid);
         return msg;
     }
     

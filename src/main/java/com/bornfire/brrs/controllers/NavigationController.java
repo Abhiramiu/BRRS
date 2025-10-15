@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +60,8 @@ import com.bornfire.brrs.entities.BRRSValidationsRepo;
 import com.bornfire.brrs.entities.BRRS_Report_Mast_Rep;
 import com.bornfire.brrs.entities.BankBranchMaster;
 import com.bornfire.brrs.entities.BankBranchMasterRepo;
+import com.bornfire.brrs.entities.BrrsGeneralMasterEntity;
+import com.bornfire.brrs.entities.BrrsGeneralMasterRepo;
 import com.bornfire.brrs.entities.MCBL_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
@@ -92,11 +95,10 @@ public class NavigationController {
 	@Autowired
 	UserProfileRep UserProfileReps;
 
-	@Autowired
-	private MCBL_Rep mcblRep;
 
 	@Autowired
-	MCBL_Services MCBL_Servicess;
+	BDGF_Services BDGF_Servicess;
+	
 
 	@Autowired
 	BDGF_Rep bdgfRep;
@@ -107,13 +109,17 @@ public class NavigationController {
 	@Autowired
 	BLBF_Rep blbfRep;
 
-	@Autowired
-	BDGF_Services BDGF_Servicess;
 
 	@Autowired
 	BFDB_Services BFDB_Servicess;
 
 	@Autowired
+	BrrsGeneralMasterRepo BrrsGeneralMasterRepos;
+	 @Autowired
+	  MCBL_Rep mcblRep;
+	 
+	 
+	 @Autowired
 	ReportServices reportServices;
 
 	@Autowired
@@ -545,11 +551,309 @@ public class NavigationController {
 	}
 
 	@RequestMapping(value = "SourceDataMap", method = { RequestMethod.GET, RequestMethod.POST })
-	public String SourceDataMap(@RequestParam(required = false) String formmode,
-			@RequestParam(required = false) String id,
-			@RequestParam(value = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(value = "size", required = false, defaultValue = "100") int size, Model md) {
 
+	/*
+	 * public String SourceDataMap(@RequestParam(required = false) String formmode,
+	 * 
+	 * @RequestParam(required = false) String id,
+	 * 
+	 * @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+	 * 
+	 * @RequestParam(value = "size", required = false, defaultValue = "100") int
+	 * size, Model md) {
+	 */
+	public String SourceDataMap(
+	        @RequestParam(required = false) String formmode,
+	        @RequestParam(required = false) String id,
+	        @RequestParam(required = false) String fileType,
+	        @RequestParam(required = false) String reportDate,
+	        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+	        @RequestParam(value = "size", required = false, defaultValue = "100") int size,
+	        Model md) {
+
+	    md.addAttribute("menu", "General Master Table");
+	    md.addAttribute("menuname", "General Master Table");
+	    md.addAttribute("formmode", formmode != null ? formmode : "list");
+
+	    if (formmode == null || formmode.equals("list")) {
+	        int offset = page * size;
+	        List<BrrsGeneralMasterEntity> list;
+
+	        if ((fileType != null && !fileType.isEmpty()) && (reportDate != null && !reportDate.isEmpty())) {
+	            list = BrrsGeneralMasterRepos.findByFileTypeAndReportDate(fileType, reportDate, offset, size);
+	        } else if (fileType != null && !fileType.isEmpty()) {
+	            list = BrrsGeneralMasterRepos.findByFileType(fileType, offset, size);
+	        } else if (reportDate != null && !reportDate.isEmpty()) {
+	            list = BrrsGeneralMasterRepos.findByReportDate(reportDate, offset, size);
+	        } else {
+	            list = BrrsGeneralMasterRepos.getdatabydateList(offset, size);
+	        }
+
+	        int totalRecords;
+	        if ((fileType != null && !fileType.isEmpty()) && (reportDate != null && !reportDate.isEmpty())) {
+	            totalRecords = BrrsGeneralMasterRepos.countByFileTypeAndReportDate(fileType, reportDate);
+	        } else if (fileType != null && !fileType.isEmpty()) {
+	            totalRecords = BrrsGeneralMasterRepos.countByFileType(fileType);
+	        } else if (reportDate != null && !reportDate.isEmpty()) {
+	            totalRecords = BrrsGeneralMasterRepos.countByReportDate(reportDate);
+	        } else {
+	            totalRecords = BrrsGeneralMasterRepos.countAll();
+	        }
+
+	        int totalPages = (int) Math.ceil((double) totalRecords / size);
+
+	        md.addAttribute("list", list);
+	        md.addAttribute("pagination", "YES");
+	        md.addAttribute("currentPage", page);
+	        md.addAttribute("totalPages", totalPages);
+	        md.addAttribute("fileType", fileType);
+	        md.addAttribute("reportDate", reportDate);
+
+	    } else if (formmode.equals("add")) {
+            md.addAttribute("menuname", "MCBL Main- Add");
+            md.addAttribute("formmode", "add");
+
+        } else { // edit/view/delete
+	        BrrsGeneralMasterEntity entity = BrrsGeneralMasterRepos.findById(id).orElse(null);
+	        md.addAttribute("list", entity);
+	        md.addAttribute("formmode", formmode);
+	        md.addAttribute("menuname", "General Master Table - " + formmode.toUpperCase());
+	    }
+
+	    return "Source_Data_Mapping";
+	}
+
+    
+        @RequestMapping(value = "ReferCodeMast", method = { RequestMethod.GET, RequestMethod.POST })
+        public String ReferCodeMast(
+                @RequestParam(required = false) String formmode,
+                @RequestParam(required = false) String id,
+                @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                @RequestParam(value = "size", required = false, defaultValue = "100") int size,
+                Model md) {
+
+                md.addAttribute("menu", "Reference Code Master");
+                md.addAttribute("menuname", "Referance Code Master");
+                md.addAttribute("formmode", "list");
+
+                int offset = page * size;
+                List<MCBL_Main_Entity> lists = MCBL_Main_Reps.getdatabydateList(offset, size);
+
+                // ✅ Declare totalRecords here
+                int totalRecords = MCBL_Main_Reps.countAll();
+                int totalPages = (int) Math.ceil((double) totalRecords / size);
+
+                List<String> RptCodes = BRRS_Report_Mast_Reps.getRptCode();
+                
+
+                md.addAttribute("RptCodes", RptCodes);
+               
+                
+                md.addAttribute("MCBL_List", lists);
+                md.addAttribute("pagination", "YES");
+                md.addAttribute("currentPage", page);
+                md.addAttribute("totalPages", totalPages);
+            
+            
+
+            return "Reference_Code_Master.html";
+        }
+
+
+        
+
+    	
+    	@RequestMapping(value = "MCBL", method = { RequestMethod.GET, RequestMethod.POST })
+    	public String MCBL(@RequestParam(required = false) String formmode,
+    			@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
+    			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
+    			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    		md.addAttribute("activeMenu", "Reports");
+    		md.addAttribute("activePage", "CentralBank");
+    		 String USERID = (String) req.getSession().getAttribute("USERID");
+    	   md.addAttribute("USERID", USERID);
+    		logger.info("==> Entered MCBL controller || Formmode: {}", formmode);
+
+    		LocalDate today = LocalDate.now();
+    		Date defaultDate = java.sql.Date.valueOf(today);
+
+    		
+    		
+    		try {
+    			if (formmode == null || formmode.equals("add")) {
+    				//List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
+    				String currentDateString = null;
+    				if (date == null) {
+    					// If no date provided → use today's date
+    					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(defaultDate);
+    					//logger.info("Fetched {} records for default date: {}", customerList.size(), defaultDate);
+    					currentDateString = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    				} else {
+    					// Convert LocalDate param → SQL Date
+    					Date sqlDate = java.sql.Date.valueOf(date);
+    					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(sqlDate);
+    					//logger.info("Fetched {} records for provided date: {}", customerList.size(), sqlDate);
+
+    					currentDateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    				}
+    				md.addAttribute("currentdate", currentDateString);
+    				md.addAttribute("menu", "MCBL - List");
+    				//md.addAttribute("customersplratedetail", customerList);
+    				md.addAttribute("currentdate", currentDateString);
+    				md.addAttribute("formmode", "add");
+    			} else if (formmode.equals("list")) {
+    				List<Date> reportDates = mcblRep.findDistinctReportDates();
+    			    md.addAttribute("reportDates", reportDates);
+    				md.addAttribute("menu", "File Upload - List");
+    				md.addAttribute("formmode", "list");
+    			}  
+
+    		} catch (Exception e) {
+    			logger.error("Error in  MCBL controller: {}", e.getMessage(), e);
+    			md.addAttribute("errorMessage", "Error loading MCBL page. Please contact administrator.");
+    		}
+
+    		logger.info("<== Exiting MCBL controller");
+    		return "MCBL";
+    	}
+
+
+
+    	//Getting Details by report date for view and download for MCBL IN FILE UPLOAD
+    	@GetMapping("/fetchMCBLRecords")
+    	public String fetchMCBLRecords(@RequestParam String reportDate, Model md) {
+    	    System.out.println("Came to controller with report date: " + reportDate);
+
+    	    // Fetch records from repository
+    	    List<MCBL_Entity> lists = mcblRep.findRecordsByReportDate(reportDate);
+
+    	    // Add data to model
+    	    md.addAttribute("MCBL_List", lists);
+    	    md.addAttribute("selectedReportDate", reportDate);
+    	    
+    	    List<Date> reportDates = mcblRep.findDistinctReportDates();
+		    md.addAttribute("reportDates", reportDates);
+		    
+		    
+    	    md.addAttribute("formmode", "list");
+    	    // Return the same view (page name)
+    	    return "MCBL"; // change this to your actual HTML/Thymeleaf page name
+    	}
+
+
+    	@Autowired
+    	MCBL_Services MCBL_Servicess;
+    	
+    	
+   /* 	@PostMapping("addmcbl")
+    	@ResponseBody
+    	public String addmcbl(@ModelAttribute MultipartFile file,
+    	                                    Model md,String reportDate,
+    	                                    HttpServletRequest rq ) {
+    	    logger.info("==> Entered MCBL method");
+    	    String userid = (String) rq.getSession().getAttribute("USERID");
+    	    String username = (String) rq.getSession().getAttribute("USERNAME");
+    	    try {
+    	        String msg = MCBL_Servicess.addMCBL( file, userid, username,reportDate);
+    	        logger.info("MCBL result: {}", msg);
+    	        return msg;
+    	    } catch (Exception e) {
+    	        logger.error("Error occurred while Add MCBL: {}", e.getMessage(), e);
+    	        return "Error Occurred. Please contact Administrator.";
+    	    }
+    	}
+
+    	
+   /* 	//BDGF
+    	@RequestMapping(value = "BDGF", method = { RequestMethod.GET, RequestMethod.POST })
+    	public String BDGF(@RequestParam(required = false) String formmode,
+    			@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
+    			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
+    			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    		md.addAttribute("activeMenu", "Reports");
+    		md.addAttribute("activePage", "CentralBank");
+    		 String USERID = (String) req.getSession().getAttribute("USERID");
+    	   md.addAttribute("USERID", USERID);
+    		logger.info("==> Entered BDGF controller || Formmode: {}", formmode);
+
+    		LocalDate today = LocalDate.now();
+    		Date defaultDate = java.sql.Date.valueOf(today);
+
+    		try {
+    			if (formmode == null || formmode.equals("list")) {
+    				//List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
+    				String currentDateString = null;
+    				if (date == null) {
+    					// If no date provided → use today's date
+    					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(defaultDate);
+    					//logger.info("Fetched {} records for default date: {}", customerList.size(), defaultDate);
+    					currentDateString = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    				} else {
+    					// Convert LocalDate param → SQL Date
+    					Date sqlDate = java.sql.Date.valueOf(date);
+    					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(sqlDate);
+    					//logger.info("Fetched {} records for provided date: {}", customerList.size(), sqlDate);
+
+    					currentDateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    				}
+    				md.addAttribute("currentdate", currentDateString);
+    				md.addAttribute("menu", "Blank Deposit General Format - List");
+    				//md.addAttribute("customersplratedetail", customerList);
+    				md.addAttribute("currentdate", currentDateString);
+    				md.addAttribute("formmode", "list");
+    			} else if (formmode.equals("add")) {
+    				md.addAttribute("menu", "Blank Deposit General Format - Add");
+    				md.addAttribute("formmode", "add");
+    			}  
+
+    		} catch (Exception e) {
+    			logger.error("Error in  BDGF controller: {}", e.getMessage(), e);
+    			md.addAttribute("errorMessage", "Error loading BDGF page. Please contact administrator.");
+    		}
+
+    		logger.info("<== Exiting BDGF controller");
+    		return "BDGF";
+    	}
+
+
+
+    	
+    /*	@PostMapping("addBDGF")
+    	@ResponseBody
+    	public String addBDGF(@ModelAttribute MultipartFile file, Model md, HttpServletRequest rq) {
+    	    logger.info("==> Entered BDGF method");
+
+    	    String userid = (String) rq.getSession().getAttribute("USERID");
+    	    String username = (String) rq.getSession().getAttribute("USERNAME");
+
+    	    try {
+    	        String msg = BDGF_Servicess.addBDGF(file, userid, username);
+    	        logger.info("BDGF result: {}", msg);
+    	        return msg;
+    	    } catch (Exception e) {
+    	        logger.error("Error occurred while Add BDGF: {}", e.getMessage(), e);
+    	        return "Error Occurred. Please contact Administrator.";
+    	    }
+    	}
+    	
+    	*/
+
+	//BFDB
+/*
+@RequestMapping(value = "BFDB", method = { RequestMethod.GET, RequestMethod.POST })
+public String BFDB(@RequestParam(required = false) String formmode,
+		@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
+		@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
+		@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+	md.addAttribute("activeMenu", "Reports");
+	md.addAttribute("activePage", "CentralBank");
+	 String USERID = (String) req.getSession().getAttribute("USERID");
+   md.addAttribute("USERID", USERID);
+	logger.info("==> Entered BFDB controller || Formmode: {}", formmode);
+
+	LocalDate today = LocalDate.now();
+
+	try {
 		if (formmode == null || formmode.equals("list")) {
 			md.addAttribute("menu", "MCBL Main");
 			md.addAttribute("menuname", "MCBL Main");
@@ -587,9 +891,9 @@ public class NavigationController {
 		}
 
 		return "Source_Data_Mapping";
-	}
+	}*/
 
-	@RequestMapping(value = "ReferCodeMast", method = { RequestMethod.GET, RequestMethod.POST })
+	/*@RequestMapping(value = "ReferCodeMast", method = { RequestMethod.GET, RequestMethod.POST })
 	public String ReferCodeMast(@RequestParam(required = false) String formmode,
 			@RequestParam(required = false) String id,
 			@RequestParam(value = "page", required = false, defaultValue = "0") int page,
@@ -617,8 +921,8 @@ public class NavigationController {
 
 		return "Reference_Code_Master.html";
 	}
-
-	@RequestMapping(value = "MCBL", method = { RequestMethod.GET, RequestMethod.POST })
+*/
+	/*@RequestMapping(value = "MCBL", method = { RequestMethod.GET, RequestMethod.POST })
 	public String MCBL(@RequestParam(required = false) String formmode, @RequestParam(required = false) String tranid,
 			@RequestParam(required = false) Optional<Integer> page,
 			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
@@ -670,7 +974,7 @@ public class NavigationController {
 
 		logger.info("<== Exiting MCBL controller");
 		return "MCBL";
-	}
+	}*/
 
 	@GetMapping("/getReportDatesByFileType")
 	@ResponseBody

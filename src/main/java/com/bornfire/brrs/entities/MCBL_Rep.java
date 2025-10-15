@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 @Repository
-public interface MCBL_Rep extends JpaRepository<MCBL_Entity, Long> {
+public interface MCBL_Rep extends JpaRepository<MCBL_Entity, String> {
 	
 	/*@Query(value = "SELECT * FROM BTDES_INR_REPORTING_BRANCH WHERE report_date=? ORDER BY id", nativeQuery = true)
 	List<MCBL_Detail_Entity> Getcurrentdaydetail(Date Report_date);
