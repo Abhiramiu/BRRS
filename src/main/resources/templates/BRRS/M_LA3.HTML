@@ -621,6 +621,121 @@ PURPOSE		: BWRBRREPORT
 
 	</script>
 	
+	<script>
+
+			function startReport(button) {
+				const alertMsg = document.getElementById("alertMessage");
+				const filename = button.getAttribute('data-filename');
+				const fromdate = button.getAttribute('data-fromdate');
+				const todate = button.getAttribute('data-todate');
+				const currency = button.getAttribute('data-currency');
+				const dtltype = button.getAttribute('data-dtltype');
+				const type = button.getAttribute('data-type');
+				const version = button.getAttribute('data-version');
+				const sessionfilename = sessionStorage.getItem("filename");
+
+				if (sessionfilename == filename) {
+					alertMsg.innerHTML = 'Download request already Processing...';
+					showAlert();
+					return;
+				}
+
+				alertMsg.innerHTML = 'Download request Processing...';
+				showAlert();
+
+				const baseUrl = '/BCDRS/Reports/startreport';
+				const downloadUrl = baseUrl +
+					'?filename=' + encodeURIComponent(filename) +
+					'&fromdate=' + encodeURIComponent(fromdate) +
+					'&todate=' + encodeURIComponent(todate) +
+					'&currency=' + encodeURIComponent(currency) +
+					'&dtltype=' + encodeURIComponent(dtltype) +
+					'&type=' + encodeURIComponent(type) +
+					'&version=' + encodeURIComponent(version);
+				fetch(downloadUrl)  // ✅ no invalid characters now
+					.then(res => res.text())
+					.then(jobId => {
+
+						alertMsg.innerHTML = 'Download request received...' + jobId;
+						showAlert();
+						sessionStorage.setItem("jobId", jobId);
+						sessionStorage.setItem("filename", filename);
+						checkReport(jobId);
+					});
+			}
+
+			function checkReport(jobId) {
+				const alertMsg = document.getElementById("alertMessage");
+				fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+					.then(res => res.text())
+					.then(status => {
+						if (status === "READY") {
+							alertMsg.innerHTML = 'Report is ready! Downloading…';
+							showAlert();
+							const filename = sessionStorage.getItem("filename");
+							downloadDetailfile(jobId, filename)
+							sessionStorage.removeItem("jobId");
+							sessionStorage.removeItem("filename");
+
+						} else if (status === "PROCESSING") {
+							alertMsg.innerHTML = 'Download Is Processing…';
+							showAlert();
+							setTimeout(() => checkReport(jobId), 5000);
+						}
+						else if (status === "ERROR") {
+							alertMsg.innerHTML = 'No data was available to create a download.';
+							showAlert();
+							sessionStorage.removeItem("jobId");
+							sessionStorage.removeItem("filename");
+						}
+					});
+			}
+
+
+
+			function downloadDetailfile(jobId, filename) {
+
+				//$('#loader').modal('show');
+
+				$.ajax({
+					url: '/BCDRS/Reports/downloaddetailExcel?jobId=' + jobId +
+						'&filename=' + filename,
+					type: 'GET',
+					xhrFields: {
+						responseType: 'blob'
+					},
+					success: function (data) {
+						$('#loader').modal('hide');
+
+						if (data && data.size > 100) {
+							const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+							const url = window.URL.createObjectURL(blob);
+							const a = document.createElement('a');
+							a.style.display = 'none';
+							a.href = url;
+							a.download = filename;
+							document.body.appendChild(a);
+							a.click();
+							window.URL.revokeObjectURL(url);
+							document.body.removeChild(a);
+
+							showResultModal('Success', filename + ' downloaded successfully.');
+						} else {
+							showResultModal('Information', 'No data was available to create a download.');
+						}
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						$('#loader').modal('hide');
+						console.error("Download failed:", textStatus, errorThrown);
+						showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+					}
+				});
+			}
+
+
+		</script>
+
+	
 	
 </head>
 <title>BRRS</title>
@@ -704,7 +819,7 @@ PURPOSE		: BWRBRREPORT
 											<div class="table-wrapper table-responsive scrollable-table-container"
 												style="border-right: 1px solid #dee2e6; ">
 												<table
-													class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+													class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 													id="reports">
 													<thead class="thead-light"
 										style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
@@ -1002,10 +1117,10 @@ PURPOSE		: BWRBRREPORT
 												<tr style="background-color: black; ">
 													<thead class="thead-light">
 													    <tr style="background-color: #b3b6b9 ">
-													        <th rowspan="1" style="text-align: left; width: 750px;">(26B) LOANS AND ADVANCES BY MATURITY</th>
-													        <th style="text-align: right; width: 100px;">No. of A/Cs</th>
-													        <th style="text-align: right; width: 200px;">Approved Limit</th>
-													        <th style="text-align: right; width: 300px;">Amount Outstanding</th>
+													        <th rowspan="1" style="text-align: left; width: 555px;">(26B) LOANS AND ADVANCES BY MATURITY</th>
+													        <th style="text-align: right; width: 25px;">No. of A/Cs</th>
+													        <th style="text-align: right; width: 270px;">Approved Limit</th>
+													        <th style="text-align: right; width: 350px;">Amount Outstanding</th>
 													    </tr>
 													</thead>
 
@@ -1409,7 +1524,7 @@ PURPOSE		: BWRBRREPORT
 												/* Your existing CSS - this is the correct approach */
 												.scrollable-table-container {
 													/* This is the key: it creates the scroll context */
-													max-height: 590px;
+													max-height: 700px;
 													/* Or a suitable height like 80vh for responsive design */
 													overflow-y: auto;
 													border: 1px solid #ccc;

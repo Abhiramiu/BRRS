@@ -506,7 +506,7 @@ PURPOSE		: BRFREPORT
 			alertMsg.innerHTML = 'Download request Processing...';
 			showAlert();
 
-			const baseUrl = '/BCDRS/Reports/startreport';
+			const baseUrl = '/BRRS/Reports/startreport';
 			const downloadUrl = baseUrl +
 				'?filename=' + encodeURIComponent(filename) +
 				'&fromdate=' + encodeURIComponent(fromdate) +
@@ -529,7 +529,7 @@ PURPOSE		: BRFREPORT
 
 		function checkReport(jobId) {
 			const alertMsg = document.getElementById("alertMessage");
-			fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
 				.then(res => res.text())
 				.then(status => {
 					if (status === "READY") {
@@ -561,7 +561,7 @@ PURPOSE		: BRFREPORT
 			//$('#loader').modal('show');
 
 			$.ajax({
-				url: '/BCDRS/Reports/downloaddetailExcel?jobId=' + jobId +
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
 					'&filename=' + filename,
 				type: 'GET',
 				xhrFields: {
