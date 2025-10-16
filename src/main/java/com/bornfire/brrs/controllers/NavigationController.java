@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -62,6 +61,8 @@ import com.bornfire.brrs.entities.BankBranchMaster;
 import com.bornfire.brrs.entities.BankBranchMasterRepo;
 import com.bornfire.brrs.entities.BrrsGeneralMasterEntity;
 import com.bornfire.brrs.entities.BrrsGeneralMasterRepo;
+import com.bornfire.brrs.entities.GeneralMasterEntity;
+import com.bornfire.brrs.entities.GeneralMasterRepo;
 import com.bornfire.brrs.entities.MCBL_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
@@ -114,10 +115,9 @@ public class NavigationController {
 	BFDB_Services BFDB_Servicess;
 
 	@Autowired
-	BrrsGeneralMasterRepo BrrsGeneralMasterRepos;
+	GeneralMasterRepo GeneralMasterRepos;
 	 @Autowired
-	  MCBL_Rep mcblRep;
-	 
+	 MCBL_Rep mcblRep;
 	 
 	 @Autowired
 	ReportServices reportServices;
@@ -577,27 +577,23 @@ public class NavigationController {
 
 	    if (formmode == null || formmode.equals("list")) {
 	        int offset = page * size;
-	        List<BrrsGeneralMasterEntity> list;
+	        List<GeneralMasterEntity> list;
 
-	        if ((fileType != null && !fileType.isEmpty()) && (reportDate != null && !reportDate.isEmpty())) {
-	            list = BrrsGeneralMasterRepos.findByFileTypeAndReportDate(fileType, reportDate, offset, size);
-	        } else if (fileType != null && !fileType.isEmpty()) {
-	            list = BrrsGeneralMasterRepos.findByFileType(fileType, offset, size);
+	        if ((reportDate != null && !reportDate.isEmpty())) {
+	            list = GeneralMasterRepos.findByFileTypeAndReportDate( reportDate, offset, size);
 	        } else if (reportDate != null && !reportDate.isEmpty()) {
-	            list = BrrsGeneralMasterRepos.findByReportDate(reportDate, offset, size);
+	            list = GeneralMasterRepos.findByReportDate(reportDate, offset, size);
 	        } else {
-	            list = BrrsGeneralMasterRepos.getdatabydateList(offset, size);
+	            list = GeneralMasterRepos.getdatabydateList(offset, size);
 	        }
 
 	        int totalRecords;
-	        if ((fileType != null && !fileType.isEmpty()) && (reportDate != null && !reportDate.isEmpty())) {
-	            totalRecords = BrrsGeneralMasterRepos.countByFileTypeAndReportDate(fileType, reportDate);
-	        } else if (fileType != null && !fileType.isEmpty()) {
-	            totalRecords = BrrsGeneralMasterRepos.countByFileType(fileType);
-	        } else if (reportDate != null && !reportDate.isEmpty()) {
-	            totalRecords = BrrsGeneralMasterRepos.countByReportDate(reportDate);
+	        if ((reportDate != null && !reportDate.isEmpty())) {
+	            totalRecords = GeneralMasterRepos.countByFileTypeAndReportDate(reportDate);
+	        }  else if (reportDate != null && !reportDate.isEmpty()) {
+	            totalRecords = GeneralMasterRepos.countByReportDate(reportDate);
 	        } else {
-	            totalRecords = BrrsGeneralMasterRepos.countAll();
+	            totalRecords = GeneralMasterRepos.countAll();
 	        }
 
 	        int totalPages = (int) Math.ceil((double) totalRecords / size);
@@ -614,7 +610,7 @@ public class NavigationController {
             md.addAttribute("formmode", "add");
 
         } else { // edit/view/delete
-	        BrrsGeneralMasterEntity entity = BrrsGeneralMasterRepos.findById(id).orElse(null);
+        	GeneralMasterEntity entity = GeneralMasterRepos.findById(id).orElse(null);
 	        md.addAttribute("list", entity);
 	        md.addAttribute("formmode", formmode);
 	        md.addAttribute("menuname", "General Master Table - " + formmode.toUpperCase());
