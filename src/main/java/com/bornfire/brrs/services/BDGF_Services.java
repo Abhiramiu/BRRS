@@ -431,7 +431,7 @@ public class BDGF_Services {
 					// All numeric/text/date cells use either numericStyle or dataCellStyle
 					createNumericCell(row, col++, rec.getS_no(), numericStyle);
 					createTextCell(row, col++, rec.getSol_id(), dataCellStyle);
-					createTextCell(row, col++, rec.getAcc_no(), dataCellStyle);
+					createTextCell(row, col++, rec.getAccount_no(), dataCellStyle);
 					createTextCell(row, col++, rec.getCustomer_id(), dataCellStyle);
 					createTextCell(row, col++, rec.getCustomer_name(), dataCellStyle);
 					createDateCell(row, col++, rec.getAcct_open_date(), sdf, dataCellStyle);

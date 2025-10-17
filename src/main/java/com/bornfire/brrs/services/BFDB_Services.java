@@ -407,11 +407,11 @@ public class BFDB_Services {
 	                int col = 0;
 
 	                // ======= All cells with borders =======
-	                createDataCell(row, col++, rec.getCust_id(), dataCellStyle);
+	                createDataCell(row, col++, rec.getCustomer_id(), dataCellStyle);
 	                createDataCell(row, col++, rec.getSol_id(), dataCellStyle);
 	                createDataCell(row, col++, rec.getGender(), dataCellStyle);
 	                createDataCell(row, col++, rec.getAccount_no(), dataCellStyle);
-	                createDataCell(row, col++, rec.getAcct_name(), dataCellStyle);
+	                createDataCell(row, col++, rec.getCustomer_name(), dataCellStyle);
 	                createDataCell(row, col++, rec.getSchm_code(), dataCellStyle);
 	                createDataCell(row, col++, rec.getSchm_desc(), dataCellStyle);
 	                createDataCell(row, col++, rec.getAcct_open_date() != null ? sdf.format(rec.getAcct_open_date()) : "", dataCellStyle);
