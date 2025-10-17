@@ -15,7 +15,7 @@ public class BDGF_Entity {
     private BigDecimal s_no;
 
     private String sol_id;
-    private String acc_no;
+    private String account_no;
     private String customer_id;
     private String customer_name; 
 
@@ -68,6 +68,8 @@ public class BDGF_Entity {
 
     private BigDecimal residual_tenure;
     private String sls_bucket;
+    
+    
 	public BigDecimal getS_no() {
 		return s_no;
 	}
@@ -80,11 +82,13 @@ public class BDGF_Entity {
 	public void setSol_id(String sol_id) {
 		this.sol_id = sol_id;
 	}
-	public String getAcc_no() {
-		return acc_no;
+	
+	
+	public String getAccount_no() {
+		return account_no;
 	}
-	public void setAcc_no(String acc_no) {
-		this.acc_no = acc_no;
+	public void setAccount_no(String account_no) {
+		this.account_no = account_no;
 	}
 	public String getCustomer_id() {
 		return customer_id;

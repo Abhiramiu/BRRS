@@ -11,13 +11,13 @@ import java.util.Date;
 public class BFDB_Entity {
 
     @Id
-    private String cust_id;
+    private String customer_id;
 
     private String sol_id;
     private String gender;
     private String account_no;
 
-    private String acct_name; 
+    private String customer_name; 
     private String schm_code;
     private String schm_desc;
 
@@ -62,12 +62,7 @@ public class BFDB_Entity {
     private String modify_flg;
     private String verify_flg;
     private String del_flg;
-	public String getCust_id() {
-		return cust_id;
-	}
-	public void setCust_id(String cust_id) {
-		this.cust_id = cust_id;
-	}
+	
 	public String getSol_id() {
 		return sol_id;
 	}
@@ -86,11 +81,18 @@ public class BFDB_Entity {
 	public void setAccount_no(String account_no) {
 		this.account_no = account_no;
 	}
-	public String getAcct_name() {
-		return acct_name;
+	
+	public String getCustomer_id() {
+		return customer_id;
 	}
-	public void setAcct_name(String acct_name) {
-		this.acct_name = acct_name;
+	public void setCustomer_id(String customer_id) {
+		this.customer_id = customer_id;
+	}
+	public String getCustomer_name() {
+		return customer_name;
+	}
+	public void setCustomer_name(String customer_name) {
+		this.customer_name = customer_name;
 	}
 	public String getSchm_code() {
 		return schm_code;
