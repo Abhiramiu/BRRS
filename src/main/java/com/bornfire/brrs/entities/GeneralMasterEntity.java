@@ -25,11 +25,11 @@ public class GeneralMasterEntity {
 	private BigDecimal	mcbl_credit_balance;
 	private BigDecimal	mcbl_debit_equivalent;
 	private BigDecimal	mcbl_credit_equivalent;
-	private String	sol_id;
-	private String	customer_id;
-	private String	customer_name;
-	private String	account_no;
-	private String	gender;
+	private String	sol_id;	
+	private String	customer_id; 
+	private String	customer_name; 
+	private String	account_no; 
+	private String	gender; 
 	private String	schm_code;
 	private String	schm_desc;
     @Temporal(TemporalType.TIMESTAMP)

@@ -10,49 +10,58 @@ import java.util.Date;
 @Table(name = "BRRS_BFDB")
 public class BFDB_Entity {
 
-	@Id
-	private String	cust_id;
-	private String	sol_id;
-	private String	gender;
-	private String	account_no;
-	private String	acct_name;
-	private String	schm_code;
-	private String	schm_desc;
+    @Id
+    private String cust_id;
+
+    private String sol_id;
+    private String gender;
+    private String account_no;
+
+    private String acct_name; 
+    private String schm_code;
+    private String schm_desc;
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	acct_opn_date;
+    private Date acct_open_date; 
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	acct_cls_date;
-    private BigDecimal	balance_as_on;
-	private String	ccy;
-	private BigDecimal	bal_equi_to_bwp;
-	private BigDecimal	int_rate;
-	private BigDecimal	hundred;
-	private String	status;
+    private Date acct_close_date; 
+
+    private BigDecimal balance_as_on;
+    private String currency; 
+    private BigDecimal bal_equi_to_bwp;
+    private BigDecimal rate_of_interest; 
+    private BigDecimal hundred;
+    private String status;
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	maturity_date;
-	private String	gl_sub_head_code;
-	private String	gl_sub_head_desc;
-	private String	type_of_accounts;
-	private String	segment;
-	private String	period;
-	private BigDecimal	effective_int_rate;
-	private String	branch_name;
-	private String	branch_code;
+    private Date maturity_date;
+
+    private String gl_sub_head_code;
+    private String gl_sub_head_desc;
+    private String type_of_accounts;
+    private String segment;
+    private String period;
+    private BigDecimal effective_interest_rate; 
+    private String branch_name;
+    private String branch_code;
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	report_date;
+    private Date report_date;
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	entry_date;
+    private Date entry_date;
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	modify_date;
+    private Date modify_date;
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	verify_date;
-	private String	entry_user;
-	private String	modify_user;
-	private String	verify_user;
-	private String	entry_flg;
-	private String	modify_flg;
-	private String	verify_flg;
-	private String	del_flg;
+    private Date verify_date;
+
+    private String entry_user;
+    private String modify_user;
+    private String verify_user;
+    private String entry_flg;
+    private String modify_flg;
+    private String verify_flg;
+    private String del_flg;
 	public String getCust_id() {
 		return cust_id;
 	}
@@ -95,31 +104,29 @@ public class BFDB_Entity {
 	public void setSchm_desc(String schm_desc) {
 		this.schm_desc = schm_desc;
 	}
-	public Date getAcct_opn_date() {
-		return acct_opn_date;
+	public Date getAcct_open_date() {
+		return acct_open_date;
 	}
-	public void setAcct_opn_date(Date acct_opn_date) {
-		this.acct_opn_date = acct_opn_date;
+	public void setAcct_open_date(Date acct_open_date) {
+		this.acct_open_date = acct_open_date;
 	}
-	public Date getAcct_cls_date() {
-		return acct_cls_date;
+	public Date getAcct_close_date() {
+		return acct_close_date;
 	}
-	public void setAcct_cls_date(Date acct_cls_date) {
-		this.acct_cls_date = acct_cls_date;
+	public void setAcct_close_date(Date acct_close_date) {
+		this.acct_close_date = acct_close_date;
 	}
-	
-	
 	public BigDecimal getBalance_as_on() {
 		return balance_as_on;
 	}
 	public void setBalance_as_on(BigDecimal balance_as_on) {
 		this.balance_as_on = balance_as_on;
 	}
-	public String getCcy() {
-		return ccy;
+	public String getCurrency() {
+		return currency;
 	}
-	public void setCcy(String ccy) {
-		this.ccy = ccy;
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 	public BigDecimal getBal_equi_to_bwp() {
 		return bal_equi_to_bwp;
@@ -127,11 +134,11 @@ public class BFDB_Entity {
 	public void setBal_equi_to_bwp(BigDecimal bal_equi_to_bwp) {
 		this.bal_equi_to_bwp = bal_equi_to_bwp;
 	}
-	public BigDecimal getInt_rate() {
-		return int_rate;
+	public BigDecimal getRate_of_interest() {
+		return rate_of_interest;
 	}
-	public void setInt_rate(BigDecimal int_rate) {
-		this.int_rate = int_rate;
+	public void setRate_of_interest(BigDecimal rate_of_interest) {
+		this.rate_of_interest = rate_of_interest;
 	}
 	public BigDecimal getHundred() {
 		return hundred;
@@ -181,11 +188,11 @@ public class BFDB_Entity {
 	public void setPeriod(String period) {
 		this.period = period;
 	}
-	public BigDecimal getEffective_int_rate() {
-		return effective_int_rate;
+	public BigDecimal getEffective_interest_rate() {
+		return effective_interest_rate;
 	}
-	public void setEffective_int_rate(BigDecimal effective_int_rate) {
-		this.effective_int_rate = effective_int_rate;
+	public void setEffective_interest_rate(BigDecimal effective_interest_rate) {
+		this.effective_interest_rate = effective_interest_rate;
 	}
 	public String getBranch_name() {
 		return branch_name;
@@ -265,7 +272,12 @@ public class BFDB_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-
-
+    
+    
+    
+    
 }
 
+	
+
+	

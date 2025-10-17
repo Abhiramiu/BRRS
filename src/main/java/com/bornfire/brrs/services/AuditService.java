@@ -141,15 +141,15 @@ public class AuditService {
 		                	MCBL_Entity existing1 = existingOpt1.get();
 
 		                    // Update Master Table
-		                    existing1.setGl_code(old.getGl_code());
-		                    existing1.setGl_sub_code(old.getGl_sub_code());
-		                    existing1.setHead_acc_no(old.getHead_acc_no());
-		                    existing1.setCurrency(old.getCurrency());
-		                    existing1.setDescription(old.getDescription());
-		                    existing1.setDebit_balance(old.getDebit_balance());
-		                    existing1.setCredit_balance(old.getCredit_balance());
-		                    existing1.setDebit_equivalent(old.getDebit_equivalent());
-		                    existing1.setCredit_equivalent(old.getCredit_equivalent());
+		                    existing1.setMcbl_gl_code(old.getGl_code());
+		                    existing1.setMcbl_gl_sub_code(old.getGl_sub_code());
+		                    existing1.setMcbl_head_acc_no(old.getHead_acc_no());
+		                    existing1.setMcbl_currency(old.getCurrency());
+		                    existing1.setMcbl_description(old.getDescription());
+		                    existing1.setMcbl_debit_balance(old.getDebit_balance());
+		                    existing1.setMcbl_credit_balance(old.getCredit_balance());
+		                    existing1.setMcbl_debit_equivalent(old.getDebit_equivalent());
+		                    existing1.setMcbl_credit_equivalent(old.getCredit_equivalent());
 		                    existing1.setReport_date(old.getReport_date());
 
 		                    MCBL_Reps.save(existing1);

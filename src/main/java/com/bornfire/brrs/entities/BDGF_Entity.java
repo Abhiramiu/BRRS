@@ -9,68 +9,65 @@ import java.util.Date;
 @Table(name = "BRRS_BDGF")
 public class BDGF_Entity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bdgf_seq_gen")
-	@SequenceGenerator(name = "bdgf_seq_gen", sequenceName = "BDGF_SEQ", allocationSize = 1)
-	private BigDecimal	s_no;
-	private String	sol_id;
-	private String	acc_no;
-	private String	customer_id;
-	private String	customer_name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bdgf_seq_gen")
+    @SequenceGenerator(name = "bdgf_seq_gen", sequenceName = "BDGF_SEQ", allocationSize = 1)
+    private BigDecimal s_no;
+
+    private String sol_id;
+    private String acc_no;
+    private String customer_id;
+    private String customer_name; 
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	open_date;
-	private BigDecimal	amount_deposited;
-	private String	currency;
-	private String	period;
-	private BigDecimal	rate_of_interest;
-	private BigDecimal	hundred;
-	private BigDecimal	bal_equi_to_bwp;
-	private BigDecimal	outstanding_balance;
-	private BigDecimal	oustndng_bal_ugx;
+    private Date acct_open_date; 
+
+    private BigDecimal amount_deposited;
+    private String currency;
+    private String period;
+    private BigDecimal rate_of_interest; 
+    private BigDecimal hundred;
+    private BigDecimal bal_equi_to_bwp;
+    private BigDecimal outstanding_balance;
+    private BigDecimal oustndng_bal_ugx;
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	maturity_date;
-	private BigDecimal	maturity_amount;
-	private String	scheme;
-	private BigDecimal	cr_pref_int_rate;
-	private String	segment;
+    private Date maturity_date;
+
+    private BigDecimal maturity_amount;
+    private String scheme;
+    private BigDecimal cr_pref_int_rate;
+    private String segment;
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	reference_date;
-	private BigDecimal	difference;
-	private BigDecimal	days;
-	private BigDecimal	period_days;
-	private BigDecimal	effective_int_rate;
-	private String	branch_name;
-	private String	branch_code;
+    private Date reference_date;
+
+    private BigDecimal difference;
+    private BigDecimal days;
+    private BigDecimal period_days;
+    private BigDecimal effective_interest_rate; 
+    private String branch_name;
+    private String branch_code;
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	report_date;
+    private Date report_date;
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	entry_date;
+    private Date entry_date;
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	modify_date;
+    private Date modify_date;
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	verify_date;
-	private String	entry_user;
-	private String	modify_user;
-	private String	verify_user;
-	private String	entry_flg;
-	private String	modify_flg;
-	private String	verify_flg;
-	private String	del_flg;
-	   private BigDecimal residual_tenure;
-	   private String sls_bucket;
-	    
-		public String getSls_bucket() {
-		return sls_bucket;
-	}
-	   public void setSls_bucket(String sls_bucket) {
-		   this.sls_bucket = sls_bucket;
-	   }
-		public BigDecimal getResidual_tenure() {
-			return residual_tenure;
-		}
-		public void setResidual_tenure(BigDecimal residual_tenure) {
-			this.residual_tenure = residual_tenure;
-		}
+    private Date verify_date;
+
+    private String entry_user;
+    private String modify_user;
+    private String verify_user;
+    private String entry_flg;
+    private String modify_flg;
+    private String verify_flg;
+    private String del_flg;
+
+    private BigDecimal residual_tenure;
+    private String sls_bucket;
 	public BigDecimal getS_no() {
 		return s_no;
 	}
@@ -101,11 +98,11 @@ public class BDGF_Entity {
 	public void setCustomer_name(String customer_name) {
 		this.customer_name = customer_name;
 	}
-	public Date getOpen_date() {
-		return open_date;
+	public Date getAcct_open_date() {
+		return acct_open_date;
 	}
-	public void setOpen_date(Date open_date) {
-		this.open_date = open_date;
+	public void setAcct_open_date(Date acct_open_date) {
+		this.acct_open_date = acct_open_date;
 	}
 	public BigDecimal getAmount_deposited() {
 		return amount_deposited;
@@ -209,11 +206,11 @@ public class BDGF_Entity {
 	public void setPeriod_days(BigDecimal period_days) {
 		this.period_days = period_days;
 	}
-	public BigDecimal getEffective_int_rate() {
-		return effective_int_rate;
+	public BigDecimal getEffective_interest_rate() {
+		return effective_interest_rate;
 	}
-	public void setEffective_int_rate(BigDecimal effective_int_rate) {
-		this.effective_int_rate = effective_int_rate;
+	public void setEffective_interest_rate(BigDecimal effective_interest_rate) {
+		this.effective_interest_rate = effective_interest_rate;
 	}
 	public String getBranch_name() {
 		return branch_name;
@@ -293,5 +290,21 @@ public class BDGF_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-
+	public BigDecimal getResidual_tenure() {
+		return residual_tenure;
+	}
+	public void setResidual_tenure(BigDecimal residual_tenure) {
+		this.residual_tenure = residual_tenure;
+	}
+	public String getSls_bucket() {
+		return sls_bucket;
+	}
+	public void setSls_bucket(String sls_bucket) {
+		this.sls_bucket = sls_bucket;
+	}
+    
+    
+    
+    
+    
 }

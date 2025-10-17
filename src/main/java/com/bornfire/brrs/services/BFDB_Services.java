@@ -414,13 +414,13 @@ public class BFDB_Services {
 	                createDataCell(row, col++, rec.getAcct_name(), dataCellStyle);
 	                createDataCell(row, col++, rec.getSchm_code(), dataCellStyle);
 	                createDataCell(row, col++, rec.getSchm_desc(), dataCellStyle);
-	                createDataCell(row, col++, rec.getAcct_opn_date() != null ? sdf.format(rec.getAcct_opn_date()) : "", dataCellStyle);
-	                createDataCell(row, col++, rec.getAcct_cls_date() != null ? sdf.format(rec.getAcct_cls_date()) : "", dataCellStyle);
+	                createDataCell(row, col++, rec.getAcct_open_date() != null ? sdf.format(rec.getAcct_open_date()) : "", dataCellStyle);
+	                createDataCell(row, col++, rec.getAcct_close_date() != null ? sdf.format(rec.getAcct_close_date()) : "", dataCellStyle);
 
 	                createNumericCell(row, col++, rec.getBalance_as_on(), numericStyle);
-	                createDataCell(row, col++, rec.getCcy(), dataCellStyle);
+	                createDataCell(row, col++, rec.getCurrency(), dataCellStyle);
 	                createNumericCell(row, col++, rec.getBal_equi_to_bwp(), numericStyle);
-	                createNumericCell(row, col++, rec.getInt_rate(), numericStyle);
+	                createNumericCell(row, col++, rec.getRate_of_interest(), numericStyle);
 	                createNumericCell(row, col++, rec.getHundred(), numericStyle);
 	                createDataCell(row, col++, rec.getStatus(), dataCellStyle);
 	                createDataCell(row, col++, rec.getMaturity_date() != null ? sdf.format(rec.getMaturity_date()) : "", dataCellStyle);
@@ -429,7 +429,7 @@ public class BFDB_Services {
 	                createDataCell(row, col++, rec.getType_of_accounts(), dataCellStyle);
 	                createDataCell(row, col++, rec.getSegment(), dataCellStyle);
 	                createDataCell(row, col++, rec.getPeriod(), dataCellStyle);
-	                createNumericCell(row, col++, rec.getEffective_int_rate(), numericStyle);
+	                createNumericCell(row, col++, rec.getEffective_interest_rate(), numericStyle);
 	                createDataCell(row, col++, rec.getBranch_name(), dataCellStyle);
 	                createDataCell(row, col++, rec.getBranch_code(), dataCellStyle);
 	                createDataCell(row, col++, rec.getReport_date() != null ? sdf.format(rec.getReport_date()) : "", dataCellStyle);

@@ -434,7 +434,7 @@ public class BDGF_Services {
 					createTextCell(row, col++, rec.getAcc_no(), dataCellStyle);
 					createTextCell(row, col++, rec.getCustomer_id(), dataCellStyle);
 					createTextCell(row, col++, rec.getCustomer_name(), dataCellStyle);
-					createDateCell(row, col++, rec.getOpen_date(), sdf, dataCellStyle);
+					createDateCell(row, col++, rec.getAcct_open_date(), sdf, dataCellStyle);
 
 					createNumericCell(row, col++, rec.getAmount_deposited(), numericStyle);
 					createTextCell(row, col++, rec.getCurrency(), dataCellStyle);
@@ -453,7 +453,7 @@ public class BDGF_Services {
 					createNumericCell(row, col++, rec.getDifference(), numericStyle);
 					createNumericCell(row, col++, rec.getDays(), numericStyle);
 					createNumericCell(row, col++, rec.getPeriod_days(), numericStyle);
-					createNumericCell(row, col++, rec.getEffective_int_rate(), numericStyle);
+					createNumericCell(row, col++, rec.getEffective_interest_rate(), numericStyle);
 					createTextCell(row, col++, rec.getBranch_name(), dataCellStyle);
 					createTextCell(row, col++, rec.getBranch_code(), dataCellStyle);
 					createDateCell(row, col++, rec.getReport_date(), sdf, dataCellStyle);

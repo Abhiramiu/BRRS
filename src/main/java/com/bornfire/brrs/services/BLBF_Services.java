@@ -423,7 +423,7 @@ public class BLBF_Services {
 					createTextCell(row, col++, rec.getAcct_name(), dataCellStyle);
 					createTextCell(row, col++, rec.getSchm_code(), dataCellStyle);
 					createTextCell(row, col++, rec.getSchm_desc(), dataCellStyle);
-					createTextCell(row, col++, rec.getAcct_opn_date() != null ? sdf.format(rec.getAcct_opn_date()) : "",
+					createTextCell(row, col++, rec.getAcct_open_date() != null ? sdf.format(rec.getAcct_open_date()) : "",
 							dataCellStyle);
 
 					// ======== Numeric Cells ========
@@ -432,9 +432,9 @@ public class BLBF_Services {
 					createNumericCell(row, col++, rec.getDisbursed_amt(), numericStyle);
 					createNumericCell(row, col++, rec.getBalance_as_on(), numericStyle);
 
-					createTextCell(row, col++, rec.getCcy(), dataCellStyle);
+					createTextCell(row, col++, rec.getCurrency(), dataCellStyle);
 					createNumericCell(row, col++, rec.getBal_equi_to_bwp(), numericStyle);
-					createNumericCell(row, col++, rec.getInt_rate(), numericStyle);
+					createNumericCell(row, col++, rec.getRate_of_interest(), numericStyle);
 					createNumericCell(row, col++, rec.getAccrued_int_amt(), numericStyle);
 					createNumericCell(row, col++, rec.getInt_of_aug_25(), numericStyle);
 					createTextCell(row, col++,
@@ -442,7 +442,7 @@ public class BLBF_Services {
 									: "",
 							dataCellStyle);
 					createTextCell(row, col++, rec.getAcct_cls_flg(), dataCellStyle);
-					createTextCell(row, col++, rec.getClose_date() != null ? sdf.format(rec.getClose_date()) : "",
+					createTextCell(row, col++, rec.getAcct_close_date() != null ? sdf.format(rec.getAcct_close_date()) : "",
 							dataCellStyle);
 					createTextCell(row, col++, rec.getGender(), dataCellStyle);
 					createTextCell(row, col++, rec.getClassification_code(), dataCellStyle);

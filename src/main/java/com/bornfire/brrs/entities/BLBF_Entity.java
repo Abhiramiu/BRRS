@@ -4,81 +4,97 @@ package com.bornfire.brrs.entities;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
-
 @Entity
 @Table(name = "BRRS_BLBF")
 public class BLBF_Entity {
 
-	
-	private String	cust_id;
-	private String	sol_id;
-	
-	@Id
-	private String	account_no;
-	private String	acct_name;
-	private String	schm_code;
-	private String	schm_desc;
+    @Id
+    private String account_no;
+
+    private String cust_id;
+    private String sol_id;
+
+    private String acct_name; 
+    private String schm_code;
+    private String schm_desc;
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	acct_opn_date;
-	private BigDecimal	approved_limit;
-	private BigDecimal	sanction_limit;
-	private BigDecimal	disbursed_amt;
-	private BigDecimal	balance_as_on;
-	private String	ccy;
-	private BigDecimal	bal_equi_to_bwp;
-	private BigDecimal	int_rate;
-	private BigDecimal	hundred;
-	private BigDecimal	accrued_int_amt;
-	private BigDecimal	int_of_aug_25;
+    private Date acct_open_date; 
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	last_interest_debit_date;
-	private String	acct_cls_flg;
+    private Date acct_close_date; 
+
+    private BigDecimal approved_limit;
+    private BigDecimal sanction_limit;
+    private BigDecimal disbursed_amt;
+    private BigDecimal balance_as_on;
+
+    private String currency; 
+    private BigDecimal bal_equi_to_bwp;
+    private BigDecimal rate_of_interest; 
+    private BigDecimal hundred;
+    private BigDecimal accrued_int_amt;
+    private BigDecimal int_of_aug_25;
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	close_date;
-	private String	gender;
-	private String	classification_code;
-	private String	constitution_code;
+    private Date last_interest_debit_date;
+
+    private String acct_cls_flg;
+    private String gender;
+    private String classification_code;
+    private String constitution_code;
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	maturity_date;
-	private String	gl_sub_head_code;
-	private String	gl_sub_head_desc;
-	private BigDecimal	tenor_month;
-	private BigDecimal	emi;
-	private String	segment;
-	private String	facility;
-	private String	past_due;
-	private BigDecimal	past_due_days;
-	private String	asset;
-	private BigDecimal	provision;
-	private String	unsecured;
-	private String	int_bucket;
-	private String	staff;
-	private String	smme;
-	private String	labod;
-	private String	new_ac;
-	private BigDecimal	undrawn;
-	private String	sector;
-	private String	period;
-	private BigDecimal	effective_interest_rate;
-	private String	stage;
-	private BigDecimal	ecl_provision;
-	private String	branch_name;
-	private String	branch_code;
+    private Date maturity_date;
+
+    private String gl_sub_head_code;
+    private String gl_sub_head_desc;
+    private BigDecimal tenor_month;
+    private BigDecimal emi;
+    private String segment;
+    private String facility;
+    private String past_due;
+    private BigDecimal past_due_days;
+    private String asset;
+    private BigDecimal provision;
+    private String unsecured;
+    private String int_bucket;
+    private String staff;
+    private String smme;
+    private String labod;
+    private String new_ac;
+    private BigDecimal undrawn;
+    private String sector;
+    private String period;
+    private BigDecimal effective_interest_rate; 
+    private String stage;
+    private BigDecimal ecl_provision;
+    private String branch_name;
+    private String branch_code;
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	report_date;
+    private Date report_date;
+
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	entry_date;
+    private Date entry_date;
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	modify_date;
+    private Date modify_date;
     @Temporal(TemporalType.TIMESTAMP)
-	private Date	verify_date;
-	private String	entry_user;
-	private String	modify_user;
-	private String	verify_user;
-	private String	entry_flg;
-	private String	modify_flg;
-	private String	verify_flg;
-	private String	del_flg;
+    private Date verify_date;
+
+    private String entry_user;
+    private String modify_user;
+    private String verify_user;
+    private String entry_flg;
+    private String modify_flg;
+    private String verify_flg;
+    private String del_flg;
+	public String getAccount_no() {
+		return account_no;
+	}
+	public void setAccount_no(String account_no) {
+		this.account_no = account_no;
+	}
 	public String getCust_id() {
 		return cust_id;
 	}
@@ -90,12 +106,6 @@ public class BLBF_Entity {
 	}
 	public void setSol_id(String sol_id) {
 		this.sol_id = sol_id;
-	}
-	public String getAccount_no() {
-		return account_no;
-	}
-	public void setAccount_no(String account_no) {
-		this.account_no = account_no;
 	}
 	public String getAcct_name() {
 		return acct_name;
@@ -115,11 +125,17 @@ public class BLBF_Entity {
 	public void setSchm_desc(String schm_desc) {
 		this.schm_desc = schm_desc;
 	}
-	public Date getAcct_opn_date() {
-		return acct_opn_date;
+	public Date getAcct_open_date() {
+		return acct_open_date;
 	}
-	public void setAcct_opn_date(Date acct_opn_date) {
-		this.acct_opn_date = acct_opn_date;
+	public void setAcct_open_date(Date acct_open_date) {
+		this.acct_open_date = acct_open_date;
+	}
+	public Date getAcct_close_date() {
+		return acct_close_date;
+	}
+	public void setAcct_close_date(Date acct_close_date) {
+		this.acct_close_date = acct_close_date;
 	}
 	public BigDecimal getApproved_limit() {
 		return approved_limit;
@@ -139,18 +155,17 @@ public class BLBF_Entity {
 	public void setDisbursed_amt(BigDecimal disbursed_amt) {
 		this.disbursed_amt = disbursed_amt;
 	}
-	
 	public BigDecimal getBalance_as_on() {
 		return balance_as_on;
 	}
 	public void setBalance_as_on(BigDecimal balance_as_on) {
 		this.balance_as_on = balance_as_on;
 	}
-	public String getCcy() {
-		return ccy;
+	public String getCurrency() {
+		return currency;
 	}
-	public void setCcy(String ccy) {
-		this.ccy = ccy;
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 	public BigDecimal getBal_equi_to_bwp() {
 		return bal_equi_to_bwp;
@@ -158,11 +173,11 @@ public class BLBF_Entity {
 	public void setBal_equi_to_bwp(BigDecimal bal_equi_to_bwp) {
 		this.bal_equi_to_bwp = bal_equi_to_bwp;
 	}
-	public BigDecimal getInt_rate() {
-		return int_rate;
+	public BigDecimal getRate_of_interest() {
+		return rate_of_interest;
 	}
-	public void setInt_rate(BigDecimal int_rate) {
-		this.int_rate = int_rate;
+	public void setRate_of_interest(BigDecimal rate_of_interest) {
+		this.rate_of_interest = rate_of_interest;
 	}
 	public BigDecimal getHundred() {
 		return hundred;
@@ -193,12 +208,6 @@ public class BLBF_Entity {
 	}
 	public void setAcct_cls_flg(String acct_cls_flg) {
 		this.acct_cls_flg = acct_cls_flg;
-	}
-	public Date getClose_date() {
-		return close_date;
-	}
-	public void setClose_date(Date close_date) {
-		this.close_date = close_date;
 	}
 	public String getGender() {
 		return gender;
@@ -434,5 +443,6 @@ public class BLBF_Entity {
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
-
+    
+    
 }

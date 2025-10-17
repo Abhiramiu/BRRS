@@ -332,43 +332,43 @@ public class MCBL_Services {
 
 					// Text / Date cells
 					Cell cell0 = row.createCell(0);
-					cell0.setCellValue(rec.getGl_code());
+					cell0.setCellValue(rec.getMcbl_gl_code());
 					cell0.setCellStyle(dataCellStyle);
 
 					Cell cell1 = row.createCell(1);
-					cell1.setCellValue(rec.getGl_sub_code());
+					cell1.setCellValue(rec.getMcbl_gl_sub_code());
 					cell1.setCellStyle(dataCellStyle);
 
 					Cell cell2 = row.createCell(2);
-					cell2.setCellValue(rec.getHead_acc_no());
+					cell2.setCellValue(rec.getMcbl_head_acc_no());
 					cell2.setCellStyle(dataCellStyle);
 
 					Cell cell3 = row.createCell(3);
-					cell3.setCellValue(rec.getDescription());
+					cell3.setCellValue(rec.getMcbl_description());
 					cell3.setCellStyle(dataCellStyle);
 
 					Cell cell4 = row.createCell(4);
-					cell4.setCellValue(rec.getCurrency());
+					cell4.setCellValue(rec.getMcbl_currency());
 					cell4.setCellStyle(dataCellStyle);
 
 					// Numeric / Amount cells
 					Cell debitCell = row.createCell(5);
-					debitCell.setCellValue(rec.getDebit_balance() != null ? rec.getDebit_balance().doubleValue() : 0);
+					debitCell.setCellValue(rec.getMcbl_debit_balance() != null ? rec.getMcbl_debit_balance().doubleValue() : 0);
 					debitCell.setCellStyle(balanceStyle);
 
 					Cell creditCell = row.createCell(6);
 					creditCell
-							.setCellValue(rec.getCredit_balance() != null ? rec.getCredit_balance().doubleValue() : 0);
+							.setCellValue(rec.getMcbl_credit_balance() != null ? rec.getMcbl_credit_balance().doubleValue() : 0);
 					creditCell.setCellStyle(balanceStyle);
 
 					Cell debitEqCell = row.createCell(7);
 					debitEqCell.setCellValue(
-							rec.getDebit_equivalent() != null ? rec.getDebit_equivalent().doubleValue() : 0);
+							rec.getMcbl_debit_equivalent() != null ? rec.getMcbl_debit_equivalent().doubleValue() : 0);
 					debitEqCell.setCellStyle(balanceStyle);
 
 					Cell creditEqCell = row.createCell(8);
 					creditEqCell.setCellValue(
-							rec.getCredit_equivalent() != null ? rec.getCredit_equivalent().doubleValue() : 0);
+							rec.getMcbl_credit_equivalent() != null ? rec.getMcbl_credit_equivalent().doubleValue() : 0);
 					creditEqCell.setCellStyle(balanceStyle);
 
 					// Report Date cell
