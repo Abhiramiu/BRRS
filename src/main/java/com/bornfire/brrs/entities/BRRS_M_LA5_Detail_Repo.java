@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BRRS_M_LA5_Detail_Repo extends JpaRepository<M_LA5_Detail_Entity, String> {
+public interface BRRS_M_LA5_Detail_Repo extends JpaRepository<M_LA5_Detail_Entity, Date> {
 
 		@Query(value = "select * from BRRS_M_LA5_DETAILTABLE  ", nativeQuery = true)
 		List<M_LA5_Detail_Entity> getdatabydateList(Date reportdate);
