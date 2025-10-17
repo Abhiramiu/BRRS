@@ -10,8 +10,8 @@ PURPOSE		: BWRBRREPORT
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- CSS -->
-	
-	
+
+
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
@@ -67,10 +67,10 @@ PURPOSE		: BWRBRREPORT
 
 		.btn-primary:not(:disabled):not(.disabled).active,
 		.btn-primary:not(:disabled):not(.disabled):active,
-		.show > .btn-primary.dropdown-toggle {
-		    color: #fff;
-		    background-color: #cc000000;
-		    border-color: #161617;
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc000000;
+			border-color: #161617;
 		}
 
 
@@ -217,10 +217,10 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not(:focus) ~ .form-legend {
-		    color: #aaa; /* Normal label color */
+		.form-control:not(:focus)~.form-legend {
+			color: #aaa;
+			/* Normal label color */
 		}
-
 	</style>
 	<style>
 		/* Red border for invalid inputs */
@@ -311,38 +311,38 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-    
-    var Callurl;
-    	$('#loader').modal('show');
-        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/ 
-        location.href = Callurl;
-        	console.log(Callurl);
-   /*  $.ajax({
-        type: 'get',
-        url: Callurl,
-        beforeSend: function () {
-            $('#loader').modal('show'); // 🔄 Show loader
-        },
-        success: function (data) {
-            $('.content').html(data);
-            //$("#detailsbtn").addClass("active");
-            //tablepagination();
-        },
-        complete: function () {
-            $('#loader').modal('hide'); 
-        },
-        error: function () {
-        	  $('#loader').modal('hide');
-            alert("Something went wrongss. Please try again.");
-          
-        }
-    }); */
-}
+
+			var Callurl;
+			$('#loader').modal('show');
+			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/
+				location.href = Callurl;
+			console.log(Callurl);
+			/*  $.ajax({
+				 type: 'get',
+				 url: Callurl,
+				 beforeSend: function () {
+					 $('#loader').modal('show'); // 🔄 Show loader
+				 },
+				 success: function (data) {
+					 $('.content').html(data);
+					 //$("#detailsbtn").addClass("active");
+					 //tablepagination();
+				 },
+				 complete: function () {
+					 $('#loader').modal('hide'); 
+				 },
+				 error: function () {
+					   $('#loader').modal('hide');
+					 alert("Something went wrongss. Please try again.");
+				   
+				 }
+			 }); */
+		}
 
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 	</script>
@@ -435,308 +435,308 @@ PURPOSE		: BWRBRREPORT
 			$('#resultModal').modal('show');
 		}
 	</script>
-	
-	
-		
-	
-	
-	
-	
+
+
+
+
+
+
+
 	<script>
 		// Show Modify (enable inputs & dropdowns)
-	function showmodify(btn) {
-    // List of IDs that should ALWAYS remain readonly
-    var readonlyIds = ["R36_NO_OF_AC", "R36_CREDIT_LIMIT", "R36_AMOUNT_OUTSTANDING" ,"R39_NO_OF_AC", "R39_CREDIT_LIMIT", "R39_AMOUNT_OUTSTANDING","R42_NO_OF_AC", "R42_CREDIT_LIMIT", "R42_AMOUNT_OUTSTANDING"];
+		function showmodify(btn) {
+			// List of IDs that should ALWAYS remain readonly
+			var readonlyIds = ["R36_NO_OF_AC", "R36_CREDIT_LIMIT", "R36_AMOUNT_OUTSTANDING", "R39_NO_OF_AC", "R39_CREDIT_LIMIT", "R39_AMOUNT_OUTSTANDING", "R42_NO_OF_AC", "R42_CREDIT_LIMIT", "R42_AMOUNT_OUTSTANDING"];
 
-    // Make all .Show_input editable except the ones in readonlyIds
-    $(".Show_input").each(function () {
-        if (!readonlyIds.includes(this.id)) {
-            $(this).removeAttr("readonly").removeAttr("disabled");
-        }
-    });
-	
-	$("#R37_NO_OF_AC, #R37_CREDIT_LIMIT, #R37_AMOUNT_OUTSTANDING,#R38_NO_OF_AC, #R38_CREDIT_LIMIT, #R38_AMOUNT_OUTSTANDING,#R40_NO_OF_AC, #R40_CREDIT_LIMIT, #R40_AMOUNT_OUTSTANDING,#R41_NO_OF_AC, #R41_CREDIT_LIMIT, #R41_AMOUNT_OUTSTANDING ").css({"background-color": "#d3d3d3"});
+			// Make all .Show_input editable except the ones in readonlyIds
+			$(".Show_input").each(function () {
+				if (!readonlyIds.includes(this.id)) {
+					$(this).removeAttr("readonly").removeAttr("disabled");
+				}
+			});
 
-    // Toggle buttons
-    $("#submitButton").show();
-    $("#cancelRecord").show();
-    $(btn).hide(); // hide the clicked Modify button
-}
+			$("#R37_NO_OF_AC, #R37_CREDIT_LIMIT, #R37_AMOUNT_OUTSTANDING,#R38_NO_OF_AC, #R38_CREDIT_LIMIT, #R38_AMOUNT_OUTSTANDING,#R40_NO_OF_AC, #R40_CREDIT_LIMIT, #R40_AMOUNT_OUTSTANDING,#R41_NO_OF_AC, #R41_CREDIT_LIMIT, #R41_AMOUNT_OUTSTANDING ").css({"background-color": "#d3d3d3"});
 
-	//Cancel / Reset function
-	function cancelModify() {
-	    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-	        // ✅ Only when user clicks YES
-	        location.reload();
-	        
-	        $(".Show_input").attr("readonly", true).attr("disabled", true);
+			// Toggle buttons
+			$("#submitButton").show();
+			$("#cancelRecord").show();
+			$(btn).hide(); // hide the clicked Modify button
+		}
 
-	       
-	        $("#submitButton, #btnBack_edit").hide();
-	        $("#btnBack").show();
+		//Cancel / Reset function
+		function cancelModify() {
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				// ✅ Only when user clicks YES
+				location.reload();
 
-	        // Hide Cancel button again
-	        $("#cancelRecord").hide();
-
-	        // Show all Modify buttons
-	        $("#addRecord").show();
-	    }
-	    // ❌ If user clicks CANCEL, nothing happens
-	}
+				$(".Show_input").attr("readonly", true).attr("disabled", true);
 
 
-		
+				$("#submitButton, #btnBack_edit").hide();
+				$("#btnBack").show();
 
-		</script>
-		
-	
+				// Hide Cancel button again
+				$("#cancelRecord").hide();
+
+				// Show all Modify buttons
+				$("#addRecord").show();
+			}
+			// ❌ If user clicks CANCEL, nothing happens
+		}
+
+
+
+
+	</script>
+
+
 	<SCRIPT>
-		
+
 		// Calculate totals for R36, R39, R42
 		function calculateR36Totals() {
-		    const fields = ["NO_OF_AC", "CREDIT_LIMIT", "AMOUNT_OUTSTANDING"];
-		    fields.forEach(field => {
-		        let total = 0;
-		        for (let row = 37; row <= 38; row++) {
-		            total += parseFloat($("#R" + row + "_" + field).val()?.replace(/,/g, "")) || 0;
-		        }
-		        $("#R36_" + field).val(total);
-		    });
+			const fields = ["NO_OF_AC", "CREDIT_LIMIT", "AMOUNT_OUTSTANDING"];
+			fields.forEach(field => {
+				let total = 0;
+				for (let row = 37; row <= 38; row++) {
+					total += parseFloat($("#R" + row + "_" + field).val()?.replace(/,/g, "")) || 0;
+				}
+				$("#R36_" + field).val(total);
+			});
 		}
 
 		function calculateR39Totals() {
-		    const fields = ["NO_OF_AC", "CREDIT_LIMIT", "AMOUNT_OUTSTANDING"];
-		    fields.forEach(field => {
-		        let total = 0;
-		        for (let row = 40; row <= 41; row++) {
-		            total += parseFloat($("#R" + row + "_" + field).val()?.replace(/,/g, "")) || 0;
-		        }
-		        $("#R39_" + field).val(total);
-		    });
+			const fields = ["NO_OF_AC", "CREDIT_LIMIT", "AMOUNT_OUTSTANDING"];
+			fields.forEach(field => {
+				let total = 0;
+				for (let row = 40; row <= 41; row++) {
+					total += parseFloat($("#R" + row + "_" + field).val()?.replace(/,/g, "")) || 0;
+				}
+				$("#R39_" + field).val(total);
+			});
 		}
 
 		function calculateR42Totals() {
-		    const fields = ["NO_OF_AC", "CREDIT_LIMIT", "AMOUNT_OUTSTANDING"];
-		    fields.forEach(field => {
-		        let total36 = parseFloat($("#R36_" + field).val()?.replace(/,/g, "")) || 0;
-		        let total39 = parseFloat($("#R39_" + field).val()?.replace(/,/g, "")) || 0;
-		        let total42 = total36 + total39;
-		        $("#R42_" + field).val(total42);
-		    });
+			const fields = ["NO_OF_AC", "CREDIT_LIMIT", "AMOUNT_OUTSTANDING"];
+			fields.forEach(field => {
+				let total36 = parseFloat($("#R36_" + field).val()?.replace(/,/g, "")) || 0;
+				let total39 = parseFloat($("#R39_" + field).val()?.replace(/,/g, "")) || 0;
+				let total42 = total36 + total39;
+				$("#R42_" + field).val(total42);
+			});
 		}
 
 		// ✅ Live calculation on input
 		function attachLiveCalculations() {
-		    const fields = ["NO_OF_AC", "CREDIT_LIMIT", "AMOUNT_OUTSTANDING"];
-		    const rowsToWatch = [37, 38, 40, 41]; // user input rows
+			const fields = ["NO_OF_AC", "CREDIT_LIMIT", "AMOUNT_OUTSTANDING"];
+			const rowsToWatch = [37, 38, 40, 41]; // user input rows
 
-		    rowsToWatch.forEach(row => {
-		        fields.forEach(field => {
-		            $("#R" + row + "_" + field).on("input", function() {
-		                calculateR36Totals();
-		                calculateR39Totals();
-		                calculateR42Totals();
-		            });
-		        });
-		    });
+			rowsToWatch.forEach(row => {
+				fields.forEach(field => {
+					$("#R" + row + "_" + field).on("input", function () {
+						calculateR36Totals();
+						calculateR39Totals();
+						calculateR42Totals();
+					});
+				});
+			});
 		}
 
 		// Call this after DOM is ready
-		$(document).ready(function() {
-		    attachLiveCalculations();
+		$(document).ready(function () {
+			attachLiveCalculations();
 		});
 
-		
-		
+
+
 	</SCRIPT>
 
 
 	<script>
-		
-	// This function is for closing the modal after an action is complete.
-	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+		// This function is for closing the modal after an action is complete.
+		// It hides the result and loader modals and reloads the page.
+		function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
-	function fileuploads(btn) {
-	    const asondate = btn.getAttribute("data-todate");
-	    $('#loader').modal('show');
+			// Reload the page after a short delay to ensure the modal animation completes smoothly.
+			setTimeout(function () {
+				location.reload();
+			}, 300);
+		}
 
-	    // ✅ Step 1: Calculate totals
-	    calculateR36Totals();
-	    calculateR39Totals();
-	    calculateR42Totals();
+		function fileuploads(btn) {
+			const asondate = btn.getAttribute("data-todate");
+			$('#loader').modal('show');
 
-	    // ✅ Step 2: Remove commas from visible inputs only
-		$("#fileupload input[type='text']").each(function () {
-		        $(this).val($(this).val().replace(/,/g, ''));
-		    });
-	    // ✅ Step 3: Validate form
-	    if (!$("#fileupload").valid()) {
-	        $('#loader').modal('hide');
-	        return;
-	    }
+			// ✅ Step 1: Calculate totals
+			calculateR36Totals();
+			calculateR39Totals();
+			calculateR42Totals();
 
-	    // ✅ Step 4: Build FormData object including hidden inputs
-	    const formData = new FormData();
-	    formData.append("asondate", asondate);
+			// ✅ Step 2: Remove commas from visible inputs only
+			$("#fileupload input[type='text']").each(function () {
+				$(this).val($(this).val().replace(/,/g, ''));
+			});
+			// ✅ Step 3: Validate form
+			if (!$("#fileupload").valid()) {
+				$('#loader').modal('hide');
+				return;
+			}
 
-	    $('#fileupload').find(':input[name]').each(function () {
-	        const name = $(this).attr('name');
-	        formData.append(name, $(this).val());
-	    });
+			// ✅ Step 4: Build FormData object including hidden inputs
+			const formData = new FormData();
+			formData.append("asondate", asondate);
 
-	    // ✅ Step 5: Send Ajax request
-	    $.ajax({
-	        url: './LA3updateAll',
-	        type: 'POST',
-	        data: formData,
-	        processData: false,
-	        contentType: false,
-	        dataType: 'text',
-	        success: function () {
-	            $("#resultModalLabel").text("Success");
-	            $("#resultModalBody").text("Updated successfully.");
-	            $("#resultModal").modal("show");
-	        },
-	        error: function (jqXHR) {
-	            console.error("Error response:", jqXHR.responseText);
-	            $("#resultModalLabel").text("Error");
-	            $("#resultModalBody").text("Update failed. Check console for details.");
-	            $("#resultModal").modal("show");
-	        },
-	        complete: function () {
-	            $('#loader').modal('hide');
-	        }
-	    });
-	}
+			$('#fileupload').find(':input[name]').each(function () {
+				const name = $(this).attr('name');
+				formData.append(name, $(this).val());
+			});
+
+			// ✅ Step 5: Send Ajax request
+			$.ajax({
+				url: './LA3updateAll',
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				dataType: 'text',
+				success: function () {
+					$("#resultModalLabel").text("Success");
+					$("#resultModalBody").text("Updated successfully.");
+					$("#resultModal").modal("show");
+				},
+				error: function (jqXHR) {
+					console.error("Error response:", jqXHR.responseText);
+					$("#resultModalLabel").text("Error");
+					$("#resultModalBody").text("Update failed. Check console for details.");
+					$("#resultModal").modal("show");
+				},
+				complete: function () {
+					$('#loader').modal('hide');
+				}
+			});
+		}
 
 
 	</script>
-	
+
 	<script>
 
-			function startReport(button) {
-				const alertMsg = document.getElementById("alertMessage");
-				const filename = button.getAttribute('data-filename');
-				const fromdate = button.getAttribute('data-fromdate');
-				const todate = button.getAttribute('data-todate');
-				const currency = button.getAttribute('data-currency');
-				const dtltype = button.getAttribute('data-dtltype');
-				const type = button.getAttribute('data-type');
-				const version = button.getAttribute('data-version');
-				const sessionfilename = sessionStorage.getItem("filename");
+		function startReport(button) {
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
 
-				if (sessionfilename == filename) {
-					alertMsg.innerHTML = 'Download request already Processing...';
-					showAlert();
-					return;
-				}
-
-				alertMsg.innerHTML = 'Download request Processing...';
+			if (sessionfilename == filename) {
+				alertMsg.innerHTML = 'Download request already Processing...';
 				showAlert();
+				return;
+			}
 
-				const baseUrl = '/BRRS/Reports/startreport';
-				const downloadUrl = baseUrl +
-					'?filename=' + encodeURIComponent(filename) +
-					'&fromdate=' + encodeURIComponent(fromdate) +
-					'&todate=' + encodeURIComponent(todate) +
-					'&currency=' + encodeURIComponent(currency) +
-					'&dtltype=' + encodeURIComponent(dtltype) +
-					'&type=' + encodeURIComponent(type) +
-					'&version=' + encodeURIComponent(version);
-				fetch(downloadUrl)  // ✅ no invalid characters now
-					.then(res => res.text())
-					.then(jobId => {
+			alertMsg.innerHTML = 'Download request Processing...';
+			showAlert();
 
-						alertMsg.innerHTML = 'Download request received...' + jobId;
+			const baseUrl = '/BRRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+			fetch(downloadUrl)  // ✅ no invalid characters now
+				.then(res => res.text())
+				.then(jobId => {
+
+					alertMsg.innerHTML = 'Download request received...' + jobId;
+					showAlert();
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+					checkReport(jobId);
+				});
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report is ready! Downloading…';
 						showAlert();
-						sessionStorage.setItem("jobId", jobId);
-						sessionStorage.setItem("filename", filename);
-						checkReport(jobId);
-					});
-			}
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename)
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
 
-			function checkReport(jobId) {
-				const alertMsg = document.getElementById("alertMessage");
-				fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
-					.then(res => res.text())
-					.then(status => {
-						if (status === "READY") {
-							alertMsg.innerHTML = 'Report is ready! Downloading…';
-							showAlert();
-							const filename = sessionStorage.getItem("filename");
-							downloadDetailfile(jobId, filename)
-							sessionStorage.removeItem("jobId");
-							sessionStorage.removeItem("filename");
-
-						} else if (status === "PROCESSING") {
-							alertMsg.innerHTML = 'Download Is Processing…';
-							showAlert();
-							setTimeout(() => checkReport(jobId), 5000);
-						}
-						else if (status === "ERROR") {
-							alertMsg.innerHTML = 'No data was available to create a download.';
-							showAlert();
-							sessionStorage.removeItem("jobId");
-							sessionStorage.removeItem("filename");
-						}
-					});
-			}
-
-
-
-			function downloadDetailfile(jobId, filename) {
-
-				//$('#loader').modal('show');
-
-				$.ajax({
-					url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
-						'&filename=' + filename,
-					type: 'GET',
-					xhrFields: {
-						responseType: 'blob'
-					},
-					success: function (data) {
-						$('#loader').modal('hide');
-
-						if (data && data.size > 100) {
-							const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-							const url = window.URL.createObjectURL(blob);
-							const a = document.createElement('a');
-							a.style.display = 'none';
-							a.href = url;
-							a.download = filename;
-							document.body.appendChild(a);
-							a.click();
-							window.URL.revokeObjectURL(url);
-							document.body.removeChild(a);
-
-							showResultModal('Success', filename + ' downloaded successfully.');
-						} else {
-							showResultModal('Information', 'No data was available to create a download.');
-						}
-					},
-					error: function (jqXHR, textStatus, errorThrown) {
-						$('#loader').modal('hide');
-						console.error("Download failed:", textStatus, errorThrown);
-						showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+					} else if (status === "PROCESSING") {
+						alertMsg.innerHTML = 'Download Is Processing…';
+						showAlert();
+						setTimeout(() => checkReport(jobId), 5000);
+					}
+					else if (status === "ERROR") {
+						alertMsg.innerHTML = 'No data was available to create a download.';
+						showAlert();
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
 					}
 				});
-			}
+		}
 
 
-		</script>
 
-	
-	
+		function downloadDetailfile(jobId, filename) {
+
+			//$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('Success', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+
+	</script>
+
+
+
 </head>
 <title>BRRS</title>
 
@@ -772,24 +772,19 @@ PURPOSE		: BWRBRREPORT
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
-						
-							<!-- Modify button -->
-							<button type="button" class="custom-tab-btn"
-							        onclick="showmodify(this);"
-							        title="Click to EDIT Records"
-									th:if="${type != 'ARCHIVAL'}"
-							        th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							        id="addRecord">Modify</button>
 
-							<!-- Cancel button (hidden initially) -->
-							<button type="button" class="custom-tab-btn"
-							        title="Cancel editing"
-							        id="cancelRecord"
-							        onclick="cancelModify();"
-							        style="display: none;">Cancel</button>
-							
-							
-							<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'}"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							id="addRecord">Modify</button>
+
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
@@ -814,20 +809,21 @@ PURPOSE		: BWRBRREPORT
 				</div>
 
 				<div th:if="${displaymode == 'summary'}">
-									<div class="row">
-										<div class="col-sm-12">
-											<div class="table-wrapper table-responsive scrollable-table-container"
-												style="border-right: 1px solid #dee2e6; ">
-												<table
-													class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
-													id="reports">
-													<thead class="thead-light"
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6; ">
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light"
 										style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
 										<tr style="background-color: black; ">
 											<thead class="thead-light">
 												<tr style="background-color: #b3b6b9 ">
 
-													<th rowspan="1" style="text-align: left; width: 750px;"> (26A) NOMINAL INTEREST
+													<th rowspan="1" style="text-align: left; width: 750px;"> (26A)
+														NOMINAL INTEREST
 														RATES </th>
 													<th style="text-align: right;">No. of A/Cs</th>
 													<th style="text-align: right;"> Approved Limit </th>
@@ -843,92 +839,113 @@ PURPOSE		: BWRBRREPORT
 												th:text="${report.r10_product}"></td>
 											<td style="text-align: right;" th:attr="RowId='R10', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r10_no_of_ac}"></td>
+												th:text="${#numbers.formatDecimal(report.r10_no_of_ac,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="text-align: right;" th:attr="RowId='R10', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r10_approved_limit}"></td>
+												th:text="${#numbers.formatDecimal(report.r10_approved_limit,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="text-align: right;" th:attr="RowId='R10', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r10_amount_outstanding}"></td>
+												th:text="${#numbers.formatDecimal(report.r10_amount_outstanding,1,'COMMA',0,'POINT')}">
+											</td>
 										</tr>
 										<tr>
 											<td style="text-align: left;" th:attr="RowId='R11', ColumnId='C1'"
 												th:text="${report.r11_product}"></td>
 											<td style="text-align: right;" th:attr="RowId='R11', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r11_no_of_ac}"></td>
+												th:text="${#numbers.formatDecimal(report.r11_no_of_ac,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="text-align: right;" th:attr="RowId='R11', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r11_approved_limit}"></td>
+												th:text="${#numbers.formatDecimal(report.r11_approved_limit,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="text-align: right;" th:attr="RowId='R11', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r11_amount_outstanding}"></td>
+												th:text="${#numbers.formatDecimal(report.r11_amount_outstanding,1,'COMMA',0,'POINT')}">
+											</td>
 										</tr>
 										<tr>
 											<td style="text-align: left;" th:attr="RowId='R12', ColumnId='C1'"
 												th:text="${report.r12_product}"></td>
 											<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r12_no_of_ac}"></td>
+												th:text="${#numbers.formatDecimal(report.r12_no_of_ac,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r12_approved_limit}"></td>
+												th:text="${#numbers.formatDecimal(report.r12_approved_limit,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r12_amount_outstanding}"></td>
+												th:text="${#numbers.formatDecimal(report.r12_amount_outstanding,1,'COMMA',0,'POINT')}">
+											</td>
 										</tr>
 										<tr>
 											<td style="text-align: left;" th:attr="RowId='R13', ColumnId='C1'"
 												th:text="${report.r13_product}"></td>
 											<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r13_no_of_ac}"></td>
+												th:text="${#numbers.formatDecimal(report.r13_no_of_ac,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r13_approved_limit}"></td>
+												th:text="${#numbers.formatDecimal(report.r13_approved_limit,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r13_amount_outstanding}"></td>
+												th:text="${#numbers.formatDecimal(report.r13_amount_outstanding,1,'COMMA',0,'POINT')}">
+											</td>
 										</tr>
 										<tr>
 											<td style="text-align: left;" th:attr="RowId='R14', ColumnId='C1'"
 												th:text="${report.r14_product}"></td>
 											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r14_no_of_ac}"></td>
+												th:text="${#numbers.formatDecimal(report.r14_no_of_ac,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r14_approved_limit}"></td>
+												th:text="${#numbers.formatDecimal(report.r14_approved_limit,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r14_amount_outstanding}"></td>
+												th:text="${#numbers.formatDecimal(report.r14_amount_outstanding,1,'COMMA',0,'POINT')}">
+											</td>
 										</tr>
 										<tr>
 											<td style="text-align: left;" th:attr="RowId='R15', ColumnId='C1'"
 												th:text="${report.r15_product}"></td>
 											<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r15_no_of_ac}"></td>
+												th:text="${#numbers.formatDecimal(report.r15_no_of_ac,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r15_approved_limit}"></td>
+												th:text="${#numbers.formatDecimal(report.r15_approved_limit,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.r15_amount_outstanding}"></td>
+												th:text="${#numbers.formatDecimal(report.r15_amount_outstanding,1,'COMMA',0,'POINT')}">
+											</td>
 										</tr>
 
 										<tr>
 											<td style="text-align: left;" th:attr="RowId='R16', ColumnId='C1'"
 												th:text="${report.r16_product}"></td>
 											<td style="background-color: rgb(107, 122, 143); text-align: right; color: white;"
-												th:attr="RowId='R16', ColumnId='C2'" th:text="${report.r16_no_of_ac}">
+												th:attr="RowId='R16', ColumnId='C2'"
+												th:text="${#numbers.formatDecimal(report.r16_no_of_ac,1,'COMMA',0,'POINT')}">
 											</td>
 											<td style="background-color: rgb(107, 122, 143); text-align: right;color: white;"
 												th:attr="RowId='R16', ColumnId='C3'"
-												th:text="${report.r16_approved_limit}"></td>
+												th:text="${#numbers.formatDecimal(report.r16_approved_limit,1,'COMMA',0,'POINT')}">
+											</td>
 											<td style="background-color: rgb(107, 122, 143); text-align: right;color: white;"
 												th:attr="RowId='R16', ColumnId='C4'"
-												th:text="${report.r16_amount_outstanding}"></td>
+												th:text="${#numbers.formatDecimal(report.r16_amount_outstanding,1,'COMMA',0,'POINT')}">
+											</td>
 										</tr>
 									</tbody>
 								</table>
@@ -942,12 +959,13 @@ PURPOSE		: BWRBRREPORT
 										<thead class="thead-light"
 											style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
 											<tr style="background-color: black; ">
-											
-												
+
+
 												<thead class="thead-light">
 													<tr style="background-color: #b3b6b9 ">
 
-														<th rowspan="1" style="text-align: left; width: 750px;"> 	(26B) LOANS AND ADVANCES BY MATURITY  </th>
+														<th rowspan="1" style="text-align: left; width: 750px;"> (26B)
+															LOANS AND ADVANCES BY MATURITY </th>
 														<th style="text-align: right;">No. of A/Cs</th>
 														<th style="text-align: right;"> Approved Limit </th>
 														<th style="text-align: right;">Amount Outstanding</th>
@@ -963,130 +981,160 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.r21_product}"></td>
 												<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r21_no_of_ac}"></td>
+													th:text="${#numbers.formatDecimal(report.r21_no_of_ac,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r21_approved_limit}"></td>
+													th:text="${#numbers.formatDecimal(report.r21_approved_limit,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r21_amount_outstanding}"></td>
+													th:text="${#numbers.formatDecimal(report.r21_amount_outstanding,1,'COMMA',0,'POINT')}">
+												</td>
 											</tr>
 											<tr>
 												<td style="text-align: left;" th:attr="RowId='R22', ColumnId='C1'"
 													th:text="${report.r22_product}"></td>
 												<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r22_no_of_ac}"></td>
+													th:text="${#numbers.formatDecimal(report.r22_no_of_ac,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r22_approved_limit}"></td>
+													th:text="${#numbers.formatDecimal(report.r22_approved_limit,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r22_amount_outstanding}"></td>
+													th:text="${#numbers.formatDecimal(report.r22_amount_outstanding,1,'COMMA',0,'POINT')}">
+												</td>
 											</tr>
 											<tr>
 												<td style="text-align: left;" th:attr="RowId='R23', ColumnId='C1'"
 													th:text="${report.r23_product}"></td>
 												<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r23_no_of_ac}"></td>
+													th:text="${#numbers.formatDecimal(report.r23_no_of_ac,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r23_approved_limit}"></td>
+													th:text="${#numbers.formatDecimal(report.r23_approved_limit,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r23_amount_outstanding}"></td>
+													th:text="${#numbers.formatDecimal(report.r23_amount_outstanding,1,'COMMA',0,'POINT')}">
+												</td>
 											</tr>
 											<tr>
 												<td style="text-align: left;" th:attr="RowId='R24', ColumnId='C1'"
 													th:text="${report.r24_product}"></td>
 												<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r24_no_of_ac}"></td>
+													th:text="${#numbers.formatDecimal(report.r24_no_of_ac,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r24_approved_limit}"></td>
+													th:text="${#numbers.formatDecimal(report.r24_approved_limit,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r24_amount_outstanding}"></td>
+													th:text="${#numbers.formatDecimal(report.r24_amount_outstanding,1,'COMMA',0,'POINT')}">
+												</td>
 											</tr>
 											<tr>
 												<td style="text-align: left;" th:attr="RowId='R25', ColumnId='C1'"
 													th:text="${report.r25_product}"></td>
 												<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r25_no_of_ac}"></td>
+													th:text="${#numbers.formatDecimal(report.r25_no_of_ac,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r25_approved_limit}"></td>
+													th:text="${#numbers.formatDecimal(report.r25_approved_limit,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r25_amount_outstanding}"></td>
+													th:text="${#numbers.formatDecimal(report.r25_amount_outstanding,1,'COMMA',0,'POINT')}">
+												</td>
 											</tr>
 											<tr>
 												<td style="text-align: left;" th:attr="RowId='R26', ColumnId='C1'"
 													th:text="${report.r26_product}"></td>
 												<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r26_no_of_ac}"></td>
+													th:text="${#numbers.formatDecimal(report.r26_no_of_ac,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r26_approved_limit}"></td>
+													th:text="${#numbers.formatDecimal(report.r26_approved_limit,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r26_amount_outstanding}"></td>
+													th:text="${#numbers.formatDecimal(report.r26_amount_outstanding,1,'COMMA',0,'POINT')}">
+												</td>
 											</tr>
 											<tr>
 												<td style="text-align: left;" th:attr="RowId='R27', ColumnId='C1'"
 													th:text="${report.r27_product}"></td>
 												<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r27_no_of_ac}"></td>
+													th:text="${#numbers.formatDecimal(report.r27_no_of_ac,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r27_approved_limit}"></td>
+													th:text="${#numbers.formatDecimal(report.r27_approved_limit,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r27_amount_outstanding}"></td>
+													th:text="${#numbers.formatDecimal(report.r27_amount_outstanding,1,'COMMA',0,'POINT')}">
+												</td>
 											</tr>
 											<tr>
 												<td style="text-align: left;" th:attr="RowId='R28', ColumnId='C1'"
 													th:text="${report.r28_product}"></td>
 												<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r28_no_of_ac}"></td>
+													th:text="${#numbers.formatDecimal(report.r28_no_of_ac,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r28_approved_limit}"></td>
+													th:text="${#numbers.formatDecimal(report.r28_approved_limit,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r28_amount_outstanding}"></td>
+													th:text="${#numbers.formatDecimal(report.r28_amount_outstanding,1,'COMMA',0,'POINT')}">
+												</td>
 											</tr>
 											<tr>
 												<td style="text-align: left;" th:attr="RowId='R29', ColumnId='C1'"
 													th:text="${report.r29_product}"></td>
 												<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r29_no_of_ac}"></td>
+													th:text="${#numbers.formatDecimal(report.r29_no_of_ac,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r29_approved_limit}"></td>
+													th:text="${#numbers.formatDecimal(report.r29_approved_limit,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r29_amount_outstanding}"></td>
+													th:text="${#numbers.formatDecimal(report.r29_amount_outstanding,1,'COMMA',0,'POINT')}">
+												</td>
 											</tr>
 											<tr>
 												<td style="text-align: left;" th:attr="RowId='R30', ColumnId='C1'"
 													th:text="${report.r30_product}"></td>
 												<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r30_no_of_ac}"></td>
+													th:text="${#numbers.formatDecimal(report.r30_no_of_ac,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r30_approved_limit}"></td>
+													th:text="${#numbers.formatDecimal(report.r30_approved_limit,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.r30_amount_outstanding}"></td>
+													th:text="${#numbers.formatDecimal(report.r30_amount_outstanding,1,'COMMA',0,'POINT')}">
+												</td>
 											</tr>
 
 											<tr>
@@ -1094,270 +1142,287 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.r31_product}"></td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
 													th:attr="RowId='R31', ColumnId='C2'"
-													th:text="${report.r31_no_of_ac}"></td>
+													th:text="${#numbers.formatDecimal(report.r31_no_of_ac,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
 													th:attr="RowId='R31', ColumnId='C3'"
-													th:text="${report.r31_approved_limit}"></td>
+													th:text="${#numbers.formatDecimal(report.r31_approved_limit,1,'COMMA',0,'POINT')}">
+												</td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
 													th:attr="RowId='R31', ColumnId='C4'"
-													th:text="${report.r31_amount_outstanding}"></td>
+													th:text="${#numbers.formatDecimal(report.r31_amount_outstanding,1,'COMMA',0,'POINT')}">
+												</td>
 											</tr>
 										</tbody>
 									</table>
 
-	<form action="#" method="POST" id="fileupload">
-									
-
-									<div style="border-right: 1px solid #dee2e6; ">
-										<table
-											class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
-											id="reports">
-											<thead class="thead-light"
-												style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
-												<tr style="background-color: black; ">
-													<thead class="thead-light">
-													    <tr style="background-color: #b3b6b9 ">
-													        <th rowspan="1" style="text-align: left; width: 555px;">(26B) LOANS AND ADVANCES BY MATURITY</th>
-													        <th style="text-align: right; width: 25px;">No. of A/Cs</th>
-													        <th style="text-align: right; width: 270px;">Approved Limit</th>
-													        <th style="text-align: right; width: 350px;">Amount Outstanding</th>
-													    </tr>
-													</thead>
-
-											<tbody id="entity2" th:each="report1: ${reportsummary1}"
-												style="font-family: Arial;">
-
-												<tr>
-													<th>(a) Resident (sum of line (a) (1) and (2)):</th>
-
-													<td id="ROW36"
-														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-       th:value="${report1.R36_NO_OF_AC != null ? #numbers.formatDecimal(report1.R36_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
-       id="R36_NO_OF_AC" name="R36_NO_OF_AC"
-       style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-       readonly disabled />
-
-													</td>
-
-													<td id="ROW36"
-														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-														th:value="${report1.R36_CREDIT_LIMIT != null ? #numbers.formatDecimal(report1.R36_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R36_CREDIT_LIMIT" name="R36_CREDIT_LIMIT"
-															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
-
-													<td id="ROW36"
-														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-														th:value="${report1.R36_AMOUNT_OUTSTANDING != null ? #numbers.formatDecimal(report1.R36_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R36_AMOUNT_OUTSTANDING"
-															name="R36_AMOUNT_OUTSTANDING"
-															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
+									<form action="#" method="POST" id="fileupload">
 
 
+										<div style="border-right: 1px solid #dee2e6; ">
+											<table
+												class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+												id="reports">
+												<thead class="thead-light"
+													style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
+													<tr style="background-color: black; ">
+														<thead class="thead-light">
+															<tr style="background-color: #b3b6b9 ">
+																<th rowspan="1" style="text-align: left; width: 555px;">
+																	(26B) LOANS AND ADVANCES BY MATURITY</th>
+																<th style="text-align: right; width: 25px;">No. of A/Cs
+																</th>
+																<th style="text-align: right; width: 270px;">Approved
+																	Limit</th>
+																<th style="text-align: right; width: 350px;">Amount
+																	Outstanding</th>
+															</tr>
+														</thead>
 
-												</tr>
+												<tbody id="entity2" th:each="report1: ${reportsummary1}"
+													style="font-family: Arial;">
 
+													<tr>
+														<th>(a) Resident (sum of line (a) (1) and (2)):</th>
 
-												<tr>
+														<td id="ROW36"
+															style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R36_NO_OF_AC != null ? #numbers.formatDecimal(report1.R36_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R36_NO_OF_AC" name="R36_NO_OF_AC"
+																style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly disabled />
 
-													<td>1. Individuals </td>
-													<td id="ROW37" style="padding-left: 20px; font-weight: bold;text-align: right;">
-																	        <input class="display-input Show_input"
-																	               type="text"
-																	               th:value="${report1.R37_NO_OF_AC != null ? #numbers.formatDecimal(report1.R37_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
-																	               id="R37_NO_OF_AC"
-																	               name="R37_NO_OF_AC"
-																	               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-																	           readonly />
-																	    </td>
+														</td>
 
+														<td id="ROW36"
+															style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R36_CREDIT_LIMIT != null ? #numbers.formatDecimal(report1.R36_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R36_CREDIT_LIMIT" name="R36_CREDIT_LIMIT"
+																style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
 
-													<td id="ROW37" style="padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-															th:value="${report1.R37_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R37_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R37_CREDIT_LIMIT" name="R37_CREDIT_LIMIT"
-															style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
-
-													<td id="ROW37" style="padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-															th:value="${report1.R37_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R37_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R37_AMOUNT_OUTSTANDING"
-															name="R37_AMOUNT_OUTSTANDING"
-															style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
-												</tr>
+														<td id="ROW36"
+															style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R36_AMOUNT_OUTSTANDING != null ? #numbers.formatDecimal(report1.R36_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R36_AMOUNT_OUTSTANDING"
+																name="R36_AMOUNT_OUTSTANDING"
+																style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
 
 
 
-												<tr>
+													</tr>
 
-													<td>2. Corporate </td>
-													<td id="ROW38" style="padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-															th:value="${report1.R38_NO_OF_AC!= null ? #numbers.formatDecimal(report1.R38_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R38_NO_OF_AC" name="R38_NO_OF_AC"
-															style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
 
-													<td id="ROW38" style="padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-															th:value="${report1.R38_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R38_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R38_CREDIT_LIMIT" name="R38_CREDIT_LIMIT"
-															style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
+													<tr>
 
-													<td id="ROW38" style="padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-															th:value="${report1.R38_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R38_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R38_AMOUNT_OUTSTANDING"
-															name="R38_AMOUNT_OUTSTANDING"
-															style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
-												</tr>
+														<td>1. Individuals </td>
+														<td id="ROW37"
+															style="padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R37_NO_OF_AC != null ? #numbers.formatDecimal(report1.R37_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R37_NO_OF_AC" name="R37_NO_OF_AC"
+																style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
 
-												<tr>
-													<th>(b) Non- Resident (sum of line (a) (1) and (2)):</th>
 
-													<td id="ROW39"
-														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-														th:value="${report1.R39_NO_OF_AC != null ? #numbers.formatDecimal(report1.R39_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R39_NO_OF_AC" name="R39_NO_OF_AC"
-															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
+														<td id="ROW37"
+															style="padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R37_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R37_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R37_CREDIT_LIMIT" name="R37_CREDIT_LIMIT"
+																style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
 
-													<td id="ROW39"
-														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-														th:value="${report1.R39_CREDIT_LIMIT != null ? #numbers.formatDecimal(report1.R39_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R39_CREDIT_LIMIT" name="R39_CREDIT_LIMIT"
-															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
-
-													<td id="ROW39"
-														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-														th:value="${report1.R39_AMOUNT_OUTSTANDING != null ? #numbers.formatDecimal(report1.R39_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R39_AMOUNT_OUTSTANDING"
-															name="R39_AMOUNT_OUTSTANDING"
-															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
+														<td id="ROW37"
+															style="padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R37_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R37_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R37_AMOUNT_OUTSTANDING"
+																name="R37_AMOUNT_OUTSTANDING"
+																style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
+													</tr>
 
 
 
-												</tr>
+													<tr>
 
+														<td>2. Corporate </td>
+														<td id="ROW38"
+															style="padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R38_NO_OF_AC!= null ? #numbers.formatDecimal(report1.R38_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R38_NO_OF_AC" name="R38_NO_OF_AC"
+																style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
 
-												<tr>
+														<td id="ROW38"
+															style="padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R38_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R38_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R38_CREDIT_LIMIT" name="R38_CREDIT_LIMIT"
+																style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
 
-													<td>Agriculture, Forestry, Fishing </td>
-													<td id="ROW40" style="padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-															th:value="${report1.R40_NO_OF_AC!= null ? #numbers.formatDecimal(report1.R40_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R40_NO_OF_AC" name="R40_NO_OF_AC"
-															style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
+														<td id="ROW38"
+															style="padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R38_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R38_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R38_AMOUNT_OUTSTANDING"
+																name="R38_AMOUNT_OUTSTANDING"
+																style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
+													</tr>
 
-													<td id="ROW40" style="padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-															th:value="${report1.R40_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R40_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R40_CREDIT_LIMIT" name="R40_CREDIT_LIMIT"
-															style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
+													<tr>
+														<th>(b) Non- Resident (sum of line (a) (1) and (2)):</th>
 
-													<td id="ROW40" style="padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-															th:value="${report1.R40_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R40_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R40_AMOUNT_OUTSTANDING"
-															name="R40_AMOUNT_OUTSTANDING"
-															style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
-												</tr>
+														<td id="ROW39"
+															style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R39_NO_OF_AC != null ? #numbers.formatDecimal(report1.R39_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R39_NO_OF_AC" name="R39_NO_OF_AC"
+																style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
 
+														<td id="ROW39"
+															style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R39_CREDIT_LIMIT != null ? #numbers.formatDecimal(report1.R39_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R39_CREDIT_LIMIT" name="R39_CREDIT_LIMIT"
+																style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
 
-
-												<tr>
-
-													<td>Agriculture, Forestry, Fishing </td>
-													<td id="ROW41" style="padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-															th:value="${report1.R41_NO_OF_AC!= null ? #numbers.formatDecimal(report1.R41_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R41_NO_OF_AC" name="R41_NO_OF_AC"
-															style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
-
-													<td id="ROW41" style="padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-															th:value="${report1.R41_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R41_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R41_CREDIT_LIMIT" name="R41_CREDIT_LIMIT"
-															style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
-
-													<td id="ROW41" style="padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-															th:value="${report1.R41_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R41_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R41_AMOUNT_OUTSTANDING"
-															name="R41_AMOUNT_OUTSTANDING"
-															style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
-												</tr>
-
-
-												<tr>
-													<th>Total</th>
-
-													<td id="ROW42"
-														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-														th:value="${report1.R42_NO_OF_AC!= null ? #numbers.formatDecimal(report1.R42_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R42_NO_OF_AC" name="R42_NO_OF_AC"
-															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
-
-													<td id="ROW42"
-														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-														th:value="${report1.R42_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R42_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R42_CREDIT_LIMIT" name="R42_CREDIT_LIMIT"
-															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
-
-													<td id="ROW42"
-														style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
-														<input class="display-input Show_input" type="text"
-														th:value="${report1.R42_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R42_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
-															id="R42_AMOUNT_OUTSTANDING"
-															name="R42_AMOUNT_OUTSTANDING"
-															style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-															readonly />
-													</td>
+														<td id="ROW39"
+															style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R39_AMOUNT_OUTSTANDING != null ? #numbers.formatDecimal(report1.R39_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R39_AMOUNT_OUTSTANDING"
+																name="R39_AMOUNT_OUTSTANDING"
+																style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
 
 
 
-												</tr>
+													</tr>
+
+
+													<tr>
+
+														<td>Agriculture, Forestry, Fishing </td>
+														<td id="ROW40"
+															style="padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R40_NO_OF_AC!= null ? #numbers.formatDecimal(report1.R40_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R40_NO_OF_AC" name="R40_NO_OF_AC"
+																style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
+
+														<td id="ROW40"
+															style="padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R40_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R40_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R40_CREDIT_LIMIT" name="R40_CREDIT_LIMIT"
+																style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
+
+														<td id="ROW40"
+															style="padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R40_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R40_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R40_AMOUNT_OUTSTANDING"
+																name="R40_AMOUNT_OUTSTANDING"
+																style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
+													</tr>
+
+
+
+													<tr>
+
+														<td>Agriculture, Forestry, Fishing </td>
+														<td id="ROW41"
+															style="padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R41_NO_OF_AC!= null ? #numbers.formatDecimal(report1.R41_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R41_NO_OF_AC" name="R41_NO_OF_AC"
+																style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
+
+														<td id="ROW41"
+															style="padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R41_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R41_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R41_CREDIT_LIMIT" name="R41_CREDIT_LIMIT"
+																style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
+
+														<td id="ROW41"
+															style="padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R41_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R41_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R41_AMOUNT_OUTSTANDING"
+																name="R41_AMOUNT_OUTSTANDING"
+																style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
+													</tr>
+
+
+													<tr>
+														<th>Total</th>
+
+														<td id="ROW42"
+															style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R42_NO_OF_AC!= null ? #numbers.formatDecimal(report1.R42_NO_OF_AC, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R42_NO_OF_AC" name="R42_NO_OF_AC"
+																style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
+
+														<td id="ROW42"
+															style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R42_CREDIT_LIMIT!= null ? #numbers.formatDecimal(report1.R42_CREDIT_LIMIT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R42_CREDIT_LIMIT" name="R42_CREDIT_LIMIT"
+																style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
+
+														<td id="ROW42"
+															style="background-color: rgb(107, 122, 143); color: white;padding-left: 20px; font-weight: bold;text-align: right;">
+															<input class="display-input Show_input" type="text"
+																th:value="${report1.R42_AMOUNT_OUTSTANDING!= null ? #numbers.formatDecimal(report1.R42_AMOUNT_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
+																id="R42_AMOUNT_OUTSTANDING"
+																name="R42_AMOUNT_OUTSTANDING"
+																style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+																readonly />
+														</td>
+
+
+
+													</tr>
 
 
 
@@ -1365,144 +1430,145 @@ PURPOSE		: BWRBRREPORT
 
 
 
-												</table>
-																			
+											</table>
 
 
-																		</div>
-																		<div style="text-align: center; margin-top: 10px;">
-																			
-											    <button id="submitButton" 
-											            type="button"
-											            class="custom-tab-btn Show_input" 
-											            form="fileupload"
-											            th:attr="data-todate=${asondate},data-type=${type}" 
-											            onclick="fileuploads(this);" 
-											            style="display: none;">
-											        Submit
-											    </button>
-											</div>
-																		</form>
-																	</div>
-				
-												</div>
-												</div>
-												</div>
-												</div>
-												
-												<div th:if="${displaymode == 'Details'}">
+
+										</div>
+										<div style="text-align: center; margin-top: 10px;">
+
+											<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+												form="fileupload" th:attr="data-todate=${asondate},data-type=${type}"
+												onclick="fileuploads(this);" style="display: none;">
+												Submit
+											</button>
+										</div>
+									</form>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div th:if="${displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="table-responsive scrollable-table-container"
 								style="border-right: 1px solid #dee2e6;">
 								<table
-																	class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-																	id="reports">
-																	<thead class="thead-light">
-																		<tr>
-																			<th></th>
-																			<th>CUST_ID</th>
-																			<th>ACCT_NUMBER</th>
-																			<th>ACCT_NAME</th>
-																			
-																			
-																			
-																			<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
-																			<th>REPORT_LABEL</th>
-																			<th>REPORT_ADDL_CRITERIA_1</th>
-																			<th>REPORT_DATE</th>
-																		</tr>
-
-																	</thead>
-
-																	<tbody th:each="report: ${reportdetails}"
-																		style="font-family: Arial;">
-																		<tr>
-																			<td><a data-toggle="tooltip" class="editrec"
-																				title="Click to Edit this Record"> <i
-																					class="fas fa-edit" onclick="editRecord(this)"></i>
-																			</a></td>
-																			<td th:text="${report.cust_id}"></td>
-																			<td th:text="${report.acct_number}"></td>
-																			<td th:text="${report.acct_name}"></td>
-																			
-																			<td style="text-align:right;"
-																			th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 3, 'POINT')}"></td>
-																			
-																			<td th:text="${report.report_label}"></td>
-																			<td th:text="${report.report_addl_criteria_1}"></td>
-																			<td
-																				th:text="${#dates.format(report.report_date, 'dd-MM-yyyy')}"></td>
-																		</tr>
-																	</tbody>
+									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light">
+										<tr>
+											<th></th>
+											<th>CUST_ID</th>
+											<th>ACCT_NUMBER</th>
+											<th>ACCT_NAME</th>
 
 
-																</table>
-																</div>
-															</div>
-															
-														</div>
-													</div>
-												<!-- Custom Cellresult Modal -->
-													<div class="modal fade" id="cellresultModal">
-													  <div class="modal-dialog modal-dialog-centered">
-													    <div class="modal-content">
-													      
-													      <!-- Custom header -->
-													      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-													        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-													          Do you want to open the report?
-													        </div>
-													      </div>
 
-													      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-													        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-													          Cancel
-													        </button>
-													        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-													          Yes
-													        </button>
-													      </div>
-													    </div>
-													  </div>
-													</div>
+											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
+											<th>REPORT_LABEL</th>
+											<th>REPORT_ADDL_CRITERIA_1</th>
+											<th>REPORT_DATE</th>
+										</tr>
 
-												
-												<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-													<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-														<div class="modal-content" style="background: transparent;">
-															<div class="modal-body" style="text-align: center">
-																<div>
-																	<img th:src=@{/images/loader.gif} id="bfirelogo"
-																		style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-																		alt="Bornfire">
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-												<!-- Custom Alert/Result Modal (Matches your existing style) -->
-												<div class="modal fade" id="resultModal">
-													<div class="modal-dialog modal-dialog-centered">
-														<div class="modal-content">
-															<!-- Your custom styled header -->
-															<div class="menu-title-header">
-																<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-																	<!-- Title will be set by JavaScript -->
-																</div>
-															</div>
-															<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-																<p id="resultModalBody"></p>
-																<!-- Your custom styled button -->
-																<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
-															</div>
-														</div>
-													</div>
-												</div>
+									</thead>
 
-											</body>
+									<tbody th:each="report: ${reportdetails}" style="font-family: Arial;">
+										<tr>
+											<td><a data-toggle="tooltip" class="editrec"
+													title="Click to Edit this Record"> <i class="fas fa-edit"
+														onclick="editRecord(this)"></i>
+												</a></td>
+											<td th:text="${report.cust_id}"></td>
+											<td th:text="${report.acct_number}"></td>
+											<td th:text="${report.acct_name}"></td>
 
-											<!-- <script>
+											<td style="text-align:right;"
+												th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 3, 'POINT')}">
+											</td>
+
+											<td th:text="${report.report_label}"></td>
+											<td th:text="${report.report_addl_criteria_1}"></td>
+											<td th:text="${#dates.format(report.report_date, 'dd-MM-yyyy')}"></td>
+										</tr>
+									</tbody>
+
+
+								</table>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<!-- Custom Cellresult Modal -->
+				<div class="modal fade" id="cellresultModal">
+					<div class="modal-dialog modal-dialog-centered">
+						<div class="modal-content">
+
+							<!-- Custom header -->
+							<div class="menu-title-header"
+								style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+								<div class="modal-title" id="cellresultModalLabel"
+									style="text-align: center; color: white;">
+									Do you want to open the report?
+								</div>
+							</div>
+
+							<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+								<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+									style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+									Cancel
+								</button>
+								<button type="button" class="custom-tab-btn yes-btn"
+									style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+									Yes
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+					<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+						<div class="modal-content" style="background: transparent;">
+							<div class="modal-body" style="text-align: center">
+								<div>
+									<img th:src=@{/images/loader.gif} id="bfirelogo"
+										style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+										alt="Bornfire">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Custom Alert/Result Modal (Matches your existing style) -->
+				<div class="modal fade" id="resultModal">
+					<div class="modal-dialog modal-dialog-centered">
+						<div class="modal-content">
+							<!-- Your custom styled header -->
+							<div class="menu-title-header">
+								<div class="modal-title" id="resultModalLabel"
+									style="text-align: center; color: white;">
+									<!-- Title will be set by JavaScript -->
+								</div>
+							</div>
+							<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+								<p id="resultModalBody"></p>
+								<!-- Your custom styled button -->
+								<button type="button" class="custom-tab-btn" onclick="closemodel()"
+									data-bs-dismiss="modal">OK</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+</body>
+
+<!-- <script>
 																										  $(document).ready(function () {
 																										    $('#BRRSvalidation').DataTable({
 																										      "paging": true,
@@ -1514,120 +1580,120 @@ PURPOSE		: BWRBRREPORT
 																										  });
 												
 																									</script> -->
-																									
-																									<style>
-																									  #BRFdet td {
-																									    border: 1px solid #ccc;
-																									    padding: 8px;
-																									  }
 
-																									  #BRFdet {
-																									    border-collapse: collapse;
-																									    width: 100%;
-																									  }
-																									</style>
-																									
-											<style>
-												/* Your existing CSS - this is the correct approach */
-												.scrollable-table-container {
-													/* This is the key: it creates the scroll context */
-													max-height: 700px;
-													/* Or a suitable height like 80vh for responsive design */
-													overflow-y: auto;
-													border: 1px solid #ccc;
-												}
+<style>
+	#BRFdet td {
+		border: 1px solid #ccc;
+		padding: 8px;
+	}
 
-												/* Your existing sticky header CSS, targeting the tr elements within the thead */
-												.scrollable-table-container thead tr:nth-child(1) {
-													position: sticky;
-													top: 0;
-													background-color: #b3b6b9;
-													z-index: 5;
-												}
+	#BRFdet {
+		border-collapse: collapse;
+		width: 100%;
+	}
+</style>
 
-												.scrollable-table-container thead tr:nth-child(2) {
-													position: sticky;
-													top: 36px;
-													/* adjust based on row height */
-													background-color: #b3b6b9;
-													z-index: 4;
-												}
+<style>
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 700px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
 
-												.scrollable-table-container thead tr:nth-child(3) {
-													position: sticky;
-													top: 72px;
-													/* Adjust based on row height */
-													background-color: #b3b6b9;
-													z-index: 3;
-												}
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
 
-												.scrollable-table-container thead tr:nth-child(4) {
-													position: sticky;
-													top: 100px;
-													/* Adjust based on row height */
-													background-color: #b3b6b9;
-													z-index: 2;
-												}
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
 
-												.scrollable-table-container thead tr:nth-child(5) {
-													position: sticky;
-													top: 135px;
-													/* Adjust based on row height */
-													background-color: #b3b6b9;
-													z-index: 1;
-												}
-											</style>
-											<style>
-												.inner {
-													max-height: 600px;
-													/* Adjust height as needed */
-													overflow: auto;
-													border: 1px solid #dee2e6;
-												}
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
 
-												/* Sticky thead */
-												#reports thead th {
-													position: sticky;
-													top: 0;
-													background-color: #f8f9fa;
-													/* Match Bootstrap thead-light */
-													z-index: 2;
-												}
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
 
-												div.dataTables_wrapper div.dataTables_paginate {
-													text-align: right !important;
-													float: right !important;
-													width: auto;
-													margin-top: 10px;
-												}
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
+</style>
+<style>
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
 
-												/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-												div.dataTables_wrapper div.dataTables_info {
-													float: left !important;
-													margin-top: 10px;
-												}
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
 
-												.pagination {
-													margin: 0;
-												}
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
 
-												.page-item.active .page-link {
-													background-color: #386276;
-													border-color: #386276;
-												}
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
 
-												.page-link {
-													color: #386276;
-												}
+	.pagination {
+		margin: 0;
+	}
 
-												.page-link:hover {
-													color: #2a4a5c;
-												}
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
 
-												.form-select {
-													display: inline-block;
-													width: auto;
-												}
-											</style>
+	.page-link {
+		color: #386276;
+	}
 
-											</html>
+	.page-link:hover {
+		color: #2a4a5c;
+	}
+
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
+</style>
+
+</html>
