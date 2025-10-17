@@ -17,67 +17,33 @@ import javax.persistence.TemporalType;
 @Table(name = "BRRS_MCBL")
 public class MCBL_Entity {
 
-	// In @Entity
-	@Id
-	private String id;
+    @Id
+    private String id;
 
-
-
-    @Column(name = "gl_code")
     private String mcbl_gl_code;
-
-    @Column(name = "gl_sub_code")
     private String mcbl_gl_sub_code;
+    private String mcbl_head_acc_no;
+    private String mcbl_description;
+    private String mcbl_currency;
+    private BigDecimal mcbl_debit_balance;
+    private BigDecimal mcbl_credit_balance;
+    private BigDecimal mcbl_debit_equivalent;
+    private BigDecimal mcbl_credit_equivalent;
 
-    @Column(name = "head_acc_no")
-    private String	mcbl_head_acc_no;
-    
-    @Column(name = "description")
-	private String	mcbl_description;
-    
-    @Column(name = "currency")
-	private String	mcbl_currency;
-    
-    @Column(name = "debit_balance")
-	private BigDecimal	mcbl_debit_balance;
-    
-    @Column(name = "credit_balance")
-	private BigDecimal	mcbl_credit_balance;
-    
-    @Column(name = "debit_equivalent")
-	private BigDecimal	mcbl_debit_equivalent;
-    
-    @Column(name = "credit_equivalent")
-	private BigDecimal	mcbl_credit_equivalent;
-	
-    
-  
-    @Column(name = "entry_user")
     private String entry_user;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "entry_date")
     private Date entry_date;
-    
-    @Column(name = "modify_user")
+
     private String modify_user;
-
-    @Column(name = "delete_user")
     private String delete_user;
-
-    @Column(name = "entry_flg")
     private String entry_flg;
-    
-    @Column(name = "modify_flg")
     private String modify_flg;
-    
-    @Column(name = "delete_flg")
     private String delete_flg;
 
-
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "report_date")
     private Date report_date;
+
 
     public Date getReport_date() {
 		return report_date;
