@@ -11,30 +11,31 @@ public class BLBF_Entity {
     @Id
     private String account_no;
 
-    private String cust_id;
+    private String customer_id;
     private String sol_id;
+    
+    private String customer_name;  
 
-    private String acct_name; 
     private String schm_code;
     private String schm_desc;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date acct_open_date; 
+    private Date acct_open_date;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date acct_close_date; 
+    private Date acct_close_date;
 
     private BigDecimal approved_limit;
     private BigDecimal sanction_limit;
     private BigDecimal disbursed_amt;
     private BigDecimal balance_as_on;
 
-    private String currency; 
+    private String currency;
     private BigDecimal bal_equi_to_bwp;
-    private BigDecimal rate_of_interest; 
+    private BigDecimal rate_of_interest;
     private BigDecimal hundred;
     private BigDecimal accrued_int_amt;
-    private BigDecimal int_of_aug_25;
+    private BigDecimal monthly_interest;  
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date last_interest_debit_date;
@@ -49,6 +50,7 @@ public class BLBF_Entity {
 
     private String gl_sub_head_code;
     private String gl_sub_head_desc;
+
     private BigDecimal tenor_month;
     private BigDecimal emi;
     private String segment;
@@ -66,15 +68,15 @@ public class BLBF_Entity {
     private BigDecimal undrawn;
     private String sector;
     private String period;
-    private BigDecimal effective_interest_rate; 
+    private BigDecimal effective_interest_rate;
     private String stage;
     private BigDecimal ecl_provision;
+
     private String branch_name;
     private String branch_code;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date report_date;
-
     @Temporal(TemporalType.TIMESTAMP)
     private Date entry_date;
     @Temporal(TemporalType.TIMESTAMP)
@@ -95,11 +97,11 @@ public class BLBF_Entity {
 	public void setAccount_no(String account_no) {
 		this.account_no = account_no;
 	}
-	public String getCust_id() {
-		return cust_id;
+	public String getCustomer_id() {
+		return customer_id;
 	}
-	public void setCust_id(String cust_id) {
-		this.cust_id = cust_id;
+	public void setCustomer_id(String customer_id) {
+		this.customer_id = customer_id;
 	}
 	public String getSol_id() {
 		return sol_id;
@@ -107,11 +109,11 @@ public class BLBF_Entity {
 	public void setSol_id(String sol_id) {
 		this.sol_id = sol_id;
 	}
-	public String getAcct_name() {
-		return acct_name;
+	public String getCustomer_name() {
+		return customer_name;
 	}
-	public void setAcct_name(String acct_name) {
-		this.acct_name = acct_name;
+	public void setCustomer_name(String customer_name) {
+		this.customer_name = customer_name;
 	}
 	public String getSchm_code() {
 		return schm_code;
@@ -191,11 +193,11 @@ public class BLBF_Entity {
 	public void setAccrued_int_amt(BigDecimal accrued_int_amt) {
 		this.accrued_int_amt = accrued_int_amt;
 	}
-	public BigDecimal getInt_of_aug_25() {
-		return int_of_aug_25;
+	public BigDecimal getMonthly_interest() {
+		return monthly_interest;
 	}
-	public void setInt_of_aug_25(BigDecimal int_of_aug_25) {
-		this.int_of_aug_25 = int_of_aug_25;
+	public void setMonthly_interest(BigDecimal monthly_interest) {
+		this.monthly_interest = monthly_interest;
 	}
 	public Date getLast_interest_debit_date() {
 		return last_interest_debit_date;
@@ -233,6 +235,7 @@ public class BLBF_Entity {
 	public void setMaturity_date(Date maturity_date) {
 		this.maturity_date = maturity_date;
 	}
+	
 	public String getGl_sub_head_code() {
 		return gl_sub_head_code;
 	}
@@ -445,4 +448,6 @@ public class BLBF_Entity {
 	}
     
     
+    
 }
+	

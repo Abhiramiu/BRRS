@@ -417,10 +417,10 @@ public class BLBF_Services {
 					int col = 0;
 
 					// ======== Text / Date Cells ========
-					createTextCell(row, col++, rec.getCust_id(), dataCellStyle);
+					createTextCell(row, col++, rec.getCustomer_id(), dataCellStyle);
 					createTextCell(row, col++, rec.getSol_id(), dataCellStyle);
 					createTextCell(row, col++, rec.getAccount_no(), dataCellStyle);
-					createTextCell(row, col++, rec.getAcct_name(), dataCellStyle);
+					createTextCell(row, col++, rec.getCustomer_name(), dataCellStyle);
 					createTextCell(row, col++, rec.getSchm_code(), dataCellStyle);
 					createTextCell(row, col++, rec.getSchm_desc(), dataCellStyle);
 					createTextCell(row, col++, rec.getAcct_open_date() != null ? sdf.format(rec.getAcct_open_date()) : "",
@@ -436,7 +436,7 @@ public class BLBF_Services {
 					createNumericCell(row, col++, rec.getBal_equi_to_bwp(), numericStyle);
 					createNumericCell(row, col++, rec.getRate_of_interest(), numericStyle);
 					createNumericCell(row, col++, rec.getAccrued_int_amt(), numericStyle);
-					createNumericCell(row, col++, rec.getInt_of_aug_25(), numericStyle);
+					createNumericCell(row, col++, rec.getMonthly_interest(), numericStyle);
 					createTextCell(row, col++,
 							rec.getLast_interest_debit_date() != null ? sdf.format(rec.getLast_interest_debit_date())
 									: "",
