@@ -161,7 +161,7 @@ public class BLBF_Services {
 
 					stmt.setString(++col, getCellStringSafe(row, 44, formatter, evaluator)); // Stage
 					stmt.setBigDecimal(++col, getCellDecimalSafe(row, 45, formatter, evaluator)); // ECL_PROVISON
-					stmt.setDate(++col, getCellDateSafe(row, 46, formatter, evaluator)); // Report_DATE
+					stmt.setDate(++col, getCellDateSafe(row, 47, formatter, evaluator)); // Report_DATE
 
 					// Audit fields
 					stmt.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
@@ -232,7 +232,7 @@ public class BLBF_Services {
 					masterEntity.setSector(getCellString(row.getCell(41), formatter, evaluator));
 					masterEntity.setPeriod(getCellString(row.getCell(42), formatter, evaluator));
 					masterEntity.setEffective_interest_rate(getCellDecimal(row.getCell(43), formatter, evaluator));
-					masterEntity.setReport_date(getCellDate(row.getCell(44), formatter, evaluator));
+					masterEntity.setReport_date(getCellDate(row.getCell(47), formatter, evaluator));
 					masterEntity.setBlbf_flg("Y");
 					
 					// Audit fields
