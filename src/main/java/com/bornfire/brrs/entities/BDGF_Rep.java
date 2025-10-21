@@ -26,6 +26,8 @@ public interface BDGF_Rep extends JpaRepository<BDGF_Entity, BigDecimal> {
     nativeQuery = true)
 	 List<BDGF_Entity> findRecordsByReportDate(@Param("reportDate") String reportDate);
 
+     @Query("SELECT b FROM BDGF_Entity b WHERE b.account_no = :accNo AND b.report_date = :reportDate")
+     BDGF_Entity getdataByAcc(@Param("accNo") String accNo, @Param("reportDate") Date reportDate);
 }
 
 

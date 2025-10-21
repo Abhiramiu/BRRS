@@ -1,26 +1,23 @@
 package com.bornfire.brrs.controllers;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.bornfire.brrs.entities.BRRS_Report_Mast_Rep;
-import com.bornfire.brrs.entities.BrrsGeneralMasterEntity;
+import com.bornfire.brrs.entities.GeneralMasterEntity;
 import com.bornfire.brrs.entities.MCBL_Detail_Rep;
-import com.bornfire.brrs.entities.MCBL_Entity;
-import com.bornfire.brrs.entities.MCBL_Main_Entity;
-import com.bornfire.brrs.entities.MCBL_Rep;
 import com.bornfire.brrs.services.AuditService;
 
 @RestController
@@ -36,8 +33,6 @@ public class Rest_Controller {
 	@Autowired
 	private MCBL_Detail_Rep mcblDetailRep;
 
-	 @Autowired
-	 private MCBL_Rep mcblRep;
 	 
 	@GetMapping("/checkReportDate")
     @ResponseBody
@@ -47,21 +42,51 @@ public class Rest_Controller {
     }
 
 	
-    @PostMapping("createAcc")
-    public String createAccessRoleEn(
-            @RequestParam("formmode") String formmode,
-            @RequestParam("type") String type,
-            @ModelAttribute BrrsGeneralMasterEntity BrrsGeneralMasterEntity,
-            Model md,
-            HttpServletRequest rq) {
+	@PostMapping("createAcc")
+	public String createAccessRoleEn(
+	        @RequestParam("formmode") String formmode,
+	        @RequestParam("FileType") String FileType,
+	        @ModelAttribute GeneralMasterEntity generalMasterEntity,
+	        Model md,
+	        HttpServletRequest rq) {
 
-        String userid = (String) rq.getSession().getAttribute("USERID");
+	    String userid = (String) rq.getSession().getAttribute("USERID");
+	    logger.info("Form mode: {}, FileType: {}, User: {}", formmode, FileType, userid);
 
-        logger.info("Form mode: {}, User: {}", formmode, userid);
+	    String msg=null;
 
-        String msg = AuditServices.createAccount(formmode,type, BrrsGeneralMasterEntity, userid);
-        return msg;
-    }
+	    try {
+	        switch (FileType) {
+	            case "MCBLs":
+	                msg = AuditServices.createAccount_MCBL(formmode, generalMasterEntity, userid);
+	                break;
+
+	            case "BLBFs":
+	                msg = AuditServices.createAccount_BLBF(formmode, generalMasterEntity, userid);
+	                break;
+
+	            case "BDGFs":
+	                msg = AuditServices.createAccount_BDGF(formmode, generalMasterEntity, userid);
+	                break;
+
+	            case "BFDBs":
+	                msg = AuditServices.createAccount_BFDB(formmode, generalMasterEntity, userid);
+	                break;
+
+	            default:
+	                msg = "Invalid FileType provided: " + FileType;
+	                logger.warn("Unknown FileType received: {}", FileType);
+	                break;
+	        }
+
+	    } catch (Exception e) {
+	        logger.error("Error while creating account for FileType {}: {}", FileType, e.getMessage(), e);
+	        msg = "Error while processing request: " + e.getMessage();
+	    }
+
+	    return msg;
+	}
+
     
     @GetMapping("/getRptName")
     @ResponseBody

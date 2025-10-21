@@ -56,5 +56,9 @@ int checkIfReportDateExists(@Param("report_date") String report_date);
 	       "AND (d.gl_code, d.gl_sub_code, d.head_acc_no, d.currency) IN :keys")
 	void deleteByKeysAndReportDateBatch(@Param("keys") List<Object[]> keys,
 	                                    @Param("reportDate") Date reportDate);
+	
+
+    @Query(value = "SELECT * FROM BRRS_MCBL WHERE mcbl_head_acc_no=?1 AND  REPORT_DATE =?2", nativeQuery = true)
+    MCBL_Entity getdataByAcc(String mcbl_head_acc_no,Date reportDate);
 
 }

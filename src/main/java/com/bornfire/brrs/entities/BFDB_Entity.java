@@ -3,6 +3,9 @@ package com.bornfire.brrs.entities;
 
 
 import javax.persistence.*;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -22,9 +25,11 @@ public class BFDB_Entity {
     private String schm_desc;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date acct_open_date; 
 
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date acct_close_date; 
 
     private BigDecimal balance_as_on;
@@ -35,6 +40,7 @@ public class BFDB_Entity {
     private String status;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date maturity_date;
 
     private String gl_sub_head_code;
@@ -47,12 +53,16 @@ public class BFDB_Entity {
     private String branch_code;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date report_date;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date entry_date;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date modify_date;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date verify_date;
 
     private String entry_user;

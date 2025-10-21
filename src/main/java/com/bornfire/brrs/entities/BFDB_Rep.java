@@ -25,6 +25,8 @@ public interface BFDB_Rep extends JpaRepository<BFDB_Entity, String> {
     nativeQuery = true)
 	 List<BFDB_Entity> findRecordsByReportDate(@Param("reportDate") String reportDate);
 
+	 @Query("SELECT b FROM BFDB_Entity b WHERE b.account_no = :accNo AND b.report_date = :reportDate")
+	 BFDB_Entity getdataByAcc(@Param("accNo") String accNo, @Param("reportDate") Date reportDate);
 
 }
 

@@ -33,8 +33,10 @@ public class GeneralMasterEntity {
 	private String	schm_code;
 	private String	schm_desc;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date	acct_open_date;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date	acct_close_date;
 	private BigDecimal	balance_as_on;
 	private String	currency;
@@ -43,6 +45,7 @@ public class GeneralMasterEntity {
 	private BigDecimal	hundred;
 	private String	status;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date	maturity_date;
 	private BigDecimal	maturity_amount;
 	private String	gl_sub_head_code;
@@ -57,6 +60,7 @@ public class GeneralMasterEntity {
 	private String	scheme;
 	private BigDecimal	cr_pref_int_rate;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date	reference_date;
 	private BigDecimal	difference;
 	private BigDecimal	days;
@@ -66,6 +70,7 @@ public class GeneralMasterEntity {
 	private BigDecimal	accrued_int_amt;
 	private BigDecimal	monthly_interest;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date	last_interest_debit_date;
 	private String	acct_cls_flg;
 	private String	classification_code;
@@ -91,14 +96,17 @@ public class GeneralMasterEntity {
 	private BigDecimal	mat_bucket;
 	private String	branch_name;
 	private String	branch_code;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date	report_date;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date	entry_date;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date	modify_date;
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date	verify_date;
 	private String	entry_user;
 	private String	modify_user;
@@ -107,6 +115,37 @@ public class GeneralMasterEntity {
 	private String	modify_flg;
 	private String	verify_flg;
 	private String	del_flg;
+	private String	mcbl_flg;
+	private String	blbf_flg;
+	private String	bdgf_flg;
+	private String	bfdb_flg;
+	
+
+	public String getMcbl_flg() {
+		return mcbl_flg;
+	}
+	public void setMcbl_flg(String mcbl_flg) {
+		this.mcbl_flg = mcbl_flg;
+	}
+	public String getBlbf_flg() {
+		return blbf_flg;
+	}
+	public void setBlbf_flg(String blbf_flg) {
+		this.blbf_flg = blbf_flg;
+	}
+	public String getBdgf_flg() {
+		return bdgf_flg;
+	}
+	public void setBdgf_flg(String bdgf_flg) {
+		this.bdgf_flg = bdgf_flg;
+	}
+	public String getBfdb_flg() {
+		return bfdb_flg;
+	}
+	public void setBfdb_flg(String bfdb_flg) {
+		this.bfdb_flg = bfdb_flg;
+	}
+	
 	public String getId() {
 		return id;
 	}

@@ -551,17 +551,6 @@ public class NavigationController {
 	}
 
 	@RequestMapping(value = "SourceDataMap", method = { RequestMethod.GET, RequestMethod.POST })
-
-	/*
-	 * public String SourceDataMap(@RequestParam(required = false) String formmode,
-	 * 
-	 * @RequestParam(required = false) String id,
-	 * 
-	 * @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-	 * 
-	 * @RequestParam(value = "size", required = false, defaultValue = "100") int
-	 * size, Model md) {
-	 */
 	public String SourceDataMap(
 	        @RequestParam(required = false) String formmode,
 	        @RequestParam(required = false) String id,
@@ -608,11 +597,13 @@ public class NavigationController {
 	    } else if (formmode.equals("add")) {
             md.addAttribute("menuname", "MCBL Main- Add");
             md.addAttribute("formmode", "add");
+	        md.addAttribute("fileType", fileType);
 
         } else { // edit/view/delete
         	GeneralMasterEntity entity = GeneralMasterRepos.findById(id).orElse(null);
 	        md.addAttribute("list", entity);
 	        md.addAttribute("formmode", formmode);
+	        md.addAttribute("fileType", fileType);
 	        md.addAttribute("menuname", "General Master Table - " + formmode.toUpperCase());
 	    }
 

@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,4 +42,10 @@ public interface GeneralMasterRepo extends JpaRepository<GeneralMasterEntity, St
     // Count with fileType and reportDate filter
     @Query(value = "SELECT COUNT(*) FROM GENERAL_MASTER_TABLE WHERE REPORT_DATE = TO_DATE(:reportDate,'YYYY-MM-DD')", nativeQuery = true)
     int countByFileTypeAndReportDate(@Param("reportDate") String reportDate);
+    
+    
+
+    @Query(value = "SELECT * FROM GENERAL_MASTER_TABLE WHERE mcbl_head_acc_no=?1 AND  REPORT_DATE =?2", nativeQuery = true)
+    GeneralMasterEntity getdataByAcc(String mcbl_head_acc_no,Date reportDate);
+    
 }
