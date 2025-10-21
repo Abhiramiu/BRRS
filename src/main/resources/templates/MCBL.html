@@ -388,37 +388,45 @@
 	</script>
 
 	<script>
-		function checkReportDate() {
-			alert('check');
-			var reportDate = $("#report_date").val();
+function checkReportDate() {
+    var reportDate = $("#report_date").val();
 
-			if (!reportDate) {
-				alert("Please select a Report Date first.");
-				return;
-			}
+    if (!reportDate) {
+        alert("Please select a Report Date first.");
+        return;
+    }
 
-			$("#loader").modal("show"); // show loader
+    $("#loader").modal("show"); // Show loader
 
-			$.ajax({
-				url: "./checkReportDate",
-				type: "GET",
-				data: {report_date: reportDate},
-				success: function (exists) {
-					$("#loader").modal("hide");
+    $.ajax({
+        url: "./checkReportDate",
+        type: "GET",
+        data: { report_date: reportDate },
+        success: function (exists) {
+            $("#loader").modal("hide");
 
-					if (exists === true) {
-						alert("There is already data for this Report Date.");
-						$("#report_date").val("");
-					}
-				},
-				error: function (xhr, status, error) {
-					$("#loader").modal("hide");
-					console.error("Error checking report date:", status, error);
-					alert("Error checking report date!");
-				}
-			});
-		}
-	</script>
+            if (exists === true) {
+                // Confirmation dialog with proper grammar
+                var confirmReplace = confirm(
+                    "Report Date (" + reportDate + ") already exists. Do you want to replace it?"
+                );
+
+                if (!confirmReplace) {
+                    // If user clicks "Cancel", clear the date
+                    $("#report_date").val("");
+                } 
+                // If OK, just continue silently (do nothing)
+            }
+        },
+        error: function (xhr, status, error) {
+            $("#loader").modal("hide");
+            console.error("Error checking report date:", status, error);
+            alert("Error checking report date!");
+        }
+    });
+}
+</script>
+
 
 
 
@@ -464,7 +472,7 @@
 				success: function (response) {
 					$("#loader").modal("hide");
 					console.log('Success response:', response);
-					$("#alertmsg").text(response);
+					$("#alertmsg").html(response.replace(/\n/g, "<br>"));
 					$('#alert').modal("toggle");
 				},
 				error: function (xhr, status, error) {
@@ -752,159 +760,155 @@
 
 
 
-							<!-- Table Section -->
-							<!-- ================== MCBL TABLE ================== -->
-							<div th:if="${selectedFileType == 'MCBL'}">
+							    <!-- Table Section -->
+ <!-- ================== MCBL TABLE ================== -->
+<div th:if="${selectedFileType == 'MCBL'}">
+  
+  <!-- Header row with download button -->
+  <div class="d-flex justify-content-between align-items-center mb-2">
+   
+    
+  </div>
 
-								<!-- Header row with download button -->
-								<div class="d-flex justify-content-between align-items-center mb-2">
-
-
-								</div>
-
-								<!-- Table -->
-								<div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-									<table class="table table-bordered table-sm" id="mcblTable"
-										style="margin-bottom: 0;">
-										<thead class="table-light" style="position: sticky; top: 0; z-index: 2;">
-											<tr>
-												<th>GL Code</th>
-												<th>GL Sub Code</th>
-												<th>Head Acc No</th>
-												<th>Description</th>
-												<th>Currency</th>
-												<th class="text-end">Debit Balance</th>
-												<th class="text-end">Credit Balance</th>
-												<th class="text-end">Debit Equivalent</th>
-												<th class="text-end">Credit Equivalent</th>
-												<th>Report Date</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr th:each="record : ${MCBL_List}">
-												<td th:text="${record.gl_code}"></td>
-												<td th:text="${record.gl_sub_code}"></td>
-												<td th:text="${record.head_acc_no}"></td>
-												<td th:text="${record.description}"></td>
-												<td th:text="${record.currency}"></td>
-												<td class="text-end"
-													th:text="${#numbers.formatInteger(record.debit_balance,3,'COMMA')}">
-												</td>
-												<td class="text-end"
-													th:text="${#numbers.formatInteger(record.credit_balance,3,'COMMA')}">
-												</td>
-												<td class="text-end"
-													th:text="${#numbers.formatInteger(record.debit_equivalent,3,'COMMA')}">
-												</td>
-												<td class="text-end"
-													th:text="${#numbers.formatInteger(record.credit_equivalent,3,'COMMA')}">
-												</td>
-												<td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
-											</tr>
-											<tr th:if="${#lists.isEmpty(MCBL_List)}">
-												<td colspan="10" class="text-center">No records found</td>
-											</tr>
-										</tbody>
-									</table>
-								</div>
-							</div>
+  <!-- Table -->
+  <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-bordered table-sm" id="mcblTable" style="margin-bottom: 0;">
+      <thead class="table-light" style="position: sticky; top: 0; z-index: 2;">
+        <tr>
+          <th>GL Code</th>
+          <th>GL Sub Code</th>
+          <th>Head Acc No</th>
+          <th>Description</th>
+          <th>Currency</th>
+          <th class="text-end">Debit Balance</th>
+          <th class="text-end">Credit Balance</th>
+          <th class="text-end">Debit Equivalent</th>
+          <th class="text-end">Credit Equivalent</th>
+          <th>Report Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="record : ${MCBL_List}">
+          <td th:text="${record.mcbl_gl_code}"></td>
+          <td th:text="${record.mcbl_gl_sub_code}"></td>
+          <td th:text="${record.mcbl_head_acc_no}"></td>
+          <td th:text="${record.mcbl_description}"></td>
+          <td th:text="${record.mcbl_currency}"></td>
+          <td class="text-end" th:text="${#numbers.formatInteger(record.mcbl_debit_balance,3,'COMMA')}"></td>
+          <td class="text-end" th:text="${#numbers.formatInteger(record.mcbl_credit_balance,3,'COMMA')}"></td>
+          <td class="text-end" th:text="${#numbers.formatInteger(record.mcbl_debit_equivalent,3,'COMMA')}"></td>
+          <td class="text-end" th:text="${#numbers.formatInteger(record.mcbl_credit_equivalent,3,'COMMA')}"></td>
+          <td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(MCBL_List)}">
+          <td colspan="10" class="text-center">No records found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
 
 
 
-							<!-- ================== DEPOSIT GENERAL (BDGF) ================== -->
-							<div th:if="${selectedFileType == 'DEPOSIT_GENERAL'}" class="table-responsive"
-								style="max-height: 500px; overflow-y: auto;">
-								<table class="table table-bordered table-sm">
-									<thead class="table-light" style="position: sticky; top: 0; z-index: 2;">
-										<tr>
-											<th>Account No</th>
-											<th>Customer Name</th>
-											<th>Currency</th>
-											<th class="text-end">Outstanding Balance</th>
-											<th>Maturity Date</th>
-											<th>Report Date</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr th:each="record : ${BDGF_List}">
-											<td th:text="${record.acc_no}"></td>
-											<td th:text="${record.customer_name}"></td>
-											<td th:text="${record.currency}"></td>
-											<td class="text-end"
-												th:text="${#numbers.formatInteger(record.outstanding_balance,3,'COMMA')}">
-											</td>
-											<td th:text="${#dates.format(record.maturity_date, 'dd-MM-yyyy')}"></td>
-											<td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
-										</tr>
-										<tr th:if="${#lists.isEmpty(BDGF_List)}">
-											<td colspan="6" class="text-center">No records found</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
+<!-- ================== DEPOSIT GENERAL (BDGF) ================== -->
+<div th:if="${selectedFileType == 'DEPOSIT_GENERAL'}" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+  <table class="table table-bordered table-sm">
+    <thead class="table-light" style="position: sticky; top: 0; z-index: 2;">
+      <tr>
+        <th>Account No</th>
+        <th>Customer Id</th>
+        <th>Customer Name
+        <th>Currency</th>
+        <th class="text-end">Amount Deposited</th>
+        <th class="text-end">Outstanding Balance</th>
+        <th>Maturity Date</th>
+        <th>Report Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="record : ${BDGF_List}">
+        <td th:text="${record.acc_no}"></td>
+        <td th:text="${record.customer_id}"></td>
+        <td th:text="${record.customer_name}"></td>
+        <td th:text="${record.currency}"></td>
+        <td class="text-end" th:text="${#numbers.formatInteger(record.amount_deposited,3,'COMMA')}"></td>
+        <td class="text-end" th:text="${#numbers.formatInteger(record.outstanding_balance,3,'COMMA')}"></td>
+        <td th:text="${#dates.format(record.maturity_date, 'dd-MM-yyyy')}"></td>
+        <td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(BDGF_List)}">
+        <td colspan="6" class="text-center">No records found</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 
-							<!-- ================== DEPOSIT BOOK (BFDB) ================== -->
-							<div th:if="${selectedFileType == 'DEPOSIT_BOOK'}" class="table-responsive"
-								style="max-height: 500px; overflow-y: auto;">
-								<table class="table table-bordered table-sm">
-									<thead class="table-light">
-										<tr>
-											<th>Account No</th>
-											<th>Account Name</th>
-											<th>Currency</th>
-											<th class="text-end">Balance As On</th>
-											<th>Report Date</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr th:each="record : ${BFDB_List}">
-											<td th:text="${record.account_no}"></td>
-											<td th:text="${record.acct_name}"></td>
-											<td th:text="${record.ccy}"></td>
-											<td class="text-end"
-												th:text="${#numbers.formatInteger(record.balance_as_on,3,'COMMA')}">
-											</td>
-											<td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
-										</tr>
-										<tr th:if="${#lists.isEmpty(BFDB_List)}">
-											<td colspan="5" class="text-center">No records found</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
+<!-- ================== DEPOSIT BOOK (BFDB) ================== -->
+<div th:if="${selectedFileType == 'DEPOSIT_BOOK'}" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+  <table class="table table-bordered table-sm">
+    <thead class="table-light">
+      <tr>
+        <th>Account No</th>
+        <th>Customer Id</th>
+        <th>Account Name</th>
+        <th>Currency</th>
+        <th>GL Sub Head</th>
+        <th class="text-end">Balance As On</th>
+        <th>Report Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="record : ${BFDB_List}">
+        <td th:text="${record.account_no}"></td>
+        <td th:text="${record.cust_id}"></td>
+        <td th:text="${record.acct_name}"></td>
+        <td th:text="${record.ccy}"></td>
+        <td th:text="${record.gl_sub_head_code}"></td>
+        <td class="text-end" th:text="${#numbers.formatInteger(record.balance_as_on,3,'COMMA')}"></td>
+        <td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(BFDB_List)}">
+        <td colspan="5" class="text-center">No records found</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 
-							<!-- ================== LOAN BOOK (BLBF) ================== -->
-							<div th:if="${selectedFileType == 'LOAN_BOOK'}" class="table-responsive"
-								style="max-height: 500px; overflow-y: auto;">
-								<table class="table table-bordered table-sm">
-									<thead class="table-light">
-										<tr>
-											<th>Account No</th>
-											<th>Account Name</th>
-											<th>Currency</th>
-											<th class="text-end">Balance As On</th>
-											<th>Report Date</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr th:each="record : ${BLBF_List}">
-											<td th:text="${record.account_no}"></td>
-											<td th:text="${record.acct_name}"></td>
-											<td th:text="${record.ccy}"></td>
-											<td class="text-end"
-												th:text="${#numbers.formatInteger(record.balance_as_on,3,'COMMA')}">
-											</td>
-											<td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
-										</tr>
-										<tr th:if="${#lists.isEmpty(BLBF_List)}">
-											<td colspan="5" class="text-center">No records found</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
+<!-- ================== LOAN BOOK (BLBF) ================== -->
+<div th:if="${selectedFileType == 'LOAN_BOOK'}" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+  <table class="table table-bordered table-sm">
+    <thead class="table-light">
+      <tr>
+        <th>Account No</th>
+        <th>Customer Id</th>
+        <th>Account Name</th>
+       <th>Scheme Code</th>
+       <th>Scheme Desc</th>
+        <th>Currency</th>
+        <th class="text-end">Balance As On</th>
+        <th>Report Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="record : ${BLBF_List}">
+        <td th:text="${record.account_no}"></td>
+        <td th:text="${record.cust_id}"></td>
+        <td th:text="${record.acct_name}"></td>
+        <td th:text="${record.schm_code}"></td>
+        <td th:text="${record.schm_desc}"></td>
+        <td th:text="${record.ccy}"></td>
+        <td class="text-end" th:text="${#numbers.formatInteger(record.balance_as_on,3,'COMMA')}"></td>
+        <td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(BLBF_List)}">
+        <td colspan="5" class="text-center">No records found</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 
 
@@ -1042,7 +1046,7 @@
 											<label class="col-sm-2">MCBL File</label>
 											<div class="col-sm-3">
 												<input th:if="${formmode}=='add'" type="file" id="file" name="file"
-													class="form-control form-control-sm" />
+													class="form-control form-control-sm" accept=".xls" />
 
 											</div>
 
@@ -1099,7 +1103,7 @@
 											<label class="col-sm-2">File</label>
 											<div class="col-sm-3">
 												<input th:if="${formmode}=='add'" type="file" id="file1" name="file"
-													class="form-control form-control-sm" />
+													class="form-control form-control-sm" accept=".xls" />
 											</div>
 										</div>
 										<div class="row formline">
@@ -1145,7 +1149,7 @@
 											<label class="col-sm-2">File</label>
 											<div class="col-sm-3">
 												<input th:if="${formmode}=='add'" type="file" id="file2" name="file"
-													class="form-control form-control-sm" />
+													class="form-control form-control-sm" accept=".xls"/>
 											</div>
 										</div>
 										<div class="row formline">
@@ -1191,7 +1195,7 @@
 											<label class="col-sm-2">File</label>
 											<div class="col-sm-3">
 												<input th:if="${formmode}=='add'" type="file" id="file3" name="file"
-													class="form-control form-control-sm" />
+													class="form-control form-control-sm" accept=".xls"/>
 											</div>
 										</div>
 										<div class="row formline">
@@ -1471,5 +1475,40 @@
 		$('#alert').modal("toggle");
 	}
 </script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Array of all your file input IDs
+    const fileInputs = ["file", "file1", "file2", "file3"];
+
+    fileInputs.forEach(function (id) {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener("change", function () {
+                const file = this.files[0];
+                if (!file) return;
+
+                const fileName = file.name.toLowerCase();
+                const allowedExtension = /\.xls$/i;
+
+                if (!allowedExtension.test(fileName)) {
+                    alert("❌ Only .xls (Excel 97–2003) files are allowed.\nPlease select a valid .xls file.");
+                    this.value = ""; // clear invalid file
+                    return false;
+                }
+
+                const validMimeTypes = ["application/vnd.ms-excel"];
+                if (!validMimeTypes.includes(file.type) && file.type !== "") {
+                    alert("❌ Invalid file type detected.\nPlease upload only .xls (Excel 97–2003) format.");
+                    this.value = "";
+                    return false;
+                }
+            });
+        }
+    });
+});
+</script>
+
 
 </html>

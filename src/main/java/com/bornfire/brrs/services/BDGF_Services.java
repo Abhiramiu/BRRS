@@ -41,6 +41,8 @@ import com.bornfire.brrs.entities.BDGF_Entity;
 import com.bornfire.brrs.entities.BDGF_Rep;
 import com.bornfire.brrs.entities.BrrsGeneralMasterEntity;
 import com.bornfire.brrs.entities.BrrsGeneralMasterRepo;
+import com.bornfire.brrs.entities.GeneralMasterEntity;
+import com.bornfire.brrs.entities.GeneralMasterRepo;
 
 @Service
 @Transactional
@@ -52,7 +54,7 @@ public class BDGF_Services {
 	@Autowired
 	private BDGF_Rep BDGF_Reps;
 	@Autowired
-	BrrsGeneralMasterRepo BrrsGeneralMasterRepos;
+	GeneralMasterRepo GeneralMasterRepos;
 
 	@Autowired
 	private DataSource dataSource; // Inject DataSource for JDBC
@@ -75,12 +77,13 @@ public class BDGF_Services {
 			FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
 			String insertSql = "INSERT INTO BRRS_BDGF ("
-					+ "SOL_ID,S_NO, ACC_NO, CUSTOMER_ID, CUSTOMER_NAME, OPEN_DATE, AMOUNT_DEPOSITED, CURRENCY, PERIOD, "
-					+ "RATE_OF_INTEREST, HUNDRED, BAL_EQUI_TO_BWP, OUTSTANDING_BALANCE, OUSTNDNG_BAL_UGX, "
-					+ "MATURITY_DATE, MATURITY_AMOUNT, SCHEME, CR_PREF_INT_RATE, SEGMENT, REFERENCE_DATE, "
-					+ "DIFFERENCE, DAYS, PERIOD_DAYS, EFFECTIVE_INT_RATE, REPORT_DATE, ENTRY_DATE, "
-					+ "ENTRY_USER, ENTRY_FLG, DEL_FLG" + ") VALUES (" + String.join(",", Collections.nCopies(29, "?"))
-					+ ")";
+			        + "SOL_ID, S_NO, ACCOUNT_NO, CUSTOMER_ID, CUSTOMER_NAME, ACCT_OPEN_DATE, AMOUNT_DEPOSITED, CURRENCY, PERIOD, "
+			        + "RATE_OF_INTEREST, HUNDRED, BAL_EQUI_TO_BWP, OUTSTANDING_BALANCE, OUSTNDNG_BAL_UGX, "
+			        + "MATURITY_DATE, MATURITY_AMOUNT, SCHEME, CR_PREF_INT_RATE, SEGMENT, REFERENCE_DATE, "
+			        + "DIFFERENCE, DAYS, PERIOD_DAYS, EFFECTIVE_INTEREST_RATE, REPORT_DATE, ENTRY_DATE, "
+			        + "ENTRY_USER, ENTRY_FLG, DEL_FLG"
+			        + ") VALUES (" + String.join(",", Collections.nCopies(29, "?")) + ")";
+
 
 			PreparedStatement stmt = conn.prepareStatement(insertSql);
 			int count = 0;
@@ -148,18 +151,16 @@ public class BDGF_Services {
 					stmt.addBatch();
 
 					// === Master Entity ===
-					BrrsGeneralMasterEntity master = new BrrsGeneralMasterEntity();
+					GeneralMasterEntity master = new GeneralMasterEntity();
 					master.setId(sequence.generateRequestUUId());
-					master.setFile_type("BDGF");
-
+					
 					master.setSol_id(getCellString(row.getCell(0), formatter, evaluator));
 
-					master.setS_no(getCellDecimal(row.getCell(1), formatter, evaluator));
-
-					master.setAcc_no(getCellString(row.getCell(2), formatter, evaluator));
+					
+					master.setAccount_no(getCellString(row.getCell(2), formatter, evaluator));
 					master.setCustomer_id(getCellString(row.getCell(3), formatter, evaluator));
 					master.setCustomer_name(getCellString(row.getCell(4), formatter, evaluator));
-					master.setOpen_date(getCellDate(row.getCell(5), formatter, evaluator));
+					master.setAcct_open_date(getCellDate(row.getCell(5), formatter, evaluator));
 
 					master.setAmount_deposited(getCellDecimal(row.getCell(6), formatter, evaluator));
 					master.setCurrency(getCellString(row.getCell(7), formatter, evaluator));
@@ -179,8 +180,9 @@ public class BDGF_Services {
 					master.setDifference(getCellDecimal(row.getCell(20), formatter, evaluator));
 					master.setDays(getCellDecimal(row.getCell(21), formatter, evaluator));
 					master.setPeriod_days(getCellDecimal(row.getCell(22), formatter, evaluator));
-					master.setEffective_int_rate(getCellDecimal(row.getCell(23), formatter, evaluator));
+					master.setEffective_interest_rate(getCellDecimal(row.getCell(23), formatter, evaluator));
 					master.setReport_date(getCellDate(row.getCell(24), formatter, evaluator));
+					master.setBdgf_flg("Y");
 
 					// Audit
 					master.setEntry_date(new Date());
@@ -188,7 +190,7 @@ public class BDGF_Services {
 					master.setDel_flg("N");
 					master.setEntry_flg("Y");
 
-					BrrsGeneralMasterRepos.save(master);
+					GeneralMasterRepos.save(master);
 
 					savedCount++;
 

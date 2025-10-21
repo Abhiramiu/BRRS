@@ -41,6 +41,8 @@ import com.bornfire.brrs.entities.BLBF_Entity;
 import com.bornfire.brrs.entities.BLBF_Rep;
 import com.bornfire.brrs.entities.BrrsGeneralMasterEntity;
 import com.bornfire.brrs.entities.BrrsGeneralMasterRepo;
+import com.bornfire.brrs.entities.GeneralMasterEntity;
+import com.bornfire.brrs.entities.GeneralMasterRepo;
 
 @Service
 @Transactional
@@ -50,7 +52,7 @@ public class BLBF_Services {
 	SequenceGenerator sequence;
 
 	@Autowired
-	BrrsGeneralMasterRepo BrrsGeneralMasterRepos;
+	GeneralMasterRepo GeneralMasterRepos;
 	@Autowired
 	private BLBF_Rep BLBF_Reps;
 
@@ -76,14 +78,14 @@ public class BLBF_Services {
 			FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
 			String insertSql = "INSERT INTO BRRS_BLBF ("
-					+ "SOL_ID, CUST_ID, ACCOUNT_NO, ACCT_NAME, SCHM_CODE, SCHM_DESC, ACCT_OPN_DATE, "
-					+ "APPROVED_LIMIT, SANCTION_LIMIT, DISBURSED_AMT, BALANCE_AS_ON, CCY, BAL_EQUI_TO_BWP, "
-					+ "INT_RATE, HUNDRED, ACCRUED_INT_AMT, INT_OF_AUG_25, LAST_INTEREST_DEBIT_DATE, "
-					+ "ACCT_CLS_FLG, CLOSE_DATE, GENDER, CLASSIFICATION_CODE, CONSTITUTION_CODE, MATURITY_DATE, "
-					+ "GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, TENOR_MONTH, EMI, SEGMENT, FACILITY, PAST_DUE,PAST_DUE_DAYS, ASSET, "
-					+ "PROVISION, UNSECURED, INT_BUCKET, STAFF, SMME, LABOD, NEW_AC, UNDRAWN, SECTOR, PERIOD, "
-					+ "EFFECTIVE_INTEREST_RATE,STAGE,ECL_PROVISION,REPORT_DATE, ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG"
-					+ ") VALUES (" + String.join(",", Collections.nCopies(51, "?")) + ")";
+			        + "SOL_ID, CUSTOMER_ID, ACCOUNT_NO, CUSTOMER_NAME, SCHM_CODE, SCHM_DESC, ACCT_OPEN_DATE, "
+			        + "APPROVED_LIMIT, SANCTION_LIMIT, DISBURSED_AMT, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, "
+			        + "RATE_OF_INTEREST, HUNDRED, ACCRUED_INT_AMT, MONTHLY_INTEREST, LAST_INTEREST_DEBIT_DATE, "
+			        + "ACCT_CLS_FLG, ACCT_CLOSE_DATE, GENDER, CLASSIFICATION_CODE, CONSTITUTION_CODE, MATURITY_DATE, "
+			        + "GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, TENOR_MONTH, EMI, SEGMENT, FACILITY, PAST_DUE, PAST_DUE_DAYS, ASSET, "
+			        + "PROVISION, UNSECURED, INT_BUCKET, STAFF, SMME, LABOD, NEW_AC, UNDRAWN, SECTOR, PERIOD, "
+			        + "EFFECTIVE_INTEREST_RATE, STAGE, ECL_PROVISION, REPORT_DATE, ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG"
+			        + ") VALUES (" + String.join(",", Collections.nCopies(51, "?")) + ")";
 
 			PreparedStatement stmt = conn.prepareStatement(insertSql);
 			int count = 0;
@@ -170,32 +172,34 @@ public class BLBF_Services {
 					stmt.addBatch();
 
 					// --- Create Master Entity ---
-					BrrsGeneralMasterEntity masterEntity = new BrrsGeneralMasterEntity();
+					GeneralMasterEntity masterEntity = new GeneralMasterEntity();
 					masterEntity.setId(sequence.generateRequestUUId());
-					masterEntity.setFile_type("BLBF");
-
+					
 					masterEntity.setSol_id(getCellString(row.getCell(0), formatter, evaluator));
 					masterEntity.setCustomer_id(getCellString(row.getCell(1), formatter, evaluator));
-					masterEntity.setAcc_no(getCellString(row.getCell(2), formatter, evaluator));
-					masterEntity.setAcct_name(getCellString(row.getCell(3), formatter, evaluator));
+					masterEntity.setAccount_no(getCellString(row.getCell(2), formatter, evaluator));
+					masterEntity.setCustomer_name(getCellString(row.getCell(3), formatter, evaluator));
 					masterEntity.setSchm_code(getCellString(row.getCell(4), formatter, evaluator));
 					masterEntity.setSchm_desc(getCellString(row.getCell(5), formatter, evaluator));
 
-					masterEntity.setAcct_opn_date(getCellDate(row.getCell(6), formatter, evaluator));
+					masterEntity.setAcct_open_date(getCellDate(row.getCell(6), formatter, evaluator));
 					masterEntity.setApproved_limit(getCellDecimal(row.getCell(7), formatter, evaluator));
 					masterEntity.setSanction_limit(getCellDecimal(row.getCell(8), formatter, evaluator));
 					masterEntity.setDisbursed_amt(getCellDecimal(row.getCell(9), formatter, evaluator));
 					masterEntity.setBalance_as_on(getCellDecimal(row.getCell(10), formatter, evaluator));
 
-					masterEntity.setCcy(getCellString(row.getCell(11), formatter, evaluator));
+					masterEntity.setCurrency(getCellString(row.getCell(11), formatter, evaluator));
 					masterEntity.setBal_equi_to_bwp(getCellDecimal(row.getCell(12), formatter, evaluator));
-					masterEntity.setInt_rate(getCellDecimal(row.getCell(13), formatter, evaluator));
+					
+					//masterEntity.setInt_rate(getCellDecimal(row.getCell(13), formatter, evaluator));
+					
 					masterEntity.setHundred(getCellDecimal(row.getCell(14), formatter, evaluator));
 					masterEntity.setAccrued_int_amt(getCellDecimal(row.getCell(15), formatter, evaluator));
-					masterEntity.setInt_of_aug_25(getCellDecimal(row.getCell(16), formatter, evaluator));
+					masterEntity.setMonthly_interest(getCellDecimal(row.getCell(16), formatter, evaluator));
+					
 					masterEntity.setLast_interest_debit_date(getCellDate(row.getCell(17), formatter, evaluator));
 					masterEntity.setAcct_cls_flg(getCellString(row.getCell(18), formatter, evaluator));
-					masterEntity.setAcct_cls_date(getCellDate(row.getCell(19), formatter, evaluator));
+					masterEntity.setAcct_close_date(getCellDate(row.getCell(19), formatter, evaluator));
 					// masterEntity.setSanction_limit(getCellDecimal(row.getCell(20), formatter,
 					// evaluator));
 
@@ -229,14 +233,15 @@ public class BLBF_Services {
 					masterEntity.setPeriod(getCellString(row.getCell(42), formatter, evaluator));
 					masterEntity.setEffective_interest_rate(getCellDecimal(row.getCell(43), formatter, evaluator));
 					masterEntity.setReport_date(getCellDate(row.getCell(44), formatter, evaluator));
-
+					masterEntity.setBlbf_flg("Y");
+					
 					// Audit fields
 					masterEntity.setEntry_date(new Date());
 					masterEntity.setEntry_user(userid);
 					masterEntity.setDel_flg("N");
 					masterEntity.setEntry_flg("Y");
 
-					BrrsGeneralMasterRepos.save(masterEntity);
+					GeneralMasterRepos.save(masterEntity);
 
 					count++;
 

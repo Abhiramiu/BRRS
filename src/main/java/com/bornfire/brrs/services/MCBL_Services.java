@@ -5,12 +5,14 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sql.DataSource;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -56,177 +58,199 @@ public class MCBL_Services {
 
 	@Transactional
 	public String addMCBL(MultipartFile file, String userid, String username, String reportDate) {
-		long startTime = System.currentTimeMillis();
-		List<String> validationErrors = new ArrayList<>();
+	    long startTime = System.currentTimeMillis();
+	    List<String> validationErrors = new ArrayList<>();
 
-		if (file == null || file.isEmpty()) {
-			return "Error: Uploaded file is empty!";
-		}
+	    if (file == null || file.isEmpty()) {
+	        return "Error: Uploaded file is empty!";
+	    }
 
-		try (InputStream is = file.getInputStream();
-				Workbook workbook = new XSSFWorkbook(is);
-				Connection conn = dataSource.getConnection()) {
+	    try (InputStream is = file.getInputStream();
+	         //Workbook workbook = new XSSFWorkbook(is);
+	    	Workbook workbook = new HSSFWorkbook(is);
+	    	Connection conn = dataSource.getConnection()) {
 
-			if (workbook.getNumberOfSheets() == 0) {
-				return "Error: Excel file has no sheets!";
-			}
+	        conn.setAutoCommit(false);
 
-			conn.setAutoCommit(false);
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	        java.util.Date parsedDate = sdf.parse(reportDate);
+	        java.sql.Date sqlReportDate = new java.sql.Date(parsedDate.getTime());
 
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			java.util.Date parsedDate = sdf.parse(reportDate);
-			java.sql.Date sqlReportDate = new java.sql.Date(parsedDate.getTime());
+	        // 1️⃣ Last month report date
+	        Calendar cal = Calendar.getInstance();
+	        cal.setTime(parsedDate);
+	        cal.set(Calendar.DAY_OF_MONTH, 1); // first day of current month
+	        cal.add(Calendar.DATE, -1);        // last day of previous month
+	        java.sql.Date lastMonthDate = new java.sql.Date(cal.getTimeInMillis());
 
-			Sheet sheet = workbook.getSheet("MCBL");
+	        // 2️⃣ Fetch last month head account numbers
+	        String lastMonthQuery = "SELECT MCBL_HEAD_ACC_NO FROM BRRS_MCBL WHERE REPORT_DATE = ?";
+	        PreparedStatement lastMonthStmt = conn.prepareStatement(lastMonthQuery);
+	        lastMonthStmt.setDate(1, lastMonthDate);
+	        ResultSet rs = lastMonthStmt.executeQuery();
+	        Set<String> lastMonthAccounts = new HashSet<>();
+	        while (rs.next()) {
+	            lastMonthAccounts.add(rs.getString("MCBL_HEAD_ACC_NO"));
+	        }
 
-			if (sheet == null) {
-				return "Error: First sheet is missing! Sheet Name should be MCBL";
-			}
+	        // 3️⃣ Read current Excel head accounts
+	        Sheet sheet = workbook.getSheet("MCBL");
+	        if (sheet == null) {
+	            return "Error: Sheet 'MCBL' not found!";
+	        }
+	        DataFormatter formatter = new DataFormatter();
+	     // 3️⃣ Read current Excel head accounts (only valid rows)
+	        Set<String> currentAccounts = new HashSet<>();
+	        for (int i = 0; i <= sheet.getLastRowNum(); i++) {
+	            Row row = sheet.getRow(i);
+	            if (row == null) continue;
 
-			// Prepare delete statements
-			String deleteSql = "DELETE FROM BRRS_MCBL " + "WHERE GL_CODE = ? AND GL_SUB_CODE = ? AND HEAD_ACC_NO = ? "
-					+ "AND CURRENCY = ? AND REPORT_DATE = ?";
-			PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
+	            String glCode = formatter.formatCellValue(row.getCell(0)).trim();
+	            String glSubCode = formatter.formatCellValue(row.getCell(1)).trim();
+	            String headAccNo = formatter.formatCellValue(row.getCell(2)).trim();
+	            String currency = formatter.formatCellValue(row.getCell(5)).trim();
 
-			String deleteGeneralSql = "DELETE FROM BRRS_GENERAL_MASTER_TABLE "
-					+ "WHERE GL_CODE = ? AND GL_SUB_CODE = ? AND HEAD_ACC_NO = ? "
-					+ "AND CURRENCY = ? AND REPORT_DATE = ? AND FILE_TYPE = 'MCBL'";
-			PreparedStatement deleteGeneralStmt = conn.prepareStatement(deleteGeneralSql);
+	            // Only include valid rows
+	            if (!glCode.isEmpty() && !glSubCode.isEmpty() && !headAccNo.isEmpty() && !currency.isEmpty() && isNumeric(headAccNo)) {
+	                currentAccounts.add(headAccNo);  // ✅ only valid rows
+	            }
+	        }
 
-			// Prepare insert statements
-			String insertSql = "INSERT INTO BRRS_MCBL (GL_CODE, GL_SUB_CODE, HEAD_ACC_NO, DESCRIPTION, CURRENCY, "
-					+ "DEBIT_BALANCE, CREDIT_BALANCE, DEBIT_EQUIVALENT, CREDIT_EQUIVALENT, ENTRY_USER, ENTRY_DATE, REPORT_DATE) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			PreparedStatement insertStmt = conn.prepareStatement(insertSql);
+	        // 4️⃣ Compare accounts
+	        Set<String> newAccounts = new HashSet<>(currentAccounts);
+	        newAccounts.removeAll(lastMonthAccounts);
 
-			String insertGeneralSql = "INSERT INTO BRRS_GENERAL_MASTER_TABLE ("
-					+ "ID, FILE_TYPE, GL_CODE, GL_SUB_CODE, HEAD_ACC_NO, DESCRIPTION, CURRENCY, "
-					+ "DEBIT_BALANCE, CREDIT_BALANCE, DEBIT_EQUIVALENT, CREDIT_EQUIVALENT, "
-					+ "ENTRY_USER, ENTRY_DATE, REPORT_DATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	        Set<String> missingAccounts = new HashSet<>(lastMonthAccounts);
+	        missingAccounts.removeAll(currentAccounts);
 
-			PreparedStatement insertGeneralStmt = conn.prepareStatement(insertGeneralSql);
 
-			DataFormatter formatter = new DataFormatter();
-			int batchSize = 500;
-			int count = 0;
-			int skippedCount = 0;
+	        // 5️⃣ Prepare SQL statements
+	        String deleteSql = "DELETE FROM BRRS_MCBL WHERE MCBL_GL_CODE = ? AND MCBL_GL_SUB_CODE = ? AND MCBL_HEAD_ACC_NO = ? AND MCBL_CURRENCY = ? AND REPORT_DATE = ?";
+	        PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
 
-			Set<String> processedKeys = new HashSet<>();
+	        String deleteGeneralSql = "DELETE FROM GENERAL_MASTER_TABLE WHERE MCBL_GL_CODE = ? AND MCBL_GL_SUB_CODE = ? AND MCBL_HEAD_ACC_NO = ? AND MCBL_CURRENCY = ? AND REPORT_DATE = ?";
+	        PreparedStatement deleteGeneralStmt = conn.prepareStatement(deleteGeneralSql);
 
-			for (int i = 0; i <= sheet.getLastRowNum(); i++) {
-				Row row = sheet.getRow(i);
-				if (row == null) {
-					System.out.println("Skipping empty row: " + i);
-					continue;
-				}
+	        String insertSql = "INSERT INTO BRRS_MCBL (MCBL_GL_CODE, MCBL_GL_SUB_CODE, MCBL_HEAD_ACC_NO, MCBL_DESCRIPTION, MCBL_CURRENCY, " +
+	                "MCBL_DEBIT_BALANCE, MCBL_CREDIT_BALANCE, MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, ENTRY_USER, ENTRY_DATE, REPORT_DATE, ID, ENTRY_FLG, MODIFY_USER, MODIFY_FLG, DELETE_USER, DELETE_FLG) " +
+	                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Y', NULL, NULL, NULL, NULL)";
+	        PreparedStatement insertStmt = conn.prepareStatement(insertSql);
 
-				if (row == null)
-					continue;
+	        String insertGeneralSql = "INSERT INTO GENERAL_MASTER_TABLE (ID, MCBL_GL_CODE, MCBL_GL_SUB_CODE, MCBL_HEAD_ACC_NO, MCBL_DESCRIPTION, MCBL_CURRENCY, " +
+	                "MCBL_DEBIT_BALANCE, MCBL_CREDIT_BALANCE, MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, ENTRY_USER, ENTRY_DATE, REPORT_DATE,MCBL_FLG) " +
+	                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+	        PreparedStatement insertGeneralStmt = conn.prepareStatement(insertGeneralSql);
 
-				String glCode = formatter.formatCellValue(row.getCell(0)).trim();
-				String glSubCode = formatter.formatCellValue(row.getCell(1)).trim();
-				String headAccNo = formatter.formatCellValue(row.getCell(2)).trim();
-				String description = formatter.formatCellValue(row.getCell(3)).trim();
-				String currency = formatter.formatCellValue(row.getCell(5)).trim();
+	        int batchSize = 500;
+	        int count = 0;
+	        int skippedCount = 0;
+	        Set<String> processedKeys = new HashSet<>();
 
-				if (!glCode.isEmpty() && !glSubCode.isEmpty() && !headAccNo.isEmpty() && !currency.isEmpty()) {
+	        
+	        // 6️⃣ Process Excel rows
+	        for (int i = 0; i <= sheet.getLastRowNum(); i++) {
+	            Row row = sheet.getRow(i);
+	            if (row == null) continue;
 
-					if (isNumeric(headAccNo) || isString(headAccNo)) {
-						String lookupKey = normalizeKey(glCode, glSubCode, headAccNo, currency);
-						String uniqueKey = lookupKey + "|" + sqlReportDate;
+	            String glCode = formatter.formatCellValue(row.getCell(0)).trim();
+	            String glSubCode = formatter.formatCellValue(row.getCell(1)).trim();
+	            String headAccNo = formatter.formatCellValue(row.getCell(2)).trim();
+	            String description = formatter.formatCellValue(row.getCell(3)).trim();
+	            String currency = formatter.formatCellValue(row.getCell(5)).trim();
 
-						if (!processedKeys.add(uniqueKey)) {
-							skippedCount++;
-							continue;
-						}
+	            if (!glCode.isEmpty() && !glSubCode.isEmpty() && !headAccNo.isEmpty() && !currency.isEmpty() && isNumeric(headAccNo) && isNumeric(glCode) && isNumeric(glSubCode)) {
+	                String uniqueKey = glCode + "|" + glSubCode + "|" + headAccNo + "|" + currency + "|" + sqlReportDate;
+	                if (!processedKeys.add(uniqueKey)) {
+	                    skippedCount++;
+	                    continue;
+	                }
 
-						// Delete old records
-						deleteStmt.setString(1, glCode);
-						deleteStmt.setString(2, glSubCode);
-						deleteStmt.setString(3, headAccNo);
-						deleteStmt.setString(4, currency);
-						deleteStmt.setDate(5, sqlReportDate);
-						deleteStmt.executeUpdate();
+	                // Delete old records
+	                deleteStmt.setString(1, glCode);
+	                deleteStmt.setString(2, glSubCode);
+	                deleteStmt.setString(3, headAccNo);
+	                deleteStmt.setString(4, currency);
+	                deleteStmt.setDate(5, sqlReportDate);
+	                deleteStmt.executeUpdate();
 
-						deleteGeneralStmt.setString(1, glCode);
-						deleteGeneralStmt.setString(2, glSubCode);
-						deleteGeneralStmt.setString(3, headAccNo);
-						deleteGeneralStmt.setString(4, currency);
-						deleteGeneralStmt.setDate(5, sqlReportDate);
-						deleteGeneralStmt.executeUpdate();
+	                deleteGeneralStmt.setString(1, glCode);
+	                deleteGeneralStmt.setString(2, glSubCode);
+	                deleteGeneralStmt.setString(3, headAccNo);
+	                deleteGeneralStmt.setString(4, currency);
+	                deleteGeneralStmt.setDate(5, sqlReportDate);
+	                deleteGeneralStmt.executeUpdate();
 
-						// Insert new MCBL record
-						insertStmt.setString(1, glCode);
-						insertStmt.setString(2, glSubCode);
-						insertStmt.setString(3, headAccNo);
-						insertStmt.setString(4, description);
-						insertStmt.setString(5, currency);
-						insertStmt.setBigDecimal(6, getCellDecimal(row.getCell(6)));
-						insertStmt.setBigDecimal(7, getCellDecimal(row.getCell(7)));
-						insertStmt.setBigDecimal(8, getCellDecimal(row.getCell(8)));
-						insertStmt.setBigDecimal(9, getCellDecimal(row.getCell(9)));
-						insertStmt.setString(10, userid);
-						insertStmt.setDate(11, new java.sql.Date(System.currentTimeMillis()));
-						insertStmt.setDate(12, sqlReportDate);
-						insertStmt.addBatch();
+	                // Insert into BRRS_MCBL
+	                insertStmt.setString(1, glCode);
+	                insertStmt.setString(2, glSubCode);
+	                insertStmt.setString(3, headAccNo);
+	                insertStmt.setString(4, description);
+	                insertStmt.setString(5, currency);
+	                insertStmt.setBigDecimal(6, getCellDecimal(row.getCell(6)));
+	                insertStmt.setBigDecimal(7, getCellDecimal(row.getCell(7)));
+	                insertStmt.setBigDecimal(8, getCellDecimal(row.getCell(8)));
+	                insertStmt.setBigDecimal(9, getCellDecimal(row.getCell(9)));
+	                insertStmt.setString(10, userid);
+	                insertStmt.setDate(11, new java.sql.Date(System.currentTimeMillis()));
+	                insertStmt.setDate(12, sqlReportDate);
+	                insertStmt.setString(13, sequence.generateRequestUUId());
+	                insertStmt.addBatch();
 
-						// Insert into General Master
-						insertGeneralStmt.setString(1, sequence.generateRequestUUId()); // ID
-						insertGeneralStmt.setString(2, "MCBL"); // FILE_TYPE
-						insertGeneralStmt.setString(3, glCode); // GL_CODE
-						insertGeneralStmt.setString(4, glSubCode); // GL_SUB_CODE
-						insertGeneralStmt.setString(5, headAccNo); // HEAD_ACC_NO
-						insertGeneralStmt.setString(6, description); // DESCRIPTION
-						insertGeneralStmt.setString(7, currency); // CURRENCY
-						insertGeneralStmt.setBigDecimal(8, getCellDecimal(row.getCell(6))); // DEBIT_BALANCE
-						insertGeneralStmt.setBigDecimal(9, getCellDecimal(row.getCell(7))); // CREDIT_BALANCE
-						insertGeneralStmt.setBigDecimal(10, getCellDecimal(row.getCell(8))); // DEBIT_EQUIVALENT
-						insertGeneralStmt.setBigDecimal(11, getCellDecimal(row.getCell(9))); // CREDIT_EQUIVALENT
-						insertGeneralStmt.setString(12, userid); // ENTRY_USER
-						insertGeneralStmt.setDate(13, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
-						insertGeneralStmt.setDate(14, sqlReportDate); // REPORT_DATE
+	                // Insert into GENERAL_MASTER_TABLE
+	                insertGeneralStmt.setString(1, sequence.generateRequestUUId());
+	                insertGeneralStmt.setString(2, glCode);
+	                insertGeneralStmt.setString(3, glSubCode);
+	                insertGeneralStmt.setString(4, headAccNo);
+	                insertGeneralStmt.setString(5, description);
+	                insertGeneralStmt.setString(6, currency);
+	                insertGeneralStmt.setBigDecimal(7, getCellDecimal(row.getCell(6)));
+	                insertGeneralStmt.setBigDecimal(8, getCellDecimal(row.getCell(7)));
+	                insertGeneralStmt.setBigDecimal(9, getCellDecimal(row.getCell(8)));
+	                insertGeneralStmt.setBigDecimal(10, getCellDecimal(row.getCell(9)));
+	                insertGeneralStmt.setString(11, userid);
+	                insertGeneralStmt.setDate(12, new java.sql.Date(System.currentTimeMillis()));
+	                insertGeneralStmt.setDate(13, sqlReportDate);
+	                insertGeneralStmt.setString(14, "Y");               
+	                insertGeneralStmt.addBatch();
 
-						insertGeneralStmt.addBatch();
+	                count++;
+	                if (count % batchSize == 0) {
+	                    insertStmt.executeBatch();
+	                    insertGeneralStmt.executeBatch();
+	                    conn.commit();
+	                }
 
-						count++;
+	            } else {
+	                skippedCount++;
+	            }
+	        }
 
-						if (count % batchSize == 0) {
-							insertStmt.executeBatch();
-							insertGeneralStmt.executeBatch();
-							conn.commit();
-						}
+	        // Final batch commit
+	        insertStmt.executeBatch();
+	        insertGeneralStmt.executeBatch();
+	        conn.commit();
 
-					} else {
-						skippedCount++;
-					}
+	        long duration = System.currentTimeMillis() - startTime;
 
-				} else {
-					skippedCount++;
-				}
-			}
+	        // 7️⃣ Prepare popup message
+	        String popupMessage = "MCBL processed successfully.<br>" +
+	                "Saved rows: " + count + "<br>" +
+	                "Skipped rows: " + skippedCount + "<br>" +
+	                "New Accounts (" + newAccounts.size() + "): " + String.join(", ", newAccounts) + "<br>" +
+	                "Missing Accounts (" + missingAccounts.size() + "): " + String.join(", ", missingAccounts) + "<br>" +
+	                "Time taken: " + duration + " ms";
 
-			// Execute remaining batches
-			insertStmt.executeBatch();
-			insertGeneralStmt.executeBatch();
-			conn.commit();
+	        return popupMessage;
 
-			long duration = System.currentTimeMillis() - startTime;
-			String result = "MCBL Added successfully. Saved: " + count + ", Skipped: " + skippedCount + ". Time taken: "
-					+ duration + " ms";
-
-			if (!validationErrors.isEmpty()) {
-				result += "\n\nAccounts not found: " + validationErrors.size() + "\n"
-						+ String.join("\n", validationErrors);
-			}
-
-			return result;
-
-		} catch (Exception e) {
-			logger.error("Error while processing MCBL Excel: {}", e.getMessage(), e);
-			return "Error Occurred while reading Excel: " + e.getMessage();
-		}
+	    } catch (Exception e) {
+	        logger.error("Error while processing MCBL Excel: {}", e.getMessage(), e);
+	        return "Error occurred while reading Excel: " + e.getMessage();
+	    }
 	}
 
+
+
+	
 	private boolean isString(String value) {
 		return value != null && value.matches("[a-zA-Z]+");
 	}

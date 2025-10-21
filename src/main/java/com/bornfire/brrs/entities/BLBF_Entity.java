@@ -72,6 +72,8 @@ public class BLBF_Entity {
     private String stage;
     private BigDecimal ecl_provision;
 
+    private String MAT_BUCKET;
+    
     private String branch_name;
     private String branch_code;
 
@@ -445,6 +447,12 @@ public class BLBF_Entity {
 	}
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
+	}
+	public String getMAT_BUCKET() {
+		return MAT_BUCKET;
+	}
+	public void setMAT_BUCKET(String mAT_BUCKET) {
+		MAT_BUCKET = mAT_BUCKET;
 	}
     
     

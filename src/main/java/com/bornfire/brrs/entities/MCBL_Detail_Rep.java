@@ -22,7 +22,7 @@ public interface MCBL_Detail_Rep extends JpaRepository<MCBL_Detail_Entity, Strin
 
 
 	@Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END " +
-            "FROM BRRS_MCBL_DETAIL " +
+            "FROM BRRS_MCBL " +
             "WHERE TRUNC(REPORT_DATE) = TRUNC(TO_DATE(:report_date, 'YYYY-MM-DD'))",
     nativeQuery = true)
 int checkIfReportDateExists(@Param("report_date") String report_date);

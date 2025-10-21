@@ -43,6 +43,8 @@ import com.bornfire.brrs.entities.BFDB_Entity;
 import com.bornfire.brrs.entities.BFDB_Rep;
 import com.bornfire.brrs.entities.BrrsGeneralMasterEntity;
 import com.bornfire.brrs.entities.BrrsGeneralMasterRepo;
+import com.bornfire.brrs.entities.GeneralMasterEntity;
+import com.bornfire.brrs.entities.GeneralMasterRepo;
 
 @Service
 @Transactional
@@ -52,7 +54,7 @@ public class BFDB_Services {
 	SequenceGenerator sequence;
 
 	@Autowired
-	BrrsGeneralMasterRepo BrrsGeneralMasterRepos;
+	GeneralMasterRepo GeneralMasterRepos;
 	@Autowired
 	private BFDB_Rep BFDB_Reps;
 
@@ -77,12 +79,12 @@ public class BFDB_Services {
 			FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
 			String insertSql = "INSERT INTO BRRS_BFDB ("
-					+ "SOL_ID,CUST_ID, GENDER, ACCOUNT_NO, ACCT_NAME, SCHM_CODE, SCHM_DESC, "
-					+ "ACCT_OPN_DATE, ACCT_CLS_DATE, BALANCE_AS_ON, CCY, BAL_EQUI_TO_BWP, "
-					+ "INT_RATE, HUNDRED, STATUS, MATURITY_DATE, GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, "
-					+ "TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INT_RATE, "
-					+ "REPORT_DATE, ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG" + ") VALUES ("
-					+ String.join(",", Collections.nCopies(27, "?")) + ")";
+			        + "SOL_ID, CUSTOMER_ID, GENDER, ACCOUNT_NO, CUSTOMER_NAME, SCHM_CODE, SCHM_DESC, "
+			        + "ACCT_OPEN_DATE, ACCT_CLOSE_DATE, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, "
+			        + "RATE_OF_INTEREST, HUNDRED, STATUS, MATURITY_DATE, GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, "
+			        + "TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INTEREST_RATE, "
+			        + "REPORT_DATE, ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG"
+			        + ") VALUES (" + String.join(",", Collections.nCopies(27, "?")) + ")";
 
 			PreparedStatement stmt = conn.prepareStatement(insertSql);
 			int count = 0;
@@ -142,19 +144,19 @@ public class BFDB_Services {
 					stmt.addBatch();
 
 					// === Master Entity ===
-					BrrsGeneralMasterEntity master = new BrrsGeneralMasterEntity();
+					GeneralMasterEntity master = new GeneralMasterEntity();
+					
 					master.setId(sequence.generateRequestUUId());
-					master.setFile_type("BFDB");
-
+					
 					master.setSol_id(getCellString(row.getCell(0), formatter, evaluator));
 					master.setCustomer_id(getCellString(row.getCell(1), formatter, evaluator));
 					master.setGender(getCellString(row.getCell(2), formatter, evaluator));
-					master.setAcc_no(getCellString(row.getCell(3), formatter, evaluator));
+					master.setAccount_no(getCellString(row.getCell(3), formatter, evaluator));
 					master.setCustomer_name(getCellString(row.getCell(4), formatter, evaluator));
 					master.setSchm_code(getCellString(row.getCell(5), formatter, evaluator));
 					master.setSchm_desc(getCellString(row.getCell(6), formatter, evaluator));
-					master.setOpen_date(getCellDate(row.getCell(7), formatter, evaluator));
-					master.setAcct_cls_date(getCellDate(row.getCell(8), formatter, evaluator));
+					master.setAcct_open_date(getCellDate(row.getCell(7), formatter, evaluator));
+					master.setAcct_close_date(getCellDate(row.getCell(8), formatter, evaluator));
 
 					master.setBalance_as_on(getCellDecimal(row.getCell(9), formatter, evaluator));
 					master.setCurrency(getCellString(row.getCell(10), formatter, evaluator));
@@ -168,15 +170,16 @@ public class BFDB_Services {
 					master.setType_of_accounts(getCellString(row.getCell(18), formatter, evaluator));
 					master.setSegment(getCellString(row.getCell(19), formatter, evaluator));
 					master.setPeriod(getCellString(row.getCell(20), formatter, evaluator));
-					master.setEffective_int_rate(getCellDecimal(row.getCell(21), formatter, evaluator));
+					master.setEffective_interest_rate(getCellDecimal(row.getCell(21), formatter, evaluator));
 					master.setReport_date(getCellDate(row.getCell(22), formatter, evaluator));
-
+					master.setBfdb_flg("Y");
+					
 					master.setEntry_date(new Date());
 					master.setEntry_user(userid);
 					master.setDel_flg("N");
 					master.setEntry_flg("Y");
 
-					BrrsGeneralMasterRepos.save(master);
+					GeneralMasterRepos.save(master);
 
 					savedCount++;
 
