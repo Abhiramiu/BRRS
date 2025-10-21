@@ -747,252 +747,252 @@ function showdetailsbyRowAndColumn(a) {
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r12_product}"></td>
 							<td th:text="${report.r12_cross_ref}" style="text-align:left;"></td>
 							<td th:text="${#numbers.formatDecimal(report.r12_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R12', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r12_average}" th:attr="RowId='R12', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r12_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R12', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r13_product}"></td>
 							<td th:text="${report.r13_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r13_month_end}" th:attr="RowId='R13', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
-							<td th:text="${report.r13_average}" th:attr="RowId='R13', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r13_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R13', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r13_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R13', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;" th:text="${report.r14_product}"></td>
 							<td th:text="${report.r14_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r14_month_end}" th:attr="RowId='R14', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"style="text-align: right; "></td>
-							<td th:text="${report.r14_average}" th:attr="RowId='R14', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r14_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R14', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"style="text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r14_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R14', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"th:text="${report.r15_product}"></td>
 							<td th:text="${report.r15_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r15_month_end}" th:attr="RowId='R15', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r15_average}" th:attr="RowId='R15', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r15_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R15', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r15_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R15', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r16_product}"></td>
 							<td th:text="${report.r16_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r16_month_end}" th:attr="RowId='R16', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
-							<td th:text="${report.r16_average}" th:attr="RowId='R16', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r16_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R16', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r16_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R16', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r17_product}"></td>
 							<td th:text="${report.r17_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r17_month_end}" th:attr="RowId='R17', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
-							<td th:text="${report.r17_average}"  th:attr="RowId='R17', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r17_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R17', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r17_average, 0, 'COMMA', 0, 'POINT')}"  th:attr="RowId='R17', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;" th:text="${report.r18_product}"></td>
 							<td th:text="${report.r18_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r18_month_end}" th:attr="RowId='R18', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r18_average}" th:attr="RowId='R18', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r18_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R18', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r18_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R18', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;" th:text="${report.r19_product}"></td>
 							<td th:text="${report.r19_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r19_month_end}" th:attr="RowId='R19', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r19_average}" th:attr="RowId='R19', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r19_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R19', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r19_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R19', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r20_product}"></td>
 							<td th:text="${report.r20_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r20_month_end}" th:attr="RowId='R20', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r20_average}" th:attr="RowId='R20', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r20_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R20', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r20_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R20', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r21_product}"></td>
 							<td th:text="${report.r21_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r21_month_end}" th:attr="RowId='R21', ColumnId='C3'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
-							<td th:text="${report.r21_average}" th:attr="RowId='R21', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r21_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R21', ColumnId='C3'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r21_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R21', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 50px;" th:text="${report.r22_product}"></td>
 							<td th:text="${report.r22_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r22_month_end}" th:attr="RowId='R22', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="background-color: rgb(107, 122, 143);color: white;text-align: right; "></td>
-							<td th:text="${report.r22_average}" th:attr="RowId='R22', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r22_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R22', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="background-color: rgb(107, 122, 143);color: white;text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r22_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R22', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 50px;"  th:text="${report.r23_product}"></td>
 							<td th:text="${report.r23_cross_ref}"  style="text-align:left; "></td>
-							<td th:text="${report.r23_month_end}" th:attr="RowId='R23', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="background-color: rgb(107, 122, 143);color: white;text-align: right; "></td>
-							<td th:text="${report.r23_average}" th:attr="RowId='R23', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r23_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R23', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="background-color: rgb(107, 122, 143);color: white;text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r23_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R23', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;" th:text="${report.r24_product}"></td>
 							<td th:text="${report.r24_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r24_month_end}" th:attr="RowId='R24', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r24_average}" th:attr="RowId='R24', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r24_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R24', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r24_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R24', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 50px;" th:text="${report.r25_product}"></td>
 							<td th:text="${report.r25_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r25_month_end}" th:attr="RowId='R25', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r25_average}" th:attr="RowId='R25', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r25_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R25', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r25_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R25', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 50px;" th:text="${report.r26_product}"></td>
 							<td th:text="${report.r26_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r26_month_end}" th:attr="RowId='R26', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
-							<td th:text="${report.r26_average}" th:attr="RowId='R26', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r26_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R26', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r26_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R26', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"th:text="${report.r27_product}"></td>
 							<td th:text="${report.r27_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r27_month_end}" th:attr="RowId='R27', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r27_average}" th:attr="RowId='R27', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r27_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R27', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r27_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R27', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"th:text="${report.r28_product}"></td>
 							<td th:text="${report.r28_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r28_month_end}" th:attr="RowId='R28', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
-							<td th:text="${report.r28_average}" th:attr="RowId='R28', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r28_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R28', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r28_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R28', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r29_product}"></td>
 							<td th:text="${report.r29_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r29_month_end}" th:attr="RowId='R29', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r29_average}" th:attr="RowId='R29', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r29_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R29', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r29_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R29', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r30_product}"></td>
 							<td th:text="${report.r30_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r30_month_end}" th:attr="RowId='R30', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
-							<td th:text="${report.r30_average}" th:attr="RowId='R30', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r30_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r30_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R30', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r31_product}"></td>
 							<td th:text="${report.r31_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r31_month_end}" th:attr="RowId='R31', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r31_average}" th:attr="RowId='R31', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r31_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r31_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R31', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r32_product}"></td>
 							<td th:text="${report.r32_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r32_month_end}" th:attr="RowId='R32', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r32_average}" th:attr="RowId='R32', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r32_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r32_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R32', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;" th:text="${report.r33_product}"></td>
 							<td th:text="${report.r33_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r33_month_end}" th:attr="RowId='R33', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r33_average}" th:attr="RowId='R33', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r33_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R33', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r33_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R33', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r34_product}"></td>
 							<td th:text="${report.r34_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r34_month_end}" th:attr="RowId='R34', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td th:text="${report.r34_average}" th:attr="RowId='R34', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r34_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R34', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r34_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R34', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r35_product}"></td>
 							<td th:text="${report.r35_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r35_month_end}" th:attr="RowId='R35', ColumnId='C3'" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
-							<td th:text="${report.r35_average}" th:attr="RowId='R35', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r35_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R35', ColumnId='C3'" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r35_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R35', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;" th:text="${report.r36_product}"></td>
 							<td th:text="${report.r36_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r36_month_end}" th:attr="RowId='R36', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="background-color: rgb(107, 122, 143);color: white;text-align: right; "></td>
-							<td th:text="${report.r36_average}" th:attr="RowId='R36', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r36_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R36', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="background-color: rgb(107, 122, 143);color: white;text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r36_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R36', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r37_product}"></td>
 							<td th:text="${report.r37_cross_ref}"  style="text-align:left; "></td>
-							<td th:text="${report.r37_month_end}" th:attr="RowId='R37', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td th:text="${report.r37_average}" th:attr="RowId='R37', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r37_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R37', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r37_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R37', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;" th:text="${report.r38_product}"></td>
 							<td th:text="${report.r38_cross_ref}"  style="text-align:left; "></td>
-							<td th:text="${report.r38_month_end}" th:attr="RowId='R38', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r38_average}" th:attr="RowId='R38', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r38_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R38', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r38_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R38', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;" th:text="${report.r39_product}"></td>
 							<td th:text="${report.r39_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r39_month_end}" th:attr="RowId='R39', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="background-color: rgb(107, 122, 143);color: white;text-align: right; "></td>
-							<td th:text="${report.r39_average}" th:attr="RowId='R39', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r39_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R39', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="background-color: rgb(107, 122, 143);color: white;text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r39_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R39', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r40_product}"></td>
 							<td th:text="${report.r40_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r40_month_end}" th:attr="RowId='R40', ColumnId='C3'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
-							<td th:text="${report.r40_average}" th:attr="RowId='R40', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r40_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R40', ColumnId='C3'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r40_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R40', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r41_product}"></td>
 							<td th:text="${report.r41_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r41_month_end}" th:attr="RowId='R41', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r41_average}" th:attr="RowId='R41', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r41_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R41', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r41_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R41', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r42_product}"></td>
 							<td th:text="${report.r42_cross_ref}"   style="text-align: left; "></td>
-							<td th:text="${report.r42_month_end}" th:attr="RowId='R42', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r42_average}" th:attr="RowId='R42', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r42_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R42', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r42_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R42', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;" th:text="${report.r43_product}"></td>
 							<td th:text="${report.r43_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r43_month_end}" th:attr="RowId='R43', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td th:text="${report.r43_average}" th:attr="RowId='R43', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r43_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R43', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r43_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R43', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r44_product}"></td>
 							<td th:text="${report.r44_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r44_month_end}" th:attr="RowId='R44', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r44_average}" th:attr="RowId='R44', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r44_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R44', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r44_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R44', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r45_product}"></td>
 							<td th:text="${report.r45_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r45_month_end}" th:attr="RowId='R45', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r45_average}" th:attr="RowId='R45', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r45_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R45', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r45_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R45', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r46_product}"></td>
 							<td th:text="${report.r46_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r46_month_end}" th:attr="RowId='R46', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r46_average}" th:attr="RowId='R46', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r46_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R46', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r46_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R46', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r47_product}"></td>
 							<td th:text="${report.r47_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r47_month_end}" th:attr="RowId='R47', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r47_average}" th:attr="RowId='R47', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r47_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R47', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r47_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R47', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r48_product}"></td>
 							<td th:text="${report.r48_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r48_month_end}" th:attr="RowId='R48', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r48_average}" th:attr="RowId='R48', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r48_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R48', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r48_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R48', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r49_product}"></td>
 							<td th:text="${report.r49_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r49_month_end}" th:attr="RowId='R49', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r49_average}" th:attr="RowId='R49', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r49_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R49', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r49_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R49', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r50_product}"></td>
 							<td th:text="${report.r50_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r50_month_end}" th:attr="RowId='R50', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td th:text="${report.r50_average}" th:attr="RowId='R50', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r50_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R50', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r50_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R50', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r51_product}"></td>
 							<td th:text="${report.r51_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r51_month_end}" th:attr="RowId='R51', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td th:text="${report.r51_average}" th:attr="RowId='R51', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r51_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R51', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r51_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R51', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r52_product}"></td>
 							<td th:text="${report.r52_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r52_month_end}" th:attr="RowId='R52', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td th:text="${report.r52_average}" th:attr="RowId='R52', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r52_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R52', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r52_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R52', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r53_product}"></td>
 							<td th:text="${report.r53_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r53_month_end}" th:attr="RowId='R53', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
-							<td th:text="${report.r53_average}" th:attr="RowId='R53', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r53_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R53', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r53_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R53', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r54_product}"></td>
 							<td th:text="${report.r54_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r54_month_end}" th:attr="RowId='R54', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r54_average}" th:attr="RowId='R54', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r54_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R54', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r54_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R54', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r55_product}"></td>
 							<td th:text="${report.r55_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r55_month_end}" th:attr="RowId='R55', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
-							<td th:text="${report.r55_average}" th:attr="RowId='R55', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r55_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R55', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r55_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R55', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r56_product}"></td>
 							<td th:text="${report.r56_cross_ref}"  style="text-align: left; "></td>
-							<td th:text="${report.r56_month_end}" th:attr="RowId='R56', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r56_average}" th:attr="RowId='R56', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r56_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R56', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r56_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R56', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>  </tr>
 							
 	 					<tr>  <td style="padding-left: 30px;"  th:text="${report.r57_product}"></td>
 							<td th:text="${report.r57_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r57_month_end}" th:attr="RowId='R57', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td th:text="${report.r57_average}" th:attr="RowId='R57', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r57_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R57', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r57_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R57', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;" th:text="${report.r58_product}"></td>
 							<td th:text="${report.r58_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r58_month_end}" th:attr="RowId='R58', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td th:text="${report.r58_average}" th:attr="RowId='R58', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r58_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R58', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r58_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R58', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;"  th:text="${report.r59_product}"></td>
 							<td th:text="${report.r59_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r59_month_end}" th:attr="RowId='R59', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td th:text="${report.r59_average}" th:attr="RowId='R59', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r59_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R59', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r59_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R59', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 30px;" th:text="${report.r60_product}"></td>
 							<td th:text="${report.r60_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r60_month_end}" th:attr="RowId='R60', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td th:text="${report.r60_average}" th:attr="RowId='R60', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r60_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R60', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td th:text="${#numbers.formatDecimal(report.r60_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R60', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px; font-weight:bold;"  th:text="${report.r61_product}"></td>
 							<td th:text="${report.r61_cross_ref}" style="text-align: left; "></td>
-							<td th:text="${report.r61_month_end}" th:attr="RowId='R61', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
-							<td th:text="${report.r61_average}" th:attr="RowId='R61', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>  </tr>
+							<td th:text="${#numbers.formatDecimal(report.r61_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R61', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
+							<td th:text="${#numbers.formatDecimal(report.r61_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R61', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143);color: white; "></td>  </tr>
 										</tbody>
 								</table>
 							</div>
