@@ -308,9 +308,9 @@ PURPOSE		: BWRBRREPORT
 		}
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-				
-					 showResultModal('BRRS',' Details page not available for Manual Report');
-				}
+
+			showResultModal('BRRS', ' Details page not available for Manual Report');
+		}
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
@@ -493,27 +493,31 @@ PURPOSE		: BWRBRREPORT
 			$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
 
 
-			
+
 			for (let i = 50; i <= 54; i++) {
-							let fields = [
-								"AMOUNT",
+				let fields = [
+					"AMOUNT",
 
 
-							];
+				];
 
-							fields.forEach(field => {
-								let selector = `#R${i}_${field}`;
-								if ($(selector).length) {  // check if element exists
-									$(selector).css({"background-color": "#d3d3d3"});
-								}
-							});
-						}
+				fields.forEach(field => {
+					let selector = `#R${i}_${field}`;
+					if ($(selector).length) {  // check if element exists
+						$(selector).css({"background-color": "#d3d3d3"});
+					}
+				});
+			}
 
-		
+
 			$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
+<<<<<<< Updated upstream
 			
 			// Toggle buttons
 			    $("#submitButton").show();
+=======
+
+>>>>>>> Stashed changes
 
 			// Show Cancel button only when Modify is clicked
 			$("#cancelRecord").show();
@@ -1062,7 +1066,7 @@ PURPOSE		: BWRBRREPORT
 													threshold, the remaining balance below thresholds shall be treated
 													as other assets (para 3.16 <br>
 													- 3.18 Basel II Guidelines)</td>
-												<td id="ROW24" style="text-align: left; font-weight: bold;">
+												<td id="ROW24" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R24_AMOUNT != null ? #numbers.formatDecimal(report.R24_AMOUNT,1, 0, 'POINT') : '0'}"
 														id="R24_AMOUNT" name="R24_AMOUNT"
@@ -1310,7 +1314,11 @@ PURPOSE		: BWRBRREPORT
 													treated as other assets.
 												</td>
 
+<<<<<<< Updated upstream
 													</td>
+=======
+												treated as other assets.</td>
+>>>>>>> Stashed changes
 
 												<td id="ROW44" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -1486,7 +1494,7 @@ PURPOSE		: BWRBRREPORT
 													treated as other assets.
 												</td>
 
-													
+
 
 												<td id="ROW58" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -1528,28 +1536,17 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 										</tbody>
 
-
-
 									</table>
+
+
 
 								</div>
 								<div style="text-align: center; margin-top: 10px;">
 
-
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate},data-type=${type}"
-										onclick="fileuploads(this);" style="display: none;">
+										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none;">
 										Submit
-
-									<button id="submitButton" 
-									        type="button"
-									        class="custom-tab-btn Show_input" 
-									        form="fileupload"
-									        th:attr="data-todate=${asondate},data-type=${type}" 
-									        onclick="fileuploads(this);" 
-									        style="display: none;">
-									    Submit
-
 									</button>
 								</div>
 							</form>
@@ -1573,6 +1570,7 @@ PURPOSE		: BWRBRREPORT
 						Do you want to open the report?
 					</div>
 				</div>
+
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
 						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
@@ -1586,6 +1584,7 @@ PURPOSE		: BWRBRREPORT
 			</div>
 		</div>
 	</div>
+
 
 	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -1619,19 +1618,21 @@ PURPOSE		: BWRBRREPORT
 			</div>
 		</div>
 	</div>
+
 </body>
+
 <!-- <script>
-															  $(document).ready(function () {
-															    $('#BRRSvalidation').DataTable({
-															      "paging": true,
-															      "info": false,       // turn off "Showing x of y"
-															      "searching": false,  // turn off search
-															      "ordering": false,   // turn off ordering
-															      "lengthChange": false // hide "Show x entries"
-															    });
-															  });
-	
-														</script> -->
+																									  $(document).ready(function () {
+																									    $('#BRRSvalidation').DataTable({
+																									      "paging": true,
+																									      "info": false,       // turn off "Showing x of y"
+																									      "searching": false,  // turn off search
+																									      "ordering": false,   // turn off ordering
+																									      "lengthChange": false // hide "Show x entries"
+																									    });
+																									  });
+											
+																								</script> -->
 
 <style>
 	#BRFdet td {
@@ -1656,11 +1657,43 @@ PURPOSE		: BWRBRREPORT
 	}
 
 	/* Your existing sticky header CSS, targeting the tr elements within the thead */
-	.scrollable-table-container thead tr:nth-child(2) {
+	.scrollable-table-container thead tr:nth-child(1) {
 		position: sticky;
 		top: 0;
 		background-color: #b3b6b9;
 		z-index: 5;
+	}
+
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
+
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
+
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
+
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
 	}
 </style>
 <style>

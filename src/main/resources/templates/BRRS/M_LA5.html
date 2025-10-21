@@ -75,11 +75,11 @@ PURPOSE		: BRFREPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
+		.btn-primary:not(:disabled):not(.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled):active,
+		.show > .btn-primary.dropdown-toggle {
 			color: #fff;
-			background-color: #cc000000;
+			background-color: #cc0000; /* remove the extra zeros */
 			border-color: #161617;
 		}
 
@@ -219,23 +219,23 @@ PURPOSE		: BRFREPORT
 
 		/* When input or select is focused or has a value, move the label up */
 		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
+		/* When input has text (not showing placeholder) */
+		.form-control:not(:placeholder-shown) ~ .form-legend {
+		    top: -8px;
+		    font-size: 1rem;
+		    color: #007bff;
 		}
 
 		/* Hover effect when the input/select is focused */
-		.form-control:focus:hover~.form-legend {
-			color: #0056b3;
-			/* Darker shade of blue on hover */
+		.form-control:focus:hover ~ .form-legend {
+		    color: #0056b3; /* Darker shade of blue on hover */
 		}
 
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
+		/* Return to normal color when focus/hover removed */
+		.form-control:not(:focus) ~ .form-legend {
+		    color: #aaa; /* Normal label color */
 		}
+
 
 		.table-cell tbody td:hover {
 			background-color: #f0f0f0;
@@ -600,8 +600,8 @@ PURPOSE		: BRFREPORT
 
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
-			var rowId = a.getAttribute('RowId');
-			var columnId = a.getAttribute('ColumnId');
+			var rowId = a.getAttribute('rowId');
+			var columnId = a.getAttribute('columnId');
 			var cellValue = a.textContent || a.innerText;
 
 			if (cellValue !== '0') {
@@ -2885,38 +2885,42 @@ PURPOSE		: BRFREPORT
 									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
 									id="reportss">
 									<thead class="thead-light">
-										<tr>
-											<th></th>
-											<th>CUST ID</th>
-											<th>ACCT NO</th>
-											<th>ACCT NAME</th>
-											<th style="text-align: right;">ACCT BALANCE</th>
-											<th style="text-align: left;">ROWID</th>
-											<th>COLUMNID</th>
-											<th>REPORT_DATE</th>
-										</tr>
+																			<tr>
+																				<th></th>
+																				<th>CUST_ID</th>
+																				<th>ACCT_NUMBER</th>
+																				<th>ACCT_NAME</th>
 
-									</thead>
 
-									<tbody style="font-family: Arial;">
-										<tr th:each="report: ${reportdetails}">
-											<td><a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record"> <i class="fas fa-edit"
-														onclick="editRecord(this)"></i>
-												</a></td>
-											<td th:text="${report.custId}"></td>
-											<td th:text="${report.acctNumber}"></td>
-											<td th:text="${report.acctName}"></td>
-											<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
-											<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 2)}"
-												style="text-align: right;"></td>
 
-											<td style="text-align: left;" th:text="${report.rowId}"></td>
-											<td th:text="${report.columnId}"></td>
-											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+																				<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
+																				<th>REPORT_LABEL</th>
+																				<th>REPORT_ADDL_CRITERIA_1</th>
+																				<th>REPORT_DATE</th>
+																			</tr>
 
-										</tr>
-									</tbody>
+																		</thead>
+
+																		<tbody th:each="report: ${reportdetails}" style="font-family: Arial;">
+																			<tr>
+																				<td><a data-toggle="tooltip" class="editrec"
+																						title="Click to Edit this Record"> <i class="fas fa-edit"
+																							onclick="editRecord(this)"></i>
+																					</a></td>
+																				<td th:text="${report.cust_id}"></td>
+																				<td th:text="${report.acct_number}"></td>
+																				<td th:text="${report.acct_name}"></td>
+
+																				<td style="text-align:right;"
+																					th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 3, 'POINT')}">
+																				</td>
+
+																				<td th:text="${report.report_label}"></td>
+																				<td th:text="${report.report_addl_criteria_1}"></td>
+																				<td th:text="${#dates.format(report.report_date, 'dd-MM-yyyy')}"></td>
+																			</tr>
+																		</tbody>
+
 
 								</table>
 								<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">

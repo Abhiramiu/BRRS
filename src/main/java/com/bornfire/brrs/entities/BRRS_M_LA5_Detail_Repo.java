@@ -12,8 +12,9 @@ public interface BRRS_M_LA5_Detail_Repo extends JpaRepository<M_LA5_Detail_Entit
 		List<M_LA5_Detail_Entity> getdatabydateList(Date reportdate);
 
 			
-		@Query(value = "select * from BRRS_M_LA5_DETAILTABLE where ROW_ID =?1 and COLUMN_ID=?2 AND REPORT_DATE=?3", nativeQuery = true)
+		@Query(value = "select * from BRRS_M_LA5_DETAILTABLE where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3", nativeQuery = true)
 		List<M_LA5_Detail_Entity> GetDataByRowIdAndColumnId(String rowId,String ColumnId,Date reportdate);
+		
 		
 		@Query(value = "select * from BRRS_M_LA5_DETAILTABLE where REPORT_DATE=?1 offset ?2 rows fetch next ?3 rows only", nativeQuery = true)
 		List<M_LA5_Detail_Entity> getdatabydateList(Date reportdate,int startpage,int endpage);

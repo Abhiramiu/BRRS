@@ -736,7 +736,43 @@ PURPOSE		: BWRBRREPORT
 	</script>
 
 
+	<script th:inline="javascript">
+			function showdetailsbyRowAndColumn(a) {
+				var rowId = a.getAttribute('rowId');
+				var columnId = a.getAttribute('columnId');
+				var cellValue = a.textContent || a.innerText;
 
+				if (cellValue !== '0') {
+					// Set dynamic message in modal (instead of confirm)
+					document.getElementById("cellresultModalLabel").innerText =
+						"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+					// Show custom Bootstrap modal
+					$('#cellresultModal').modal('show');
+
+					// Handle Yes button
+					document.querySelector('.yes-btn').onclick = function () {
+						$('#cellresultModal').modal('hide');
+
+						// Show loader
+						const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+							backdrop: 'static',
+							keyboard: false
+						});
+						$('#loader').modal('show');
+
+						// Build dynamic URL
+						var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+						Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+						location.href = Callurl;
+					};
+				} else {
+					// Use your custom alert modal instead of window.alert
+					showResultModal("Alert", "No Records available for this selected cell.");
+				}
+			}
+		</script> 
 </head>
 <title>BRRS</title>
 
@@ -1471,6 +1507,8 @@ PURPOSE		: BWRBRREPORT
 											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
 											<th>REPORT_LABEL</th>
 											<th>REPORT_ADDL_CRITERIA_1</th>
+											<th>REPORT_ADDL_CRITERIA_2</th>
+											<th>REPORT_ADDL_CRITERIA_3</th>
 											<th>REPORT_DATE</th>
 										</tr>
 
@@ -1487,11 +1525,13 @@ PURPOSE		: BWRBRREPORT
 											<td th:text="${report.acct_name}"></td>
 
 											<td style="text-align:right;"
-												th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 3, 'POINT')}">
+												th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 0, 'POINT')}">
 											</td>
 
 											<td th:text="${report.report_label}"></td>
 											<td th:text="${report.report_addl_criteria_1}"></td>
+											<td th:text="${report.report_addl_criteria_2}"></td>
+											<td th:text="${report.report_addl_criteria_3}"></td>
 											<td th:text="${#dates.format(report.report_date, 'dd-MM-yyyy')}"></td>
 										</tr>
 									</tbody>

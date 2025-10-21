@@ -11,8 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 		@Query(value = "select * from BRRS_M_LA3_DETAILTABLE", nativeQuery = true)
 		List<M_LA3_Detail_Entity> getdatabydateList(Date reportdate);
 		
-		@Query(value = "select * from BRRS_M_LA3_DETAILTABLE WHERE REPORT_DATE =?1 and COLUMN_ID =?2 and ROW_ID=?3 ", nativeQuery = true)
-		List<M_LA3_Detail_Entity> getdatabydateListrow(Date reportdate,String COLUMN_ID, String ROW_ID);
+		@Query(value = "select * from BRRS_M_LA3_DETAILTABLE WHERE REPORT_DATE =?1 and REPORT_ADDL_CRITERIA_1 =?2 and REPORT_ADDL_CRITERIA_2 =?3 and REPORT_ADDL_CRITERIA_3 =?4 and REPORT_LABEL=?4 ", nativeQuery = true)
+		List<M_LA3_Detail_Entity> getdatabydateListrow(Date reportdate,String REPORT_ADDL_CRITERIA_1,String REPORT_LABEL);
 		
 		@Query(value = "select * from BRRS_M_LA3_DETAILTABLE where REPORT_DATE=?1 offset ?2 rows fetch next ?3 rows only", nativeQuery = true)
 		List<M_LA3_Detail_Entity> getdatabydateList(Date reportdate,int startpage,int endpage);
