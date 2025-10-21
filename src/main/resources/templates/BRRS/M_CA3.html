@@ -512,6 +512,8 @@ PURPOSE		: BWRBRREPORT
 		
 			$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
 			
+			// Toggle buttons
+			    $("#submitButton").show();
 
 			// Show Cancel button only when Modify is clicked
 			$("#cancelRecord").show();
@@ -769,7 +771,7 @@ PURPOSE		: BWRBRREPORT
 				dataType: 'text',
 				success: function () {
 					$("#resultModalLabel").text("Success");
-					$("#resultModalBody").text(" updated successfully.");
+					$("#resultModalBody").text(" Updated Successfully.");
 					$("#resultModal").modal("show");
 				},
 				error: function (jqXHR) {
@@ -1308,7 +1310,7 @@ PURPOSE		: BWRBRREPORT
 													treated as other assets.
 												</td>
 
-													treated as other assets.</td>
+													</td>
 
 												<td id="ROW44" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
