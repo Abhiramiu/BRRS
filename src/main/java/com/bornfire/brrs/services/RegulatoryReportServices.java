@@ -29,6 +29,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_SFINP2_ReportService BRRS_M_SFINP2_reportservice;
+	
+	@Autowired
+	BRRS_M_SFINP1_ReportService BRRS_M_SFINP1_reportservice;
 
 	@Autowired
 	BRRS_M_LA4_ReportService BRRS_M_LA4_reportservice; 
@@ -109,6 +112,11 @@ public class RegulatoryReportServices {
 
 		case "M_SFINP2":
 			repsummary = BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+			
+		case "M_SFINP1":
+			repsummary = BRRS_M_SFINP1_reportservice.getM_SFINP1View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 			
@@ -242,6 +250,11 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_M_SFINP2_reportservice.getM_SFINP2currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
+			
+		case "M_SFINP1":
+			repdetail = BRRS_M_SFINP1_reportservice.getM_SFINP1currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
 		
 					
 		case "M_LA4":
@@ -349,6 +362,16 @@ public class RegulatoryReportServices {
 		case "M_SFINP2":
 			try {
 				repfile = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break; 
+		
+		case "M_SFINP1":
+			try {
+				repfile = BRRS_M_SFINP1_reportservice.getM_SFINP1Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -592,6 +615,12 @@ public class RegulatoryReportServices {
 			return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
+		
+		if ("MSFinP1Detail".equals(filename)) {
+			return BRRS_M_SFINP1_reportservice.getM_SFINP1DetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
+		}
+		
 		if ("MLA4Detail".equals(filename)) {
 			return BRRS_M_LA4_reportservice.BRRS_M_LA4DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
@@ -674,6 +703,15 @@ public class RegulatoryReportServices {
 		case "M_SFINP2":
 			try {
 				archivalData = BRRS_M_SFINP2_reportservice.getM_SFINP2Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_SFINP1":
+			try {
+				archivalData = BRRS_M_SFINP1_reportservice.getM_SFINP1Archival();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -880,7 +918,9 @@ public class RegulatoryReportServices {
 				
 		if (filename.equals("MSFinP2Detail")) {
 		    fileData = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
-		} else if (filename.equals("MLA4Detail")) {
+		}else if (filename.equals("MSFinP1Detail")) {
+		    fileData = BRRS_M_SFINP1_reportservice.getM_SFINP1DetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
+		}else if (filename.equals("MLA4Detail")) {
 		    fileData = BRRS_M_LA4_reportservice.BRRS_M_LA4DetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 		} else if (filename.equals("M_ISDetail")) {
 		    fileData = BRRS_M_IS_reportservice.BRRS_M_ISDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
