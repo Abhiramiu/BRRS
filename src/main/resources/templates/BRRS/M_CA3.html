@@ -65,7 +65,7 @@ PURPOSE		: BWRBRREPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not(:disabled):not (.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled).active,
 		.btn-primary:not(:disabled):not(.disabled):active,
 		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
@@ -203,7 +203,7 @@ PURPOSE		: BWRBRREPORT
 
 		/* When input or select is focused or has a value, move the label up */
 		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
+		.form-control:not(:placeholder-shown)~.form-legend {
 			top: -8px;
 			font-size: 1rem;
 			color: #007bff;
@@ -216,7 +216,7 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
+		.form-control:not(:focus)~.form-legend {
 			color: #aaa;
 			/* Normal label color */
 		}
@@ -313,8 +313,8 @@ PURPOSE		: BWRBRREPORT
 		}
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
-			location.href = Callurl;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+				location.href = Callurl;
 		}
 	</script>
 	<script>
@@ -512,10 +512,17 @@ PURPOSE		: BWRBRREPORT
 
 			$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
 
+
 			
 			// Toggle buttons
 			    $("#submitButton").show();
 
+
+
+
+
+			// Toggle buttons
+			$("#submitButton").show();
 
 
 
@@ -839,7 +846,7 @@ PURPOSE		: BWRBRREPORT
                    				 data-todate=${todate},
                    				 data-currency=${currency},
                    				 data-dtltype=${dtltype},
-                   				 data-filename='M-CA3(Reg.Adjust.).xls',
+                   				 data-filename='M_CA3.xls',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
@@ -852,7 +859,7 @@ PURPOSE		: BWRBRREPORT
 								    data-todate=${todate},
 									data-currency=${currency}, 
 												data-dtltype=${dtltype},
-								    data-filename='MSFinP2Detail',
+								    data-filename='M_CA3',
 									data-type=${type},
 												data-version=${version}
 								  ">
@@ -892,11 +899,12 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R10_PRODUCT}"></td>
 												<td id="ROW10" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R10_AMOUNT != null ? #numbers.formatDecimal(report.R10_AMOUNT, 1, 0, 'POINT') : '0'}"
+														th:value="${report.R10_AMOUNT != null ? #numbers.formatDecimal(report.R10_AMOUNT, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R10_AMOUNT" name="R10_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
+
 											</tr>
 											<tr>
 
@@ -905,7 +913,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R11_PRODUCT}"></td>
 												<td id="ROW11" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R11_AMOUNT != null ? #numbers.formatDecimal(report.R11_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R11_AMOUNT != null ? #numbers.formatDecimal(report.R11_AMOUNT, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R11_AMOUNT" name="R11_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -917,7 +925,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R12_PRODUCT}"></td>
 												<td id="ROW12" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R12_AMOUNT != null ? #numbers.formatDecimal(report.R12_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R12_AMOUNT != null ? #numbers.formatDecimal(report.R12_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R12_AMOUNT" name="R12_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -929,7 +937,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R13_PRODUCT}"></td>
 												<td id="ROW13" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R13_AMOUNT != null ? #numbers.formatDecimal(report.R13_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R13_AMOUNT != null ? #numbers.formatDecimal(report.R13_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R13_AMOUNT" name="R13_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -941,7 +949,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R14_PRODUCT}"></td>
 												<td id="ROW14" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R14_AMOUNT != null ? #numbers.formatDecimal(report.R14_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R14_AMOUNT != null ? #numbers.formatDecimal(report.R14_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R14_AMOUNT" name="R14_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -953,7 +961,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R15_PRODUCT}"></td>
 												<td id="ROW15" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R15_AMOUNT != null ? #numbers.formatDecimal(report.R15_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R15_AMOUNT != null ? #numbers.formatDecimal(report.R15_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R15_AMOUNT" name="R15_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -965,7 +973,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R16_PRODUCT}"></td>
 												<td id="ROW16" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R16_AMOUNT != null ? #numbers.formatDecimal(report.R16_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R16_AMOUNT != null ? #numbers.formatDecimal(report.R16_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R16_AMOUNT" name="R16_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -977,7 +985,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R17_PRODUCT}"></td>
 												<td id="ROW17" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R17_AMOUNT != null ? #numbers.formatDecimal(report.R17_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R17_AMOUNT != null ? #numbers.formatDecimal(report.R17_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R17_AMOUNT" name="R17_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -989,7 +997,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R18_PRODUCT}"></td>
 												<td id="ROW18" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R18_AMOUNT != null ? #numbers.formatDecimal(report.R18_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R18_AMOUNT != null ? #numbers.formatDecimal(report.R18_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R18_AMOUNT" name="R18_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1001,7 +1009,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R19_PRODUCT}"></td>
 												<td id="ROW19" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R19_AMOUNT != null ? #numbers.formatDecimal(report.R19_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R19_AMOUNT != null ? #numbers.formatDecimal(report.R19_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R19_AMOUNT" name="R19_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1046,7 +1054,7 @@ PURPOSE		: BWRBRREPORT
 												<th colspan="1"
 													style="text-align: center; background-color: #D8D8D8;width: 60%;">
 													Item</th>
-												<th colspan="1" style="text-align: center; background-color: #D8D8D8;">
+												<th colspan="1" style="text-align:right; background-color: #D8D8D8;">
 													Amount(P'000)</th>
 											</tr>
 										</thead>
@@ -1068,7 +1076,7 @@ PURPOSE		: BWRBRREPORT
 													- 3.18 Basel II Guidelines)</td>
 												<td id="ROW24" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R24_AMOUNT != null ? #numbers.formatDecimal(report.R24_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R24_AMOUNT != null ? #numbers.formatDecimal(report.R24_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R24_AMOUNT" name="R24_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1080,7 +1088,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R25_PRODUCT}"></td>
 												<td id="ROW25" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R25_AMOUNT != null ? #numbers.formatDecimal(report.R25_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R25_AMOUNT != null ? #numbers.formatDecimal(report.R25_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R25_AMOUNT" name="R25_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1092,7 +1100,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R26_PRODUCT}"></td>
 												<td id="ROW26" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R26_AMOUNT != null ? #numbers.formatDecimal(report.R26_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R26_AMOUNT != null ? #numbers.formatDecimal(report.R26_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R26_AMOUNT" name="R26_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1110,7 +1118,7 @@ PURPOSE		: BWRBRREPORT
 													treated as other assets.</td>
 												<td id="ROW27" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R27_AMOUNT != null ? #numbers.formatDecimal(report.R27_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R27_AMOUNT != null ? #numbers.formatDecimal(report.R27_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R27_AMOUNT" name="R27_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1172,19 +1180,17 @@ PURPOSE		: BWRBRREPORT
 													Tier1 Capital </th>
 											</tr>
 											<tr>
-												<th colspan="3" style="text-align: left; ">
+												<th colspan="3" style="text-align: left; background-color: #FFFFFF ">
 													A. Full decductions </th>
 											</tr>
 
 
 											<!-- First header row -->
-											<tr style="background-color: #b3b6b9">
-												<th rowspan="1" style="text-align: center; background-color: #D8D8D8;">
-													Line</th>
-												<th colspan="1" style="text-align: center; background-color: #D8D8D8;">
-													Item</th>
-												<th colspan="1" style="text-align: center; background-color: #D8D8D8;">
-													Amount(P'000)</th>
+											<tr>
+												<td></td>
+												<td></td>
+												<td></td>
+
 											</tr>
 										</tbody>
 
@@ -1197,7 +1203,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R36_PRODUCT}"></td>
 												<td id="ROW36" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R36_AMOUNT != null ? #numbers.formatDecimal(report.R36_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R36_AMOUNT != null ? #numbers.formatDecimal(report.R36_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R36_AMOUNT" name="R36_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1209,7 +1215,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R37_PRODUCT}"></td>
 												<td id="ROW37" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R37_AMOUNT != null ? #numbers.formatDecimal(report.R37_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R37_AMOUNT != null ? #numbers.formatDecimal(report.R37_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R37_AMOUNT" name="R37_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1221,7 +1227,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R38_PRODUCT}"></td>
 												<td id="ROW38" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R38_AMOUNT != null ? #numbers.formatDecimal(report.R38_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R38_AMOUNT != null ? #numbers.formatDecimal(report.R38_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R38_AMOUNT" name="R38_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1233,7 +1239,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R39_PRODUCT}"></td>
 												<td id="ROW39" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R39_AMOUNT != null ? #numbers.formatDecimal(report.R39_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R39_AMOUNT != null ? #numbers.formatDecimal(report.R39_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R39_AMOUNT" name="R39_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1248,7 +1254,7 @@ PURPOSE		: BWRBRREPORT
 													and other financial entities)</td>
 												<td id="ROW40" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R40_AMOUNT != null ? #numbers.formatDecimal(report.R40_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R40_AMOUNT != null ? #numbers.formatDecimal(report.R40_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R40_AMOUNT" name="R40_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1286,15 +1292,7 @@ PURPOSE		: BWRBRREPORT
 													paragraph 4.10)</th>
 											</tr>
 
-											<!-- First header row -->
-											<tr style="background-color: #b3b6b9">
-												<th rowspan="1" style="text-align: center; background-color: #D8D8D8;">
-													Line</th>
-												<th colspan="1" style="text-align: center; background-color: #D8D8D8;">
-													Item</th>
-												<th colspan="1" style="text-align: right; background-color: #D8D8D8;">
-													Amount(P'000)</th>
-											</tr>
+
 										</tbody>
 										<tbody id="entity" th:each="report: ${reportsummary}"
 											style="font-family: Arial;">
@@ -1315,14 +1313,18 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 
+
 													</td>
+
+												</td>
+
 
 												</td>
 
 
 												<td id="ROW44" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R44_AMOUNT != null ? #numbers.formatDecimal(report.R44_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R44_AMOUNT != null ? #numbers.formatDecimal(report.R44_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R44_AMOUNT" name="R44_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1335,7 +1337,7 @@ PURPOSE		: BWRBRREPORT
 												<td id="ROW45"
 													style="background-color: rgb(107, 122, 143);color: white;text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R45_AMOUNT != null ? #numbers.formatDecimal(report.R45_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R45_AMOUNT != null ? #numbers.formatDecimal(report.R45_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R45_AMOUNT" name="R45_AMOUNT"
 														style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1362,24 +1364,21 @@ PURPOSE		: BWRBRREPORT
 										</tbody>
 
 										<thead class="thead-light">
-
+											<tr>
+												<th colspan="3" style="text-align: left; background-color: #FFFFFF "> 2.
+													Regulatory adjustments applied in the calculation of Tier2 Capital
+												</th>
+											</tr>
 											<tr>
 												<th style="text-align: left; background-color: #FFFFFF ">
-													B. Threshold decductions:</th>
+													A. Full decductions</th>
 												<th style="text-align: left;background-color: #FFFFFF ">
 													( Recognition capped at 10 percent of the bank’scommon equity (after
 													the application of all regulatory adjustments set out under
 													paragraph 4.15)</th>
 											</tr>
-											<!-- First header row -->
-											<tr style="background-color: #b3b6b9">
-												<th rowspan="1" style="text-align: center; background-color: #D8D8D8;">
-													Line</th>
-												<th colspan="1" style="text-align: center; background-color: #D8D8D8;">
-													Item</th>
-												<th colspan="1" style="text-align: right; background-color: #D8D8D8;">
-													Amount(P'000)</th>
-											</tr>
+
+
 										</thead>
 										<tbody id="entity" th:each="report: ${reportsummary}"
 											style="font-family: Arial;">
@@ -1390,7 +1389,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R50_PRODUCT}"></td>
 												<td id="ROW50" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R50_AMOUNT != null ? #numbers.formatDecimal(report.R50_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R50_AMOUNT != null ? #numbers.formatDecimal(report.R50_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R50_AMOUNT" name="R50_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1402,7 +1401,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R51_PRODUCT}"></td>
 												<td id="ROW51" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R51_AMOUNT != null ? #numbers.formatDecimal(report.R51_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R51_AMOUNT != null ? #numbers.formatDecimal(report.R51_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R51_AMOUNT" name="R51_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1414,7 +1413,7 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R52_PRODUCT}"></td>
 												<td id="ROW52" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R52_AMOUNT != null ? #numbers.formatDecimal(report.R52_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R52_AMOUNT != null ? #numbers.formatDecimal(report.R52_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R52_AMOUNT" name="R52_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1426,12 +1425,14 @@ PURPOSE		: BWRBRREPORT
 													th:text="${report.R53_PRODUCT}"></td>
 												<td id="ROW53" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R53_AMOUNT != null ? #numbers.formatDecimal(report.R53_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R53_AMOUNT != null ? #numbers.formatDecimal(report.R53_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R53_AMOUNT" name="R53_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
+
+
 											<tr>
 												<td style="text-align: center; font-weight: bold;">52</td>
 												<td style="text-align: left; font-weight: normal;"> Significant
@@ -1441,7 +1442,7 @@ PURPOSE		: BWRBRREPORT
 													financial entities).</td>
 												<td id="ROW54" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R54_AMOUNT != null ? #numbers.formatDecimal(report.R54_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R54_AMOUNT != null ? #numbers.formatDecimal(report.R54_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R54_AMOUNT" name="R54_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1469,16 +1470,21 @@ PURPOSE		: BWRBRREPORT
 										<thead class="thead-light">
 											<!-- First header row -->
 											<tr style="background-color: #b3b6b9">
-												<th rowspan="1" style="text-align: center; background-color: #D8D8D8;">
-													Line</th>
-												<th colspan="1" style="text-align: center; background-color: #D8D8D8;">
-													Item</th>
-												<th colspan="1" style="text-align: right; background-color: #D8D8D8;">
-													Amount(P'000)</th>
+												<th></th>
+												<th></th>
+												<th></th>
 											</tr>
 										</thead>
 										<tbody id="entity" th:each="report: ${reportsummary}"
 											style="font-family: Arial;">
+
+											<tr>
+												<th>B. Threshold decductions:</th>
+												<td colspan="2">( Recognition capped at 10 percent of the bank’scommon
+													equity (after the application of all regulatory adjustments set out
+													under paragraph 4.15)</td>
+												</th>
+											</tr>
 
 											<tr>
 												<td style="text-align: center; font-weight: bold;">54</td>
@@ -1498,7 +1504,7 @@ PURPOSE		: BWRBRREPORT
 
 												<td id="ROW58" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R58_AMOUNT != null ? #numbers.formatDecimal(report.R58_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R58_AMOUNT != null ? #numbers.formatDecimal(report.R58_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R58_AMOUNT" name="R58_AMOUNT"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
@@ -1511,7 +1517,7 @@ PURPOSE		: BWRBRREPORT
 												<td id="ROW59"
 													style="background-color: rgb(107, 122, 143);color: white;text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${report.R59_AMOUNT != null ? #numbers.formatDecimal(report.R59_AMOUNT,1, 0, 'POINT') : '0'}"
+														th:value="${report.R59_AMOUNT != null ? #numbers.formatDecimal(report.R59_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R59_AMOUNT" name="R59_AMOUNT"
 														style="background-color: rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
