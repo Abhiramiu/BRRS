@@ -180,7 +180,7 @@ public class AuditService {
 	                    msg = "MCBL Added successfully";
 	                }
 	            }else if ("edit".equalsIgnoreCase(formmode)) {
-	                GeneralMasterEntity newAcc = GeneralMasterRepos.getdataByAcc(newData.getMcbl_head_acc_no(), newData.getReport_date());
+	                GeneralMasterEntity newAcc = GeneralMasterRepos.getById(newData.getId());
 	                
 	                if (newAcc != null) {
 	                    newAcc.setMcbl_gl_code(newData.getMcbl_gl_code());
@@ -314,6 +314,12 @@ public class AuditService {
 	    gm.setSanction_limit(data.getSanction_limit());
 	    gm.setDisbursed_amt(data.getDisbursed_amt());
 	    gm.setBalance_as_on(data.getBalance_as_on());
+	    
+	    gm.setHundred(data.getHundred());
+	    gm.setPeriod(data.getPeriod());
+	    gm.setEffective_interest_rate(data.getEffective_interest_rate());
+	    gm.setMat_bucket(data.getMat_bucket());
+	    
 	    gm.setCurrency(data.getCurrency());
 	    gm.setBal_equi_to_bwp(data.getBal_equi_to_bwp());
 	    gm.setRate_of_interest(data.getRate_of_interest());
@@ -371,6 +377,12 @@ public class AuditService {
 	    blbf.setDisbursed_amt(data.getDisbursed_amt());
 	    blbf.setBalance_as_on(data.getBalance_as_on());
 	    blbf.setCurrency(data.getCurrency());
+
+	    blbf.setHundred(data.getHundred());
+	    blbf.setPeriod(data.getPeriod());
+	    blbf.setEffective_interest_rate(data.getEffective_interest_rate());
+	    blbf.setMat_bucket(data.getMat_bucket());
+	    
 	    blbf.setBal_equi_to_bwp(data.getBal_equi_to_bwp());
 	    blbf.setRate_of_interest(data.getRate_of_interest());
 	    blbf.setAccrued_int_amt(data.getAccrued_int_amt());

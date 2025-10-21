@@ -564,26 +564,46 @@ public class NavigationController {
 	    md.addAttribute("menuname", "General Master Table");
 	    md.addAttribute("formmode", formmode != null ? formmode : "list");
 
+	    int offset = page * size;
+	    List<GeneralMasterEntity> list;
+	    int totalRecords = 0;
+	    if (fileType == null || fileType.trim().isEmpty()) {
+	    	fileType="MCBL";
+	    }
+
 	    if (formmode == null || formmode.equals("list")) {
-	        int offset = page * size;
-	        List<GeneralMasterEntity> list;
 
-	        if ((reportDate != null && !reportDate.isEmpty())) {
-	            list = GeneralMasterRepos.findByFileTypeAndReportDate( reportDate, offset, size);
-	        } else if (reportDate != null && !reportDate.isEmpty()) {
-	            list = GeneralMasterRepos.findByReportDate(reportDate, offset, size);
-	        } else {
-	            list = GeneralMasterRepos.getdatabydateList(offset, size);
-	        }
+	    	switch (fileType) {
+	        case "MCBL":
+	            list = (reportDate != null && !reportDate.isEmpty())
+	                    ? GeneralMasterRepos.findByMcblFlag(reportDate, offset, size)
+	                    : GeneralMasterRepos.findByMcblFlag(null, offset, size);
+	            totalRecords = GeneralMasterRepos.countByMcblFlag(reportDate);
+	            break;
+	        case "BLBF":
+	            list = (reportDate != null && !reportDate.isEmpty())
+	                    ? GeneralMasterRepos.findByBlbfFlag(reportDate, offset, size)
+	                    : GeneralMasterRepos.findByBlbfFlag(null, offset, size);
+	            totalRecords = GeneralMasterRepos.countByBlbfFlag(reportDate);
+	            break;
+	        case "BDGF":
+	            list = (reportDate != null && !reportDate.isEmpty())
+	                    ? GeneralMasterRepos.findByBdgfFlag(reportDate, offset, size)
+	                    : GeneralMasterRepos.findByBdgfFlag(null, offset, size);
+	            totalRecords = GeneralMasterRepos.countByBdgfFlag(reportDate);
+	            break;
+	        case "BFDB":
+	            list = (reportDate != null && !reportDate.isEmpty())
+	                    ? GeneralMasterRepos.findByBfdbFlag(reportDate, offset, size)
+	                    : GeneralMasterRepos.findByBfdbFlag(null, offset, size);
+	            totalRecords = GeneralMasterRepos.countByBfdbFlag(reportDate);
+	            break;
+	        default:
+	            list = new ArrayList<>();
+	            totalRecords = 0;
+	            break;
+	    }
 
-	        int totalRecords;
-	        if ((reportDate != null && !reportDate.isEmpty())) {
-	            totalRecords = GeneralMasterRepos.countByFileTypeAndReportDate(reportDate);
-	        }  else if (reportDate != null && !reportDate.isEmpty()) {
-	            totalRecords = GeneralMasterRepos.countByReportDate(reportDate);
-	        } else {
-	            totalRecords = GeneralMasterRepos.countAll();
-	        }
 
 	        int totalPages = (int) Math.ceil((double) totalRecords / size);
 
@@ -595,12 +615,12 @@ public class NavigationController {
 	        md.addAttribute("reportDate", reportDate);
 
 	    } else if (formmode.equals("add")) {
-            md.addAttribute("menuname", "MCBL Main- Add");
-            md.addAttribute("formmode", "add");
+	        md.addAttribute("menuname", "MCBL Main - Add");
+	        md.addAttribute("formmode", "add");
 	        md.addAttribute("fileType", fileType);
 
-        } else { // edit/view/delete
-        	GeneralMasterEntity entity = GeneralMasterRepos.findById(id).orElse(null);
+	    } else { // edit/view/delete
+	        GeneralMasterEntity entity = GeneralMasterRepos.findByIdNative(id);
 	        md.addAttribute("list", entity);
 	        md.addAttribute("formmode", formmode);
 	        md.addAttribute("fileType", fileType);
@@ -609,6 +629,7 @@ public class NavigationController {
 
 	    return "Source_Data_Mapping";
 	}
+
 
     
         @RequestMapping(value = "ReferCodeMast", method = { RequestMethod.GET, RequestMethod.POST })

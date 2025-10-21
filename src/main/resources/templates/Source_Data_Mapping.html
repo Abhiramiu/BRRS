@@ -253,7 +253,7 @@ PURPOSE		: Source Data Mapping
 
 			var id = a.getAttribute("data-roleId");
 			var FileType = document.getElementById("FileType").value;
-			alert('ID = ' + id + ' | FileType = ' + FileType);
+			//alert('ID = ' + id + ' | FileType = ' + FileType);
 			location.href = 'SourceDataMap?formmode=edit&id=' + id + '&FileType=' + FileType;
 		}
 
@@ -443,6 +443,7 @@ PURPOSE		: Source Data Mapping
 		});
 	</script>
 	<script>
+		
 	document.addEventListener("DOMContentLoaded", function () {
 
 	    // ✅ Define mappings between dropdown values and corresponding table IDs
@@ -497,7 +498,42 @@ PURPOSE		: Source Data Mapping
 	    // ✅ Re-run whenever dropdown changes
 	    fileTypeSelect.addEventListener("change", showTable);
 	});
+	
+	$(document).ready(function () {
+
+	    const urlParams = new URLSearchParams(window.location.search);
+	    const formmode = urlParams.get('formmode'); 
+	    const fileType = urlParams.get('FileType'); 
+	    const fileTypeSelect = document.getElementById("FileType_add");
+
+	    // List of all edit/view/delete table IDs
+	    const allTables = ["MCBLs", "BLBFs", "BDGFs", "BFDBs"];
+
+	    if(formmode && formmode !== 'add' && formmode !== 'list' && fileTypeSelect) {
+	        // Append 's' to match dropdown and table ID
+	        const file_type = fileType + "s";
+
+	        // Set dropdown value
+	        fileTypeSelect.value = file_type;
+
+	        // Hide all tables first
+	        allTables.forEach(id => {
+	            const el = document.getElementById(id);
+	            if(el) el.style.display = "none";
+	        });
+
+	        // Show only the selected table
+	        const target = document.getElementById(file_type);
+	        if(target) target.style.display = "block";
+	    }
+	});
+
+	
+	
+	
 	</script>
+	
+	
 
 
 </head>
@@ -758,12 +794,10 @@ PURPOSE		: Source Data Mapping
 
 							<!-------------------------------------------------------BFDB List -end----------------------------------->
 
-							<div class="card-footer text-center">
-								<button type="button" class="custom-tab-btn" id="btnHome"
-									onclick="home();">Home</button>
-								<button type="button" class="custom-tab-btn" id="btnBack"
-									onclick="back();">Back</button>
-							</div>
+							<!--<div class="card-footer text-center">
+								<button type="button" class="custom-tab-btn" id="btnHome" onclick="home();">Home</button>
+								<button type="button" class="custom-tab-btn" id="btnBack" onclick="back();">Back</button>
+							</div>-->
 
 						</div>
 					</div>
@@ -819,7 +853,7 @@ PURPOSE		: Source Data Mapping
 											<div class="col-sm-2">
 												<select id="FileType_add" name="FileType_add"
 													class="form-control form-control-sm"
-													style="background-color: #beccd8;" required >
+													style="background-color: #beccd8;" disabled >
 													<option value="MCBLs" th:selected="${FileType == 'MCBL'}">MCBL
 													</option>
 													<option value="BLBFs" th:selected="${FileType == 'BLBF'}">LOAN BOOK
