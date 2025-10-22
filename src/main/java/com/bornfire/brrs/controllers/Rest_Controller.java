@@ -100,7 +100,7 @@ public class Rest_Controller {
     }
 
 
-    // to get the role if of the user from session
+    // to get the role  of the user from session
     @GetMapping("/getUserRole")
     public String getUserRole(HttpSession session) {
         String roleId = (String) session.getAttribute("ROLEID");
