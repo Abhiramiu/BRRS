@@ -513,9 +513,9 @@ PURPOSE		: BWRBRREPORT
 			$("#R58_AMOUNT").css({"background-color": "#d3d3d3"});
 
 
-			
+
 			// Toggle buttons
-			    $("#submitButton").show();
+			$("#submitButton").show();
 
 
 
@@ -552,178 +552,129 @@ PURPOSE		: BWRBRREPORT
 
 	</script>
 
-	<SCRIPT>
-
+	<script>
 		// Calculating Totals for 20 row
 		function calculateR20Totals() {
 			let totalAmount = 0;
 
 			for (let i = 10; i <= 19; i++) {
-				// Get numeric values safely (remove commas, default 0)
 				let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-
 				totalAmount += amt;
-
 			}
-			// Set totals without forcing decimals
-			$("#R20_AMOUNT").val(totalAmount);
+
+			// Format with comma separation
+			$("#R20_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
 			calculateR29Totals();
-
 		}
-
 
 		// Calculating Totals for 28 row
 		function calculateR28Totals() {
 			let totalAmount = 0;
 
 			for (let i = 24; i <= 27; i++) {
-				// Get numeric values safely (remove commas, default 0)
 				let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-
 				totalAmount += amt;
-
 			}
-			// Set totals without forcing decimals
-			$("#R28_AMOUNT").val(totalAmount);
+
+			// Format with comma separation
+			$("#R28_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
 			calculateR29Totals();
-
 		}
-
 
 		// Calculating Totals for 29 row
 		function calculateR29Totals() {
-
-			// Get numeric values safely (remove commas, default 0)
 			let amt1 = parseFloat($("#R20_AMOUNT").val()?.replace(/,/g, "")) || 0;
 			let amt2 = parseFloat($("#R28_AMOUNT").val()?.replace(/,/g, "")) || 0;
 			let totalAmount = amt1 + amt2;
 
-			// Set totals without forcing decimals
-			$("#R29_AMOUNT").val(totalAmount);
+			// Format with comma separation
+			$("#R29_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
 		}
 
-
-		// Call on page load
+		// Call on page load for section 1
 		$(document).ready(function () {
 			calculateR20Totals();
 			calculateR28Totals();
 			calculateR29Totals();
-			// Attach listeners
+
 			for (let i = 10; i <= 19; i++) {
-				$("#R" + i + "_AMOUNT").on("input", function () {
-					calculateR20Totals();
-				});
+				$("#R" + i + "_AMOUNT").on("input", calculateR20Totals);
 			}
 			for (let i = 24; i <= 27; i++) {
-				$("#R" + i + "_AMOUNT").on("input", function () {
-					calculateR28Totals();
-				});
+				$("#R" + i + "_AMOUNT").on("input", calculateR28Totals);
 			}
 		});
-
 
 		// Calculating Totals for 41 row
 		function calculateR41Totals() {
 			let totalAmount = 0;
 
 			for (let i = 36; i <= 40; i++) {
-				// Get numeric values safely (remove commas, default 0)
 				let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-
 				totalAmount += amt;
-
 			}
-			// Set totals without forcing decimals
-			$("#R41_AMOUNT").val(totalAmount);
+
+			// Format with comma separation
+			$("#R41_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
 			calculateR46Totals();
-
 		}
-
 
 		// Calculating Totals for 46 row
 		function calculateR46Totals() {
-
-			// Get numeric values safely (remove commas, default 0)
 			let amt1 = parseFloat($("#R41_AMOUNT").val()?.replace(/,/g, "")) || 0;
 			let amt2 = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
 			let totalAmount = amt1 + amt2;
 
-			// Set totals without forcing decimals
-			$("#R46_AMOUNT").val(totalAmount);
+			$("#R46_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
 		}
 
-
-		// Call on page load
+		// Call on page load for section 2
 		$(document).ready(function () {
 			calculateR41Totals();
 			calculateR46Totals();
-			// Attach listeners
+
 			for (let i = 36; i <= 40; i++) {
-				$("#R" + i + "_AMOUNT").on("input", function () {
-					calculateR41Totals();
-				});
+				$("#R" + i + "_AMOUNT").on("input", calculateR41Totals);
 			}
-			$("#R45_AMOUNT").on("input", function () {
-				calculateR46Totals();
-			});
 
+			$("#R45_AMOUNT").on("input", calculateR46Totals);
 		});
-
 
 		// Calculating Totals for 55 row
 		function calculateR55Totals() {
 			let totalAmount = 0;
 
 			for (let i = 50; i <= 54; i++) {
-				// Get numeric values safely (remove commas, default 0)
 				let amt = parseFloat($("#R" + i + "_AMOUNT").val()?.replace(/,/g, "")) || 0;
-
 				totalAmount += amt;
-
 			}
-			// Set totals without forcing decimals
-			$("#R55_AMOUNT").val(totalAmount);
+
+			$("#R55_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
 			calculateR60Totals();
-
 		}
-
 
 		// Calculating Totals for 60 row
 		function calculateR60Totals() {
-
-			// Get numeric values safely (remove commas, default 0)
 			let amt1 = parseFloat($("#R55_AMOUNT").val()?.replace(/,/g, "")) || 0;
 			let amt2 = parseFloat($("#R59_AMOUNT").val()?.replace(/,/g, "")) || 0;
 			let totalAmount = amt1 + amt2;
 
-			// Set totals without forcing decimals
-			$("#R60_AMOUNT").val(totalAmount);
+			$("#R60_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
 		}
 
-
-		// Call on page load
+		// Call on page load for section 3
 		$(document).ready(function () {
 			calculateR55Totals();
 			calculateR60Totals();
-			// Attach listeners
+
 			for (let i = 50; i <= 54; i++) {
-				$("#R" + i + "_AMOUNT").on("input", function () {
-					calculateR55Totals();
-				});
+				$("#R" + i + "_AMOUNT").on("input", calculateR55Totals);
 			}
-			$("#R59_AMOUNT").on("input", function () {
-				calculateR60Totals();
-			});
 
+			$("#R59_AMOUNT").on("input", calculateR60Totals);
 		});
+	</script>
 
-
-
-
-
-
-
-	</SCRIPT>
 	<script>
 
 		// This function is for closing the modal after an action is complete.
@@ -822,7 +773,7 @@ PURPOSE		: BWRBRREPORT
 						<!-- 📅 Date -->
 						<span class="white-text"
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${asondate}">2025-07-04</span>
+							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -1017,8 +968,8 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 											<tr>
 												<td style="text-align: center; font-weight: bold;">32</td>
-												<td style="text-align: left; font-weight: normal;"
-													th:text="${report.R20_PRODUCT}"></td>
+												<th style="text-align: left; font-weight: bold;"
+													th:text="${report.R20_PRODUCT}"></th>
 												<td id="ROW20"
 													style="background-color: rgb(107, 122, 143);color: white;text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text" id="R20_AMOUNT"
@@ -1126,8 +1077,8 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 											<tr>
 												<td style="text-align: center; font-weight: bold;">37</td>
-												<td style="text-align: left; font-weight: normal;"
-													th:text="${report.R28_PRODUCT}"></td>
+												<th style="text-align: left; font-weight: bold;"
+													th:text="${report.R28_PRODUCT}"></th>
 												<td id="ROW28"
 													style="background-color: rgb(107, 122, 143);color: white;text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text" id="R28_AMOUNT"
@@ -1138,8 +1089,8 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 											<tr>
 												<td style="text-align: center; font-weight: bold;">38</td>
-												<td style="text-align: left; font-weight: normal;"
-													th:text="${report.R29_PRODUCT}"></td>
+												<th style="text-align: left; font-weight: bold;"
+													th:text="${report.R29_PRODUCT}"></th>
 												<td id="ROW29"
 													style="background-color: rgb(107, 122, 143);color: white;text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text" id="R29_AMOUNT"
@@ -1262,8 +1213,8 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 											<tr>
 												<td style="text-align: center; font-weight: bold;">44</td>
-												<td style="text-align: left; font-weight: normal;"
-													th:text="${report.R41_PRODUCT}"></td>
+												<th style="text-align: left; font-weight: bold;"
+													th:text="${report.R41_PRODUCT}"></th>
 												<td id="ROW41"
 													style="background-color: rgb(107, 122, 143);color: white;text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text" id="R41_AMOUNT"
@@ -1314,7 +1265,7 @@ PURPOSE		: BWRBRREPORT
 
 
 
-													</td>
+												</td>
 
 												</td>
 
@@ -1332,8 +1283,8 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 											<tr>
 												<td style="text-align: center; font-weight: bold;">46</td>
-												<td style="text-align: left; font-weight: normal;"
-													th:text="${report.R45_PRODUCT}"></td>
+												<th style="text-align: left; font-weight: bold;"
+													th:text="${report.R45_PRODUCT}"></th>
 												<td id="ROW45"
 													style="background-color: rgb(107, 122, 143);color: white;text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -1345,8 +1296,8 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 											<tr>
 												<td style="text-align: center; font-weight: bold;">47</td>
-												<td style="text-align: left; font-weight: normal;"
-													th:text="${report.R46_PRODUCT}"></td>
+												<th style="text-align: left; font-weight: bold;"
+													th:text="${report.R46_PRODUCT}"></th>
 												<td id="ROW46"
 													style="background-color: rgb(107, 122, 143);color: white;text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text" id="R46_AMOUNT"
@@ -1450,8 +1401,8 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 											<tr>
 												<td style="text-align: center; font-weight: bold;">53</td>
-												<td style="text-align: left; font-weight: normal;"
-													th:text="${report.R55_PRODUCT}"></td>
+												<th style="text-align: left; font-weight: bold;"
+													th:text="${report.R55_PRODUCT}"></th>
 												<td id="ROW55"
 													style="background-color: rgb(107, 122, 143);color: white;text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text" id="R55_AMOUNT"
@@ -1512,8 +1463,8 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 											<tr>
 												<td style="text-align: center; font-weight: bold;">55</td>
-												<td style="text-align: left; font-weight: normal;"
-													th:text="${report.R59_PRODUCT}"></td>
+												<th style="text-align: left; font-weight: normal;"
+													th:text="${report.R59_PRODUCT}"></th>
 												<td id="ROW59"
 													style="background-color: rgb(107, 122, 143);color: white;text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -1525,8 +1476,8 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 											<tr>
 												<td style="text-align: center; font-weight: bold;">56</td>
-												<td style="text-align: left; font-weight: normal;"
-													th:text="${report.R60_PRODUCT}"></td>
+												<th style="text-align: left; font-weight: bold;"
+													th:text="${report.R60_PRODUCT}"></th>
 												<td id="ROW60"
 													style="background-color: rgb(107, 122, 143);color: white;text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text" id="R60_AMOUNT"
@@ -1542,6 +1493,7 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 										</tbody>
 
+
 									</table>
 
 
@@ -1550,10 +1502,11 @@ PURPOSE		: BWRBRREPORT
 								<div style="text-align: center; margin-top: 10px;">
 
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
-										style="display: none;">
+										form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
+										onclick="fileuploads(this);" style="display: none;">
 										Submit
 									</button>
+
 								</div>
 							</form>
 						</div>

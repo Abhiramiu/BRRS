@@ -458,24 +458,24 @@ public byte[] BRRS_M_CA1Excel(String filename,String reportId, String fromdate, 
 	            for (M_CA1_Detail_Entity item : reportData) {
 	                XSSFRow row = sheet.createRow(rowIndex++);
 
-	                row.createCell(0).setCellValue(item.getCUST_ID());
-	                row.createCell(1).setCellValue(item.getACCT_NUMBER());
-	                row.createCell(2).setCellValue(item.getACCT_NAME());
+	                row.createCell(0).setCellValue(item.getCust_id());
+	                row.createCell(1).setCellValue(item.getAcct_name());
+	                row.createCell(2).setCellValue(item.getAcct_name());
 
 	                // ACCT BALANCE (right aligned, 3 decimal places)
 	                Cell balanceCell = row.createCell(3);
-	                if (item.getACCT_BALANCE_IN_PULA() != null) {
-	                    balanceCell.setCellValue(item.getACCT_BALANCE_IN_PULA().doubleValue());
+	                if (item.getAcct_balance_in_pula() != null) {
+	                    balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
 	                } else {
 	                    balanceCell.setCellValue(0.000);
 	                }
 	                balanceCell.setCellStyle(balanceStyle);
 
-	                row.createCell(4).setCellValue(item.getROW_ID());
-	                row.createCell(5).setCellValue(item.getCOLUMN_ID());
+	                row.createCell(4).setCellValue(item.getReport_label());
+	                row.createCell(5).setCellValue(item.getreport_addl_criteria_1());
 	                row.createCell(6).setCellValue(
-	                    item.getREPORT_DATE() != null ?
-	                    new SimpleDateFormat("dd-MM-yyyy").format(item.getREPORT_DATE()) : ""
+	                    item.getReport_date() != null ?
+	                    new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date()) : ""
 	                );
 
 	                // Apply data style for all other cells

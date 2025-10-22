@@ -75,8 +75,8 @@ PURPOSE		: BRFREPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
+		.btn-primary:not(:disabled):not(.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled):active,
 		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
 			background-color: #cc000000;
@@ -219,7 +219,7 @@ PURPOSE		: BRFREPORT
 
 		/* When input or select is focused or has a value, move the label up */
 		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
+		.form-control:not(:placeholder-shown)~.form-legend {
 			top: -8px;
 			font-size: 1rem;
 			color: #007bff;
@@ -232,7 +232,7 @@ PURPOSE		: BRFREPORT
 		}
 
 		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
+		.form-control:not(:focus)~.form-legend {
 			color: #aaa;
 			/* Normal label color */
 		}
@@ -366,8 +366,8 @@ PURPOSE		: BRFREPORT
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
-			location.href = Callurl;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+				location.href = Callurl;
 
 		}
 	</script>
@@ -662,8 +662,7 @@ PURPOSE		: BRFREPORT
 						<!-- 📅 Date -->
 						<span class="white-text"
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${asondate}">2025-07-04</span>
-						</span>
+							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span> </span>
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -699,120 +698,138 @@ PURPOSE		: BRFREPORT
 						<div class="col-sm-12">
 							<div class="table-wrapper table-responsive scrollable-table-container"
 								style="border-right: 1px solid #dee2e6; ">
-							
 
 
-									<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" 
-									       id="reportss" style="table-layout: fixed;">
-									    <colgroup>
-									        <col style="width: 60px;" />
-									        <col style="width: 33%;" />
-									        <col style="width: 200px;" />
-									        <col style="width: 400px;" />
-									    </colgroup>
-									    <thead class="thead-light">
-									        <tr style="background-color: #b3b6b9">
-									            <th rowspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
-									            <th rowspan="1" style="text-align: left; width:33%; background-color: #D8D8D8;">Ref Para</th>
-									            <th colspan="1" style="text-align: center; background-color: #D8D8D8;">Item</th>
-									            <th colspan="1" style="text-align: right; background-color: #D8D8D8;">Amount (P'000)</th>
-									        </tr>
-									    </thead>
 
-									    <tbody th:each="report : ${reportsummary}" style="font-family: Arial;">
-									        <tr>
-									            <td style="text-align: center;">1</td>
-									            <td th:text="${report.R9_REF_PARM}" style="text-align: left;"></td>
-									            <td th:text="${report.R9_PRODUCT}" style="text-align: left;"></td>
-									            <td th:text="${#numbers.formatDecimal(report.R9_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-									                style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
-									        </tr>
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reportss" style="table-layout: fixed;">
+									<colgroup>
+										<col style="width: 60px;" />
+										<col style="width: 33%;" />
+										<col style="width: 200px;" />
+										<col style="width: 400px;" />
+									</colgroup>
+									<thead class="thead-light">
+										<tr style="background-color: #b3b6b9">
+											<th rowspan="1" style="text-align: center; background-color: #D8D8D8;"></th>
+											<th rowspan="1"
+												style="text-align: left; width:33%; background-color: #D8D8D8;">Ref Para
+											</th>
+											<th colspan="1" style="text-align: center; background-color: #D8D8D8;">Item
+											</th>
+											<th colspan="1" style="text-align: right; background-color: #D8D8D8;">Amount
+												(P'000)</th>
+										</tr>
+									</thead>
 
-									        <tr>
-									            <td style="text-align: center;">2</td>
-									            <td th:text="${report.R10_REF_PARM}" style="text-align: left;"></td>
-									            <td th:text="${report.R10_PRODUCT}" style="text-align: left;"></td>
-									            <td th:text="${#numbers.formatDecimal(report.R10_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-									                style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
-									        </tr>
+									<tbody th:each="report : ${reportsummary}" style="font-family: Arial;">
+										<tr>
+											<td style="text-align: center;">1</td>
+											<td th:text="${report.R9_REF_PARM}" style="text-align: left;"></td>
+											<td th:text="${report.R9_PRODUCT}" style="text-align: left;"></td>
+											<td th:text="${#numbers.formatDecimal(report.R9_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
+											</td>
+										</tr>
 
-									        <tr>
-									            <td style="text-align: center;">3</td>
-									            <td th:text="${report.R11_REF_PARM}" style="text-align: left;"></td>
-									            <td th:text="${report.R11_PRODUCT}" style="text-align: left;"></td>
-									            <td th:text="${#numbers.formatDecimal(report.R11_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-									                style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
-									        </tr>
+										<tr>
+											<td style="text-align: center;">2</td>
+											<td th:text="${report.R10_REF_PARM}" style="text-align: left;"></td>
+											<td th:text="${report.R10_PRODUCT}" style="text-align: left;"></td>
+											<td th:text="${#numbers.formatDecimal(report.R10_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
+											</td>
+										</tr>
 
-									        <tr>
-									            <td style="text-align: center;">4</td>
-									            <td th:text="${report.R12_REF_PARM}" style="text-align: left;"></td>
-									            <td th:text="${report.R12_PRODUCT}" style="text-align: left;"></td>
-									            <td th:text="${#numbers.formatDecimal(report.R12_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-									                style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
-									        </tr>
+										<tr>
+											<td style="text-align: center;">3</td>
+											<td th:text="${report.R11_REF_PARM}" style="text-align: left;"></td>
+											<td th:text="${report.R11_PRODUCT}" style="text-align: left;"></td>
+											<td th:text="${#numbers.formatDecimal(report.R11_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
+											</td>
+										</tr>
 
-									        <tr>
-									            <td style="text-align: center;">5</td>
-									            <td th:text="${report.R13_REF_PARM}" style="text-align: left;"></td>
-									            <td th:text="${report.R13_PRODUCT}" style="text-align: left;"></td>
-									            <td th:text="${#numbers.formatDecimal(report.R13_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-									                style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
-									        </tr>
+										<tr>
+											<td style="text-align: center;">4</td>
+											<td th:text="${report.R12_REF_PARM}" style="text-align: left;"></td>
+											<td th:text="${report.R12_PRODUCT}" style="text-align: left;"></td>
+											<td th:text="${#numbers.formatDecimal(report.R12_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
+											</td>
+										</tr>
 
-									        <tr>
-									            <td style="text-align: center;">6</td>
-									            <td th:text="${report.R14_REF_PARM}" style="text-align: left; font-weight: bold;"></td>
-									            <td th:text="${report.R14_PRODUCT}" style="text-align: left;"></td>
-									            <td th:text="${#numbers.formatDecimal(report.R14_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-									                style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
-									        </tr>
-											
-											<tr>
-												<td></td>
-											</tr>
+										<tr>
+											<td style="text-align: center;">5</td>
+											<td th:text="${report.R13_REF_PARM}" style="text-align: left;"></td>
+											<td th:text="${report.R13_PRODUCT}" style="text-align: left;"></td>
+											<td th:text="${#numbers.formatDecimal(report.R13_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
+											</td>
+										</tr>
 
-									        <tr>
-									            <td style="text-align: center;">7</td>
-									            <td th:text="${report.R17_REF_PARM}" style="text-align: left;"></td>
-									            <td th:text="${report.R17_PRODUCT}" style="text-align: left;"></td>
-									            <td th:text="${#numbers.formatDecimal(report.R17_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-									                style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
-									        </tr>
+										<tr>
+											<td style="text-align: center;">6</td>
+											<td th:text="${report.R14_REF_PARM}"
+												style="text-align: left; font-weight: bold;"></td>
+											<td th:text="${report.R14_PRODUCT}" style="text-align: left;"></td>
+											<td th:text="${#numbers.formatDecimal(report.R14_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
+											</td>
+										</tr>
 
-									        <tr>
-									            <td style="text-align: center;">8</td>
-									            <td th:text="${report.R18_REF_PARM}" style="text-align: left;"></td>
-									            <td th:text="${report.R18_PRODUCT}" style="text-align: left;"></td>
-									            <td th:text="${#numbers.formatDecimal(report.R18_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-									                style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
-									        </tr>
+										<tr>
+											<td></td>
+										</tr>
 
-									        <tr>
-									            <td style="text-align: center;">9</td>
-									            <td th:text="${report.R19_REF_PARM}" style="text-align: left;"></td>
-									            <td th:text="${report.R19_PRODUCT}" style="text-align: left;"></td>
-									            <td th:text="${#numbers.formatDecimal(report.R19_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-									                style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
-									        </tr>
+										<tr>
+											<td style="text-align: center;">7</td>
+											<td th:text="${report.R17_REF_PARM}" style="text-align: left;"></td>
+											<td th:text="${report.R17_PRODUCT}" style="text-align: left;"></td>
+											<td th:text="${#numbers.formatDecimal(report.R17_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
+											</td>
+										</tr>
 
-									        <tr>
-									            <td style="text-align: center;">10</td>
-									            <td th:text="${report.R20_REF_PARM}" style="text-align: left;"></td>
-									            <td th:text="${report.R20_PRODUCT}" style="text-align: left;"></td>
-									            <td th:text="${#numbers.formatDecimal(report.R20_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-									                style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
-									        </tr>
+										<tr>
+											<td style="text-align: center;">8</td>
+											<td th:text="${report.R18_REF_PARM}" style="text-align: left;"></td>
+											<td th:text="${report.R18_PRODUCT}" style="text-align: left;"></td>
+											<td th:text="${#numbers.formatDecimal(report.R18_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
+											</td>
+										</tr>
 
-									        <tr>
-									            <td style="text-align: center;">11</td>
-									            <td th:text="${report.R21_REF_PARM}" style="text-align: left;"></td>
-									            <td th:text="${report.R21_PRODUCT}" style="text-align: left; font-weight: bold;"></td>
-									            <td th:text="${#numbers.formatDecimal(report.R21_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
-									                style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
-									        </tr>
-									    </tbody>
-									</table>
+										<tr>
+											<td style="text-align: center;">9</td>
+											<td th:text="${report.R19_REF_PARM}" style="text-align: left;"></td>
+											<td th:text="${report.R19_PRODUCT}" style="text-align: left;"></td>
+											<td th:text="${#numbers.formatDecimal(report.R19_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="text-align: center;">10</td>
+											<td th:text="${report.R20_REF_PARM}" style="text-align: left;"></td>
+											<td th:text="${report.R20_PRODUCT}" style="text-align: left;"></td>
+											<td th:text="${#numbers.formatDecimal(report.R20_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="text-align: center;">11</td>
+											<td th:text="${report.R21_REF_PARM}" style="text-align: left;"></td>
+											<td th:text="${report.R21_PRODUCT}"
+												style="text-align: left; font-weight: bold;"></td>
+											<td th:text="${#numbers.formatDecimal(report.R21_AMOUNT, 1, 'COMMA', 0, 'POINT')}"
+												style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
+											</td>
+										</tr>
+									</tbody>
+								</table>
 
 
 
@@ -840,8 +857,8 @@ PURPOSE		: BRFREPORT
 											<th>ACCT NO</th>
 											<th>ACCT NAME</th>
 											<th style="text-align: right;"> ACCT BALANCE</th>
-											<th>ROWID</th>
-											<th>COLUMNID</th>
+											<th>REPORT LABEL</th>
+											<th>REPORT ADDL CRITERIA</th>
 											<th>REPORT_DATE</th>
 										</tr>
 
@@ -853,14 +870,14 @@ PURPOSE		: BRFREPORT
 													title="Click to Edit this Record"> <i class="fas fa-edit"
 														onclick="editRecord(this)"></i>
 												</a></td>
-											<td th:text="${report.CUST_ID}"></td>
-											<td th:text="${report.ACCT_NUMBER}"></td>
-											<td th:text="${report.ACCT_NAME}"></td>
-											<td th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_IN_PULA, 1, 2)}"
+											<td th:text="${report.cust_id}"></td>
+											<td th:text="${report.acct_number}"></td>
+											<td th:text="${report.acct_name}"></td>
+											<td th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 2)}"
 												style="text-align: right;"></td>
-											<td th:text="${report.ROW_ID}"></td>
-											<td th:text="${report.COLUMN_ID}"></td>
-											<td th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"></td>
+											<td th:text="${report.report_label}"></td>
+											<td th:text="${report.report_addl_criteria_1}"></td>
+											<td th:text="${#dates.format(report.report_date, 'dd-MM-yyyy')}"></td>
 
 										</tr>
 									</tbody>
