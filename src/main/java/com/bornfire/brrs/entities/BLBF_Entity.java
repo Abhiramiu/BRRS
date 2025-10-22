@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 @Entity
 @Table(name = "BRRS_BLBF")
+@IdClass(BLBF_Key.class)
 public class BLBF_Entity {
 
     @Id
@@ -82,7 +83,7 @@ public class BLBF_Entity {
 	}
 	private String branch_name;
     private String branch_code;
-
+    @Id
     @Temporal(TemporalType.TIMESTAMP)
     private Date report_date;
     @Temporal(TemporalType.TIMESTAMP)

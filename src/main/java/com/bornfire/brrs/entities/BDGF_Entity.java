@@ -10,14 +10,16 @@ import java.util.Date;
 
 @Entity
 @Table(name = "BRRS_BDGF")
+@IdClass(BLBF_Key.class)
 public class BDGF_Entity {
 
-    @Id
+   
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bdgf_seq_gen")
     @SequenceGenerator(name = "bdgf_seq_gen", sequenceName = "BDGF_SEQ", allocationSize = 1)
     private BigDecimal s_no;
 
     private String sol_id;
+    @Id
     private String account_no;
     private String customer_id;
     private String customer_name; 
@@ -54,7 +56,7 @@ public class BDGF_Entity {
     private BigDecimal effective_interest_rate; 
     private String branch_name;
     private String branch_code;
-
+    @Id
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date report_date;
