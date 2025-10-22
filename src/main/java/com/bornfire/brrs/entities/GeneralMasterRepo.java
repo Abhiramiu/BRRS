@@ -49,10 +49,6 @@ public interface GeneralMasterRepo extends JpaRepository<GeneralMasterEntity, St
     
    
 
-    @Query("SELECT g FROM GeneralMasterEntity g WHERE g.mcbl_head_acc_no = :accNo AND g.report_date = :repDate")
-    GeneralMasterEntity getdataBymcbl(@Param("accNo") String mcbl_head_acc_no,
-                                      @Param("repDate") Date reportDate);
-
     
     @Query("SELECT g FROM GeneralMasterEntity g WHERE g.account_no = :accNo AND g.report_date = :repDate")
     GeneralMasterEntity getdataBybdgf(@Param("accNo") String accountNo,

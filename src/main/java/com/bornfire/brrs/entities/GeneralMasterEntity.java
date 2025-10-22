@@ -18,11 +18,7 @@ public class GeneralMasterEntity {
 	@Id
 	private String	id;
 	private String	mcbl_gl_code;
-	private String	mcbl_gl_sub_code;
-    @Column(name="MCBL_HEAD_ACC_NO")
-	private String	mcbl_head_acc_no;
 	private String	mcbl_description;
-	private String	mcbl_currency;
 	private BigDecimal	mcbl_debit_balance;
 	private BigDecimal	mcbl_credit_balance;
 	private BigDecimal	mcbl_debit_equivalent;
@@ -162,30 +158,14 @@ public class GeneralMasterEntity {
 	public void setMcbl_gl_code(String mcbl_gl_code) {
 		this.mcbl_gl_code = mcbl_gl_code;
 	}
-	public String getMcbl_gl_sub_code() {
-		return mcbl_gl_sub_code;
-	}
-	public void setMcbl_gl_sub_code(String mcbl_gl_sub_code) {
-		this.mcbl_gl_sub_code = mcbl_gl_sub_code;
-	}
-	public String getMcbl_head_acc_no() {
-		return mcbl_head_acc_no;
-	}
-	public void setMcbl_head_acc_no(String mcbl_head_acc_no) {
-		this.mcbl_head_acc_no = mcbl_head_acc_no;
-	}
+	
 	public String getMcbl_description() {
 		return mcbl_description;
 	}
 	public void setMcbl_description(String mcbl_description) {
 		this.mcbl_description = mcbl_description;
 	}
-	public String getMcbl_currency() {
-		return mcbl_currency;
-	}
-	public void setMcbl_currency(String mcbl_currency) {
-		this.mcbl_currency = mcbl_currency;
-	}
+	
 	public BigDecimal getMcbl_debit_balance() {
 		return mcbl_debit_balance;
 	}

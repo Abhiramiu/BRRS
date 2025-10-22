@@ -126,7 +126,7 @@ public class AuditService {
 	    try {
 	            
 	            if ("add".equalsIgnoreCase(formmode)) {
-	                GeneralMasterEntity existing = GeneralMasterRepos.getdataBymcbl(newData.getMcbl_head_acc_no(), newData.getReport_date());
+	                GeneralMasterEntity existing = GeneralMasterRepos.getdataBybdgf(newData.getAccount_no(), newData.getReport_date());
 	                
 	                if (existing != null) {
 	                    logger.info("MCBL Data Already Exist...");
@@ -135,9 +135,9 @@ public class AuditService {
 	                    GeneralMasterEntity newAcc = new GeneralMasterEntity();
 	                    newAcc.setId(sequence.generateRequestUUId());
 	                    newAcc.setMcbl_gl_code(newData.getMcbl_gl_code());
-	                    newAcc.setMcbl_gl_sub_code(newData.getMcbl_gl_sub_code());
-	                    newAcc.setMcbl_head_acc_no(newData.getMcbl_head_acc_no());
-	                    newAcc.setMcbl_currency(newData.getMcbl_currency());
+	                    newAcc.setGl_sub_head_code(newData.getGl_sub_head_code());
+	                    newAcc.setCurrency(newData.getCurrency());
+	                    newAcc.setAccount_no(newData.getAccount_no());
 	                    newAcc.setMcbl_description(newData.getMcbl_description());
 	                    newAcc.setMcbl_debit_balance(newData.getMcbl_debit_balance());
 	                    newAcc.setMcbl_credit_balance(newData.getMcbl_credit_balance());
@@ -155,9 +155,9 @@ public class AuditService {
 	                    MCBL_Entity mcblNew = new MCBL_Entity();
 	                    mcblNew.setId(sequence.generateRequestUUId());
 	                    mcblNew.setMcbl_gl_code(newData.getMcbl_gl_code());
-	                    mcblNew.setMcbl_gl_sub_code(newData.getMcbl_gl_sub_code());
-	                    mcblNew.setMcbl_head_acc_no(newData.getMcbl_head_acc_no());
-	                    mcblNew.setMcbl_currency(newData.getMcbl_currency());
+	                    mcblNew.setMcbl_gl_sub_code(newData.getGl_sub_head_code());
+	                    mcblNew.setMcbl_head_acc_no(newData.getAccount_no());
+	                    mcblNew.setMcbl_currency(newData.getCurrency());
 	                    mcblNew.setMcbl_description(newData.getMcbl_description());
 	                    mcblNew.setMcbl_debit_balance(newData.getMcbl_debit_balance());
 	                    mcblNew.setMcbl_credit_balance(newData.getMcbl_credit_balance());
@@ -171,15 +171,15 @@ public class AuditService {
 
 	                    MCBL_Reps.save(mcblNew);
 
-	                    msg = "MCBL Added successfully";
+	                    msg = "MCBL Data Added successfully";
 	                }
 	            }else if ("edit".equalsIgnoreCase(formmode)) {
-	                GeneralMasterEntity newAcc = GeneralMasterRepos.getdataBymcbl(newData.getMcbl_head_acc_no(), newData.getReport_date());
+	                GeneralMasterEntity newAcc = GeneralMasterRepos.getdataBybdgf(newData.getAccount_no(), newData.getReport_date());
 	                
 	                if (newAcc != null) {
 	                    newAcc.setMcbl_gl_code(newData.getMcbl_gl_code());
-	                    newAcc.setMcbl_gl_sub_code(newData.getMcbl_gl_sub_code());
-	                    newAcc.setMcbl_currency(newData.getMcbl_currency());
+	                    newAcc.setGl_sub_head_code(newData.getGl_sub_head_code());
+	                    newAcc.setCurrency(newData.getCurrency());
 	                    newAcc.setMcbl_description(newData.getMcbl_description());
 	                    newAcc.setMcbl_debit_balance(newData.getMcbl_debit_balance());
 	                    newAcc.setMcbl_credit_balance(newData.getMcbl_credit_balance());
@@ -192,11 +192,12 @@ public class AuditService {
 
 	                    GeneralMasterRepos.save(newAcc);
 
-	                    MCBL_Entity mcblNew = MCBL_Reps.getdataByAcc(newData.getMcbl_head_acc_no(), newData.getReport_date());
+	                    MCBL_Entity mcblNew = MCBL_Reps.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
 	                    if (mcblNew != null) {
 	                        mcblNew.setMcbl_gl_code(newData.getMcbl_gl_code());
-	                        mcblNew.setMcbl_gl_sub_code(newData.getMcbl_gl_sub_code());
-	                        mcblNew.setMcbl_currency(newData.getMcbl_currency());
+		                    mcblNew.setMcbl_gl_sub_code(newData.getGl_sub_head_code());
+		                    mcblNew.setMcbl_currency(newData.getCurrency());
+		                    mcblNew.setMcbl_head_acc_no(newData.getAccount_no());
 	                        mcblNew.setMcbl_description(newData.getMcbl_description());
 	                        mcblNew.setMcbl_debit_balance(newData.getMcbl_debit_balance());
 	                        mcblNew.setMcbl_credit_balance(newData.getMcbl_credit_balance());
@@ -210,20 +211,20 @@ public class AuditService {
 
 	                    msg = "MCBL Data Edited Successfully";
 	                } else {
-	                    msg = "Error: MCBL not found for Account " + newData.getMcbl_head_acc_no();
+	                    msg = "Error: MCBL Data not found for Account " + newData.getAccount_no();
 	                }
 	            }else if ("delete".equalsIgnoreCase(formmode)) {
-	                GeneralMasterEntity existingOpt = GeneralMasterRepos.getdataBymcbl(newData.getMcbl_head_acc_no(), newData.getReport_date());
+	                GeneralMasterEntity existingOpt = GeneralMasterRepos.getdataBybdgf(newData.getAccount_no(), newData.getReport_date());
 	                if (existingOpt != null) {
 	                    GeneralMasterRepos.delete(existingOpt);
 	                }
 
-	                MCBL_Entity existingOpt1 = MCBL_Reps.getdataByAcc(newData.getMcbl_head_acc_no(), newData.getReport_date());
+	                MCBL_Entity existingOpt1 = MCBL_Reps.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
 	                if (existingOpt1 != null) {
 	                    MCBL_Reps.delete(existingOpt1);
 	                }
 
-	                msg = "MCBL deleted successfully";
+	                msg = "MCBL Data deleted successfully";
 	            }
 	        
 	    } catch (Exception e) {
@@ -258,7 +259,7 @@ public class AuditService {
 	                BLBF_Entity blbf = copyBLBFDataToBLBF(newData, userid);
 	                BLBF_Reps.save(blbf);
 
-	                msg = "BLBF Added successfully";
+	                msg = "BLBF Data Added successfully";
 	                break;
 
 	            case "edit":
@@ -266,7 +267,7 @@ public class AuditService {
 	                    updateBLBFData(existingGM, newData, userid);
 	                    GeneralMasterRepos.save(existingGM);
 	                } else {
-	                    return "Error: BLBF not found for Account " + newData.getAccount_no();
+	                    return "Error: BLBF Data not found for Account " + newData.getAccount_no();
 	                }
 
 	                if (existingBLBF != null) {
@@ -280,7 +281,7 @@ public class AuditService {
 	            case "delete":
 	                if (existingGM != null) GeneralMasterRepos.delete(existingGM);
 	                if (existingBLBF != null) BLBF_Reps.delete(existingBLBF);
-	                msg = "BLBF deleted successfully";
+	                msg = "BLBF Data deleted successfully";
 	                break;
 
 	            default:
@@ -554,7 +555,7 @@ public class AuditService {
 	                BDGF_Entity bdgf = copyBDGFDataToBDGF(newData, userid);
 	                BDGF_Reps.save(bdgf);
 
-	                msg = "BDGF Added Successfully";
+	                msg = "BDGF Data Added Successfully";
 	                break;
 
 	            case "edit":
@@ -562,7 +563,7 @@ public class AuditService {
 	                    updateBDGFData(existingGM, newData, userid);
 	                    GeneralMasterRepos.save(existingGM);
 	                } else {
-	                    return "Error: BDGF not found for Account " + newData.getAccount_no();
+	                    return "Error: BDGF Data not found for Account " + newData.getAccount_no();
 	                }
 
 	                if (existingBDGF != null) {
@@ -576,7 +577,7 @@ public class AuditService {
 	            case "delete":
 	                if (existingGM != null) GeneralMasterRepos.delete(existingGM);
 	                if (existingBDGF != null) BDGF_Reps.delete(existingBDGF);
-	                msg = "BDGF deleted successfully";
+	                msg = "BDGF Data deleted successfully";
 	                break;
 
 	            default:
@@ -757,7 +758,7 @@ public class AuditService {
 	                    updateBFDBData(existingGM, newData, userid);
 	                    GeneralMasterRepos.save(existingGM);
 	                } else {
-	                    return "Error: BFDB not found for Account " + newData.getAccount_no();
+	                    return "Error: BFDB Data not found for Account " + newData.getAccount_no();
 	                }
 
 	                if (existingBFDB != null) {

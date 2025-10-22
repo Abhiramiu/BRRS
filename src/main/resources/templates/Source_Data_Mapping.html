@@ -674,6 +674,7 @@ PURPOSE		: Source Data Mapping
 								<thead class="thead-light"
 									style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
 									<tr>
+									<th style="width: 7%;text-align: center;">Report Date</th>
 										<th style="width: 10%;text-align: left;">GL Code</th>
 										<th style="width: 10%;text-align: left;">GL Sub Head Code</th>
 										<th style="width: 10%">Account Number</th>
@@ -685,10 +686,11 @@ PURPOSE		: Source Data Mapping
 								<tbody>
 									<tr th:each="list : ${list}" th:id="${list.id}" class="userlist"
 										th:if="${list?.mcbl_flg == 'Y'}">
+										<td style="text-align: center;" th:text="${list.report_date != null ? #dates.format(list.report_date, 'dd-MM-yyyy') : ''}"></td>
 										<td th:text="${list?.mcbl_gl_code}"></td>
-										<td th:text="${list?.mcbl_gl_sub_code}"></td>
-										<td th:text="${list?.mcbl_head_acc_no}"></td>
-										<td style="text-align: center;" th:text="${list?.mcbl_currency}"></td>
+										<td th:text="${list?.gl_sub_head_code}"></td>
+										<td th:text="${list?.account_no}"></td>
+										<td style="text-align: center;" th:text="${list?.currency}"></td>
 										<td style="text-align: left;" th:text="${list?.mcbl_description}"></td>
 										<td style="text-align: center;">
 
@@ -711,21 +713,23 @@ PURPOSE		: Source Data Mapping
 								<thead class="thead-light"
 									style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
 									<tr>
+									<th style="width: 9%;text-align: center;">Report Date</th>
 										<th style="width: 7%;text-align: center;">Cust Id</th>
 										<th style="width: 10%">Account Number</th>
 										<th style="width: 10%;text-align: center;">Account Name</th>
-										<th style="width: 10%">Schema Code</th>
+										<th style="width: 8%">Schema Code</th>
 										<th style="width: 10%;text-align: center;">Schema Desc</th>
 										<th style="width: 5%">Currency</th>
 										<th style="width: 10%;text-align: center;">Constitution Code</th>
-										<th style="width: 10%;text-align: center;">GL Sub Head code</th>
+										<th style="width: 8%;text-align: center;">GL Sub Head code</th>
 										<th style="width: 15%;text-align: center;">GL Sub head code desc</th>
-										<th style="width: 10%;text-align: center;">Action</th>
+										<th style="width: 12%;text-align: center;">Action</th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr th:each="list : ${list}" th:id="${list.id}" class="userlist"
 										th:if="${list?.blbf_flg == 'Y'}">
+									<td style="text-align: center;" th:text="${list.report_date != null ? #dates.format(list.report_date, 'dd-MM-yyyy') : ''}"></td>
 										<td th:text="${list?.customer_id}"></td>
 										<td style="text-align: center;" th:text="${list?.account_no}"></td>
 										<td style="text-align: left;" th:text="${list?.customer_name}"></td>
@@ -754,6 +758,7 @@ PURPOSE		: Source Data Mapping
 								<thead class="thead-light"
 									style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
 									<tr>
+									<th style="width: 7%;text-align: center;">Report Date</th>
 										<th style="width: 7%;text-align: left;">Cust Id</th>
 										<th style="width: 7%;text-align: left;">Sol Id</th>
 										<th style="width: 10%;text-align: left;">Account Number</th>
@@ -767,6 +772,7 @@ PURPOSE		: Source Data Mapping
 								<tbody>
 									<tr th:each="list : ${list}" th:id="${list.id}" class="userlist"
 										th:if="${list?.bdgf_flg == 'Y'}">
+									<td style="text-align: center;" th:text="${list.report_date != null ? #dates.format(list.report_date, 'dd-MM-yyyy') : ''}"></td>
 										<td style="text-align: left;" th:text="${list?.customer_id}"></td>
 										<td style="text-align: left;" th:text="${list?.sol_id}"></td>
 										<td style="text-align: left;" th:text="${list?.account_no}"></td>
@@ -795,21 +801,23 @@ PURPOSE		: Source Data Mapping
 								<thead class="thead-light"
 									style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
 									<tr>
+									<th style="width: 9%;text-align: center;">Report Date</th>
 										<th style="width: 7%;text-align: center;">Cust Id</th>
 										<th style="width: 10%">Account Number</th>
 										<th style="width: 10%;text-align: center;">Account Name</th>
-										<th style="width: 10%">Schema Code</th>
+										<th style="width: 8%">Schema Code</th>
 										<th style="width: 10%;text-align: center;">Schema Desc</th>
 										<th style="width: 5%">Currency</th>
 										<th style="width: 10%;text-align: center;">Constitution Code</th>
-										<th style="width: 10%;text-align: center;">GL Sub Head code</th>
+										<th style="width: 8%;text-align: center;">GL Sub Head code</th>
 										<th style="width: 15%;text-align: center;">GL Sub head code desc</th>
-										<th style="width: 10%;text-align: center;">Action</th>
+										<th style="width: 12%;text-align: center;">Action</th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr th:each="list : ${list}" th:id="${list.id}" class="userlist"
 										th:if="${list?.bfdb_flg == 'Y'}">
+									<td style="text-align: center;" th:text="${list.report_date != null ? #dates.format(list.report_date, 'dd-MM-yyyy') : ''}"></td>
 										<td th:text="${list?.customer_id}"></td>
 										<td style="text-align: center;" th:text="${list?.account_no}"></td>
 										<td style="text-align: left;" th:text="${list?.customer_name}"></td>
@@ -945,14 +953,14 @@ PURPOSE		: Source Data Mapping
 
 													<div class="col-sm-3">
 														<input th:if="${formmode}=='add'" type="text"
-															id="mcbl_gl_sub_code" name="mcbl_gl_sub_code"
+															id="gl_sub_head_code" name="gl_sub_head_code"
 															class="form-control form-control-sm" />
 
 														<!-- Dropdown with selected value and readonly for other modes -->
 														<input
 															th:if="${formmode}=='edit' or ${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'"
-															type="text" id="mcbl_gl_sub_code" name="mcbl_gl_sub_code"
-															th:field="*{mcbl_gl_sub_code}"
+															type="text" id="gl_sub_head_code" name="gl_sub_head_code"
+															th:field="*{gl_sub_head_code}"
 															class="form-control form-control-sm"
 															th:disabled="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
 													</div>
@@ -968,14 +976,14 @@ PURPOSE		: Source Data Mapping
 															style="color: red !important">*</span></label>
 													<div class="col-sm-3">
 														<input th:if="${formmode}=='add'" type="text"
-															id="mcbl_head_acc_no" name="mcbl_head_acc_no"
+															id="account_no" name="account_no"
 															class="form-control form-control-sm" />
 
 														<!-- Dropdown with selected value and readonly for other modes -->
 														<input
 															th:if="${formmode}=='edit' or ${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'"
-															type="text" id="mcbl_head_acc_no" name="mcbl_head_acc_no"
-															th:field="*{mcbl_head_acc_no}"
+															type="text" id="account_no" name="account_no"
+															th:field="*{account_no}"
 															class="form-control form-control-sm"
 															th:disabled="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
 													</div>
@@ -983,8 +991,8 @@ PURPOSE		: Source Data Mapping
 													<label class="col-sm-2">Currency <span
 															style="color: red !important">*</span></label>
 													<div class="col-sm-3" th:if="${formmode}=='add'">
-														<select id="mcbl_currency" class="form-control form-control-sm"
-															name="mcbl_currency">
+														<select id="currency" class="form-control form-control-sm"
+															name="currency">
 															<option value="">Select</option>
 															<option value="BWP">BWP</option>
 															<option value="EUR">EUR</option>
@@ -998,8 +1006,8 @@ PURPOSE		: Source Data Mapping
 													</div>
 													<div class="col-sm-3"
 														th:if="${formmode}=='edit'or ${formmode}=='verify' or ${formmode}=='view' or ${formmode}=='delete'">
-														<select id="mcbl_currency" class="form-control form-control-sm"
-															th:value="*{mcbl_currency}" th:field="*{mcbl_currency}"
+														<select id="currency" class="form-control form-control-sm"
+															th:value="*{currency}" th:field="*{currency}"
 															th:disabled="${formmode}=='verify' or ${formmode}=='delete' or ${formmode}=='view'">
 															<option value="">Select</option>
 															<option value="BWP">BWP</option>
