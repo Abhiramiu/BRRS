@@ -3,6 +3,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -18,6 +19,7 @@ public class GeneralMasterEntity {
 	private String	id;
 	private String	mcbl_gl_code;
 	private String	mcbl_gl_sub_code;
+    @Column(name="MCBL_HEAD_ACC_NO")
 	private String	mcbl_head_acc_no;
 	private String	mcbl_description;
 	private String	mcbl_currency;
@@ -28,6 +30,7 @@ public class GeneralMasterEntity {
 	private String	sol_id;	
 	private String	customer_id; 
 	private String	customer_name; 
+    @Column(name="ACCOUNT_NO")
 	private String	account_no; 
 	private String	gender; 
 	private String	schm_code;
@@ -98,6 +101,7 @@ public class GeneralMasterEntity {
 	private String	branch_code;
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name="REPORT_DATE")
 	private Date	report_date;
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd")

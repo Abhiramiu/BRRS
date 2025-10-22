@@ -47,13 +47,21 @@ public interface GeneralMasterRepo extends JpaRepository<GeneralMasterEntity, St
     @Query(value = "SELECT COUNT(*) FROM GENERAL_MASTER_TABLE WHERE REPORT_DATE = TO_DATE(:reportDate,'YYYY-MM-DD')", nativeQuery = true)
     int countByFileTypeAndReportDate(@Param("reportDate") String reportDate);
     
-    
-    @Query(value = "SELECT * FROM GENERAL_MASTER_TABLE "
-            + "WHERE mcbl_head_acc_no=?1 "
-            + "AND TRUNC(REPORT_DATE)=TRUNC(?2)", nativeQuery = true)
-GeneralMasterEntity getdataByAcc(String mcbl_head_acc_no, Date reportDate);
+   
+
+    @Query("SELECT g FROM GeneralMasterEntity g WHERE g.mcbl_head_acc_no = :accNo AND g.report_date = :repDate")
+    GeneralMasterEntity getdataBymcbl(@Param("accNo") String mcbl_head_acc_no,
+                                      @Param("repDate") Date reportDate);
 
     
+    @Query("SELECT g FROM GeneralMasterEntity g WHERE g.account_no = :accNo AND g.report_date = :repDate")
+    GeneralMasterEntity getdataBybdgf(@Param("accNo") String accountNo,
+                                      @Param("repDate") Date reportDate);
+
+    @Query(value = "SELECT * FROM GENERAL_MASTER_TABLE "
+            + "WHERE account_no=?1 "
+            + "AND TRUNC(REPORT_DATE)=TRUNC(?2)", nativeQuery = true)
+GeneralMasterEntity getdataBybfbl(String account_no, Date reportDate);
     
     
     

@@ -4,7 +4,6 @@ import java.util.Date;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,10 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -29,8 +25,6 @@ import com.bornfire.brrs.entities.BFDB_Entity;
 import com.bornfire.brrs.entities.BFDB_Rep;
 import com.bornfire.brrs.entities.BLBF_Entity;
 import com.bornfire.brrs.entities.BLBF_Rep;
-import com.bornfire.brrs.entities.BrrsGeneralMasterEntity;
-import com.bornfire.brrs.entities.BrrsGeneralMasterRepo;
 import com.bornfire.brrs.entities.GeneralMasterEntity;
 import com.bornfire.brrs.entities.GeneralMasterRepo;
 import com.bornfire.brrs.entities.MCBL_Entity;
@@ -132,7 +126,7 @@ public class AuditService {
 	    try {
 	            
 	            if ("add".equalsIgnoreCase(formmode)) {
-	                GeneralMasterEntity existing = GeneralMasterRepos.getdataByAcc(newData.getMcbl_head_acc_no(), newData.getReport_date());
+	                GeneralMasterEntity existing = GeneralMasterRepos.getdataBymcbl(newData.getMcbl_head_acc_no(), newData.getReport_date());
 	                
 	                if (existing != null) {
 	                    logger.info("MCBL Data Already Exist...");
@@ -180,7 +174,7 @@ public class AuditService {
 	                    msg = "MCBL Added successfully";
 	                }
 	            }else if ("edit".equalsIgnoreCase(formmode)) {
-	                GeneralMasterEntity newAcc = GeneralMasterRepos.getById(newData.getId());
+	                GeneralMasterEntity newAcc = GeneralMasterRepos.getdataBymcbl(newData.getMcbl_head_acc_no(), newData.getReport_date());
 	                
 	                if (newAcc != null) {
 	                    newAcc.setMcbl_gl_code(newData.getMcbl_gl_code());
@@ -194,6 +188,7 @@ public class AuditService {
 	                    newAcc.setModify_user(userid);
 	                    newAcc.setModify_flg("Y");
 	                    newAcc.setDel_flg("N");
+	                    newAcc.setMcbl_flg("Y");
 
 	                    GeneralMasterRepos.save(newAcc);
 
@@ -218,7 +213,7 @@ public class AuditService {
 	                    msg = "Error: MCBL not found for Account " + newData.getMcbl_head_acc_no();
 	                }
 	            }else if ("delete".equalsIgnoreCase(formmode)) {
-	                GeneralMasterEntity existingOpt = GeneralMasterRepos.getdataByAcc(newData.getMcbl_head_acc_no(), newData.getReport_date());
+	                GeneralMasterEntity existingOpt = GeneralMasterRepos.getdataBymcbl(newData.getMcbl_head_acc_no(), newData.getReport_date());
 	                if (existingOpt != null) {
 	                    GeneralMasterRepos.delete(existingOpt);
 	                }
@@ -242,10 +237,12 @@ public class AuditService {
 	    String msg = null;
 	    logger.info("Enter BLBF Account method for {} mode...", formmode);
 
-	    try {
+	    try {System.out.println("DEBUG: account_no=" + newData.getAccount_no() + 
+                " reportDate=" + newData.getReport_date());
+
 	        // Fetch existing records
-	        GeneralMasterEntity existingGM = GeneralMasterRepos.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
-	        BLBF_Entity existingBLBF = BLBF_Reps.findById(newData.getAccount_no()).orElse(null);
+	        GeneralMasterEntity existingGM = GeneralMasterRepos.getdataBybfbl(newData.getAccount_no(), newData.getReport_date());
+	        BLBF_Entity existingBLBF = BLBF_Reps.GetAll(newData.getAccount_no(), newData.getReport_date());
 
 	        switch (formmode.toLowerCase()) {
 	            case "add":
@@ -434,6 +431,12 @@ public class AuditService {
 	    existing.setDisbursed_amt(newData.getDisbursed_amt());
 	    existing.setBalance_as_on(newData.getBalance_as_on());
 	    existing.setCurrency(newData.getCurrency());
+	    
+	    existing.setHundred(newData.getHundred());
+	    existing.setPeriod(newData.getPeriod());
+	    existing.setEffective_interest_rate(newData.getEffective_interest_rate());
+	    existing.setMat_bucket(newData.getMat_bucket());
+	    
 	    existing.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
 	    existing.setRate_of_interest(newData.getRate_of_interest());
 	    existing.setAccrued_int_amt(newData.getAccrued_int_amt());
@@ -469,6 +472,7 @@ public class AuditService {
 	    existing.setModify_user(userid);
 	    existing.setModify_flg("Y");
 	    existing.setDel_flg("N");
+	    existing.setBlbf_flg("Y");
 	}
 
 	private void updateBLBFData(BLBF_Entity existing, GeneralMasterEntity newData) {
@@ -484,6 +488,13 @@ public class AuditService {
 	    existing.setDisbursed_amt(newData.getDisbursed_amt());
 	    existing.setBalance_as_on(newData.getBalance_as_on());
 	    existing.setCurrency(newData.getCurrency());
+
+	    existing.setHundred(newData.getHundred());
+	    existing.setPeriod(newData.getPeriod());
+	    existing.setEffective_interest_rate(newData.getEffective_interest_rate());
+	    existing.setMat_bucket(newData.getMat_bucket());
+	    
+	    
 	    existing.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
 	    existing.setRate_of_interest(newData.getRate_of_interest());
 	    existing.setAccrued_int_amt(newData.getAccrued_int_amt());
@@ -517,373 +528,388 @@ public class AuditService {
 	}
 
 
-	
 	public String createAccount_BDGF(String formmode, GeneralMasterEntity newData, String userid) {
 	    String msg = null;
-	    logger.info("Enter BDGF Account method...");
+	    logger.info("Enter BDGF Account method for {} mode...", formmode);
 
 	    try {
-	        if ("add".equalsIgnoreCase(formmode)) {
-	            // Check if record exists
-	            GeneralMasterEntity existing = GeneralMasterRepos.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
-	            if (existing != null) {
-	                logger.info("BDGF Data Already Exist...");
-	                return "BDGF Data Already Exist, So can you Replace It";
-	            }
+	        System.out.println("DEBUG: account_no=" + newData.getAccount_no() + 
+	                " reportDate=" + newData.getReport_date());
 
-	            // 1️⃣ Insert into GENERAL_MASTER_TABLE
-	            GeneralMasterEntity gen = new GeneralMasterEntity();
-	            gen.setId(sequence.generateRequestUUId());
-	            gen.setSol_id(newData.getSol_id());
-	            gen.setAccount_no(newData.getAccount_no());
-	            gen.setCustomer_id(newData.getCustomer_id());
-	            gen.setCustomer_name(newData.getCustomer_name());
-	            gen.setAcct_open_date(newData.getAcct_open_date());
-	            gen.setAmount_deposited(newData.getAmount_deposited());
-	            gen.setCurrency(newData.getCurrency());
-	            gen.setPeriod(newData.getPeriod());
-	            gen.setRate_of_interest(newData.getRate_of_interest());
-	            gen.setHundred(newData.getHundred());
-	            gen.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	            gen.setOutstanding_balance(newData.getOutstanding_balance());
-	            gen.setOustndng_bal_ugx(newData.getOustndng_bal_ugx());
-	            gen.setMaturity_date(newData.getMaturity_date());
-	            gen.setMaturity_amount(newData.getMaturity_amount());
-	            gen.setScheme(newData.getScheme());
-	            gen.setCr_pref_int_rate(newData.getCr_pref_int_rate());
-	            gen.setSegment(newData.getSegment());
-	            gen.setReference_date(newData.getReference_date());
-	            gen.setDifference(newData.getDifference());
-	            gen.setDays(newData.getDays());
-	            gen.setPeriod_days(newData.getPeriod_days());
-	            gen.setEffective_interest_rate(newData.getEffective_interest_rate());
-	            gen.setBranch_name(newData.getBranch_name());
-	            gen.setBranch_code(newData.getBranch_code());
-	            //gen.setResidual_tenure(newData.getResidual_tenure());
-	            //gen.setSls_bucket(newData.getSls_bucket());
-	            gen.setReport_date(newData.getReport_date());
-	            gen.setEntry_date(new Date());
-	            gen.setEntry_user(userid);
-	            gen.setModify_flg("Y");
-	            gen.setDel_flg("N");
-	            gen.setBdgf_flg("Y");
+	        // Fetch existing records
+	        GeneralMasterEntity existingGM = GeneralMasterRepos.getdataBybdgf(newData.getAccount_no(), newData.getReport_date());
+	        BDGF_Entity existingBDGF = BDGF_Reps.getdataBybdgf(newData.getAccount_no(), newData.getReport_date());
 
-	            GeneralMasterRepos.save(gen);
+	        switch (formmode.toLowerCase()) {
+	            case "add":
+	                if (existingGM != null) {
+	                    return "BDGF Data Already Exist, so can you Replace It";
+	                }
 
-	            // 2️⃣ Insert into BRRS_BDGF
-	            BDGF_Entity bdgf = new BDGF_Entity();
-	            bdgf.setSol_id(newData.getSol_id());
-	            bdgf.setAccount_no(newData.getAccount_no());
-	            bdgf.setCustomer_id(newData.getCustomer_id());
-	            bdgf.setCustomer_name(newData.getCustomer_name());
-	            bdgf.setAcct_open_date(newData.getAcct_open_date());
-	            bdgf.setAmount_deposited(newData.getAmount_deposited());
-	            bdgf.setCurrency(newData.getCurrency());
-	            bdgf.setPeriod(newData.getPeriod());
-	            bdgf.setRate_of_interest(newData.getRate_of_interest());
-	            bdgf.setHundred(newData.getHundred());
-	            bdgf.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	            bdgf.setOutstanding_balance(newData.getOutstanding_balance());
-	            bdgf.setOustndng_bal_ugx(newData.getOustndng_bal_ugx());
-	            bdgf.setMaturity_date(newData.getMaturity_date());
-	            bdgf.setMaturity_amount(newData.getMaturity_amount());
-	            bdgf.setScheme(newData.getScheme());
-	            bdgf.setCr_pref_int_rate(newData.getCr_pref_int_rate());
-	            bdgf.setSegment(newData.getSegment());
-	            bdgf.setReference_date(newData.getReference_date());
-	            bdgf.setDifference(newData.getDifference());
-	            bdgf.setDays(newData.getDays());
-	            bdgf.setPeriod_days(newData.getPeriod_days());
-	            bdgf.setEffective_interest_rate(newData.getEffective_interest_rate());
-	            bdgf.setBranch_name(newData.getBranch_name());
-	            bdgf.setBranch_code(newData.getBranch_code());
-	            //bdgf.setResidual_tenure(newData.getResidual_tenure());
-	            //bdgf.setSls_bucket(newData.getSls_bucket());
-	            bdgf.setReport_date(newData.getReport_date());
-	            bdgf.setEntry_date(new Date());
-	            bdgf.setEntry_user(userid);
-	            bdgf.setModify_flg("Y");
-	            bdgf.setDel_flg("N");
+	                // Create new GeneralMasterEntity
+	                GeneralMasterEntity gm = copyBDGFDataToGeneralMaster(newData, userid);
+	                GeneralMasterRepos.save(gm);
 
-	            BDGF_Reps.save(bdgf);
+	                // Create new BDGF_Entity
+	                BDGF_Entity bdgf = copyBDGFDataToBDGF(newData, userid);
+	                BDGF_Reps.save(bdgf);
 
-	            msg = "BDGF Added Successfully";
+	                msg = "BDGF Added Successfully";
+	                break;
 
-	        } else if ("edit".equalsIgnoreCase(formmode)) {
-	            // 1️⃣ Update General Master
-	            GeneralMasterEntity gen = GeneralMasterRepos.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
-	            if (gen != null) {
-	                gen.setSol_id(newData.getSol_id());
-	                gen.setCustomer_id(newData.getCustomer_id());
-	                gen.setCustomer_name(newData.getCustomer_name());
-	                gen.setAcct_open_date(newData.getAcct_open_date());
-	                gen.setAmount_deposited(newData.getAmount_deposited());
-	                gen.setCurrency(newData.getCurrency());
-	                gen.setPeriod(newData.getPeriod());
-	                gen.setRate_of_interest(newData.getRate_of_interest());
-	                gen.setHundred(newData.getHundred());
-	                gen.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	                gen.setOutstanding_balance(newData.getOutstanding_balance());
-	                gen.setOustndng_bal_ugx(newData.getOustndng_bal_ugx());
-	                gen.setMaturity_date(newData.getMaturity_date());
-	                gen.setMaturity_amount(newData.getMaturity_amount());
-	                gen.setScheme(newData.getScheme());
-	                gen.setCr_pref_int_rate(newData.getCr_pref_int_rate());
-	                gen.setSegment(newData.getSegment());
-	                gen.setReference_date(newData.getReference_date());
-	                gen.setDifference(newData.getDifference());
-	                gen.setDays(newData.getDays());
-	                gen.setPeriod_days(newData.getPeriod_days());
-	                gen.setEffective_interest_rate(newData.getEffective_interest_rate());
-	                gen.setBranch_name(newData.getBranch_name());
-	                gen.setBranch_code(newData.getBranch_code());
-	                //gen.setResidual_tenure(newData.getResidual_tenure());
-	                //gen.setSls_bucket(newData.getSls_bucket());
-	                gen.setModify_user(userid);
-	                gen.setModify_date(new Date());
-	                gen.setModify_flg("Y");
-	                gen.setDel_flg("N");
+	            case "edit":
+	                if (existingGM != null) {
+	                    updateBDGFData(existingGM, newData, userid);
+	                    GeneralMasterRepos.save(existingGM);
+	                } else {
+	                    return "Error: BDGF not found for Account " + newData.getAccount_no();
+	                }
 
-	                GeneralMasterRepos.save(gen);
-
-	                // 2️⃣ Update BDGF
-	                BDGF_Entity bdgf = BDGF_Reps.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
-	                if (bdgf != null) {
-	                    bdgf.setSol_id(newData.getSol_id());
-	                    bdgf.setCustomer_id(newData.getCustomer_id());
-	                    bdgf.setCustomer_name(newData.getCustomer_name());
-	                    bdgf.setAcct_open_date(newData.getAcct_open_date());
-	                    bdgf.setAmount_deposited(newData.getAmount_deposited());
-	                    bdgf.setCurrency(newData.getCurrency());
-	                    bdgf.setPeriod(newData.getPeriod());
-	                    bdgf.setRate_of_interest(newData.getRate_of_interest());
-	                    bdgf.setHundred(newData.getHundred());
-	                    bdgf.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	                    bdgf.setOutstanding_balance(newData.getOutstanding_balance());
-	                    bdgf.setOustndng_bal_ugx(newData.getOustndng_bal_ugx());
-	                    bdgf.setMaturity_date(newData.getMaturity_date());
-	                    bdgf.setMaturity_amount(newData.getMaturity_amount());
-	                    bdgf.setScheme(newData.getScheme());
-	                    bdgf.setCr_pref_int_rate(newData.getCr_pref_int_rate());
-	                    bdgf.setSegment(newData.getSegment());
-	                    bdgf.setReference_date(newData.getReference_date());
-	                    bdgf.setDifference(newData.getDifference());
-	                    bdgf.setDays(newData.getDays());
-	                    bdgf.setPeriod_days(newData.getPeriod_days());
-	                    bdgf.setEffective_interest_rate(newData.getEffective_interest_rate());
-	                    bdgf.setBranch_name(newData.getBranch_name());
-	                    bdgf.setBranch_code(newData.getBranch_code());
-	                    //bdgf.setResidual_tenure(newData.getResidual_tenure());
-	                    //bdgf.setSls_bucket(newData.getSls_bucket());
-	                    bdgf.setModify_user(userid);
-	                    bdgf.setModify_date(new Date());
-	                    bdgf.setModify_flg("Y");
-	                    bdgf.setDel_flg("N");
-
-	                    BDGF_Reps.save(bdgf);
+	                if (existingBDGF != null) {
+	                    updateBDGFData(existingBDGF, newData, userid);
+	                    BDGF_Reps.save(existingBDGF);
 	                }
 
 	                msg = "BDGF Data Edited Successfully";
+	                break;
 
-	            } else {
-	                msg = "Error: BDGF not found for Account " + newData.getAccount_no();
-	            }
+	            case "delete":
+	                if (existingGM != null) GeneralMasterRepos.delete(existingGM);
+	                if (existingBDGF != null) BDGF_Reps.delete(existingBDGF);
+	                msg = "BDGF deleted successfully";
+	                break;
 
-	        } else if ("delete".equalsIgnoreCase(formmode)) {
-	            GeneralMasterEntity gen = GeneralMasterRepos.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
-	            if (gen != null) {
-	                GeneralMasterRepos.delete(gen);
-	            }
-
-	            BDGF_Entity bdgf = BDGF_Reps.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
-	            if (bdgf != null) {
-	                BDGF_Reps.delete(bdgf);
-	            }
-
-	            msg = "BDGF deleted successfully";
+	            default:
+	                msg = "Unknown form mode: " + formmode;
 	        }
 
 	    } catch (Exception e) {
+	        logger.error("Error while processing BDGF: {}", e.getMessage(), e);
 	        msg = "Error: " + e.getMessage();
-	        logger.error("Exception in createAccount_BDGF: ", e);
 	    }
 
 	    return msg;
 	}
+
+	// Helper Methods
+	private GeneralMasterEntity copyBDGFDataToGeneralMaster(GeneralMasterEntity data, String userid) {
+	    GeneralMasterEntity gm = new GeneralMasterEntity();
+	    gm.setId(sequence.generateRequestUUId());
+	    gm.setSol_id(data.getSol_id());
+	    gm.setAccount_no(data.getAccount_no());
+	    gm.setCustomer_id(data.getCustomer_id());
+	    gm.setCustomer_name(data.getCustomer_name());
+	    gm.setAcct_open_date(data.getAcct_open_date());
+	    gm.setAmount_deposited(data.getAmount_deposited());
+	    gm.setCurrency(data.getCurrency());
+	    gm.setPeriod(data.getPeriod());
+	    gm.setRate_of_interest(data.getRate_of_interest());
+	    gm.setHundred(data.getHundred());
+	    gm.setBal_equi_to_bwp(data.getBal_equi_to_bwp());
+	    gm.setOutstanding_balance(data.getOutstanding_balance());
+	    gm.setOustndng_bal_ugx(data.getOustndng_bal_ugx());
+	    gm.setMaturity_date(data.getMaturity_date());
+	    gm.setMaturity_amount(data.getMaturity_amount());
+	    gm.setScheme(data.getScheme());
+	    gm.setCr_pref_int_rate(data.getCr_pref_int_rate());
+	    gm.setSegment(data.getSegment());
+	    gm.setReference_date(data.getReference_date());
+	    gm.setDifference(data.getDifference());
+	    gm.setDays(data.getDays());
+	    gm.setPeriod_days(data.getPeriod_days());
+	    gm.setEffective_interest_rate(data.getEffective_interest_rate());
+	    gm.setBranch_name(data.getBranch_name());
+	    gm.setBranch_code(data.getBranch_code());
+	    gm.setReport_date(data.getReport_date());
+	    gm.setEntry_date(new Date());
+	    gm.setEntry_user(userid);
+	    gm.setModify_flg("Y");
+	    gm.setDel_flg("N");
+	    gm.setBdgf_flg("Y");
+	    return gm;
+	}
+
+	private BDGF_Entity copyBDGFDataToBDGF(GeneralMasterEntity data, String userid) {
+	    BDGF_Entity bdgf = new BDGF_Entity();
+	    bdgf.setSol_id(data.getSol_id());
+	    bdgf.setAccount_no(data.getAccount_no());
+	    bdgf.setCustomer_id(data.getCustomer_id());
+	    bdgf.setCustomer_name(data.getCustomer_name());
+	    bdgf.setAcct_open_date(data.getAcct_open_date());
+	    bdgf.setAmount_deposited(data.getAmount_deposited());
+	    bdgf.setCurrency(data.getCurrency());
+	    bdgf.setPeriod(data.getPeriod());
+	    bdgf.setRate_of_interest(data.getRate_of_interest());
+	    bdgf.setHundred(data.getHundred());
+	    bdgf.setBal_equi_to_bwp(data.getBal_equi_to_bwp());
+	    bdgf.setOutstanding_balance(data.getOutstanding_balance());
+	    bdgf.setOustndng_bal_ugx(data.getOustndng_bal_ugx());
+	    bdgf.setMaturity_date(data.getMaturity_date());
+	    bdgf.setMaturity_amount(data.getMaturity_amount());
+	    bdgf.setScheme(data.getScheme());
+	    bdgf.setCr_pref_int_rate(data.getCr_pref_int_rate());
+	    bdgf.setSegment(data.getSegment());
+	    bdgf.setReference_date(data.getReference_date());
+	    bdgf.setDifference(data.getDifference());
+	    bdgf.setDays(data.getDays());
+	    bdgf.setPeriod_days(data.getPeriod_days());
+	    bdgf.setEffective_interest_rate(data.getEffective_interest_rate());
+	    bdgf.setBranch_name(data.getBranch_name());
+	    bdgf.setBranch_code(data.getBranch_code());
+	    bdgf.setReport_date(data.getReport_date());
+	    bdgf.setEntry_date(new Date());
+	    bdgf.setEntry_user(userid);
+	    bdgf.setModify_flg("Y");
+	    bdgf.setDel_flg("N");
+	    return bdgf;
+	}
+
+	private void updateBDGFData(GeneralMasterEntity existing, GeneralMasterEntity newData, String userid) {
+	    existing.setSol_id(newData.getSol_id());
+	    existing.setCustomer_id(newData.getCustomer_id());
+	    existing.setCustomer_name(newData.getCustomer_name());
+	    existing.setAcct_open_date(newData.getAcct_open_date());
+	    existing.setAmount_deposited(newData.getAmount_deposited());
+	    existing.setCurrency(newData.getCurrency());
+	    existing.setPeriod(newData.getPeriod());
+	    existing.setRate_of_interest(newData.getRate_of_interest());
+	    existing.setHundred(newData.getHundred());
+	    existing.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
+	    existing.setOutstanding_balance(newData.getOutstanding_balance());
+	    existing.setOustndng_bal_ugx(newData.getOustndng_bal_ugx());
+	    existing.setMaturity_date(newData.getMaturity_date());
+	    existing.setMaturity_amount(newData.getMaturity_amount());
+	    existing.setScheme(newData.getScheme());
+	    existing.setCr_pref_int_rate(newData.getCr_pref_int_rate());
+	    existing.setSegment(newData.getSegment());
+	    existing.setReference_date(newData.getReference_date());
+	    existing.setDifference(newData.getDifference());
+	    existing.setDays(newData.getDays());
+	    existing.setPeriod_days(newData.getPeriod_days());
+	    existing.setEffective_interest_rate(newData.getEffective_interest_rate());
+	    existing.setBranch_name(newData.getBranch_name());
+	    existing.setBranch_code(newData.getBranch_code());
+	    existing.setModify_user(userid);
+	    existing.setModify_flg("Y");
+	    existing.setDel_flg("N");
+	    existing.setBdgf_flg("Y");
+	}
+
+	private void updateBDGFData(BDGF_Entity existing, GeneralMasterEntity newData, String userid) {
+	    existing.setSol_id(newData.getSol_id());
+	    existing.setCustomer_id(newData.getCustomer_id());
+	    existing.setCustomer_name(newData.getCustomer_name());
+	    existing.setAcct_open_date(newData.getAcct_open_date());
+	    existing.setAmount_deposited(newData.getAmount_deposited());
+	    existing.setCurrency(newData.getCurrency());
+	    existing.setPeriod(newData.getPeriod());
+	    existing.setRate_of_interest(newData.getRate_of_interest());
+	    existing.setHundred(newData.getHundred());
+	    existing.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
+	    existing.setOutstanding_balance(newData.getOutstanding_balance());
+	    existing.setOustndng_bal_ugx(newData.getOustndng_bal_ugx());
+	    existing.setMaturity_date(newData.getMaturity_date());
+	    existing.setMaturity_amount(newData.getMaturity_amount());
+	    existing.setScheme(newData.getScheme());
+	    existing.setCr_pref_int_rate(newData.getCr_pref_int_rate());
+	    existing.setSegment(newData.getSegment());
+	    existing.setReference_date(newData.getReference_date());
+	    existing.setDifference(newData.getDifference());
+	    existing.setDays(newData.getDays());
+	    existing.setPeriod_days(newData.getPeriod_days());
+	    existing.setEffective_interest_rate(newData.getEffective_interest_rate());
+	    existing.setBranch_name(newData.getBranch_name());
+	    existing.setBranch_code(newData.getBranch_code());
+	    existing.setModify_user(userid);
+	    existing.setModify_flg("Y");
+	    existing.setDel_flg("N");
+	}
+
+
 	public String createAccount_BFDB(String formmode, GeneralMasterEntity newData, String userid) {
 	    String msg = null;
-	    logger.info("Enter BFDB Account method...");
+	    logger.info("Enter BFDB Account method for {} mode...", formmode);
 
 	    try {
-	        if ("add".equalsIgnoreCase(formmode)) {
+	        // Fetch existing records
+	        GeneralMasterEntity existingGM = GeneralMasterRepos.getdataBybdgf(newData.getAccount_no(), newData.getReport_date());
+	        BFDB_Entity existingBFDB = BFDB_Reps.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
 
-	            // Check existing data
-	            GeneralMasterEntity existing = GeneralMasterRepos.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
-	            if (existing != null) {
-	                logger.info("BFDB Data Already Exist...");
-	                return "BFDB Data Already Exist, Do you want to replace it?";
-	            }
+	        switch (formmode.toLowerCase()) {
+	            case "add":
+	                if (existingGM != null) {
+	                    return "BFDB Data Already Exist, Do you want to replace it?";
+	                }
 
-	            // 1️⃣ Insert into GENERAL_MASTER_TABLE
-	            GeneralMasterEntity gen = new GeneralMasterEntity();
-	            gen.setId(sequence.generateRequestUUId());
-	            gen.setSol_id(newData.getSol_id());
-	            gen.setGender(newData.getGender());
-	            gen.setAccount_no(newData.getAccount_no());
-	            gen.setCustomer_id(newData.getCustomer_id());
-	            gen.setCustomer_name(newData.getCustomer_name());
-	            gen.setSchm_code(newData.getSchm_code());
-	            gen.setSchm_desc(newData.getSchm_desc());
-	            gen.setAcct_open_date(newData.getAcct_open_date());
-	            gen.setAcct_close_date(newData.getAcct_close_date());
-	            gen.setBalance_as_on(newData.getBalance_as_on());
-	            gen.setCurrency(newData.getCurrency());
-	            gen.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	            gen.setRate_of_interest(newData.getRate_of_interest());
-	            gen.setHundred(newData.getHundred());
-	            gen.setStatus(newData.getStatus());
-	            gen.setMaturity_date(newData.getMaturity_date());
-	            gen.setGl_sub_head_code(newData.getGl_sub_head_code());
-	            gen.setGl_sub_head_desc(newData.getGl_sub_head_desc());
-	            gen.setType_of_accounts(newData.getType_of_accounts());
-	            gen.setSegment(newData.getSegment());
-	            gen.setPeriod(newData.getPeriod());
-	            gen.setEffective_interest_rate(newData.getEffective_interest_rate());
-	            gen.setBranch_name(newData.getBranch_name());
-	            gen.setBranch_code(newData.getBranch_code());
-	            gen.setReport_date(newData.getReport_date());
-	            gen.setEntry_user(userid);
-	            gen.setEntry_date(new Date());
-	            gen.setModify_flg("Y");
-	            gen.setDel_flg("N");
-	            gen.setBfdb_flg("Y");
+	                // Create new GeneralMasterEntity
+	                GeneralMasterEntity gm = copyBFDBDataToGeneralMaster(newData, userid);
+	                GeneralMasterRepos.save(gm);
 
-	            GeneralMasterRepos.save(gen);
-
-	            // 2️⃣ Insert into BRRS_BFDB
-	            BFDB_Entity bfdb = new BFDB_Entity();
-	            bfdb.setSol_id(newData.getSol_id());
-	            bfdb.setGender(newData.getGender());
-	            bfdb.setAccount_no(newData.getAccount_no());
-	            bfdb.setCustomer_id(newData.getCustomer_id());
-	            bfdb.setCustomer_name(newData.getCustomer_name());
-	            bfdb.setSchm_code(newData.getSchm_code());
-	            bfdb.setSchm_desc(newData.getSchm_desc());
-	            bfdb.setAcct_open_date(newData.getAcct_open_date());
-	            bfdb.setAcct_close_date(newData.getAcct_close_date());
-	            bfdb.setBalance_as_on(newData.getBalance_as_on());
-	            bfdb.setCurrency(newData.getCurrency());
-	            bfdb.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	            bfdb.setRate_of_interest(newData.getRate_of_interest());
-	            bfdb.setHundred(newData.getHundred());
-	            bfdb.setStatus(newData.getStatus());
-	            bfdb.setMaturity_date(newData.getMaturity_date());
-	            bfdb.setGl_sub_head_code(newData.getGl_sub_head_code());
-	            bfdb.setGl_sub_head_desc(newData.getGl_sub_head_desc());
-	            bfdb.setType_of_accounts(newData.getType_of_accounts());
-	            bfdb.setSegment(newData.getSegment());
-	            bfdb.setPeriod(newData.getPeriod());
-	            bfdb.setEffective_interest_rate(newData.getEffective_interest_rate());
-	            bfdb.setBranch_name(newData.getBranch_name());
-	            bfdb.setBranch_code(newData.getBranch_code());
-	            bfdb.setReport_date(newData.getReport_date());
-	            bfdb.setEntry_user(userid);
-	            bfdb.setEntry_date(new Date());
-	            bfdb.setModify_flg("Y");
-	            bfdb.setDel_flg("N");
-
-	            BFDB_Reps.save(bfdb);
-
-	            msg = "BFDB Data Added Successfully";
-
-	        } else if ("edit".equalsIgnoreCase(formmode)) {
-
-	            // 1️⃣ Update General Master
-	            GeneralMasterEntity gen = GeneralMasterRepos.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
-	            if (gen != null) {
-	                gen.setSol_id(newData.getSol_id());
-	                gen.setGender(newData.getGender());
-	                gen.setCustomer_id(newData.getCustomer_id());
-	                gen.setCustomer_name(newData.getCustomer_name());
-	                gen.setSchm_code(newData.getSchm_code());
-	                gen.setSchm_desc(newData.getSchm_desc());
-	                gen.setAcct_open_date(newData.getAcct_open_date());
-	                gen.setAcct_close_date(newData.getAcct_close_date());
-	                gen.setBalance_as_on(newData.getBalance_as_on());
-	                gen.setCurrency(newData.getCurrency());
-	                gen.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	                gen.setRate_of_interest(newData.getRate_of_interest());
-	                gen.setHundred(newData.getHundred());
-	                gen.setStatus(newData.getStatus());
-	                gen.setMaturity_date(newData.getMaturity_date());
-	                gen.setGl_sub_head_code(newData.getGl_sub_head_code());
-	                gen.setGl_sub_head_desc(newData.getGl_sub_head_desc());
-	                gen.setType_of_accounts(newData.getType_of_accounts());
-	                gen.setSegment(newData.getSegment());
-	                gen.setPeriod(newData.getPeriod());
-	                gen.setEffective_interest_rate(newData.getEffective_interest_rate());
-	                gen.setBranch_name(newData.getBranch_name());
-	                gen.setBranch_code(newData.getBranch_code());
-	                gen.setModify_user(userid);
-	                gen.setModify_date(new Date());
-	                gen.setModify_flg("Y");
-
-	                GeneralMasterRepos.save(gen);
-	            }
-
-	            // 2️⃣ Update BFDB
-	            BFDB_Entity bfdb = BFDB_Reps.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
-	            if (bfdb != null) {
-	                bfdb.setSol_id(newData.getSol_id());
-	                bfdb.setGender(newData.getGender());
-	                bfdb.setCustomer_name(newData.getCustomer_name());
-	                bfdb.setSchm_code(newData.getSchm_code());
-	                bfdb.setSchm_desc(newData.getSchm_desc());
-	                bfdb.setAcct_open_date(newData.getAcct_open_date());
-	                bfdb.setAcct_close_date(newData.getAcct_close_date());
-	                bfdb.setBalance_as_on(newData.getBalance_as_on());
-	                bfdb.setCurrency(newData.getCurrency());
-	                bfdb.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	                bfdb.setRate_of_interest(newData.getRate_of_interest());
-	                bfdb.setHundred(newData.getHundred());
-	                bfdb.setStatus(newData.getStatus());
-	                bfdb.setMaturity_date(newData.getMaturity_date());
-	                bfdb.setGl_sub_head_code(newData.getGl_sub_head_code());
-	                bfdb.setGl_sub_head_desc(newData.getGl_sub_head_desc());
-	                bfdb.setType_of_accounts(newData.getType_of_accounts());
-	                bfdb.setSegment(newData.getSegment());
-	                bfdb.setPeriod(newData.getPeriod());
-	                bfdb.setEffective_interest_rate(newData.getEffective_interest_rate());
-	                bfdb.setBranch_name(newData.getBranch_name());
-	                bfdb.setBranch_code(newData.getBranch_code());
-	                bfdb.setModify_user(userid);
-	                bfdb.setModify_date(new Date());
-	                bfdb.setModify_flg("Y");
-
+	                // Create new BFDB_Entity
+	                BFDB_Entity bfdb = copyBFDBDataToBFDB(newData, userid);
 	                BFDB_Reps.save(bfdb);
-	            }
 
-	            msg = "BFDB Data Edited Successfully";
+	                msg = "BFDB Data Added Successfully";
+	                break;
 
-	        } else if ("delete".equalsIgnoreCase(formmode)) {
-	            GeneralMasterEntity gen = GeneralMasterRepos.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
-	            if (gen != null)
-	                GeneralMasterRepos.delete(gen);
+	            case "edit":
+	                if (existingGM != null) {
+	                    updateBFDBData(existingGM, newData, userid);
+	                    GeneralMasterRepos.save(existingGM);
+	                } else {
+	                    return "Error: BFDB not found for Account " + newData.getAccount_no();
+	                }
 
-	            BFDB_Entity bfdb = BFDB_Reps.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
-	            if (bfdb != null)
-	            	BFDB_Reps.delete(bfdb);
+	                if (existingBFDB != null) {
+	                    updateBFDBData(existingBFDB, newData, userid);
+	                    BFDB_Reps.save(existingBFDB);
+	                }
 
-	            msg = "BFDB Data Deleted Successfully";
+	                msg = "BFDB Data Edited Successfully";
+	                break;
+
+	            case "delete":
+	                if (existingGM != null) GeneralMasterRepos.delete(existingGM);
+	                if (existingBFDB != null) BFDB_Reps.delete(existingBFDB);
+	                msg = "BFDB Data Deleted Successfully";
+	                break;
+
+	            default:
+	                msg = "Unknown form mode: " + formmode;
 	        }
 
 	    } catch (Exception e) {
+	        logger.error("Error while processing BFDB: {}", e.getMessage(), e);
 	        msg = "Error: " + e.getMessage();
-	        logger.error("Exception in createAccount_BFDB: ", e);
 	    }
 
 	    return msg;
 	}
-
+	private GeneralMasterEntity copyBFDBDataToGeneralMaster(GeneralMasterEntity data, String userid) {
+	    GeneralMasterEntity gm = new GeneralMasterEntity();
+	    gm.setId(sequence.generateRequestUUId());
+	    gm.setSol_id(data.getSol_id());
+	    gm.setGender(data.getGender());
+	    gm.setAccount_no(data.getAccount_no());
+	    gm.setCustomer_id(data.getCustomer_id());
+	    gm.setCustomer_name(data.getCustomer_name());
+	    gm.setSchm_code(data.getSchm_code());
+	    gm.setSchm_desc(data.getSchm_desc());
+	    gm.setAcct_open_date(data.getAcct_open_date());
+	    gm.setAcct_close_date(data.getAcct_close_date());
+	    gm.setBalance_as_on(data.getBalance_as_on());
+	    gm.setCurrency(data.getCurrency());
+	    gm.setBal_equi_to_bwp(data.getBal_equi_to_bwp());
+	    gm.setRate_of_interest(data.getRate_of_interest());
+	    gm.setHundred(data.getHundred());
+	    gm.setStatus(data.getStatus());
+	    gm.setMaturity_date(data.getMaturity_date());
+	    gm.setGl_sub_head_code(data.getGl_sub_head_code());
+	    gm.setGl_sub_head_desc(data.getGl_sub_head_desc());
+	    gm.setType_of_accounts(data.getType_of_accounts());
+	    gm.setSegment(data.getSegment());
+	    gm.setPeriod(data.getPeriod());
+	    gm.setEffective_interest_rate(data.getEffective_interest_rate());
+	    gm.setBranch_name(data.getBranch_name());
+	    gm.setBranch_code(data.getBranch_code());
+	    gm.setReport_date(data.getReport_date());
+	    gm.setEntry_user(userid);
+	    gm.setEntry_date(new Date());
+	    gm.setModify_flg("Y");
+	    gm.setDel_flg("N");
+	    gm.setBfdb_flg("Y");
+	    return gm;
+	}
+	private BFDB_Entity copyBFDBDataToBFDB(GeneralMasterEntity data, String userid) {
+	    BFDB_Entity bfdb = new BFDB_Entity();
+	    bfdb.setSol_id(data.getSol_id());
+	    bfdb.setGender(data.getGender());
+	    bfdb.setAccount_no(data.getAccount_no());
+	    bfdb.setCustomer_id(data.getCustomer_id());
+	    bfdb.setCustomer_name(data.getCustomer_name());
+	    bfdb.setSchm_code(data.getSchm_code());
+	    bfdb.setSchm_desc(data.getSchm_desc());
+	    bfdb.setAcct_open_date(data.getAcct_open_date());
+	    bfdb.setAcct_close_date(data.getAcct_close_date());
+	    bfdb.setBalance_as_on(data.getBalance_as_on());
+	    bfdb.setCurrency(data.getCurrency());
+	    bfdb.setBal_equi_to_bwp(data.getBal_equi_to_bwp());
+	    bfdb.setRate_of_interest(data.getRate_of_interest());
+	    bfdb.setHundred(data.getHundred());
+	    bfdb.setStatus(data.getStatus());
+	    bfdb.setMaturity_date(data.getMaturity_date());
+	    bfdb.setGl_sub_head_code(data.getGl_sub_head_code());
+	    bfdb.setGl_sub_head_desc(data.getGl_sub_head_desc());
+	    bfdb.setType_of_accounts(data.getType_of_accounts());
+	    bfdb.setSegment(data.getSegment());
+	    bfdb.setPeriod(data.getPeriod());
+	    bfdb.setEffective_interest_rate(data.getEffective_interest_rate());
+	    bfdb.setBranch_name(data.getBranch_name());
+	    bfdb.setBranch_code(data.getBranch_code());
+	    bfdb.setReport_date(data.getReport_date());
+	    bfdb.setEntry_user(userid);
+	    bfdb.setEntry_date(new Date());
+	    bfdb.setModify_flg("Y");
+	    bfdb.setDel_flg("N");
+	    return bfdb;
+	}
+	private void updateBFDBData(GeneralMasterEntity existing, GeneralMasterEntity newData, String userid) {
+	    existing.setSol_id(newData.getSol_id());
+	    existing.setGender(newData.getGender());
+	    existing.setCustomer_id(newData.getCustomer_id());
+	    existing.setCustomer_name(newData.getCustomer_name());
+	    existing.setSchm_code(newData.getSchm_code());
+	    existing.setSchm_desc(newData.getSchm_desc());
+	    existing.setAcct_open_date(newData.getAcct_open_date());
+	    existing.setAcct_close_date(newData.getAcct_close_date());
+	    existing.setBalance_as_on(newData.getBalance_as_on());
+	    existing.setCurrency(newData.getCurrency());
+	    existing.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
+	    existing.setRate_of_interest(newData.getRate_of_interest());
+	    existing.setHundred(newData.getHundred());
+	    existing.setStatus(newData.getStatus());
+	    existing.setMaturity_date(newData.getMaturity_date());
+	    existing.setGl_sub_head_code(newData.getGl_sub_head_code());
+	    existing.setGl_sub_head_desc(newData.getGl_sub_head_desc());
+	    existing.setType_of_accounts(newData.getType_of_accounts());
+	    existing.setSegment(newData.getSegment());
+	    existing.setPeriod(newData.getPeriod());
+	    existing.setEffective_interest_rate(newData.getEffective_interest_rate());
+	    existing.setBranch_name(newData.getBranch_name());
+	    existing.setBranch_code(newData.getBranch_code());
+	    existing.setModify_user(userid);
+	    existing.setModify_date(new Date());
+	    existing.setModify_flg("Y");
+	    existing.setDel_flg("N");
+	    existing.setBfdb_flg("Y");
+	}
+	private void updateBFDBData(BFDB_Entity existing, GeneralMasterEntity newData, String userid) {
+	    existing.setSol_id(newData.getSol_id());
+	    existing.setGender(newData.getGender());
+	    existing.setCustomer_name(newData.getCustomer_name());
+	    existing.setSchm_code(newData.getSchm_code());
+	    existing.setSchm_desc(newData.getSchm_desc());
+	    existing.setAcct_open_date(newData.getAcct_open_date());
+	    existing.setAcct_close_date(newData.getAcct_close_date());
+	    existing.setBalance_as_on(newData.getBalance_as_on());
+	    existing.setCurrency(newData.getCurrency());
+	    existing.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
+	    existing.setRate_of_interest(newData.getRate_of_interest());
+	    existing.setHundred(newData.getHundred());
+	    existing.setStatus(newData.getStatus());
+	    existing.setMaturity_date(newData.getMaturity_date());
+	    existing.setGl_sub_head_code(newData.getGl_sub_head_code());
+	    existing.setGl_sub_head_desc(newData.getGl_sub_head_desc());
+	    existing.setType_of_accounts(newData.getType_of_accounts());
+	    existing.setSegment(newData.getSegment());
+	    existing.setPeriod(newData.getPeriod());
+	    existing.setEffective_interest_rate(newData.getEffective_interest_rate());
+	    existing.setBranch_name(newData.getBranch_name());
+	    existing.setBranch_code(newData.getBranch_code());
+	    existing.setModify_user(userid);
+	    existing.setModify_date(new Date());
+	    existing.setModify_flg("Y");
+	    existing.setDel_flg("N");
+	}
 
 }
