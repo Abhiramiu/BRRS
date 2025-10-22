@@ -14,6 +14,7 @@
 	<link rel="stylesheet" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
 
+
 	<!-- JavaScript -->
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
@@ -387,12 +388,17 @@
 
 	</script>
 
-	<script>
+<script>
+function showAlert(message) {
+    $("#alertmsgValidation1").text(message);
+    $("#alertValidation1").modal("show");
+}
+
 function checkReportDate() {
     var reportDate = $("#report_date").val();
 
     if (!reportDate) {
-        alert("Please select a Report Date first.");
+        showAlert("Please select a Report Date first.");
         return;
     }
 
@@ -406,26 +412,48 @@ function checkReportDate() {
             $("#loader").modal("hide");
 
             if (exists === true) {
-                // Confirmation dialog with proper grammar
-                var confirmReplace = confirm(
-                    "Report Date (" + reportDate + ") already exists. Do you want to replace it?"
+                // Instead of window.confirm, show a custom modal for confirmation
+                $("#alertmsgValidation1").html(
+                    "Report Date (" + reportDate + ") already exists.<br>Do you want to replace it?"
                 );
 
-                if (!confirmReplace) {
-                    // If user clicks "Cancel", clear the date
-                    $("#report_date").val("");
-                } 
-                // If OK, just continue silently (do nothing)
+                // Add Yes/No buttons dynamically
+                $("#alertmsgValidation1").append(`
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-danger btn-sm" id="confirmYes">Yes</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">No</button>
+                    </div>
+                `);
+
+                $("#alertValidation1").modal("show");
+
+                // Handle button clicks
+                $("#confirmYes").on("click", function () {
+                    $("#alertValidation1").modal("hide");
+                    // Continue silently — proceed with replacing
+                });
+
+                $("#alertValidation1").on("hidden.bs.modal", function () {
+                    $("#confirmYes").off("click"); // Clean up
+                });
+
+                // If user clicks "No", clear the date when modal closes
+                $("#alertValidation1").on("hide.bs.modal", function (e) {
+                    if (!$("#confirmYes").is(":focus")) {
+                        $("#report_date").val("");
+                    }
+                });
             }
         },
         error: function (xhr, status, error) {
             $("#loader").modal("hide");
             console.error("Error checking report date:", status, error);
-            alert("Error checking report date!");
+            showAlert("Error checking report date!");
         }
     });
 }
 </script>
+
 
 
 
@@ -1241,7 +1269,29 @@ function checkReportDate() {
 		</div>
 
 
+<div class="modal fade" id="alertValidation">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <p id="alertmsgValidation"></p>
+                
+                <button type="button" class="custom-tab-btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+
+<div class="modal fade" id="alertValidation1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <p id="alertmsgValidation1"></p>
+                
+            </div>
+        </div>
+    </div>
+</div>
 		<div class="modal fade" id="alert">
 			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 				<div class="modal-content">
@@ -1479,7 +1529,7 @@ function checkReportDate() {
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // Array of all your file input IDs
+    // All file input IDs
     const fileInputs = ["file", "file1", "file2", "file3"];
 
     fileInputs.forEach(function (id) {
@@ -1492,21 +1542,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 const fileName = file.name.toLowerCase();
                 const allowedExtension = /\.xls$/i;
 
+                // ❌ Invalid extension
                 if (!allowedExtension.test(fileName)) {
-                    alert("❌ Only .xls (Excel 97–2003) files are allowed.\nPlease select a valid .xls file.");
-                    this.value = ""; // clear invalid file
+                    showModal("❌ Only .xls (Excel 97–2003) files are allowed.<br>Please select a valid .xls file.");
+                    this.value = "";
                     return false;
                 }
 
                 const validMimeTypes = ["application/vnd.ms-excel"];
+                // ❌ Invalid MIME type
                 if (!validMimeTypes.includes(file.type) && file.type !== "") {
-                    alert("❌ Invalid file type detected.\nPlease upload only .xls (Excel 97–2003) format.");
+                    showModal("❌ Invalid file type detected.<br>Please upload only .xls (Excel 97–2003) format.");
                     this.value = "";
                     return false;
                 }
             });
         }
     });
+
+    // Function to show modal alert
+    function showModal(message) {
+        document.getElementById("alertmsgValidation").innerHTML = message;
+        const modal = new bootstrap.Modal(document.getElementById("alertValidation"));
+        modal.show();
+    }
 });
 </script>
 
