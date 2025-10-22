@@ -567,6 +567,7 @@ public class NavigationController {
 	    int offset = page * size;
 	    List<GeneralMasterEntity> list;
 	    int totalRecords = 0;
+        System.out.println("file type is : "+fileType);
 	    if (fileType == null || fileType.trim().isEmpty()) {
 	    	fileType="MCBL";
 	    }

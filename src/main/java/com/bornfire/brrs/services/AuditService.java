@@ -213,20 +213,19 @@ public class AuditService {
 	                } else {
 	                    msg = "Error: MCBL Data not found for Account " + newData.getAccount_no();
 	                }
-	            }else if ("delete".equalsIgnoreCase(formmode)) {
-	                GeneralMasterEntity existingOpt = GeneralMasterRepos.getdataBybdgf(newData.getAccount_no(), newData.getReport_date());
-	                if (existingOpt != null) {
-	                    GeneralMasterRepos.delete(existingOpt);
-	                }
+				} else if ("delete".equalsIgnoreCase(formmode)) {
+					GeneralMasterRepos.deleteById(newData.getId());
+					MCBL_Entity data = MCBL_Reps.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
+					if (data != null) {
+						MCBL_Reps.delete(data);
+						msg = "Deleted successfully";
+					} else {
+						msg = "No record found for given account_no and date in MCBL Table";
+					}
 
-	                MCBL_Entity existingOpt1 = MCBL_Reps.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
-	                if (existingOpt1 != null) {
-	                    MCBL_Reps.delete(existingOpt1);
-	                }
+					msg = "MCBL Data deleted successfully";
+				}
 
-	                msg = "MCBL Data deleted successfully";
-	            }
-	        
 	    } catch (Exception e) {
 	        msg = "Error: " + e.getMessage();
 	    }

@@ -13,6 +13,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name = "BRRS_MCBL")
 public class MCBL_Entity {
@@ -22,6 +24,7 @@ public class MCBL_Entity {
 
     private String mcbl_gl_code;
     private String mcbl_gl_sub_code;
+    @Column(name = "MCBL_HEAD_ACC_NO")
     private String mcbl_head_acc_no;
     private String mcbl_description;
     private String mcbl_currency;
@@ -33,6 +36,7 @@ public class MCBL_Entity {
     private String entry_user;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date entry_date;
 
     private String modify_user;
@@ -42,6 +46,8 @@ public class MCBL_Entity {
     private String delete_flg;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name="REPORT_DATE")
     private Date report_date;
 
 

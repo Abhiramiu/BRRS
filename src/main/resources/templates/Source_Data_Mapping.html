@@ -558,7 +558,18 @@ PURPOSE		: Source Data Mapping
 	});
 
 	
-	
+	$(document).ready(function () {
+	    const urlParams = new URLSearchParams(window.location.search);
+	    const formmode = urlParams.get('formmode'); 
+	    const fileType = urlParams.get('FileType'); 
+	    const pageHeader = document.getElementById("pageHeader");
+
+	    if(pageHeader && fileType && formmode) {
+	        let modeText = formmode.charAt(0).toUpperCase() + formmode.slice(1); // Edit/View/Delete
+	        pageHeader.textContent = fileType + " - " + modeText;
+	    }
+	});
+
 	
 	</script>
 	
@@ -874,11 +885,7 @@ PURPOSE		: Source Data Mapping
 												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;"
 													th:if="${formmode}=='add'"> Source Data - Add</h6>
 												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;"
-													th:if="${formmode}=='edit'">MCBL - Edit</h6>
-												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;"
-													th:if="${formmode}=='view'">MCBL - View</h6>
-												<h6 style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;"
-													th:if="${formmode}=='delete'">MCBL - Delete</h6>
+													id="pageHeader"></h6>
 												</div>
 											</div>
 										</div>
@@ -985,7 +992,7 @@ PURPOSE		: Source Data Mapping
 															type="text" id="account_no" name="account_no"
 															th:field="*{account_no}"
 															class="form-control form-control-sm"
-															th:disabled="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
+															th:readonly="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
 													</div>
 													<div class="col-sm-1"></div>
 													<label class="col-sm-2">Currency <span
@@ -1053,7 +1060,7 @@ PURPOSE		: Source Data Mapping
 															type="date" id="report_date" name="report_date"
 															th:field="*{report_date}"
 															class="form-control form-control-sm"
-															th:disabled="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
+															th:readonly="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
 													</div>
 												</div>
 
@@ -1133,8 +1140,13 @@ PURPOSE		: Source Data Mapping
 												</div>
 
 
-												<div class="row formline">
-													<label style="height: 2px;"></label>
+												<div class="card-footer text-center">
+													<button th:if="${formmode}=='add'" type="button" class="custom-tab-btn" form="MCBL_List"
+														th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="submitform(this);">Submit</button>
+													<button th:if="${formmode}=='edit'" type="button" class="custom-tab-btn" form="MCBL_List"
+														th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="submitform(this);">Submit</button>
+													<button th:if="${formmode}=='delete'" type="button" class="custom-tab-btn" form="MCBL_List"
+														th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="submitform(this);">Delete</button>
 												</div>
 
 											</form>
@@ -1209,7 +1221,7 @@ PURPOSE		: Source Data Mapping
 															type="text" id="account_no" name="account_no"
 															th:field="*{account_no}"
 															class="form-control form-control-sm"
-															th:disabled="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
+															th:readonly="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
 													</div>
 													<div class="col-sm-1"></div>
 													<label class="col-sm-2">Account Name <span
@@ -1256,7 +1268,7 @@ PURPOSE		: Source Data Mapping
 															type="date" id="report_date" name="report_date"
 															th:field="*{report_date}"
 															class="form-control form-control-sm"
-															th:disabled="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
+															th:readonly="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
 													</div>
 												</div>
 
@@ -2054,6 +2066,14 @@ PURPOSE		: Source Data Mapping
 												<div class="row formline">
 													<label style="height: 2px;"></label>
 												</div>
+												<div class="card-footer text-center">
+													<button th:if="${formmode}=='add'" type="button" class="custom-tab-btn" form="MCBL_List"
+														th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="submitform(this);">Submit</button>
+													<button th:if="${formmode}=='edit'" type="button" class="custom-tab-btn" form="MCBL_List"
+														th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="submitform(this);">Submit</button>
+													<button th:if="${formmode}=='delete'" type="button" class="custom-tab-btn" form="MCBL_List"
+														th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="submitform(this);">Delete</button>
+												</div>
 
 											</form>
 
@@ -2126,7 +2146,7 @@ PURPOSE		: Source Data Mapping
 															type="text" id="account_no" name="account_no"
 															th:field="*{account_no}"
 															class="form-control form-control-sm"
-															th:disabled="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
+															th:readonly="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
 													</div>
 													<div class="col-sm-1"></div>
 													<label class="col-sm-2">Customer Name <span
@@ -2520,11 +2540,19 @@ PURPOSE		: Source Data Mapping
 															type="date" id="report_date" name="report_date"
 															th:field="*{report_date}"
 															class="form-control form-control-sm"
-															th:disabled="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
+															th:readonly="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
 													</div>
 												</div>
 												<div class="row formline">
 													<label style="height: 2px;"></label>
+												</div>
+												<div class="card-footer text-center">
+													<button th:if="${formmode}=='add'" type="button" class="custom-tab-btn" form="MCBL_List"
+														th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="submitform(this);">Submit</button>
+													<button th:if="${formmode}=='edit'" type="button" class="custom-tab-btn" form="MCBL_List"
+														th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="submitform(this);">Submit</button>
+													<button th:if="${formmode}=='delete'" type="button" class="custom-tab-btn" form="MCBL_List"
+														th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="submitform(this);">Delete</button>
 												</div>
 
 											</form>
@@ -2599,7 +2627,7 @@ PURPOSE		: Source Data Mapping
 															type="text" id="account_no" name="account_no"
 															th:field="*{account_no}"
 															class="form-control form-control-sm"
-															th:disabled="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
+															th:readonly="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
 													</div>
 													<div class="col-sm-1"></div>
 													<label class="col-sm-2">Account Name <span
@@ -2754,7 +2782,7 @@ PURPOSE		: Source Data Mapping
 															type="date" id="report_date" name="report_date"
 															th:field="*{report_date}"
 															class="form-control form-control-sm"
-															th:disabled="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
+															th:readonly="${formmode}=='view' or ${formmode}=='verify' or ${formmode}=='delete'" />
 													</div>
 												</div>
 
@@ -2993,27 +3021,19 @@ PURPOSE		: Source Data Mapping
 													<div class="col-sm-1"></div>
 
 												</div>
+												<div class="card-footer text-center">
+													<button th:if="${formmode}=='add'" type="button" class="custom-tab-btn" form="MCBL_List"
+														th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="submitform(this);">Submit</button>
+													<button th:if="${formmode}=='edit'" type="button" class="custom-tab-btn" form="MCBL_List"
+														th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="submitform(this);">Submit</button>
+													<button th:if="${formmode}=='delete'" type="button" class="custom-tab-btn" form="MCBL_List"
+														th:attr="data-formmode=${formmode}" id="btnSubmit" onclick="submitform(this);">Delete</button>
+												</div>
 
 											</form>
 
 										</div>
-										<div class="card-footer text-center">
-											<!--<button type="button" class="custom-tab-btn" id="btnHome"
-												onclick="home();">Home</button>-->
-											<button th:if="${formmode}=='add'" type="button" class="custom-tab-btn"
-												form="MCBL_List" th:attr="data-formmode=${formmode}" id="btnSubmit"
-												onclick="submitform(this);">Submit</button>
-											<button th:if="${formmode}=='edit'" type="button" class="custom-tab-btn"
-												form="MCBL_List" th:attr="data-formmode=${formmode}" id="btnSubmit"
-												onclick="submitform(this);">Submit</button>
-											<button th:if="${formmode}=='delete'" type="button" class="custom-tab-btn"
-												form="MCBL_List" th:attr="data-formmode=${formmode}" id="btnSubmit"
-												onclick="deleteSubmit(this);">Delete</button>
-
-										<!--	<button type="button" class="custom-tab-btn" id="btnBack"
-												onclick="back();">Back</button>-->
-
-										</div>
+										
 									</div>
 									<!-----------------------------------------------------BFDB Edit end------------------------------------>
 

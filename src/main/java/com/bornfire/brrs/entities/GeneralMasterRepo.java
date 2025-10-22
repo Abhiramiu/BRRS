@@ -4,8 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface GeneralMasterRepo extends JpaRepository<GeneralMasterEntity, String> {
 
@@ -60,7 +62,12 @@ public interface GeneralMasterRepo extends JpaRepository<GeneralMasterEntity, St
 GeneralMasterEntity getdataBybfbl(String account_no, Date reportDate);
     
     
-    
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM GENERAL_MASTER_TABLE WHERE account_no = ?1 AND TRUNC(REPORT_DATE) = TRUNC(?2)",
+           nativeQuery = true)
+    int deletedata(String account_no, Date reportDate);
     
     // ---------------- MCBL ----------------
     @Query(value = "SELECT * FROM GENERAL_MASTER_TABLE " +

@@ -57,8 +57,11 @@ int checkIfReportDateExists(@Param("report_date") String report_date);
 	void deleteByKeysAndReportDateBatch(@Param("keys") List<Object[]> keys,
 	                                    @Param("reportDate") Date reportDate);
 	
+	@Query(value = "SELECT * FROM BRRS_MCBL WHERE MCBL_HEAD_ACC_NO = CAST(?1 AS VARCHAR2(50)) AND TRUNC(REPORT_DATE) = TRUNC(?2)", nativeQuery = true)
+	MCBL_Entity getdataByAcc(String mcbl_head_acc_no, Date reportDate);
 
-    @Query(value = "SELECT * FROM BRRS_MCBL WHERE mcbl_head_acc_no=?1 AND  REPORT_DATE =?2", nativeQuery = true)
-    MCBL_Entity getdataByAcc(String mcbl_head_acc_no,Date reportDate);
+    
+    
+    
 
 }
