@@ -68,12 +68,6 @@ public class M_CA1_Detail_Entity {
 	   public void setReport_label(String report_label) {
 		   this.report_label = report_label;
 	   }
-	   public String getreport_addl_criteria_1() {
-		   return getreport_addl_criteria_1();
-	   }
-	   public void setreport_addl_criteria_1(String report_addl_criteria_1) {
-		   this.report_addl_criteria_1 = report_addl_criteria_1;
-	   }
 	   public String getReport_remarks() {
 		   return report_remarks;
 	   }
@@ -164,23 +158,31 @@ public class M_CA1_Detail_Entity {
 	   public void setDel_flg(String del_flg) {
 		   this.del_flg = del_flg;
 	   }
-	   public String getreport_addl_criteria_2() {
+	   public String getReport_addl_criteria_2() {
 		   return report_addl_criteria_2;
 	   }
-	   public void setreport_addl_criteria_2(String report_addl_criteria_2) {
+	   public void setReport_addl_criteria_2(String report_addl_criteria_2) {
 		   this.report_addl_criteria_2 = report_addl_criteria_2;
 	   }
-	   public String getreport_addl_criteria_3() {
+	   public String getReport_addl_criteria_3() {
 		   return report_addl_criteria_3;
 	   }
-	   public void setreport_addl_criteria_3(String report_addl_criteria_3) {
+	   public void setReport_addl_criteria_3(String report_addl_criteria_3) {
 		   this.report_addl_criteria_3 = report_addl_criteria_3;
+	   }
+	   public String getReport_addl_criteria_1() {
+		   return report_addl_criteria_1;
+	   }
+	   public void setReport_addl_criteria_1(String report_addl_criteria_1) {
+		   this.report_addl_criteria_1 = report_addl_criteria_1;
 	   }
 	   public M_CA1_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	   }
-
+	   
+	   
+	   
      
     
 }
