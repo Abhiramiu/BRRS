@@ -308,6 +308,31 @@ label.error {
 
 <script th:inline="javascript">
 
+//to get the role id , to check the access level of the user
+$(document).ready(function() {
+    get_userRole(); 
+});
+
+// if logged user is a Maker, maker cannot download the Report
+function get_userRole() {
+    $.ajax({
+        url: "/BRRS/getUserRole",    
+        type: "GET",
+        success: function(roleId) {
+            console.log("User Role ID:", roleId);
+                   if (roleId === "ADM-M" || roleId ==="USR-M") {
+            const button = document.getElementById("custom-tab-btnAdd");
+            if (button) button.style.display = "none";
+        }
+		    
+        },
+        error: function(err) {
+            console.error("Error fetching role:", err);
+        }
+    });
+}
+
+
 $(document).ready(function() {
     // hide loader on normal load
     $('#loader').modal('hide');

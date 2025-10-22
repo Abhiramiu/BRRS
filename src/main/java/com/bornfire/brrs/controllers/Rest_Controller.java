@@ -3,6 +3,7 @@ package com.bornfire.brrs.controllers;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +99,14 @@ public class Rest_Controller {
         return "";
     }
 
+
+    // to get the role if of the user from session
+    @GetMapping("/getUserRole")
+    public String getUserRole(HttpSession session) {
+        String roleId = (String) session.getAttribute("ROLEID");
+        return roleId != null ? roleId : "NO_ROLE";
+    }
+ 
 
 
 	
