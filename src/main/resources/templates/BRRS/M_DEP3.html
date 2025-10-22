@@ -97,8 +97,8 @@ PURPOSE		: BRRSREPORT
         border-color: #0c0c0c;
       }
 
-      .btn-primary:not (:disabled):not (.disabled).active,
-      .btn-primary:not (:disabled):not (.disabled):active,
+      .btn-primary:not(:disabled):not(.disabled).active,
+      .btn-primary:not(:disabled):not(.disabled):active,
       .show > .btn-primary.dropdown-toggle {
         color: #fff;
         background-color: #cc000000;
@@ -240,7 +240,7 @@ PURPOSE		: BRRSREPORT
 
       /* When input or select is focused or has a value, move the label up */
       .form-control:focus ~ .form-legend,
-      .form-control:not (:placeholder-shown) ~ .form-legend {
+      .form-control:not(:placeholder-shown) ~ .form-legend {
         top: -8px;
         font-size: 1rem;
         color: #007bff;
@@ -253,7 +253,7 @@ PURPOSE		: BRRSREPORT
       }
 
       /* Ensure the label returns to the normal color after focus or hover is removed */
-      .form-control:not (:focus) ~ .form-legend {
+      .form-control:not(:focus) ~ .form-legend {
         color: #aaa;
         /* Normal label color */
       }
@@ -327,8 +327,8 @@ PURPOSE		: BRRSREPORT
         text-align:right;
       }
       #color{
-        background-color:#92D050;
-        color: black;
+       background-color: rgb(107, 122, 143);color: white;
+       
         font-weight: bold;
       }
       
@@ -575,10 +575,7 @@ body {
               window.URL.revokeObjectURL(url);
               document.body.removeChild(a);
 
-              showResultModal(
-                "BRRS",
-                "The file has been downloaded successfully."
-              );
+              showResultModal('BRRS', filename + ' downloaded successfully.');
             } else {
               showResultModal(
                 "Information",
@@ -953,456 +950,456 @@ body {
         <th>Over 24</th>
       </tr>
     </thead>
-    <tbody style="font-family: Arial"th:each="reportsummary: ${reportsummary}">
-                     <tr>
-        <td th:text="${reportsummary.r11_foreign_curr_acc_by_curr}" style="text-align: left;"></td>
-        <td th:text="${reportsummary.r11_ex_rate_buy}"th:attr="RowId='R11', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_ex_rate_mid}"   th:attr="RowId='R11', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_ex_rate_sell}"  th:attr="RowId='R11', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_current}"  th:attr="RowId='R11', ColumnId='C5'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_call}" th:attr="RowId='R11', ColumnId='C6'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-         <td th:text="${reportsummary.r11_savings}"th:attr="RowId='R11', ColumnId='C7'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r11_notice_0to31}"  th:attr="RowId='R11', ColumnId='C8'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_notice_32to88}"   th:attr="RowId='R11', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_fix_depo_91_day_depo}"  th:attr="RowId='R11', ColumnId='C10'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_fix_depo_1to2}"  th:attr="RowId='R11', ColumnId='C11'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_fix_depo_4to6}"  th:attr="RowId='R11', ColumnId='C12'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_fix_depo_7to12}"   th:attr="RowId='R11', ColumnId='C13'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_fix_depo_13to18}"  th:attr="RowId='R11', ColumnId='C14'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_fix_depo_19to24}"  th:attr="RowId='R11', ColumnId='C15'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_fix_depo_over24}"  ></td>
-         <td th:text="${reportsummary.r11_cer_of_depo}"th:attr="RowId='R11', ColumnId='C17'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r11_total}" id="color"></td>
-        <td th:text="${reportsummary.r11_pula_equivalent}"   th:attr="RowId='R11', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r11_avg_pula_equivalent}"  th:attr="RowId='R11', ColumnId='C20'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-    </tr>
-                         <tr>
-        <td th:text="${reportsummary.r12_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
-        <td th:text="${reportsummary.r12_ex_rate_buy}"th:attr="RowId='R12', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_ex_rate_mid}"   th:attr="RowId='R12', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_ex_rate_sell}"  th:attr="RowId='R12', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_current}"  th:attr="RowId='R12', ColumnId='C5'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_call}" th:attr="RowId='R12', ColumnId='C6'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-         <td th:text="${reportsummary.r12_savings}"th:attr="RowId='R12', ColumnId='C7'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r12_notice_0to31}"  th:attr="RowId='R12', ColumnId='C8'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_notice_32to88}"   th:attr="RowId='R12', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_fix_depo_91_day_depo}"  th:attr="RowId='R12', ColumnId='C10'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_fix_depo_1to2}"  th:attr="RowId='R12', ColumnId='C11'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_fix_depo_4to6}"  th:attr="RowId='R12', ColumnId='C12'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_fix_depo_7to12}"   th:attr="RowId='R12', ColumnId='C13'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_fix_depo_13to18}"  th:attr="RowId='R12', ColumnId='C14'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_fix_depo_19to24}"  th:attr="RowId='R12', ColumnId='C15'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_fix_depo_over24}"  ></td>
-         <td th:text="${reportsummary.r12_cer_of_depo}"th:attr="RowId='R12', ColumnId='C17'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r12_total}" id="color"></td>
-        <td th:text="${reportsummary.r12_pula_equivalent}"   th:attr="RowId='R12', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r12_avg_pula_equivalent}"  th:attr="RowId='R12', ColumnId='C20'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-    </tr>
-    <tr>
-        <td th:text="${reportsummary.r13_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
-        <td th:text="${reportsummary.r13_ex_rate_buy}"th:attr="RowId='R13', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_ex_rate_mid}"   th:attr="RowId='R13', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_ex_rate_sell}"  th:attr="RowId='R13', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_current}"  th:attr="RowId='R13', ColumnId='C5'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_call}" th:attr="RowId='R13', ColumnId='C6'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-         <td th:text="${reportsummary.r13_savings}"th:attr="RowId='R13', ColumnId='C7'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r13_notice_0to31}"  th:attr="RowId='R13', ColumnId='C8'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_notice_32to88}"   th:attr="RowId='R13', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_fix_depo_91_day_depo}"  th:attr="RowId='R13', ColumnId='C10'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_fix_depo_1to2}"  th:attr="RowId='R13', ColumnId='C11'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_fix_depo_4to6}"  th:attr="RowId='R13', ColumnId='C12'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_fix_depo_7to12}"   th:attr="RowId='R13', ColumnId='C13'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_fix_depo_13to18}"  th:attr="RowId='R13', ColumnId='C14'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_fix_depo_19to24}"  th:attr="RowId='R13', ColumnId='C15'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_fix_depo_over24}"  ></td>
-         <td th:text="${reportsummary.r13_cer_of_depo}"th:attr="RowId='R13', ColumnId='C17'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r13_total}" id="color"></td>
-        <td th:text="${reportsummary.r13_pula_equivalent}"   th:attr="RowId='R13', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r13_avg_pula_equivalent}"  th:attr="RowId='R13', ColumnId='C20'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-    </tr>
-    <tr>
-        <td th:text="${reportsummary.r14_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
-        <td th:text="${reportsummary.r14_ex_rate_buy}"th:attr="RowId='R14', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_ex_rate_mid}"   th:attr="RowId='R14', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_ex_rate_sell}"  th:attr="RowId='R14', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_current}"  th:attr="RowId='R14', ColumnId='C5'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_call}" th:attr="RowId='R14', ColumnId='C6'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-         <td th:text="${reportsummary.r14_savings}"th:attr="RowId='R14', ColumnId='C7'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r14_notice_0to31}"  th:attr="RowId='R14', ColumnId='C8'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_notice_32to88}"   th:attr="RowId='R14', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_fix_depo_91_day_depo}"  th:attr="RowId='R14', ColumnId='C10'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_fix_depo_1to2}"  th:attr="RowId='R14', ColumnId='C11'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_fix_depo_4to6}"  th:attr="RowId='R14', ColumnId='C12'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_fix_depo_7to12}"   th:attr="RowId='R14', ColumnId='C13'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_fix_depo_13to18}"  th:attr="RowId='R14', ColumnId='C14'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_fix_depo_19to24}"  th:attr="RowId='R14', ColumnId='C15'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_fix_depo_over24}"  ></td>
-         <td th:text="${reportsummary.r14_cer_of_depo}"th:attr="RowId='R14', ColumnId='C17'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r14_total}" id="color"></td>
-        <td th:text="${reportsummary.r14_pula_equivalent}"   th:attr="RowId='R14', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r14_avg_pula_equivalent}"  th:attr="RowId='R14', ColumnId='C20'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-    </tr>
-    <tr>
-        <td th:text="${reportsummary.r15_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
-        <td th:text="${reportsummary.r15_ex_rate_buy}"th:attr="RowId='R15', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_ex_rate_mid}"   th:attr="RowId='R15', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_ex_rate_sell}"  th:attr="RowId='R15', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_current}"  th:attr="RowId='R15', ColumnId='C5'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_call}" th:attr="RowId='R15', ColumnId='C6'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-         <td th:text="${reportsummary.r15_savings}"th:attr="RowId='R15', ColumnId='C7'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r15_notice_0to31}"  th:attr="RowId='R15', ColumnId='C8'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_notice_32to88}"   th:attr="RowId='R15', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_fix_depo_91_day_depo}"  th:attr="RowId='R15', ColumnId='C10'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_fix_depo_1to2}"  th:attr="RowId='R15', ColumnId='C11'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_fix_depo_4to6}"  th:attr="RowId='R15', ColumnId='C12'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_fix_depo_7to12}"   th:attr="RowId='R15', ColumnId='C13'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_fix_depo_13to18}"  th:attr="RowId='R15', ColumnId='C14'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_fix_depo_19to24}"  th:attr="RowId='R15', ColumnId='C15'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_fix_depo_over24}"  ></td>
-         <td th:text="${reportsummary.r15_cer_of_depo}"th:attr="RowId='R15', ColumnId='C17'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r15_total}" id="color"></td>
-        <td th:text="${reportsummary.r15_pula_equivalent}"   th:attr="RowId='R15', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r15_avg_pula_equivalent}"  th:attr="RowId='R15', ColumnId='C20'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-    </tr>
-    <tr>
-        <td th:text="${reportsummary.r16_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
-        <td th:text="${reportsummary.r16_ex_rate_buy}"th:attr="RowId='R16', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_ex_rate_mid}"   th:attr="RowId='R16', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_ex_rate_sell}"  th:attr="RowId='R16', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_current}"  th:attr="RowId='R16', ColumnId='C5'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_call}" th:attr="RowId='R16', ColumnId='C6'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-         <td th:text="${reportsummary.r16_savings}"th:attr="RowId='R16', ColumnId='C7'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r16_notice_0to31}"  th:attr="RowId='R16', ColumnId='C8'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_notice_32to88}"   th:attr="RowId='R16', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_fix_depo_91_day_depo}"  th:attr="RowId='R16', ColumnId='C10'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_fix_depo_1to2}"  th:attr="RowId='R16', ColumnId='C11'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_fix_depo_4to6}"  th:attr="RowId='R16', ColumnId='C12'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_fix_depo_7to12}"   th:attr="RowId='R16', ColumnId='C13'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_fix_depo_13to18}"  th:attr="RowId='R16', ColumnId='C14'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_fix_depo_19to24}"  th:attr="RowId='R16', ColumnId='C15'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_fix_depo_over24}"  ></td>
-         <td th:text="${reportsummary.r16_cer_of_depo}"th:attr="RowId='R16', ColumnId='C17'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r16_total}" id="color"></td>
-        <td th:text="${reportsummary.r16_pula_equivalent}"   th:attr="RowId='R16', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r16_avg_pula_equivalent}"  th:attr="RowId='R16', ColumnId='C20'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-    </tr>
-    <tr>
-        <td th:text="${reportsummary.r17_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
-        <td th:text="${reportsummary.r17_ex_rate_buy}"th:attr="RowId='R17', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r17_ex_rate_mid}"   th:attr="RowId='R17', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r17_ex_rate_sell}"  th:attr="RowId='R17', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-      
-        <td th:text="${reportsummary.r17_current}"id="color" ></td>
-        <td th:text="${reportsummary.r17_call}" id="color"></td>
-        <td th:text="${reportsummary.r17_savings} "id="color"></td>
-        <td th:text="${reportsummary.r17_notice_0to31}"id="color"></td>
-        <td th:text="${reportsummary.r17_notice_32to88}"id="color"></td>
-        <td th:text="${reportsummary.r17_fix_depo_91_day_depo}"id="color"></td>
-        <td th:text="${reportsummary.r17_fix_depo_1to2}"id="color" ></td>
-        <td th:text="${reportsummary.r17_fix_depo_4to6}" id="color"></td>
-        <td th:text="${reportsummary.r17_fix_depo_7to12}"id="color" ></td>
-        <td th:text="${reportsummary.r17_fix_depo_13to18}"id="color"></td>
-        <td th:text="${reportsummary.r17_fix_depo_19to24}"id="color" ></td>
-        <td th:text="${reportsummary.r17_fix_depo_over24}" id="color" ></td>
-        <td th:text="${reportsummary.r17_cer_of_depo}"id="color"></td>
-        <td th:text="${reportsummary.r17_total}"id="color"></td>
-        <td th:text="${reportsummary.r17_pula_equivalent}"id="color"></td>
-        <td th:text="${reportsummary.r17_avg_pula_equivalent}"id="color"></td>
-    
-    </tr>
-     <tr>
-        <td th:text="${reportsummary.r18_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
-        <td th:text="${reportsummary.r18_ex_rate_buy}"th:attr="RowId='R18', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_ex_rate_mid}"   th:attr="RowId='R18', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_ex_rate_sell}"  th:attr="RowId='R18', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_current}"  th:attr="RowId='R18', ColumnId='C5'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_call}" th:attr="RowId='R18', ColumnId='C6'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-         <td th:text="${reportsummary.r18_savings}"th:attr="RowId='R18', ColumnId='C7'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r18_notice_0to31}"  th:attr="RowId='R18', ColumnId='C8'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_notice_32to88}"   th:attr="RowId='R18', ColumnId='C9'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_fix_depo_91_day_depo}"  th:attr="RowId='R18', ColumnId='C10'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_fix_depo_1to2}"  th:attr="RowId='R18', ColumnId='C11'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_fix_depo_4to6}"  th:attr="RowId='R18', ColumnId='C12'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_fix_depo_7to12}"   th:attr="RowId='R18', ColumnId='C13'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_fix_depo_13to18}"  th:attr="RowId='R18', ColumnId='C14'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_fix_depo_19to24}"  th:attr="RowId='R18', ColumnId='C15'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_fix_depo_over24}"  ></td>
-         <td th:text="${reportsummary.r18_cer_of_depo}"th:attr="RowId='R18', ColumnId='C17'"
-												onclick="showdetailsbyRowAndColumn(this)" ></td>
-        <td th:text="${reportsummary.r18_total}"></td>
-        <td th:text="${reportsummary.r18_pula_equivalent}"   th:attr="RowId='R18', ColumnId='C19'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary.r18_avg_pula_equivalent}"  th:attr="RowId='R18', ColumnId='C20'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-    </tr>
-    </tbody>
-                  </table>
-                </div>
-                   </div>
-                  
-           <div class="table-container">
+	 <tbody style="font-family: Arial"th:each="reportsummary: ${reportsummary}">
+	                     <tr>
+	        <td  th:text="${reportsummary.r11_foreign_curr_acc_by_curr}" style="text-align: left;"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_ex_rate_buy,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_ex_rate_mid,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_ex_rate_sell,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_current,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C5'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_call,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C6'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r11_savings,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_notice_0to31,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C8'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_notice_32to88,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_fix_depo_91_day_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C10'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_fix_depo_1to2,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C11'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_fix_depo_4to6,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C12'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_fix_depo_7to12,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C13'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_fix_depo_13to18,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C14'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C15'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_fix_depo_over24,1,'COMMA',0,'POINT')}"  ></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r11_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C17'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_total,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r11_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R11', ColumnId='C20'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	    </tr>
+	                         <tr>
+	        <td  th:text="${reportsummary.r12_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_ex_rate_buy,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_ex_rate_mid,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_ex_rate_sell,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_current,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C5'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_call,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C6'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r12_savings,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_notice_0to31,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C8'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_notice_32to88,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_fix_depo_91_day_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C10'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_fix_depo_1to2,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C11'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_fix_depo_4to6,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C12'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_fix_depo_7to12,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C13'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_fix_depo_13to18,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C14'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C15'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_fix_depo_over24,1,'COMMA',0,'POINT')}"  ></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r12_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C17'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_total,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r12_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R12', ColumnId='C20'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	    </tr>
+	    <tr>
+	        <td  th:text="${reportsummary.r13_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_ex_rate_buy,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_ex_rate_mid,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_ex_rate_sell,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_current,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C5'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_call,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C6'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r13_savings,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_notice_0to31,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C8'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_notice_32to88,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_fix_depo_91_day_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C10'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_fix_depo_1to2,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C11'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_fix_depo_4to6,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C12'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_fix_depo_7to12,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C13'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_fix_depo_13to18,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C14'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C15'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_fix_depo_over24,1,'COMMA',0,'POINT')}"  ></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r13_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C17'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_total,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r13_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R13', ColumnId='C20'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	    </tr>
+	    <tr>
+	        <td  th:text="${reportsummary.r14_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_ex_rate_buy,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_ex_rate_mid,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_ex_rate_sell,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_current,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C5'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_call,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C6'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r14_savings,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_notice_0to31,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C8'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_notice_32to88,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_fix_depo_91_day_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C10'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_fix_depo_1to2,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C11'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_fix_depo_4to6,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C12'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_fix_depo_7to12,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C13'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_fix_depo_13to18,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C14'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C15'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_fix_depo_over24,1,'COMMA',0,'POINT')}"  ></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r14_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C17'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_total,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r14_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R14', ColumnId='C20'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	    </tr>
+	    <tr>
+	        <td  th:text="${reportsummary.r15_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_ex_rate_buy,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_ex_rate_mid,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_ex_rate_sell,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_current,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C5'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_call,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C6'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r15_savings,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_notice_0to31,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C8'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_notice_32to88,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_fix_depo_91_day_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C10'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_fix_depo_1to2,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C11'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_fix_depo_4to6,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C12'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_fix_depo_7to12,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C13'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_fix_depo_13to18,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C14'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C15'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_fix_depo_over24,1,'COMMA',0,'POINT')}"  ></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r15_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C17'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_total,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r15_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R15', ColumnId='C20'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	    </tr>
+	    <tr>
+	        <td  th:text="${reportsummary.r16_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_ex_rate_buy,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_ex_rate_mid,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_ex_rate_sell,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_current,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C5'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_call,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C6'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r16_savings,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_notice_0to31,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C8'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_notice_32to88,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_fix_depo_91_day_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C10'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_fix_depo_1to2,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C11'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_fix_depo_4to6,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C12'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_fix_depo_7to12,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C13'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_fix_depo_13to18,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C14'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C15'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_fix_depo_over24,1,'COMMA',0,'POINT')}"  ></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r16_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C17'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_total,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r16_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R16', ColumnId='C20'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	    </tr>
+	    <tr>
+	        <td  th:text="${reportsummary.r17_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_ex_rate_buy,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R17', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_ex_rate_mid,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R17', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_ex_rate_sell,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R17', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	      
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_current,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_call,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_savings,1,'COMMA',0,'POINT')} "id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_notice_0to31,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_notice_32to88,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_fix_depo_91_day_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_fix_depo_1to2,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_fix_depo_4to6,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_fix_depo_7to12,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_fix_depo_13to18,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_total,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r17_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" id="color"></td>
+	    
+	    </tr>
+	     <tr>
+	        <td  th:text="${reportsummary.r18_foreign_curr_acc_by_curr}"style="text-align: left;" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_ex_rate_buy,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_ex_rate_mid,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_ex_rate_sell,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_current,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C5'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_call,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C6'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r18_savings,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_notice_0to31,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C8'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_notice_32to88,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_91_day_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C10'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_1to2,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C11'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_4to6,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C12'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_7to12,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C13'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_13to18,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C14'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C15'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_over24,1,'COMMA',0,'POINT')}"  ></td>
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r18_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C17'"
+													onclick="showdetailsbyRowAndColumn(this)" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_total,1,'COMMA',0,'POINT')}" ></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C19'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R18', ColumnId='C20'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	    </tr>
+	    </tbody>
+	                  </table>
+	                </div>
+	                   </div>
+	                  
+	           <div class="table-container">
 
-    <figure>
-        <figcaption class="table-heading">(39 B) PURPOSE OF FOREIGN CURRENCY <br>ACCOUNTS (P'000)					
-</figcaption>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <td></td>
-                    <th class="import-header">Import</th>
-                    <th class="investment-header">Investment</th>
-                    <th class="other-header">Other</th>
-                </tr>
-            </thead>
-               <tbody style="font-family: Arial"th:each="reportsummary1: ${reportsummary1}">
-                     <tr>
-        <td th:text="${reportsummary1.r28_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
-          <td th:text="${reportsummary1.r28_import}"   th:attr="RowId='R28', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary1.r28_investment}"  th:attr="RowId='R28', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td th:text="${reportsummary1.r28_other}"  th:attr="RowId='R28', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+	    <figure>
+	        <figcaption class="table-heading">(39 B) PURPOSE OF FOREIGN CURRENCY <br>ACCOUNTS (P'000)					
+	</figcaption>
+	        <table class="data-table">
+	            <thead>
+	                <tr>
+	                    <td></td>
+	                    <th class="import-header">Import</th>
+	                    <th class="investment-header">Investment</th>
+	                    <th class="other-header">Other</th>
+	                </tr>
+	            </thead>
+	               <tbody style="font-family: Arial"th:each="reportsummary1: ${reportsummary1}">
+	                     <tr>
+	        <td  th:text="${reportsummary1.r28_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+	          <td  th:text="${#numbers.formatDecimal(reportsummary1.r28_import,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R28', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary1.r28_investment,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R28', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	                         <td  th:text="${#numbers.formatDecimal(reportsummary1.r28_other,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R28', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-                     </tr>
-                 <tr>
-        <td th:text="${reportsummary1.r29_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
-          <td th:text="${reportsummary1.r29_import}"   th:attr="RowId='r29', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary1.r29_investment}"  th:attr="RowId='r29', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td th:text="${reportsummary1.r29_other}"  th:attr="RowId='r29', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+	                     </tr>
+	                 <tr>
+	        <td  th:text="${reportsummary1.r29_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+	          <td  th:text="${#numbers.formatDecimal(reportsummary1.r29_import,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='r29', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary1.r29_investment,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='r29', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	                         <td  th:text="${#numbers.formatDecimal(reportsummary1.r29_other,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='r29', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-                     </tr>
-                       <tr>
-        <td th:text="${reportsummary1.r30_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
-          <td th:text="${reportsummary1.r30_import}"   th:attr="RowId='R30', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary1.r30_investment}"  th:attr="RowId='R30', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td th:text="${reportsummary1.r30_other}"  th:attr="RowId='R30', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+	                     </tr>
+	                       <tr>
+	        <td  th:text="${reportsummary1.r30_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+	          <td  th:text="${#numbers.formatDecimal(reportsummary1.r30_import,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R30', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary1.r30_investment,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R30', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	                         <td  th:text="${#numbers.formatDecimal(reportsummary1.r30_other,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R30', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-                     </tr>
-                       <tr>
-        <td th:text="${reportsummary1.r31_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
-          <td th:text="${reportsummary1.r31_import}"   th:attr="RowId='R31', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary1.r31_investment}"  th:attr="RowId='R31', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td th:text="${reportsummary1.r31_other}"  th:attr="RowId='R31', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+	                     </tr>
+	                       <tr>
+	        <td  th:text="${reportsummary1.r31_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+	          <td  th:text="${#numbers.formatDecimal(reportsummary1.r31_import,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R31', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary1.r31_investment,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R31', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	                         <td  th:text="${#numbers.formatDecimal(reportsummary1.r31_other,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R31', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-                     </tr>
+	                     </tr>
 
-                       <tr>
-        <td th:text="${reportsummary1.r32_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
-          <td th:text="${reportsummary1.r32_import}"   th:attr="RowId='R32', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary1.r32_investment}"  th:attr="RowId='R32', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td th:text="${reportsummary1.r32_other}"  th:attr="RowId='R32', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+	                       <tr>
+	        <td  th:text="${reportsummary1.r32_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+	          <td  th:text="${#numbers.formatDecimal(reportsummary1.r32_import,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R32', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary1.r32_investment,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R32', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	                         <td  th:text="${#numbers.formatDecimal(reportsummary1.r32_other,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R32', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-                     </tr>
-                       <tr>
-        <td th:text="${reportsummary1.r33_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
-          <td th:text="${reportsummary1.r33_import}"   th:attr="RowId='R33', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary1.r33_investment}"  th:attr="RowId='R33', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-                         <td th:text="${reportsummary1.r33_other}"  th:attr="RowId='R33', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+	                     </tr>
+	                       <tr>
+	        <td  th:text="${reportsummary1.r33_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+	          <td  th:text="${#numbers.formatDecimal(reportsummary1.r33_import,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R33', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary1.r33_investment,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R33', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+	                         <td  th:text="${#numbers.formatDecimal(reportsummary1.r33_other,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R33', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-                     </tr>
+	                     </tr>
 
-                       <tr>
-        <td th:text="${reportsummary1.r34_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
-          <td th:text="${reportsummary1.r34_import}"   th:attr="RowId='R34', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
-        <td th:text="${reportsummary1.r34_investment}"  th:attr="RowId='R34', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
-                         <td th:text="${reportsummary1.r34_other}"  th:attr="RowId='R34', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
+	                       <tr>
+	        <td  th:text="${reportsummary1.r34_pur_of_frn_cuu_acc}" style="text-align: left;"></td>
+	          <td  th:text="${#numbers.formatDecimal(reportsummary1.r34_import,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R34', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary1.r34_investment,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R34', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
+	                         <td  th:text="${#numbers.formatDecimal(reportsummary1.r34_other,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R34', ColumnId='C4'"
+													onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
 
-                     </tr>
-            </tbody>
-        </table>
-    </figure>
+	                     </tr>
+	            </tbody>
+	        </table>
+	    </figure>
 
-    <figure>
-        <figcaption class="table-heading">(39C)HOLDERS OF FOREIGN CURRENCY <br> ACCOUNTS - RESIDENT/NON-RESIDENT (P'000)								
-</figcaption>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <td></td>
-                    <th class="res-header">Residents</th>
-                    <th class="nonres-header">Non-residents</th>
-                </tr>
-            </thead>
-            <tbody style="font-family: Arial"th:each="reportsummary2: ${reportsummary2}">
-        <tr>
-        <td th:text="${reportsummary2.r28_holder_of_frn_curr_acc}" style="text-align: left;"></td>
-        <td th:text="${reportsummary2.r28_residents}"   th:attr="RowId='R28', ColumnId='C9'"onclick="showdetailsbyRowAndColumn(this)"></td>
-        <td th:text="${reportsummary2.r28_non_residents}"   th:attr="RowId='R28', ColumnId='C10'"onclick="showdetailsbyRowAndColumn(this)"></td>
-        </tr>
-    <tr>
-    <td th:text="${reportsummary2.r29_holder_of_frn_curr_acc}" style="text-align: left;"></td>
-    <td th:text="${reportsummary2.r29_residents}" th:attr="RowId='R29', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td th:text="${reportsummary2.r29_non_residents}" th:attr="RowId='R29', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"></td>
-</tr>
+	    <figure>
+	        <figcaption class="table-heading">(39C)HOLDERS OF FOREIGN CURRENCY <br> ACCOUNTS - RESIDENT/NON-RESIDENT (P'000)								
+	</figcaption>
+	        <table class="data-table">
+	            <thead>
+	                <tr>
+	                    <td></td>
+	                    <th class="res-header">Residents</th>
+	                    <th class="nonres-header">Non-residents</th>
+	                </tr>
+	            </thead>
+	            <tbody style="font-family: Arial"th:each="reportsummary2: ${reportsummary2}">
+	        <tr>
+	        <td  th:text="${reportsummary2.r28_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary2.r28_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R28', ColumnId='C9'"onclick="showdetailsbyRowAndColumn(this)"></td>
+	        <td  th:text="${#numbers.formatDecimal(reportsummary2.r28_non_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R28', ColumnId='C10'"onclick="showdetailsbyRowAndColumn(this)"></td>
+	        </tr>
+	    <tr>
+	    <td  th:text="${reportsummary2.r29_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+	    <td  th:text="${#numbers.formatDecimal(reportsummary2.r29_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R29', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"></td>
+	    <td  th:text="${#numbers.formatDecimal(reportsummary2.r29_non_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R29', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"></td>
+	</tr>
 
-<tr>
-    <td th:text="${reportsummary2.r30_holder_of_frn_curr_acc}" style="text-align: left;"></td>
-    <td th:text="${reportsummary2.r30_residents}" th:attr="RowId='R30', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td th:text="${reportsummary2.r30_non_residents}" th:attr="RowId='R30', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-</tr>
+	<tr>
+	    <td  th:text="${reportsummary2.r30_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+	    <td  th:text="${#numbers.formatDecimal(reportsummary2.r30_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R30', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"></td>
+	    <td  th:text="${#numbers.formatDecimal(reportsummary2.r30_non_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R30', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+	</tr>
 
-<tr>
-    <td th:text="${reportsummary2.r31_holder_of_frn_curr_acc}" style="text-align: left;"></td>
-    <td th:text="${reportsummary2.r31_residents}" th:attr="RowId='R31', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td th:th:text="${reportsummary2.r31_non_residents}" th:attr="RowId='R31', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"></td>
-</tr>
+	<tr>
+	    <td  th:text="${reportsummary2.r31_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+	    <td  th:text="${#numbers.formatDecimal(reportsummary2.r31_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R31', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+	    <td  th:text="${#numbers.formatDecimal(reportsummary2.r31_non_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R31', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"></td>
+	</tr>
 
-<tr>
-    <td th:text="${reportsummary2.r32_holder_of_frn_curr_acc}" style="text-align: left;"></td>
-    <td th:text="${reportsummary2.r32_residents}" th:attr="RowId='R32', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td th:text="${reportsummary2.r32_non_residents}" th:attr="RowId='R32', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"></td>
-</tr>
+	<tr>
+	    <td  th:text="${reportsummary2.r32_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+	    <td  th:text="${#numbers.formatDecimal(reportsummary2.r32_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R32', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"></td>
+	    <td  th:text="${#numbers.formatDecimal(reportsummary2.r32_non_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R32', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"></td>
+	</tr>
 
-<tr>
-    <td th:text="${reportsummary2.r33_holder_of_frn_curr_acc}" style="text-align: left;"></td>
-    <td th:text="${reportsummary2.r33_residents}" th:attr="RowId='R33', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td th:text="${reportsummary2.r33_non_residents}" th:attr="RowId='R33', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"></td>
-</tr>
+	<tr>
+	    <td  th:text="${reportsummary2.r33_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+	    <td  th:text="${#numbers.formatDecimal(reportsummary2.r33_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R33', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"></td>
+	    <td  th:text="${#numbers.formatDecimal(reportsummary2.r33_non_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R33', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"></td>
+	</tr>
 
-<tr>
-    <td th:text="${reportsummary2.r34_holder_of_frn_curr_acc}" style="text-align: left;"></td>
-    <td th:text="${reportsummary2.r34_residents}" th:attr="RowId='R34', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
-    <td th:text="${reportsummary2.r34_non_residents}" th:attr="RowId='R34', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
-</tr>
-            </tbody>
+	<tr>
+	    <td  th:text="${reportsummary2.r34_holder_of_frn_curr_acc}" style="text-align: left;"></td>
+	    <td  th:text="${#numbers.formatDecimal(reportsummary2.r34_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R34', ColumnId='C9'" onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
+	    <td  th:text="${#numbers.formatDecimal(reportsummary2.r34_non_residents,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="RowId='R34', ColumnId='C10'" onclick="showdetailsbyRowAndColumn(this)"id="color"></td>
+	</tr>
+	            </tbody>
         </table>
     </figure>
 
