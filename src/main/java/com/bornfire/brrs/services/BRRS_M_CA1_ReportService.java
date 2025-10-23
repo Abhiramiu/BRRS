@@ -472,7 +472,7 @@ public byte[] BRRS_M_CA1Excel(String filename,String reportId, String fromdate, 
 	                balanceCell.setCellStyle(balanceStyle);
 
 	                row.createCell(4).setCellValue(item.getReport_label());
-	                row.createCell(5).setCellValue(item.getreport_addl_criteria_1());
+	                row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
 	                row.createCell(6).setCellValue(
 	                    item.getReport_date() != null ?
 	                    new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date()) : ""
