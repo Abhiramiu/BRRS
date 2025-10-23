@@ -27,6 +27,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -70,7 +71,7 @@ public class BFDB_Services {
 		int batchSize = 500;
 
 		try (InputStream is = file.getInputStream();
-				Workbook workbook = new XSSFWorkbook(is);
+				Workbook workbook = WorkbookFactory.create(is);
 				Connection conn = dataSource.getConnection()) {
 
 			conn.setAutoCommit(false);

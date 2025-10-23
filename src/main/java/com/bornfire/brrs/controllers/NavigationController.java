@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -59,8 +60,7 @@ import com.bornfire.brrs.entities.BRRSValidationsRepo;
 import com.bornfire.brrs.entities.BRRS_Report_Mast_Rep;
 import com.bornfire.brrs.entities.BankBranchMaster;
 import com.bornfire.brrs.entities.BankBranchMasterRepo;
-import com.bornfire.brrs.entities.BrrsGeneralMasterEntity;
-import com.bornfire.brrs.entities.BrrsGeneralMasterRepo;
+import com.bornfire.brrs.entities.BrrsMcblAccountTrackRepo;
 import com.bornfire.brrs.entities.GeneralMasterEntity;
 import com.bornfire.brrs.entities.GeneralMasterRepo;
 import com.bornfire.brrs.entities.MCBL_Entity;
@@ -96,6 +96,8 @@ public class NavigationController {
 	@Autowired
 	UserProfileRep UserProfileReps;
 
+	@Autowired
+	BrrsMcblAccountTrackRepo accountTrackRepo;
 
 	@Autowired
 	BDGF_Services BDGF_Servicess;
@@ -1074,6 +1076,17 @@ public String BFDB(@RequestParam(required = false) String formmode,
 
 		return "MCBL"; // all tables in one page
 	}
+	
+	
+	@GetMapping("/vieAddDel")
+	public String viewAddDel(Model model) {
+		System.out.println("came to controller");
+	    model.addAttribute("accountTrackList", accountTrackRepo.findAll());
+	    model.addAttribute("selectedFileType", "AD");
+	    return "MCBL";
+	}
+
+
 
 	// =================== START REPORT ===================
 	@GetMapping("/startreport")
@@ -1340,60 +1353,62 @@ public String BFDB(@RequestParam(required = false) String formmode,
 	}
 
 	private ResponseEntity<byte[]> createExcelTemplate(String sheetName, String fileName, List<String> headers)
-			throws Exception {
-		Workbook workbook = new XSSFWorkbook();
-		Sheet sheet = workbook.createSheet(sheetName);
-
-		// 🔹 Header style (bold, centered, grey background)
-		CellStyle headerStyle = workbook.createCellStyle();
-		Font headerFont = workbook.createFont();
-		headerFont.setBold(true);
-		headerStyle.setFont(headerFont);
-		headerStyle.setAlignment(HorizontalAlignment.CENTER);
-		headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-		headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-		headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		headerStyle.setLocked(true);
-
-		// 🔹 Unlocked style for data cells
-		CellStyle unlockedStyle = workbook.createCellStyle();
-		unlockedStyle.setLocked(false);
-
-		// 🔹 Create header row
-		Row headerRow = sheet.createRow(0);
-		for (int i = 0; i < headers.size(); i++) {
-			Cell cell = headerRow.createCell(i);
-			cell.setCellValue(headers.get(i));
-			cell.setCellStyle(headerStyle);
-			sheet.autoSizeColumn(i);
-		}
-
-		// 🔹 Create a few editable rows for user entry
-		for (int r = 1; r <= 100; r++) { // 100 editable rows
-			Row row = sheet.createRow(r);
-			for (int c = 0; c < headers.size(); c++) {
-				Cell cell = row.createCell(c);
-				cell.setCellStyle(unlockedStyle);
-			}
-		}
-
-		// 🔹 Freeze header row
-		sheet.createFreezePane(0, 1);
-
-		// 🔹 Protect sheet to enforce lock/unlock
-		sheet.protectSheet("123");
-
-		// 🔹 Write workbook to byte array
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		workbook.write(out);
-		workbook.close();
-
-		HttpHeaders headersResponse = new HttpHeaders();
-		headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
-		headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-
-		return ResponseEntity.ok().headers(headersResponse).body(out.toByteArray());
+	        throws Exception {
+	    XSSFWorkbook workbook = new XSSFWorkbook();
+	    XSSFSheet sheet = workbook.createSheet(sheetName);
+	    
+	    // 🔹 Header style (bold, centered, grey background, LOCKED)
+	    CellStyle headerStyle = workbook.createCellStyle();
+	    Font headerFont = workbook.createFont();
+	    headerFont.setBold(true);
+	    headerStyle.setFont(headerFont);
+	    headerStyle.setAlignment(HorizontalAlignment.CENTER);
+	    headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+	    headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+	    headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    headerStyle.setLocked(true); // Lock header cells
+	    
+	    // 🔹 Create header row
+	    Row headerRow = sheet.createRow(0);
+	    for (int i = 0; i < headers.size(); i++) {
+	        Cell cell = headerRow.createCell(i);
+	        cell.setCellValue(headers.get(i));
+	        cell.setCellStyle(headerStyle);
+	        sheet.autoSizeColumn(i);
+	    }
+	    
+	    // 🔹 Freeze header row
+	    sheet.createFreezePane(0, 1);
+	    
+	    // 🔹 Protect sheet with password - this makes ALL cells locked by default
+	    sheet.protectSheet("123");
+	    
+	    // 🔹 UNLOCK all rows EXCEPT the header by setting the default cell style
+	    CellStyle unlockedStyle = workbook.createCellStyle();
+	    unlockedStyle.setLocked(false);
+	    
+	    // Apply unlocked style to ALL columns (Excel will use this for new rows too)
+	    for (int i = 0; i < headers.size(); i++) {
+	        sheet.setDefaultColumnStyle(i, unlockedStyle);
+	    }
+	    
+	    // 🔹 Write workbook to byte array
+	    ByteArrayOutputStream out = new ByteArrayOutputStream();
+	    workbook.write(out);
+	    workbook.close();
+	    
+	    HttpHeaders headersResponse = new HttpHeaders();
+	    headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+	    headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+	    
+	    return ResponseEntity.ok()
+	            .headers(headersResponse)
+	            .body(out.toByteArray());
 	}
+
+
+
+
 
 	@GetMapping("/download-templateBDGF")
 	public ResponseEntity<byte[]> downloadTemplateBDGF() throws Exception {
@@ -1402,7 +1417,7 @@ public String BFDB(@RequestParam(required = false) String formmode,
 				"Outstanding Balance", "Oustndng Bal UGX", "Maturity Date", "Maturity Amount", "Scheme",
 				"Cr Pref Int Rate", "SEGMENT", "REFERENCE DATE", "DIFFERENCE", "DAYS", "PERIOD",
 				"EFFECTIVE INTEREST RATE", "REPORT DATE");
-		return createExcelTemplate("DEPOSIT GENERAL", "DEPOSIT GENERAL.xls", headers);
+		return createExcelTemplate("DEPOSIT GENERAL", "DEPOSIT GENERAL.xlsx", headers);
 	}
 
 	@GetMapping("/download-templateBFDB")
@@ -1411,7 +1426,7 @@ public String BFDB(@RequestParam(required = false) String formmode,
 				"SCHM DESC", "ACCT OPN DATE", "ACCT CLS DATE", "BALANCE AS ON", "CCY", "BAL EQUI TO BWP", "INT RATE",
 				"100", "STATUS", "MATURITY DATE", "GL SUB HEAD CODE", "GL SUB HEAD DESC", "TYPE OF ACCOUNTS", "SEGMENT",
 				"PERIOD", "EFFECTIVE INTEREST RATE", "REPORT DATE");
-		return createExcelTemplate("DEPOSIT BOOK", "DEPOSIT BOOK.xls", headers);
+		return createExcelTemplate("DEPOSIT BOOK", "DEPOSIT BOOK.xlsx", headers);
 	}
 
 	@GetMapping("/download-templateBLBF")
@@ -1422,8 +1437,8 @@ public String BFDB(@RequestParam(required = false) String formmode,
 				"ACCT CLS FLG", "CLOSE DATE", "GENDER", "CLASSFICATION CODE", "CONSTITUTION CODE", "MATURITY DATE",
 				"GL SUB HEAD CODE", "GL SUB HEAD DESC", "TENOR(MONTH)", "EMI", "SEGMENT", "FACILITY", "PAST DUE",
 				"PAST DUE DAYS", "ASSET", "PROVISION", "UNSECURED", "INT BUCKET", "STAFF", "SMME", "LABOD", "NEW A/C",
-				"UNDRAWN", "SECTOR", "Period", "Effective Interest Rate", "STAGE", "ECL PROVISION","MAT BUCKET", "REPORT DATE");
-		return createExcelTemplate("LOAN BOOK", "LOAN BOOK.xls", headers);
+				"UNDRAWN", "SECTOR", "Period", "Effective Interest Rate", "STAGE", "ECL PROVISION", "REPORT DATE","MAT BUCKET");
+		return createExcelTemplate("LOAN BOOK", "LOAN BOOK.xlsx", headers);
 	}
 
 }

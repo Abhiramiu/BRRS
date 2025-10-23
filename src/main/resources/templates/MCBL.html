@@ -367,6 +367,30 @@
 			}
 		}
 	</style>
+	<style>
+	below Styles is for Report date validation
+.validation-message {
+    margin-top: 5px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    display: none;
+}
+
+.validation-message.error {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef5350;
+    display: block;
+}
+
+.validation-message.success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #66bb6a;
+    display: block;
+}
+</style>
 	<script>
 
 		function addrole(a) {
@@ -387,7 +411,43 @@
 		}
 
 	</script>
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.querySelector('.month-end-date-picker');
+    const validationMsg = document.getElementById('dateValidation');
+    
+    if (dateInput && validationMsg) {
+        dateInput.addEventListener('input', function() {
+            const selectedDate = this.value;
+            
+            if (!selectedDate) {
+                validationMsg.className = 'validation-message';
+                validationMsg.textContent = '';
+                return;
+            }
+            
+            const date = new Date(selectedDate + 'T00:00:00');
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const lastDay = new Date(year, month + 1, 0).getDate();
+            const selectedDay = date.getDate();
+            
+            if (selectedDay !== lastDay) {
+                validationMsg.className = 'validation-message error';
+                validationMsg.textContent = `Only month-end dates allowed. Last day: ${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+                this.value = '';
+            } else {
+                validationMsg.className = 'validation-message success';
+                validationMsg.textContent = '✓ Valid month-end date';
+                setTimeout(() => {
+                    validationMsg.className = 'validation-message';
+                    validationMsg.textContent = '';
+                }, 2000);
+            }
+        });
+    }
+});
+</script>
 <script>
 function showAlert(message) {
     $("#alertmsgValidation1").text(message);
@@ -595,6 +655,7 @@ function checkReportDate() {
 		});
 	</script>
 
+	
 
 	<script>
 		document.getElementById("downloadMCBLBtn").addEventListener("click", function () {
@@ -704,6 +765,8 @@ function checkReportDate() {
 			});
 		}
 	</script>
+	<script>
+	</script>
 </head>
 
 <title>MCBL</title>
@@ -716,6 +779,69 @@ function checkReportDate() {
 	<div class="container-fluid">
 		<div class="card">
 
+
+<div class="row" th:if="${selectedFileType == 'AD'}">
+				<div class="col-sm-12 finuserapply">
+					<div class="card">
+						<div class="card-header d-flex justify-content-between align-items-center">
+						
+						<div class="d-flex align-items-center">
+								<button type="button" class="custom-tab-btn" id="btnBack" onclick="back();"
+									title="Back">
+									<i class="fa fa-arrow-left" style="color: black;"></i>
+								</button>
+
+								<h6 style="font-family: Verdana; font-weight: bold; margin: 0; font-size: 1.25rem;"
+									>
+									Added/Deleted Account - List
+								</h6>
+							</div>
+						
+						
+						</div>
+						
+						
+						<div class="card-body">
+
+<div class="tab-pane fade"
+     th:classappend="${selectedFileType == 'AD'} ? ' show active' : ''"
+     id="addedDeleted"
+     role="tabpanel"
+     aria-labelledby="addedDeleted-tab">
+  <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-bordered table-sm" id="addedDeletedTable" style="margin-bottom: 0;">
+      <thead class="table-light" style="position: sticky; top: 0; z-index: 2;">
+        <tr>
+          <th>Account No</th>
+          <th>Change Type</th>
+          <th>Report Date</th>
+          <th>Entry User</th>
+          <th>Entry Time</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="track : ${accountTrackList}">
+          <td th:text="${track.accountNo}"></td>
+          <td>
+            <span th:text="${track.changeType}"
+                  th:classappend="${track.changeType == 'ADDED'} ? 'text-success fw-bold' : 'text-danger fw-bold'">
+            </span>
+          </td>
+          <td th:text="${#temporals.format(track.reportDate, 'dd-MM-yyyy')}"></td>
+          <td th:text="${track.entryUser}"></td>
+          <td th:text="${#temporals.format(track.entryTime, 'dd-MM-yyyy HH:mm')}"></td>
+          <td th:text="${track.remarks}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(accountTrackList)}">
+          <td colspan="6" class="text-center">No added or deleted accounts found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+</div></div></div>
 
 
 			<div class="row" th:if="${formmode == 'list'}">
@@ -752,32 +878,48 @@ function checkReportDate() {
 						<div class="card-body">
 
 							<!-- Dropdowns -->
-							<div class="row formline" style="margin-bottom:0px;">
-								<div class="col-sm-auto"></div>
+							<div class="row align-items-center formline" style="margin-bottom: 0px;">
+    <!-- Empty space -->
+    <div class="col-sm-auto"></div>
 
-								<label class="col-sm-1">File Type</label>
-								<div class="col-sm-2">
-									<select id="FileType" class="form-control form-control-sm" name="FileType"
-										autocomplete="off" required>
-										<option value="">Select File Type</option>
-										<option value="MCBL" th:selected="${selectedFileType == 'MCBL'}">MCBL</option>
-										<option value="LOAN_BOOK" th:selected="${selectedFileType == 'LOAN_BOOK'}">LOAN
-											BOOK</option>
-										<option value="DEPOSIT_GENERAL"
-											th:selected="${selectedFileType == 'DEPOSIT_GENERAL'}">DEPOSIT GENERAL
-										</option>
-										<option value="DEPOSIT_BOOK"
-											th:selected="${selectedFileType == 'DEPOSIT_BOOK'}">DEPOSIT BOOK</option>
-									</select>
-								</div>
+    <!-- File Type -->
+    <label class="col-sm-1">File Type</label>
+    <div class="col-sm-2">
+        <select id="FileType" class="form-control form-control-sm" name="FileType" autocomplete="off" required>
+            <option value="">Select File Type</option>
+            <option value="MCBL" th:selected="${selectedFileType == 'MCBL'}">MCBL</option>
+            <option value="LOAN_BOOK" th:selected="${selectedFileType == 'LOAN_BOOK'}">LOAN BOOK</option>
+            <option value="DEPOSIT_GENERAL" th:selected="${selectedFileType == 'DEPOSIT_GENERAL'}">DEPOSIT GENERAL</option>
+            <option value="DEPOSIT_BOOK" th:selected="${selectedFileType == 'DEPOSIT_BOOK'}">DEPOSIT BOOK</option>
+        </select>
+    </div>
 
-								<label class="col-sm-1">Report Date</label>
-								<div class="col-sm-3">
-									<select id="ReportDate" name="ReportDate" class="form-control form-control-sm">
-										<option value="">-- Select Report Date --</option>
-									</select>
-								</div>
-							</div>
+    <!-- Report Date -->
+    <label class="col-sm-1">Report Date</label>
+    <div class="col-sm-3">
+        <select id="ReportDate" name="ReportDate" class="form-control form-control-sm">
+            <option value="">-- Select Report Date --</option>
+        </select>
+    </div>
+
+    <!-- Tabs on the right -->
+    <div class="col-sm d-flex justify-content-end">
+    <ul class="nav nav-tabs mb-0" id="mcblTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a href="./vieAddDel"  th:if="${selectedFileType == 'MCBL'}"
+               class="custom-tab-btn" 
+               id="addedDeleted-tab" 
+               role="tab" 
+               aria-controls="addedDeleted" 
+               aria-selected="false">
+                Added / Deleted Accounts
+            </a>
+        </li>
+    </ul>
+</div>
+
+</div>
+
 
 
 
@@ -1056,14 +1198,15 @@ function checkReportDate() {
 
 										<div class="row formline">
 											<label class="col-sm-2">Report Date</label>
-											<div class="col-sm-3">
-												<input th:if="${formmode}=='add'" type="date" id="report_date"
-													name="report_date" class="form-control form-control-sm"
-													maxlength="24" onchange="checkReportDate();" />
-
-
-
-											</div>
+<div class="col-sm-3">
+    <input th:if="${formmode}=='add'" 
+           type="date" 
+           id="report_date"
+           name="report_date" 
+           class="form-control form-control-sm month-end-date-picker"
+           maxlength="24" />
+    <div class="validation-message" id="dateValidation"></div>
+</div>
 										</div>
 
 
@@ -1074,7 +1217,7 @@ function checkReportDate() {
 											<label class="col-sm-2">MCBL File</label>
 											<div class="col-sm-3">
 												<input th:if="${formmode}=='add'" type="file" id="file" name="file"
-													class="form-control form-control-sm" accept=".xls" />
+													class="form-control form-control-sm" accept=".xls,.xlsx" />
 
 											</div>
 
@@ -1131,7 +1274,7 @@ function checkReportDate() {
 											<label class="col-sm-2">File</label>
 											<div class="col-sm-3">
 												<input th:if="${formmode}=='add'" type="file" id="file1" name="file"
-													class="form-control form-control-sm" accept=".xls" />
+													class="form-control form-control-sm" accept=".xls,.xlsx" />
 											</div>
 										</div>
 										<div class="row formline">
@@ -1177,7 +1320,7 @@ function checkReportDate() {
 											<label class="col-sm-2">File</label>
 											<div class="col-sm-3">
 												<input th:if="${formmode}=='add'" type="file" id="file2" name="file"
-													class="form-control form-control-sm" accept=".xls"/>
+													class="form-control form-control-sm" accept=".xls,.xlsx"/>
 											</div>
 										</div>
 										<div class="row formline">
@@ -1223,7 +1366,7 @@ function checkReportDate() {
 											<label class="col-sm-2">File</label>
 											<div class="col-sm-3">
 												<input th:if="${formmode}=='add'" type="file" id="file3" name="file"
-													class="form-control form-control-sm" accept=".xls"/>
+													class="form-control form-control-sm" accept=".xls,.xlsx"/>
 											</div>
 										</div>
 										<div class="row formline">
@@ -1253,6 +1396,9 @@ function checkReportDate() {
 						</div>
 					</div>
 				</div>
+
+
+				
 			</div>
 		</div>
 
@@ -1531,35 +1677,33 @@ function checkReportDate() {
 document.addEventListener("DOMContentLoaded", function () {
     // All file input IDs
     const fileInputs = ["file", "file1", "file2", "file3"];
-
     fileInputs.forEach(function (id) {
         const input = document.getElementById(id);
         if (input) {
             input.addEventListener("change", function () {
                 const file = this.files[0];
                 if (!file) return;
-
                 const fileName = file.name.toLowerCase();
-                const allowedExtension = /\.xls$/i;
-
+                const allowedExtension = /\.(xls|xlsx)$/i;
                 // ❌ Invalid extension
                 if (!allowedExtension.test(fileName)) {
-                    showModal("❌ Only .xls (Excel 97–2003) files are allowed.<br>Please select a valid .xls file.");
+                    showModal("❌ Only .xls (Excel 97–2003) and .xlsx (Excel 2007+) files are allowed.<br>Please select a valid Excel file.");
                     this.value = "";
                     return false;
                 }
-
-                const validMimeTypes = ["application/vnd.ms-excel"];
+                const validMimeTypes = [
+                    "application/vnd.ms-excel",                                                      // .xls
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"            // .xlsx
+                ];
                 // ❌ Invalid MIME type
                 if (!validMimeTypes.includes(file.type) && file.type !== "") {
-                    showModal("❌ Invalid file type detected.<br>Please upload only .xls (Excel 97–2003) format.");
+                    showModal("❌ Invalid file type detected.<br>Please upload only .xls or .xlsx Excel formats.");
                     this.value = "";
                     return false;
                 }
             });
         }
     });
-
     // Function to show modal alert
     function showModal(message) {
         document.getElementById("alertmsgValidation").innerHTML = message;
