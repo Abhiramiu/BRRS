@@ -1,6 +1,7 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -11,9 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -44,9 +43,11 @@ import org.springframework.web.servlet.ModelAndView;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_LIQ_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Summary_Repo;
 import com.bornfire.brrs.entities.M_LIQ_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_LIQ_Archival_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_LIQ_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LIQ_Detail_Entity;
 import com.bornfire.brrs.entities.M_LIQ_Manual_Summary_Entity;
@@ -75,11 +76,12 @@ public class BRRS_M_LIQ_ReportService {
 
 	@Autowired
 	BRRS_M_LIQ_Archival_Summary_Repo m_liq_Archival_Summary_Repo;
-	
+
 	@Autowired
-	BRRS_M_LIQ_Manual_Summary_Repo  m_liq_Manual_Summary_Repo;
-	
-	
+	BRRS_M_LIQ_Manual_Summary_Repo m_liq_Manual_Summary_Repo;
+
+	@Autowired
+	BRRS_M_LIQ_Manual_Archival_Summary_Repo m_liq_Manual_Archival_Summary_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -99,6 +101,7 @@ public class BRRS_M_LIQ_ReportService {
 		if (type.equals("ARCHIVAL") & version != null) {
 			System.out.println(type);
 			List<M_LIQ_Archival_Summary_Entity> T1Master = new ArrayList<M_LIQ_Archival_Summary_Entity>();
+			List<M_LIQ_Archival_Manual_Summary_Entity> T2Master = new ArrayList<M_LIQ_Archival_Manual_Summary_Entity>();
 			System.out.println(version);
 			try {
 				Date d1 = dateformat.parse(todate);
@@ -108,12 +111,15 @@ public class BRRS_M_LIQ_ReportService {
 				// .setParameter(1, df.parse(todate)).getResultList();
 
 				T1Master = m_liq_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+				T2Master = m_liq_Manual_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate),
+						version);
 
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 
 			mv.addObject("reportsummary", T1Master);
+			mv.addObject("reportsummary1", T2Master);
 		} else {
 
 			List<M_LIQ_Summary_Entity> T1Master = new ArrayList<M_LIQ_Summary_Entity>();
@@ -127,7 +133,7 @@ public class BRRS_M_LIQ_ReportService {
 				// .setParameter(1, df.parse(todate)).getResultList();
 				T1Master = brrs_m_liq_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 				T2Master = m_liq_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-				System.out.println("T2Master size "+ T2Master.size());
+				System.out.println("T2Master size " + T2Master.size());
 				mv.addObject("report_date", dateformat.format(d1));
 
 			} catch (ParseException e) {
@@ -158,7 +164,7 @@ public class BRRS_M_LIQ_ReportService {
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
 		int totalPages = 0;
-		
+
 		ModelAndView mv = new ModelAndView();
 
 		Session hs = sessionFactory.getCurrentSession();
@@ -170,14 +176,14 @@ public class BRRS_M_LIQ_ReportService {
 				parsedDate = dateformat.parse(todate);
 			}
 
-			String rowId = null;
-			String columnId = null;
+			String reportLable = null;
+			String reportAddlCriteria_1 = null;
 			// ✅ Split filter string into rowId & columnId
 			if (filter != null && filter.contains(",")) {
 				String[] parts = filter.split(",");
 				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
+					reportLable = parts[0];
+					reportAddlCriteria_1 = parts[1];
 				}
 			}
 
@@ -186,8 +192,8 @@ public class BRRS_M_LIQ_ReportService {
 				System.out.println(type);
 				// 🔹 Archival branch
 				List<M_LIQ_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = m_liq_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+				if (reportLable != null && reportAddlCriteria_1 != null) {
+					T1Dt1 = m_liq_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate, version);
 				} else {
 					T1Dt1 = m_liq_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
 				}
@@ -200,8 +206,8 @@ public class BRRS_M_LIQ_ReportService {
 				// 🔹 Current branch
 				List<M_LIQ_Detail_Entity> T1Dt1;
 
-				if (rowId != null && columnId != null) {
-					T1Dt1 = brrs_m_liq_detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+				if (reportLable != null && reportAddlCriteria_1 != null) {
+					T1Dt1 = brrs_m_liq_detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate);
 				} else {
 					T1Dt1 = brrs_m_liq_detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
 					totalPages = brrs_m_liq_detail_Repo.getdatacount(parsedDate);
@@ -252,7 +258,8 @@ public class BRRS_M_LIQ_ReportService {
 		// Fetch data
 
 		List<M_LIQ_Summary_Entity> dataList = brrs_m_liq_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-		List<M_LIQ_Manual_Summary_Entity> dataList1 = m_liq_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+		List<M_LIQ_Manual_Summary_Entity> dataList1 = m_liq_Manual_Summary_Repo
+				.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_LIQ report. Returning empty result.");
@@ -432,17 +439,27 @@ public class BRRS_M_LIQ_ReportService {
 					}
 
 					// row21
+					
 					row = sheet.getRow(20);
+					if (row == null) row = sheet.createRow(20);
 
-					// Column 2 - total
-					cellE = row.createCell(4);
+					// Reuse existing cell if it exists, otherwise create new
+					cellE = row.getCell(4);
+					if (cellE == null) cellE = row.createCell(4);
+
 					if (record.getR21_total() != null) {
-						cellE.setCellValue(record.getR21_total().doubleValue());
-						cellE.setCellStyle(numberStyle);
+					    cellE.setCellValue(record.getR21_total().doubleValue());
 					} else {
-						cellE.setCellValue("");
-						cellE.setCellStyle(textStyle);
+					    cellE.setCellValue(0); // or leave previous value if preferred
 					}
+					/*
+					 * row = sheet.getRow(20);
+					 * 
+					 * // Column 2 - total cellE = row.createCell(4); if (record.getR21_total() !=
+					 * null) { cellE.setCellValue(record.getR21_total().doubleValue());
+					 * cellE.setCellStyle(numberStyle); } else { cellE.setCellValue("");
+					 * cellE.setCellStyle(textStyle); }
+					 */
 
 					// row22
 					row = sheet.getRow(21);
@@ -470,18 +487,30 @@ public class BRRS_M_LIQ_ReportService {
 						cellE.setCellStyle(textStyle);
 					}
 
+					
+					
+					
 					// row25
 					row = sheet.getRow(24);
+					if (row == null) row = sheet.createRow(24);
 
-					// Column 2 - total
-					cellE = row.createCell(4);
+					// Reuse existing cell if it exists, otherwise create new
+					cellE = row.getCell(4);
+					if (cellE == null) cellE = row.createCell(4);
+
 					if (record.getR25_total() != null) {
-						cellE.setCellValue(record.getR25_total().doubleValue());
-						cellE.setCellStyle(numberStyle);
+					    cellE.setCellValue(record.getR25_total().doubleValue());
 					} else {
-						cellE.setCellValue("");
-						cellE.setCellStyle(textStyle);
+					    cellE.setCellValue(0); // or leave as is if you prefer
 					}
+					/*
+					 * // row25 row = sheet.getRow(24);
+					 * 
+					 * // Column 2 - total cellE = row.createCell(4); if (record.getR25_total() !=
+					 * null) { cellE.setCellValue(record.getR25_total().doubleValue());
+					 * cellE.setCellStyle(numberStyle); } else { cellE.setCellValue("");
+					 * cellE.setCellStyle(textStyle); }
+					 */
 
 					// row26
 					row = sheet.getRow(25);
@@ -524,18 +553,30 @@ public class BRRS_M_LIQ_ReportService {
 					}
 
 					// row32
+					
 					row = sheet.getRow(31);
+					if (row == null) row = sheet.createRow(31);
 
-					// Column 2 - total
-					cellE = row.createCell(4);
+					cellE = row.getCell(4);
+					if (cellE == null) cellE = row.createCell(4);
+
 					if (record.getR32_total() != null) {
-						cellE.setCellValue(record.getR32_total().doubleValue());
-						cellE.setCellStyle(numberStyle);
+					    cellE.setCellValue(record.getR32_total().doubleValue());
 					} else {
-						cellE.setCellValue("");
-						cellE.setCellStyle(textStyle);
+					    cellE.setCellValue(0); // or leave previous value
 					}
+					
+					
+					/*
+					 * row = sheet.getRow(31);
+					 * 
+					 * // Column 2 - total cellE = row.createCell(4); if (record.getR32_total() !=
+					 * null) { cellE.setCellValue(record.getR32_total().doubleValue());
+					 * cellE.setCellStyle(numberStyle); } else { cellE.setCellValue("");
+					 * cellE.setCellStyle(textStyle); }
+					 */
 
+					
 					// row34
 					row = sheet.getRow(33);
 
@@ -549,18 +590,27 @@ public class BRRS_M_LIQ_ReportService {
 						cellE.setCellStyle(textStyle);
 					}
 
+					
 					// row35
 					row = sheet.getRow(34);
+					if (row == null) row = sheet.createRow(34);
 
-					// Column 2 - total
-					cellE = row.createCell(4);
+					cellE = row.getCell(4);
+					if (cellE == null) cellE = row.createCell(4);
+
 					if (record.getR35_total() != null) {
-						cellE.setCellValue(record.getR35_total().doubleValue());
-						cellE.setCellStyle(numberStyle);
+					    cellE.setCellValue(record.getR35_total().doubleValue());
 					} else {
-						cellE.setCellValue("");
-						cellE.setCellStyle(textStyle);
+					    cellE.setCellValue(0); // or leave previous value
 					}
+					/*
+					 * // row35 row = sheet.getRow(34);
+					 * 
+					 * // Column 2 - total cellE = row.createCell(4); if (record.getR35_total() !=
+					 * null) { cellE.setCellValue(record.getR35_total().doubleValue());
+					 * cellE.setCellStyle(numberStyle); } else { cellE.setCellValue("");
+					 * cellE.setCellStyle(textStyle); }
+					 */
 
 				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
@@ -632,8 +682,7 @@ public class BRRS_M_LIQ_ReportService {
 			balanceStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = { " ID", "HEAD_ACC_NO",  "ACCT BALANCE","DEBIT_EQUIVALENT", "ROWID", "COLUMNID",
-					"REPORT_DATE" };
+			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -658,32 +707,22 @@ public class BRRS_M_LIQ_ReportService {
 				for (M_LIQ_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
-					row.createCell(0).setCellValue(item.getId());
-					row.createCell(1).setCellValue(item.getHeadAccNo());
-					
-
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
 					// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(2);
-					if (item.getAcctBalanceInPula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
 					balanceCell.setCellStyle(balanceStyle);
-					
-					
-					balanceCell = row.createCell(3);
-					if (item.getDebitEquivalent() != null) {
-						balanceCell.setCellValue(item.getDebitEquivalent().doubleValue());
-					} else {
-						balanceCell.setCellValue(0.000);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-					
+
 					
 
-					row.createCell(4).setCellValue(item.getRowId());
-					row.createCell(5).setCellValue(item.getColumnId());
+					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
@@ -718,6 +757,8 @@ public class BRRS_M_LIQ_ReportService {
 		List<Object> M_LIQArchivallist = new ArrayList<>();
 		try {
 			M_LIQArchivallist = m_liq_Archival_Summary_Repo.getM_LIQarchival();
+			M_LIQArchivallist = m_liq_Manual_Archival_Summary_Repo.getM_LIQmanualarchival();
+			System.out.println("countser" + M_LIQArchivallist.size());
 			System.out.println("countser" + M_LIQArchivallist.size());
 		} catch (Exception e) {
 			// Log the exception
@@ -740,6 +781,8 @@ public class BRRS_M_LIQ_ReportService {
 		}
 
 		List<M_LIQ_Archival_Summary_Entity> dataList = m_liq_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_LIQ_Archival_Manual_Summary_Entity> dataList1 = m_liq_Manual_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
@@ -808,16 +851,17 @@ public class BRRS_M_LIQ_ReportService {
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_LIQ_Archival_Summary_Entity record = dataList.get(i);
+					M_LIQ_Archival_Manual_Summary_Entity record1 = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
 
-//row12
+					// row12
 					row = sheet.getRow(11);
 
-// Column 2 - total
+					// Column 2 - total
 					Cell cellE = row.createCell(4);
 					if (record.getR12_total() != null) {
 						cellE.setCellValue(record.getR12_total().doubleValue());
@@ -827,10 +871,10 @@ public class BRRS_M_LIQ_ReportService {
 						cellE.setCellStyle(textStyle);
 					}
 
-// row13
+					// row13
 					row = sheet.getRow(12);
 
-// Column 2 - total
+					// Column 2 - total
 					cellE = row.createCell(4);
 					if (record.getR13_total() != null) {
 						cellE.setCellValue(record.getR13_total().doubleValue());
@@ -840,10 +884,10 @@ public class BRRS_M_LIQ_ReportService {
 						cellE.setCellStyle(textStyle);
 					}
 
-// row15
+					// row15
 					row = sheet.getRow(14);
 
-// Column 2 - total
+					// Column 2 - total
 					cellE = row.createCell(4);
 					if (record.getR15_total() != null) {
 						cellE.setCellValue(record.getR15_total().doubleValue());
@@ -853,19 +897,23 @@ public class BRRS_M_LIQ_ReportService {
 						cellE.setCellStyle(textStyle);
 					}
 
-					/*
-					 * // row16 row = sheet.getRow(15);
-					 * 
-					 * // Column 2 - total cellE = row.createCell(4); if (record.getR16_total() !=
-					 * null) { cellE.setCellValue(record.getR16_total().doubleValue());
-					 * cellE.setCellStyle(numberStyle); } else { cellE.setCellValue("");
-					 * cellE.setCellStyle(textStyle); }
-					 */
+					// row16
+					row = sheet.getRow(15);
 
-// row17
+					// Column 2 - total
+					cellE = row.createCell(4);
+					if (record1.getR16_total() != null) {
+						cellE.setCellValue(record1.getR16_total().doubleValue());
+						cellE.setCellStyle(numberStyle);
+					} else {
+						cellE.setCellValue("");
+						cellE.setCellStyle(textStyle);
+					}
+
+					// row17
 					row = sheet.getRow(16);
 
-// Column 2 - total
+					// Column 2 - total
 					cellE = row.createCell(4);
 					if (record.getR17_total() != null) {
 						cellE.setCellValue(record.getR17_total().doubleValue());
@@ -875,10 +923,10 @@ public class BRRS_M_LIQ_ReportService {
 						cellE.setCellStyle(textStyle);
 					}
 
-// row18
+					// row18
 					row = sheet.getRow(17);
 
-// Column 2 - total
+					// Column 2 - total
 					cellE = row.createCell(4);
 					if (record.getR18_total() != null) {
 						cellE.setCellValue(record.getR18_total().doubleValue());
@@ -888,82 +936,124 @@ public class BRRS_M_LIQ_ReportService {
 						cellE.setCellStyle(textStyle);
 					}
 
-					/*
-					 * // row19 row = sheet.getRow(18);
-					 * 
-					 * // Column 2 - total cellE = row.createCell(4); if (record1.getR19_total() !=
-					 * null) { cellE.setCellValue(record1.getR19_total().doubleValue());
-					 * cellE.setCellStyle(numberStyle); } else { cellE.setCellValue("");
-					 * cellE.setCellStyle(textStyle); }
-					 * 
-					 * // row20 row = sheet.getRow(19);
-					 * 
-					 * // Column 2 - total cellE = row.createCell(4); if (record1.getR20_total() !=
-					 * null) { cellE.setCellValue(record1.getR20_total().doubleValue());
-					 * cellE.setCellStyle(numberStyle); } else { cellE.setCellValue("");
-					 * cellE.setCellStyle(textStyle); }
-					 */
+					// row19
+					row = sheet.getRow(18);
 
+					// Column 2 - total
+					cellE = row.createCell(4);
+					if (record1.getR19_total() != null) {
+						cellE.setCellValue(record1.getR19_total().doubleValue());
+						cellE.setCellStyle(numberStyle);
+					} else {
+						cellE.setCellValue("");
+						cellE.setCellStyle(textStyle);
+					}
 
-// row21
+					// row20
+					row = sheet.getRow(19);
+
+					// Column 2 - total
+					cellE = row.createCell(4);
+					if (record1.getR20_total() != null) {
+						cellE.setCellValue(record1.getR20_total().doubleValue());
+						cellE.setCellStyle(numberStyle);
+					} else {
+						cellE.setCellValue("");
+						cellE.setCellStyle(textStyle);
+					}
+
+					// row21
+					
 					row = sheet.getRow(20);
+					if (row == null) row = sheet.createRow(20);
 
-// Column 2 - total
-					cellE = row.createCell(4);
+					// Reuse existing cell if it exists, otherwise create new
+					cellE = row.getCell(4);
+					if (cellE == null) cellE = row.createCell(4);
+
 					if (record.getR21_total() != null) {
-						cellE.setCellValue(record.getR21_total().doubleValue());
-						cellE.setCellStyle(numberStyle);
+					    cellE.setCellValue(record.getR21_total().doubleValue());
 					} else {
-						cellE.setCellValue("");
-						cellE.setCellStyle(textStyle);
+					    cellE.setCellValue(0); // or leave previous value if preferred
 					}
-
 					/*
-					 * // row22 row = sheet.getRow(21);
+					 * row = sheet.getRow(20);
 					 * 
-					 * // Column 2 - total cellE = row.createCell(4); if (record.getR22_total() !=
-					 * null) { cellE.setCellValue(record.getR22_total().doubleValue());
-					 * cellE.setCellStyle(numberStyle); } else { cellE.setCellValue("");
-					 * cellE.setCellStyle(textStyle); }
-					 * 
-					 * // row23 row = sheet.getRow(22);
-					 * 
-					 * // Column 2 - total cellE = row.createCell(4); if (record1.getR23_total() !=
-					 * null) { cellE.setCellValue(record1.getR23_total().doubleValue());
+					 * // Column 2 - total cellE = row.createCell(4); if (record.getR21_total() !=
+					 * null) { cellE.setCellValue(record.getR21_total().doubleValue());
 					 * cellE.setCellStyle(numberStyle); } else { cellE.setCellValue("");
 					 * cellE.setCellStyle(textStyle); }
 					 */
-					
-					
-					
-					
-// row25
-					row = sheet.getRow(24);
 
-// Column 2 - total
+					// row22
+					row = sheet.getRow(21);
+
+					// Column 2 - total
 					cellE = row.createCell(4);
-					if (record.getR25_total() != null) {
-						cellE.setCellValue(record.getR25_total().doubleValue());
+					if (record1.getR22_total() != null) {
+						cellE.setCellValue(record1.getR22_total().doubleValue());
 						cellE.setCellStyle(numberStyle);
 					} else {
 						cellE.setCellValue("");
 						cellE.setCellStyle(textStyle);
 					}
 
+					// row23
+					row = sheet.getRow(22);
+
+					// Column 2 - total
+					cellE = row.createCell(4);
+					if (record1.getR23_total() != null) {
+						cellE.setCellValue(record1.getR23_total().doubleValue());
+						cellE.setCellStyle(numberStyle);
+					} else {
+						cellE.setCellValue("");
+						cellE.setCellStyle(textStyle);
+					}
+
+					
+					
+					
+					// row25
+					row = sheet.getRow(24);
+					if (row == null) row = sheet.createRow(24);
+
+					// Reuse existing cell if it exists, otherwise create new
+					cellE = row.getCell(4);
+					if (cellE == null) cellE = row.createCell(4);
+
+					if (record.getR25_total() != null) {
+					    cellE.setCellValue(record.getR25_total().doubleValue());
+					} else {
+					    cellE.setCellValue(0); // or leave as is if you prefer
+					}
 					/*
-					 * // row26 row = sheet.getRow(25);
+					 * // row25 row = sheet.getRow(24);
 					 * 
-					 * // Column 2 - total cellE = row.createCell(4); if (record.getR26_total() !=
-					 * null) { cellE.setCellValue(record.getR26_total().doubleValue());
+					 * // Column 2 - total cellE = row.createCell(4); if (record.getR25_total() !=
+					 * null) { cellE.setCellValue(record.getR25_total().doubleValue());
 					 * cellE.setCellStyle(numberStyle); } else { cellE.setCellValue("");
 					 * cellE.setCellStyle(textStyle); }
 					 */
 
-// row30
-					row = sheet.getRow(29);
-// Column 1 - product name
+					// row26
+					row = sheet.getRow(25);
 
-// Column 2 - total
+					// Column 2 - total
+					cellE = row.createCell(4);
+					if (record1.getR26_total() != null) {
+						cellE.setCellValue(record1.getR26_total().doubleValue());
+						cellE.setCellStyle(numberStyle);
+					} else {
+						cellE.setCellValue("");
+						cellE.setCellStyle(textStyle);
+					}
+
+					// row30
+					row = sheet.getRow(29);
+					// Column 1 - product name
+
+					// Column 2 - total
 					cellE = row.createCell(4);
 					if (record.getR30_total() != null) {
 						cellE.setCellValue(record.getR30_total().doubleValue());
@@ -973,10 +1063,10 @@ public class BRRS_M_LIQ_ReportService {
 						cellE.setCellStyle(textStyle);
 					}
 
-// row31
+					// row31
 					row = sheet.getRow(30);
 
-// Column 2 - total
+					// Column 2 - total
 					cellE = row.createCell(4);
 					if (record.getR31_total() != null) {
 						cellE.setCellValue(record.getR31_total().doubleValue());
@@ -986,23 +1076,35 @@ public class BRRS_M_LIQ_ReportService {
 						cellE.setCellStyle(textStyle);
 					}
 
-// row32
+					// row32
+					
 					row = sheet.getRow(31);
+					if (row == null) row = sheet.createRow(31);
 
-// Column 2 - total
-					cellE = row.createCell(4);
+					cellE = row.getCell(4);
+					if (cellE == null) cellE = row.createCell(4);
+
 					if (record.getR32_total() != null) {
-						cellE.setCellValue(record.getR32_total().doubleValue());
-						cellE.setCellStyle(numberStyle);
+					    cellE.setCellValue(record.getR32_total().doubleValue());
 					} else {
-						cellE.setCellValue("");
-						cellE.setCellStyle(textStyle);
+					    cellE.setCellValue(0); // or leave previous value
 					}
+					
+					
+					/*
+					 * row = sheet.getRow(31);
+					 * 
+					 * // Column 2 - total cellE = row.createCell(4); if (record.getR32_total() !=
+					 * null) { cellE.setCellValue(record.getR32_total().doubleValue());
+					 * cellE.setCellStyle(numberStyle); } else { cellE.setCellValue("");
+					 * cellE.setCellStyle(textStyle); }
+					 */
 
-// row34
+					
+					// row34
 					row = sheet.getRow(33);
 
-// Column 2 - total
+					// Column 2 - total
 					cellE = row.createCell(4);
 					if (record.getR34_total() != null) {
 						cellE.setCellValue(record.getR34_total().doubleValue());
@@ -1012,17 +1114,18 @@ public class BRRS_M_LIQ_ReportService {
 						cellE.setCellStyle(textStyle);
 					}
 
-// row35
+					
+					// row35
 					row = sheet.getRow(34);
+					if (row == null) row = sheet.createRow(34);
 
-// Column 2 - total
-					cellE = row.createCell(4);
+					cellE = row.getCell(4);
+					if (cellE == null) cellE = row.createCell(4);
+
 					if (record.getR35_total() != null) {
-						cellE.setCellValue(record.getR35_total().doubleValue());
-						cellE.setCellStyle(numberStyle);
+					    cellE.setCellValue(record.getR35_total().doubleValue());
 					} else {
-						cellE.setCellValue("");
-						cellE.setCellStyle(textStyle);
+					    cellE.setCellValue(0); // or leave previous value
 					}
 
 				}
@@ -1093,8 +1196,7 @@ public class BRRS_M_LIQ_ReportService {
 			balanceStyle.setBorderRight(border);
 
 // Header row
-			String[] headers = { "ID", "HEAD_ACC_NO",  "ACCT BALANCE", "DEBIT_EQUIVALENT", "ROWID", "COLUMNID",
-					"REPORT_DATE" };
+			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE",  "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -1120,30 +1222,22 @@ public class BRRS_M_LIQ_ReportService {
 				for (M_LIQ_Archival_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
-					row.createCell(0).setCellValue(item.getId());
-					row.createCell(1).setCellValue(item.getHeadAccNo());
-					/* row.createCell(2).setCellValue(item.getAcctName()); */
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					 row.createCell(2).setCellValue(item.getAcctName()); 
 
 // ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(2);
-					if (item.getAcctBalanceInPula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0.000);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-					
-					
-					 balanceCell = row.createCell(3);
-					if (item.getDebitEquivalent() != null) {
-						balanceCell.setCellValue(item.getDebitEquivalent().doubleValue());
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getRowId());
-					row.createCell(5).setCellValue(item.getColumnId());
+					
+					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
@@ -1173,70 +1267,47 @@ public class BRRS_M_LIQ_ReportService {
 			return new byte[0];
 		}
 	}
-	
-	
-	
 
-	  
-	 
-	
-	
-	
-	  
-	  public void updateReport1(M_LIQ_Manual_Summary_Entity updatedEntity) {
-		    System.out.println("Came to services");
-		    System.out.println("Report Date: " + updatedEntity.getReport_date());
+	public void updateReport1(M_LIQ_Manual_Summary_Entity updatedEntity) {
+		System.out.println("Came to services");
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		    M_LIQ_Manual_Summary_Entity existing = m_liq_Manual_Summary_Repo.findById(updatedEntity.getReport_date())
-		            .orElseThrow(() -> new RuntimeException(
-		                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		M_LIQ_Manual_Summary_Entity existing = m_liq_Manual_Summary_Repo.findById(updatedEntity.getReport_date())
+				.orElseThrow(() -> new RuntimeException(
+						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
-		    try {
-		        // 🔹 Only these rows
-		        int[] specialRows = {16, 19, 20, 22, 23, 26};
+		try {
+			// 🔹 Only these rows
+			int[] specialRows = { 16, 19, 20, 22, 23, 26 };
 
-		        for (int i : specialRows) {
-		            String prefix = "R" + i + "_";
-		            String[] fields = { "product", "total" };
+			for (int i : specialRows) {
+				String prefix = "R" + i + "_";
+				String[] fields = { "product", "total" };
 
-		            for (String field : fields) {
-		                String getterName = "get" + prefix + field; // e.g., getR16_product
-		                String setterName = "set" + prefix + field; // e.g., setR16_product
+				for (String field : fields) {
+					String getterName = "get" + prefix + field; // e.g., getR16_product
+					String setterName = "set" + prefix + field; // e.g., setR16_product
 
-		                try {
-		                    Method getter = M_LIQ_Manual_Summary_Entity.class.getMethod(getterName);
-		                    Method setter = M_LIQ_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					try {
+						Method getter = M_LIQ_Manual_Summary_Entity.class.getMethod(getterName);
+						Method setter = M_LIQ_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-		                    Object newValue = getter.invoke(updatedEntity);
-		                    setter.invoke(existing, newValue);
+						Object newValue = getter.invoke(updatedEntity);
+						setter.invoke(existing, newValue);
 
-		                } catch (NoSuchMethodException e) {
-		                    // If getter/setter is missing, just skip
-		                    continue;
-		                }
-		            }
-		        }
+					} catch (NoSuchMethodException e) {
+						// If getter/setter is missing, just skip
+						continue;
+					}
+				}
+			}
 
-		       
-
-		    } catch (Exception e) {
-		        throw new RuntimeException("Error while updating report fields", e);
-		    }
-
-		    // 3️⃣ Save updated entity
-		    m_liq_Manual_Summary_Repo.save(existing);
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating report fields", e);
 		}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+		// 3️⃣ Save updated entity
+		m_liq_Manual_Summary_Repo.save(existing);
+	}
 
 }

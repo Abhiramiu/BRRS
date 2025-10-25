@@ -564,32 +564,26 @@ public class BRRS_ReportsController {
 		@Autowired
 		 BRRS_M_LIQ_ReportService brrs_m_liq_reportservice;
 		
-
 		 @RequestMapping(value = "/M_LIQupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 		 @ResponseBody
 		 public ResponseEntity<String> updateAllReports(
 		         @RequestParam(required = false)
 		         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-		        
-		         @ModelAttribute M_LIQ_Manual_Summary_Entity request2
 		       
+		         @ModelAttribute M_LIQ_Manual_Summary_Entity request2
+		      
 		 ) {
 		     try {
 		         System.out.println("Came to single controller");
-
 		         // set date into all 3 entities
-		         
-		         request2.setReport_date(asondate);
 		        
-		     
-
+		         request2.setReport_date(asondate);
+		       
+		    
 		         // call services
 					/* brrs_m_liq_reportservice.updateReport(request1); */
 		         brrs_m_liq_reportservice.updateReport1(request2);
-		        
-
-
+		       
 		         return ResponseEntity.ok("All Reports Updated Successfully");
 		     } catch (Exception e) {
 		         e.printStackTrace();

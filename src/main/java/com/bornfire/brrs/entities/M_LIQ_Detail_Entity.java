@@ -18,112 +18,101 @@ public class M_LIQ_Detail_Entity {
 	
 	
 	@Id
-	@Column(name = "ID", length = 50)
-	private String id;
+	 @Column(name = "CUST_ID")
+    private String custId;
 
-	@Column(name = "ACCT_NAME", length = 100)
-	private String acctName;
+    @Column(name = "ACCT_NUMBER")
+    private String acctNumber;
 
-	@Column(name = "DATA_TYPE", length = 100)
-	private String dataType;
+    @Column(name = "ACCT_NAME")
+    private String acctName;
+  
 
-	@Column(name = "ROW_ID", length = 100)
-	private String rowId;
+    @Column(name = "DATA_TYPE")
+    private String dataType;
 
-	@Column(name = "COLUMN_ID", length = 100)
-	private String columnId;
+    @Column(name = "REPORT_NAME")
+    private String reportName;
+    
+    @Column(name = "REPORT_LABEL")
+    private String reportLable;
+    
+    @Column(name = "REPORT_ADDL_CRITERIA_1")
+    private String reportAddlCriteria_1;
+    
+    @Column(name = "REPORT_ADDL_CRITERIA_2")
+    private String reportAddlCriteria_2;
 
-	@Column(name = "REPORT_REMARKS", length = 100)
-	private String reportRemarks;
+    @Column(name = "REPORT_ADDL_CRITERIA_3")
+    private String reportAddlCriteria_3;
+    
+    @Column(name = "REPORT_REMARKS")
+    private String reportRemarks;
+    
+    @Column(name = "SANCTION_LIMIT")
+    private String sanctionLimit;
 
-	@Column(name = "MODIFICATION_REMARKS", length = 100)
-	private String modificationRemarks;
+    @Column(name = "MODIFICATION_REMARKS")
+    private String modificationRemarks;
 
-	@Column(name = "DATA_ENTRY_VERSION", length = 100)
-	private String dataEntryVersion;
+    @Column(name = "DATA_ENTRY_VERSION")
+    private String dataEntryVersion;
 
-	@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 2)
-	private BigDecimal acctBalanceInPula;
+    @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+    private BigDecimal acctBalanceInpula;
 
-	@Column(name = "REPORT_DATE")
-	@DateTimeFormat(pattern = "dd-MM-yyyy")
-	private Date reportDate;
 
-	@Column(name = "REPORT_NAME", length = 100)
-	private String reportName;
+    @Column(name = "REPORT_DATE")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private Date reportDate;
 
-	@Column(name = "CREATE_USER", length = 50)
-	private String createUser;
+  
+    @Column(name = "CREATE_USER")
+    private String createUser;
 
-	@Column(name = "CREATE_TIME")
-	@DateTimeFormat(pattern = "dd-MM-yyyy")
-	private Date createTime;
+    @Column(name = "CREATE_TIME")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private Date createTime;
 
-	@Column(name = "MODIFY_USER", length = 50)
-	private String modifyUser;
+    @Column(name = "MODIFY_USER")
+    private String modifyUser;
 
-	@Column(name = "MODIFY_TIME")
-	@DateTimeFormat(pattern = "dd-MM-yyyy")
-	private Date modifyTime;
 
-	@Column(name = "VERIFY_USER", length = 50)
-	private String verifyUser;
+    @Column(name = "MODIFY_TIME")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private Date modifyTime;
 
-	@Column(name = "VERIFY_TIME")
-	@DateTimeFormat(pattern = "dd-MM-yyyy")
-	private Date verifyTime;
+    @Column(name = "VERIFY_USER")
+    private String verifyUser;
 
-	@Column(name = "ENTITY_FLG", length = 1)
-	private String entityFlg;
 
-	@Column(name = "MODIFY_FLG", length = 1)
-	private String modifyFlg;
+    @Column(name = "VERIFY_TIME")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private Date verifyTime;
 
-	@Column(name = "DEL_FLG", length = 1)
-	private String delFlg;
+    @Column(name = "ENTITY_FLG")
+    private char entityFlg;
 
-	@Column(name = "REPORT_NAME_1", length = 500)
-	private String reportName1;
+    @Column(name = "MODIFY_FLG")
+    private char modifyFlg;
 
-	@Column(name = "GL_CODE", length = 50)
-	private String glCode;
+    @Column(name = "DEL_FLG")
+    private char delFlg;
 
-	@Column(name = "GL_SUB_CODE", length = 50)
-	private String glSubCode;
-
-	@Column(name = "HEAD_ACC_NO", length = 50)
-	private String headAccNo;
-
-	@Column(name = "DESCRIPTION", length = 200)
-	private String description;
-
-	@Column(name = "CURRENCY", length = 10)
-	private String currency;
-
-	@Column(name = "DEBIT_BALANCE", precision = 18, scale = 2)
-	private BigDecimal debitBalance;
-
-	@Column(name = "CREDIT_BALANCE", precision = 18, scale = 2)
-	private BigDecimal creditBalance;
-
-	@Column(name = "DEBIT_EQUIVALENT", precision = 18, scale = 2)
-	private BigDecimal debitEquivalent;
-
-	@Column(name = "CREDIT_EQUIVALENT", precision = 18, scale = 2)
-	private BigDecimal creditEquivalent;
-
-	@Column(name = "ENTRY_USER", length = 50)
-	private String entryUser;
-
-	@Column(name = "ENTRY_DATE")
-	private Timestamp entryDate;
-
-	public String getId() {
-		return id;
+	public String getCustId() {
+		return custId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setCustId(String custId) {
+		this.custId = custId;
+	}
+
+	public String getAcctNumber() {
+		return acctNumber;
+	}
+
+	public void setAcctNumber(String acctNumber) {
+		this.acctNumber = acctNumber;
 	}
 
 	public String getAcctName() {
@@ -142,20 +131,44 @@ public class M_LIQ_Detail_Entity {
 		this.dataType = dataType;
 	}
 
-	public String getRowId() {
-		return rowId;
+	public String getReportName() {
+		return reportName;
 	}
 
-	public void setRowId(String rowId) {
-		this.rowId = rowId;
+	public void setReportName(String reportName) {
+		this.reportName = reportName;
 	}
 
-	public String getColumnId() {
-		return columnId;
+	public String getReportLable() {
+		return reportLable;
 	}
 
-	public void setColumnId(String columnId) {
-		this.columnId = columnId;
+	public void setReportLable(String reportLable) {
+		this.reportLable = reportLable;
+	}
+
+	public String getReportAddlCriteria_1() {
+		return reportAddlCriteria_1;
+	}
+
+	public void setReportAddlCriteria_1(String reportAddlCriteria_1) {
+		this.reportAddlCriteria_1 = reportAddlCriteria_1;
+	}
+
+	public String getReportAddlCriteria_2() {
+		return reportAddlCriteria_2;
+	}
+
+	public void setReportAddlCriteria_2(String reportAddlCriteria_2) {
+		this.reportAddlCriteria_2 = reportAddlCriteria_2;
+	}
+
+	public String getReportAddlCriteria_3() {
+		return reportAddlCriteria_3;
+	}
+
+	public void setReportAddlCriteria_3(String reportAddlCriteria_3) {
+		this.reportAddlCriteria_3 = reportAddlCriteria_3;
 	}
 
 	public String getReportRemarks() {
@@ -164,6 +177,14 @@ public class M_LIQ_Detail_Entity {
 
 	public void setReportRemarks(String reportRemarks) {
 		this.reportRemarks = reportRemarks;
+	}
+
+	public String getSanctionLimit() {
+		return sanctionLimit;
+	}
+
+	public void setSanctionLimit(String sanctionLimit) {
+		this.sanctionLimit = sanctionLimit;
 	}
 
 	public String getModificationRemarks() {
@@ -182,12 +203,12 @@ public class M_LIQ_Detail_Entity {
 		this.dataEntryVersion = dataEntryVersion;
 	}
 
-	public BigDecimal getAcctBalanceInPula() {
-		return acctBalanceInPula;
+	public BigDecimal getAcctBalanceInpula() {
+		return acctBalanceInpula;
 	}
 
-	public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
-		this.acctBalanceInPula = acctBalanceInPula;
+	public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+		this.acctBalanceInpula = acctBalanceInpula;
 	}
 
 	public Date getReportDate() {
@@ -196,14 +217,6 @@ public class M_LIQ_Detail_Entity {
 
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
-	}
-
-	public String getReportName() {
-		return reportName;
-	}
-
-	public void setReportName(String reportName) {
-		this.reportName = reportName;
 	}
 
 	public String getCreateUser() {
@@ -254,130 +267,36 @@ public class M_LIQ_Detail_Entity {
 		this.verifyTime = verifyTime;
 	}
 
-	public String getEntityFlg() {
+	public char getEntityFlg() {
 		return entityFlg;
 	}
 
-	public void setEntityFlg(String entityFlg) {
+	public void setEntityFlg(char entityFlg) {
 		this.entityFlg = entityFlg;
 	}
 
-	public String getModifyFlg() {
+	public char getModifyFlg() {
 		return modifyFlg;
 	}
 
-	public void setModifyFlg(String modifyFlg) {
+	public void setModifyFlg(char modifyFlg) {
 		this.modifyFlg = modifyFlg;
 	}
 
-	public String getDelFlg() {
+	public char getDelFlg() {
 		return delFlg;
 	}
 
-	public void setDelFlg(String delFlg) {
+	public void setDelFlg(char delFlg) {
 		this.delFlg = delFlg;
-	}
-
-	public String getReportName1() {
-		return reportName1;
-	}
-
-	public void setReportName1(String reportName1) {
-		this.reportName1 = reportName1;
-	}
-
-	public String getGlCode() {
-		return glCode;
-	}
-
-	public void setGlCode(String glCode) {
-		this.glCode = glCode;
-	}
-
-	public String getGlSubCode() {
-		return glSubCode;
-	}
-
-	public void setGlSubCode(String glSubCode) {
-		this.glSubCode = glSubCode;
-	}
-
-	public String getHeadAccNo() {
-		return headAccNo;
-	}
-
-	public void setHeadAccNo(String headAccNo) {
-		this.headAccNo = headAccNo;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getCurrency() {
-		return currency;
-	}
-
-	public void setCurrency(String currency) {
-		this.currency = currency;
-	}
-
-	public BigDecimal getDebitBalance() {
-		return debitBalance;
-	}
-
-	public void setDebitBalance(BigDecimal debitBalance) {
-		this.debitBalance = debitBalance;
-	}
-
-	public BigDecimal getCreditBalance() {
-		return creditBalance;
-	}
-
-	public void setCreditBalance(BigDecimal creditBalance) {
-		this.creditBalance = creditBalance;
-	}
-
-	public BigDecimal getDebitEquivalent() {
-		return debitEquivalent;
-	}
-
-	public void setDebitEquivalent(BigDecimal debitEquivalent) {
-		this.debitEquivalent = debitEquivalent;
-	}
-
-	public BigDecimal getCreditEquivalent() {
-		return creditEquivalent;
-	}
-
-	public void setCreditEquivalent(BigDecimal creditEquivalent) {
-		this.creditEquivalent = creditEquivalent;
-	}
-
-	public String getEntryUser() {
-		return entryUser;
-	}
-
-	public void setEntryUser(String entryUser) {
-		this.entryUser = entryUser;
-	}
-
-	public Timestamp getEntryDate() {
-		return entryDate;
-	}
-
-	public void setEntryDate(Timestamp entryDate) {
-		this.entryDate = entryDate;
 	}
 
 	public M_LIQ_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+
 
 
 	
