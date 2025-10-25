@@ -46,6 +46,9 @@ public class RegulatoryReportServices {
 	BRRS_M_CA5_ReportService BRRS_M_CA5_reportservice;
 	
 	@Autowired
+	BRRS_M_SP_ReportService BRRS_M_SP_reportservice;
+	
+	@Autowired
 	BRRS_M_SRWA_12F_ReportService BRRS_M_SRWA_12F_reportservice;
 	
 	@Autowired
@@ -181,6 +184,11 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 			
+		case "M_SP":
+			repsummary = BRRS_M_SP_reportservice.getM_SPView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+			
 		case "M_PI":
 			repsummary = BRRS_M_PI_reportservice.getM_PIView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
@@ -285,6 +293,11 @@ public class RegulatoryReportServices {
 			
 		case "M_CA5":
 			repdetail = BRRS_M_CA5_reportservice.getM_CA5currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
+			
+		case "M_SP":
+			repdetail = BRRS_M_SP_reportservice.getM_SPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
 			
@@ -438,6 +451,16 @@ public class RegulatoryReportServices {
 		case "M_CA7":
 			try {
 				repfile = BRRS_M_CA7_reportservice.getM_CA7Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_SP":
+			try {
+				repfile = BRRS_M_SP_reportservice.getM_SPExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -672,6 +695,11 @@ public class RegulatoryReportServices {
 					type, version);
 		}
 		
+		if ("M_SPDetail".equals(filename)) {
+			return BRRS_M_SP_reportservice.getM_SPDetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
+		}
+		
 		if ("M_SRWA_12FDetail".equals(filename)) {
 			return BRRS_M_SRWA_12F_reportservice.BRRS_M_SRWA_12FDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -793,6 +821,15 @@ public class RegulatoryReportServices {
 		case "M_CA7":
 			try {
 				archivalData = BRRS_M_CA7_reportservice.getM_CA7Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_SP":
+			try {
+				archivalData = BRRS_M_SP_reportservice.getM_SPArchival();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
