@@ -1280,7 +1280,7 @@ public String BFDB(@RequestParam(required = false) String formmode,
 		return "BFDB";
 	}
 
-	@PostMapping("addBFDB")
+/*	@PostMapping("addBFDB")
 	@ResponseBody
 	public String addBFDB(@ModelAttribute MultipartFile file, Model md, HttpServletRequest rq) {
 		logger.info("==> Entered BFDB method");
@@ -1297,7 +1297,71 @@ public String BFDB(@RequestParam(required = false) String formmode,
 			return "Error Occurred. Please contact Administrator.";
 		}
 	}
+*/
+	
+	
+	@PostMapping("/startBFDBUpload")
+	@ResponseBody
+	public String startBFDBUpload(@RequestParam("file") MultipartFile file, HttpServletRequest rq) {
+	    String userid = (String) rq.getSession().getAttribute("USERID");
+	    String username = (String) rq.getSession().getAttribute("USERNAME");
+	    String jobId = UUID.randomUUID().toString();
 
+	    try {
+	        BFDB_Servicess.initializeJobStatus(jobId, file, userid, username);
+	        logger.info("BFDB job {} initialized and started.", jobId);
+	        return jobId;
+	    } catch (Exception e) {
+	        logger.error("Error starting BFDB upload: {}", e.getMessage(), e);
+	        return "ERROR_STARTING_JOB";
+	    }
+	}
+
+
+    // ==========================================================
+    // NEW ENDPOINT TO CHECK UPLOAD STATUS
+    // ==========================================================
+    @GetMapping("/checkBFDBUpload")
+    public ResponseEntity<String> checkBFDBUpload(@RequestParam String jobId) {
+
+        String status = BFDB_Servicess.getJobStatus(jobId);
+        System.out.println("checking controller");
+        // The service returns: "PROCESSING", "NOT_FOUND", "COMPLETED:..." or "ERROR:..."
+        if (status.startsWith("COMPLETED:") || status.startsWith("ERROR:")) {
+            // Send final status/result message
+            return ResponseEntity.ok(status); 
+        }
+        if (status.equals("PROCESSING")) {
+            return ResponseEntity.ok("PROCESSING");
+        }
+        
+        return ResponseEntity.ok("NOT_FOUND"); // Should rarely happen if the client polls correctly
+    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 //BLBF
 
 	@RequestMapping(value = "BLBF", method = { RequestMethod.GET, RequestMethod.POST })

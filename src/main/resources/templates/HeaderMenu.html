@@ -912,6 +912,74 @@ color:white;
     display: block;
 }
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // ✅ Wait until DOM is ready (works even if multiple scripts use window.onload)
+    const jobId = sessionStorage.getItem("currentBFDBJobId");
+
+    if (jobId) {
+        console.log("Resuming BFDB job polling:", jobId);
+        checkBFDBUploadStatus(jobId);
+    }
+});
+
+function checkBFDBUploadStatus(jobId) {
+    if (!jobId) return; // safety
+
+    const alertMsg = document.getElementById("alertMessage");
+    if (!alertMsg) {
+        console.error("Alert element not found in DOM!");
+        return;
+    }
+
+    $.ajax({
+        url: 'checkBFDBUpload?jobId=' + encodeURIComponent(jobId),
+        type: "GET",
+        dataType: "text",
+        timeout: 5000,
+        success: function(status) {
+            if (status.startsWith("COMPLETED:")) {
+                sessionStorage.removeItem("currentBFDBJobId");
+                const resultMsg = status.substring("COMPLETED:".length);
+                alertMsg.innerHTML = '✅ BFDB Upload Complete! ' + resultMsg;
+                showAlert();
+                showResultModal('Success', resultMsg);
+            } 
+            else if (status === "PROCESSING") {
+                alertMsg.innerHTML = '⏳ BFDB Upload is processing... (Job ID: ' + jobId + ')';
+                showAlert();
+                setTimeout(() => checkBFDBUploadStatus(jobId), 6000);
+            } 
+            else if (status.startsWith("ERROR:") || status === "NOT_FOUND") {
+                const errorMsg = status.startsWith("ERROR:") 
+                    ? status.substring("ERROR:".length) 
+                    : "Job not found or failed.";
+                alertMsg.innerHTML = 'BFDB Upload finished';
+                showAlert();
+                showResultModal('Job Status', errorMsg);
+                sessionStorage.removeItem("currentBFDBJobId");
+            } 
+            else {
+                alertMsg.innerHTML = 'Unexpected response: ' + status;
+                showAlert();
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Error checking BFDB upload status:', textStatus, errorThrown);
+            if (textStatus === "timeout" || jqXHR.status === 0) {
+                alertMsg.innerHTML = '⏳ BFDB Upload is processing... (Temporary connection issue)';
+                showAlert();
+                setTimeout(() => checkBFDBUploadStatus(jobId), 6000);
+            } else {
+                alertMsg.innerHTML = '❌ Error while checking upload: ' + textStatus;
+                showAlert();
+            }
+        }
+    });
+}
+</script>
+
 <script>
 window.onload = function () {
     const jobId = sessionStorage.getItem("jobId");
