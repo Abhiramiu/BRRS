@@ -683,8 +683,6 @@ function fileuploads(btn) {
 }
 
 </script>
-
-
 </head>
 <title>BRRS</title>
 
@@ -794,30 +792,30 @@ function fileuploads(btn) {
 										id="R9_STAFF_COMPLEMENT" name="R9_STAFF_COMPLEMENT"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW9" style=" font-weight: bold;">
+	                                    <td id="ROW9" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R9_LOCAL != null ? #numbers.formatDecimal(report.R9_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R9_LOCAL"
                                         name="R9_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right; "
                                         readonly /></td>
-	                                    <td id="ROW9" style=" font-weight: bold;">
+	                                    <td id="ROW9" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R9_EXPARIATES != null ? #numbers.formatDecimal(report.R9_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R9_EXPARIATES"
 	                                    name="R9_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW9" style="font-weight: bold;background-color: rgb(107, 122, 143);" >
+										 <td id="ROW9" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);" >
 	                                    <input class="display-input Show_input "
 	                                    type="text"
-	                                    th:value="${report.R9_TOTAL != null ? #numbers.formatDecimal(report.R9_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R9_TOTAL }"
 	                                    id="R9_TOTAL"
 	                                    name="R9_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 
@@ -828,30 +826,30 @@ function fileuploads(btn) {
 										id="R10_STAFF_COMPLEMENT" name="R10_STAFF_COMPLEMENT"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW10" style=" font-weight: bold;">
+	                                    <td id="ROW10" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R10_LOCAL != null ? #numbers.formatDecimal(report.R10_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R10_LOCAL"
                                         name="R10_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
-	                                    <td id="ROW10" style=" font-weight: bold;">
+	                                    <td id="ROW10" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R10_EXPARIATES != null ? #numbers.formatDecimal(report.R10_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R10_EXPARIATES"
 	                                    name="R10_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW10" style="font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW10" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R10_TOTAL != null ? #numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R10_TOTAL }"
 	                                    id="R10_TOTAL"
 	                                    name="R10_TOTAL" 
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white; "readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white; "readonly />
 	                                    </td>
                                         </tr>
 										<tr>
@@ -861,30 +859,30 @@ function fileuploads(btn) {
 										id="R11_STAFF_COMPLEMENT" name="R11_STAFF_COMPLEMENT"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW11" style=" font-weight: bold;">
+	                                    <td id="ROW11" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R11_LOCAL != null ? #numbers.formatDecimal(report.R11_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R11_LOCAL"
                                         name="R11_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
-	                                    <td id="ROW11" style="font-weight: bold;">
+	                                    <td id="ROW11" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R11_EXPARIATES != null ? #numbers.formatDecimal(report.R11_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R11_EXPARIATES"
 	                                    name="R11_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW11" style="font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW11" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R11_TOTAL }"
 	                                    id="R11_TOTAL"
 	                                    name="R11_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -894,30 +892,30 @@ function fileuploads(btn) {
 										id="R12_STAFF_COMPLEMENT" name="R12_STAFF_COMPLEMENT"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW12" style="font-weight: bold;">
+	                                    <td id="ROW12" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R12_LOCAL != null ? #numbers.formatDecimal(report.R12_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R12_LOCAL"
                                         name="R12_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
-	                                    <td id="ROW12" style=" font-weight: bold;">
+	                                    <td id="ROW12" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R12_EXPARIATES != null ? #numbers.formatDecimal(report.R12_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R12_EXPARIATES"
 	                                    name="R12_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW12" style=" font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW12" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R12_TOTAL != null ? #numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R12_TOTAL }"
 	                                    id="R12_TOTAL"
 	                                    name="R12_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -927,30 +925,30 @@ function fileuploads(btn) {
 										id="R13_STAFF_COMPLEMENT" name="R13_STAFF_COMPLEMENT"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW13" style=" font-weight: bold;">
+	                                    <td id="ROW13" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R13_LOCAL != null ? #numbers.formatDecimal(report.R13_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R13_LOCAL"
                                         name="R13_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
-	                                    <td id="ROW13" style="font-weight: bold;">
+	                                    <td id="ROW13" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R13_EXPARIATES != null ? #numbers.formatDecimal(report.R13_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R13_EXPARIATES"
 	                                    name="R13_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW13" style=" font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW13" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R13_TOTAL }"
 	                                    id="R13_TOTAL"
 	                                    name="R13_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -960,30 +958,30 @@ function fileuploads(btn) {
 										id="R14_STAFF_COMPLEMENT" name="R14_STAFF_COMPLEMENT"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW14" style="font-weight: bold;">
+	                                    <td id="ROW14" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R14_LOCAL != null ? #numbers.formatDecimal(report.R14_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R14_LOCAL"
                                         name="R14_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
-	                                    <td id="ROW14" style=" font-weight: bold;">
+	                                    <td id="ROW14" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R14_EXPARIATES != null ? #numbers.formatDecimal(report.R14_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R14_EXPARIATES"
 	                                    name="R14_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW14" style="font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW14" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R14_TOTAL }"
 	                                    id="R14_TOTAL"
 	                                    name="R14_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -993,30 +991,30 @@ function fileuploads(btn) {
 										id="R15_STAFF_COMPLEMENT" name="R15_STAFF_COMPLEMENT"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW15" style="font-weight: bold;background-color: rgb(107, 122, 143);">
+	                                    <td id="ROW15" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.R15_LOCAL != null ? #numbers.formatDecimal(report.R15_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.R15_LOCAL }"
                                         id="R15_LOCAL"
                                         name="R15_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
                                         readonly /></td>
-	                                    <td id="ROW15" style=" font-weight: bold;background-color: rgb(107, 122, 143);">
+	                                    <td id="ROW15" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R15_EXPARIATES != null ? #numbers.formatDecimal(report.R15_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R15_EXPARIATES }"
 	                                    id="R15_EXPARIATES"
 	                                    name="R15_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW15" style=" font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW15" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R15_TOTAL != null ? #numbers.formatDecimal(report.R15_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R15_TOTAL }"
 	                                    id="R15_TOTAL"
 	                                    name="R15_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 	
@@ -1046,30 +1044,30 @@ function fileuploads(btn) {
 										id="R21_SENIOR_MANAGEMENT_COMPENSATION" name="R21_SENIOR_MANAGEMENT_COMPENSATION"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW21" style=" font-weight: bold;">
+	                                    <td id="ROW21" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R21_LOCAL != null ? #numbers.formatDecimal(report.R21_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R21_LOCAL"
                                         name="R21_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
-	                                    <td id="ROW21" style="font-weight: bold;">
+	                                    <td id="ROW21" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R21_EXPARIATES != null ? #numbers.formatDecimal(report.R21_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R21_EXPARIATES"
 	                                    name="R21_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW21" style=" font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW21" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R21_TOTAL != null ? #numbers.formatDecimal(report.R21_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R21_TOTAL }"
 	                                    id="R21_TOTAL"
 	                                    name="R21_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -1079,30 +1077,30 @@ function fileuploads(btn) {
 										id="R22_SENIOR_MANAGEMENT_COMPENSATION" name="R22_SENIOR_MANAGEMENT_COMPENSATION"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW22" style=" font-weight: bold;">
+	                                    <td id="ROW22" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R22_LOCAL != null ? #numbers.formatDecimal(report.R22_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R22_LOCAL"
                                         name="R22_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
-	                                    <td id="ROW22" style=" font-weight: bold;">
+	                                    <td id="ROW22" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R22_EXPARIATES != null ? #numbers.formatDecimal(report.R22_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R22_EXPARIATES"
 	                                    name="R22_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW22" style="font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW22" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R22_TOTAL != null ? #numbers.formatDecimal(report.R22_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R22_TOTAL }"
 	                                    id="R22_TOTAL"
 	                                    name="R22_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -1112,30 +1110,30 @@ function fileuploads(btn) {
 										id="R23_SENIOR_MANAGEMENT_COMPENSATION" name="R23_SENIOR_MANAGEMENT_COMPENSATION"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW23" style=" font-weight: bold;">
+	                                    <td id="ROW23" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R23_LOCAL != null ? #numbers.formatDecimal(report.R23_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R23_LOCAL"
                                         name="R23_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
-	                                    <td id="ROW23" style=" font-weight: bold;">
+	                                    <td id="ROW23" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R23_EXPARIATES != null ? #numbers.formatDecimal(report.R23_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R23_EXPARIATES"
 	                                    name="R23_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW23" style="font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW23" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R23_TOTAL != null ? #numbers.formatDecimal(report.R23_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R23_TOTAL }"
 	                                    id="R23_TOTAL"
 	                                    name="R23_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -1145,30 +1143,30 @@ function fileuploads(btn) {
 										id="R24_SENIOR_MANAGEMENT_COMPENSATION" name="R24_SENIOR_MANAGEMENT_COMPENSATION"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW24" style=" font-weight: bold;">
+	                                    <td id="ROW24" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R24_LOCAL != null ? #numbers.formatDecimal(report.R24_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R24_LOCAL"
                                         name="R24_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
-	                                    <td id="ROW24" style="font-weight: bold;">
+	                                    <td id="ROW24" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R24_EXPARIATES != null ? #numbers.formatDecimal(report.R24_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R24_EXPARIATES"
 	                                    name="R24_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW24" style=" font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW24" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R24_TOTAL != null ? #numbers.formatDecimal(report.R24_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R24_TOTAL }"
 	                                    id="R24_TOTAL"
 	                                    name="R24_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -1178,30 +1176,30 @@ function fileuploads(btn) {
 										id="R25_SENIOR_MANAGEMENT_COMPENSATION" name="R25_SENIOR_MANAGEMENT_COMPENSATION"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW25" style=" font-weight: bold;">
+	                                    <td id="ROW25" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R25_LOCAL != null ? #numbers.formatDecimal(report.R25_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R25_LOCAL"
                                         name="R25_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
-	                                    <td id="ROW25" style="font-weight: bold;">
+	                                    <td id="ROW25" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R25_EXPARIATES != null ? #numbers.formatDecimal(report.R25_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R25_EXPARIATES"
 	                                    name="R25_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW25" style=" font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW25" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R25_TOTAL != null ? #numbers.formatDecimal(report.R25_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R25_TOTAL }"
 	                                    id="R25_TOTAL"
 	                                    name="R25_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -1211,30 +1209,30 @@ function fileuploads(btn) {
 										id="R26_SENIOR_MANAGEMENT_COMPENSATION" name="R26_SENIOR_MANAGEMENT_COMPENSATION"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW26" style="font-weight: bold;">
+	                                    <td id="ROW26" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R26_LOCAL != null ? #numbers.formatDecimal(report.R26_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R26_LOCAL"
                                         name="R26_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
-	                                    <td id="ROW26" style="font-weight: bold;">
+	                                    <td id="ROW26" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R26_EXPARIATES != null ? #numbers.formatDecimal(report.R26_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R26_EXPARIATES"
 	                                    name="R26_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW26" style=" font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW26" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R26_TOTAL != null ? #numbers.formatDecimal(report.R26_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R26_TOTAL }"
 	                                    id="R26_TOTAL"
 	                                    name="R26_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										<tr>
@@ -1244,30 +1242,30 @@ function fileuploads(btn) {
 										id="R27_SENIOR_MANAGEMENT_COMPENSATION" name="R27_SENIOR_MANAGEMENT_COMPENSATION"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW27" style=" font-weight: bold;">
+	                                    <td id="ROW27" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
                                         type="text"
                                         th:value="${report.R27_LOCAL != null ? #numbers.formatDecimal(report.R27_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R27_LOCAL"
                                         name="R27_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
-	                                    <td id="ROW27" style=" font-weight: bold;">
+	                                    <td id="ROW27" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
 	                                    th:value="${report.R27_EXPARIATES != null ? #numbers.formatDecimal(report.R27_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R27_EXPARIATES"
 	                                    name="R27_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW27" style=" font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW27" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R27_TOTAL != null ? #numbers.formatDecimal(report.R27_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R27_TOTAL }"
 	                                    id="R27_TOTAL"
 	                                    name="R27_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										<tr>
@@ -1277,30 +1275,30 @@ function fileuploads(btn) {
 										id="R28_SENIOR_MANAGEMENT_COMPENSATION" name="R28_SENIOR_MANAGEMENT_COMPENSATION"
 										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 										readonly /></td>
-	                                    <td id="ROW28" style=" font-weight: bold;background-color: rgb(107, 122, 143);">
+	                                    <td id="ROW28" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.R28_LOCAL != null ? #numbers.formatDecimal(report.R28_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.R28_LOCAL }"
                                         id="R28_LOCAL"
                                         name="R28_LOCAL"
-                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
                                         readonly /></td>
-	                                    <td id="ROW28" style=" font-weight: bold;background-color: rgb(107, 122, 143);">
+	                                    <td id="ROW28" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R28_EXPARIATES != null ? #numbers.formatDecimal(report.R28_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R28_EXPARIATES }"
 	                                    id="R28_EXPARIATES"
 	                                    name="R28_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         
-										 <td id="ROW28" style=" font-weight: bold;background-color: rgb(107, 122, 143);">
+										 <td id="ROW28" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
 	                                    type="text"
-	                                    th:value="${report.R28_TOTAL != null ? #numbers.formatDecimal(report.R28_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
+	                                    th:value="${report.R28_TOTAL }"
 	                                    id="R28_TOTAL"
 	                                    name="R28_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 
@@ -1332,28 +1330,28 @@ function fileuploads(btn) {
 					style="background-color: #FFFFFF; width: 100%; height: 33px; border: none; text-align: left; padding-left: 20px;"
 					readonly />
 			</td>
-			<td id="ROW33" style="font-weight: bold;">
+			<td id="ROW33" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R33_ORIGINAL_AMT != null ? #numbers.formatDecimal(report.R33_ORIGINAL_AMT, 0, 'COMMA', 0, 'POINT') : '0'}"
 					id="R33_ORIGINAL_AMT" name="R33_ORIGINAL_AMT"
 					style="background-color: #FFFFFF; width: 100%; height: 33px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW33" style="font-weight: bold;">
+			<td id="ROW33" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R33_BALANCE_OUTSTANDING != null ? #numbers.formatDecimal(report.R33_BALANCE_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
 					id="R33_BALANCE_OUTSTANDING" name="R33_BALANCE_OUTSTANDING"
 					style="background-color: #FFFFFF; width: 100%; height: 33px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW33" style="font-weight: bold;">
+			<td id="ROW33" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R33_NO_OF_ACS != null ? #numbers.formatDecimal(report.R33_NO_OF_ACS, 1, 'COMMA', 0, 'POINT') : '0'}"
 					id="R33_NO_OF_ACS" name="R33_NO_OF_ACS"
 					style="background-color: #FFFFFF; width: 100%; height: 33px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW33" style="font-weight: bold;">
+			<td id="ROW33" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R33_INTEREST_RATE != null ? #numbers.formatDecimal(report.R33_INTEREST_RATE, 1, 'COMMA', 2, 'POINT') : '0.00'}"
 					id="R33_INTEREST_RATE" name="R33_INTEREST_RATE"
@@ -1371,28 +1369,28 @@ function fileuploads(btn) {
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: left; padding-left: 20px;"
 					readonly />
 			</td>
-			<td id="ROW34" style="font-weight: bold;">
+			<td id="ROW34" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R34_ORIGINAL_AMT != null ? #numbers.formatDecimal(report.R34_ORIGINAL_AMT, 0, 'COMMA', 0, 'POINT') : '0'}"
 					id="R34_ORIGINAL_AMT" name="R34_ORIGINAL_AMT"
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW34" style="font-weight: bold;">
+			<td id="ROW34" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R34_BALANCE_OUTSTANDING != null ? #numbers.formatDecimal(report.R34_BALANCE_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
 					id="R34_BALANCE_OUTSTANDING" name="R34_BALANCE_OUTSTANDING"
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW34" style="font-weight: bold;">
+			<td id="ROW34" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R34_NO_OF_ACS != null ? #numbers.formatDecimal(report.R34_NO_OF_ACS, 1, 'COMMA', 0, 'POINT') : '0'}"
 					id="R34_NO_OF_ACS" name="R34_NO_OF_ACS"
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW34" style="font-weight: bold;">
+			<td id="ROW34" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R34_INTEREST_RATE != null ? #numbers.formatDecimal(report.R34_INTEREST_RATE, 1, 'COMMA', 2, 'POINT') : '0.00'}"
 					id="R34_INTEREST_RATE" name="R34_INTEREST_RATE"
@@ -1410,28 +1408,28 @@ function fileuploads(btn) {
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: left; padding-left: 20px;"
 					readonly />
 			</td>
-			<td id="ROW35" style="font-weight: bold;">
+			<td id="ROW35" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R35_ORIGINAL_AMT != null ? #numbers.formatDecimal(report.R35_ORIGINAL_AMT, 0, 'COMMA', 0, 'POINT') : '0'}"
 					id="R35_ORIGINAL_AMT" name="R35_ORIGINAL_AMT"
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW35" style="font-weight: bold;">
+			<td id="ROW35" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R35_BALANCE_OUTSTANDING != null ? #numbers.formatDecimal(report.R35_BALANCE_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
 					id="R35_BALANCE_OUTSTANDING" name="R35_BALANCE_OUTSTANDING"
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW35" style="font-weight: bold;">
+			<td id="ROW35" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R35_NO_OF_ACS != null ? #numbers.formatDecimal(report.R35_NO_OF_ACS, 1, 'COMMA', 0, 'POINT') : '0'}"
 					id="R35_NO_OF_ACS" name="R35_NO_OF_ACS"
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW35" style="font-weight: bold;">
+			<td id="ROW35" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R35_INTEREST_RATE != null ? #numbers.formatDecimal(report.R35_INTEREST_RATE, 1, 'COMMA', 2, 'POINT') : '0.00'}"
 					id="R35_INTEREST_RATE" name="R35_INTEREST_RATE"
@@ -1449,28 +1447,28 @@ function fileuploads(btn) {
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: left; padding-left: 20px;"
 					readonly />
 			</td>
-			<td id="ROW36" style="font-weight: bold;">
+			<td id="ROW36" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R36_ORIGINAL_AMT != null ? #numbers.formatDecimal(report.R36_ORIGINAL_AMT, 0, 'COMMA', 0, 'POINT') : '0'}"
 					id="R36_ORIGINAL_AMT" name="R36_ORIGINAL_AMT"
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW36" style="font-weight: bold;">
+			<td id="ROW36" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R36_BALANCE_OUTSTANDING != null ? #numbers.formatDecimal(report.R36_BALANCE_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
 					id="R36_BALANCE_OUTSTANDING" name="R36_BALANCE_OUTSTANDING"
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW36" style="font-weight: bold;">
+			<td id="ROW36" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R36_NO_OF_ACS != null ? #numbers.formatDecimal(report.R36_NO_OF_ACS, 1, 'COMMA', 0, 'POINT') : '0'}"
 					id="R36_NO_OF_ACS" name="R36_NO_OF_ACS"
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW36" style="font-weight: bold;">
+			<td id="ROW36" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R36_INTEREST_RATE != null ? #numbers.formatDecimal(report.R36_INTEREST_RATE, 1, 'COMMA', 2, 'POINT') : '0.00'}"
 					id="R36_INTEREST_RATE" name="R36_INTEREST_RATE"
@@ -1488,28 +1486,28 @@ function fileuploads(btn) {
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: left; padding-left: 20px;"
 					readonly />
 			</td>
-			<td id="ROW37" style="font-weight: bold;">
+			<td id="ROW37" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R37_ORIGINAL_AMT != null ? #numbers.formatDecimal(report.R37_ORIGINAL_AMT, 0, 'COMMA', 0, 'POINT') : '0'}"
 					id="R37_ORIGINAL_AMT" name="R37_ORIGINAL_AMT"
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW37" style="font-weight: bold;">
+			<td id="ROW37" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R37_BALANCE_OUTSTANDING != null ? #numbers.formatDecimal(report.R37_BALANCE_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
 					id="R37_BALANCE_OUTSTANDING" name="R37_BALANCE_OUTSTANDING"
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW37" style="font-weight: bold;">
+			<td id="ROW37" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R37_NO_OF_ACS != null ? #numbers.formatDecimal(report.R37_NO_OF_ACS, 1, 'COMMA', 0, 'POINT') : '0'}"
 					id="R37_NO_OF_ACS" name="R37_NO_OF_ACS"
 					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: right;"
 					readonly />
 			</td>
-			<td id="ROW37" style="font-weight: bold;">
+			<td id="ROW37" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
 					th:value="${report.R37_INTEREST_RATE != null ? #numbers.formatDecimal(report.R37_INTEREST_RATE, 1, 'COMMA', 2, 'POINT') : '0.00'}"
 					id="R37_INTEREST_RATE" name="R37_INTEREST_RATE"
@@ -1526,30 +1524,30 @@ function fileuploads(btn) {
 					style="background-color: #FFFFFF; width: 100%; height: 35px; border: none; text-align: left; padding-left: 20px;"
 					readonly />
 			</td>
-			<td id="ROW38" style="font-weight: bold; background-color: rgb(107,122,143);">
+			<td id="ROW38" style="font-weight: bold;padding-left: 20px; background-color: rgb(107,122,143);">
 				<input class="display-input Show_input" type="text"
-					th:value="${report.R38_ORIGINAL_AMT != null ? #numbers.formatDecimal(report.R38_ORIGINAL_AMT, 0, 'COMMA', 0, 'POINT') : '0'}"
+					th:value="${report.R38_ORIGINAL_AMT }"
 					id="R38_ORIGINAL_AMT" name="R38_ORIGINAL_AMT"
 					style="width: 100%; height: 35px; border: none; text-align: right; background-color: rgb(107,122,143); color: white;"
 					readonly />
 			</td>
-			<td id="ROW38" style="font-weight: bold; background-color: rgb(107,122,143);">
+			<td id="ROW38" style="font-weight: bold;padding-left: 20px; background-color: rgb(107,122,143);">
 				<input class="display-input Show_input" type="text"
-					th:value="${report.R38_BALANCE_OUTSTANDING != null ? #numbers.formatDecimal(report.R38_BALANCE_OUTSTANDING, 1, 'COMMA', 0, 'POINT') : '0'}"
+					th:value="${report.R38_BALANCE_OUTSTANDING }"
 					id="R38_BALANCE_OUTSTANDING" name="R38_BALANCE_OUTSTANDING"
 					style="width: 100%; height: 35px; border: none; text-align: right; background-color: rgb(107,122,143); color: white;"
 					readonly />
 			</td>
-			<td id="ROW38" style="font-weight: bold; background-color: rgb(107,122,143);">
+			<td id="ROW38" style="font-weight: bold; padding-left: 20px;background-color: rgb(107,122,143);">
 				<input class="display-input Show_input" type="text"
-					th:value="${report.R38_NO_OF_ACS != null ? #numbers.formatDecimal(report.R38_NO_OF_ACS, 1, 'COMMA', 0, 'POINT') : '0'}"
+					th:value="${report.R38_NO_OF_ACS }"
 					id="R38_NO_OF_ACS" name="R38_NO_OF_ACS"
 					style="width: 100%; height: 35px; border: none; text-align: right; background-color: rgb(107,122,143); color: white;"
 					readonly />
 			</td>
-			<td id="ROW38" style="font-weight: bold;">
+			<td id="ROW38" style="font-weight: bold;padding-left: 20px;">
 				<input class="display-input Show_input" type="text"
-					th:value="${report.R38_INTEREST_RATE != null ? #numbers.formatDecimal(report.R38_INTEREST_RATE, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+					th:value="${report.R38_INTEREST_RATE }"
 					id="R38_INTEREST_RATE" name="R38_INTEREST_RATE"
 					style="background-color: #FFFFFF; width: 100%; height: 35px; border: none; text-align: right;"
 					readonly />
