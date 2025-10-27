@@ -49,6 +49,7 @@ import com.bornfire.brrs.entities.BRRS_M_LA1_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA1_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA1_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA1_Summary_Repo;
+import com.bornfire.brrs.entities.M_LA1_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
@@ -227,18 +228,11 @@ public class BRRS_M_LA1_ReportService {
 	public byte[] BRRS_M_LA1Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
-		System.out.println(type);
-		System.out.println(version);
-		if (type.equals("ARCHIVAL") & version != null) {
-			byte[] ARCHIVALreport = getExcelM_LA1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
-					version);
-			return ARCHIVALreport;
-		}
 
-		List<M_LA1_Summary_Entity> dataList = BRRS_M_LA1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+		List<M_LA1_Summary_Entity> dataList =BRRS_M_LA1_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for BRF2.4 report. Returning empty result.");
+			logger.warn("Service: No data found for LA1 report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -251,11 +245,10 @@ public class BRRS_M_LA1_ReportService {
 		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
 		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
 			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
 		}
+
 		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
 			throw new SecurityException(
 					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
 		}
@@ -265,7 +258,6 @@ public class BRRS_M_LA1_ReportService {
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
 				Workbook workbook = WorkbookFactory.create(templateInputStream);
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
 			Sheet sheet = workbook.getSheetAt(0);
 
 			// --- Style Definitions ---
@@ -277,7 +269,6 @@ public class BRRS_M_LA1_ReportService {
 			dateStyle.setBorderTop(BorderStyle.THIN);
 			dateStyle.setBorderLeft(BorderStyle.THIN);
 			dateStyle.setBorderRight(BorderStyle.THIN);
-
 			CellStyle textStyle = workbook.createCellStyle();
 			textStyle.setBorderBottom(BorderStyle.THIN);
 			textStyle.setBorderTop(BorderStyle.THIN);
@@ -288,7 +279,6 @@ public class BRRS_M_LA1_ReportService {
 			Font font = workbook.createFont();
 			font.setFontHeightInPoints((short) 8); // size 8
 			font.setFontName("Arial");
-
 			CellStyle numberStyle = workbook.createCellStyle();
 			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
 			numberStyle.setBorderBottom(BorderStyle.THIN);
@@ -296,14 +286,9 @@ public class BRRS_M_LA1_ReportService {
 			numberStyle.setBorderLeft(BorderStyle.THIN);
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
-
-			CellStyle percentStyle = workbook.createCellStyle();
-			percentStyle.cloneStyleFrom(numberStyle);
-			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
-			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
 			// --- End of Style Definitions ---
-
 			int startRow = 11;
+			
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1995,22 +1980,22 @@ public class BRRS_M_LA1_ReportService {
 				int rowIndex = 1;
 				for (M_LA1_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
+					row.createCell(0).setCellValue(item.getCust_id());
+					row.createCell(1).setCellValue(item.getAcct_number());
+					row.createCell(2).setCellValue(item.getAcct_name());
 // ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					if (item.getAcct_balance_in_pula() != null) {
+						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
 					balanceCell.setCellStyle(balanceStyle);
-					row.createCell(4).setCellValue(item.getRowId());
-					row.createCell(5).setCellValue(item.getColumnId());
+					row.createCell(4).setCellValue(item.getReport_label());
+					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
 					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+							.setCellValue(item.getReport_date() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
 // Apply data style for all other cells
 					for (int j = 0; j < 7; j++) {
@@ -3812,24 +3797,24 @@ public class BRRS_M_LA1_ReportService {
 				for (M_LA1_Archival_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
+					row.createCell(0).setCellValue(item.getCust_id());
+					row.createCell(1).setCellValue(item.getAcct_number());
+					row.createCell(2).setCellValue(item.getAcct_name());
 
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					if (item.getAcct_balance_in_pula() != null) {
+						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getRowId());
-					row.createCell(5).setCellValue(item.getColumnId());
+					row.createCell(4).setCellValue(item.getReport_label());
+					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
 					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+							.setCellValue(item.getReport_date() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
 
 					// Apply data style for all other cells
