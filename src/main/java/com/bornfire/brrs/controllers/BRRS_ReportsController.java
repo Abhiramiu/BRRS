@@ -2,6 +2,7 @@ package com.bornfire.brrs.controllers;
 
 import java.io.FileNotFoundException;
 
+
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -39,6 +40,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA4_ReportService;
+import com.bornfire.brrs.entities.M_CA6_Summary_Entity2;
+import com.bornfire.brrs.services.BRRS_M_CA6_ReportService;
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
@@ -403,6 +406,33 @@ public class BRRS_ReportsController {
 
 
 
+	 @Autowired
+	 BRRS_M_CA6_ReportService BRRS_M_CA6_ReportService;
+	 @RequestMapping(value = "/MCA6updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	 @ResponseBody
+	 public ResponseEntity<String> updateAllReports(
+	         @RequestParam(required = false)
+	         @DateTimeFormat(pattern = "yyyy-MM-dd") Date asondate,  // ✅ ISO format
+	         @RequestParam(required = false) String type,
+	         @ModelAttribute M_CA6_Summary_Entity2 request1
+	 ) {
+	     try {
+	         System.out.println("Came to single controller");
+	         System.out.println(type);
+	         // set date into all 4 entities
+	         request1.setREPORT_DATE(asondate);
+	  
+	     
+	    	 BRRS_M_CA6_ReportService.updateReport(request1);
+	    
+	   return ResponseEntity.ok("Updated Successfully");
+	     }
+	     catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                              .body("Update Failed: " + e.getMessage());
+	     }
+	 }
 	 
 	 
 

@@ -1,7 +1,9 @@
 package com.bornfire.brrs.entities;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -9,94 +11,196 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
-@Table(name = "BRRS_M_CA6_ARCHIVALTABLE_SUMMARY2")
+@Table(name = "BRRS_M_CA6__ARCHIVALTABLE_SUMMARY2")
+
 public class M_CA6_Archival_Summary_Entity2 {
 	
+
 	private String R28_PRODUCT;
-   private Date R28_ISSUANCE_DATE;
-   private Date R28_CONTRACTUAL_MATURITY_DATE;
-   private Date R28_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R28_AMOUNT;
-   private String R29_PRODUCT;
-   private Date R29_ISSUANCE_DATE;
-   private Date R29_CONTRACTUAL_MATURITY_DATE;
-   private Date R29_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R29_AMOUNT;
-   private String R30_PRODUCT;
-   private Date R30_ISSUANCE_DATE;
-   private Date R30_CONTRACTUAL_MATURITY_DATE;
-   private Date R30_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R30_AMOUNT;
-   private String R31_PRODUCT;
-   private Date R31_ISSUANCE_DATE;
-   private Date R31_CONTRACTUAL_MATURITY_DATE;
-   private Date R31_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R31_AMOUNT;
-   private String R32_PRODUCT;
-   private Date R32_ISSUANCE_DATE;
-   private Date R32_CONTRACTUAL_MATURITY_DATE;
-   private Date R32_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R32_AMOUNT;
-   private String R33_PRODUCT;
-   private Date R33_ISSUANCE_DATE;
-   private Date R33_CONTRACTUAL_MATURITY_DATE;
-   private Date R33_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R33_AMOUNT;
-   private String R34_PRODUCT;
-   private Date R34_ISSUANCE_DATE;
-   private Date R34_CONTRACTUAL_MATURITY_DATE;
-   private Date R34_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R34_AMOUNT;
-   private BigDecimal R35_AMOUNT;
-   private String R40_PRODUCT;
-   private Date R40_ISSUANCE_DATE;
-   private Date R40_CONTRACTUAL_MATURITY_DATE;
-   private Date R40_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R40_AMOUNT;
-   private String R41_PRODUCT;
-   private Date R41_ISSUANCE_DATE;
-   private Date R41_CONTRACTUAL_MATURITY_DATE;
-   private Date R41_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R41_AMOUNT;
-   private String R42_PRODUCT;
-   private Date R42_ISSUANCE_DATE;
-   private Date R42_CONTRACTUAL_MATURITY_DATE;
-   private Date R42_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R42_AMOUNT;
-   private String R43_PRODUCT;
-   private Date R43_ISSUANCE_DATE;
-   private Date R43_CONTRACTUAL_MATURITY_DATE;
-   private Date R43_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R43_AMOUNT;
-   private String R44_PRODUCT;
-   private Date R44_ISSUANCE_DATE;
-   private Date R44_CONTRACTUAL_MATURITY_DATE;
-   private Date R44_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R44_AMOUNT;
-   private String R45_PRODUCT;
-   private Date R45_ISSUANCE_DATE;
-   private Date R45_CONTRACTUAL_MATURITY_DATE;
-   private Date R45_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R45_AMOUNT;
-   private String R46_PRODUCT;
-   private Date R46_ISSUANCE_DATE;
-   private Date R46_CONTRACTUAL_MATURITY_DATE;
-   private Date R46_EFFECTIVE_MATURITY_DATE;
-   private BigDecimal R46_AMOUNT;
-   private BigDecimal R47_AMOUNT;
-  
-   @Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Id
-	public Date REPORT_DATE;
-   public String REPORT_VERSION;
-   public String REPORT_FREQUENCY;
-   public String REPORT_CODE;
-   public String REPORT_DESC;
-   public String ENTITY_FLG;
-   public String MODIFY_FLG;
-   public String DEL_FLG;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R28_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R28_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R28_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R28_AMOUNT;
+
+    private String R29_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R29_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R29_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R29_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R29_AMOUNT;
+
+    private String R30_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R30_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R30_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R30_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R30_AMOUNT;
+
+    private String R31_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R31_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R31_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R31_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R31_AMOUNT;
+
+    private String R32_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R32_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R32_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R32_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R32_AMOUNT;
+
+    private String R33_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R33_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R33_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R33_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R33_AMOUNT;
+
+    private String R34_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R34_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R34_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R34_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R34_AMOUNT;
+
+    private BigDecimal R35_AMOUNT;
+
+    private String R40_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R40_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R40_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R40_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R40_AMOUNT;
+
+    private String R41_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R41_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R41_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R41_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R41_AMOUNT;
+
+    private String R42_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R42_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R42_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R42_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R42_AMOUNT;
+
+    private String R43_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R43_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R43_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R43_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R43_AMOUNT;
+
+    private String R44_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R44_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R44_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R44_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R44_AMOUNT;
+
+    private String R45_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R45_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R45_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R45_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R45_AMOUNT;
+
+    private String R46_PRODUCT;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R46_ISSUANCE_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R46_CONTRACTUAL_MATURITY_DATE;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date R46_EFFECTIVE_MATURITY_DATE;
+    private BigDecimal R46_AMOUNT;
+
+    private BigDecimal R47_AMOUNT;
+    
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Id
+    private Date REPORT_DATE;
+    public String REPORT_VERSION;
+    public String REPORT_FREQUENCY;
+    public String REPORT_CODE;
+    public String REPORT_DESC;
+    public String ENTITY_FLG;
+    public String MODIFY_FLG;
+    public String DEL_FLG;
 	public String getR28_PRODUCT() {
 		return R28_PRODUCT;
 	}
@@ -581,6 +685,4 @@ public class M_CA6_Archival_Summary_Entity2 {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-  
-  
 }

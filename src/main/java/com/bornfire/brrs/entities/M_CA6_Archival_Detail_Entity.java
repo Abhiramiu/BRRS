@@ -1,6 +1,5 @@
 package com.bornfire.brrs.entities;
 
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -11,78 +10,83 @@ import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+
+
 @Entity
-@Table(name = "BRRS_M_CA6_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_M_CA6_ARCHIVAL_DETAIL")
 
 public class M_CA6_Archival_Detail_Entity {
 	
 	@Id
-    @Column(name = "CUST_ID", length = 100)
+    @Column(name = "CUST_ID")
     private String custId;
 
-    @Column(name = "ACCT_NUMBER", length = 100)
+    @Column(name = "ACCT_NUMBER")
     private String acctNumber;
 
-    @Column(name = "ACCT_NAME", length = 100)
+    @Column(name = "ACCT_NAME")
     private String acctName;
 
-    @Column(name = "DATA_TYPE", length = 100)
+    @Column(name = "DATA_TYPE")
     private String dataType;
 
-    @Column(name = "ROW_ID", length = 100)
+    @Column(name = "COLUMN_ID")
+    private String columnId;
+    
+    @Column(name = "ROW_ID")
     private String rowId;
 
-    @Column(name = "COLUMN_ID", length = 100)
-    private String columnId;
-
-    @Column(name = "REPORT_REMARKS", length = 100)
+    @Column(name = "REPORT_REMARKS")
     private String reportRemarks;
 
-    @Column(name = "MODIFICATION_REMARKS", length = 100)
+    @Column(name = "MODIFICATION_REMARKS")
     private String modificationRemarks;
 
-    @Column(name = "DATA_ENTRY_VERSION", length = 100)
+    @Column(name = "DATA_ENTRY_VERSION")
     private String dataEntryVersion;
 
     @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
-    private BigDecimal acctBalanceInPula;
+    private BigDecimal acctBalanceInpula;
+
 
     @Column(name = "REPORT_DATE")
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date reportDate;
 
-    @Column(name = "REPORT_NAME", length = 100)
+    @Column(name = "REPORT_NAME")
     private String reportName;
 
-    @Column(name = "CREATE_USER", length = 50)
+    @Column(name = "CREATE_USER")
     private String createUser;
 
     @Column(name = "CREATE_TIME")
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date createTime;
 
-    @Column(name = "MODIFY_USER", length = 50)
+    @Column(name = "MODIFY_USER")
     private String modifyUser;
+
 
     @Column(name = "MODIFY_TIME")
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date modifyTime;
 
-    @Column(name = "VERIFY_USER", length = 50)
+    @Column(name = "VERIFY_USER")
     private String verifyUser;
+
 
     @Column(name = "VERIFY_TIME")
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date verifyTime;
 
-    @Column(name = "ENTITY_FLG", length = 1)
-    private String entityFlg;
+    @Column(name = "ENTITY_FLG")
+    private char entityFlg;
 
-    @Column(name = "MODIFY_FLG", length = 1)
-    private String modifyFlg;
+    @Column(name = "MODIFY_FLG")
+    private char modifyFlg;
 
-    @Column(name = "DEL_FLG", length = 1)
-    private String delFlg;
+    @Column(name = "DEL_FLG")
+    private char delFlg;
 
 	public String getCustId() {
 		return custId;
@@ -116,20 +120,20 @@ public class M_CA6_Archival_Detail_Entity {
 		this.dataType = dataType;
 	}
 
-	public String getRowId() {
-		return rowId;
-	}
-
-	public void setRowId(String rowId) {
-		this.rowId = rowId;
-	}
-
 	public String getColumnId() {
 		return columnId;
 	}
 
 	public void setColumnId(String columnId) {
 		this.columnId = columnId;
+	}
+
+	public String getRowId() {
+		return rowId;
+	}
+
+	public void setRowId(String rowId) {
+		this.rowId = rowId;
 	}
 
 	public String getReportRemarks() {
@@ -156,12 +160,12 @@ public class M_CA6_Archival_Detail_Entity {
 		this.dataEntryVersion = dataEntryVersion;
 	}
 
-	public BigDecimal getAcctBalanceInPula() {
-		return acctBalanceInPula;
+	public BigDecimal getAcctBalanceInpula() {
+		return acctBalanceInpula;
 	}
 
-	public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
-		this.acctBalanceInPula = acctBalanceInPula;
+	public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+		this.acctBalanceInpula = acctBalanceInpula;
 	}
 
 	public Date getReportDate() {
@@ -228,27 +232,27 @@ public class M_CA6_Archival_Detail_Entity {
 		this.verifyTime = verifyTime;
 	}
 
-	public String getEntityFlg() {
+	public char getEntityFlg() {
 		return entityFlg;
 	}
 
-	public void setEntityFlg(String entityFlg) {
+	public void setEntityFlg(char entityFlg) {
 		this.entityFlg = entityFlg;
 	}
 
-	public String getModifyFlg() {
+	public char getModifyFlg() {
 		return modifyFlg;
 	}
 
-	public void setModifyFlg(String modifyFlg) {
+	public void setModifyFlg(char modifyFlg) {
 		this.modifyFlg = modifyFlg;
 	}
 
-	public String getDelFlg() {
+	public char getDelFlg() {
 		return delFlg;
 	}
 
-	public void setDelFlg(String delFlg) {
+	public void setDelFlg(char delFlg) {
 		this.delFlg = delFlg;
 	}
 
@@ -258,5 +262,4 @@ public class M_CA6_Archival_Detail_Entity {
 	}
     
     
-
 }

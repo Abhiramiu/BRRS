@@ -1,7 +1,9 @@
 package com.bornfire.brrs.entities;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -9,63 +11,74 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name = "BRRS_M_CA6_SUMMARYTABLE1")
+
 public class M_CA6_Summary_Entity1 {
 	
 	private Date R12_CALENDAR_YEAR;
-   private BigDecimal R12_CAP;
-   private BigDecimal R12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private BigDecimal R12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private Date R13_CALENDAR_YEAR;
-   private BigDecimal R13_CAP;
-   private BigDecimal R13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private BigDecimal R13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private Date R14_CALENDAR_YEAR;
-   private BigDecimal R14_CAP;
-   private BigDecimal R14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private BigDecimal R14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private Date R15_CALENDAR_YEAR;
-   private BigDecimal R15_CAP;
-   private BigDecimal R15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private BigDecimal R15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private Date R16_CALENDAR_YEAR;
-   private BigDecimal R16_CAP;
-   private BigDecimal R16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private BigDecimal R16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private Date R20_CALENDAR_YEAR;
-   private BigDecimal R20_CAP;
-   private BigDecimal R20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private BigDecimal R20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private Date R21_CALENDAR_YEAR;
-   private BigDecimal R21_CAP;
-   private BigDecimal R21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private BigDecimal R21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private Date R22_CALENDAR_YEAR;
-   private BigDecimal R22_CAP;
-   private BigDecimal R22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private BigDecimal R22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private Date R23_CALENDAR_YEAR;
-   private BigDecimal R23_CAP;
-   private BigDecimal R23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private BigDecimal R23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private Date R24_CALENDAR_YEAR;
-   private BigDecimal R24_CAP;
-   private BigDecimal R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-   private BigDecimal R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
-  
-   @Temporal(TemporalType.DATE)
+    private BigDecimal R12_CAP;
+    private BigDecimal R12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+    private BigDecimal R12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+    private Date R13_CALENDAR_YEAR;
+    private BigDecimal R13_CAP;
+    private BigDecimal R13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+    private BigDecimal R13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+    private Date R14_CALENDAR_YEAR;
+    private BigDecimal R14_CAP;
+    private BigDecimal R14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+    private BigDecimal R14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+    private Date R15_CALENDAR_YEAR;
+    private BigDecimal R15_CAP;
+    private BigDecimal R15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+    private BigDecimal R15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+    private Date R16_CALENDAR_YEAR;
+    private BigDecimal R16_CAP;
+    private BigDecimal R16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+    private BigDecimal R16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+    private Date R20_CALENDAR_YEAR;
+    private BigDecimal R20_CAP;
+    private BigDecimal R20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+    private BigDecimal R20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+    private Date R21_CALENDAR_YEAR;
+    private BigDecimal R21_CAP;
+    private BigDecimal R21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+    private BigDecimal R21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+    private Date R22_CALENDAR_YEAR;
+    private BigDecimal R22_CAP;
+    private BigDecimal R22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+    private BigDecimal R22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+    private Date R23_CALENDAR_YEAR;
+    private BigDecimal R23_CAP;
+    private BigDecimal R23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+    private BigDecimal R23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+
+    private Date R24_CALENDAR_YEAR;
+    private BigDecimal R24_CAP;
+    private BigDecimal R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+    private BigDecimal R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
+    
+    @Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
 	public Date REPORT_DATE;
-   public String REPORT_VERSION;
-   public String REPORT_FREQUENCY;
-   public String REPORT_CODE;
-   public String REPORT_DESC;
-   public String ENTITY_FLG;
-   public String MODIFY_FLG;
-   public String DEL_FLG;
-  
+    public String REPORT_VERSION;
+    public String REPORT_FREQUENCY;
+    public String REPORT_CODE;
+    public String REPORT_DESC;
+    public String ENTITY_FLG;
+    public String MODIFY_FLG;
+    public String DEL_FLG;
+    
 	public Date getR12_CALENDAR_YEAR() {
 		return R12_CALENDAR_YEAR;
 	}
@@ -368,8 +381,9 @@ public class M_CA6_Summary_Entity1 {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-  
+    
 	
-  
-  
+    
+    
+
 }
