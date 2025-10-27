@@ -56,6 +56,36 @@ public class MCBL_Services {
 
 	private static final Logger logger = LoggerFactory.getLogger(MCBL_Services.class);
 
+
+	private final ConcurrentHashMap<String, String> jobStatusStorage = new ConcurrentHashMap<>();
+
+	@Async
+	public void initializeJobStatus(String jobId, MultipartFile file, String userid, String username,String reportDate) {
+	    jobStatusStorage.put(jobId, "PROCESSING");
+	    startMCBLUploadAsync(jobId, file, userid, username,reportDate);
+	}
+
+	public String startMCBLUploadAsync(String jobId, MultipartFile file, String userid, String username,String reportDate) {
+	    logger.info("Starting MCBL upload job: {}", jobId);
+
+	    try {
+	        String resultMsg = addMCBL(file, userid, username,reportDate);
+	        jobStatusStorage.put(jobId, "COMPLETED:" + resultMsg);
+	        logger.info("Job {} completed successfully.", jobId);
+	        return resultMsg;
+
+	    } catch (Exception e) {
+	        String errorMessage = "ERROR:" + e.getMessage();
+	        jobStatusStorage.put(jobId, errorMessage);
+	        logger.error("Job {} failed: {}", jobId, e.getMessage(), e);
+	        return errorMessage;
+	    }
+	}
+
+	public String getJobStatus(String jobId) {
+	    return jobStatusStorage.getOrDefault(jobId, "NOT_FOUND");
+	}
+	
 	@Transactional
 	public String addMCBL(MultipartFile file, String userid, String username, String reportDate) {
 	    long startTime = System.currentTimeMillis();

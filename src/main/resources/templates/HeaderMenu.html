@@ -915,17 +915,19 @@ color:white;
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // ✅ Wait until DOM is ready (works even if multiple scripts use window.onload)
-    const jobId = sessionStorage.getItem("currentBFDBJobId");
+    const jobTypes = ["BFDB", "BDGF", "BLBF", "MCBL"];
 
-    if (jobId) {
-        console.log("Resuming BFDB job polling:", jobId);
-        checkBFDBUploadStatus(jobId);
-    }
+    jobTypes.forEach(type => {
+        const jobId = sessionStorage.getItem("current" + type + "JobId");
+        if (jobId) {
+            console.log(`Resuming ${type} job polling:`, jobId);
+            checkUploadStatus(type, jobId);
+        }
+    });
 });
 
-function checkBFDBUploadStatus(jobId) {
-    if (!jobId) return; // safety
+function checkUploadStatus(type, jobId) {
+    if (!jobId) return;
 
     const alertMsg = document.getElementById("alertMessage");
     if (!alertMsg) {
@@ -934,51 +936,54 @@ function checkBFDBUploadStatus(jobId) {
     }
 
     $.ajax({
-        url: 'checkBFDBUpload?jobId=' + encodeURIComponent(jobId),
+        url: `check${type}Upload?jobId=` + encodeURIComponent(jobId),
         type: "GET",
         dataType: "text",
         timeout: 5000,
-        success: function(status) {
+        success: function (status) {
             if (status.startsWith("COMPLETED:")) {
-                sessionStorage.removeItem("currentBFDBJobId");
+                sessionStorage.removeItem("current" + type + "JobId");
                 const resultMsg = status.substring("COMPLETED:".length);
-                alertMsg.innerHTML = '✅ BFDB Upload Complete! ' + resultMsg;
+                alertMsg.innerHTML = `✅ ${type} Upload Complete! ${resultMsg}`;
                 showAlert();
                 showResultModal('Success', resultMsg);
             } 
             else if (status === "PROCESSING") {
-                alertMsg.innerHTML = '⏳ BFDB Upload is processing... (Job ID: ' + jobId + ')';
+                alertMsg.innerHTML = `⏳ ${type} Upload is processing... (Job ID: ${jobId})`;
                 showAlert();
-                setTimeout(() => checkBFDBUploadStatus(jobId), 6000);
+                setTimeout(() => checkUploadStatus(type, jobId), 6000);
             } 
             else if (status.startsWith("ERROR:") || status === "NOT_FOUND") {
-                const errorMsg = status.startsWith("ERROR:") 
-                    ? status.substring("ERROR:".length) 
+                const errorMsg = status.startsWith("ERROR:")
+                    ? status.substring("ERROR:".length)
                     : "Job not found or failed.";
-                alertMsg.innerHTML = 'BFDB Upload finished';
+                alertMsg.innerHTML = ` ${type} Upload finished`;
                 showAlert();
                 showResultModal('Job Status', errorMsg);
-                sessionStorage.removeItem("currentBFDBJobId");
+                sessionStorage.removeItem("current" + type + "JobId");
             } 
             else {
-                alertMsg.innerHTML = 'Unexpected response: ' + status;
+                alertMsg.innerHTML = `Unexpected response: ${status}`;
                 showAlert();
             }
         },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error('Error checking BFDB upload status:', textStatus, errorThrown);
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error(`Error checking ${type} upload status:`, textStatus, errorThrown);
             if (textStatus === "timeout" || jqXHR.status === 0) {
-                alertMsg.innerHTML = '⏳ BFDB Upload is processing... (Temporary connection issue)';
+                alertMsg.innerHTML = `⏳ ${type} Upload is processing... (Temporary connection issue)`;
                 showAlert();
-                setTimeout(() => checkBFDBUploadStatus(jobId), 6000);
+                setTimeout(() => checkUploadStatus(type, jobId), 6000);
             } else {
-                alertMsg.innerHTML = '❌ Error while checking upload: ' + textStatus;
+                alertMsg.innerHTML = `❌ Error while checking ${type} upload: ${textStatus}`;
                 showAlert();
             }
         }
     });
 }
 </script>
+
+
+
 
 <script>
 window.onload = function () {

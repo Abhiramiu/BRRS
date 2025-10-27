@@ -62,6 +62,35 @@ public class BDGF_Services {
 
 	private static final Logger logger = LoggerFactory.getLogger(BDGF_Services.class);
 
+	private final ConcurrentHashMap<String, String> jobStatusStorage = new ConcurrentHashMap<>();
+
+	@Async
+	public void initializeJobStatus(String jobId, MultipartFile file, String userid, String username) {
+	    jobStatusStorage.put(jobId, "PROCESSING");
+	    startBDGFUploadAsync(jobId, file, userid, username);
+	}
+
+	public String startBDGFUploadAsync(String jobId, MultipartFile file, String userid, String username) {
+	    logger.info("Starting BDGF upload job: {}", jobId);
+
+	    try {
+	        String resultMsg = addBDGF(file, userid, username);
+	        jobStatusStorage.put(jobId, "COMPLETED:" + resultMsg);
+	        logger.info("Job {} completed successfully.", jobId);
+	        return resultMsg;
+
+	    } catch (Exception e) {
+	        String errorMessage = "ERROR:" + e.getMessage();
+	        jobStatusStorage.put(jobId, errorMessage);
+	        logger.error("Job {} failed: {}", jobId, e.getMessage(), e);
+	        return errorMessage;
+	    }
+	}
+
+	public String getJobStatus(String jobId) {
+	    return jobStatusStorage.getOrDefault(jobId, "NOT_FOUND");
+	}
+
 	@Transactional
 	public String addBDGF(MultipartFile file, String userid, String username) {
 		long startTime = System.currentTimeMillis();

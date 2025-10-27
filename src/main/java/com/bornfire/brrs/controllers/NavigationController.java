@@ -1160,7 +1160,7 @@ public String BFDB(@RequestParam(required = false) String formmode,
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(data);
 	}
 
-	@PostMapping("addmcbl")
+	/*@PostMapping("addmcbl")
 	@ResponseBody
 	public String addmcbl(@ModelAttribute MultipartFile file, Model md, String reportDate, HttpServletRequest rq) {
 		logger.info("==> Entered MCBL method");
@@ -1174,6 +1174,37 @@ public String BFDB(@RequestParam(required = false) String formmode,
 			logger.error("Error occurred while Add MCBL: {}", e.getMessage(), e);
 			return "Error Occurred. Please contact Administrator.";
 		}
+	}
+*/
+	@PostMapping("/startMCBLUpload")
+	@ResponseBody
+	public String startMCBLUpload(
+	        @RequestParam("file") MultipartFile file,
+	        @RequestParam("reportDate") String reportDate,
+	        HttpServletRequest rq) {
+	    String userid = (String) rq.getSession().getAttribute("USERID");
+	    String username = (String) rq.getSession().getAttribute("USERNAME");
+	    String jobId = UUID.randomUUID().toString();
+
+	    try {
+	    	MCBL_Servicess.initializeJobStatus(jobId, file, userid, username, reportDate);
+	        return jobId;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return "ERROR_STARTING_JOB";
+	    }
+	}
+
+
+	@GetMapping("/checkMCBLUpload")
+	@ResponseBody
+	public ResponseEntity<String> checkMCBLUpload(@RequestParam String jobId) {
+	    String status = MCBL_Servicess.getJobStatus(jobId);
+	    if (status.startsWith("COMPLETED:") || status.startsWith("ERROR:"))
+	        return ResponseEntity.ok(status);
+	    if (status.equals("PROCESSING"))
+	        return ResponseEntity.ok("PROCESSING");
+	    return ResponseEntity.ok("NOT_FOUND");
 	}
 
 	// BDGF
@@ -1229,22 +1260,29 @@ public String BFDB(@RequestParam(required = false) String formmode,
 		return "BDGF";
 	}
 
-	@PostMapping("addBDGF")
+	
+	@PostMapping("/startBDGFUpload")
 	@ResponseBody
-	public String addBDGF(@ModelAttribute MultipartFile file, Model md, HttpServletRequest rq) {
-		logger.info("==> Entered BDGF method");
+	public String startBDGFUpload(@RequestParam("file") MultipartFile file, HttpServletRequest rq) {
+	    String userid = (String) rq.getSession().getAttribute("USERID");
+	    String username = (String) rq.getSession().getAttribute("USERNAME");
+	    String jobId = UUID.randomUUID().toString();
 
-		String userid = (String) rq.getSession().getAttribute("USERID");
-		String username = (String) rq.getSession().getAttribute("USERNAME");
+	    try {
+	    	BDGF_Servicess.initializeJobStatus(jobId, file, userid, username);
+	        return jobId;
+	    } catch (Exception e) {
+	        return "ERROR_STARTING_JOB";
+	    }
+	}
 
-		try {
-			String msg = BDGF_Servicess.addBDGF(file, userid, username);
-			logger.info("BDGF result: {}", msg);
-			return msg;
-		} catch (Exception e) {
-			logger.error("Error occurred while Add BDGF: {}", e.getMessage(), e);
-			return "Error Occurred. Please contact Administrator.";
-		}
+	@GetMapping("/checkBDGFUpload")
+	@ResponseBody
+	public ResponseEntity<String> checkBDGFUpload(@RequestParam String jobId) {
+	    String status = BDGF_Servicess.getJobStatus(jobId);
+	    if (status.startsWith("COMPLETED:") || status.startsWith("ERROR:")) return ResponseEntity.ok(status);
+	    if (status.equals("PROCESSING")) return ResponseEntity.ok("PROCESSING");
+	    return ResponseEntity.ok("NOT_FOUND");
 	}
 
 	// BFDB
@@ -1280,25 +1318,6 @@ public String BFDB(@RequestParam(required = false) String formmode,
 		return "BFDB";
 	}
 
-/*	@PostMapping("addBFDB")
-	@ResponseBody
-	public String addBFDB(@ModelAttribute MultipartFile file, Model md, HttpServletRequest rq) {
-		logger.info("==> Entered BFDB method");
-
-		String userid = (String) rq.getSession().getAttribute("USERID");
-		String username = (String) rq.getSession().getAttribute("USERNAME");
-
-		try {
-			String msg = BFDB_Servicess.addBFDB(file, userid, username);
-			logger.info("BFDB result: {}", msg);
-			return msg;
-		} catch (Exception e) {
-			logger.error("Error occurred while Add BFDB: {}", e.getMessage(), e);
-			return "Error Occurred. Please contact Administrator.";
-		}
-	}
-*/
-	
 	
 	@PostMapping("/startBFDBUpload")
 	@ResponseBody
@@ -1345,23 +1364,6 @@ public String BFDB(@RequestParam(required = false) String formmode,
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 //BLBF
 
 	@RequestMapping(value = "BLBF", method = { RequestMethod.GET, RequestMethod.POST })
@@ -1398,7 +1400,7 @@ public String BFDB(@RequestParam(required = false) String formmode,
 	@Autowired
 	BLBF_Services BLBF_Servicess;
 
-	@PostMapping("addBLBF")
+	/*@PostMapping("addBLBF")
 	@ResponseBody
 	public String addBLBF(@ModelAttribute MultipartFile file, Model md, HttpServletRequest rq) {
 		logger.info("==> Entered BLBF method");
@@ -1415,7 +1417,33 @@ public String BFDB(@RequestParam(required = false) String formmode,
 			return "Error Occurred. Please contact Administrator.";
 		}
 	}
+*/
+	@PostMapping("/startBLBFUpload")
+	@ResponseBody
+	public String startBLBFUpload(@RequestParam("file") MultipartFile file, HttpServletRequest rq) {
+	    String userid = (String) rq.getSession().getAttribute("USERID");
+	    String username = (String) rq.getSession().getAttribute("USERNAME");
+	    String jobId = UUID.randomUUID().toString();
 
+	    try {
+	    	BLBF_Servicess.initializeJobStatus(jobId, file, userid, username);
+	        return jobId;
+	    } catch (Exception e) {
+	        return "ERROR_STARTING_JOB";
+	    }
+	}
+
+	@GetMapping("/checkBLBFUpload")
+	@ResponseBody
+	public ResponseEntity<String> checkBLBFUpload(@RequestParam String jobId) {
+	    String status = BLBF_Servicess.getJobStatus(jobId);
+	    if (status.startsWith("COMPLETED:") || status.startsWith("ERROR:")) return ResponseEntity.ok(status);
+	    if (status.equals("PROCESSING")) return ResponseEntity.ok("PROCESSING");
+	    return ResponseEntity.ok("NOT_FOUND");
+	}
+	
+	
+	
 	private ResponseEntity<byte[]> createExcelTemplate(String sheetName, String fileName, List<String> headers)
 	        throws Exception {
 	    XSSFWorkbook workbook = new XSSFWorkbook();
