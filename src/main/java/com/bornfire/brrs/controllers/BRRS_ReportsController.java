@@ -67,9 +67,11 @@ import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
 import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LIQ_Manual_Summary_Entity;
+import com.bornfire.brrs.entities.M_SFINP1_Summary_Manual_Entity;
 import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 
 @Controller
@@ -653,6 +655,37 @@ public class BRRS_ReportsController {
 		                              .body("Update Failed: " + e.getMessage());
 		     }
 		 }
+		 
+		 
+		 @Autowired
+		 BRRS_M_SFINP1_ReportService M_SFINP1_ReportService;
+		 @RequestMapping(value = "/MSFINP1updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+		 @ResponseBody
+		 public ResponseEntity<String> updateReport(
+		         @RequestParam(required = false)
+		         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		         
+		         @ModelAttribute M_SFINP1_Summary_Manual_Entity request1
+		 ) {
+		     try {
+		         System.out.println("Came to single controller");
+		        
+		         // set date into all 4 entities
+		         request1.setREPORT_DATE(asondate);
+		        
+		     
+		         M_SFINP1_ReportService.updateReport(request1);
+		     
+		     return ResponseEntity.ok("All Reports Updated Successfully");
+		     }
+		     catch (Exception e) {
+		         e.printStackTrace();
+		         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                              .body("Update Failed: " + e.getMessage());
+		     }
+		 }
+		 
+		 
 
 
 		

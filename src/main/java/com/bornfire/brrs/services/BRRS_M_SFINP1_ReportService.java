@@ -1,11 +1,11 @@
 package com.bornfire.brrs.services;
-
 import org.springframework.web.servlet.ModelAndView;
-
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -44,24 +46,24 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
 //import com.bornfire.brrs.controllers.CBUAE_BRF_ReportsController;
-
 import com.bornfire.brrs.entities.M_SFINP1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_SFINP1_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.M_SFINP1_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_SFINP1_Archival_Summary_Manual_Entity;
 import com.bornfire.brrs.entities.BRRS_M_SFINP1_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_SFINP1_Archival_Summary_Manual_Repo;
 import com.bornfire.brrs.entities.M_SFINP1_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_SFINP1_Detail_Repo;
 import com.bornfire.brrs.entities.M_SFINP1_Summary_Entity;
+import com.bornfire.brrs.entities.M_SFINP1_Summary_Manual_Entity;
 import com.bornfire.brrs.entities.M_SFINP2_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_SFINP2_Detail_Entity;
+import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_SFINP1_Summary_Repo;
-
+import com.bornfire.brrs.entities.BRRS_M_SFINP1_Summary_Manual_Repo;
 @Component
 @Service
-
-
 public class BRRS_M_SFINP1_ReportService {
 private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_ReportService.class);
 	
@@ -78,90 +80,117 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 	BRRS_M_SFINP1_Summary_Repo BRRS_M_SFINP1_Summary_Repo;
 	
 	@Autowired
+	BRRS_M_SFINP1_Summary_Manual_Repo BRRS_M_SFINP1_Summary_Manual_Repo;
+	
+	@Autowired
 	BRRS_M_SFINP1_Archival_Detail_Repo BRRS_M_SFINP1_Archival_Detail_Repo;
-
 	@Autowired
 	BRRS_M_SFINP1_Archival_Summary_Repo BRRS_M_SFINP1_Archival_Summary_Repo;
+	
+	@Autowired
+	BRRS_M_SFINP1_Archival_Summary_Manual_Repo BRRS_M_SFINP1_Archival_Summary_Manual_Repo;
 
+	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+	
 	public ModelAndView getM_SFINP1View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
-		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;	
+            String dtltype, Pageable pageable, String type, String version) {
 
-		System.out.println("testing");
-		System.out.println(version);
+ModelAndView mv = new ModelAndView();
+Session hs = sessionFactory.getCurrentSession();
+System.out.println("🟢 getM_SFINP1View() called");
 
-		if (type.equals("ARCHIVAL") & version != null) {
-			System.out.println(type);
-			List<M_SFINP1_Archival_Summary_Entity> T1Master = new ArrayList<M_SFINP1_Archival_Summary_Entity>();
-			System.out.println(version);
-			try {
-				Date d1 = dateformat.parse(todate);
+try {
+Date reportDate = dateformat.parse(todate);
 
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = BRRS_M_SFINP1_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+// ======= CASE 1: ARCHIVAL =======
+if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+System.out.println("📦 Fetching ARCHIVAL data for version: " + version);
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+List<M_SFINP1_Archival_Summary_Manual_Entity> archivalList =
+BRRS_M_SFINP1_Archival_Summary_Manual_Repo.getdatabydateListarchival(reportDate);
 
-			mv.addObject("reportsummary", T1Master);
-		} else {		
+mv.addObject("reportsummary", archivalList);
 
-		List<M_SFINP1_Summary_Entity> T1Master = new ArrayList<M_SFINP1_Summary_Entity>();
-		try {
-			Date d1 = dateformat.parse(todate);
-			// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
+} else {
+// ======= CASE 2: MANUAL =======
+System.out.println("🧾 Fetching MANUAL data for date: " + todate);
 
-			//T1Master = hs.createQuery("from  BRF1_REPORT_ENTITY a where a.report_date = ?1 ", BRF1_REPORT_ENTITY.class)
-				//	.setParameter(1, df.parse(todate)).getResultList();
-			 T1Master=BRRS_M_SFINP1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-			 
-		
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}	
-			mv.addObject("reportsummary", T1Master);
-		}
+List<M_SFINP1_Summary_Entity> mainList =
+BRRS_M_SFINP1_Summary_Repo.getdatabydateList(reportDate);
+List<M_SFINP1_Summary_Manual_Entity> manualList =
+BRRS_M_SFINP1_Summary_Manual_Repo.getdatabydateList(reportDate);
 
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
+// ======= Fields to calculate averages =======
+String[] fields = {"R14","R34","R37","R39","R43","R50","R51","R52","R57","R59"};
 
-		mv.setViewName("BRRS/M_SFINP1");
-		
-		//mv.addObject("reportsummary", T1Master);
-		//mv.addObject("reportmaster", T1Master);
-		mv.addObject("displaymode", "summary");
-		//mv.addObject("reportsflag", "reportsflag");
-		//mv.addObject("menu", reportId);
-		System.out.println("scv" + mv.getViewName());
+for (String field : fields) {
+try {
+BigDecimal currentVal = (BigDecimal) hs.createNativeQuery(
+"SELECT " + field + "_MONTH_END FROM BRRS_M_SFINP1_SUMMARYTABLE_MANUAL WHERE REPORT_DATE = :reportDate")
+.setParameter("reportDate", reportDate)
+.getSingleResult();
 
-		return mv;
-		}
+BigDecimal previousVal = (BigDecimal) hs.createNativeQuery(
+"SELECT " + field + "_MONTH_END FROM BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY_MANUAL WHERE REPORT_DATE = ADD_MONTHS(:reportDate,-1)")
+.setParameter("reportDate", reportDate)
+.getSingleResult();
+
+if (currentVal != null && previousVal != null) {
+BigDecimal averageVal = currentVal.add(previousVal)
+        .divide(BigDecimal.valueOf(2), 2, RoundingMode.HALF_UP);
+
+// Update the average in main summary table
+hs.createNativeQuery(
+    "UPDATE BRRS_M_SFINP1_SUMMARYTABLE SET " + field + "_AVERAGE = :avg WHERE REPORT_DATE = :reportDate")
+    .setParameter("avg", averageVal)
+    .setParameter("reportDate", reportDate)
+    .executeUpdate();
+
+System.out.println("✅ " + field + "_AVERAGE updated: " + averageVal);
+}
+
+} catch (Exception e) {
+System.err.println("❌ Error processing " + field + ": " + e.getMessage());
+}
+}
+
+// ======= Add to ModelAndView =======
+mv.addObject("reportsummary", mainList);
+mv.addObject("reportsummary1", manualList);
+}
+
+// ======= Common view settings =======
+mv.setViewName("BRRS/M_SFINP1");
+mv.addObject("displaymode", "summary");
+System.out.println("✅ View set to: " + mv.getViewName());
+
+} catch (ParseException e) {
+System.err.println("❌ Error parsing todate: " + todate);
+e.printStackTrace();
+} catch (Exception ex) {
+System.err.println("❌ Unexpected error in getM_SFINP1View()");
+ex.printStackTrace();
+}
+
+return mv;
+}
+
+
 		public ModelAndView getM_SFINP1currentDtl(String reportId, String fromdate, String todate, String currency,
 				  String dtltype, Pageable pageable, String Filter, String type, String version) {
-
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
 		int totalPages = 0;
-
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
-
 		try {
 			Date parsedDate = null;
 			if (todate != null && !todate.isEmpty()) {
 				parsedDate = dateformat.parse(todate);
 			}
-
 			String rowId = null;
 			String columnId = null;
-
 			// ✅ Split filter string into rowId & columnId
 			if (Filter != null && Filter.contains(",")) {
 				String[] parts = Filter.split(",");
@@ -180,11 +209,9 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 				} else {
 					T1Dt1 = BRRS_M_SFINP1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
 				}
-
 				mv.addObject("reportdetails", T1Dt1);
 				mv.addObject("reportmaster12", T1Dt1);
 				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-
 			} else {
 				// 🔹 Current branch
 				List<M_SFINP1_Detail_Entity> T1Dt1;
@@ -195,12 +222,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					totalPages = BRRS_M_SFINP1_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
-
 				mv.addObject("reportdetails", T1Dt1);
 				mv.addObject("reportmaster12", T1Dt1);
 				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 			}
-
 		} catch (ParseException e) {
 			e.printStackTrace();
 			mv.addObject("errorMessage", "Invalid date format: " + todate);
@@ -208,7 +233,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 			e.printStackTrace();
 			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
 		}
-
 		// ✅ Common attributes
 		mv.setViewName("BRRS/M_SFINP1");
 		mv.addObject("displaymode", "Details");
@@ -217,30 +241,53 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
 		mv.addObject("reportsflag", "reportsflag");
 		mv.addObject("menu", reportId);
-
 		return mv;
 	}
+		
+	public void updateReport(M_SFINP1_Summary_Manual_Entity updatedEntity) {
+		    System.out.println("Came to services 1");
+		    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
+		    M_SFINP1_Summary_Manual_Entity existing = BRRS_M_SFINP1_Summary_Manual_Repo.findById(updatedEntity.getREPORT_DATE())
+		            .orElseThrow(() -> new RuntimeException(
+		                    "Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+
+		    try {
+		        
+		    	existing.setR14_MONTH_END(updatedEntity.getR14_MONTH_END());
+		    	existing.setR34_MONTH_END(updatedEntity.getR34_MONTH_END());
+		    	existing.setR37_MONTH_END(updatedEntity.getR37_MONTH_END());
+		    	existing.setR39_MONTH_END(updatedEntity.getR39_MONTH_END());
+		    	existing.setR43_MONTH_END(updatedEntity.getR43_MONTH_END());
+		    	existing.setR50_MONTH_END(updatedEntity.getR50_MONTH_END());
+		    	existing.setR51_MONTH_END(updatedEntity.getR51_MONTH_END());
+		    	existing.setR52_MONTH_END(updatedEntity.getR52_MONTH_END());
+		    	existing.setR57_MONTH_END(updatedEntity.getR57_MONTH_END());
+		    	existing.setR59_MONTH_END(updatedEntity.getR59_MONTH_END());
 
 
+		        // Save back
+		        BRRS_M_SFINP1_Summary_Manual_Repo.save(existing);
+
+		    } catch (Exception e) {
+		        throw new RuntimeException("Error updating report: " + e.getMessage(), e);
+		    }
+		}
+		
 	public byte[] getM_SFINP1Excel(String filename, String reportId, String fromdate, String todate, String currency,
 									 String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
-
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelM_SFINP1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
-
 		// Fetch data
-
 		List<M_SFINP1_Summary_Entity> dataList =BRRS_M_SFINP1_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
-
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_SFINP1 report. Returning empty result.");
 			return new byte[0];
 		}
-
 		String templateDir = env.getProperty("output.exportpathtemp");
 		String templateFileName = filename;
 		System.out.println(filename);
@@ -248,7 +295,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 		System.out.println(templatePath);
 		
 		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
 		if (!Files.exists(templatePath)) {
 			// This specific exception will be caught by the controller.
 			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
@@ -258,25 +304,20 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 			throw new SecurityException(
 					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
 		}
-
 		// This try-with-resources block is perfect. It guarantees all resources are
 		// closed automatically.
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
 				Workbook workbook = WorkbookFactory.create(templateInputStream);
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
 			Sheet sheet = workbook.getSheetAt(0);
-
 			// --- Style Definitions ---
 			CreationHelper createHelper = workbook.getCreationHelper();
-
 			CellStyle dateStyle = workbook.createCellStyle();
 			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
 			dateStyle.setBorderBottom(BorderStyle.THIN);
 			dateStyle.setBorderTop(BorderStyle.THIN);
 			dateStyle.setBorderLeft(BorderStyle.THIN);
 			dateStyle.setBorderRight(BorderStyle.THIN);
-
 			CellStyle textStyle = workbook.createCellStyle();
 			textStyle.setBorderBottom(BorderStyle.THIN);
 			textStyle.setBorderTop(BorderStyle.THIN);
@@ -286,8 +327,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 			// Create the font
 			Font font = workbook.createFont();
 			font.setFontHeightInPoints((short)8); // size 8
-			font.setFontName("Arial");    
-
+			font.setFontName("Arial");   
 			CellStyle numberStyle = workbook.createCellStyle();
 			//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
 			numberStyle.setBorderBottom(BorderStyle.THIN);
@@ -296,9 +336,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-
 			int startRow = 9;
-
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_SFINP1_Summary_Entity record = dataList.get(i);
@@ -307,14 +345,11 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
-
 		
 										
-
 					
 					Cell cellC, cellD;
 					CellStyle originalStyle;
-
 					// ===== Row 10 / Col C =====
 					row = sheet.getRow(9);
 					cellC = row.getCell(2);
@@ -323,7 +358,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR10_month_end() != null) cellC.setCellValue(record.getR10_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 10 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -331,7 +365,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR10_average() != null) cellD.setCellValue(record.getR10_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 11 / Col C =====
 					row = sheet.getRow(10);
 					cellC = row.getCell(2);
@@ -340,7 +373,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR11_month_end() != null) cellC.setCellValue(record.getR11_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 11 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -348,7 +380,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR11_average() != null) cellD.setCellValue(record.getR11_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 13 / Col C =====
 					row = sheet.getRow(12);
 					cellC = row.getCell(2);
@@ -357,7 +388,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR13_month_end() != null) cellC.setCellValue(record.getR13_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 13 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -365,7 +395,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR13_average() != null) cellD.setCellValue(record.getR13_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 14 / Col C =====
 					row = sheet.getRow(13);
 					cellC = row.getCell(2);
@@ -374,7 +403,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR14_month_end() != null) cellC.setCellValue(record.getR14_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 14 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -382,7 +410,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR14_average() != null) cellD.setCellValue(record.getR14_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 15 / Col C =====
 					row = sheet.getRow(14);
 					cellC = row.getCell(2);
@@ -391,7 +418,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR15_month_end() != null) cellC.setCellValue(record.getR15_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 15 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -399,7 +425,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR15_average() != null) cellD.setCellValue(record.getR15_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 16 / Col C =====
 					row = sheet.getRow(15);
 					cellC = row.getCell(2);
@@ -408,7 +433,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR16_month_end() != null) cellC.setCellValue(record.getR16_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 16 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -416,7 +440,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR16_average() != null) cellD.setCellValue(record.getR16_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 17 / Col C =====
 					row = sheet.getRow(16);
 					cellC = row.getCell(2);
@@ -425,7 +448,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR17_month_end() != null) cellC.setCellValue(record.getR17_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 17 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -433,7 +455,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR17_average() != null) cellD.setCellValue(record.getR17_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 18 / Col C =====
 					row = sheet.getRow(17);
 					cellC = row.getCell(2);
@@ -442,7 +463,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR18_month_end() != null) cellC.setCellValue(record.getR18_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 18 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -450,7 +470,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR18_average() != null) cellD.setCellValue(record.getR18_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 19 / Col C =====
 					row = sheet.getRow(18);
 					cellC = row.getCell(2);
@@ -459,7 +478,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR19_month_end() != null) cellC.setCellValue(record.getR19_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 19 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -467,7 +485,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR19_average() != null) cellD.setCellValue(record.getR19_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 22 / Col C =====
 					row = sheet.getRow(21);
 					cellC = row.getCell(2);
@@ -476,7 +493,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR22_month_end() != null) cellC.setCellValue(record.getR22_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 22 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -484,7 +500,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR22_average() != null) cellD.setCellValue(record.getR22_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 23 / Col C =====
 					row = sheet.getRow(22);
 					cellC = row.getCell(2);
@@ -493,7 +508,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR23_month_end() != null) cellC.setCellValue(record.getR23_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 23 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -501,7 +515,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR23_average() != null) cellD.setCellValue(record.getR23_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 25 / Col C =====
 					row = sheet.getRow(24);
 					cellC = row.getCell(2);
@@ -510,7 +523,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR25_month_end() != null) cellC.setCellValue(record.getR25_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 25 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -518,7 +530,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR25_average() != null) cellD.setCellValue(record.getR25_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 26 / Col C =====
 					row = sheet.getRow(25);
 					cellC = row.getCell(2);
@@ -527,7 +538,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR26_month_end() != null) cellC.setCellValue(record.getR26_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 26 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -535,7 +545,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR26_average() != null) cellD.setCellValue(record.getR26_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 28 / Col C =====
 					row = sheet.getRow(27);
 					cellC = row.getCell(2);
@@ -544,7 +553,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR28_month_end() != null) cellC.setCellValue(record.getR28_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 28 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -552,7 +560,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR28_average() != null) cellD.setCellValue(record.getR28_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 29 / Col C =====
 					row = sheet.getRow(28);
 					cellC = row.getCell(2);
@@ -561,7 +568,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR29_month_end() != null) cellC.setCellValue(record.getR29_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 29 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -569,7 +575,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR29_average() != null) cellD.setCellValue(record.getR29_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 30 / Col C =====
 					row = sheet.getRow(29);
 					cellC = row.getCell(2);
@@ -578,7 +583,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR30_month_end() != null) cellC.setCellValue(record.getR30_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 30 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -586,7 +590,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR30_average() != null) cellD.setCellValue(record.getR30_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 32 / Col C =====
 					row = sheet.getRow(31);
 					cellC = row.getCell(2);
@@ -595,7 +598,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR32_month_end() != null) cellC.setCellValue(record.getR32_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 32 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -603,7 +605,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR32_average() != null) cellD.setCellValue(record.getR32_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 33 / Col C =====
 					row = sheet.getRow(32);
 					cellC = row.getCell(2);
@@ -612,7 +613,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR33_month_end() != null) cellC.setCellValue(record.getR33_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 33 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -620,7 +620,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR33_average() != null) cellD.setCellValue(record.getR33_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 34 / Col C =====
 					row = sheet.getRow(33);
 					cellC = row.getCell(2);
@@ -629,7 +628,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR34_month_end() != null) cellC.setCellValue(record.getR34_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 34 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -637,7 +635,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR34_average() != null) cellD.setCellValue(record.getR34_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 36 / Col C =====
 					row = sheet.getRow(35);
 					cellC = row.getCell(2);
@@ -646,7 +643,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR36_month_end() != null) cellC.setCellValue(record.getR36_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 36 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -654,7 +650,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR36_average() != null) cellD.setCellValue(record.getR36_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 37 / Col C =====
 					row = sheet.getRow(36);
 					cellC = row.getCell(2);
@@ -663,7 +658,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR37_month_end() != null) cellC.setCellValue(record.getR37_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 37 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -671,7 +665,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR37_average() != null) cellD.setCellValue(record.getR37_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 39 / Col C =====
 					row = sheet.getRow(38);
 					cellC = row.getCell(2);
@@ -680,7 +673,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR39_month_end() != null) cellC.setCellValue(record.getR39_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 39 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -688,7 +680,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR39_average() != null) cellD.setCellValue(record.getR39_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 41 / Col C =====
 					row = sheet.getRow(40);
 					cellC = row.getCell(2);
@@ -697,7 +688,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR41_month_end() != null) cellC.setCellValue(record.getR41_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 41 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -705,7 +695,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR41_average() != null) cellD.setCellValue(record.getR41_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 42 / Col C =====
 					row = sheet.getRow(41);
 					cellC = row.getCell(2);
@@ -714,7 +703,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR42_month_end() != null) cellC.setCellValue(record.getR42_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 42 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -722,7 +710,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR42_average() != null) cellD.setCellValue(record.getR42_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 43 / Col C =====
 					row = sheet.getRow(42);
 					cellC = row.getCell(2);
@@ -731,7 +718,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR43_month_end() != null) cellC.setCellValue(record.getR43_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 43 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -739,7 +725,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR43_average() != null) cellD.setCellValue(record.getR43_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 45 / Col C =====
 					row = sheet.getRow(44);
 					cellC = row.getCell(2);
@@ -748,7 +733,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR45_month_end() != null) cellC.setCellValue(record.getR45_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 45 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -756,7 +740,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR45_average() != null) cellD.setCellValue(record.getR45_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 46 / Col C =====
 					row = sheet.getRow(45);
 					cellC = row.getCell(2);
@@ -765,7 +748,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR46_month_end() != null) cellC.setCellValue(record.getR46_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 46 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -773,7 +755,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR46_average() != null) cellD.setCellValue(record.getR46_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 47 / Col C =====
 					row = sheet.getRow(46);
 					cellC = row.getCell(2);
@@ -782,7 +763,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR47_month_end() != null) cellC.setCellValue(record.getR47_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 47 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -790,7 +770,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR47_average() != null) cellD.setCellValue(record.getR47_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 48 / Col C =====
 					row = sheet.getRow(47);
 					cellC = row.getCell(2);
@@ -799,7 +778,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR48_month_end() != null) cellC.setCellValue(record.getR48_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 48 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -807,7 +785,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR48_average() != null) cellD.setCellValue(record.getR48_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 50 / Col C =====
 					row = sheet.getRow(49);
 					cellC = row.getCell(2);
@@ -816,7 +793,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR50_month_end() != null) cellC.setCellValue(record.getR50_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 50 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -824,7 +800,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR50_average() != null) cellD.setCellValue(record.getR50_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 51 / Col C =====
 					row = sheet.getRow(50);
 					cellC = row.getCell(2);
@@ -833,7 +808,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR51_month_end() != null) cellC.setCellValue(record.getR51_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 51 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -841,7 +815,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR51_average() != null) cellD.setCellValue(record.getR51_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 52 / Col C =====
 					row = sheet.getRow(51);
 					cellC = row.getCell(2);
@@ -850,7 +823,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR52_month_end() != null) cellC.setCellValue(record.getR52_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 52 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -858,7 +830,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR52_average() != null) cellD.setCellValue(record.getR52_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 53 / Col C =====
 					row = sheet.getRow(52);
 					cellC = row.getCell(2);
@@ -867,7 +838,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR53_month_end() != null) cellC.setCellValue(record.getR53_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 53 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -875,7 +845,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR53_average() != null) cellD.setCellValue(record.getR53_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 54 / Col C =====
 					row = sheet.getRow(53);
 					cellC = row.getCell(2);
@@ -884,7 +853,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR54_month_end() != null) cellC.setCellValue(record.getR54_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 54 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -892,7 +860,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR54_average() != null) cellD.setCellValue(record.getR54_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 55 / Col C =====
 					row = sheet.getRow(54);
 					cellC = row.getCell(2);
@@ -901,7 +868,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR55_month_end() != null) cellC.setCellValue(record.getR55_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 55 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -909,7 +875,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR55_average() != null) cellD.setCellValue(record.getR55_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 57 / Col C =====
 					row = sheet.getRow(56);
 					cellC = row.getCell(2);
@@ -918,7 +883,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR57_month_end() != null) cellC.setCellValue(record.getR57_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 57 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -926,7 +890,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR57_average() != null) cellD.setCellValue(record.getR57_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 58 / Col C =====
 					row = sheet.getRow(57);
 					cellC = row.getCell(2);
@@ -935,7 +898,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR58_month_end() != null) cellC.setCellValue(record.getR58_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 58 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -943,7 +905,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR58_average() != null) cellD.setCellValue(record.getR58_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 59 / Col C =====
 					row = sheet.getRow(58);
 					cellC = row.getCell(2);
@@ -952,7 +913,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR59_month_end() != null) cellC.setCellValue(record.getR59_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 59 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -960,7 +920,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR59_average() != null) cellD.setCellValue(record.getR59_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 60 / Col C =====
 					row = sheet.getRow(59);
 					cellC = row.getCell(2);
@@ -969,7 +928,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR60_month_end() != null) cellC.setCellValue(record.getR60_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 60 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -977,12 +935,9 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 					if (record.getR60_average() != null) cellD.setCellValue(record.getR60_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
-
-
 //										
 //										//R10
-//										// Column C 
+//										// Column C
 //										Cell cell6 = row.createCell(2);
 //										if (record.getR10_month_end() != null) {
 //											cell6.setCellValue(record.getR10_month_end().doubleValue());
@@ -1007,7 +962,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										row = sheet.getRow(10);
 //										
 //										//R11
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR11_month_end() != null) {
 //											cell6.setCellValue(record.getR11_month_end().doubleValue());
@@ -1033,7 +988,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 ////R13	
 //										row = sheet.getRow(12);
 //										//R13
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR13_month_end() != null) {
 //											cell6.setCellValue(record.getR13_month_end().doubleValue());
@@ -1057,7 +1012,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 ////R14		
 //										row = sheet.getRow(13);
 //										//R14
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR14_month_end() != null) {
 //											cell6.setCellValue(record.getR14_month_end().doubleValue());
@@ -1082,7 +1037,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										row = sheet.getRow(14);
 //										
 //										//R15
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR15_month_end() != null) {
 //											cell6.setCellValue(record.getR15_month_end().doubleValue());
@@ -1106,7 +1061,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 ////R16			
 //										row = sheet.getRow(15);
 //										//R16
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR16_month_end() != null) {
 //											cell6.setCellValue(record.getR16_month_end().doubleValue());
@@ -1132,7 +1087,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R17
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR17_month_end() != null) {
 //											cell6.setCellValue(record.getR17_month_end().doubleValue());
@@ -1158,7 +1113,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R18
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR18_month_end() != null) {
 //											cell6.setCellValue(record.getR18_month_end().doubleValue());
@@ -1182,7 +1137,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 ////R19				
 //										row = sheet.getRow(18);
 //										//R19
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR19_month_end() != null) {
 //											cell6.setCellValue(record.getR19_month_end().doubleValue());
@@ -1209,7 +1164,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										row = sheet.getRow(21);
 //										
 //										//R22
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR22_month_end() != null) {
 //											cell6.setCellValue(record.getR22_month_end().doubleValue());
@@ -1234,7 +1189,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										row = sheet.getRow(22);
 //										
 //										//R23
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR23_month_end() != null) {
 //											cell6.setCellValue(record.getR23_month_end().doubleValue());
@@ -1262,7 +1217,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R25
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR25_month_end() != null) {
 //											cell6.setCellValue(record.getR25_month_end().doubleValue());
@@ -1286,7 +1241,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 ////R26				
 //										row = sheet.getRow(25);
 //										//R26
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR26_month_end() != null) {
 //											cell6.setCellValue(record.getR26_month_end().doubleValue());
@@ -1314,7 +1269,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R28
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR28_month_end() != null) {
 //											cell6.setCellValue(record.getR28_month_end().doubleValue());
@@ -1340,7 +1295,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R29
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR29_month_end() != null) {
 //											cell6.setCellValue(record.getR29_month_end().doubleValue());
@@ -1365,7 +1320,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										row = sheet.getRow(29);
 //										
 //										//R30
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR30_month_end() != null) {
 //											cell6.setCellValue(record.getR30_month_end().doubleValue());
@@ -1392,7 +1347,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R32
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR32_month_end() != null) {
 //											cell6.setCellValue(record.getR32_month_end().doubleValue());
@@ -1418,7 +1373,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R33
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR33_month_end() != null) {
 //											cell6.setCellValue(record.getR33_month_end().doubleValue());
@@ -1444,7 +1399,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R34
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR34_month_end() != null) {
 //											cell6.setCellValue(record.getR34_month_end().doubleValue());
@@ -1470,7 +1425,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										row = sheet.getRow(35);
 //										
 //										//R36
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR36_month_end() != null) {
 //											cell6.setCellValue(record.getR36_month_end().doubleValue());
@@ -1496,7 +1451,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R37
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR37_month_end() != null) {
 //											cell6.setCellValue(record.getR37_month_end().doubleValue());
@@ -1523,7 +1478,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R39
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR39_month_end() != null) {
 //											cell6.setCellValue(record.getR39_month_end().doubleValue());
@@ -1550,7 +1505,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R41
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR41_month_end() != null) {
 //											cell6.setCellValue(record.getR41_month_end().doubleValue());
@@ -1576,7 +1531,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R42
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR42_month_end() != null) {
 //											cell6.setCellValue(record.getR42_month_end().doubleValue());
@@ -1602,7 +1557,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R43
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR43_month_end() != null) {
 //											cell6.setCellValue(record.getR43_month_end().doubleValue());
@@ -1629,7 +1584,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R45
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR45_month_end() != null) {
 //											cell6.setCellValue(record.getR45_month_end().doubleValue());
@@ -1655,7 +1610,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R46
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR46_month_end() != null) {
 //											cell6.setCellValue(record.getR46_month_end().doubleValue());
@@ -1681,7 +1636,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R47
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR47_month_end() != null) {
 //											cell6.setCellValue(record.getR47_month_end().doubleValue());
@@ -1707,7 +1662,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R48
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR48_month_end() != null) {
 //											cell6.setCellValue(record.getR48_month_end().doubleValue());
@@ -1734,7 +1689,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										row = sheet.getRow(49);
 //										
 //										//R50
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR50_month_end() != null) {
 //											cell6.setCellValue(record.getR50_month_end().doubleValue());
@@ -1760,7 +1715,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R51
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR51_month_end() != null) {
 //											cell6.setCellValue(record.getR51_month_end().doubleValue());
@@ -1786,7 +1741,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R52
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR52_month_end() != null) {
 //											cell6.setCellValue(record.getR52_month_end().doubleValue());
@@ -1812,7 +1767,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R53
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR53_month_end() != null) {
 //											cell6.setCellValue(record.getR53_month_end().doubleValue());
@@ -1838,7 +1793,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R54
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR54_month_end() != null) {
 //											cell6.setCellValue(record.getR54_month_end().doubleValue());
@@ -1864,7 +1819,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R55
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR55_month_end() != null) {
 //											cell6.setCellValue(record.getR55_month_end().doubleValue());
@@ -1892,7 +1847,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										
 //										
 //										//R57
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR57_month_end() != null) {
 //											cell6.setCellValue(record.getR57_month_end().doubleValue());
@@ -1917,7 +1872,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										row = sheet.getRow(57);
 //										
 //										//R58
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR58_month_end() != null) {
 //											cell6.setCellValue(record.getR58_month_end().doubleValue());
@@ -1942,7 +1897,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										row = sheet.getRow(58);
 //										
 //										//R59
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR59_month_end() != null) {
 //											cell6.setCellValue(record.getR59_month_end().doubleValue());
@@ -1967,7 +1922,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //										row = sheet.getRow(59);
 //										
 //										//R60
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR60_month_end() != null) {
 //											cell6.setCellValue(record.getR60_month_end().doubleValue());
@@ -1987,41 +1942,31 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 //											cell7.setCellValue("");
 //											cell7.setCellStyle(textStyle);
 //										}
-
-
- 				}
+				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {
 				
 			}
-
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
-
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
 			return out.toByteArray();
 		}
 	}
-
 	public byte[] getM_SFINP1DetailExcel(String filename, String fromdate, String todate, String currency,
 										   String dtltype, String type, String version) {
 	    try {
 	        logger.info("Generating Excel for M_SFINP1 Details...");
 	        System.out.println("came to Detail download service");
-
 			if (type.equals("ARCHIVAL") & version != null) {
 				byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
 						version);
 				return ARCHIVALreport;
 			}
-
 	        XSSFWorkbook workbook = new XSSFWorkbook();
 	        XSSFSheet sheet = workbook.createSheet("M_SFINP1Details");
-
 	        // Common border style
 	        BorderStyle border = BorderStyle.THIN;
-
 	        // Header style (left aligned)
 	        CellStyle headerStyle = workbook.createCellStyle();
 	        Font headerFont = workbook.createFont();
@@ -2035,12 +1980,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 	        headerStyle.setBorderBottom(border);
 	        headerStyle.setBorderLeft(border);
 	        headerStyle.setBorderRight(border);
-
 	        // Right-aligned header style for ACCT BALANCE
 	        CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
 	        rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
 	        rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
 	        // Default data style (left aligned)
 	        CellStyle dataStyle = workbook.createCellStyle();
 	        dataStyle.setAlignment(HorizontalAlignment.LEFT);
@@ -2048,7 +1991,6 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 	        dataStyle.setBorderBottom(border);
 	        dataStyle.setBorderLeft(border);
 	        dataStyle.setBorderRight(border);
-
 	        // ACCT BALANCE style (right aligned with 3 decimals)
 	        CellStyle balanceStyle = workbook.createCellStyle();
 	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
@@ -2057,39 +1999,31 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 	        balanceStyle.setBorderBottom(border);
 	        balanceStyle.setBorderLeft(border);
 	        balanceStyle.setBorderRight(border);
-
 	        // Header row
 	        String[] headers = {
 	            "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID", "REPORT_DATE"
 	        };
-
 	        XSSFRow headerRow = sheet.createRow(0);
 	        for (int i = 0; i < headers.length; i++) {
 	            Cell cell = headerRow.createCell(i);
 	            cell.setCellValue(headers[i]);
-
 	            if (i == 3) { // ACCT BALANCE
 	                cell.setCellStyle(rightAlignedHeaderStyle);
 	            } else {
 	                cell.setCellStyle(headerStyle);
 	            }
-
 	            sheet.setColumnWidth(i, 5000);
 	        }
-
 	        // Get data
 	        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
 	        List<M_SFINP1_Detail_Entity> reportData = BRRS_M_SFINP1_Detail_Repo.getdatabydateList(parsedToDate);
-
 	        if (reportData != null && !reportData.isEmpty()) {
 	            int rowIndex = 1;
 	            for (M_SFINP1_Detail_Entity item : reportData) {
 	                XSSFRow row = sheet.createRow(rowIndex++);
-
 	                row.createCell(0).setCellValue(item.getCustId());
 	                row.createCell(1).setCellValue(item.getAcctNumber());
 	                row.createCell(2).setCellValue(item.getAcctName());
-
 	                // ACCT BALANCE (right aligned, 3 decimal places)
 	                Cell balanceCell = row.createCell(3);
 	                if (item.getAcctBalanceInPula() != null) {
@@ -2098,14 +2032,12 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 	                    balanceCell.setCellValue(0.000);
 	                }
 	                balanceCell.setCellStyle(balanceStyle);
-
 	                row.createCell(4).setCellValue(item.getRowId());
 	                row.createCell(5).setCellValue(item.getColumnId());
 	                row.createCell(6).setCellValue(
 	                    item.getReportDate() != null ?
 	                    new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
 	                );
-
 	                // Apply data style for all other cells
 	                for (int j = 0; j < 7; j++) {
 	                    if (j != 3) {
@@ -2116,21 +2048,17 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SFINP1_Repor
 	        } else {
 	            logger.info("No data found for M_SFINP1 — only header will be written.");
 	        }
-
 	        // Write to byte[]
 	        ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	        workbook.write(bos);
 	        workbook.close();
-
 	        logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
 	        return bos.toByteArray();
-
 	    } catch (Exception e) {
 	        logger.error("Error generating M_SFINP1 Excel", e);
 	        return new byte[0];
 	    }
 	}
-
 public List<Object> getM_SFINP1Archival() {
 		List<Object> M_SFINP1Archivallist = new ArrayList<>();
 		try {
@@ -2140,35 +2068,28 @@ public List<Object> getM_SFINP1Archival() {
 			// Log the exception
 			System.err.println("Error fetching M_SFINP1 Archival data: " + e.getMessage());
 			e.printStackTrace();
-
 			// Optionally, you can rethrow it or return empty list
 			// throw new RuntimeException("Failed to fetch data", e);
 		}
 		return M_SFINP1Archivallist;
 	}
-
 	public byte[] getExcelM_SFINP1ARCHIVAL(String filename, String reportId, String fromdate, String todate,
 										   String currency, String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if (type.equals("ARCHIVAL") & version != null) {
-
 		}
 		List<M_SFINP1_Archival_Summary_Entity> dataList = BRRS_M_SFINP1_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
-
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_SFINP1 report. Returning empty result.");
 			return new byte[0];
 		}
-
 		String templateDir = env.getProperty("output.exportpathtemp");
 		String templateFileName = filename;
 		System.out.println(filename);
 		Path templatePath = Paths.get(templateDir, templateFileName);
 		System.out.println(templatePath);
-
 		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-
 		if (!Files.exists(templatePath)) {
 			// This specific exception will be caught by the controller.
 			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
@@ -2178,36 +2099,29 @@ public List<Object> getM_SFINP1Archival() {
 			throw new SecurityException(
 					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
 		}
-
 		// This try-with-resources block is perfect. It guarantees all resources are
 		// closed automatically.
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
 			 Workbook workbook = WorkbookFactory.create(templateInputStream);
 			 ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
 			Sheet sheet = workbook.getSheetAt(0);
-
 			// --- Style Definitions ---
 			CreationHelper createHelper = workbook.getCreationHelper();
-
 			CellStyle dateStyle = workbook.createCellStyle();
 			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
 			dateStyle.setBorderBottom(BorderStyle.THIN);
 			dateStyle.setBorderTop(BorderStyle.THIN);
 			dateStyle.setBorderLeft(BorderStyle.THIN);
 			dateStyle.setBorderRight(BorderStyle.THIN);
-
 			CellStyle textStyle = workbook.createCellStyle();
 			textStyle.setBorderBottom(BorderStyle.THIN);
 			textStyle.setBorderTop(BorderStyle.THIN);
 			textStyle.setBorderLeft(BorderStyle.THIN);
 			textStyle.setBorderRight(BorderStyle.THIN);
-
 			// Create the font
 			Font font = workbook.createFont();
 			font.setFontHeightInPoints((short) 8); // size 8
 			font.setFontName("Arial");
-
 			CellStyle numberStyle = workbook.createCellStyle();
 			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
 			numberStyle.setBorderBottom(BorderStyle.THIN);
@@ -2217,7 +2131,6 @@ public List<Object> getM_SFINP1Archival() {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 	int startRow = 9;
-
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_SFINP1_Archival_Summary_Entity record = dataList.get(i);
@@ -2226,13 +2139,10 @@ public List<Object> getM_SFINP1Archival() {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
-
 		
-
 				
 					Cell cellC, cellD;
 					CellStyle originalStyle;
-
 					// ===== Row 10 / Col C =====
 					row = sheet.getRow(9);
 					cellC = row.getCell(2);
@@ -2241,7 +2151,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR10_month_end() != null) cellC.setCellValue(record.getR10_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 10 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2249,7 +2158,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR10_average() != null) cellD.setCellValue(record.getR10_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 11 / Col C =====
 					row = sheet.getRow(10);
 					cellC = row.getCell(2);
@@ -2258,7 +2166,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR11_month_end() != null) cellC.setCellValue(record.getR11_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 11 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2266,7 +2173,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR11_average() != null) cellD.setCellValue(record.getR11_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 13 / Col C =====
 					row = sheet.getRow(12);
 					cellC = row.getCell(2);
@@ -2275,7 +2181,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR13_month_end() != null) cellC.setCellValue(record.getR13_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 13 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2283,7 +2188,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR13_average() != null) cellD.setCellValue(record.getR13_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 14 / Col C =====
 					row = sheet.getRow(13);
 					cellC = row.getCell(2);
@@ -2292,7 +2196,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR14_month_end() != null) cellC.setCellValue(record.getR14_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 14 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2300,7 +2203,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR14_average() != null) cellD.setCellValue(record.getR14_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 15 / Col C =====
 					row = sheet.getRow(14);
 					cellC = row.getCell(2);
@@ -2309,7 +2211,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR15_month_end() != null) cellC.setCellValue(record.getR15_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 15 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2317,7 +2218,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR15_average() != null) cellD.setCellValue(record.getR15_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 16 / Col C =====
 					row = sheet.getRow(15);
 					cellC = row.getCell(2);
@@ -2326,7 +2226,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR16_month_end() != null) cellC.setCellValue(record.getR16_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 16 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2334,7 +2233,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR16_average() != null) cellD.setCellValue(record.getR16_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 17 / Col C =====
 					row = sheet.getRow(16);
 					cellC = row.getCell(2);
@@ -2343,7 +2241,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR17_month_end() != null) cellC.setCellValue(record.getR17_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 17 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2351,7 +2248,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR17_average() != null) cellD.setCellValue(record.getR17_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 18 / Col C =====
 					row = sheet.getRow(17);
 					cellC = row.getCell(2);
@@ -2360,7 +2256,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR18_month_end() != null) cellC.setCellValue(record.getR18_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 18 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2368,7 +2263,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR18_average() != null) cellD.setCellValue(record.getR18_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 19 / Col C =====
 					row = sheet.getRow(18);
 					cellC = row.getCell(2);
@@ -2377,7 +2271,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR19_month_end() != null) cellC.setCellValue(record.getR19_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 19 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2385,7 +2278,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR19_average() != null) cellD.setCellValue(record.getR19_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 22 / Col C =====
 					row = sheet.getRow(21);
 					cellC = row.getCell(2);
@@ -2394,7 +2286,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR22_month_end() != null) cellC.setCellValue(record.getR22_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 22 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2402,7 +2293,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR22_average() != null) cellD.setCellValue(record.getR22_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 23 / Col C =====
 					row = sheet.getRow(22);
 					cellC = row.getCell(2);
@@ -2411,7 +2301,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR23_month_end() != null) cellC.setCellValue(record.getR23_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 23 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2419,7 +2308,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR23_average() != null) cellD.setCellValue(record.getR23_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 25 / Col C =====
 					row = sheet.getRow(24);
 					cellC = row.getCell(2);
@@ -2428,7 +2316,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR25_month_end() != null) cellC.setCellValue(record.getR25_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 25 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2436,7 +2323,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR25_average() != null) cellD.setCellValue(record.getR25_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 26 / Col C =====
 					row = sheet.getRow(25);
 					cellC = row.getCell(2);
@@ -2445,7 +2331,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR26_month_end() != null) cellC.setCellValue(record.getR26_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 26 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2453,7 +2338,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR26_average() != null) cellD.setCellValue(record.getR26_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 28 / Col C =====
 					row = sheet.getRow(27);
 					cellC = row.getCell(2);
@@ -2462,7 +2346,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR28_month_end() != null) cellC.setCellValue(record.getR28_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 28 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2470,7 +2353,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR28_average() != null) cellD.setCellValue(record.getR28_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 29 / Col C =====
 					row = sheet.getRow(28);
 					cellC = row.getCell(2);
@@ -2479,7 +2361,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR29_month_end() != null) cellC.setCellValue(record.getR29_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 29 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2487,7 +2368,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR29_average() != null) cellD.setCellValue(record.getR29_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 30 / Col C =====
 					row = sheet.getRow(29);
 					cellC = row.getCell(2);
@@ -2496,7 +2376,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR30_month_end() != null) cellC.setCellValue(record.getR30_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 30 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2504,7 +2383,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR30_average() != null) cellD.setCellValue(record.getR30_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 32 / Col C =====
 					row = sheet.getRow(31);
 					cellC = row.getCell(2);
@@ -2513,7 +2391,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR32_month_end() != null) cellC.setCellValue(record.getR32_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 32 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2521,7 +2398,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR32_average() != null) cellD.setCellValue(record.getR32_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 33 / Col C =====
 					row = sheet.getRow(32);
 					cellC = row.getCell(2);
@@ -2530,7 +2406,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR33_month_end() != null) cellC.setCellValue(record.getR33_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 33 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2538,7 +2413,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR33_average() != null) cellD.setCellValue(record.getR33_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 34 / Col C =====
 					row = sheet.getRow(33);
 					cellC = row.getCell(2);
@@ -2547,7 +2421,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR34_month_end() != null) cellC.setCellValue(record.getR34_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 34 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2555,7 +2428,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR34_average() != null) cellD.setCellValue(record.getR34_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 36 / Col C =====
 					row = sheet.getRow(35);
 					cellC = row.getCell(2);
@@ -2564,7 +2436,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR36_month_end() != null) cellC.setCellValue(record.getR36_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 36 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2572,7 +2443,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR36_average() != null) cellD.setCellValue(record.getR36_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 37 / Col C =====
 					row = sheet.getRow(36);
 					cellC = row.getCell(2);
@@ -2581,7 +2451,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR37_month_end() != null) cellC.setCellValue(record.getR37_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 37 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2589,7 +2458,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR37_average() != null) cellD.setCellValue(record.getR37_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 39 / Col C =====
 					row = sheet.getRow(38);
 					cellC = row.getCell(2);
@@ -2598,7 +2466,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR39_month_end() != null) cellC.setCellValue(record.getR39_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 39 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2606,7 +2473,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR39_average() != null) cellD.setCellValue(record.getR39_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 41 / Col C =====
 					row = sheet.getRow(40);
 					cellC = row.getCell(2);
@@ -2615,7 +2481,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR41_month_end() != null) cellC.setCellValue(record.getR41_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 41 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2623,7 +2488,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR41_average() != null) cellD.setCellValue(record.getR41_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 42 / Col C =====
 					row = sheet.getRow(41);
 					cellC = row.getCell(2);
@@ -2632,7 +2496,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR42_month_end() != null) cellC.setCellValue(record.getR42_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 42 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2640,7 +2503,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR42_average() != null) cellD.setCellValue(record.getR42_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 43 / Col C =====
 					row = sheet.getRow(42);
 					cellC = row.getCell(2);
@@ -2649,7 +2511,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR43_month_end() != null) cellC.setCellValue(record.getR43_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 43 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2657,7 +2518,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR43_average() != null) cellD.setCellValue(record.getR43_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 45 / Col C =====
 					row = sheet.getRow(44);
 					cellC = row.getCell(2);
@@ -2666,7 +2526,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR45_month_end() != null) cellC.setCellValue(record.getR45_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 45 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2674,7 +2533,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR45_average() != null) cellD.setCellValue(record.getR45_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 46 / Col C =====
 					row = sheet.getRow(45);
 					cellC = row.getCell(2);
@@ -2683,7 +2541,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR46_month_end() != null) cellC.setCellValue(record.getR46_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 46 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2691,7 +2548,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR46_average() != null) cellD.setCellValue(record.getR46_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 47 / Col C =====
 					row = sheet.getRow(46);
 					cellC = row.getCell(2);
@@ -2700,7 +2556,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR47_month_end() != null) cellC.setCellValue(record.getR47_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 47 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2708,7 +2563,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR47_average() != null) cellD.setCellValue(record.getR47_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 48 / Col C =====
 					row = sheet.getRow(47);
 					cellC = row.getCell(2);
@@ -2717,7 +2571,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR48_month_end() != null) cellC.setCellValue(record.getR48_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 48 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2725,7 +2578,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR48_average() != null) cellD.setCellValue(record.getR48_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 50 / Col C =====
 					row = sheet.getRow(49);
 					cellC = row.getCell(2);
@@ -2734,7 +2586,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR50_month_end() != null) cellC.setCellValue(record.getR50_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 50 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2742,7 +2593,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR50_average() != null) cellD.setCellValue(record.getR50_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 51 / Col C =====
 					row = sheet.getRow(50);
 					cellC = row.getCell(2);
@@ -2751,7 +2601,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR51_month_end() != null) cellC.setCellValue(record.getR51_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 51 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2759,7 +2608,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR51_average() != null) cellD.setCellValue(record.getR51_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 52 / Col C =====
 					row = sheet.getRow(51);
 					cellC = row.getCell(2);
@@ -2768,7 +2616,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR52_month_end() != null) cellC.setCellValue(record.getR52_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 52 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2776,7 +2623,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR52_average() != null) cellD.setCellValue(record.getR52_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 53 / Col C =====
 					row = sheet.getRow(52);
 					cellC = row.getCell(2);
@@ -2785,7 +2631,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR53_month_end() != null) cellC.setCellValue(record.getR53_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 53 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2793,7 +2638,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR53_average() != null) cellD.setCellValue(record.getR53_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 54 / Col C =====
 					row = sheet.getRow(53);
 					cellC = row.getCell(2);
@@ -2802,7 +2646,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR54_month_end() != null) cellC.setCellValue(record.getR54_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 54 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2810,7 +2653,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR54_average() != null) cellD.setCellValue(record.getR54_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 55 / Col C =====
 					row = sheet.getRow(54);
 					cellC = row.getCell(2);
@@ -2819,7 +2661,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR55_month_end() != null) cellC.setCellValue(record.getR55_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 55 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2827,7 +2668,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR55_average() != null) cellD.setCellValue(record.getR55_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 57 / Col C =====
 					row = sheet.getRow(56);
 					cellC = row.getCell(2);
@@ -2836,7 +2676,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR57_month_end() != null) cellC.setCellValue(record.getR57_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 57 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2844,7 +2683,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR57_average() != null) cellD.setCellValue(record.getR57_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 58 / Col C =====
 					row = sheet.getRow(57);
 					cellC = row.getCell(2);
@@ -2853,7 +2691,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR58_month_end() != null) cellC.setCellValue(record.getR58_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 58 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2861,7 +2698,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR58_average() != null) cellD.setCellValue(record.getR58_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 59 / Col C =====
 					row = sheet.getRow(58);
 					cellC = row.getCell(2);
@@ -2870,7 +2706,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR59_month_end() != null) cellC.setCellValue(record.getR59_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 59 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2878,7 +2713,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR59_average() != null) cellD.setCellValue(record.getR59_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 					// ===== Row 60 / Col C =====
 					row = sheet.getRow(59);
 					cellC = row.getCell(2);
@@ -2887,7 +2721,6 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR60_month_end() != null) cellC.setCellValue(record.getR60_month_end().doubleValue());
 					else cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
-
 					// ===== Row 60 / Col D =====
 					cellD = row.getCell(3);
 					if (cellD == null) cellD = row.createCell(3);
@@ -2895,13 +2728,10 @@ public List<Object> getM_SFINP1Archival() {
 					if (record.getR60_average() != null) cellD.setCellValue(record.getR60_average().doubleValue());
 					else cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
-
-
 										
 //										
 //										//R10
-//										// Column C 
+//										// Column C
 //										Cell cell6 = row.createCell(2);
 //										if (record.getR10_month_end() != null) {
 //											cell6.setCellValue(record.getR10_month_end().doubleValue());
@@ -2926,7 +2756,7 @@ public List<Object> getM_SFINP1Archival() {
 //										row = sheet.getRow(10);
 //										
 //										//R11
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR11_month_end() != null) {
 //											cell6.setCellValue(record.getR11_month_end().doubleValue());
@@ -2952,7 +2782,7 @@ public List<Object> getM_SFINP1Archival() {
 ////R13	
 //										row = sheet.getRow(12);
 //										//R13
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR13_month_end() != null) {
 //											cell6.setCellValue(record.getR13_month_end().doubleValue());
@@ -2976,7 +2806,7 @@ public List<Object> getM_SFINP1Archival() {
 ////R14		
 //										row = sheet.getRow(13);
 //										//R14
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR14_month_end() != null) {
 //											cell6.setCellValue(record.getR14_month_end().doubleValue());
@@ -3001,7 +2831,7 @@ public List<Object> getM_SFINP1Archival() {
 //										row = sheet.getRow(14);
 //										
 //										//R15
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR15_month_end() != null) {
 //											cell6.setCellValue(record.getR15_month_end().doubleValue());
@@ -3025,7 +2855,7 @@ public List<Object> getM_SFINP1Archival() {
 ////R16			
 //										row = sheet.getRow(15);
 //										//R16
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR16_month_end() != null) {
 //											cell6.setCellValue(record.getR16_month_end().doubleValue());
@@ -3051,7 +2881,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R17
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR17_month_end() != null) {
 //											cell6.setCellValue(record.getR17_month_end().doubleValue());
@@ -3077,7 +2907,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R18
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR18_month_end() != null) {
 //											cell6.setCellValue(record.getR18_month_end().doubleValue());
@@ -3101,7 +2931,7 @@ public List<Object> getM_SFINP1Archival() {
 ////R19				
 //										row = sheet.getRow(18);
 //										//R19
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR19_month_end() != null) {
 //											cell6.setCellValue(record.getR19_month_end().doubleValue());
@@ -3128,7 +2958,7 @@ public List<Object> getM_SFINP1Archival() {
 //										row = sheet.getRow(21);
 //										
 //										//R22
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR22_month_end() != null) {
 //											cell6.setCellValue(record.getR22_month_end().doubleValue());
@@ -3153,7 +2983,7 @@ public List<Object> getM_SFINP1Archival() {
 //										row = sheet.getRow(22);
 //										
 //										//R23
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR23_month_end() != null) {
 //											cell6.setCellValue(record.getR23_month_end().doubleValue());
@@ -3181,7 +3011,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R25
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR25_month_end() != null) {
 //											cell6.setCellValue(record.getR25_month_end().doubleValue());
@@ -3205,7 +3035,7 @@ public List<Object> getM_SFINP1Archival() {
 ////R26				
 //										row = sheet.getRow(25);
 //										//R26
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR26_month_end() != null) {
 //											cell6.setCellValue(record.getR26_month_end().doubleValue());
@@ -3233,7 +3063,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R28
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR28_month_end() != null) {
 //											cell6.setCellValue(record.getR28_month_end().doubleValue());
@@ -3259,7 +3089,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R29
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR29_month_end() != null) {
 //											cell6.setCellValue(record.getR29_month_end().doubleValue());
@@ -3284,7 +3114,7 @@ public List<Object> getM_SFINP1Archival() {
 //										row = sheet.getRow(29);
 //										
 //										//R30
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR30_month_end() != null) {
 //											cell6.setCellValue(record.getR30_month_end().doubleValue());
@@ -3311,7 +3141,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R32
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR32_month_end() != null) {
 //											cell6.setCellValue(record.getR32_month_end().doubleValue());
@@ -3337,7 +3167,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R33
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR33_month_end() != null) {
 //											cell6.setCellValue(record.getR33_month_end().doubleValue());
@@ -3363,7 +3193,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R34
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR34_month_end() != null) {
 //											cell6.setCellValue(record.getR34_month_end().doubleValue());
@@ -3389,7 +3219,7 @@ public List<Object> getM_SFINP1Archival() {
 //										row = sheet.getRow(35);
 //										
 //										//R36
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR36_month_end() != null) {
 //											cell6.setCellValue(record.getR36_month_end().doubleValue());
@@ -3415,7 +3245,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R37
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR37_month_end() != null) {
 //											cell6.setCellValue(record.getR37_month_end().doubleValue());
@@ -3442,7 +3272,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R39
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR39_month_end() != null) {
 //											cell6.setCellValue(record.getR39_month_end().doubleValue());
@@ -3469,7 +3299,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R41
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR41_month_end() != null) {
 //											cell6.setCellValue(record.getR41_month_end().doubleValue());
@@ -3495,7 +3325,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R42
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR42_month_end() != null) {
 //											cell6.setCellValue(record.getR42_month_end().doubleValue());
@@ -3521,7 +3351,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R43
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR43_month_end() != null) {
 //											cell6.setCellValue(record.getR43_month_end().doubleValue());
@@ -3548,7 +3378,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R45
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR45_month_end() != null) {
 //											cell6.setCellValue(record.getR45_month_end().doubleValue());
@@ -3574,7 +3404,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R46
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR46_month_end() != null) {
 //											cell6.setCellValue(record.getR46_month_end().doubleValue());
@@ -3600,7 +3430,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R47
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR47_month_end() != null) {
 //											cell6.setCellValue(record.getR47_month_end().doubleValue());
@@ -3626,7 +3456,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R48
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR48_month_end() != null) {
 //											cell6.setCellValue(record.getR48_month_end().doubleValue());
@@ -3653,7 +3483,7 @@ public List<Object> getM_SFINP1Archival() {
 //										row = sheet.getRow(49);
 //										
 //										//R50
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR50_month_end() != null) {
 //											cell6.setCellValue(record.getR50_month_end().doubleValue());
@@ -3679,7 +3509,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R51
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR51_month_end() != null) {
 //											cell6.setCellValue(record.getR51_month_end().doubleValue());
@@ -3705,7 +3535,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R52
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR52_month_end() != null) {
 //											cell6.setCellValue(record.getR52_month_end().doubleValue());
@@ -3731,7 +3561,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R53
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR53_month_end() != null) {
 //											cell6.setCellValue(record.getR53_month_end().doubleValue());
@@ -3757,7 +3587,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R54
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR54_month_end() != null) {
 //											cell6.setCellValue(record.getR54_month_end().doubleValue());
@@ -3783,7 +3613,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R55
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR55_month_end() != null) {
 //											cell6.setCellValue(record.getR55_month_end().doubleValue());
@@ -3811,7 +3641,7 @@ public List<Object> getM_SFINP1Archival() {
 //										
 //										
 //										//R57
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR57_month_end() != null) {
 //											cell6.setCellValue(record.getR57_month_end().doubleValue());
@@ -3836,7 +3666,7 @@ public List<Object> getM_SFINP1Archival() {
 //										row = sheet.getRow(57);
 //										
 //										//R58
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR58_month_end() != null) {
 //											cell6.setCellValue(record.getR58_month_end().doubleValue());
@@ -3861,7 +3691,7 @@ public List<Object> getM_SFINP1Archival() {
 //										row = sheet.getRow(58);
 //										
 //										//R59
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR59_month_end() != null) {
 //											cell6.setCellValue(record.getR59_month_end().doubleValue());
@@ -3886,7 +3716,7 @@ public List<Object> getM_SFINP1Archival() {
 //										row = sheet.getRow(59);
 //										
 //										//R60
-//										// Column C 
+//										// Column C
 //										cell6 = row.createCell(2);
 //										if (record.getR60_month_end() != null) {
 //											cell6.setCellValue(record.getR60_month_end().doubleValue());
@@ -3906,37 +3736,28 @@ public List<Object> getM_SFINP1Archival() {
 //											cell7.setCellValue("");
 //											cell7.setCellStyle(textStyle);
 //										}
-
-
- 				}
+				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {
 				
 			}
-
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
-
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-
 			return out.toByteArray();
 		}
 	}
-
 public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
 										 String dtltype, String type, String version) {
 		try {
 			logger.info("Generating Excel for BRRS_M_SFINP1 ARCHIVAL Details...");
 			System.out.println("came to Detail download service");
 			if (type.equals("ARCHIVAL") & version != null) {
-
 			}
- XSSFWorkbook workbook = new XSSFWorkbook();
+XSSFWorkbook workbook = new XSSFWorkbook();
 	        XSSFSheet sheet = workbook.createSheet("M_SFINP1Details");
-
 	        // Common border style
 	        BorderStyle border = BorderStyle.THIN;
-
 	        // Header style (left aligned)
 	        CellStyle headerStyle = workbook.createCellStyle();
 	        Font headerFont = workbook.createFont();
@@ -3950,12 +3771,10 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	        headerStyle.setBorderBottom(border);
 	        headerStyle.setBorderLeft(border);
 	        headerStyle.setBorderRight(border);
-
 	        // Right-aligned header style for ACCT BALANCE
 	        CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
 	        rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
 	        rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
 	        // Default data style (left aligned)
 	        CellStyle dataStyle = workbook.createCellStyle();
 	        dataStyle.setAlignment(HorizontalAlignment.LEFT);
@@ -3963,7 +3782,6 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	        dataStyle.setBorderBottom(border);
 	        dataStyle.setBorderLeft(border);
 	        dataStyle.setBorderRight(border);
-
 	        // ACCT BALANCE style (right aligned with 3 decimals)
 	        CellStyle balanceStyle = workbook.createCellStyle();
 	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
@@ -3972,40 +3790,32 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	        balanceStyle.setBorderBottom(border);
 	        balanceStyle.setBorderLeft(border);
 	        balanceStyle.setBorderRight(border);
-
 	        // Header row
 	        String[] headers = {
 	            "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID", "REPORT_DATE"
 	        };
-
 	        XSSFRow headerRow = sheet.createRow(0);
 	        for (int i = 0; i < headers.length; i++) {
 	            Cell cell = headerRow.createCell(i);
 	            cell.setCellValue(headers[i]);
-
 	            if (i == 3) { // ACCT BALANCE
 	                cell.setCellStyle(rightAlignedHeaderStyle);
 	            } else {
 	                cell.setCellStyle(headerStyle);
 	            }
-
 	            sheet.setColumnWidth(i, 5000);
 	        }
-
 	     // Get data
 	     			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
 	     			List<M_SFINP1_Archival_Detail_Entity> reportData = BRRS_M_SFINP1_Archival_Detail_Repo
 	     					.getdatabydateList(parsedToDate, version);
-
 	     			if (reportData != null && !reportData.isEmpty()) {
 	     				int rowIndex = 1;
 	     				for (M_SFINP1_Archival_Detail_Entity item : reportData) {
 	     					XSSFRow row = sheet.createRow(rowIndex++);
-
 	     					row.createCell(0).setCellValue(item.getCustId());
 	     					row.createCell(1).setCellValue(item.getAcctNumber());
 	     					row.createCell(2).setCellValue(item.getAcctName());
-
 	                // ACCT BALANCE (right aligned, 3 decimal places)
 	                Cell balanceCell = row.createCell(3);
 	                if (item.getAcctBalanceInPula() != null) {
@@ -4014,14 +3824,12 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	                    balanceCell.setCellValue(0.000);
 	                }
 	                balanceCell.setCellStyle(balanceStyle);
-
 	                row.createCell(4).setCellValue(item.getRowId());
 	                row.createCell(5).setCellValue(item.getColumnId());
 	                row.createCell(6).setCellValue(
 	                    item.getReportDate() != null ?
 	                    new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
 	                );
-
 	                // Apply data style for all other cells
 	                for (int j = 0; j < 7; j++) {
 	                    if (j != 3) {
@@ -4032,20 +3840,16 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	        } else {
 	            logger.info("No data found for M_SFINP1 — only header will be written.");
 	        }
-
 	        // Write to byte[]
 	        ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	        workbook.write(bos);
 	        workbook.close();
-
 	        logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
 	        return bos.toByteArray();
-
 	    } catch (Exception e) {
 	        logger.error("Error generating M_SFINP1 Excel", e);
 	        return new byte[0];
 	    }
 	}
-
 }
 
