@@ -117,6 +117,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_Q_STAFF_ReportService BRRS_Q_STAFF_reportservice;
 	
+	@Autowired
+	BRRS_Q_BRANCHNET_ReportService BRRS_Q_BRANCHNET_reportservice;
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -279,6 +282,10 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 			
+		case "Q_BRANCHNET":
+			repsummary = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
 
 		}
 		
@@ -1078,6 +1085,15 @@ public class RegulatoryReportServices {
 		case "Q_STAFF":
 			try {
 				archivalData = BRRS_Q_STAFF_reportservice.getQ_STAFFArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		
+		case "Q_BRANCHNET":
+			try {
+				archivalData = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
