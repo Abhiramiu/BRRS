@@ -114,6 +114,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_LIQ_ReportService BRRS_M_LIQ_reportservice;
 	
+	@Autowired
+	BRRS_Q_STAFF_ReportService BRRS_Q_STAFF_reportservice;
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -268,6 +271,11 @@ public class RegulatoryReportServices {
                 
 		case "M_LIQ":
 			repsummary = BRRS_M_LIQ_reportservice.getM_LIQView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+			
+		case "Q_STAFF":
+			repsummary = BRRS_Q_STAFF_reportservice.getQ_STAFFView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 			
@@ -701,6 +709,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "Q_STAFF":
+			try {
+				repfile = BRRS_Q_STAFF_reportservice.BRRS_Q_STAFFExcel(filename, reportId, fromdate, todate, currency,
+						dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		
 			
 		}
@@ -1057,6 +1075,14 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+		case "Q_STAFF":
+			try {
+				archivalData = BRRS_Q_STAFF_reportservice.getQ_STAFFArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		}
 		return archivalData;

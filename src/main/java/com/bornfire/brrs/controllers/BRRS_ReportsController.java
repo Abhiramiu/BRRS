@@ -59,11 +59,14 @@ import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity1;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity2;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity3;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity4;
+import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity1;
+import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity2;
+import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity3;
 import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
-
+import com.bornfire.brrs.services.BRRS_Q_STAFF_ReportService;
 import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LIQ_Manual_Summary_Entity;
@@ -679,6 +682,74 @@ public class BRRS_ReportsController {
 		     return ResponseEntity.ok("All Reports Updated Successfully");
 		     }
 		     catch (Exception e) {
+		         e.printStackTrace();
+		         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                              .body("Update Failed: " + e.getMessage());
+		     }
+		 }
+		 
+		 @Autowired
+		 private BRRS_Q_STAFF_ReportService QSTAFF_service;
+		
+		 @RequestMapping(value = "/QSTAFF1", method = { RequestMethod.GET, RequestMethod.POST })
+		 @ResponseBody
+		 public ResponseEntity<String> updateReport(
+		     @RequestParam(required = false)
+		     @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		     @ModelAttribute Q_STAFF_Summary_Entity1 request,
+		     HttpServletRequest req) {
+		     try {
+		         System.out.println("came to First controller");
+		         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		       
+		         // ✅ set the asondate into entity
+		         request.setREPORT_DATE(asondate);
+		         QSTAFF_service.updateReport(request);
+		         return ResponseEntity.ok("Updated Successfully");
+		     } catch (Exception e) {
+		         e.printStackTrace();
+		         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                              .body("Update Failed: " + e.getMessage());
+		     }
+		 }
+		 @RequestMapping(value = "/QSTAFF2", method = { RequestMethod.GET, RequestMethod.POST })
+		 @ResponseBody
+		 public ResponseEntity<String> updateReport2(
+		     @RequestParam(required = false)
+		     @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		     @ModelAttribute Q_STAFF_Summary_Entity2 request,
+		     HttpServletRequest req) {
+		     try {
+		         System.out.println("came to Second controller");
+		         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		       
+		         // ✅ set the asondate into entity
+		         request.setREPORT_DATE(asondate);
+		         QSTAFF_service.updateReport2(request);
+		         return ResponseEntity.ok("Updated Successfully");
+		     } catch (Exception e) {
+		         e.printStackTrace();
+		         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                              .body("Update Failed: " + e.getMessage());
+		     }
+		 }
+		
+		 @RequestMapping(value = "/QSTAFF3", method = { RequestMethod.GET, RequestMethod.POST })
+		 @ResponseBody
+		 public ResponseEntity<String> updateReport3(
+		     @RequestParam(required = false)
+		     @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		     @ModelAttribute Q_STAFF_Summary_Entity3 request,
+		     HttpServletRequest req) {
+		     try {
+		         System.out.println("came to Third controller");
+		         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		      
+		         // ✅ set the asondate into entity
+		         request.setREPORT_DATE(asondate);
+		         QSTAFF_service.updateReport3(request);
+		         return ResponseEntity.ok("Updated Successfully");
+		     } catch (Exception e) {
 		         e.printStackTrace();
 		         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 		                              .body("Update Failed: " + e.getMessage());
