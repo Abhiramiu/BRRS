@@ -672,7 +672,7 @@ PURPOSE		: BWRBRREPORT
 						<!-- 📅 Date -->
 						<span class="white-text"
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${asondate}">2025-07-04</span>
+							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -719,133 +719,178 @@ PURPOSE		: BWRBRREPORT
                         
 							<thead class="thead-light">
   									 <!-- First header row -->
-                                   <tr style="background-color: #b3b6b9">
-                                        <th rowspan="1" style="text-align: center; background-color: #fefeff;">Line no.</th>
-                                        <th colspan="2" style="text-align: center; background-color: #ffffff;">Number of working days after the agreed settlement date:</th>
-                                        <th rowspan="1" style="text-align: center; background-color:#ffffff;">Number of Failed Trades</th>
-										 <th colspan="1" style="text-align: center; background-color:#ffffff;">Positive Current Exposure</th>
-										  <th colspan="1" style="text-align: center; background-color:#ffffff;">Risk Multiplier</th>
-										   <th colspan="1" style="text-align: center; background-color:#ffffff;">RWA</th>
-                                    </tr>
-									<tr>
-		<th style="text-align: center; background-color:#ffffff;"> </th>
-        <th style="text-align: center; background-color:#ffffff;"> </th>
-        <th style="text-align: center; background-color:#ffffff;"> </th>
-        <th style="text-align: center; background-color:#ffffff;">(1)</th>
-        <th style="text-align: center; background-color:#ffffff;">(2)</th>
-        <th style="text-align: center; background-color:#ffffff;">(3)</th>
-        <th style="text-align: center; background-color:#ffffff;">(4) = (2) x (3) x 1250%</th>
-    </tr>
-								</thead>
+										<tr style="background-color: #b3b6b9">
+											<th rowspan="1"
+												style="text-align: center; background-color: #fefeff;">Line
+												no.</th>
+											<th colspan="2"
+												style="text-align: center; background-color: #ffffff;">Number
+												of working days after the agreed settlement date:</th>
+											<th rowspan="1"
+												style="text-align: center; background-color: #ffffff;">Number
+												of Failed Trades</th>
+											<th colspan="1"
+												style="text-align: center; background-color: #ffffff;">Positive
+												Current Exposure</th>
+											<th colspan="1"
+												style="text-align: center; background-color: #ffffff;">Risk
+												Multiplier</th>
+											<th colspan="1"
+												style="text-align: center; background-color: #ffffff;">RWA</th>
+										</tr>
+										<tr>
+											<th style="text-align: center; background-color: #ffffff;">
+											</th>
+											<th style="text-align: center; background-color: #ffffff;">
+											</th>
+											<th style="text-align: center; background-color: #ffffff;">
+											</th>
+											<th style="text-align: center; background-color: #ffffff;">(1)</th>
+											<th style="text-align: center; background-color: #ffffff;">(2)</th>
+											<th style="text-align: center; background-color: #ffffff;">(3)</th>
+											<th style="text-align: center; background-color: #ffffff;">(4)
+												= (2) x (3) x 1250%</th>
+										</tr>
+									</thead>
 
 
 								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 
-								        <tr>
-											<td style="text-align: right; font-weight:  normal; background-color: #ffffff;">1</td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: white;"></td>
-                                            <td style="text-align: left; font-weight:  normal;background-color: white; text-decoration: underline;" th:text="${report.R11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: #adaaaa;"></td>
-											<td style="text-align: right;font-weight:  normal;background-color: #adaaaa;"></td>
-											<td style="text-align: right;font-weight:  normal;background-color: #adaaaa;"></td>
-											<td style="text-align: right;font-weight:  normal;background-color: #adaaaa;"></td>
+										<tr>
+											<td
+												style="text-align: right; font-weight: normal; background-color: #ffffff;">1</td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: white;"></td>
+											<td
+												style="text-align: left; font-weight: bold; background-color: white; text-decoration: underline;"
+												th:text="${report.R11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
 
 
 
 										</tr>
 
-                                        <tr>
-											<td style="text-align: right; font-weight:  normal;">2</td>
-											<td style="text-align: right;font-weight:  normal;"></td>
-                                            <td style="font-weight:  normal; padding-left: 30px;"  th:text="${report.R12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R12_NUMBER_OF_FAILED_TRADES}"
-											th:attr="RowId='R12', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right;font-weight:  normal;" th:text="${report.R12_POSITIVE_CURRENT_EXPOSURE}"
-											th:attr="RowId='R12', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: center;font-weight:  normal;" th:text="${report.R12_RISK_MULTIPLIER}+ ' %'"
-											th:attr="RowId='R12', ColumnId='C4'"  onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R12_RWA}"
-											></td>
+										<tr>
+											<td style="text-align: right; font-weight: normal;">2</td>
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td style="font-weight: normal; padding-left: 30px;"
+												th:text="${report.R12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R12_NUMBER_OF_FAILED_TRADES}"
+												th:attr="RowId='R12', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R12_POSITIVE_CURRENT_EXPOSURE}"
+												th:attr="RowId='R12', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: center; font-weight: normal;"
+												th:text="${report.R12_RISK_MULTIPLIER}+ ' %'"
+												th:attr="RowId='R12', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R12_RWA}"></td>
 										</tr>
 										<!-- R13 -->
 										<tr>
-   										 <td style="text-align: right; font-weight: normal">3</td>
-   										 <td style="text-align: right; font-weight: normal; "></td>
-   										 <td style="text-align: left; font-weight: normal;  padding-left: 30px;" 
-     									   th:text="${report.R13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-  										  <td style="text-align: right; font-weight: normal; " 
-  									      th:text="${report.R13_NUMBER_OF_FAILED_TRADES}" 
-   										     th:attr="RowId='R13', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-  										  <td style="text-align: right; font-weight: normal; " 
-    									    th:text="${report.R13_POSITIVE_CURRENT_EXPOSURE}" 
-  									       th:attr="RowId='R13', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-									    <td style="text-align: center; font-weight: normal; " 
-   									     th:text="${report.R13_RISK_MULTIPLIER}+'%'" 
-    								    th:attr="RowId='R13', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
- 									   <td style="text-align: right; font-weight: normal; background-color: 	#ADFF2F;" 
-  									      th:text="${report.R13_RWA}" ></td>
+											<td style="text-align: right; font-weight: normal">3</td>
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td
+												style="text-align: left; font-weight: normal; padding-left: 30px;"
+												th:text="${report.R13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R13_NUMBER_OF_FAILED_TRADES}"
+												th:attr="RowId='R13', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R13_POSITIVE_CURRENT_EXPOSURE}"
+												th:attr="RowId='R13', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: center; font-weight: normal;"
+												th:text="${report.R13_RISK_MULTIPLIER}+'%'"
+												th:attr="RowId='R13', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R13_RWA}"></td>
 										</tr>
 
-<!-- R14 -->
-<tr>
-    <td style="text-align: right; font-weight: normal; ">4</td>
-    <td style="text-align: right; font-weight: normal; "></td>
-    <td style="text-align: left; font-weight: normal; padding-left: 30px;" 
-        th:text="${report.R14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-    <td style="text-align: right; font-weight: normal; " 
-        th:text="${report.R14_NUMBER_OF_FAILED_TRADES}" 
-        th:attr="RowId='R14', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: right; font-weight: normal;" 
-        th:text="${report.R14_POSITIVE_CURRENT_EXPOSURE}" 
-        th:attr="RowId='R14', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: center; font-weight: normal; " 
-        th:text="${report.R14_RISK_MULTIPLIER}+'%'" 
-        th:attr="RowId='R14', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: right; font-weight: normal; background-color: 	#ADFF2F;" 
-        th:text="${report.R14_RWA}" 
-       ></td>
-</tr>
+										<!-- R14 -->
+										<tr>
+											<td style="text-align: right; font-weight: normal;">4</td>
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td
+												style="text-align: left; font-weight: normal; padding-left: 30px;"
+												th:text="${report.R14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R14_NUMBER_OF_FAILED_TRADES}"
+												th:attr="RowId='R14', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R14_POSITIVE_CURRENT_EXPOSURE}"
+												th:attr="RowId='R14', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: center; font-weight: normal;"
+												th:text="${report.R14_RISK_MULTIPLIER}+'%'"
+												th:attr="RowId='R14', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R14_RWA}"></td>
+										</tr>
 
-<!-- R15 -->
-<tr>
-    <td style="text-align: right; font-weight: normal; ">5</td>
-    <td style="text-align: right; font-weight: normal;"></td>
-    <td style="text-align: left; font-weight: normal; padding-left: 30px;" 
-        th:text="${report.R15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-    <td style="text-align: right; font-weight: normal;" 
-        th:text="${report.R15_NUMBER_OF_FAILED_TRADES}" 
-        th:attr="RowId='R15', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: right; font-weight: normal;" 
-        th:text="${report.R15_POSITIVE_CURRENT_EXPOSURE}" 
-        th:attr="RowId='R15', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: center; font-weight: normal; " 
-        th:text="${report.R15_RISK_MULTIPLIER}+'%'" 
-        th:attr="RowId='R15', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: right; font-weight: normal; background-color: 	#ADFF2F;" 
-        th:text="${report.R15_RWA}" 
-        ></td>
-</tr>
+										<!-- R15 -->
+										<tr>
+											<td style="text-align: right; font-weight: normal;">5</td>
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td
+												style="text-align: left; font-weight: normal; padding-left: 30px;"
+												th:text="${report.R15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R15_NUMBER_OF_FAILED_TRADES}"
+												th:attr="RowId='R15', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R15_POSITIVE_CURRENT_EXPOSURE}"
+												th:attr="RowId='R15', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: center; font-weight: normal;"
+												th:text="${report.R15_RISK_MULTIPLIER}+'%'"
+												th:attr="RowId='R15', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R15_RWA}"></td>
+										</tr>
 
-<!-- R16 -->
-<tr>
-    <td style="text-align: right; font-weight: normal; ">6</td>
-    <td style="text-align: right; font-weight: normal; "></td>
-    <td style="text-align: left; font-weight: normal; " 
-        th:text="${report.R16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-    <td style="text-align: right; font-weight: normal; background-color: 	#ADFF2F;" 
-        th:text="${report.R16_NUMBER_OF_FAILED_TRADES}" 
-        ></td>
-    <td style="text-align: right; font-weight: normal; background-color: 	#ADFF2F;" 
-        th:text="${report.R16_POSITIVE_CURRENT_EXPOSURE}" 
-        ></td>
-    <td style="text-align: right; font-weight: normal; background-color:  #adaaaa;"></td>
-    <td style="text-align: right; font-weight: normal; background-color: 	#ADFF2F;" 
-        th:text="${report.R16_RWA}" 
-        ></td>
-</tr>
+										<!-- R16 -->
+										<tr>
+											<td style="text-align: right; font-weight: normal;">6</td>
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td style="text-align: left; font-weight: bold;"
+												th:text="${report.R16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R16_NUMBER_OF_FAILED_TRADES}"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R16_POSITIVE_CURRENT_EXPOSURE}"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R16_RWA}"></td>
+										</tr>
+										
 
 
-                                       
 									</tbody>
 
 
@@ -856,145 +901,239 @@ PURPOSE		: BWRBRREPORT
                         
 							<thead class="thead-light">
   									 <!-- First header row -->
-                                    <tr style="background-color: #b3b6b9">
-                                        <th rowspan="1" style="text-align: center; background-color: #fefeff;"></th>
-                                        <th colspan="2" style="text-align: center; background-color: #ffffff;">Number of working days after the agreed settlement date:</th>
-                                        <th rowspan="1" style="text-align: center; background-color:#ffffff;">Number of Failed Trades</th>
-										 <th colspan="1" style="text-align: center; background-color:#ffffff;">Balance</th>
-										  <th colspan="1" style="text-align: center; background-color:#ffffff;">Risk Multiplier</th>
-										   <th colspan="1" style="text-align: center; background-color:#ffffff;">RWA</th>
-                                    </tr>
-									<tr>
-		<th style="text-align: center; background-color:#ffffff;"></th>
-        <th style="text-align: center; background-color:#ffffff;"></th>
-        <th style="text-align: center; background-color:#ffffff;"></th>
-        <th style="text-align: center; background-color:#ffffff;">(1)</th>
-        <th style="text-align: center; background-color:#ffffff;">(2)</th>
-        <th style="text-align: center; background-color:#ffffff;">(3)</th>
-        <th style="text-align: center; background-color:#ffffff;">(4) = (2) x (3) x 1250%</th>
-    </tr>
-								</thead>
+										<tr style="background-color: #b3b6b9">
+											<th rowspan="1"
+												style="text-align: center; background-color: #fefeff;"></th>
+											<th colspan="2"
+												style="text-align: center; background-color: #ffffff;">Number
+												of working days after the agreed settlement date:</th>
+											<th rowspan="1"
+												style="text-align: center; background-color: #ffffff;">Number
+												of Failed Trades</th>
+											<th colspan="1"
+												style="text-align: center; background-color: #ffffff;">Balance</th>
+											<th colspan="1"
+												style="text-align: center; background-color: #ffffff;">Risk
+												Multiplier</th>
+											<th colspan="1"
+												style="text-align: center; background-color: #ffffff;">RWA</th>
+										</tr>
+										<tr>
+											<th style="text-align: center; background-color: #ffffff;"></th>
+											<th style="text-align: center; background-color: #ffffff;"></th>
+											<th style="text-align: center; background-color: #ffffff;"></th>
+											<th style="text-align: center; background-color: #ffffff;">(1)</th>
+											<th style="text-align: center; background-color: #ffffff;">(2)</th>
+											<th style="text-align: center; background-color: #ffffff;">(3)</th>
+											<th style="text-align: center; background-color: #ffffff;">(4)
+												= (2) x (3) x 1250%</th>
+										</tr>
+									</thead>
 
 
 								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 
-								        <tr>
-											<td style="text-align: right; font-weight:  normal; ">7</td>
-                                            <td style="text-align: right;font-weight:  normal;"></td>
-                                            <td style="text-align: left;font-weight:  normal;background-color: white; text-decoration: underline;" th:text="${report.R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-                                            <td style="text-align: right;font-weight:  normal;background-color:  #adaaaa;"></td>
-											<td style="text-align: right;font-weight:  normal;background-color:  #adaaaa;"></td>
-											<td style="text-align: right;font-weight:  normal;background-color:  #adaaaa;"></td>
-											<td style="text-align: right;font-weight:  normal;background-color:  #adaaaa;"></td>
+										<tr>
+											<td style="text-align: right; font-weight: normal;">7</td>
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td
+												style="text-align: left; font-weight: bold; background-color: white; text-decoration: underline;"
+												th:text="${report.R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
 
 
 
 										</tr>
 
-                                       <tr>
-    <td style="text-align: right; font-weight: normal; ">8</td>
-    <td style="text-align: right;font-weight: normal;"></td>
-    <td style="text-align: right;font-weight: normal;" th:text="${report.R20_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-    <td style="text-align: right;font-weight:  normal;"  th:text="${report.R20_NUMBER_OF_FAILED_TRADES}"
-        th:attr="RowId='R20', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: right;font-weight:  normal;"  th:text="${report.R20_POSITIVE_CURRENT_EXPOSURE}"
-        th:attr="RowId='R20', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: center;font-weight:  normal;"  th:text="${report.R20_RISK_MULTIPLIER}+'%'"
-        th:attr="RowId='R20', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;"  th:text="${report.R20_RWA}"
-        ></td>
-</tr>
+										<tr>
+											<td style="text-align: right; font-weight: normal;">8</td>
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R20_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R20_NUMBER_OF_FAILED_TRADES}"
+												th:attr="RowId='R20', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R20_POSITIVE_CURRENT_EXPOSURE}"
+												th:attr="RowId='R20', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: center; font-weight: normal;"
+												th:text="${report.R20_RISK_MULTIPLIER}+'%'"
+												th:attr="RowId='R20', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R20_RWA}"></td>
+										</tr>
 
-<tr>
-    <td style="text-align: right; font-weight: normal; ">9</td>
-    <td></td>
-    <td style="text-align: right;font-weight:  normal;"  th:text="${report.R21_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R21_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R21', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R21_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R21', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-   <!--- <td style="text-align: center;font-weight:  normal;background-color: white;" 
+										<tr>
+											<td style="text-align: right; font-weight: normal;">9</td>
+											<td></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R21_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R21_NUMBER_OF_FAILED_TRADES}"
+												th:attr="RowId='R21', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R21_POSITIVE_CURRENT_EXPOSURE}"
+												th:attr="RowId='R21', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<!--- <td style="text-align: center;font-weight:  normal;background-color: white;" 
 	th:text="${report.R21_RISK_MULTIPLIER}+'%'" th:attr="RowId='R21', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
-	<td style="text-align: right;font-weight:  normal;" ></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R21_RWA}" ></td>
-</tr>
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R21_RWA}"></td>
+										</tr>
 
-<tr>
-    <td style="text-align: right; font-weight: normal; ">10</td>
-    <td></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R22_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R22_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R22', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R22_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R22', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-  <!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R22_RISK_MULTIPLIER}+'%'" th:attr="RowId='R22', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
-  <td style="text-align: right;font-weight:  normal;" ></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R22_RWA}" ></td>
-</tr>
+										<tr>
+											<td style="text-align: right; font-weight: normal;">10</td>
+											<td></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R22_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R22_NUMBER_OF_FAILED_TRADES}"
+												th:attr="RowId='R22', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R22_POSITIVE_CURRENT_EXPOSURE}"
+												th:attr="RowId='R22', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R22_RISK_MULTIPLIER}+'%'" th:attr="RowId='R22', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R22_RWA}"></td>
+										</tr>
 
-<tr>
-    <td style="text-align: right; font-weight: normal; ">11</td>
-    <td></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R23_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R23_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R23', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R23_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R23', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-  <!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R23_RISK_MULTIPLIER}+'%'" th:attr="RowId='R23', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
-  <td style="text-align: right;font-weight:  normal;" ></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R23_RWA}" ></td>
-</tr>
+										<tr>
+											<td style="text-align: right; font-weight: normal;">11</td>
+											<td></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R23_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R23_NUMBER_OF_FAILED_TRADES}"
+												th:attr="RowId='R23', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R23_POSITIVE_CURRENT_EXPOSURE}"
+												th:attr="RowId='R23', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R23_RISK_MULTIPLIER}+'%'" th:attr="RowId='R23', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R23_RWA}"></td>
+										</tr>
 
-<tr>
-    <td style="text-align: right; font-weight: normal; ">12</td>
-    <td></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R24_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R24_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R24', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R24_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R24', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-  <!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R24_RISK_MULTIPLIER}+'%'" th:attr="RowId='R24', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
-  <td style="text-align: right;font-weight:  normal;" ></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R24_RWA}" ></td>
-</tr>
+										<tr>
+											<td style="text-align: right; font-weight: normal;">12</td>
+											<td></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R24_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R24_NUMBER_OF_FAILED_TRADES}"
+												th:attr="RowId='R24', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R24_POSITIVE_CURRENT_EXPOSURE}"
+												th:attr="RowId='R24', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R24_RISK_MULTIPLIER}+'%'" th:attr="RowId='R24', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R24_RWA}"></td>
+										</tr>
 
-<tr>
-    <td style="text-align: right; font-weight: normal; ">13</td>
-    <td></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R25_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R25_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R25', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R25_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R25', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-   <!-- <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R25_RISK_MULTIPLIER}+'%'" th:attr="RowId='R25', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
-   <td style="text-align: right;font-weight:  normal;" ></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R25_RWA}" ></td>
-</tr>
+										<tr>
+											<td style="text-align: right; font-weight: normal;">13</td>
+											<td></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R25_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R25_NUMBER_OF_FAILED_TRADES}"
+												th:attr="RowId='R25', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R25_POSITIVE_CURRENT_EXPOSURE}"
+												th:attr="RowId='R25', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<!-- <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R25_RISK_MULTIPLIER}+'%'" th:attr="RowId='R25', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R25_RWA}"></td>
+										</tr>
 
-<tr>
-    <td style="text-align: right; font-weight: normal; ">14</td>
-    <td></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R26_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R26_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R26', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-    <td style="text-align: right;font-weight:  normal;" th:text="${report.R26_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R26', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
-  <!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R26_RISK_MULTIPLIER}+'%'" th:attr="RowId='R26', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
-  <td style="text-align: right;font-weight:  normal;" ></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R26_RWA}" ></td>
-</tr>
+										<tr>
+											<td style="text-align: right; font-weight: normal;">14</td>
+											<td></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R26_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R26_NUMBER_OF_FAILED_TRADES}"
+												th:attr="RowId='R26', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align: right; font-weight: normal;"
+												th:text="${report.R26_POSITIVE_CURRENT_EXPOSURE}"
+												th:attr="RowId='R26', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R26_RISK_MULTIPLIER}+'%'" th:attr="RowId='R26', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+											<td style="text-align: right; font-weight: normal;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R26_RWA}"></td>
+										</tr>
 
-<tr>
-    <td style="text-align: right; font-weight: normal; ">15</td>
-    <td></td>
-    <td style="text-align: left;font-weight:  normal;" th:text="${report.R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R27_NUMBER_OF_FAILED_TRADES}" ></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R27_POSITIVE_CURRENT_EXPOSURE}"></td>
-    <td style="text-align: left; font-weight: normal; background-color: #adaaaa;" ></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R27_RWA}" ></td>
-</tr>
+										<tr>
+											<td style="text-align: right; font-weight: normal;">15</td>
+											<td></td>
+											<td style="text-align: left; font-weight: bold;"
+												th:text="${report.R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R27_NUMBER_OF_FAILED_TRADES}"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R27_POSITIVE_CURRENT_EXPOSURE}"></td>
+											<td
+												style="text-align: left; font-weight: normal; background-color: #adaaaa;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R27_RWA}"></td>
+										</tr>
 
-<tr>
-    <td style="text-align: right; font-weight: normal; ">16</td>
-    <td></td>
-    <td style="text-align: left;font-weight:  normal;" th:text="${report.R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R28_NUMBER_OF_FAILED_TRADES}" ></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R28_POSITIVE_CURRENT_EXPOSURE}" ></td>
-    <td style="text-align: left; font-weight: normal; background-color: #adaaaa;"></td>
-    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R28_RWA}"></td>
-</tr>
+										<tr>
+											<td style="text-align: right; font-weight: normal;">16</td>
+											<td></td>
+											<td style="text-align: left; font-weight: bold;"
+												th:text="${report.R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R28_NUMBER_OF_FAILED_TRADES}"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R28_POSITIVE_CURRENT_EXPOSURE}"></td>
+											<td
+												style="text-align: left; font-weight: normal; background-color: #adaaaa;"></td>
+											<td
+												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
+												th:text="${report.R28_RWA}"></td>
+										</tr>
+										
 
 
-                                       
-	</tbody>
+									</tbody>
 								</table>
 
 							</div>
