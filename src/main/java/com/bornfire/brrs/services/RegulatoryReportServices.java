@@ -1,6 +1,7 @@
 package com.bornfire.brrs.services;
 
 import java.math.BigDecimal;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService;
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 
 @Component
@@ -122,6 +124,11 @@ public class RegulatoryReportServices {
 	
 	@Autowired
 	BRRS_M_FXR_ReportService BRRS_M_FXR_reportservice;
+
+	@Autowired
+	BRRS_M_SRWA_12B_ReportService brrs_m_srwa_12b_reportservice;
+	
+
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -280,6 +287,7 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 			
+
 		case "Q_STAFF":
 			repsummary = BRRS_Q_STAFF_reportservice.getQ_STAFFView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
@@ -294,6 +302,14 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_FXR_reportservice.getM_FXRView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
+
+
+		case "M_SRWA_12B":
+			
+			repsummary = brrs_m_srwa_12b_reportservice.getM_SRWA_12BView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+			
 
 		}
 		
@@ -542,6 +558,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_SRWA_12B":
+			try {
+					repfile = brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
 		case "M_SRWA_12C":
 			try {
 				repfile = BRRS_M_SRWA_12C_reportservice.BRRS_M_SRWA_12CExcel(filename, reportId, fromdate, todate, currency,
@@ -1110,6 +1136,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+
 		case "Q_STAFF":
 			try {
 				archivalData = BRRS_Q_STAFF_reportservice.getQ_STAFFArchival();
@@ -1117,6 +1144,16 @@ public class RegulatoryReportServices {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+		case "M_SRWA_12B":
+			try {
+				archivalData = brrs_m_srwa_12b_reportservice.getM_SRWA_12BArchival();
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			break;
 		
 		case "Q_BRANCHNET":
@@ -1127,6 +1164,9 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+
+
+			
 
 		}
 		return archivalData;
@@ -1223,6 +1263,7 @@ public class RegulatoryReportServices {
 			reportData = BRRS_M_SFINP2_reportservice.getReportData(specificFilePath);
 			break;
 
+			
 		
 
 		default:

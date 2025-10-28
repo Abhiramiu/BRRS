@@ -1153,9 +1153,9 @@ function checkReportDate() {
 												onchange="toggleModuleForm();">
 												<option value="" disabled selected>Select</option>
 												<option value="MCBL">MCBL</option>
-												<option value="BDGF">Deposit General Format</option>
-												<option value="BFDB">Format Deposit Book</option>
-												<option value="BLBF">Loan Book Format</option>
+												<option value="BDGF">Deposit General</option>
+												<option value="BFDB">Deposit Book</option>
+												<option value="BLBF">Loan Book</option>
 											</select>
 										</div>
 									</div>
@@ -1274,7 +1274,7 @@ function checkReportDate() {
 											<label class="col-sm-2">File</label>
 											<div class="col-sm-3">
 												<input th:if="${formmode}=='add'" type="file" id="file1" name="file"
-													class="form-control form-control-sm" accept=".xls,.xlsx" />
+													class="form-control form-control-sm" accept=".xlsx" />
 											</div>
 										</div>
 										<div class="row formline">
@@ -1320,7 +1320,7 @@ function checkReportDate() {
 											<label class="col-sm-2">File</label>
 											<div class="col-sm-3">
 												<input th:if="${formmode}=='add'" type="file" id="file2" name="file"
-													class="form-control form-control-sm" accept=".xls,.xlsx"/>
+													class="form-control form-control-sm" accept=".xlsx"/>
 											</div>
 										</div>
 										<div class="row formline">
@@ -1366,7 +1366,7 @@ function checkReportDate() {
 											<label class="col-sm-2">File</label>
 											<div class="col-sm-3">
 												<input th:if="${formmode}=='add'" type="file" id="file3" name="file"
-													class="form-control form-control-sm" accept=".xls,.xlsx"/>
+													class="form-control form-control-sm" accept=".xlsx"/>
 											</div>
 										</div>
 										<div class="row formline">

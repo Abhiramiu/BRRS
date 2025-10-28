@@ -957,7 +957,7 @@ function checkUploadStatus(type, jobId) {
                 const errorMsg = status.startsWith("ERROR:")
                     ? status.substring("ERROR:".length)
                     : "Job not found or failed.";
-                alertMsg.innerHTML = ` ${type} Upload finished`;
+                alertMsg.innerHTML = ` ${type} Upload finished with error: ${errorMsg}`;
                 showAlert();
                 showResultModal('Job Status', errorMsg);
                 sessionStorage.removeItem("current" + type + "JobId");

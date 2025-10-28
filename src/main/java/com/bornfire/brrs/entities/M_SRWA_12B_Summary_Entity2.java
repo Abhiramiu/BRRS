@@ -1,0 +1,16240 @@
+package com.bornfire.brrs.entities;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+@Entity
+@Table(name = "BRRS_M_SRWA_12B_SUMMARYTABLE2")
+
+public class M_SRWA_12B_Summary_Entity2{
+private String r51_product;
+private BigDecimal r51_exp_bef_crm;
+private BigDecimal r51_spec_prov_past_due_exp;
+private BigDecimal r51_amt_eli_bal_sheet_net;
+private BigDecimal r51_tot_exp_aft_net;
+private BigDecimal r51_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r51_guan_noncol_exp_crm_subapr;
+private BigDecimal r51_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r51_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r51_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r51_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r51_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r51_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r51_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r51_value;
+private BigDecimal r51_expeli_colexp_crm_comapr;
+private BigDecimal r51_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r51_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r51_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r51_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r51_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r51_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r51_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r51_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r51_rwa_exp_notcov_crm_rwa;
+private BigDecimal r51_unsecu_exp_credit_risk_rwa;
+private BigDecimal r51_rwa_unsecu_exp_rwa;
+private BigDecimal r51_tot_rwa;
+private String r52_product;
+private BigDecimal r52_exp_bef_crm;
+private BigDecimal r52_spec_prov_past_due_exp;
+private BigDecimal r52_amt_eli_bal_sheet_net;
+private BigDecimal r52_tot_exp_aft_net;
+private BigDecimal r52_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r52_guan_noncol_exp_crm_subapr;
+private BigDecimal r52_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r52_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r52_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r52_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r52_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r52_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r52_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r52_value;
+private BigDecimal r52_expeli_colexp_crm_comapr;
+private BigDecimal r52_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r52_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r52_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r52_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r52_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r52_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r52_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r52_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r52_rwa_exp_notcov_crm_rwa;
+private BigDecimal r52_unsecu_exp_credit_risk_rwa;
+private BigDecimal r52_rwa_unsecu_exp_rwa;
+private BigDecimal r52_tot_rwa;
+private String r53_product;
+private BigDecimal r53_exp_bef_crm;
+private BigDecimal r53_spec_prov_past_due_exp;
+private BigDecimal r53_amt_eli_bal_sheet_net;
+private BigDecimal r53_tot_exp_aft_net;
+private BigDecimal r53_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r53_guan_noncol_exp_crm_subapr;
+private BigDecimal r53_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r53_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r53_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r53_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r53_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r53_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r53_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r53_value;
+private BigDecimal r53_expeli_colexp_crm_comapr;
+private BigDecimal r53_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r53_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r53_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r53_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r53_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r53_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r53_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r53_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r53_rwa_exp_notcov_crm_rwa;
+private BigDecimal r53_unsecu_exp_credit_risk_rwa;
+private BigDecimal r53_rwa_unsecu_exp_rwa;
+private BigDecimal r53_tot_rwa;
+private String r54_product;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+private String r55_product;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+private String r56_product;
+private BigDecimal r56_exp_bef_crm;
+private BigDecimal r56_spec_prov_past_due_exp;
+private BigDecimal r56_amt_eli_bal_sheet_net;
+private BigDecimal r56_tot_exp_aft_net;
+private BigDecimal r56_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r56_guan_noncol_exp_crm_subapr;
+private BigDecimal r56_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r56_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r56_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r56_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r56_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r56_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r56_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r56_value;
+private BigDecimal r56_expeli_colexp_crm_comapr;
+private BigDecimal r56_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r56_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r56_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r56_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r56_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r56_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r56_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r56_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r56_rwa_exp_notcov_crm_rwa;
+private BigDecimal r56_unsecu_exp_credit_risk_rwa;
+private BigDecimal r56_rwa_unsecu_exp_rwa;
+private BigDecimal r56_tot_rwa;
+private String r57_product;
+private BigDecimal r57_exp_bef_crm;
+private BigDecimal r57_spec_prov_past_due_exp;
+private BigDecimal r57_amt_eli_bal_sheet_net;
+private BigDecimal r57_tot_exp_aft_net;
+private BigDecimal r57_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r57_guan_noncol_exp_crm_subapr;
+private BigDecimal r57_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r57_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r57_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r57_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r57_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r57_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r57_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r57_value;
+private BigDecimal r57_expeli_colexp_crm_comapr;
+private BigDecimal r57_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r57_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r57_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r57_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r57_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r57_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r57_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r57_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r57_rwa_exp_notcov_crm_rwa;
+private BigDecimal r57_unsecu_exp_credit_risk_rwa;
+private BigDecimal r57_rwa_unsecu_exp_rwa;
+private BigDecimal r57_tot_rwa;
+private String r58_product;
+private BigDecimal r58_exp_bef_crm;
+private BigDecimal r58_spec_prov_past_due_exp;
+private BigDecimal r58_amt_eli_bal_sheet_net;
+private BigDecimal r58_tot_exp_aft_net;
+private BigDecimal r58_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r58_guan_noncol_exp_crm_subapr;
+private BigDecimal r58_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r58_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r58_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r58_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r58_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r58_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r58_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r58_value;
+private BigDecimal r58_expeli_colexp_crm_comapr;
+private BigDecimal r58_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r58_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r58_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r58_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r58_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r58_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r58_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r58_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r58_rwa_exp_notcov_crm_rwa;
+private BigDecimal r58_unsecu_exp_credit_risk_rwa;
+private BigDecimal r58_rwa_unsecu_exp_rwa;
+private BigDecimal r58_tot_rwa;
+private String r59_product;
+private BigDecimal r59_exp_bef_crm;
+private BigDecimal r59_spec_prov_past_due_exp;
+private BigDecimal r59_amt_eli_bal_sheet_net;
+private BigDecimal r59_tot_exp_aft_net;
+private BigDecimal r59_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r59_guan_noncol_exp_crm_subapr;
+private BigDecimal r59_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r59_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r59_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r59_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r59_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r59_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r59_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r59_value;
+private BigDecimal r59_expeli_colexp_crm_comapr;
+private BigDecimal r59_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r59_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r59_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r59_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r59_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r59_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r59_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r59_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r59_rwa_exp_notcov_crm_rwa;
+private BigDecimal r59_unsecu_exp_credit_risk_rwa;
+private BigDecimal r59_rwa_unsecu_exp_rwa;
+private BigDecimal r59_tot_rwa;
+private String r60_product;
+private BigDecimal r60_exp_bef_crm;
+private BigDecimal r60_spec_prov_past_due_exp;
+private BigDecimal r60_amt_eli_bal_sheet_net;
+private BigDecimal r60_tot_exp_aft_net;
+private BigDecimal r60_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r60_guan_noncol_exp_crm_subapr;
+private BigDecimal r60_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r60_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r60_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r60_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r60_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r60_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r60_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r60_value;
+private BigDecimal r60_expeli_colexp_crm_comapr;
+private BigDecimal r60_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r60_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r60_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r60_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r60_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r60_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r60_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r60_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r60_rwa_exp_notcov_crm_rwa;
+private BigDecimal r60_unsecu_exp_credit_risk_rwa;
+private BigDecimal r60_rwa_unsecu_exp_rwa;
+private BigDecimal r60_tot_rwa;
+private String r61_product;
+private BigDecimal r61_exp_bef_crm;
+private BigDecimal r61_spec_prov_past_due_exp;
+private BigDecimal r61_amt_eli_bal_sheet_net;
+private BigDecimal r61_tot_exp_aft_net;
+private BigDecimal r61_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r61_guan_noncol_exp_crm_subapr;
+private BigDecimal r61_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r61_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r61_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r61_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r61_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r61_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r61_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r61_value;
+private BigDecimal r61_expeli_colexp_crm_comapr;
+private BigDecimal r61_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r61_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r61_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r61_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r61_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r61_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r61_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r61_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r61_rwa_exp_notcov_crm_rwa;
+private BigDecimal r61_unsecu_exp_credit_risk_rwa;
+private BigDecimal r61_rwa_unsecu_exp_rwa;
+private BigDecimal r61_tot_rwa;
+private String r62_product;
+private BigDecimal r62_exp_bef_crm;
+private BigDecimal r62_spec_prov_past_due_exp;
+private BigDecimal r62_amt_eli_bal_sheet_net;
+private BigDecimal r62_tot_exp_aft_net;
+private BigDecimal r62_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r62_guan_noncol_exp_crm_subapr;
+private BigDecimal r62_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r62_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r62_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r62_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r62_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r62_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r62_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r62_value;
+private BigDecimal r62_expeli_colexp_crm_comapr;
+private BigDecimal r62_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r62_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r62_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r62_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r62_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r62_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r62_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r62_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r62_rwa_exp_notcov_crm_rwa;
+private BigDecimal r62_unsecu_exp_credit_risk_rwa;
+private BigDecimal r62_rwa_unsecu_exp_rwa;
+private BigDecimal r62_tot_rwa;
+private String r63_product;
+private BigDecimal r63_exp_bef_crm;
+private BigDecimal r63_spec_prov_past_due_exp;
+private BigDecimal r63_amt_eli_bal_sheet_net;
+private BigDecimal r63_tot_exp_aft_net;
+private BigDecimal r63_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r63_guan_noncol_exp_crm_subapr;
+private BigDecimal r63_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r63_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r63_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r63_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r63_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r63_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r63_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r63_value;
+private BigDecimal r63_expeli_colexp_crm_comapr;
+private BigDecimal r63_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r63_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r63_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r63_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r63_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r63_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r63_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r63_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r63_rwa_exp_notcov_crm_rwa;
+private BigDecimal r63_unsecu_exp_credit_risk_rwa;
+private BigDecimal r63_rwa_unsecu_exp_rwa;
+private BigDecimal r63_tot_rwa;
+private String r64_product;
+private BigDecimal r64_exp_bef_crm;
+private BigDecimal r64_spec_prov_past_due_exp;
+private BigDecimal r64_amt_eli_bal_sheet_net;
+private BigDecimal r64_tot_exp_aft_net;
+private BigDecimal r64_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r64_guan_noncol_exp_crm_subapr;
+private BigDecimal r64_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r64_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r64_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r64_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r64_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r64_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r64_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r64_value;
+private BigDecimal r64_expeli_colexp_crm_comapr;
+private BigDecimal r64_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r64_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r64_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r64_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r64_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r64_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r64_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r64_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r64_rwa_exp_notcov_crm_rwa;
+private BigDecimal r64_unsecu_exp_credit_risk_rwa;
+private BigDecimal r64_rwa_unsecu_exp_rwa;
+private BigDecimal r64_tot_rwa;
+private String r65_product;
+private BigDecimal r65_exp_bef_crm;
+private BigDecimal r65_spec_prov_past_due_exp;
+private BigDecimal r65_amt_eli_bal_sheet_net;
+private BigDecimal r65_tot_exp_aft_net;
+private BigDecimal r65_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r65_guan_noncol_exp_crm_subapr;
+private BigDecimal r65_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r65_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r65_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r65_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r65_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r65_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r65_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r65_value;
+private BigDecimal r65_expeli_colexp_crm_comapr;
+private BigDecimal r65_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r65_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r65_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r65_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r65_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r65_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r65_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r65_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r65_rwa_exp_notcov_crm_rwa;
+private BigDecimal r65_unsecu_exp_credit_risk_rwa;
+private BigDecimal r65_rwa_unsecu_exp_rwa;
+private BigDecimal r65_tot_rwa;
+private String r66_product;
+private BigDecimal r66_exp_bef_crm;
+private BigDecimal r66_spec_prov_past_due_exp;
+private BigDecimal r66_amt_eli_bal_sheet_net;
+private BigDecimal r66_tot_exp_aft_net;
+private BigDecimal r66_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r66_guan_noncol_exp_crm_subapr;
+private BigDecimal r66_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r66_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r66_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r66_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r66_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r66_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r66_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r66_value;
+private BigDecimal r66_expeli_colexp_crm_comapr;
+private BigDecimal r66_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r66_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r66_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r66_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r66_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r66_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r66_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r66_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r66_rwa_exp_notcov_crm_rwa;
+private BigDecimal r66_unsecu_exp_credit_risk_rwa;
+private BigDecimal r66_rwa_unsecu_exp_rwa;
+private BigDecimal r66_tot_rwa;
+private String r67_product;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+private String r68_product;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+private String r69_product;
+private BigDecimal r69_exp_bef_crm;
+private BigDecimal r69_spec_prov_past_due_exp;
+private BigDecimal r69_amt_eli_bal_sheet_net;
+private BigDecimal r69_tot_exp_aft_net;
+private BigDecimal r69_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r69_guan_noncol_exp_crm_subapr;
+private BigDecimal r69_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r69_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r69_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r69_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r69_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r69_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r69_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r69_value;
+private BigDecimal r69_expeli_colexp_crm_comapr;
+private BigDecimal r69_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r69_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r69_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r69_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r69_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r69_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r69_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r69_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r69_rwa_exp_notcov_crm_rwa;
+private BigDecimal r69_unsecu_exp_credit_risk_rwa;
+private BigDecimal r69_rwa_unsecu_exp_rwa;
+private BigDecimal r69_tot_rwa;
+private String r70_product;
+private BigDecimal r70_exp_bef_crm;
+private BigDecimal r70_spec_prov_past_due_exp;
+private BigDecimal r70_amt_eli_bal_sheet_net;
+private BigDecimal r70_tot_exp_aft_net;
+private BigDecimal r70_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r70_guan_noncol_exp_crm_subapr;
+private BigDecimal r70_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r70_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r70_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r70_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r70_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r70_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r70_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r70_value;
+private BigDecimal r70_expeli_colexp_crm_comapr;
+private BigDecimal r70_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r70_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r70_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r70_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r70_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r70_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r70_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r70_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r70_rwa_exp_notcov_crm_rwa;
+private BigDecimal r70_unsecu_exp_credit_risk_rwa;
+private BigDecimal r70_rwa_unsecu_exp_rwa;
+private BigDecimal r70_tot_rwa;
+private String r71_product;
+private BigDecimal r71_exp_bef_crm;
+private BigDecimal r71_spec_prov_past_due_exp;
+private BigDecimal r71_amt_eli_bal_sheet_net;
+private BigDecimal r71_tot_exp_aft_net;
+private BigDecimal r71_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r71_guan_noncol_exp_crm_subapr;
+private BigDecimal r71_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r71_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r71_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r71_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r71_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r71_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r71_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r71_value;
+private BigDecimal r71_expeli_colexp_crm_comapr;
+private BigDecimal r71_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r71_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r71_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r71_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r71_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r71_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r71_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r71_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r71_rwa_exp_notcov_crm_rwa;
+private BigDecimal r71_unsecu_exp_credit_risk_rwa;
+private BigDecimal r71_rwa_unsecu_exp_rwa;
+private BigDecimal r71_tot_rwa;
+private String r72_product;
+private BigDecimal r72_exp_bef_crm;
+private BigDecimal r72_spec_prov_past_due_exp;
+private BigDecimal r72_amt_eli_bal_sheet_net;
+private BigDecimal r72_tot_exp_aft_net;
+private BigDecimal r72_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r72_guan_noncol_exp_crm_subapr;
+private BigDecimal r72_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r72_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r72_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r72_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r72_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r72_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r72_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r72_value;
+private BigDecimal r72_expeli_colexp_crm_comapr;
+private BigDecimal r72_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r72_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r72_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r72_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r72_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r72_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r72_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r72_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r72_rwa_exp_notcov_crm_rwa;
+private BigDecimal r72_unsecu_exp_credit_risk_rwa;
+private BigDecimal r72_rwa_unsecu_exp_rwa;
+private BigDecimal r72_tot_rwa;
+private String r73_product;
+private BigDecimal r73_exp_bef_crm;
+private BigDecimal r73_spec_prov_past_due_exp;
+private BigDecimal r73_amt_eli_bal_sheet_net;
+private BigDecimal r73_tot_exp_aft_net;
+private BigDecimal r73_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r73_guan_noncol_exp_crm_subapr;
+private BigDecimal r73_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r73_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r73_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r73_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r73_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r73_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r73_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r73_value;
+private BigDecimal r73_expeli_colexp_crm_comapr;
+private BigDecimal r73_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r73_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r73_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r73_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r73_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r73_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r73_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r73_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r73_rwa_exp_notcov_crm_rwa;
+private BigDecimal r73_unsecu_exp_credit_risk_rwa;
+private BigDecimal r73_rwa_unsecu_exp_rwa;
+private BigDecimal r73_tot_rwa;
+private String r74_product;
+private BigDecimal r74_exp_bef_crm;
+private BigDecimal r74_spec_prov_past_due_exp;
+private BigDecimal r74_amt_eli_bal_sheet_net;
+private BigDecimal r74_tot_exp_aft_net;
+private BigDecimal r74_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r74_guan_noncol_exp_crm_subapr;
+private BigDecimal r74_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r74_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r74_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r74_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r74_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r74_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r74_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r74_value;
+private BigDecimal r74_expeli_colexp_crm_comapr;
+private BigDecimal r74_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r74_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r74_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r74_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r74_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r74_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r74_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r74_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r74_rwa_exp_notcov_crm_rwa;
+private BigDecimal r74_unsecu_exp_credit_risk_rwa;
+private BigDecimal r74_rwa_unsecu_exp_rwa;
+private BigDecimal r74_tot_rwa;
+private String r75_product;
+private BigDecimal r75_exp_bef_crm;
+private BigDecimal r75_spec_prov_past_due_exp;
+private BigDecimal r75_amt_eli_bal_sheet_net;
+private BigDecimal r75_tot_exp_aft_net;
+private BigDecimal r75_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r75_guan_noncol_exp_crm_subapr;
+private BigDecimal r75_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r75_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r75_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r75_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r75_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r75_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r75_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r75_value;
+private BigDecimal r75_expeli_colexp_crm_comapr;
+private BigDecimal r75_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r75_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r75_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r75_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r75_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r75_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r75_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r75_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r75_rwa_exp_notcov_crm_rwa;
+private BigDecimal r75_unsecu_exp_credit_risk_rwa;
+private BigDecimal r75_rwa_unsecu_exp_rwa;
+private BigDecimal r75_tot_rwa;
+private String r76_product;
+private BigDecimal r76_exp_bef_crm;
+private BigDecimal r76_spec_prov_past_due_exp;
+private BigDecimal r76_amt_eli_bal_sheet_net;
+private BigDecimal r76_tot_exp_aft_net;
+private BigDecimal r76_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r76_guan_noncol_exp_crm_subapr;
+private BigDecimal r76_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r76_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r76_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r76_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r76_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r76_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r76_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r76_value;
+private BigDecimal r76_expeli_colexp_crm_comapr;
+private BigDecimal r76_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r76_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r76_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r76_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r76_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r76_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r76_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r76_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r76_rwa_exp_notcov_crm_rwa;
+private BigDecimal r76_unsecu_exp_credit_risk_rwa;
+private BigDecimal r76_rwa_unsecu_exp_rwa;
+private BigDecimal r76_tot_rwa;
+private String r77_product;
+private BigDecimal r77_exp_bef_crm;
+private BigDecimal r77_spec_prov_past_due_exp;
+private BigDecimal r77_amt_eli_bal_sheet_net;
+private BigDecimal r77_tot_exp_aft_net;
+private BigDecimal r77_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r77_guan_noncol_exp_crm_subapr;
+private BigDecimal r77_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r77_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r77_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r77_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r77_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r77_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r77_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r77_value;
+private BigDecimal r77_expeli_colexp_crm_comapr;
+private BigDecimal r77_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r77_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r77_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r77_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r77_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r77_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r77_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r77_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r77_rwa_exp_notcov_crm_rwa;
+private BigDecimal r77_unsecu_exp_credit_risk_rwa;
+private BigDecimal r77_rwa_unsecu_exp_rwa;
+private BigDecimal r77_tot_rwa;
+private String r78_product;
+private BigDecimal r78_exp_bef_crm;
+private BigDecimal r78_spec_prov_past_due_exp;
+private BigDecimal r78_amt_eli_bal_sheet_net;
+private BigDecimal r78_tot_exp_aft_net;
+private BigDecimal r78_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r78_guan_noncol_exp_crm_subapr;
+private BigDecimal r78_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r78_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r78_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r78_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r78_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r78_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r78_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r78_value;
+private BigDecimal r78_expeli_colexp_crm_comapr;
+private BigDecimal r78_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r78_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r78_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r78_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r78_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r78_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r78_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r78_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r78_rwa_exp_notcov_crm_rwa;
+private BigDecimal r78_unsecu_exp_credit_risk_rwa;
+private BigDecimal r78_rwa_unsecu_exp_rwa;
+private BigDecimal r78_tot_rwa;
+private String r79_product;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+private String r80_product;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+private String r81_product;
+private BigDecimal r81_exp_bef_crm;
+private BigDecimal r81_spec_prov_past_due_exp;
+private BigDecimal r81_amt_eli_bal_sheet_net;
+private BigDecimal r81_tot_exp_aft_net;
+private BigDecimal r81_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r81_guan_noncol_exp_crm_subapr;
+private BigDecimal r81_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r81_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r81_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r81_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r81_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r81_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r81_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r81_value;
+private BigDecimal r81_expeli_colexp_crm_comapr;
+private BigDecimal r81_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r81_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r81_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r81_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r81_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r81_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r81_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r81_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r81_rwa_exp_notcov_crm_rwa;
+private BigDecimal r81_unsecu_exp_credit_risk_rwa;
+private BigDecimal r81_rwa_unsecu_exp_rwa;
+private BigDecimal r81_tot_rwa;
+private String r82_product;
+private BigDecimal r82_exp_bef_crm;
+private BigDecimal r82_spec_prov_past_due_exp;
+private BigDecimal r82_amt_eli_bal_sheet_net;
+private BigDecimal r82_tot_exp_aft_net;
+private BigDecimal r82_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r82_guan_noncol_exp_crm_subapr;
+private BigDecimal r82_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r82_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r82_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r82_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r82_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r82_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r82_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r82_value;
+private BigDecimal r82_expeli_colexp_crm_comapr;
+private BigDecimal r82_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r82_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r82_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r82_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r82_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r82_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r82_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r82_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r82_rwa_exp_notcov_crm_rwa;
+private BigDecimal r82_unsecu_exp_credit_risk_rwa;
+private BigDecimal r82_rwa_unsecu_exp_rwa;
+private BigDecimal r82_tot_rwa;
+private String r83_product;
+private BigDecimal r83_exp_bef_crm;
+private BigDecimal r83_spec_prov_past_due_exp;
+private BigDecimal r83_amt_eli_bal_sheet_net;
+private BigDecimal r83_tot_exp_aft_net;
+private BigDecimal r83_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r83_guan_noncol_exp_crm_subapr;
+private BigDecimal r83_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r83_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r83_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r83_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r83_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r83_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r83_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r83_value;
+private BigDecimal r83_expeli_colexp_crm_comapr;
+private BigDecimal r83_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r83_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r83_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r83_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r83_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r83_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r83_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r83_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r83_rwa_exp_notcov_crm_rwa;
+private BigDecimal r83_unsecu_exp_credit_risk_rwa;
+private BigDecimal r83_rwa_unsecu_exp_rwa;
+private BigDecimal r83_tot_rwa;
+private String r84_product;
+private BigDecimal r84_exp_bef_crm;
+private BigDecimal r84_spec_prov_past_due_exp;
+private BigDecimal r84_amt_eli_bal_sheet_net;
+private BigDecimal r84_tot_exp_aft_net;
+private BigDecimal r84_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r84_guan_noncol_exp_crm_subapr;
+private BigDecimal r84_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r84_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r84_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r84_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r84_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r84_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r84_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r84_value;
+private BigDecimal r84_expeli_colexp_crm_comapr;
+private BigDecimal r84_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r84_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r84_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r84_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r84_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r84_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r84_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r84_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r84_rwa_exp_notcov_crm_rwa;
+private BigDecimal r84_unsecu_exp_credit_risk_rwa;
+private BigDecimal r84_rwa_unsecu_exp_rwa;
+private BigDecimal r84_tot_rwa;
+private String r85_product;
+private BigDecimal r85_exp_bef_crm;
+private BigDecimal r85_spec_prov_past_due_exp;
+private BigDecimal r85_amt_eli_bal_sheet_net;
+private BigDecimal r85_tot_exp_aft_net;
+private BigDecimal r85_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r85_guan_noncol_exp_crm_subapr;
+private BigDecimal r85_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r85_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r85_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r85_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r85_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r85_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r85_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r85_value;
+private BigDecimal r85_expeli_colexp_crm_comapr;
+private BigDecimal r85_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r85_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r85_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r85_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r85_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r85_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r85_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r85_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r85_rwa_exp_notcov_crm_rwa;
+private BigDecimal r85_unsecu_exp_credit_risk_rwa;
+private BigDecimal r85_rwa_unsecu_exp_rwa;
+private BigDecimal r85_tot_rwa;
+private String r86_product;
+private BigDecimal r86_exp_bef_crm;
+private BigDecimal r86_spec_prov_past_due_exp;
+private BigDecimal r86_amt_eli_bal_sheet_net;
+private BigDecimal r86_tot_exp_aft_net;
+private BigDecimal r86_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r86_guan_noncol_exp_crm_subapr;
+private BigDecimal r86_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r86_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r86_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r86_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r86_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r86_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r86_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r86_value;
+private BigDecimal r86_expeli_colexp_crm_comapr;
+private BigDecimal r86_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r86_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r86_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r86_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r86_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r86_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r86_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r86_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r86_rwa_exp_notcov_crm_rwa;
+private BigDecimal r86_unsecu_exp_credit_risk_rwa;
+private BigDecimal r86_rwa_unsecu_exp_rwa;
+private BigDecimal r86_tot_rwa;
+private String r87_product;
+private BigDecimal r87_exp_bef_crm;
+private BigDecimal r87_spec_prov_past_due_exp;
+private BigDecimal r87_amt_eli_bal_sheet_net;
+private BigDecimal r87_tot_exp_aft_net;
+private BigDecimal r87_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r87_guan_noncol_exp_crm_subapr;
+private BigDecimal r87_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r87_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r87_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r87_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r87_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r87_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r87_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r87_value;
+private BigDecimal r87_expeli_colexp_crm_comapr;
+private BigDecimal r87_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r87_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r87_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r87_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r87_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r87_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r87_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r87_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r87_rwa_exp_notcov_crm_rwa;
+private BigDecimal r87_unsecu_exp_credit_risk_rwa;
+private BigDecimal r87_rwa_unsecu_exp_rwa;
+private BigDecimal r87_tot_rwa;
+private String r88_product;
+private BigDecimal r88_exp_bef_crm;
+private BigDecimal r88_spec_prov_past_due_exp;
+private BigDecimal r88_amt_eli_bal_sheet_net;
+private BigDecimal r88_tot_exp_aft_net;
+private BigDecimal r88_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r88_guan_noncol_exp_crm_subapr;
+private BigDecimal r88_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r88_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r88_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r88_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r88_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r88_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r88_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r88_value;
+private BigDecimal r88_expeli_colexp_crm_comapr;
+private BigDecimal r88_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r88_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r88_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r88_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r88_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r88_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r88_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r88_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r88_rwa_exp_notcov_crm_rwa;
+private BigDecimal r88_unsecu_exp_credit_risk_rwa;
+private BigDecimal r88_rwa_unsecu_exp_rwa;
+private BigDecimal r88_tot_rwa;
+private String r89_product;
+private BigDecimal r89_exp_bef_crm;
+private BigDecimal r89_spec_prov_past_due_exp;
+private BigDecimal r89_amt_eli_bal_sheet_net;
+private BigDecimal r89_tot_exp_aft_net;
+private BigDecimal r89_exp_eli_noncol_exp_crm_subapr;
+private BigDecimal r89_guan_noncol_exp_crm_subapr;
+private BigDecimal r89_cre_deri_noncol_exp_crm_subapr;
+private BigDecimal r89_exp_cov_crm_noncol_exp_crm_subapr;
+private BigDecimal r89_eliexp_notcov_crm_noncol_exp_crm_subapr;
+private BigDecimal r89_riskweights_rwa_noncol_exp_crm_subapr;
+private BigDecimal r89_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r89_rw_oricount_rwa_noncol_exp_crm_subapr;
+private BigDecimal r89_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+private BigDecimal r89_value;
+private BigDecimal r89_expeli_colexp_crm_comapr;
+private BigDecimal r89_exp_aft_voladj_colexp_crm_comapr;
+private BigDecimal r89_cash_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r89_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r89_debt_secu_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r89_equities_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r89_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r89_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r89_exp_efc_haircuts_colexp_crm_comapr;
+private BigDecimal r89_rwa_exp_notcov_crm_rwa;
+private BigDecimal r89_unsecu_exp_credit_risk_rwa;
+private BigDecimal r89_rwa_unsecu_exp_rwa;
+private BigDecimal r89_tot_rwa;
+
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+	private Date report_date;
+	private String report_version;
+	private String report_frequency;
+	private String report_code;
+	private String report_desc;
+	private String entity_flg;
+	private String modify_flg;
+	private String del_flg;
+	
+	
+		
+
+
+	public String getR51_product() {
+		return r51_product;
+	}
+
+
+
+
+
+	public void setR51_product(String r51_product) {
+		this.r51_product = r51_product;
+	}
+
+
+
+
+
+	public BigDecimal getR51_exp_bef_crm() {
+		return r51_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR51_exp_bef_crm(BigDecimal r51_exp_bef_crm) {
+		this.r51_exp_bef_crm = r51_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR51_spec_prov_past_due_exp() {
+		return r51_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR51_spec_prov_past_due_exp(BigDecimal r51_spec_prov_past_due_exp) {
+		this.r51_spec_prov_past_due_exp = r51_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR51_amt_eli_bal_sheet_net() {
+		return r51_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR51_amt_eli_bal_sheet_net(BigDecimal r51_amt_eli_bal_sheet_net) {
+		this.r51_amt_eli_bal_sheet_net = r51_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR51_tot_exp_aft_net() {
+		return r51_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR51_tot_exp_aft_net(BigDecimal r51_tot_exp_aft_net) {
+		this.r51_tot_exp_aft_net = r51_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR51_exp_eli_noncol_exp_crm_subapr() {
+		return r51_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR51_exp_eli_noncol_exp_crm_subapr(BigDecimal r51_exp_eli_noncol_exp_crm_subapr) {
+		this.r51_exp_eli_noncol_exp_crm_subapr = r51_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_guan_noncol_exp_crm_subapr() {
+		return r51_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR51_guan_noncol_exp_crm_subapr(BigDecimal r51_guan_noncol_exp_crm_subapr) {
+		this.r51_guan_noncol_exp_crm_subapr = r51_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_cre_deri_noncol_exp_crm_subapr() {
+		return r51_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR51_cre_deri_noncol_exp_crm_subapr(BigDecimal r51_cre_deri_noncol_exp_crm_subapr) {
+		this.r51_cre_deri_noncol_exp_crm_subapr = r51_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r51_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR51_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r51_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r51_exp_cov_crm_noncol_exp_crm_subapr = r51_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r51_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR51_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r51_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r51_eliexp_notcov_crm_noncol_exp_crm_subapr = r51_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r51_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR51_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r51_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r51_riskweights_rwa_noncol_exp_crm_subapr = r51_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r51_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR51_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r51_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r51_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r51_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r51_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR51_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r51_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r51_rw_oricount_rwa_noncol_exp_crm_subapr = r51_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r51_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR51_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r51_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r51_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r51_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_value() {
+		return r51_value;
+	}
+
+
+
+
+
+	public void setR51_value(BigDecimal r51_value) {
+		this.r51_value = r51_value;
+	}
+
+
+
+
+
+	public BigDecimal getR51_expeli_colexp_crm_comapr() {
+		return r51_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR51_expeli_colexp_crm_comapr(BigDecimal r51_expeli_colexp_crm_comapr) {
+		this.r51_expeli_colexp_crm_comapr = r51_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_exp_aft_voladj_colexp_crm_comapr() {
+		return r51_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR51_exp_aft_voladj_colexp_crm_comapr(BigDecimal r51_exp_aft_voladj_colexp_crm_comapr) {
+		this.r51_exp_aft_voladj_colexp_crm_comapr = r51_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_cash_efc_haircuts_colexp_crm_comapr() {
+		return r51_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR51_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r51_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r51_cash_efc_haircuts_colexp_crm_comapr = r51_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r51_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR51_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r51_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r51_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r51_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r51_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR51_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r51_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r51_debt_secu_efc_haircuts_colexp_crm_comapr = r51_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_equities_efc_haircuts_colexp_crm_comapr() {
+		return r51_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR51_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r51_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r51_equities_efc_haircuts_colexp_crm_comapr = r51_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r51_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR51_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r51_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r51_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r51_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r51_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR51_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r51_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r51_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r51_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_exp_efc_haircuts_colexp_crm_comapr() {
+		return r51_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR51_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r51_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r51_exp_efc_haircuts_colexp_crm_comapr = r51_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR51_rwa_exp_notcov_crm_rwa() {
+		return r51_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR51_rwa_exp_notcov_crm_rwa(BigDecimal r51_rwa_exp_notcov_crm_rwa) {
+		this.r51_rwa_exp_notcov_crm_rwa = r51_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR51_unsecu_exp_credit_risk_rwa() {
+		return r51_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR51_unsecu_exp_credit_risk_rwa(BigDecimal r51_unsecu_exp_credit_risk_rwa) {
+		this.r51_unsecu_exp_credit_risk_rwa = r51_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR51_rwa_unsecu_exp_rwa() {
+		return r51_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR51_rwa_unsecu_exp_rwa(BigDecimal r51_rwa_unsecu_exp_rwa) {
+		this.r51_rwa_unsecu_exp_rwa = r51_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR51_tot_rwa() {
+		return r51_tot_rwa;
+	}
+
+
+
+
+
+	public void setR51_tot_rwa(BigDecimal r51_tot_rwa) {
+		this.r51_tot_rwa = r51_tot_rwa;
+	}
+
+
+
+
+
+	public String getR52_product() {
+		return r52_product;
+	}
+
+
+
+
+
+	public void setR52_product(String r52_product) {
+		this.r52_product = r52_product;
+	}
+
+
+
+
+
+	public BigDecimal getR52_exp_bef_crm() {
+		return r52_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR52_exp_bef_crm(BigDecimal r52_exp_bef_crm) {
+		this.r52_exp_bef_crm = r52_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR52_spec_prov_past_due_exp() {
+		return r52_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR52_spec_prov_past_due_exp(BigDecimal r52_spec_prov_past_due_exp) {
+		this.r52_spec_prov_past_due_exp = r52_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR52_amt_eli_bal_sheet_net() {
+		return r52_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR52_amt_eli_bal_sheet_net(BigDecimal r52_amt_eli_bal_sheet_net) {
+		this.r52_amt_eli_bal_sheet_net = r52_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR52_tot_exp_aft_net() {
+		return r52_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR52_tot_exp_aft_net(BigDecimal r52_tot_exp_aft_net) {
+		this.r52_tot_exp_aft_net = r52_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR52_exp_eli_noncol_exp_crm_subapr() {
+		return r52_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR52_exp_eli_noncol_exp_crm_subapr(BigDecimal r52_exp_eli_noncol_exp_crm_subapr) {
+		this.r52_exp_eli_noncol_exp_crm_subapr = r52_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_guan_noncol_exp_crm_subapr() {
+		return r52_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR52_guan_noncol_exp_crm_subapr(BigDecimal r52_guan_noncol_exp_crm_subapr) {
+		this.r52_guan_noncol_exp_crm_subapr = r52_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_cre_deri_noncol_exp_crm_subapr() {
+		return r52_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR52_cre_deri_noncol_exp_crm_subapr(BigDecimal r52_cre_deri_noncol_exp_crm_subapr) {
+		this.r52_cre_deri_noncol_exp_crm_subapr = r52_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r52_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR52_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r52_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r52_exp_cov_crm_noncol_exp_crm_subapr = r52_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r52_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR52_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r52_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r52_eliexp_notcov_crm_noncol_exp_crm_subapr = r52_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r52_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR52_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r52_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r52_riskweights_rwa_noncol_exp_crm_subapr = r52_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r52_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR52_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r52_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r52_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r52_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r52_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR52_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r52_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r52_rw_oricount_rwa_noncol_exp_crm_subapr = r52_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r52_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR52_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r52_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r52_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r52_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_value() {
+		return r52_value;
+	}
+
+
+
+
+
+	public void setR52_value(BigDecimal r52_value) {
+		this.r52_value = r52_value;
+	}
+
+
+
+
+
+	public BigDecimal getR52_expeli_colexp_crm_comapr() {
+		return r52_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR52_expeli_colexp_crm_comapr(BigDecimal r52_expeli_colexp_crm_comapr) {
+		this.r52_expeli_colexp_crm_comapr = r52_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_exp_aft_voladj_colexp_crm_comapr() {
+		return r52_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR52_exp_aft_voladj_colexp_crm_comapr(BigDecimal r52_exp_aft_voladj_colexp_crm_comapr) {
+		this.r52_exp_aft_voladj_colexp_crm_comapr = r52_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_cash_efc_haircuts_colexp_crm_comapr() {
+		return r52_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR52_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r52_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r52_cash_efc_haircuts_colexp_crm_comapr = r52_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r52_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR52_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r52_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r52_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r52_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r52_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR52_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r52_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r52_debt_secu_efc_haircuts_colexp_crm_comapr = r52_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_equities_efc_haircuts_colexp_crm_comapr() {
+		return r52_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR52_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r52_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r52_equities_efc_haircuts_colexp_crm_comapr = r52_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r52_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR52_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r52_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r52_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r52_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r52_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR52_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r52_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r52_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r52_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_exp_efc_haircuts_colexp_crm_comapr() {
+		return r52_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR52_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r52_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r52_exp_efc_haircuts_colexp_crm_comapr = r52_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR52_rwa_exp_notcov_crm_rwa() {
+		return r52_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR52_rwa_exp_notcov_crm_rwa(BigDecimal r52_rwa_exp_notcov_crm_rwa) {
+		this.r52_rwa_exp_notcov_crm_rwa = r52_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR52_unsecu_exp_credit_risk_rwa() {
+		return r52_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR52_unsecu_exp_credit_risk_rwa(BigDecimal r52_unsecu_exp_credit_risk_rwa) {
+		this.r52_unsecu_exp_credit_risk_rwa = r52_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR52_rwa_unsecu_exp_rwa() {
+		return r52_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR52_rwa_unsecu_exp_rwa(BigDecimal r52_rwa_unsecu_exp_rwa) {
+		this.r52_rwa_unsecu_exp_rwa = r52_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR52_tot_rwa() {
+		return r52_tot_rwa;
+	}
+
+
+
+
+
+	public void setR52_tot_rwa(BigDecimal r52_tot_rwa) {
+		this.r52_tot_rwa = r52_tot_rwa;
+	}
+
+
+
+
+
+	public String getR53_product() {
+		return r53_product;
+	}
+
+
+
+
+
+	public void setR53_product(String r53_product) {
+		this.r53_product = r53_product;
+	}
+
+
+
+
+
+	public BigDecimal getR53_exp_bef_crm() {
+		return r53_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR53_exp_bef_crm(BigDecimal r53_exp_bef_crm) {
+		this.r53_exp_bef_crm = r53_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR53_spec_prov_past_due_exp() {
+		return r53_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR53_spec_prov_past_due_exp(BigDecimal r53_spec_prov_past_due_exp) {
+		this.r53_spec_prov_past_due_exp = r53_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR53_amt_eli_bal_sheet_net() {
+		return r53_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR53_amt_eli_bal_sheet_net(BigDecimal r53_amt_eli_bal_sheet_net) {
+		this.r53_amt_eli_bal_sheet_net = r53_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR53_tot_exp_aft_net() {
+		return r53_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR53_tot_exp_aft_net(BigDecimal r53_tot_exp_aft_net) {
+		this.r53_tot_exp_aft_net = r53_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR53_exp_eli_noncol_exp_crm_subapr() {
+		return r53_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR53_exp_eli_noncol_exp_crm_subapr(BigDecimal r53_exp_eli_noncol_exp_crm_subapr) {
+		this.r53_exp_eli_noncol_exp_crm_subapr = r53_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_guan_noncol_exp_crm_subapr() {
+		return r53_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR53_guan_noncol_exp_crm_subapr(BigDecimal r53_guan_noncol_exp_crm_subapr) {
+		this.r53_guan_noncol_exp_crm_subapr = r53_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_cre_deri_noncol_exp_crm_subapr() {
+		return r53_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR53_cre_deri_noncol_exp_crm_subapr(BigDecimal r53_cre_deri_noncol_exp_crm_subapr) {
+		this.r53_cre_deri_noncol_exp_crm_subapr = r53_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r53_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR53_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r53_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r53_exp_cov_crm_noncol_exp_crm_subapr = r53_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r53_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR53_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r53_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r53_eliexp_notcov_crm_noncol_exp_crm_subapr = r53_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r53_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR53_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r53_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r53_riskweights_rwa_noncol_exp_crm_subapr = r53_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r53_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR53_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r53_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r53_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r53_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r53_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR53_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r53_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r53_rw_oricount_rwa_noncol_exp_crm_subapr = r53_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r53_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR53_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r53_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r53_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r53_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_value() {
+		return r53_value;
+	}
+
+
+
+
+
+	public void setR53_value(BigDecimal r53_value) {
+		this.r53_value = r53_value;
+	}
+
+
+
+
+
+	public BigDecimal getR53_expeli_colexp_crm_comapr() {
+		return r53_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR53_expeli_colexp_crm_comapr(BigDecimal r53_expeli_colexp_crm_comapr) {
+		this.r53_expeli_colexp_crm_comapr = r53_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_exp_aft_voladj_colexp_crm_comapr() {
+		return r53_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR53_exp_aft_voladj_colexp_crm_comapr(BigDecimal r53_exp_aft_voladj_colexp_crm_comapr) {
+		this.r53_exp_aft_voladj_colexp_crm_comapr = r53_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_cash_efc_haircuts_colexp_crm_comapr() {
+		return r53_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR53_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r53_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r53_cash_efc_haircuts_colexp_crm_comapr = r53_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r53_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR53_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r53_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r53_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r53_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r53_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR53_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r53_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r53_debt_secu_efc_haircuts_colexp_crm_comapr = r53_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_equities_efc_haircuts_colexp_crm_comapr() {
+		return r53_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR53_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r53_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r53_equities_efc_haircuts_colexp_crm_comapr = r53_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r53_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR53_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r53_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r53_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r53_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r53_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR53_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r53_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r53_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r53_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_exp_efc_haircuts_colexp_crm_comapr() {
+		return r53_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR53_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r53_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r53_exp_efc_haircuts_colexp_crm_comapr = r53_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR53_rwa_exp_notcov_crm_rwa() {
+		return r53_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR53_rwa_exp_notcov_crm_rwa(BigDecimal r53_rwa_exp_notcov_crm_rwa) {
+		this.r53_rwa_exp_notcov_crm_rwa = r53_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR53_unsecu_exp_credit_risk_rwa() {
+		return r53_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR53_unsecu_exp_credit_risk_rwa(BigDecimal r53_unsecu_exp_credit_risk_rwa) {
+		this.r53_unsecu_exp_credit_risk_rwa = r53_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR53_rwa_unsecu_exp_rwa() {
+		return r53_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR53_rwa_unsecu_exp_rwa(BigDecimal r53_rwa_unsecu_exp_rwa) {
+		this.r53_rwa_unsecu_exp_rwa = r53_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR53_tot_rwa() {
+		return r53_tot_rwa;
+	}
+
+
+
+
+
+	public void setR53_tot_rwa(BigDecimal r53_tot_rwa) {
+		this.r53_tot_rwa = r53_tot_rwa;
+	}
+
+
+
+
+
+	public String getR54_product() {
+		return r54_product;
+	}
+
+
+
+
+
+	public void setR54_product(String r54_product) {
+		this.r54_product = r54_product;
+	}
+
+
+
+
+
+	public String getR55_product() {
+		return r55_product;
+	}
+
+
+
+
+
+	public void setR55_product(String r55_product) {
+		this.r55_product = r55_product;
+	}
+
+
+
+
+
+	public String getR56_product() {
+		return r56_product;
+	}
+
+
+
+
+
+	public void setR56_product(String r56_product) {
+		this.r56_product = r56_product;
+	}
+
+
+
+
+
+	public BigDecimal getR56_exp_bef_crm() {
+		return r56_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR56_exp_bef_crm(BigDecimal r56_exp_bef_crm) {
+		this.r56_exp_bef_crm = r56_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR56_spec_prov_past_due_exp() {
+		return r56_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR56_spec_prov_past_due_exp(BigDecimal r56_spec_prov_past_due_exp) {
+		this.r56_spec_prov_past_due_exp = r56_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR56_amt_eli_bal_sheet_net() {
+		return r56_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR56_amt_eli_bal_sheet_net(BigDecimal r56_amt_eli_bal_sheet_net) {
+		this.r56_amt_eli_bal_sheet_net = r56_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR56_tot_exp_aft_net() {
+		return r56_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR56_tot_exp_aft_net(BigDecimal r56_tot_exp_aft_net) {
+		this.r56_tot_exp_aft_net = r56_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR56_exp_eli_noncol_exp_crm_subapr() {
+		return r56_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR56_exp_eli_noncol_exp_crm_subapr(BigDecimal r56_exp_eli_noncol_exp_crm_subapr) {
+		this.r56_exp_eli_noncol_exp_crm_subapr = r56_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_guan_noncol_exp_crm_subapr() {
+		return r56_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR56_guan_noncol_exp_crm_subapr(BigDecimal r56_guan_noncol_exp_crm_subapr) {
+		this.r56_guan_noncol_exp_crm_subapr = r56_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_cre_deri_noncol_exp_crm_subapr() {
+		return r56_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR56_cre_deri_noncol_exp_crm_subapr(BigDecimal r56_cre_deri_noncol_exp_crm_subapr) {
+		this.r56_cre_deri_noncol_exp_crm_subapr = r56_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r56_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR56_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r56_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r56_exp_cov_crm_noncol_exp_crm_subapr = r56_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r56_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR56_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r56_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r56_eliexp_notcov_crm_noncol_exp_crm_subapr = r56_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r56_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR56_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r56_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r56_riskweights_rwa_noncol_exp_crm_subapr = r56_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r56_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR56_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r56_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r56_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r56_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r56_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR56_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r56_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r56_rw_oricount_rwa_noncol_exp_crm_subapr = r56_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r56_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR56_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r56_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r56_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r56_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_value() {
+		return r56_value;
+	}
+
+
+
+
+
+	public void setR56_value(BigDecimal r56_value) {
+		this.r56_value = r56_value;
+	}
+
+
+
+
+
+	public BigDecimal getR56_expeli_colexp_crm_comapr() {
+		return r56_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR56_expeli_colexp_crm_comapr(BigDecimal r56_expeli_colexp_crm_comapr) {
+		this.r56_expeli_colexp_crm_comapr = r56_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_exp_aft_voladj_colexp_crm_comapr() {
+		return r56_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR56_exp_aft_voladj_colexp_crm_comapr(BigDecimal r56_exp_aft_voladj_colexp_crm_comapr) {
+		this.r56_exp_aft_voladj_colexp_crm_comapr = r56_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_cash_efc_haircuts_colexp_crm_comapr() {
+		return r56_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR56_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r56_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r56_cash_efc_haircuts_colexp_crm_comapr = r56_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r56_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR56_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r56_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r56_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r56_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r56_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR56_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r56_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r56_debt_secu_efc_haircuts_colexp_crm_comapr = r56_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_equities_efc_haircuts_colexp_crm_comapr() {
+		return r56_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR56_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r56_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r56_equities_efc_haircuts_colexp_crm_comapr = r56_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r56_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR56_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r56_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r56_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r56_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r56_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR56_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r56_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r56_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r56_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_exp_efc_haircuts_colexp_crm_comapr() {
+		return r56_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR56_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r56_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r56_exp_efc_haircuts_colexp_crm_comapr = r56_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR56_rwa_exp_notcov_crm_rwa() {
+		return r56_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR56_rwa_exp_notcov_crm_rwa(BigDecimal r56_rwa_exp_notcov_crm_rwa) {
+		this.r56_rwa_exp_notcov_crm_rwa = r56_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR56_unsecu_exp_credit_risk_rwa() {
+		return r56_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR56_unsecu_exp_credit_risk_rwa(BigDecimal r56_unsecu_exp_credit_risk_rwa) {
+		this.r56_unsecu_exp_credit_risk_rwa = r56_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR56_rwa_unsecu_exp_rwa() {
+		return r56_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR56_rwa_unsecu_exp_rwa(BigDecimal r56_rwa_unsecu_exp_rwa) {
+		this.r56_rwa_unsecu_exp_rwa = r56_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR56_tot_rwa() {
+		return r56_tot_rwa;
+	}
+
+
+
+
+
+	public void setR56_tot_rwa(BigDecimal r56_tot_rwa) {
+		this.r56_tot_rwa = r56_tot_rwa;
+	}
+
+
+
+
+
+	public String getR57_product() {
+		return r57_product;
+	}
+
+
+
+
+
+	public void setR57_product(String r57_product) {
+		this.r57_product = r57_product;
+	}
+
+
+
+
+
+	public BigDecimal getR57_exp_bef_crm() {
+		return r57_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR57_exp_bef_crm(BigDecimal r57_exp_bef_crm) {
+		this.r57_exp_bef_crm = r57_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR57_spec_prov_past_due_exp() {
+		return r57_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR57_spec_prov_past_due_exp(BigDecimal r57_spec_prov_past_due_exp) {
+		this.r57_spec_prov_past_due_exp = r57_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR57_amt_eli_bal_sheet_net() {
+		return r57_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR57_amt_eli_bal_sheet_net(BigDecimal r57_amt_eli_bal_sheet_net) {
+		this.r57_amt_eli_bal_sheet_net = r57_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR57_tot_exp_aft_net() {
+		return r57_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR57_tot_exp_aft_net(BigDecimal r57_tot_exp_aft_net) {
+		this.r57_tot_exp_aft_net = r57_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR57_exp_eli_noncol_exp_crm_subapr() {
+		return r57_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR57_exp_eli_noncol_exp_crm_subapr(BigDecimal r57_exp_eli_noncol_exp_crm_subapr) {
+		this.r57_exp_eli_noncol_exp_crm_subapr = r57_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_guan_noncol_exp_crm_subapr() {
+		return r57_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR57_guan_noncol_exp_crm_subapr(BigDecimal r57_guan_noncol_exp_crm_subapr) {
+		this.r57_guan_noncol_exp_crm_subapr = r57_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_cre_deri_noncol_exp_crm_subapr() {
+		return r57_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR57_cre_deri_noncol_exp_crm_subapr(BigDecimal r57_cre_deri_noncol_exp_crm_subapr) {
+		this.r57_cre_deri_noncol_exp_crm_subapr = r57_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r57_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR57_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r57_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r57_exp_cov_crm_noncol_exp_crm_subapr = r57_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r57_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR57_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r57_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r57_eliexp_notcov_crm_noncol_exp_crm_subapr = r57_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r57_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR57_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r57_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r57_riskweights_rwa_noncol_exp_crm_subapr = r57_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r57_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR57_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r57_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r57_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r57_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r57_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR57_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r57_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r57_rw_oricount_rwa_noncol_exp_crm_subapr = r57_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r57_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR57_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r57_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r57_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r57_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_value() {
+		return r57_value;
+	}
+
+
+
+
+
+	public void setR57_value(BigDecimal r57_value) {
+		this.r57_value = r57_value;
+	}
+
+
+
+
+
+	public BigDecimal getR57_expeli_colexp_crm_comapr() {
+		return r57_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR57_expeli_colexp_crm_comapr(BigDecimal r57_expeli_colexp_crm_comapr) {
+		this.r57_expeli_colexp_crm_comapr = r57_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_exp_aft_voladj_colexp_crm_comapr() {
+		return r57_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR57_exp_aft_voladj_colexp_crm_comapr(BigDecimal r57_exp_aft_voladj_colexp_crm_comapr) {
+		this.r57_exp_aft_voladj_colexp_crm_comapr = r57_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_cash_efc_haircuts_colexp_crm_comapr() {
+		return r57_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR57_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r57_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r57_cash_efc_haircuts_colexp_crm_comapr = r57_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r57_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR57_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r57_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r57_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r57_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r57_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR57_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r57_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r57_debt_secu_efc_haircuts_colexp_crm_comapr = r57_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_equities_efc_haircuts_colexp_crm_comapr() {
+		return r57_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR57_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r57_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r57_equities_efc_haircuts_colexp_crm_comapr = r57_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r57_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR57_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r57_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r57_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r57_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r57_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR57_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r57_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r57_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r57_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_exp_efc_haircuts_colexp_crm_comapr() {
+		return r57_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR57_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r57_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r57_exp_efc_haircuts_colexp_crm_comapr = r57_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR57_rwa_exp_notcov_crm_rwa() {
+		return r57_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR57_rwa_exp_notcov_crm_rwa(BigDecimal r57_rwa_exp_notcov_crm_rwa) {
+		this.r57_rwa_exp_notcov_crm_rwa = r57_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR57_unsecu_exp_credit_risk_rwa() {
+		return r57_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR57_unsecu_exp_credit_risk_rwa(BigDecimal r57_unsecu_exp_credit_risk_rwa) {
+		this.r57_unsecu_exp_credit_risk_rwa = r57_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR57_rwa_unsecu_exp_rwa() {
+		return r57_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR57_rwa_unsecu_exp_rwa(BigDecimal r57_rwa_unsecu_exp_rwa) {
+		this.r57_rwa_unsecu_exp_rwa = r57_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR57_tot_rwa() {
+		return r57_tot_rwa;
+	}
+
+
+
+
+
+	public void setR57_tot_rwa(BigDecimal r57_tot_rwa) {
+		this.r57_tot_rwa = r57_tot_rwa;
+	}
+
+
+
+
+
+	public String getR58_product() {
+		return r58_product;
+	}
+
+
+
+
+
+	public void setR58_product(String r58_product) {
+		this.r58_product = r58_product;
+	}
+
+
+
+
+
+	public BigDecimal getR58_exp_bef_crm() {
+		return r58_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR58_exp_bef_crm(BigDecimal r58_exp_bef_crm) {
+		this.r58_exp_bef_crm = r58_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR58_spec_prov_past_due_exp() {
+		return r58_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR58_spec_prov_past_due_exp(BigDecimal r58_spec_prov_past_due_exp) {
+		this.r58_spec_prov_past_due_exp = r58_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR58_amt_eli_bal_sheet_net() {
+		return r58_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR58_amt_eli_bal_sheet_net(BigDecimal r58_amt_eli_bal_sheet_net) {
+		this.r58_amt_eli_bal_sheet_net = r58_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR58_tot_exp_aft_net() {
+		return r58_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR58_tot_exp_aft_net(BigDecimal r58_tot_exp_aft_net) {
+		this.r58_tot_exp_aft_net = r58_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR58_exp_eli_noncol_exp_crm_subapr() {
+		return r58_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR58_exp_eli_noncol_exp_crm_subapr(BigDecimal r58_exp_eli_noncol_exp_crm_subapr) {
+		this.r58_exp_eli_noncol_exp_crm_subapr = r58_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_guan_noncol_exp_crm_subapr() {
+		return r58_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR58_guan_noncol_exp_crm_subapr(BigDecimal r58_guan_noncol_exp_crm_subapr) {
+		this.r58_guan_noncol_exp_crm_subapr = r58_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_cre_deri_noncol_exp_crm_subapr() {
+		return r58_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR58_cre_deri_noncol_exp_crm_subapr(BigDecimal r58_cre_deri_noncol_exp_crm_subapr) {
+		this.r58_cre_deri_noncol_exp_crm_subapr = r58_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r58_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR58_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r58_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r58_exp_cov_crm_noncol_exp_crm_subapr = r58_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r58_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR58_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r58_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r58_eliexp_notcov_crm_noncol_exp_crm_subapr = r58_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r58_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR58_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r58_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r58_riskweights_rwa_noncol_exp_crm_subapr = r58_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r58_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR58_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r58_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r58_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r58_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r58_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR58_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r58_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r58_rw_oricount_rwa_noncol_exp_crm_subapr = r58_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r58_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR58_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r58_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r58_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r58_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_value() {
+		return r58_value;
+	}
+
+
+
+
+
+	public void setR58_value(BigDecimal r58_value) {
+		this.r58_value = r58_value;
+	}
+
+
+
+
+
+	public BigDecimal getR58_expeli_colexp_crm_comapr() {
+		return r58_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR58_expeli_colexp_crm_comapr(BigDecimal r58_expeli_colexp_crm_comapr) {
+		this.r58_expeli_colexp_crm_comapr = r58_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_exp_aft_voladj_colexp_crm_comapr() {
+		return r58_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR58_exp_aft_voladj_colexp_crm_comapr(BigDecimal r58_exp_aft_voladj_colexp_crm_comapr) {
+		this.r58_exp_aft_voladj_colexp_crm_comapr = r58_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_cash_efc_haircuts_colexp_crm_comapr() {
+		return r58_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR58_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r58_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r58_cash_efc_haircuts_colexp_crm_comapr = r58_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r58_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR58_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r58_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r58_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r58_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r58_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR58_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r58_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r58_debt_secu_efc_haircuts_colexp_crm_comapr = r58_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_equities_efc_haircuts_colexp_crm_comapr() {
+		return r58_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR58_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r58_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r58_equities_efc_haircuts_colexp_crm_comapr = r58_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r58_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR58_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r58_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r58_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r58_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r58_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR58_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r58_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r58_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r58_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_exp_efc_haircuts_colexp_crm_comapr() {
+		return r58_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR58_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r58_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r58_exp_efc_haircuts_colexp_crm_comapr = r58_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR58_rwa_exp_notcov_crm_rwa() {
+		return r58_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR58_rwa_exp_notcov_crm_rwa(BigDecimal r58_rwa_exp_notcov_crm_rwa) {
+		this.r58_rwa_exp_notcov_crm_rwa = r58_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR58_unsecu_exp_credit_risk_rwa() {
+		return r58_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR58_unsecu_exp_credit_risk_rwa(BigDecimal r58_unsecu_exp_credit_risk_rwa) {
+		this.r58_unsecu_exp_credit_risk_rwa = r58_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR58_rwa_unsecu_exp_rwa() {
+		return r58_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR58_rwa_unsecu_exp_rwa(BigDecimal r58_rwa_unsecu_exp_rwa) {
+		this.r58_rwa_unsecu_exp_rwa = r58_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR58_tot_rwa() {
+		return r58_tot_rwa;
+	}
+
+
+
+
+
+	public void setR58_tot_rwa(BigDecimal r58_tot_rwa) {
+		this.r58_tot_rwa = r58_tot_rwa;
+	}
+
+
+
+
+
+	public String getR59_product() {
+		return r59_product;
+	}
+
+
+
+
+
+	public void setR59_product(String r59_product) {
+		this.r59_product = r59_product;
+	}
+
+
+
+
+
+	public BigDecimal getR59_exp_bef_crm() {
+		return r59_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR59_exp_bef_crm(BigDecimal r59_exp_bef_crm) {
+		this.r59_exp_bef_crm = r59_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR59_spec_prov_past_due_exp() {
+		return r59_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR59_spec_prov_past_due_exp(BigDecimal r59_spec_prov_past_due_exp) {
+		this.r59_spec_prov_past_due_exp = r59_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR59_amt_eli_bal_sheet_net() {
+		return r59_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR59_amt_eli_bal_sheet_net(BigDecimal r59_amt_eli_bal_sheet_net) {
+		this.r59_amt_eli_bal_sheet_net = r59_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR59_tot_exp_aft_net() {
+		return r59_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR59_tot_exp_aft_net(BigDecimal r59_tot_exp_aft_net) {
+		this.r59_tot_exp_aft_net = r59_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR59_exp_eli_noncol_exp_crm_subapr() {
+		return r59_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR59_exp_eli_noncol_exp_crm_subapr(BigDecimal r59_exp_eli_noncol_exp_crm_subapr) {
+		this.r59_exp_eli_noncol_exp_crm_subapr = r59_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_guan_noncol_exp_crm_subapr() {
+		return r59_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR59_guan_noncol_exp_crm_subapr(BigDecimal r59_guan_noncol_exp_crm_subapr) {
+		this.r59_guan_noncol_exp_crm_subapr = r59_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_cre_deri_noncol_exp_crm_subapr() {
+		return r59_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR59_cre_deri_noncol_exp_crm_subapr(BigDecimal r59_cre_deri_noncol_exp_crm_subapr) {
+		this.r59_cre_deri_noncol_exp_crm_subapr = r59_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r59_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR59_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r59_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r59_exp_cov_crm_noncol_exp_crm_subapr = r59_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r59_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR59_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r59_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r59_eliexp_notcov_crm_noncol_exp_crm_subapr = r59_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r59_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR59_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r59_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r59_riskweights_rwa_noncol_exp_crm_subapr = r59_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r59_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR59_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r59_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r59_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r59_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r59_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR59_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r59_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r59_rw_oricount_rwa_noncol_exp_crm_subapr = r59_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r59_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR59_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r59_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r59_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r59_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_value() {
+		return r59_value;
+	}
+
+
+
+
+
+	public void setR59_value(BigDecimal r59_value) {
+		this.r59_value = r59_value;
+	}
+
+
+
+
+
+	public BigDecimal getR59_expeli_colexp_crm_comapr() {
+		return r59_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR59_expeli_colexp_crm_comapr(BigDecimal r59_expeli_colexp_crm_comapr) {
+		this.r59_expeli_colexp_crm_comapr = r59_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_exp_aft_voladj_colexp_crm_comapr() {
+		return r59_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR59_exp_aft_voladj_colexp_crm_comapr(BigDecimal r59_exp_aft_voladj_colexp_crm_comapr) {
+		this.r59_exp_aft_voladj_colexp_crm_comapr = r59_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_cash_efc_haircuts_colexp_crm_comapr() {
+		return r59_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR59_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r59_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r59_cash_efc_haircuts_colexp_crm_comapr = r59_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r59_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR59_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r59_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r59_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r59_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r59_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR59_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r59_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r59_debt_secu_efc_haircuts_colexp_crm_comapr = r59_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_equities_efc_haircuts_colexp_crm_comapr() {
+		return r59_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR59_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r59_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r59_equities_efc_haircuts_colexp_crm_comapr = r59_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r59_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR59_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r59_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r59_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r59_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r59_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR59_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r59_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r59_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r59_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_exp_efc_haircuts_colexp_crm_comapr() {
+		return r59_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR59_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r59_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r59_exp_efc_haircuts_colexp_crm_comapr = r59_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR59_rwa_exp_notcov_crm_rwa() {
+		return r59_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR59_rwa_exp_notcov_crm_rwa(BigDecimal r59_rwa_exp_notcov_crm_rwa) {
+		this.r59_rwa_exp_notcov_crm_rwa = r59_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR59_unsecu_exp_credit_risk_rwa() {
+		return r59_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR59_unsecu_exp_credit_risk_rwa(BigDecimal r59_unsecu_exp_credit_risk_rwa) {
+		this.r59_unsecu_exp_credit_risk_rwa = r59_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR59_rwa_unsecu_exp_rwa() {
+		return r59_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR59_rwa_unsecu_exp_rwa(BigDecimal r59_rwa_unsecu_exp_rwa) {
+		this.r59_rwa_unsecu_exp_rwa = r59_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR59_tot_rwa() {
+		return r59_tot_rwa;
+	}
+
+
+
+
+
+	public void setR59_tot_rwa(BigDecimal r59_tot_rwa) {
+		this.r59_tot_rwa = r59_tot_rwa;
+	}
+
+
+
+
+
+	public String getR60_product() {
+		return r60_product;
+	}
+
+
+
+
+
+	public void setR60_product(String r60_product) {
+		this.r60_product = r60_product;
+	}
+
+
+
+
+
+	public BigDecimal getR60_exp_bef_crm() {
+		return r60_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR60_exp_bef_crm(BigDecimal r60_exp_bef_crm) {
+		this.r60_exp_bef_crm = r60_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR60_spec_prov_past_due_exp() {
+		return r60_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR60_spec_prov_past_due_exp(BigDecimal r60_spec_prov_past_due_exp) {
+		this.r60_spec_prov_past_due_exp = r60_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR60_amt_eli_bal_sheet_net() {
+		return r60_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR60_amt_eli_bal_sheet_net(BigDecimal r60_amt_eli_bal_sheet_net) {
+		this.r60_amt_eli_bal_sheet_net = r60_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR60_tot_exp_aft_net() {
+		return r60_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR60_tot_exp_aft_net(BigDecimal r60_tot_exp_aft_net) {
+		this.r60_tot_exp_aft_net = r60_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR60_exp_eli_noncol_exp_crm_subapr() {
+		return r60_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR60_exp_eli_noncol_exp_crm_subapr(BigDecimal r60_exp_eli_noncol_exp_crm_subapr) {
+		this.r60_exp_eli_noncol_exp_crm_subapr = r60_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_guan_noncol_exp_crm_subapr() {
+		return r60_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR60_guan_noncol_exp_crm_subapr(BigDecimal r60_guan_noncol_exp_crm_subapr) {
+		this.r60_guan_noncol_exp_crm_subapr = r60_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_cre_deri_noncol_exp_crm_subapr() {
+		return r60_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR60_cre_deri_noncol_exp_crm_subapr(BigDecimal r60_cre_deri_noncol_exp_crm_subapr) {
+		this.r60_cre_deri_noncol_exp_crm_subapr = r60_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r60_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR60_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r60_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r60_exp_cov_crm_noncol_exp_crm_subapr = r60_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r60_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR60_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r60_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r60_eliexp_notcov_crm_noncol_exp_crm_subapr = r60_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r60_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR60_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r60_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r60_riskweights_rwa_noncol_exp_crm_subapr = r60_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r60_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR60_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r60_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r60_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r60_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r60_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR60_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r60_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r60_rw_oricount_rwa_noncol_exp_crm_subapr = r60_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r60_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR60_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r60_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r60_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r60_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_value() {
+		return r60_value;
+	}
+
+
+
+
+
+	public void setR60_value(BigDecimal r60_value) {
+		this.r60_value = r60_value;
+	}
+
+
+
+
+
+	public BigDecimal getR60_expeli_colexp_crm_comapr() {
+		return r60_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR60_expeli_colexp_crm_comapr(BigDecimal r60_expeli_colexp_crm_comapr) {
+		this.r60_expeli_colexp_crm_comapr = r60_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_exp_aft_voladj_colexp_crm_comapr() {
+		return r60_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR60_exp_aft_voladj_colexp_crm_comapr(BigDecimal r60_exp_aft_voladj_colexp_crm_comapr) {
+		this.r60_exp_aft_voladj_colexp_crm_comapr = r60_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_cash_efc_haircuts_colexp_crm_comapr() {
+		return r60_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR60_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r60_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r60_cash_efc_haircuts_colexp_crm_comapr = r60_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r60_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR60_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r60_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r60_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r60_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r60_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR60_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r60_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r60_debt_secu_efc_haircuts_colexp_crm_comapr = r60_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_equities_efc_haircuts_colexp_crm_comapr() {
+		return r60_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR60_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r60_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r60_equities_efc_haircuts_colexp_crm_comapr = r60_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r60_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR60_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r60_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r60_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r60_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r60_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR60_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r60_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r60_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r60_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_exp_efc_haircuts_colexp_crm_comapr() {
+		return r60_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR60_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r60_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r60_exp_efc_haircuts_colexp_crm_comapr = r60_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR60_rwa_exp_notcov_crm_rwa() {
+		return r60_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR60_rwa_exp_notcov_crm_rwa(BigDecimal r60_rwa_exp_notcov_crm_rwa) {
+		this.r60_rwa_exp_notcov_crm_rwa = r60_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR60_unsecu_exp_credit_risk_rwa() {
+		return r60_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR60_unsecu_exp_credit_risk_rwa(BigDecimal r60_unsecu_exp_credit_risk_rwa) {
+		this.r60_unsecu_exp_credit_risk_rwa = r60_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR60_rwa_unsecu_exp_rwa() {
+		return r60_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR60_rwa_unsecu_exp_rwa(BigDecimal r60_rwa_unsecu_exp_rwa) {
+		this.r60_rwa_unsecu_exp_rwa = r60_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR60_tot_rwa() {
+		return r60_tot_rwa;
+	}
+
+
+
+
+
+	public void setR60_tot_rwa(BigDecimal r60_tot_rwa) {
+		this.r60_tot_rwa = r60_tot_rwa;
+	}
+
+
+
+
+
+	public String getR61_product() {
+		return r61_product;
+	}
+
+
+
+
+
+	public void setR61_product(String r61_product) {
+		this.r61_product = r61_product;
+	}
+
+
+
+
+
+	public BigDecimal getR61_exp_bef_crm() {
+		return r61_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR61_exp_bef_crm(BigDecimal r61_exp_bef_crm) {
+		this.r61_exp_bef_crm = r61_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR61_spec_prov_past_due_exp() {
+		return r61_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR61_spec_prov_past_due_exp(BigDecimal r61_spec_prov_past_due_exp) {
+		this.r61_spec_prov_past_due_exp = r61_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR61_amt_eli_bal_sheet_net() {
+		return r61_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR61_amt_eli_bal_sheet_net(BigDecimal r61_amt_eli_bal_sheet_net) {
+		this.r61_amt_eli_bal_sheet_net = r61_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR61_tot_exp_aft_net() {
+		return r61_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR61_tot_exp_aft_net(BigDecimal r61_tot_exp_aft_net) {
+		this.r61_tot_exp_aft_net = r61_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR61_exp_eli_noncol_exp_crm_subapr() {
+		return r61_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR61_exp_eli_noncol_exp_crm_subapr(BigDecimal r61_exp_eli_noncol_exp_crm_subapr) {
+		this.r61_exp_eli_noncol_exp_crm_subapr = r61_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_guan_noncol_exp_crm_subapr() {
+		return r61_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR61_guan_noncol_exp_crm_subapr(BigDecimal r61_guan_noncol_exp_crm_subapr) {
+		this.r61_guan_noncol_exp_crm_subapr = r61_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_cre_deri_noncol_exp_crm_subapr() {
+		return r61_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR61_cre_deri_noncol_exp_crm_subapr(BigDecimal r61_cre_deri_noncol_exp_crm_subapr) {
+		this.r61_cre_deri_noncol_exp_crm_subapr = r61_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r61_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR61_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r61_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r61_exp_cov_crm_noncol_exp_crm_subapr = r61_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r61_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR61_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r61_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r61_eliexp_notcov_crm_noncol_exp_crm_subapr = r61_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r61_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR61_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r61_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r61_riskweights_rwa_noncol_exp_crm_subapr = r61_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r61_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR61_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r61_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r61_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r61_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r61_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR61_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r61_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r61_rw_oricount_rwa_noncol_exp_crm_subapr = r61_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r61_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR61_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r61_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r61_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r61_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_value() {
+		return r61_value;
+	}
+
+
+
+
+
+	public void setR61_value(BigDecimal r61_value) {
+		this.r61_value = r61_value;
+	}
+
+
+
+
+
+	public BigDecimal getR61_expeli_colexp_crm_comapr() {
+		return r61_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR61_expeli_colexp_crm_comapr(BigDecimal r61_expeli_colexp_crm_comapr) {
+		this.r61_expeli_colexp_crm_comapr = r61_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_exp_aft_voladj_colexp_crm_comapr() {
+		return r61_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR61_exp_aft_voladj_colexp_crm_comapr(BigDecimal r61_exp_aft_voladj_colexp_crm_comapr) {
+		this.r61_exp_aft_voladj_colexp_crm_comapr = r61_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_cash_efc_haircuts_colexp_crm_comapr() {
+		return r61_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR61_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r61_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r61_cash_efc_haircuts_colexp_crm_comapr = r61_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r61_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR61_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r61_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r61_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r61_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r61_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR61_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r61_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r61_debt_secu_efc_haircuts_colexp_crm_comapr = r61_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_equities_efc_haircuts_colexp_crm_comapr() {
+		return r61_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR61_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r61_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r61_equities_efc_haircuts_colexp_crm_comapr = r61_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r61_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR61_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r61_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r61_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r61_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r61_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR61_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r61_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r61_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r61_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_exp_efc_haircuts_colexp_crm_comapr() {
+		return r61_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR61_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r61_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r61_exp_efc_haircuts_colexp_crm_comapr = r61_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR61_rwa_exp_notcov_crm_rwa() {
+		return r61_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR61_rwa_exp_notcov_crm_rwa(BigDecimal r61_rwa_exp_notcov_crm_rwa) {
+		this.r61_rwa_exp_notcov_crm_rwa = r61_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR61_unsecu_exp_credit_risk_rwa() {
+		return r61_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR61_unsecu_exp_credit_risk_rwa(BigDecimal r61_unsecu_exp_credit_risk_rwa) {
+		this.r61_unsecu_exp_credit_risk_rwa = r61_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR61_rwa_unsecu_exp_rwa() {
+		return r61_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR61_rwa_unsecu_exp_rwa(BigDecimal r61_rwa_unsecu_exp_rwa) {
+		this.r61_rwa_unsecu_exp_rwa = r61_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR61_tot_rwa() {
+		return r61_tot_rwa;
+	}
+
+
+
+
+
+	public void setR61_tot_rwa(BigDecimal r61_tot_rwa) {
+		this.r61_tot_rwa = r61_tot_rwa;
+	}
+
+
+
+
+
+	public String getR62_product() {
+		return r62_product;
+	}
+
+
+
+
+
+	public void setR62_product(String r62_product) {
+		this.r62_product = r62_product;
+	}
+
+
+
+
+
+	public BigDecimal getR62_exp_bef_crm() {
+		return r62_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR62_exp_bef_crm(BigDecimal r62_exp_bef_crm) {
+		this.r62_exp_bef_crm = r62_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR62_spec_prov_past_due_exp() {
+		return r62_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR62_spec_prov_past_due_exp(BigDecimal r62_spec_prov_past_due_exp) {
+		this.r62_spec_prov_past_due_exp = r62_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR62_amt_eli_bal_sheet_net() {
+		return r62_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR62_amt_eli_bal_sheet_net(BigDecimal r62_amt_eli_bal_sheet_net) {
+		this.r62_amt_eli_bal_sheet_net = r62_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR62_tot_exp_aft_net() {
+		return r62_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR62_tot_exp_aft_net(BigDecimal r62_tot_exp_aft_net) {
+		this.r62_tot_exp_aft_net = r62_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR62_exp_eli_noncol_exp_crm_subapr() {
+		return r62_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR62_exp_eli_noncol_exp_crm_subapr(BigDecimal r62_exp_eli_noncol_exp_crm_subapr) {
+		this.r62_exp_eli_noncol_exp_crm_subapr = r62_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_guan_noncol_exp_crm_subapr() {
+		return r62_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR62_guan_noncol_exp_crm_subapr(BigDecimal r62_guan_noncol_exp_crm_subapr) {
+		this.r62_guan_noncol_exp_crm_subapr = r62_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_cre_deri_noncol_exp_crm_subapr() {
+		return r62_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR62_cre_deri_noncol_exp_crm_subapr(BigDecimal r62_cre_deri_noncol_exp_crm_subapr) {
+		this.r62_cre_deri_noncol_exp_crm_subapr = r62_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r62_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR62_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r62_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r62_exp_cov_crm_noncol_exp_crm_subapr = r62_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r62_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR62_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r62_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r62_eliexp_notcov_crm_noncol_exp_crm_subapr = r62_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r62_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR62_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r62_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r62_riskweights_rwa_noncol_exp_crm_subapr = r62_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r62_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR62_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r62_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r62_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r62_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r62_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR62_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r62_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r62_rw_oricount_rwa_noncol_exp_crm_subapr = r62_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r62_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR62_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r62_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r62_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r62_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_value() {
+		return r62_value;
+	}
+
+
+
+
+
+	public void setR62_value(BigDecimal r62_value) {
+		this.r62_value = r62_value;
+	}
+
+
+
+
+
+	public BigDecimal getR62_expeli_colexp_crm_comapr() {
+		return r62_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR62_expeli_colexp_crm_comapr(BigDecimal r62_expeli_colexp_crm_comapr) {
+		this.r62_expeli_colexp_crm_comapr = r62_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_exp_aft_voladj_colexp_crm_comapr() {
+		return r62_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR62_exp_aft_voladj_colexp_crm_comapr(BigDecimal r62_exp_aft_voladj_colexp_crm_comapr) {
+		this.r62_exp_aft_voladj_colexp_crm_comapr = r62_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_cash_efc_haircuts_colexp_crm_comapr() {
+		return r62_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR62_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r62_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r62_cash_efc_haircuts_colexp_crm_comapr = r62_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r62_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR62_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r62_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r62_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r62_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r62_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR62_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r62_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r62_debt_secu_efc_haircuts_colexp_crm_comapr = r62_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_equities_efc_haircuts_colexp_crm_comapr() {
+		return r62_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR62_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r62_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r62_equities_efc_haircuts_colexp_crm_comapr = r62_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r62_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR62_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r62_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r62_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r62_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r62_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR62_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r62_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r62_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r62_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_exp_efc_haircuts_colexp_crm_comapr() {
+		return r62_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR62_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r62_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r62_exp_efc_haircuts_colexp_crm_comapr = r62_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR62_rwa_exp_notcov_crm_rwa() {
+		return r62_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR62_rwa_exp_notcov_crm_rwa(BigDecimal r62_rwa_exp_notcov_crm_rwa) {
+		this.r62_rwa_exp_notcov_crm_rwa = r62_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR62_unsecu_exp_credit_risk_rwa() {
+		return r62_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR62_unsecu_exp_credit_risk_rwa(BigDecimal r62_unsecu_exp_credit_risk_rwa) {
+		this.r62_unsecu_exp_credit_risk_rwa = r62_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR62_rwa_unsecu_exp_rwa() {
+		return r62_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR62_rwa_unsecu_exp_rwa(BigDecimal r62_rwa_unsecu_exp_rwa) {
+		this.r62_rwa_unsecu_exp_rwa = r62_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR62_tot_rwa() {
+		return r62_tot_rwa;
+	}
+
+
+
+
+
+	public void setR62_tot_rwa(BigDecimal r62_tot_rwa) {
+		this.r62_tot_rwa = r62_tot_rwa;
+	}
+
+
+
+
+
+	public String getR63_product() {
+		return r63_product;
+	}
+
+
+
+
+
+	public void setR63_product(String r63_product) {
+		this.r63_product = r63_product;
+	}
+
+
+
+
+
+	public BigDecimal getR63_exp_bef_crm() {
+		return r63_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR63_exp_bef_crm(BigDecimal r63_exp_bef_crm) {
+		this.r63_exp_bef_crm = r63_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR63_spec_prov_past_due_exp() {
+		return r63_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR63_spec_prov_past_due_exp(BigDecimal r63_spec_prov_past_due_exp) {
+		this.r63_spec_prov_past_due_exp = r63_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR63_amt_eli_bal_sheet_net() {
+		return r63_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR63_amt_eli_bal_sheet_net(BigDecimal r63_amt_eli_bal_sheet_net) {
+		this.r63_amt_eli_bal_sheet_net = r63_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR63_tot_exp_aft_net() {
+		return r63_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR63_tot_exp_aft_net(BigDecimal r63_tot_exp_aft_net) {
+		this.r63_tot_exp_aft_net = r63_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR63_exp_eli_noncol_exp_crm_subapr() {
+		return r63_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR63_exp_eli_noncol_exp_crm_subapr(BigDecimal r63_exp_eli_noncol_exp_crm_subapr) {
+		this.r63_exp_eli_noncol_exp_crm_subapr = r63_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_guan_noncol_exp_crm_subapr() {
+		return r63_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR63_guan_noncol_exp_crm_subapr(BigDecimal r63_guan_noncol_exp_crm_subapr) {
+		this.r63_guan_noncol_exp_crm_subapr = r63_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_cre_deri_noncol_exp_crm_subapr() {
+		return r63_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR63_cre_deri_noncol_exp_crm_subapr(BigDecimal r63_cre_deri_noncol_exp_crm_subapr) {
+		this.r63_cre_deri_noncol_exp_crm_subapr = r63_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r63_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR63_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r63_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r63_exp_cov_crm_noncol_exp_crm_subapr = r63_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r63_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR63_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r63_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r63_eliexp_notcov_crm_noncol_exp_crm_subapr = r63_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r63_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR63_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r63_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r63_riskweights_rwa_noncol_exp_crm_subapr = r63_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r63_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR63_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r63_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r63_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r63_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r63_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR63_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r63_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r63_rw_oricount_rwa_noncol_exp_crm_subapr = r63_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r63_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR63_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r63_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r63_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r63_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_value() {
+		return r63_value;
+	}
+
+
+
+
+
+	public void setR63_value(BigDecimal r63_value) {
+		this.r63_value = r63_value;
+	}
+
+
+
+
+
+	public BigDecimal getR63_expeli_colexp_crm_comapr() {
+		return r63_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR63_expeli_colexp_crm_comapr(BigDecimal r63_expeli_colexp_crm_comapr) {
+		this.r63_expeli_colexp_crm_comapr = r63_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_exp_aft_voladj_colexp_crm_comapr() {
+		return r63_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR63_exp_aft_voladj_colexp_crm_comapr(BigDecimal r63_exp_aft_voladj_colexp_crm_comapr) {
+		this.r63_exp_aft_voladj_colexp_crm_comapr = r63_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_cash_efc_haircuts_colexp_crm_comapr() {
+		return r63_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR63_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r63_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r63_cash_efc_haircuts_colexp_crm_comapr = r63_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r63_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR63_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r63_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r63_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r63_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r63_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR63_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r63_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r63_debt_secu_efc_haircuts_colexp_crm_comapr = r63_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_equities_efc_haircuts_colexp_crm_comapr() {
+		return r63_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR63_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r63_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r63_equities_efc_haircuts_colexp_crm_comapr = r63_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r63_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR63_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r63_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r63_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r63_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r63_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR63_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r63_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r63_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r63_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_exp_efc_haircuts_colexp_crm_comapr() {
+		return r63_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR63_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r63_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r63_exp_efc_haircuts_colexp_crm_comapr = r63_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR63_rwa_exp_notcov_crm_rwa() {
+		return r63_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR63_rwa_exp_notcov_crm_rwa(BigDecimal r63_rwa_exp_notcov_crm_rwa) {
+		this.r63_rwa_exp_notcov_crm_rwa = r63_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR63_unsecu_exp_credit_risk_rwa() {
+		return r63_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR63_unsecu_exp_credit_risk_rwa(BigDecimal r63_unsecu_exp_credit_risk_rwa) {
+		this.r63_unsecu_exp_credit_risk_rwa = r63_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR63_rwa_unsecu_exp_rwa() {
+		return r63_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR63_rwa_unsecu_exp_rwa(BigDecimal r63_rwa_unsecu_exp_rwa) {
+		this.r63_rwa_unsecu_exp_rwa = r63_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR63_tot_rwa() {
+		return r63_tot_rwa;
+	}
+
+
+
+
+
+	public void setR63_tot_rwa(BigDecimal r63_tot_rwa) {
+		this.r63_tot_rwa = r63_tot_rwa;
+	}
+
+
+
+
+
+	public String getR64_product() {
+		return r64_product;
+	}
+
+
+
+
+
+	public void setR64_product(String r64_product) {
+		this.r64_product = r64_product;
+	}
+
+
+
+
+
+	public BigDecimal getR64_exp_bef_crm() {
+		return r64_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR64_exp_bef_crm(BigDecimal r64_exp_bef_crm) {
+		this.r64_exp_bef_crm = r64_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR64_spec_prov_past_due_exp() {
+		return r64_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR64_spec_prov_past_due_exp(BigDecimal r64_spec_prov_past_due_exp) {
+		this.r64_spec_prov_past_due_exp = r64_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR64_amt_eli_bal_sheet_net() {
+		return r64_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR64_amt_eli_bal_sheet_net(BigDecimal r64_amt_eli_bal_sheet_net) {
+		this.r64_amt_eli_bal_sheet_net = r64_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR64_tot_exp_aft_net() {
+		return r64_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR64_tot_exp_aft_net(BigDecimal r64_tot_exp_aft_net) {
+		this.r64_tot_exp_aft_net = r64_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR64_exp_eli_noncol_exp_crm_subapr() {
+		return r64_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR64_exp_eli_noncol_exp_crm_subapr(BigDecimal r64_exp_eli_noncol_exp_crm_subapr) {
+		this.r64_exp_eli_noncol_exp_crm_subapr = r64_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_guan_noncol_exp_crm_subapr() {
+		return r64_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR64_guan_noncol_exp_crm_subapr(BigDecimal r64_guan_noncol_exp_crm_subapr) {
+		this.r64_guan_noncol_exp_crm_subapr = r64_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_cre_deri_noncol_exp_crm_subapr() {
+		return r64_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR64_cre_deri_noncol_exp_crm_subapr(BigDecimal r64_cre_deri_noncol_exp_crm_subapr) {
+		this.r64_cre_deri_noncol_exp_crm_subapr = r64_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r64_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR64_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r64_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r64_exp_cov_crm_noncol_exp_crm_subapr = r64_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r64_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR64_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r64_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r64_eliexp_notcov_crm_noncol_exp_crm_subapr = r64_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r64_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR64_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r64_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r64_riskweights_rwa_noncol_exp_crm_subapr = r64_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r64_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR64_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r64_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r64_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r64_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r64_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR64_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r64_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r64_rw_oricount_rwa_noncol_exp_crm_subapr = r64_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r64_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR64_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r64_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r64_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r64_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_value() {
+		return r64_value;
+	}
+
+
+
+
+
+	public void setR64_value(BigDecimal r64_value) {
+		this.r64_value = r64_value;
+	}
+
+
+
+
+
+	public BigDecimal getR64_expeli_colexp_crm_comapr() {
+		return r64_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR64_expeli_colexp_crm_comapr(BigDecimal r64_expeli_colexp_crm_comapr) {
+		this.r64_expeli_colexp_crm_comapr = r64_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_exp_aft_voladj_colexp_crm_comapr() {
+		return r64_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR64_exp_aft_voladj_colexp_crm_comapr(BigDecimal r64_exp_aft_voladj_colexp_crm_comapr) {
+		this.r64_exp_aft_voladj_colexp_crm_comapr = r64_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_cash_efc_haircuts_colexp_crm_comapr() {
+		return r64_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR64_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r64_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r64_cash_efc_haircuts_colexp_crm_comapr = r64_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r64_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR64_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r64_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r64_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r64_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r64_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR64_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r64_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r64_debt_secu_efc_haircuts_colexp_crm_comapr = r64_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_equities_efc_haircuts_colexp_crm_comapr() {
+		return r64_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR64_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r64_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r64_equities_efc_haircuts_colexp_crm_comapr = r64_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r64_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR64_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r64_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r64_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r64_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r64_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR64_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r64_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r64_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r64_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_exp_efc_haircuts_colexp_crm_comapr() {
+		return r64_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR64_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r64_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r64_exp_efc_haircuts_colexp_crm_comapr = r64_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR64_rwa_exp_notcov_crm_rwa() {
+		return r64_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR64_rwa_exp_notcov_crm_rwa(BigDecimal r64_rwa_exp_notcov_crm_rwa) {
+		this.r64_rwa_exp_notcov_crm_rwa = r64_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR64_unsecu_exp_credit_risk_rwa() {
+		return r64_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR64_unsecu_exp_credit_risk_rwa(BigDecimal r64_unsecu_exp_credit_risk_rwa) {
+		this.r64_unsecu_exp_credit_risk_rwa = r64_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR64_rwa_unsecu_exp_rwa() {
+		return r64_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR64_rwa_unsecu_exp_rwa(BigDecimal r64_rwa_unsecu_exp_rwa) {
+		this.r64_rwa_unsecu_exp_rwa = r64_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR64_tot_rwa() {
+		return r64_tot_rwa;
+	}
+
+
+
+
+
+	public void setR64_tot_rwa(BigDecimal r64_tot_rwa) {
+		this.r64_tot_rwa = r64_tot_rwa;
+	}
+
+
+
+
+
+	public String getR65_product() {
+		return r65_product;
+	}
+
+
+
+
+
+	public void setR65_product(String r65_product) {
+		this.r65_product = r65_product;
+	}
+
+
+
+
+
+	public BigDecimal getR65_exp_bef_crm() {
+		return r65_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR65_exp_bef_crm(BigDecimal r65_exp_bef_crm) {
+		this.r65_exp_bef_crm = r65_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR65_spec_prov_past_due_exp() {
+		return r65_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR65_spec_prov_past_due_exp(BigDecimal r65_spec_prov_past_due_exp) {
+		this.r65_spec_prov_past_due_exp = r65_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR65_amt_eli_bal_sheet_net() {
+		return r65_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR65_amt_eli_bal_sheet_net(BigDecimal r65_amt_eli_bal_sheet_net) {
+		this.r65_amt_eli_bal_sheet_net = r65_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR65_tot_exp_aft_net() {
+		return r65_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR65_tot_exp_aft_net(BigDecimal r65_tot_exp_aft_net) {
+		this.r65_tot_exp_aft_net = r65_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR65_exp_eli_noncol_exp_crm_subapr() {
+		return r65_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR65_exp_eli_noncol_exp_crm_subapr(BigDecimal r65_exp_eli_noncol_exp_crm_subapr) {
+		this.r65_exp_eli_noncol_exp_crm_subapr = r65_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_guan_noncol_exp_crm_subapr() {
+		return r65_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR65_guan_noncol_exp_crm_subapr(BigDecimal r65_guan_noncol_exp_crm_subapr) {
+		this.r65_guan_noncol_exp_crm_subapr = r65_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_cre_deri_noncol_exp_crm_subapr() {
+		return r65_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR65_cre_deri_noncol_exp_crm_subapr(BigDecimal r65_cre_deri_noncol_exp_crm_subapr) {
+		this.r65_cre_deri_noncol_exp_crm_subapr = r65_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r65_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR65_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r65_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r65_exp_cov_crm_noncol_exp_crm_subapr = r65_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r65_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR65_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r65_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r65_eliexp_notcov_crm_noncol_exp_crm_subapr = r65_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r65_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR65_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r65_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r65_riskweights_rwa_noncol_exp_crm_subapr = r65_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r65_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR65_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r65_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r65_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r65_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r65_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR65_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r65_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r65_rw_oricount_rwa_noncol_exp_crm_subapr = r65_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r65_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR65_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r65_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r65_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r65_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_value() {
+		return r65_value;
+	}
+
+
+
+
+
+	public void setR65_value(BigDecimal r65_value) {
+		this.r65_value = r65_value;
+	}
+
+
+
+
+
+	public BigDecimal getR65_expeli_colexp_crm_comapr() {
+		return r65_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR65_expeli_colexp_crm_comapr(BigDecimal r65_expeli_colexp_crm_comapr) {
+		this.r65_expeli_colexp_crm_comapr = r65_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_exp_aft_voladj_colexp_crm_comapr() {
+		return r65_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR65_exp_aft_voladj_colexp_crm_comapr(BigDecimal r65_exp_aft_voladj_colexp_crm_comapr) {
+		this.r65_exp_aft_voladj_colexp_crm_comapr = r65_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_cash_efc_haircuts_colexp_crm_comapr() {
+		return r65_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR65_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r65_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r65_cash_efc_haircuts_colexp_crm_comapr = r65_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r65_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR65_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r65_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r65_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r65_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r65_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR65_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r65_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r65_debt_secu_efc_haircuts_colexp_crm_comapr = r65_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_equities_efc_haircuts_colexp_crm_comapr() {
+		return r65_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR65_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r65_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r65_equities_efc_haircuts_colexp_crm_comapr = r65_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r65_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR65_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r65_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r65_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r65_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r65_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR65_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r65_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r65_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r65_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_exp_efc_haircuts_colexp_crm_comapr() {
+		return r65_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR65_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r65_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r65_exp_efc_haircuts_colexp_crm_comapr = r65_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR65_rwa_exp_notcov_crm_rwa() {
+		return r65_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR65_rwa_exp_notcov_crm_rwa(BigDecimal r65_rwa_exp_notcov_crm_rwa) {
+		this.r65_rwa_exp_notcov_crm_rwa = r65_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR65_unsecu_exp_credit_risk_rwa() {
+		return r65_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR65_unsecu_exp_credit_risk_rwa(BigDecimal r65_unsecu_exp_credit_risk_rwa) {
+		this.r65_unsecu_exp_credit_risk_rwa = r65_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR65_rwa_unsecu_exp_rwa() {
+		return r65_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR65_rwa_unsecu_exp_rwa(BigDecimal r65_rwa_unsecu_exp_rwa) {
+		this.r65_rwa_unsecu_exp_rwa = r65_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR65_tot_rwa() {
+		return r65_tot_rwa;
+	}
+
+
+
+
+
+	public void setR65_tot_rwa(BigDecimal r65_tot_rwa) {
+		this.r65_tot_rwa = r65_tot_rwa;
+	}
+
+
+
+
+
+	public String getR66_product() {
+		return r66_product;
+	}
+
+
+
+
+
+	public void setR66_product(String r66_product) {
+		this.r66_product = r66_product;
+	}
+
+
+
+
+
+	public BigDecimal getR66_exp_bef_crm() {
+		return r66_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR66_exp_bef_crm(BigDecimal r66_exp_bef_crm) {
+		this.r66_exp_bef_crm = r66_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR66_spec_prov_past_due_exp() {
+		return r66_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR66_spec_prov_past_due_exp(BigDecimal r66_spec_prov_past_due_exp) {
+		this.r66_spec_prov_past_due_exp = r66_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR66_amt_eli_bal_sheet_net() {
+		return r66_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR66_amt_eli_bal_sheet_net(BigDecimal r66_amt_eli_bal_sheet_net) {
+		this.r66_amt_eli_bal_sheet_net = r66_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR66_tot_exp_aft_net() {
+		return r66_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR66_tot_exp_aft_net(BigDecimal r66_tot_exp_aft_net) {
+		this.r66_tot_exp_aft_net = r66_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR66_exp_eli_noncol_exp_crm_subapr() {
+		return r66_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR66_exp_eli_noncol_exp_crm_subapr(BigDecimal r66_exp_eli_noncol_exp_crm_subapr) {
+		this.r66_exp_eli_noncol_exp_crm_subapr = r66_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_guan_noncol_exp_crm_subapr() {
+		return r66_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR66_guan_noncol_exp_crm_subapr(BigDecimal r66_guan_noncol_exp_crm_subapr) {
+		this.r66_guan_noncol_exp_crm_subapr = r66_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_cre_deri_noncol_exp_crm_subapr() {
+		return r66_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR66_cre_deri_noncol_exp_crm_subapr(BigDecimal r66_cre_deri_noncol_exp_crm_subapr) {
+		this.r66_cre_deri_noncol_exp_crm_subapr = r66_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r66_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR66_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r66_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r66_exp_cov_crm_noncol_exp_crm_subapr = r66_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r66_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR66_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r66_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r66_eliexp_notcov_crm_noncol_exp_crm_subapr = r66_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r66_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR66_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r66_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r66_riskweights_rwa_noncol_exp_crm_subapr = r66_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r66_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR66_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r66_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r66_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r66_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r66_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR66_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r66_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r66_rw_oricount_rwa_noncol_exp_crm_subapr = r66_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r66_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR66_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r66_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r66_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r66_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_value() {
+		return r66_value;
+	}
+
+
+
+
+
+	public void setR66_value(BigDecimal r66_value) {
+		this.r66_value = r66_value;
+	}
+
+
+
+
+
+	public BigDecimal getR66_expeli_colexp_crm_comapr() {
+		return r66_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR66_expeli_colexp_crm_comapr(BigDecimal r66_expeli_colexp_crm_comapr) {
+		this.r66_expeli_colexp_crm_comapr = r66_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_exp_aft_voladj_colexp_crm_comapr() {
+		return r66_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR66_exp_aft_voladj_colexp_crm_comapr(BigDecimal r66_exp_aft_voladj_colexp_crm_comapr) {
+		this.r66_exp_aft_voladj_colexp_crm_comapr = r66_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_cash_efc_haircuts_colexp_crm_comapr() {
+		return r66_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR66_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r66_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r66_cash_efc_haircuts_colexp_crm_comapr = r66_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r66_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR66_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r66_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r66_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r66_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r66_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR66_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r66_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r66_debt_secu_efc_haircuts_colexp_crm_comapr = r66_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_equities_efc_haircuts_colexp_crm_comapr() {
+		return r66_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR66_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r66_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r66_equities_efc_haircuts_colexp_crm_comapr = r66_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r66_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR66_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r66_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r66_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r66_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r66_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR66_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r66_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r66_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r66_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_exp_efc_haircuts_colexp_crm_comapr() {
+		return r66_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR66_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r66_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r66_exp_efc_haircuts_colexp_crm_comapr = r66_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR66_rwa_exp_notcov_crm_rwa() {
+		return r66_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR66_rwa_exp_notcov_crm_rwa(BigDecimal r66_rwa_exp_notcov_crm_rwa) {
+		this.r66_rwa_exp_notcov_crm_rwa = r66_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR66_unsecu_exp_credit_risk_rwa() {
+		return r66_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR66_unsecu_exp_credit_risk_rwa(BigDecimal r66_unsecu_exp_credit_risk_rwa) {
+		this.r66_unsecu_exp_credit_risk_rwa = r66_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR66_rwa_unsecu_exp_rwa() {
+		return r66_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR66_rwa_unsecu_exp_rwa(BigDecimal r66_rwa_unsecu_exp_rwa) {
+		this.r66_rwa_unsecu_exp_rwa = r66_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR66_tot_rwa() {
+		return r66_tot_rwa;
+	}
+
+
+
+
+
+	public void setR66_tot_rwa(BigDecimal r66_tot_rwa) {
+		this.r66_tot_rwa = r66_tot_rwa;
+	}
+
+
+
+
+
+	public String getR67_product() {
+		return r67_product;
+	}
+
+
+
+
+
+	public void setR67_product(String r67_product) {
+		this.r67_product = r67_product;
+	}
+
+
+
+
+
+	public String getR68_product() {
+		return r68_product;
+	}
+
+
+
+
+
+	public void setR68_product(String r68_product) {
+		this.r68_product = r68_product;
+	}
+
+
+
+
+
+	public String getR69_product() {
+		return r69_product;
+	}
+
+
+
+
+
+	public void setR69_product(String r69_product) {
+		this.r69_product = r69_product;
+	}
+
+
+
+
+
+	public BigDecimal getR69_exp_bef_crm() {
+		return r69_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR69_exp_bef_crm(BigDecimal r69_exp_bef_crm) {
+		this.r69_exp_bef_crm = r69_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR69_spec_prov_past_due_exp() {
+		return r69_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR69_spec_prov_past_due_exp(BigDecimal r69_spec_prov_past_due_exp) {
+		this.r69_spec_prov_past_due_exp = r69_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR69_amt_eli_bal_sheet_net() {
+		return r69_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR69_amt_eli_bal_sheet_net(BigDecimal r69_amt_eli_bal_sheet_net) {
+		this.r69_amt_eli_bal_sheet_net = r69_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR69_tot_exp_aft_net() {
+		return r69_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR69_tot_exp_aft_net(BigDecimal r69_tot_exp_aft_net) {
+		this.r69_tot_exp_aft_net = r69_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR69_exp_eli_noncol_exp_crm_subapr() {
+		return r69_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR69_exp_eli_noncol_exp_crm_subapr(BigDecimal r69_exp_eli_noncol_exp_crm_subapr) {
+		this.r69_exp_eli_noncol_exp_crm_subapr = r69_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_guan_noncol_exp_crm_subapr() {
+		return r69_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR69_guan_noncol_exp_crm_subapr(BigDecimal r69_guan_noncol_exp_crm_subapr) {
+		this.r69_guan_noncol_exp_crm_subapr = r69_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_cre_deri_noncol_exp_crm_subapr() {
+		return r69_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR69_cre_deri_noncol_exp_crm_subapr(BigDecimal r69_cre_deri_noncol_exp_crm_subapr) {
+		this.r69_cre_deri_noncol_exp_crm_subapr = r69_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r69_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR69_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r69_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r69_exp_cov_crm_noncol_exp_crm_subapr = r69_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r69_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR69_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r69_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r69_eliexp_notcov_crm_noncol_exp_crm_subapr = r69_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r69_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR69_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r69_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r69_riskweights_rwa_noncol_exp_crm_subapr = r69_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r69_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR69_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r69_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r69_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r69_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r69_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR69_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r69_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r69_rw_oricount_rwa_noncol_exp_crm_subapr = r69_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r69_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR69_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r69_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r69_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r69_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_value() {
+		return r69_value;
+	}
+
+
+
+
+
+	public void setR69_value(BigDecimal r69_value) {
+		this.r69_value = r69_value;
+	}
+
+
+
+
+
+	public BigDecimal getR69_expeli_colexp_crm_comapr() {
+		return r69_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR69_expeli_colexp_crm_comapr(BigDecimal r69_expeli_colexp_crm_comapr) {
+		this.r69_expeli_colexp_crm_comapr = r69_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_exp_aft_voladj_colexp_crm_comapr() {
+		return r69_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR69_exp_aft_voladj_colexp_crm_comapr(BigDecimal r69_exp_aft_voladj_colexp_crm_comapr) {
+		this.r69_exp_aft_voladj_colexp_crm_comapr = r69_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_cash_efc_haircuts_colexp_crm_comapr() {
+		return r69_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR69_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r69_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r69_cash_efc_haircuts_colexp_crm_comapr = r69_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r69_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR69_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r69_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r69_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r69_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r69_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR69_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r69_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r69_debt_secu_efc_haircuts_colexp_crm_comapr = r69_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_equities_efc_haircuts_colexp_crm_comapr() {
+		return r69_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR69_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r69_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r69_equities_efc_haircuts_colexp_crm_comapr = r69_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r69_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR69_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r69_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r69_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r69_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r69_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR69_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r69_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r69_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r69_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_exp_efc_haircuts_colexp_crm_comapr() {
+		return r69_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR69_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r69_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r69_exp_efc_haircuts_colexp_crm_comapr = r69_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR69_rwa_exp_notcov_crm_rwa() {
+		return r69_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR69_rwa_exp_notcov_crm_rwa(BigDecimal r69_rwa_exp_notcov_crm_rwa) {
+		this.r69_rwa_exp_notcov_crm_rwa = r69_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR69_unsecu_exp_credit_risk_rwa() {
+		return r69_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR69_unsecu_exp_credit_risk_rwa(BigDecimal r69_unsecu_exp_credit_risk_rwa) {
+		this.r69_unsecu_exp_credit_risk_rwa = r69_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR69_rwa_unsecu_exp_rwa() {
+		return r69_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR69_rwa_unsecu_exp_rwa(BigDecimal r69_rwa_unsecu_exp_rwa) {
+		this.r69_rwa_unsecu_exp_rwa = r69_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR69_tot_rwa() {
+		return r69_tot_rwa;
+	}
+
+
+
+
+
+	public void setR69_tot_rwa(BigDecimal r69_tot_rwa) {
+		this.r69_tot_rwa = r69_tot_rwa;
+	}
+
+
+
+
+
+	public String getR70_product() {
+		return r70_product;
+	}
+
+
+
+
+
+	public void setR70_product(String r70_product) {
+		this.r70_product = r70_product;
+	}
+
+
+
+
+
+	public BigDecimal getR70_exp_bef_crm() {
+		return r70_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR70_exp_bef_crm(BigDecimal r70_exp_bef_crm) {
+		this.r70_exp_bef_crm = r70_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR70_spec_prov_past_due_exp() {
+		return r70_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR70_spec_prov_past_due_exp(BigDecimal r70_spec_prov_past_due_exp) {
+		this.r70_spec_prov_past_due_exp = r70_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR70_amt_eli_bal_sheet_net() {
+		return r70_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR70_amt_eli_bal_sheet_net(BigDecimal r70_amt_eli_bal_sheet_net) {
+		this.r70_amt_eli_bal_sheet_net = r70_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR70_tot_exp_aft_net() {
+		return r70_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR70_tot_exp_aft_net(BigDecimal r70_tot_exp_aft_net) {
+		this.r70_tot_exp_aft_net = r70_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR70_exp_eli_noncol_exp_crm_subapr() {
+		return r70_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR70_exp_eli_noncol_exp_crm_subapr(BigDecimal r70_exp_eli_noncol_exp_crm_subapr) {
+		this.r70_exp_eli_noncol_exp_crm_subapr = r70_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_guan_noncol_exp_crm_subapr() {
+		return r70_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR70_guan_noncol_exp_crm_subapr(BigDecimal r70_guan_noncol_exp_crm_subapr) {
+		this.r70_guan_noncol_exp_crm_subapr = r70_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_cre_deri_noncol_exp_crm_subapr() {
+		return r70_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR70_cre_deri_noncol_exp_crm_subapr(BigDecimal r70_cre_deri_noncol_exp_crm_subapr) {
+		this.r70_cre_deri_noncol_exp_crm_subapr = r70_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r70_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR70_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r70_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r70_exp_cov_crm_noncol_exp_crm_subapr = r70_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r70_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR70_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r70_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r70_eliexp_notcov_crm_noncol_exp_crm_subapr = r70_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r70_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR70_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r70_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r70_riskweights_rwa_noncol_exp_crm_subapr = r70_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r70_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR70_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r70_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r70_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r70_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r70_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR70_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r70_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r70_rw_oricount_rwa_noncol_exp_crm_subapr = r70_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r70_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR70_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r70_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r70_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r70_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_value() {
+		return r70_value;
+	}
+
+
+
+
+
+	public void setR70_value(BigDecimal r70_value) {
+		this.r70_value = r70_value;
+	}
+
+
+
+
+
+	public BigDecimal getR70_expeli_colexp_crm_comapr() {
+		return r70_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR70_expeli_colexp_crm_comapr(BigDecimal r70_expeli_colexp_crm_comapr) {
+		this.r70_expeli_colexp_crm_comapr = r70_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_exp_aft_voladj_colexp_crm_comapr() {
+		return r70_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR70_exp_aft_voladj_colexp_crm_comapr(BigDecimal r70_exp_aft_voladj_colexp_crm_comapr) {
+		this.r70_exp_aft_voladj_colexp_crm_comapr = r70_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_cash_efc_haircuts_colexp_crm_comapr() {
+		return r70_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR70_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r70_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r70_cash_efc_haircuts_colexp_crm_comapr = r70_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r70_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR70_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r70_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r70_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r70_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r70_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR70_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r70_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r70_debt_secu_efc_haircuts_colexp_crm_comapr = r70_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_equities_efc_haircuts_colexp_crm_comapr() {
+		return r70_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR70_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r70_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r70_equities_efc_haircuts_colexp_crm_comapr = r70_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r70_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR70_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r70_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r70_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r70_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r70_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR70_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r70_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r70_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r70_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_exp_efc_haircuts_colexp_crm_comapr() {
+		return r70_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR70_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r70_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r70_exp_efc_haircuts_colexp_crm_comapr = r70_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR70_rwa_exp_notcov_crm_rwa() {
+		return r70_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR70_rwa_exp_notcov_crm_rwa(BigDecimal r70_rwa_exp_notcov_crm_rwa) {
+		this.r70_rwa_exp_notcov_crm_rwa = r70_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR70_unsecu_exp_credit_risk_rwa() {
+		return r70_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR70_unsecu_exp_credit_risk_rwa(BigDecimal r70_unsecu_exp_credit_risk_rwa) {
+		this.r70_unsecu_exp_credit_risk_rwa = r70_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR70_rwa_unsecu_exp_rwa() {
+		return r70_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR70_rwa_unsecu_exp_rwa(BigDecimal r70_rwa_unsecu_exp_rwa) {
+		this.r70_rwa_unsecu_exp_rwa = r70_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR70_tot_rwa() {
+		return r70_tot_rwa;
+	}
+
+
+
+
+
+	public void setR70_tot_rwa(BigDecimal r70_tot_rwa) {
+		this.r70_tot_rwa = r70_tot_rwa;
+	}
+
+
+
+
+
+	public String getR71_product() {
+		return r71_product;
+	}
+
+
+
+
+
+	public void setR71_product(String r71_product) {
+		this.r71_product = r71_product;
+	}
+
+
+
+
+
+	public BigDecimal getR71_exp_bef_crm() {
+		return r71_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR71_exp_bef_crm(BigDecimal r71_exp_bef_crm) {
+		this.r71_exp_bef_crm = r71_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR71_spec_prov_past_due_exp() {
+		return r71_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR71_spec_prov_past_due_exp(BigDecimal r71_spec_prov_past_due_exp) {
+		this.r71_spec_prov_past_due_exp = r71_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR71_amt_eli_bal_sheet_net() {
+		return r71_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR71_amt_eli_bal_sheet_net(BigDecimal r71_amt_eli_bal_sheet_net) {
+		this.r71_amt_eli_bal_sheet_net = r71_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR71_tot_exp_aft_net() {
+		return r71_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR71_tot_exp_aft_net(BigDecimal r71_tot_exp_aft_net) {
+		this.r71_tot_exp_aft_net = r71_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR71_exp_eli_noncol_exp_crm_subapr() {
+		return r71_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR71_exp_eli_noncol_exp_crm_subapr(BigDecimal r71_exp_eli_noncol_exp_crm_subapr) {
+		this.r71_exp_eli_noncol_exp_crm_subapr = r71_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_guan_noncol_exp_crm_subapr() {
+		return r71_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR71_guan_noncol_exp_crm_subapr(BigDecimal r71_guan_noncol_exp_crm_subapr) {
+		this.r71_guan_noncol_exp_crm_subapr = r71_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_cre_deri_noncol_exp_crm_subapr() {
+		return r71_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR71_cre_deri_noncol_exp_crm_subapr(BigDecimal r71_cre_deri_noncol_exp_crm_subapr) {
+		this.r71_cre_deri_noncol_exp_crm_subapr = r71_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r71_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR71_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r71_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r71_exp_cov_crm_noncol_exp_crm_subapr = r71_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r71_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR71_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r71_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r71_eliexp_notcov_crm_noncol_exp_crm_subapr = r71_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r71_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR71_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r71_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r71_riskweights_rwa_noncol_exp_crm_subapr = r71_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r71_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR71_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r71_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r71_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r71_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r71_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR71_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r71_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r71_rw_oricount_rwa_noncol_exp_crm_subapr = r71_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r71_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR71_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r71_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r71_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r71_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_value() {
+		return r71_value;
+	}
+
+
+
+
+
+	public void setR71_value(BigDecimal r71_value) {
+		this.r71_value = r71_value;
+	}
+
+
+
+
+
+	public BigDecimal getR71_expeli_colexp_crm_comapr() {
+		return r71_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR71_expeli_colexp_crm_comapr(BigDecimal r71_expeli_colexp_crm_comapr) {
+		this.r71_expeli_colexp_crm_comapr = r71_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_exp_aft_voladj_colexp_crm_comapr() {
+		return r71_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR71_exp_aft_voladj_colexp_crm_comapr(BigDecimal r71_exp_aft_voladj_colexp_crm_comapr) {
+		this.r71_exp_aft_voladj_colexp_crm_comapr = r71_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_cash_efc_haircuts_colexp_crm_comapr() {
+		return r71_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR71_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r71_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r71_cash_efc_haircuts_colexp_crm_comapr = r71_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r71_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR71_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r71_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r71_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r71_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r71_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR71_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r71_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r71_debt_secu_efc_haircuts_colexp_crm_comapr = r71_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_equities_efc_haircuts_colexp_crm_comapr() {
+		return r71_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR71_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r71_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r71_equities_efc_haircuts_colexp_crm_comapr = r71_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r71_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR71_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r71_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r71_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r71_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r71_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR71_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r71_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r71_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r71_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_exp_efc_haircuts_colexp_crm_comapr() {
+		return r71_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR71_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r71_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r71_exp_efc_haircuts_colexp_crm_comapr = r71_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR71_rwa_exp_notcov_crm_rwa() {
+		return r71_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR71_rwa_exp_notcov_crm_rwa(BigDecimal r71_rwa_exp_notcov_crm_rwa) {
+		this.r71_rwa_exp_notcov_crm_rwa = r71_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR71_unsecu_exp_credit_risk_rwa() {
+		return r71_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR71_unsecu_exp_credit_risk_rwa(BigDecimal r71_unsecu_exp_credit_risk_rwa) {
+		this.r71_unsecu_exp_credit_risk_rwa = r71_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR71_rwa_unsecu_exp_rwa() {
+		return r71_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR71_rwa_unsecu_exp_rwa(BigDecimal r71_rwa_unsecu_exp_rwa) {
+		this.r71_rwa_unsecu_exp_rwa = r71_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR71_tot_rwa() {
+		return r71_tot_rwa;
+	}
+
+
+
+
+
+	public void setR71_tot_rwa(BigDecimal r71_tot_rwa) {
+		this.r71_tot_rwa = r71_tot_rwa;
+	}
+
+
+
+
+
+	public String getR72_product() {
+		return r72_product;
+	}
+
+
+
+
+
+	public void setR72_product(String r72_product) {
+		this.r72_product = r72_product;
+	}
+
+
+
+
+
+	public BigDecimal getR72_exp_bef_crm() {
+		return r72_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR72_exp_bef_crm(BigDecimal r72_exp_bef_crm) {
+		this.r72_exp_bef_crm = r72_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR72_spec_prov_past_due_exp() {
+		return r72_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR72_spec_prov_past_due_exp(BigDecimal r72_spec_prov_past_due_exp) {
+		this.r72_spec_prov_past_due_exp = r72_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR72_amt_eli_bal_sheet_net() {
+		return r72_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR72_amt_eli_bal_sheet_net(BigDecimal r72_amt_eli_bal_sheet_net) {
+		this.r72_amt_eli_bal_sheet_net = r72_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR72_tot_exp_aft_net() {
+		return r72_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR72_tot_exp_aft_net(BigDecimal r72_tot_exp_aft_net) {
+		this.r72_tot_exp_aft_net = r72_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR72_exp_eli_noncol_exp_crm_subapr() {
+		return r72_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR72_exp_eli_noncol_exp_crm_subapr(BigDecimal r72_exp_eli_noncol_exp_crm_subapr) {
+		this.r72_exp_eli_noncol_exp_crm_subapr = r72_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_guan_noncol_exp_crm_subapr() {
+		return r72_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR72_guan_noncol_exp_crm_subapr(BigDecimal r72_guan_noncol_exp_crm_subapr) {
+		this.r72_guan_noncol_exp_crm_subapr = r72_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_cre_deri_noncol_exp_crm_subapr() {
+		return r72_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR72_cre_deri_noncol_exp_crm_subapr(BigDecimal r72_cre_deri_noncol_exp_crm_subapr) {
+		this.r72_cre_deri_noncol_exp_crm_subapr = r72_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r72_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR72_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r72_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r72_exp_cov_crm_noncol_exp_crm_subapr = r72_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r72_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR72_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r72_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r72_eliexp_notcov_crm_noncol_exp_crm_subapr = r72_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r72_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR72_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r72_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r72_riskweights_rwa_noncol_exp_crm_subapr = r72_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r72_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR72_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r72_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r72_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r72_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r72_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR72_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r72_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r72_rw_oricount_rwa_noncol_exp_crm_subapr = r72_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r72_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR72_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r72_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r72_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r72_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_value() {
+		return r72_value;
+	}
+
+
+
+
+
+	public void setR72_value(BigDecimal r72_value) {
+		this.r72_value = r72_value;
+	}
+
+
+
+
+
+	public BigDecimal getR72_expeli_colexp_crm_comapr() {
+		return r72_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR72_expeli_colexp_crm_comapr(BigDecimal r72_expeli_colexp_crm_comapr) {
+		this.r72_expeli_colexp_crm_comapr = r72_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_exp_aft_voladj_colexp_crm_comapr() {
+		return r72_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR72_exp_aft_voladj_colexp_crm_comapr(BigDecimal r72_exp_aft_voladj_colexp_crm_comapr) {
+		this.r72_exp_aft_voladj_colexp_crm_comapr = r72_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_cash_efc_haircuts_colexp_crm_comapr() {
+		return r72_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR72_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r72_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r72_cash_efc_haircuts_colexp_crm_comapr = r72_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r72_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR72_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r72_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r72_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r72_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r72_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR72_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r72_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r72_debt_secu_efc_haircuts_colexp_crm_comapr = r72_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_equities_efc_haircuts_colexp_crm_comapr() {
+		return r72_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR72_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r72_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r72_equities_efc_haircuts_colexp_crm_comapr = r72_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r72_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR72_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r72_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r72_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r72_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r72_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR72_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r72_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r72_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r72_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_exp_efc_haircuts_colexp_crm_comapr() {
+		return r72_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR72_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r72_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r72_exp_efc_haircuts_colexp_crm_comapr = r72_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR72_rwa_exp_notcov_crm_rwa() {
+		return r72_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR72_rwa_exp_notcov_crm_rwa(BigDecimal r72_rwa_exp_notcov_crm_rwa) {
+		this.r72_rwa_exp_notcov_crm_rwa = r72_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR72_unsecu_exp_credit_risk_rwa() {
+		return r72_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR72_unsecu_exp_credit_risk_rwa(BigDecimal r72_unsecu_exp_credit_risk_rwa) {
+		this.r72_unsecu_exp_credit_risk_rwa = r72_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR72_rwa_unsecu_exp_rwa() {
+		return r72_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR72_rwa_unsecu_exp_rwa(BigDecimal r72_rwa_unsecu_exp_rwa) {
+		this.r72_rwa_unsecu_exp_rwa = r72_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR72_tot_rwa() {
+		return r72_tot_rwa;
+	}
+
+
+
+
+
+	public void setR72_tot_rwa(BigDecimal r72_tot_rwa) {
+		this.r72_tot_rwa = r72_tot_rwa;
+	}
+
+
+
+
+
+	public String getR73_product() {
+		return r73_product;
+	}
+
+
+
+
+
+	public void setR73_product(String r73_product) {
+		this.r73_product = r73_product;
+	}
+
+
+
+
+
+	public BigDecimal getR73_exp_bef_crm() {
+		return r73_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR73_exp_bef_crm(BigDecimal r73_exp_bef_crm) {
+		this.r73_exp_bef_crm = r73_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR73_spec_prov_past_due_exp() {
+		return r73_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR73_spec_prov_past_due_exp(BigDecimal r73_spec_prov_past_due_exp) {
+		this.r73_spec_prov_past_due_exp = r73_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR73_amt_eli_bal_sheet_net() {
+		return r73_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR73_amt_eli_bal_sheet_net(BigDecimal r73_amt_eli_bal_sheet_net) {
+		this.r73_amt_eli_bal_sheet_net = r73_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR73_tot_exp_aft_net() {
+		return r73_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR73_tot_exp_aft_net(BigDecimal r73_tot_exp_aft_net) {
+		this.r73_tot_exp_aft_net = r73_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR73_exp_eli_noncol_exp_crm_subapr() {
+		return r73_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR73_exp_eli_noncol_exp_crm_subapr(BigDecimal r73_exp_eli_noncol_exp_crm_subapr) {
+		this.r73_exp_eli_noncol_exp_crm_subapr = r73_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_guan_noncol_exp_crm_subapr() {
+		return r73_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR73_guan_noncol_exp_crm_subapr(BigDecimal r73_guan_noncol_exp_crm_subapr) {
+		this.r73_guan_noncol_exp_crm_subapr = r73_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_cre_deri_noncol_exp_crm_subapr() {
+		return r73_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR73_cre_deri_noncol_exp_crm_subapr(BigDecimal r73_cre_deri_noncol_exp_crm_subapr) {
+		this.r73_cre_deri_noncol_exp_crm_subapr = r73_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r73_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR73_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r73_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r73_exp_cov_crm_noncol_exp_crm_subapr = r73_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r73_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR73_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r73_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r73_eliexp_notcov_crm_noncol_exp_crm_subapr = r73_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r73_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR73_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r73_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r73_riskweights_rwa_noncol_exp_crm_subapr = r73_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r73_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR73_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r73_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r73_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r73_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r73_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR73_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r73_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r73_rw_oricount_rwa_noncol_exp_crm_subapr = r73_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r73_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR73_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r73_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r73_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r73_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_value() {
+		return r73_value;
+	}
+
+
+
+
+
+	public void setR73_value(BigDecimal r73_value) {
+		this.r73_value = r73_value;
+	}
+
+
+
+
+
+	public BigDecimal getR73_expeli_colexp_crm_comapr() {
+		return r73_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR73_expeli_colexp_crm_comapr(BigDecimal r73_expeli_colexp_crm_comapr) {
+		this.r73_expeli_colexp_crm_comapr = r73_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_exp_aft_voladj_colexp_crm_comapr() {
+		return r73_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR73_exp_aft_voladj_colexp_crm_comapr(BigDecimal r73_exp_aft_voladj_colexp_crm_comapr) {
+		this.r73_exp_aft_voladj_colexp_crm_comapr = r73_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_cash_efc_haircuts_colexp_crm_comapr() {
+		return r73_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR73_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r73_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r73_cash_efc_haircuts_colexp_crm_comapr = r73_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r73_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR73_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r73_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r73_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r73_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r73_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR73_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r73_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r73_debt_secu_efc_haircuts_colexp_crm_comapr = r73_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_equities_efc_haircuts_colexp_crm_comapr() {
+		return r73_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR73_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r73_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r73_equities_efc_haircuts_colexp_crm_comapr = r73_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r73_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR73_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r73_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r73_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r73_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r73_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR73_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r73_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r73_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r73_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_exp_efc_haircuts_colexp_crm_comapr() {
+		return r73_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR73_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r73_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r73_exp_efc_haircuts_colexp_crm_comapr = r73_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR73_rwa_exp_notcov_crm_rwa() {
+		return r73_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR73_rwa_exp_notcov_crm_rwa(BigDecimal r73_rwa_exp_notcov_crm_rwa) {
+		this.r73_rwa_exp_notcov_crm_rwa = r73_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR73_unsecu_exp_credit_risk_rwa() {
+		return r73_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR73_unsecu_exp_credit_risk_rwa(BigDecimal r73_unsecu_exp_credit_risk_rwa) {
+		this.r73_unsecu_exp_credit_risk_rwa = r73_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR73_rwa_unsecu_exp_rwa() {
+		return r73_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR73_rwa_unsecu_exp_rwa(BigDecimal r73_rwa_unsecu_exp_rwa) {
+		this.r73_rwa_unsecu_exp_rwa = r73_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR73_tot_rwa() {
+		return r73_tot_rwa;
+	}
+
+
+
+
+
+	public void setR73_tot_rwa(BigDecimal r73_tot_rwa) {
+		this.r73_tot_rwa = r73_tot_rwa;
+	}
+
+
+
+
+
+	public String getR74_product() {
+		return r74_product;
+	}
+
+
+
+
+
+	public void setR74_product(String r74_product) {
+		this.r74_product = r74_product;
+	}
+
+
+
+
+
+	public BigDecimal getR74_exp_bef_crm() {
+		return r74_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR74_exp_bef_crm(BigDecimal r74_exp_bef_crm) {
+		this.r74_exp_bef_crm = r74_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR74_spec_prov_past_due_exp() {
+		return r74_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR74_spec_prov_past_due_exp(BigDecimal r74_spec_prov_past_due_exp) {
+		this.r74_spec_prov_past_due_exp = r74_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR74_amt_eli_bal_sheet_net() {
+		return r74_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR74_amt_eli_bal_sheet_net(BigDecimal r74_amt_eli_bal_sheet_net) {
+		this.r74_amt_eli_bal_sheet_net = r74_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR74_tot_exp_aft_net() {
+		return r74_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR74_tot_exp_aft_net(BigDecimal r74_tot_exp_aft_net) {
+		this.r74_tot_exp_aft_net = r74_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR74_exp_eli_noncol_exp_crm_subapr() {
+		return r74_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR74_exp_eli_noncol_exp_crm_subapr(BigDecimal r74_exp_eli_noncol_exp_crm_subapr) {
+		this.r74_exp_eli_noncol_exp_crm_subapr = r74_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_guan_noncol_exp_crm_subapr() {
+		return r74_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR74_guan_noncol_exp_crm_subapr(BigDecimal r74_guan_noncol_exp_crm_subapr) {
+		this.r74_guan_noncol_exp_crm_subapr = r74_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_cre_deri_noncol_exp_crm_subapr() {
+		return r74_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR74_cre_deri_noncol_exp_crm_subapr(BigDecimal r74_cre_deri_noncol_exp_crm_subapr) {
+		this.r74_cre_deri_noncol_exp_crm_subapr = r74_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r74_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR74_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r74_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r74_exp_cov_crm_noncol_exp_crm_subapr = r74_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r74_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR74_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r74_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r74_eliexp_notcov_crm_noncol_exp_crm_subapr = r74_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r74_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR74_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r74_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r74_riskweights_rwa_noncol_exp_crm_subapr = r74_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r74_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR74_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r74_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r74_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r74_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r74_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR74_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r74_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r74_rw_oricount_rwa_noncol_exp_crm_subapr = r74_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r74_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR74_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r74_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r74_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r74_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_value() {
+		return r74_value;
+	}
+
+
+
+
+
+	public void setR74_value(BigDecimal r74_value) {
+		this.r74_value = r74_value;
+	}
+
+
+
+
+
+	public BigDecimal getR74_expeli_colexp_crm_comapr() {
+		return r74_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR74_expeli_colexp_crm_comapr(BigDecimal r74_expeli_colexp_crm_comapr) {
+		this.r74_expeli_colexp_crm_comapr = r74_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_exp_aft_voladj_colexp_crm_comapr() {
+		return r74_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR74_exp_aft_voladj_colexp_crm_comapr(BigDecimal r74_exp_aft_voladj_colexp_crm_comapr) {
+		this.r74_exp_aft_voladj_colexp_crm_comapr = r74_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_cash_efc_haircuts_colexp_crm_comapr() {
+		return r74_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR74_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r74_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r74_cash_efc_haircuts_colexp_crm_comapr = r74_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r74_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR74_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r74_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r74_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r74_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r74_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR74_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r74_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r74_debt_secu_efc_haircuts_colexp_crm_comapr = r74_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_equities_efc_haircuts_colexp_crm_comapr() {
+		return r74_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR74_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r74_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r74_equities_efc_haircuts_colexp_crm_comapr = r74_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r74_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR74_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r74_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r74_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r74_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r74_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR74_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r74_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r74_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r74_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_exp_efc_haircuts_colexp_crm_comapr() {
+		return r74_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR74_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r74_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r74_exp_efc_haircuts_colexp_crm_comapr = r74_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR74_rwa_exp_notcov_crm_rwa() {
+		return r74_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR74_rwa_exp_notcov_crm_rwa(BigDecimal r74_rwa_exp_notcov_crm_rwa) {
+		this.r74_rwa_exp_notcov_crm_rwa = r74_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR74_unsecu_exp_credit_risk_rwa() {
+		return r74_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR74_unsecu_exp_credit_risk_rwa(BigDecimal r74_unsecu_exp_credit_risk_rwa) {
+		this.r74_unsecu_exp_credit_risk_rwa = r74_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR74_rwa_unsecu_exp_rwa() {
+		return r74_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR74_rwa_unsecu_exp_rwa(BigDecimal r74_rwa_unsecu_exp_rwa) {
+		this.r74_rwa_unsecu_exp_rwa = r74_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR74_tot_rwa() {
+		return r74_tot_rwa;
+	}
+
+
+
+
+
+	public void setR74_tot_rwa(BigDecimal r74_tot_rwa) {
+		this.r74_tot_rwa = r74_tot_rwa;
+	}
+
+
+
+
+
+	public String getR75_product() {
+		return r75_product;
+	}
+
+
+
+
+
+	public void setR75_product(String r75_product) {
+		this.r75_product = r75_product;
+	}
+
+
+
+
+
+	public BigDecimal getR75_exp_bef_crm() {
+		return r75_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR75_exp_bef_crm(BigDecimal r75_exp_bef_crm) {
+		this.r75_exp_bef_crm = r75_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR75_spec_prov_past_due_exp() {
+		return r75_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR75_spec_prov_past_due_exp(BigDecimal r75_spec_prov_past_due_exp) {
+		this.r75_spec_prov_past_due_exp = r75_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR75_amt_eli_bal_sheet_net() {
+		return r75_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR75_amt_eli_bal_sheet_net(BigDecimal r75_amt_eli_bal_sheet_net) {
+		this.r75_amt_eli_bal_sheet_net = r75_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR75_tot_exp_aft_net() {
+		return r75_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR75_tot_exp_aft_net(BigDecimal r75_tot_exp_aft_net) {
+		this.r75_tot_exp_aft_net = r75_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR75_exp_eli_noncol_exp_crm_subapr() {
+		return r75_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR75_exp_eli_noncol_exp_crm_subapr(BigDecimal r75_exp_eli_noncol_exp_crm_subapr) {
+		this.r75_exp_eli_noncol_exp_crm_subapr = r75_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_guan_noncol_exp_crm_subapr() {
+		return r75_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR75_guan_noncol_exp_crm_subapr(BigDecimal r75_guan_noncol_exp_crm_subapr) {
+		this.r75_guan_noncol_exp_crm_subapr = r75_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_cre_deri_noncol_exp_crm_subapr() {
+		return r75_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR75_cre_deri_noncol_exp_crm_subapr(BigDecimal r75_cre_deri_noncol_exp_crm_subapr) {
+		this.r75_cre_deri_noncol_exp_crm_subapr = r75_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r75_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR75_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r75_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r75_exp_cov_crm_noncol_exp_crm_subapr = r75_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r75_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR75_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r75_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r75_eliexp_notcov_crm_noncol_exp_crm_subapr = r75_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r75_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR75_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r75_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r75_riskweights_rwa_noncol_exp_crm_subapr = r75_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r75_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR75_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r75_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r75_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r75_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r75_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR75_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r75_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r75_rw_oricount_rwa_noncol_exp_crm_subapr = r75_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r75_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR75_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r75_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r75_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r75_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_value() {
+		return r75_value;
+	}
+
+
+
+
+
+	public void setR75_value(BigDecimal r75_value) {
+		this.r75_value = r75_value;
+	}
+
+
+
+
+
+	public BigDecimal getR75_expeli_colexp_crm_comapr() {
+		return r75_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR75_expeli_colexp_crm_comapr(BigDecimal r75_expeli_colexp_crm_comapr) {
+		this.r75_expeli_colexp_crm_comapr = r75_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_exp_aft_voladj_colexp_crm_comapr() {
+		return r75_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR75_exp_aft_voladj_colexp_crm_comapr(BigDecimal r75_exp_aft_voladj_colexp_crm_comapr) {
+		this.r75_exp_aft_voladj_colexp_crm_comapr = r75_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_cash_efc_haircuts_colexp_crm_comapr() {
+		return r75_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR75_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r75_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r75_cash_efc_haircuts_colexp_crm_comapr = r75_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r75_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR75_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r75_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r75_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r75_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r75_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR75_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r75_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r75_debt_secu_efc_haircuts_colexp_crm_comapr = r75_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_equities_efc_haircuts_colexp_crm_comapr() {
+		return r75_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR75_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r75_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r75_equities_efc_haircuts_colexp_crm_comapr = r75_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r75_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR75_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r75_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r75_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r75_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r75_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR75_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r75_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r75_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r75_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_exp_efc_haircuts_colexp_crm_comapr() {
+		return r75_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR75_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r75_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r75_exp_efc_haircuts_colexp_crm_comapr = r75_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR75_rwa_exp_notcov_crm_rwa() {
+		return r75_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR75_rwa_exp_notcov_crm_rwa(BigDecimal r75_rwa_exp_notcov_crm_rwa) {
+		this.r75_rwa_exp_notcov_crm_rwa = r75_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR75_unsecu_exp_credit_risk_rwa() {
+		return r75_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR75_unsecu_exp_credit_risk_rwa(BigDecimal r75_unsecu_exp_credit_risk_rwa) {
+		this.r75_unsecu_exp_credit_risk_rwa = r75_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR75_rwa_unsecu_exp_rwa() {
+		return r75_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR75_rwa_unsecu_exp_rwa(BigDecimal r75_rwa_unsecu_exp_rwa) {
+		this.r75_rwa_unsecu_exp_rwa = r75_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR75_tot_rwa() {
+		return r75_tot_rwa;
+	}
+
+
+
+
+
+	public void setR75_tot_rwa(BigDecimal r75_tot_rwa) {
+		this.r75_tot_rwa = r75_tot_rwa;
+	}
+
+
+
+
+
+	public String getR76_product() {
+		return r76_product;
+	}
+
+
+
+
+
+	public void setR76_product(String r76_product) {
+		this.r76_product = r76_product;
+	}
+
+
+
+
+
+	public BigDecimal getR76_exp_bef_crm() {
+		return r76_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR76_exp_bef_crm(BigDecimal r76_exp_bef_crm) {
+		this.r76_exp_bef_crm = r76_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR76_spec_prov_past_due_exp() {
+		return r76_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR76_spec_prov_past_due_exp(BigDecimal r76_spec_prov_past_due_exp) {
+		this.r76_spec_prov_past_due_exp = r76_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR76_amt_eli_bal_sheet_net() {
+		return r76_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR76_amt_eli_bal_sheet_net(BigDecimal r76_amt_eli_bal_sheet_net) {
+		this.r76_amt_eli_bal_sheet_net = r76_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR76_tot_exp_aft_net() {
+		return r76_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR76_tot_exp_aft_net(BigDecimal r76_tot_exp_aft_net) {
+		this.r76_tot_exp_aft_net = r76_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR76_exp_eli_noncol_exp_crm_subapr() {
+		return r76_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR76_exp_eli_noncol_exp_crm_subapr(BigDecimal r76_exp_eli_noncol_exp_crm_subapr) {
+		this.r76_exp_eli_noncol_exp_crm_subapr = r76_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_guan_noncol_exp_crm_subapr() {
+		return r76_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR76_guan_noncol_exp_crm_subapr(BigDecimal r76_guan_noncol_exp_crm_subapr) {
+		this.r76_guan_noncol_exp_crm_subapr = r76_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_cre_deri_noncol_exp_crm_subapr() {
+		return r76_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR76_cre_deri_noncol_exp_crm_subapr(BigDecimal r76_cre_deri_noncol_exp_crm_subapr) {
+		this.r76_cre_deri_noncol_exp_crm_subapr = r76_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r76_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR76_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r76_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r76_exp_cov_crm_noncol_exp_crm_subapr = r76_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r76_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR76_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r76_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r76_eliexp_notcov_crm_noncol_exp_crm_subapr = r76_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r76_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR76_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r76_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r76_riskweights_rwa_noncol_exp_crm_subapr = r76_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r76_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR76_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r76_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r76_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r76_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r76_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR76_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r76_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r76_rw_oricount_rwa_noncol_exp_crm_subapr = r76_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r76_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR76_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r76_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r76_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r76_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_value() {
+		return r76_value;
+	}
+
+
+
+
+
+	public void setR76_value(BigDecimal r76_value) {
+		this.r76_value = r76_value;
+	}
+
+
+
+
+
+	public BigDecimal getR76_expeli_colexp_crm_comapr() {
+		return r76_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR76_expeli_colexp_crm_comapr(BigDecimal r76_expeli_colexp_crm_comapr) {
+		this.r76_expeli_colexp_crm_comapr = r76_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_exp_aft_voladj_colexp_crm_comapr() {
+		return r76_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR76_exp_aft_voladj_colexp_crm_comapr(BigDecimal r76_exp_aft_voladj_colexp_crm_comapr) {
+		this.r76_exp_aft_voladj_colexp_crm_comapr = r76_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_cash_efc_haircuts_colexp_crm_comapr() {
+		return r76_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR76_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r76_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r76_cash_efc_haircuts_colexp_crm_comapr = r76_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r76_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR76_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r76_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r76_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r76_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r76_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR76_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r76_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r76_debt_secu_efc_haircuts_colexp_crm_comapr = r76_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_equities_efc_haircuts_colexp_crm_comapr() {
+		return r76_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR76_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r76_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r76_equities_efc_haircuts_colexp_crm_comapr = r76_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r76_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR76_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r76_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r76_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r76_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r76_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR76_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r76_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r76_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r76_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_exp_efc_haircuts_colexp_crm_comapr() {
+		return r76_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR76_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r76_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r76_exp_efc_haircuts_colexp_crm_comapr = r76_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR76_rwa_exp_notcov_crm_rwa() {
+		return r76_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR76_rwa_exp_notcov_crm_rwa(BigDecimal r76_rwa_exp_notcov_crm_rwa) {
+		this.r76_rwa_exp_notcov_crm_rwa = r76_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR76_unsecu_exp_credit_risk_rwa() {
+		return r76_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR76_unsecu_exp_credit_risk_rwa(BigDecimal r76_unsecu_exp_credit_risk_rwa) {
+		this.r76_unsecu_exp_credit_risk_rwa = r76_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR76_rwa_unsecu_exp_rwa() {
+		return r76_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR76_rwa_unsecu_exp_rwa(BigDecimal r76_rwa_unsecu_exp_rwa) {
+		this.r76_rwa_unsecu_exp_rwa = r76_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR76_tot_rwa() {
+		return r76_tot_rwa;
+	}
+
+
+
+
+
+	public void setR76_tot_rwa(BigDecimal r76_tot_rwa) {
+		this.r76_tot_rwa = r76_tot_rwa;
+	}
+
+
+
+
+
+	public String getR77_product() {
+		return r77_product;
+	}
+
+
+
+
+
+	public void setR77_product(String r77_product) {
+		this.r77_product = r77_product;
+	}
+
+
+
+
+
+	public BigDecimal getR77_exp_bef_crm() {
+		return r77_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR77_exp_bef_crm(BigDecimal r77_exp_bef_crm) {
+		this.r77_exp_bef_crm = r77_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR77_spec_prov_past_due_exp() {
+		return r77_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR77_spec_prov_past_due_exp(BigDecimal r77_spec_prov_past_due_exp) {
+		this.r77_spec_prov_past_due_exp = r77_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR77_amt_eli_bal_sheet_net() {
+		return r77_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR77_amt_eli_bal_sheet_net(BigDecimal r77_amt_eli_bal_sheet_net) {
+		this.r77_amt_eli_bal_sheet_net = r77_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR77_tot_exp_aft_net() {
+		return r77_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR77_tot_exp_aft_net(BigDecimal r77_tot_exp_aft_net) {
+		this.r77_tot_exp_aft_net = r77_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR77_exp_eli_noncol_exp_crm_subapr() {
+		return r77_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR77_exp_eli_noncol_exp_crm_subapr(BigDecimal r77_exp_eli_noncol_exp_crm_subapr) {
+		this.r77_exp_eli_noncol_exp_crm_subapr = r77_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_guan_noncol_exp_crm_subapr() {
+		return r77_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR77_guan_noncol_exp_crm_subapr(BigDecimal r77_guan_noncol_exp_crm_subapr) {
+		this.r77_guan_noncol_exp_crm_subapr = r77_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_cre_deri_noncol_exp_crm_subapr() {
+		return r77_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR77_cre_deri_noncol_exp_crm_subapr(BigDecimal r77_cre_deri_noncol_exp_crm_subapr) {
+		this.r77_cre_deri_noncol_exp_crm_subapr = r77_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r77_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR77_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r77_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r77_exp_cov_crm_noncol_exp_crm_subapr = r77_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r77_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR77_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r77_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r77_eliexp_notcov_crm_noncol_exp_crm_subapr = r77_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r77_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR77_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r77_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r77_riskweights_rwa_noncol_exp_crm_subapr = r77_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r77_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR77_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r77_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r77_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r77_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r77_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR77_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r77_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r77_rw_oricount_rwa_noncol_exp_crm_subapr = r77_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r77_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR77_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r77_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r77_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r77_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_value() {
+		return r77_value;
+	}
+
+
+
+
+
+	public void setR77_value(BigDecimal r77_value) {
+		this.r77_value = r77_value;
+	}
+
+
+
+
+
+	public BigDecimal getR77_expeli_colexp_crm_comapr() {
+		return r77_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR77_expeli_colexp_crm_comapr(BigDecimal r77_expeli_colexp_crm_comapr) {
+		this.r77_expeli_colexp_crm_comapr = r77_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_exp_aft_voladj_colexp_crm_comapr() {
+		return r77_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR77_exp_aft_voladj_colexp_crm_comapr(BigDecimal r77_exp_aft_voladj_colexp_crm_comapr) {
+		this.r77_exp_aft_voladj_colexp_crm_comapr = r77_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_cash_efc_haircuts_colexp_crm_comapr() {
+		return r77_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR77_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r77_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r77_cash_efc_haircuts_colexp_crm_comapr = r77_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r77_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR77_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r77_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r77_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r77_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r77_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR77_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r77_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r77_debt_secu_efc_haircuts_colexp_crm_comapr = r77_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_equities_efc_haircuts_colexp_crm_comapr() {
+		return r77_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR77_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r77_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r77_equities_efc_haircuts_colexp_crm_comapr = r77_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r77_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR77_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r77_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r77_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r77_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r77_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR77_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r77_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r77_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r77_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_exp_efc_haircuts_colexp_crm_comapr() {
+		return r77_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR77_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r77_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r77_exp_efc_haircuts_colexp_crm_comapr = r77_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR77_rwa_exp_notcov_crm_rwa() {
+		return r77_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR77_rwa_exp_notcov_crm_rwa(BigDecimal r77_rwa_exp_notcov_crm_rwa) {
+		this.r77_rwa_exp_notcov_crm_rwa = r77_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR77_unsecu_exp_credit_risk_rwa() {
+		return r77_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR77_unsecu_exp_credit_risk_rwa(BigDecimal r77_unsecu_exp_credit_risk_rwa) {
+		this.r77_unsecu_exp_credit_risk_rwa = r77_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR77_rwa_unsecu_exp_rwa() {
+		return r77_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR77_rwa_unsecu_exp_rwa(BigDecimal r77_rwa_unsecu_exp_rwa) {
+		this.r77_rwa_unsecu_exp_rwa = r77_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR77_tot_rwa() {
+		return r77_tot_rwa;
+	}
+
+
+
+
+
+	public void setR77_tot_rwa(BigDecimal r77_tot_rwa) {
+		this.r77_tot_rwa = r77_tot_rwa;
+	}
+
+
+
+
+
+	public String getR78_product() {
+		return r78_product;
+	}
+
+
+
+
+
+	public void setR78_product(String r78_product) {
+		this.r78_product = r78_product;
+	}
+
+
+
+
+
+	public BigDecimal getR78_exp_bef_crm() {
+		return r78_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR78_exp_bef_crm(BigDecimal r78_exp_bef_crm) {
+		this.r78_exp_bef_crm = r78_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR78_spec_prov_past_due_exp() {
+		return r78_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR78_spec_prov_past_due_exp(BigDecimal r78_spec_prov_past_due_exp) {
+		this.r78_spec_prov_past_due_exp = r78_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR78_amt_eli_bal_sheet_net() {
+		return r78_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR78_amt_eli_bal_sheet_net(BigDecimal r78_amt_eli_bal_sheet_net) {
+		this.r78_amt_eli_bal_sheet_net = r78_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR78_tot_exp_aft_net() {
+		return r78_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR78_tot_exp_aft_net(BigDecimal r78_tot_exp_aft_net) {
+		this.r78_tot_exp_aft_net = r78_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR78_exp_eli_noncol_exp_crm_subapr() {
+		return r78_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR78_exp_eli_noncol_exp_crm_subapr(BigDecimal r78_exp_eli_noncol_exp_crm_subapr) {
+		this.r78_exp_eli_noncol_exp_crm_subapr = r78_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_guan_noncol_exp_crm_subapr() {
+		return r78_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR78_guan_noncol_exp_crm_subapr(BigDecimal r78_guan_noncol_exp_crm_subapr) {
+		this.r78_guan_noncol_exp_crm_subapr = r78_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_cre_deri_noncol_exp_crm_subapr() {
+		return r78_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR78_cre_deri_noncol_exp_crm_subapr(BigDecimal r78_cre_deri_noncol_exp_crm_subapr) {
+		this.r78_cre_deri_noncol_exp_crm_subapr = r78_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r78_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR78_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r78_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r78_exp_cov_crm_noncol_exp_crm_subapr = r78_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r78_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR78_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r78_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r78_eliexp_notcov_crm_noncol_exp_crm_subapr = r78_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r78_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR78_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r78_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r78_riskweights_rwa_noncol_exp_crm_subapr = r78_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r78_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR78_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r78_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r78_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r78_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r78_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR78_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r78_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r78_rw_oricount_rwa_noncol_exp_crm_subapr = r78_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r78_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR78_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r78_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r78_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r78_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_value() {
+		return r78_value;
+	}
+
+
+
+
+
+	public void setR78_value(BigDecimal r78_value) {
+		this.r78_value = r78_value;
+	}
+
+
+
+
+
+	public BigDecimal getR78_expeli_colexp_crm_comapr() {
+		return r78_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR78_expeli_colexp_crm_comapr(BigDecimal r78_expeli_colexp_crm_comapr) {
+		this.r78_expeli_colexp_crm_comapr = r78_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_exp_aft_voladj_colexp_crm_comapr() {
+		return r78_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR78_exp_aft_voladj_colexp_crm_comapr(BigDecimal r78_exp_aft_voladj_colexp_crm_comapr) {
+		this.r78_exp_aft_voladj_colexp_crm_comapr = r78_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_cash_efc_haircuts_colexp_crm_comapr() {
+		return r78_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR78_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r78_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r78_cash_efc_haircuts_colexp_crm_comapr = r78_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r78_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR78_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r78_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r78_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r78_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r78_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR78_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r78_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r78_debt_secu_efc_haircuts_colexp_crm_comapr = r78_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_equities_efc_haircuts_colexp_crm_comapr() {
+		return r78_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR78_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r78_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r78_equities_efc_haircuts_colexp_crm_comapr = r78_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r78_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR78_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r78_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r78_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r78_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r78_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR78_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r78_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r78_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r78_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_exp_efc_haircuts_colexp_crm_comapr() {
+		return r78_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR78_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r78_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r78_exp_efc_haircuts_colexp_crm_comapr = r78_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR78_rwa_exp_notcov_crm_rwa() {
+		return r78_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR78_rwa_exp_notcov_crm_rwa(BigDecimal r78_rwa_exp_notcov_crm_rwa) {
+		this.r78_rwa_exp_notcov_crm_rwa = r78_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR78_unsecu_exp_credit_risk_rwa() {
+		return r78_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR78_unsecu_exp_credit_risk_rwa(BigDecimal r78_unsecu_exp_credit_risk_rwa) {
+		this.r78_unsecu_exp_credit_risk_rwa = r78_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR78_rwa_unsecu_exp_rwa() {
+		return r78_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR78_rwa_unsecu_exp_rwa(BigDecimal r78_rwa_unsecu_exp_rwa) {
+		this.r78_rwa_unsecu_exp_rwa = r78_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR78_tot_rwa() {
+		return r78_tot_rwa;
+	}
+
+
+
+
+
+	public void setR78_tot_rwa(BigDecimal r78_tot_rwa) {
+		this.r78_tot_rwa = r78_tot_rwa;
+	}
+
+
+
+
+
+	public String getR79_product() {
+		return r79_product;
+	}
+
+
+
+
+
+	public void setR79_product(String r79_product) {
+		this.r79_product = r79_product;
+	}
+
+
+
+
+
+	public String getR80_product() {
+		return r80_product;
+	}
+
+
+
+
+
+	public void setR80_product(String r80_product) {
+		this.r80_product = r80_product;
+	}
+
+
+
+
+
+	public String getR81_product() {
+		return r81_product;
+	}
+
+
+
+
+
+	public void setR81_product(String r81_product) {
+		this.r81_product = r81_product;
+	}
+
+
+
+
+
+	public BigDecimal getR81_exp_bef_crm() {
+		return r81_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR81_exp_bef_crm(BigDecimal r81_exp_bef_crm) {
+		this.r81_exp_bef_crm = r81_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR81_spec_prov_past_due_exp() {
+		return r81_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR81_spec_prov_past_due_exp(BigDecimal r81_spec_prov_past_due_exp) {
+		this.r81_spec_prov_past_due_exp = r81_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR81_amt_eli_bal_sheet_net() {
+		return r81_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR81_amt_eli_bal_sheet_net(BigDecimal r81_amt_eli_bal_sheet_net) {
+		this.r81_amt_eli_bal_sheet_net = r81_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR81_tot_exp_aft_net() {
+		return r81_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR81_tot_exp_aft_net(BigDecimal r81_tot_exp_aft_net) {
+		this.r81_tot_exp_aft_net = r81_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR81_exp_eli_noncol_exp_crm_subapr() {
+		return r81_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR81_exp_eli_noncol_exp_crm_subapr(BigDecimal r81_exp_eli_noncol_exp_crm_subapr) {
+		this.r81_exp_eli_noncol_exp_crm_subapr = r81_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_guan_noncol_exp_crm_subapr() {
+		return r81_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR81_guan_noncol_exp_crm_subapr(BigDecimal r81_guan_noncol_exp_crm_subapr) {
+		this.r81_guan_noncol_exp_crm_subapr = r81_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_cre_deri_noncol_exp_crm_subapr() {
+		return r81_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR81_cre_deri_noncol_exp_crm_subapr(BigDecimal r81_cre_deri_noncol_exp_crm_subapr) {
+		this.r81_cre_deri_noncol_exp_crm_subapr = r81_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r81_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR81_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r81_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r81_exp_cov_crm_noncol_exp_crm_subapr = r81_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r81_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR81_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r81_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r81_eliexp_notcov_crm_noncol_exp_crm_subapr = r81_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r81_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR81_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r81_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r81_riskweights_rwa_noncol_exp_crm_subapr = r81_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r81_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR81_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r81_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r81_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r81_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r81_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR81_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r81_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r81_rw_oricount_rwa_noncol_exp_crm_subapr = r81_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r81_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR81_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r81_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r81_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r81_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_value() {
+		return r81_value;
+	}
+
+
+
+
+
+	public void setR81_value(BigDecimal r81_value) {
+		this.r81_value = r81_value;
+	}
+
+
+
+
+
+	public BigDecimal getR81_expeli_colexp_crm_comapr() {
+		return r81_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR81_expeli_colexp_crm_comapr(BigDecimal r81_expeli_colexp_crm_comapr) {
+		this.r81_expeli_colexp_crm_comapr = r81_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_exp_aft_voladj_colexp_crm_comapr() {
+		return r81_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR81_exp_aft_voladj_colexp_crm_comapr(BigDecimal r81_exp_aft_voladj_colexp_crm_comapr) {
+		this.r81_exp_aft_voladj_colexp_crm_comapr = r81_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_cash_efc_haircuts_colexp_crm_comapr() {
+		return r81_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR81_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r81_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r81_cash_efc_haircuts_colexp_crm_comapr = r81_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r81_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR81_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r81_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r81_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r81_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r81_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR81_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r81_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r81_debt_secu_efc_haircuts_colexp_crm_comapr = r81_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_equities_efc_haircuts_colexp_crm_comapr() {
+		return r81_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR81_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r81_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r81_equities_efc_haircuts_colexp_crm_comapr = r81_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r81_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR81_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r81_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r81_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r81_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r81_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR81_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r81_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r81_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r81_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_exp_efc_haircuts_colexp_crm_comapr() {
+		return r81_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR81_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r81_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r81_exp_efc_haircuts_colexp_crm_comapr = r81_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR81_rwa_exp_notcov_crm_rwa() {
+		return r81_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR81_rwa_exp_notcov_crm_rwa(BigDecimal r81_rwa_exp_notcov_crm_rwa) {
+		this.r81_rwa_exp_notcov_crm_rwa = r81_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR81_unsecu_exp_credit_risk_rwa() {
+		return r81_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR81_unsecu_exp_credit_risk_rwa(BigDecimal r81_unsecu_exp_credit_risk_rwa) {
+		this.r81_unsecu_exp_credit_risk_rwa = r81_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR81_rwa_unsecu_exp_rwa() {
+		return r81_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR81_rwa_unsecu_exp_rwa(BigDecimal r81_rwa_unsecu_exp_rwa) {
+		this.r81_rwa_unsecu_exp_rwa = r81_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR81_tot_rwa() {
+		return r81_tot_rwa;
+	}
+
+
+
+
+
+	public void setR81_tot_rwa(BigDecimal r81_tot_rwa) {
+		this.r81_tot_rwa = r81_tot_rwa;
+	}
+
+
+
+
+
+	public String getR82_product() {
+		return r82_product;
+	}
+
+
+
+
+
+	public void setR82_product(String r82_product) {
+		this.r82_product = r82_product;
+	}
+
+
+
+
+
+	public BigDecimal getR82_exp_bef_crm() {
+		return r82_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR82_exp_bef_crm(BigDecimal r82_exp_bef_crm) {
+		this.r82_exp_bef_crm = r82_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR82_spec_prov_past_due_exp() {
+		return r82_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR82_spec_prov_past_due_exp(BigDecimal r82_spec_prov_past_due_exp) {
+		this.r82_spec_prov_past_due_exp = r82_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR82_amt_eli_bal_sheet_net() {
+		return r82_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR82_amt_eli_bal_sheet_net(BigDecimal r82_amt_eli_bal_sheet_net) {
+		this.r82_amt_eli_bal_sheet_net = r82_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR82_tot_exp_aft_net() {
+		return r82_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR82_tot_exp_aft_net(BigDecimal r82_tot_exp_aft_net) {
+		this.r82_tot_exp_aft_net = r82_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR82_exp_eli_noncol_exp_crm_subapr() {
+		return r82_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR82_exp_eli_noncol_exp_crm_subapr(BigDecimal r82_exp_eli_noncol_exp_crm_subapr) {
+		this.r82_exp_eli_noncol_exp_crm_subapr = r82_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_guan_noncol_exp_crm_subapr() {
+		return r82_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR82_guan_noncol_exp_crm_subapr(BigDecimal r82_guan_noncol_exp_crm_subapr) {
+		this.r82_guan_noncol_exp_crm_subapr = r82_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_cre_deri_noncol_exp_crm_subapr() {
+		return r82_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR82_cre_deri_noncol_exp_crm_subapr(BigDecimal r82_cre_deri_noncol_exp_crm_subapr) {
+		this.r82_cre_deri_noncol_exp_crm_subapr = r82_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r82_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR82_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r82_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r82_exp_cov_crm_noncol_exp_crm_subapr = r82_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r82_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR82_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r82_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r82_eliexp_notcov_crm_noncol_exp_crm_subapr = r82_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r82_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR82_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r82_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r82_riskweights_rwa_noncol_exp_crm_subapr = r82_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r82_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR82_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r82_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r82_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r82_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r82_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR82_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r82_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r82_rw_oricount_rwa_noncol_exp_crm_subapr = r82_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r82_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR82_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r82_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r82_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r82_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_value() {
+		return r82_value;
+	}
+
+
+
+
+
+	public void setR82_value(BigDecimal r82_value) {
+		this.r82_value = r82_value;
+	}
+
+
+
+
+
+	public BigDecimal getR82_expeli_colexp_crm_comapr() {
+		return r82_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR82_expeli_colexp_crm_comapr(BigDecimal r82_expeli_colexp_crm_comapr) {
+		this.r82_expeli_colexp_crm_comapr = r82_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_exp_aft_voladj_colexp_crm_comapr() {
+		return r82_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR82_exp_aft_voladj_colexp_crm_comapr(BigDecimal r82_exp_aft_voladj_colexp_crm_comapr) {
+		this.r82_exp_aft_voladj_colexp_crm_comapr = r82_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_cash_efc_haircuts_colexp_crm_comapr() {
+		return r82_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR82_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r82_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r82_cash_efc_haircuts_colexp_crm_comapr = r82_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r82_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR82_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r82_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r82_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r82_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r82_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR82_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r82_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r82_debt_secu_efc_haircuts_colexp_crm_comapr = r82_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_equities_efc_haircuts_colexp_crm_comapr() {
+		return r82_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR82_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r82_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r82_equities_efc_haircuts_colexp_crm_comapr = r82_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r82_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR82_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r82_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r82_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r82_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r82_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR82_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r82_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r82_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r82_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_exp_efc_haircuts_colexp_crm_comapr() {
+		return r82_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR82_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r82_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r82_exp_efc_haircuts_colexp_crm_comapr = r82_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR82_rwa_exp_notcov_crm_rwa() {
+		return r82_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR82_rwa_exp_notcov_crm_rwa(BigDecimal r82_rwa_exp_notcov_crm_rwa) {
+		this.r82_rwa_exp_notcov_crm_rwa = r82_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR82_unsecu_exp_credit_risk_rwa() {
+		return r82_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR82_unsecu_exp_credit_risk_rwa(BigDecimal r82_unsecu_exp_credit_risk_rwa) {
+		this.r82_unsecu_exp_credit_risk_rwa = r82_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR82_rwa_unsecu_exp_rwa() {
+		return r82_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR82_rwa_unsecu_exp_rwa(BigDecimal r82_rwa_unsecu_exp_rwa) {
+		this.r82_rwa_unsecu_exp_rwa = r82_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR82_tot_rwa() {
+		return r82_tot_rwa;
+	}
+
+
+
+
+
+	public void setR82_tot_rwa(BigDecimal r82_tot_rwa) {
+		this.r82_tot_rwa = r82_tot_rwa;
+	}
+
+
+
+
+
+	public String getR83_product() {
+		return r83_product;
+	}
+
+
+
+
+
+	public void setR83_product(String r83_product) {
+		this.r83_product = r83_product;
+	}
+
+
+
+
+
+	public BigDecimal getR83_exp_bef_crm() {
+		return r83_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR83_exp_bef_crm(BigDecimal r83_exp_bef_crm) {
+		this.r83_exp_bef_crm = r83_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR83_spec_prov_past_due_exp() {
+		return r83_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR83_spec_prov_past_due_exp(BigDecimal r83_spec_prov_past_due_exp) {
+		this.r83_spec_prov_past_due_exp = r83_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR83_amt_eli_bal_sheet_net() {
+		return r83_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR83_amt_eli_bal_sheet_net(BigDecimal r83_amt_eli_bal_sheet_net) {
+		this.r83_amt_eli_bal_sheet_net = r83_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR83_tot_exp_aft_net() {
+		return r83_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR83_tot_exp_aft_net(BigDecimal r83_tot_exp_aft_net) {
+		this.r83_tot_exp_aft_net = r83_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR83_exp_eli_noncol_exp_crm_subapr() {
+		return r83_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR83_exp_eli_noncol_exp_crm_subapr(BigDecimal r83_exp_eli_noncol_exp_crm_subapr) {
+		this.r83_exp_eli_noncol_exp_crm_subapr = r83_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_guan_noncol_exp_crm_subapr() {
+		return r83_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR83_guan_noncol_exp_crm_subapr(BigDecimal r83_guan_noncol_exp_crm_subapr) {
+		this.r83_guan_noncol_exp_crm_subapr = r83_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_cre_deri_noncol_exp_crm_subapr() {
+		return r83_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR83_cre_deri_noncol_exp_crm_subapr(BigDecimal r83_cre_deri_noncol_exp_crm_subapr) {
+		this.r83_cre_deri_noncol_exp_crm_subapr = r83_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r83_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR83_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r83_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r83_exp_cov_crm_noncol_exp_crm_subapr = r83_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r83_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR83_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r83_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r83_eliexp_notcov_crm_noncol_exp_crm_subapr = r83_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r83_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR83_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r83_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r83_riskweights_rwa_noncol_exp_crm_subapr = r83_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r83_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR83_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r83_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r83_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r83_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r83_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR83_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r83_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r83_rw_oricount_rwa_noncol_exp_crm_subapr = r83_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r83_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR83_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r83_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r83_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r83_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_value() {
+		return r83_value;
+	}
+
+
+
+
+
+	public void setR83_value(BigDecimal r83_value) {
+		this.r83_value = r83_value;
+	}
+
+
+
+
+
+	public BigDecimal getR83_expeli_colexp_crm_comapr() {
+		return r83_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR83_expeli_colexp_crm_comapr(BigDecimal r83_expeli_colexp_crm_comapr) {
+		this.r83_expeli_colexp_crm_comapr = r83_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_exp_aft_voladj_colexp_crm_comapr() {
+		return r83_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR83_exp_aft_voladj_colexp_crm_comapr(BigDecimal r83_exp_aft_voladj_colexp_crm_comapr) {
+		this.r83_exp_aft_voladj_colexp_crm_comapr = r83_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_cash_efc_haircuts_colexp_crm_comapr() {
+		return r83_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR83_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r83_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r83_cash_efc_haircuts_colexp_crm_comapr = r83_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r83_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR83_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r83_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r83_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r83_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r83_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR83_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r83_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r83_debt_secu_efc_haircuts_colexp_crm_comapr = r83_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_equities_efc_haircuts_colexp_crm_comapr() {
+		return r83_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR83_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r83_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r83_equities_efc_haircuts_colexp_crm_comapr = r83_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r83_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR83_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r83_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r83_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r83_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r83_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR83_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r83_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r83_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r83_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_exp_efc_haircuts_colexp_crm_comapr() {
+		return r83_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR83_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r83_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r83_exp_efc_haircuts_colexp_crm_comapr = r83_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR83_rwa_exp_notcov_crm_rwa() {
+		return r83_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR83_rwa_exp_notcov_crm_rwa(BigDecimal r83_rwa_exp_notcov_crm_rwa) {
+		this.r83_rwa_exp_notcov_crm_rwa = r83_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR83_unsecu_exp_credit_risk_rwa() {
+		return r83_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR83_unsecu_exp_credit_risk_rwa(BigDecimal r83_unsecu_exp_credit_risk_rwa) {
+		this.r83_unsecu_exp_credit_risk_rwa = r83_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR83_rwa_unsecu_exp_rwa() {
+		return r83_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR83_rwa_unsecu_exp_rwa(BigDecimal r83_rwa_unsecu_exp_rwa) {
+		this.r83_rwa_unsecu_exp_rwa = r83_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR83_tot_rwa() {
+		return r83_tot_rwa;
+	}
+
+
+
+
+
+	public void setR83_tot_rwa(BigDecimal r83_tot_rwa) {
+		this.r83_tot_rwa = r83_tot_rwa;
+	}
+
+
+
+
+
+	public String getR84_product() {
+		return r84_product;
+	}
+
+
+
+
+
+	public void setR84_product(String r84_product) {
+		this.r84_product = r84_product;
+	}
+
+
+
+
+
+	public BigDecimal getR84_exp_bef_crm() {
+		return r84_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR84_exp_bef_crm(BigDecimal r84_exp_bef_crm) {
+		this.r84_exp_bef_crm = r84_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR84_spec_prov_past_due_exp() {
+		return r84_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR84_spec_prov_past_due_exp(BigDecimal r84_spec_prov_past_due_exp) {
+		this.r84_spec_prov_past_due_exp = r84_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR84_amt_eli_bal_sheet_net() {
+		return r84_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR84_amt_eli_bal_sheet_net(BigDecimal r84_amt_eli_bal_sheet_net) {
+		this.r84_amt_eli_bal_sheet_net = r84_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR84_tot_exp_aft_net() {
+		return r84_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR84_tot_exp_aft_net(BigDecimal r84_tot_exp_aft_net) {
+		this.r84_tot_exp_aft_net = r84_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR84_exp_eli_noncol_exp_crm_subapr() {
+		return r84_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR84_exp_eli_noncol_exp_crm_subapr(BigDecimal r84_exp_eli_noncol_exp_crm_subapr) {
+		this.r84_exp_eli_noncol_exp_crm_subapr = r84_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_guan_noncol_exp_crm_subapr() {
+		return r84_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR84_guan_noncol_exp_crm_subapr(BigDecimal r84_guan_noncol_exp_crm_subapr) {
+		this.r84_guan_noncol_exp_crm_subapr = r84_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_cre_deri_noncol_exp_crm_subapr() {
+		return r84_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR84_cre_deri_noncol_exp_crm_subapr(BigDecimal r84_cre_deri_noncol_exp_crm_subapr) {
+		this.r84_cre_deri_noncol_exp_crm_subapr = r84_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r84_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR84_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r84_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r84_exp_cov_crm_noncol_exp_crm_subapr = r84_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r84_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR84_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r84_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r84_eliexp_notcov_crm_noncol_exp_crm_subapr = r84_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r84_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR84_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r84_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r84_riskweights_rwa_noncol_exp_crm_subapr = r84_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r84_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR84_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r84_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r84_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r84_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r84_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR84_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r84_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r84_rw_oricount_rwa_noncol_exp_crm_subapr = r84_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r84_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR84_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r84_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r84_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r84_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_value() {
+		return r84_value;
+	}
+
+
+
+
+
+	public void setR84_value(BigDecimal r84_value) {
+		this.r84_value = r84_value;
+	}
+
+
+
+
+
+	public BigDecimal getR84_expeli_colexp_crm_comapr() {
+		return r84_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR84_expeli_colexp_crm_comapr(BigDecimal r84_expeli_colexp_crm_comapr) {
+		this.r84_expeli_colexp_crm_comapr = r84_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_exp_aft_voladj_colexp_crm_comapr() {
+		return r84_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR84_exp_aft_voladj_colexp_crm_comapr(BigDecimal r84_exp_aft_voladj_colexp_crm_comapr) {
+		this.r84_exp_aft_voladj_colexp_crm_comapr = r84_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_cash_efc_haircuts_colexp_crm_comapr() {
+		return r84_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR84_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r84_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r84_cash_efc_haircuts_colexp_crm_comapr = r84_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r84_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR84_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r84_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r84_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r84_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r84_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR84_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r84_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r84_debt_secu_efc_haircuts_colexp_crm_comapr = r84_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_equities_efc_haircuts_colexp_crm_comapr() {
+		return r84_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR84_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r84_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r84_equities_efc_haircuts_colexp_crm_comapr = r84_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r84_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR84_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r84_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r84_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r84_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r84_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR84_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r84_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r84_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r84_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_exp_efc_haircuts_colexp_crm_comapr() {
+		return r84_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR84_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r84_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r84_exp_efc_haircuts_colexp_crm_comapr = r84_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR84_rwa_exp_notcov_crm_rwa() {
+		return r84_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR84_rwa_exp_notcov_crm_rwa(BigDecimal r84_rwa_exp_notcov_crm_rwa) {
+		this.r84_rwa_exp_notcov_crm_rwa = r84_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR84_unsecu_exp_credit_risk_rwa() {
+		return r84_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR84_unsecu_exp_credit_risk_rwa(BigDecimal r84_unsecu_exp_credit_risk_rwa) {
+		this.r84_unsecu_exp_credit_risk_rwa = r84_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR84_rwa_unsecu_exp_rwa() {
+		return r84_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR84_rwa_unsecu_exp_rwa(BigDecimal r84_rwa_unsecu_exp_rwa) {
+		this.r84_rwa_unsecu_exp_rwa = r84_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR84_tot_rwa() {
+		return r84_tot_rwa;
+	}
+
+
+
+
+
+	public void setR84_tot_rwa(BigDecimal r84_tot_rwa) {
+		this.r84_tot_rwa = r84_tot_rwa;
+	}
+
+
+
+
+
+	public String getR85_product() {
+		return r85_product;
+	}
+
+
+
+
+
+	public void setR85_product(String r85_product) {
+		this.r85_product = r85_product;
+	}
+
+
+
+
+
+	public BigDecimal getR85_exp_bef_crm() {
+		return r85_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR85_exp_bef_crm(BigDecimal r85_exp_bef_crm) {
+		this.r85_exp_bef_crm = r85_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR85_spec_prov_past_due_exp() {
+		return r85_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR85_spec_prov_past_due_exp(BigDecimal r85_spec_prov_past_due_exp) {
+		this.r85_spec_prov_past_due_exp = r85_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR85_amt_eli_bal_sheet_net() {
+		return r85_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR85_amt_eli_bal_sheet_net(BigDecimal r85_amt_eli_bal_sheet_net) {
+		this.r85_amt_eli_bal_sheet_net = r85_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR85_tot_exp_aft_net() {
+		return r85_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR85_tot_exp_aft_net(BigDecimal r85_tot_exp_aft_net) {
+		this.r85_tot_exp_aft_net = r85_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR85_exp_eli_noncol_exp_crm_subapr() {
+		return r85_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR85_exp_eli_noncol_exp_crm_subapr(BigDecimal r85_exp_eli_noncol_exp_crm_subapr) {
+		this.r85_exp_eli_noncol_exp_crm_subapr = r85_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_guan_noncol_exp_crm_subapr() {
+		return r85_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR85_guan_noncol_exp_crm_subapr(BigDecimal r85_guan_noncol_exp_crm_subapr) {
+		this.r85_guan_noncol_exp_crm_subapr = r85_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_cre_deri_noncol_exp_crm_subapr() {
+		return r85_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR85_cre_deri_noncol_exp_crm_subapr(BigDecimal r85_cre_deri_noncol_exp_crm_subapr) {
+		this.r85_cre_deri_noncol_exp_crm_subapr = r85_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r85_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR85_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r85_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r85_exp_cov_crm_noncol_exp_crm_subapr = r85_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r85_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR85_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r85_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r85_eliexp_notcov_crm_noncol_exp_crm_subapr = r85_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r85_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR85_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r85_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r85_riskweights_rwa_noncol_exp_crm_subapr = r85_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r85_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR85_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r85_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r85_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r85_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r85_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR85_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r85_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r85_rw_oricount_rwa_noncol_exp_crm_subapr = r85_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r85_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR85_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r85_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r85_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r85_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_value() {
+		return r85_value;
+	}
+
+
+
+
+
+	public void setR85_value(BigDecimal r85_value) {
+		this.r85_value = r85_value;
+	}
+
+
+
+
+
+	public BigDecimal getR85_expeli_colexp_crm_comapr() {
+		return r85_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR85_expeli_colexp_crm_comapr(BigDecimal r85_expeli_colexp_crm_comapr) {
+		this.r85_expeli_colexp_crm_comapr = r85_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_exp_aft_voladj_colexp_crm_comapr() {
+		return r85_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR85_exp_aft_voladj_colexp_crm_comapr(BigDecimal r85_exp_aft_voladj_colexp_crm_comapr) {
+		this.r85_exp_aft_voladj_colexp_crm_comapr = r85_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_cash_efc_haircuts_colexp_crm_comapr() {
+		return r85_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR85_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r85_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r85_cash_efc_haircuts_colexp_crm_comapr = r85_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r85_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR85_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r85_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r85_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r85_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r85_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR85_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r85_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r85_debt_secu_efc_haircuts_colexp_crm_comapr = r85_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_equities_efc_haircuts_colexp_crm_comapr() {
+		return r85_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR85_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r85_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r85_equities_efc_haircuts_colexp_crm_comapr = r85_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r85_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR85_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r85_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r85_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r85_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r85_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR85_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r85_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r85_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r85_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_exp_efc_haircuts_colexp_crm_comapr() {
+		return r85_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR85_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r85_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r85_exp_efc_haircuts_colexp_crm_comapr = r85_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR85_rwa_exp_notcov_crm_rwa() {
+		return r85_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR85_rwa_exp_notcov_crm_rwa(BigDecimal r85_rwa_exp_notcov_crm_rwa) {
+		this.r85_rwa_exp_notcov_crm_rwa = r85_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR85_unsecu_exp_credit_risk_rwa() {
+		return r85_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR85_unsecu_exp_credit_risk_rwa(BigDecimal r85_unsecu_exp_credit_risk_rwa) {
+		this.r85_unsecu_exp_credit_risk_rwa = r85_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR85_rwa_unsecu_exp_rwa() {
+		return r85_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR85_rwa_unsecu_exp_rwa(BigDecimal r85_rwa_unsecu_exp_rwa) {
+		this.r85_rwa_unsecu_exp_rwa = r85_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR85_tot_rwa() {
+		return r85_tot_rwa;
+	}
+
+
+
+
+
+	public void setR85_tot_rwa(BigDecimal r85_tot_rwa) {
+		this.r85_tot_rwa = r85_tot_rwa;
+	}
+
+
+
+
+
+	public String getR86_product() {
+		return r86_product;
+	}
+
+
+
+
+
+	public void setR86_product(String r86_product) {
+		this.r86_product = r86_product;
+	}
+
+
+
+
+
+	public BigDecimal getR86_exp_bef_crm() {
+		return r86_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR86_exp_bef_crm(BigDecimal r86_exp_bef_crm) {
+		this.r86_exp_bef_crm = r86_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR86_spec_prov_past_due_exp() {
+		return r86_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR86_spec_prov_past_due_exp(BigDecimal r86_spec_prov_past_due_exp) {
+		this.r86_spec_prov_past_due_exp = r86_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR86_amt_eli_bal_sheet_net() {
+		return r86_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR86_amt_eli_bal_sheet_net(BigDecimal r86_amt_eli_bal_sheet_net) {
+		this.r86_amt_eli_bal_sheet_net = r86_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR86_tot_exp_aft_net() {
+		return r86_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR86_tot_exp_aft_net(BigDecimal r86_tot_exp_aft_net) {
+		this.r86_tot_exp_aft_net = r86_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR86_exp_eli_noncol_exp_crm_subapr() {
+		return r86_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR86_exp_eli_noncol_exp_crm_subapr(BigDecimal r86_exp_eli_noncol_exp_crm_subapr) {
+		this.r86_exp_eli_noncol_exp_crm_subapr = r86_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_guan_noncol_exp_crm_subapr() {
+		return r86_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR86_guan_noncol_exp_crm_subapr(BigDecimal r86_guan_noncol_exp_crm_subapr) {
+		this.r86_guan_noncol_exp_crm_subapr = r86_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_cre_deri_noncol_exp_crm_subapr() {
+		return r86_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR86_cre_deri_noncol_exp_crm_subapr(BigDecimal r86_cre_deri_noncol_exp_crm_subapr) {
+		this.r86_cre_deri_noncol_exp_crm_subapr = r86_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r86_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR86_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r86_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r86_exp_cov_crm_noncol_exp_crm_subapr = r86_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r86_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR86_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r86_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r86_eliexp_notcov_crm_noncol_exp_crm_subapr = r86_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r86_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR86_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r86_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r86_riskweights_rwa_noncol_exp_crm_subapr = r86_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r86_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR86_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r86_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r86_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r86_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r86_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR86_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r86_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r86_rw_oricount_rwa_noncol_exp_crm_subapr = r86_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r86_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR86_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r86_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r86_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r86_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_value() {
+		return r86_value;
+	}
+
+
+
+
+
+	public void setR86_value(BigDecimal r86_value) {
+		this.r86_value = r86_value;
+	}
+
+
+
+
+
+	public BigDecimal getR86_expeli_colexp_crm_comapr() {
+		return r86_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR86_expeli_colexp_crm_comapr(BigDecimal r86_expeli_colexp_crm_comapr) {
+		this.r86_expeli_colexp_crm_comapr = r86_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_exp_aft_voladj_colexp_crm_comapr() {
+		return r86_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR86_exp_aft_voladj_colexp_crm_comapr(BigDecimal r86_exp_aft_voladj_colexp_crm_comapr) {
+		this.r86_exp_aft_voladj_colexp_crm_comapr = r86_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_cash_efc_haircuts_colexp_crm_comapr() {
+		return r86_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR86_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r86_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r86_cash_efc_haircuts_colexp_crm_comapr = r86_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r86_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR86_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r86_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r86_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r86_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r86_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR86_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r86_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r86_debt_secu_efc_haircuts_colexp_crm_comapr = r86_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_equities_efc_haircuts_colexp_crm_comapr() {
+		return r86_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR86_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r86_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r86_equities_efc_haircuts_colexp_crm_comapr = r86_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r86_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR86_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r86_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r86_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r86_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r86_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR86_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r86_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r86_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r86_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_exp_efc_haircuts_colexp_crm_comapr() {
+		return r86_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR86_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r86_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r86_exp_efc_haircuts_colexp_crm_comapr = r86_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR86_rwa_exp_notcov_crm_rwa() {
+		return r86_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR86_rwa_exp_notcov_crm_rwa(BigDecimal r86_rwa_exp_notcov_crm_rwa) {
+		this.r86_rwa_exp_notcov_crm_rwa = r86_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR86_unsecu_exp_credit_risk_rwa() {
+		return r86_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR86_unsecu_exp_credit_risk_rwa(BigDecimal r86_unsecu_exp_credit_risk_rwa) {
+		this.r86_unsecu_exp_credit_risk_rwa = r86_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR86_rwa_unsecu_exp_rwa() {
+		return r86_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR86_rwa_unsecu_exp_rwa(BigDecimal r86_rwa_unsecu_exp_rwa) {
+		this.r86_rwa_unsecu_exp_rwa = r86_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR86_tot_rwa() {
+		return r86_tot_rwa;
+	}
+
+
+
+
+
+	public void setR86_tot_rwa(BigDecimal r86_tot_rwa) {
+		this.r86_tot_rwa = r86_tot_rwa;
+	}
+
+
+
+
+
+	public String getR87_product() {
+		return r87_product;
+	}
+
+
+
+
+
+	public void setR87_product(String r87_product) {
+		this.r87_product = r87_product;
+	}
+
+
+
+
+
+	public BigDecimal getR87_exp_bef_crm() {
+		return r87_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR87_exp_bef_crm(BigDecimal r87_exp_bef_crm) {
+		this.r87_exp_bef_crm = r87_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR87_spec_prov_past_due_exp() {
+		return r87_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR87_spec_prov_past_due_exp(BigDecimal r87_spec_prov_past_due_exp) {
+		this.r87_spec_prov_past_due_exp = r87_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR87_amt_eli_bal_sheet_net() {
+		return r87_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR87_amt_eli_bal_sheet_net(BigDecimal r87_amt_eli_bal_sheet_net) {
+		this.r87_amt_eli_bal_sheet_net = r87_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR87_tot_exp_aft_net() {
+		return r87_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR87_tot_exp_aft_net(BigDecimal r87_tot_exp_aft_net) {
+		this.r87_tot_exp_aft_net = r87_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR87_exp_eli_noncol_exp_crm_subapr() {
+		return r87_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR87_exp_eli_noncol_exp_crm_subapr(BigDecimal r87_exp_eli_noncol_exp_crm_subapr) {
+		this.r87_exp_eli_noncol_exp_crm_subapr = r87_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_guan_noncol_exp_crm_subapr() {
+		return r87_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR87_guan_noncol_exp_crm_subapr(BigDecimal r87_guan_noncol_exp_crm_subapr) {
+		this.r87_guan_noncol_exp_crm_subapr = r87_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_cre_deri_noncol_exp_crm_subapr() {
+		return r87_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR87_cre_deri_noncol_exp_crm_subapr(BigDecimal r87_cre_deri_noncol_exp_crm_subapr) {
+		this.r87_cre_deri_noncol_exp_crm_subapr = r87_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r87_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR87_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r87_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r87_exp_cov_crm_noncol_exp_crm_subapr = r87_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r87_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR87_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r87_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r87_eliexp_notcov_crm_noncol_exp_crm_subapr = r87_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r87_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR87_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r87_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r87_riskweights_rwa_noncol_exp_crm_subapr = r87_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r87_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR87_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r87_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r87_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r87_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r87_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR87_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r87_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r87_rw_oricount_rwa_noncol_exp_crm_subapr = r87_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r87_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR87_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r87_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r87_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r87_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_value() {
+		return r87_value;
+	}
+
+
+
+
+
+	public void setR87_value(BigDecimal r87_value) {
+		this.r87_value = r87_value;
+	}
+
+
+
+
+
+	public BigDecimal getR87_expeli_colexp_crm_comapr() {
+		return r87_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR87_expeli_colexp_crm_comapr(BigDecimal r87_expeli_colexp_crm_comapr) {
+		this.r87_expeli_colexp_crm_comapr = r87_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_exp_aft_voladj_colexp_crm_comapr() {
+		return r87_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR87_exp_aft_voladj_colexp_crm_comapr(BigDecimal r87_exp_aft_voladj_colexp_crm_comapr) {
+		this.r87_exp_aft_voladj_colexp_crm_comapr = r87_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_cash_efc_haircuts_colexp_crm_comapr() {
+		return r87_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR87_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r87_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r87_cash_efc_haircuts_colexp_crm_comapr = r87_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r87_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR87_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r87_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r87_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r87_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r87_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR87_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r87_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r87_debt_secu_efc_haircuts_colexp_crm_comapr = r87_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_equities_efc_haircuts_colexp_crm_comapr() {
+		return r87_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR87_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r87_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r87_equities_efc_haircuts_colexp_crm_comapr = r87_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r87_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR87_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r87_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r87_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r87_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r87_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR87_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r87_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r87_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r87_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_exp_efc_haircuts_colexp_crm_comapr() {
+		return r87_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR87_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r87_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r87_exp_efc_haircuts_colexp_crm_comapr = r87_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR87_rwa_exp_notcov_crm_rwa() {
+		return r87_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR87_rwa_exp_notcov_crm_rwa(BigDecimal r87_rwa_exp_notcov_crm_rwa) {
+		this.r87_rwa_exp_notcov_crm_rwa = r87_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR87_unsecu_exp_credit_risk_rwa() {
+		return r87_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR87_unsecu_exp_credit_risk_rwa(BigDecimal r87_unsecu_exp_credit_risk_rwa) {
+		this.r87_unsecu_exp_credit_risk_rwa = r87_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR87_rwa_unsecu_exp_rwa() {
+		return r87_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR87_rwa_unsecu_exp_rwa(BigDecimal r87_rwa_unsecu_exp_rwa) {
+		this.r87_rwa_unsecu_exp_rwa = r87_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR87_tot_rwa() {
+		return r87_tot_rwa;
+	}
+
+
+
+
+
+	public void setR87_tot_rwa(BigDecimal r87_tot_rwa) {
+		this.r87_tot_rwa = r87_tot_rwa;
+	}
+
+
+
+
+
+	public String getR88_product() {
+		return r88_product;
+	}
+
+
+
+
+
+	public void setR88_product(String r88_product) {
+		this.r88_product = r88_product;
+	}
+
+
+
+
+
+	public BigDecimal getR88_exp_bef_crm() {
+		return r88_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR88_exp_bef_crm(BigDecimal r88_exp_bef_crm) {
+		this.r88_exp_bef_crm = r88_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR88_spec_prov_past_due_exp() {
+		return r88_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR88_spec_prov_past_due_exp(BigDecimal r88_spec_prov_past_due_exp) {
+		this.r88_spec_prov_past_due_exp = r88_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR88_amt_eli_bal_sheet_net() {
+		return r88_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR88_amt_eli_bal_sheet_net(BigDecimal r88_amt_eli_bal_sheet_net) {
+		this.r88_amt_eli_bal_sheet_net = r88_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR88_tot_exp_aft_net() {
+		return r88_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR88_tot_exp_aft_net(BigDecimal r88_tot_exp_aft_net) {
+		this.r88_tot_exp_aft_net = r88_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR88_exp_eli_noncol_exp_crm_subapr() {
+		return r88_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR88_exp_eli_noncol_exp_crm_subapr(BigDecimal r88_exp_eli_noncol_exp_crm_subapr) {
+		this.r88_exp_eli_noncol_exp_crm_subapr = r88_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_guan_noncol_exp_crm_subapr() {
+		return r88_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR88_guan_noncol_exp_crm_subapr(BigDecimal r88_guan_noncol_exp_crm_subapr) {
+		this.r88_guan_noncol_exp_crm_subapr = r88_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_cre_deri_noncol_exp_crm_subapr() {
+		return r88_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR88_cre_deri_noncol_exp_crm_subapr(BigDecimal r88_cre_deri_noncol_exp_crm_subapr) {
+		this.r88_cre_deri_noncol_exp_crm_subapr = r88_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r88_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR88_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r88_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r88_exp_cov_crm_noncol_exp_crm_subapr = r88_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r88_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR88_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r88_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r88_eliexp_notcov_crm_noncol_exp_crm_subapr = r88_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r88_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR88_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r88_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r88_riskweights_rwa_noncol_exp_crm_subapr = r88_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r88_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR88_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r88_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r88_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r88_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r88_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR88_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r88_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r88_rw_oricount_rwa_noncol_exp_crm_subapr = r88_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r88_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR88_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r88_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r88_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r88_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_value() {
+		return r88_value;
+	}
+
+
+
+
+
+	public void setR88_value(BigDecimal r88_value) {
+		this.r88_value = r88_value;
+	}
+
+
+
+
+
+	public BigDecimal getR88_expeli_colexp_crm_comapr() {
+		return r88_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR88_expeli_colexp_crm_comapr(BigDecimal r88_expeli_colexp_crm_comapr) {
+		this.r88_expeli_colexp_crm_comapr = r88_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_exp_aft_voladj_colexp_crm_comapr() {
+		return r88_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR88_exp_aft_voladj_colexp_crm_comapr(BigDecimal r88_exp_aft_voladj_colexp_crm_comapr) {
+		this.r88_exp_aft_voladj_colexp_crm_comapr = r88_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_cash_efc_haircuts_colexp_crm_comapr() {
+		return r88_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR88_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r88_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r88_cash_efc_haircuts_colexp_crm_comapr = r88_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r88_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR88_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r88_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r88_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r88_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r88_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR88_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r88_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r88_debt_secu_efc_haircuts_colexp_crm_comapr = r88_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_equities_efc_haircuts_colexp_crm_comapr() {
+		return r88_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR88_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r88_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r88_equities_efc_haircuts_colexp_crm_comapr = r88_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r88_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR88_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r88_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r88_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r88_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r88_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR88_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r88_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r88_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r88_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_exp_efc_haircuts_colexp_crm_comapr() {
+		return r88_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR88_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r88_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r88_exp_efc_haircuts_colexp_crm_comapr = r88_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR88_rwa_exp_notcov_crm_rwa() {
+		return r88_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR88_rwa_exp_notcov_crm_rwa(BigDecimal r88_rwa_exp_notcov_crm_rwa) {
+		this.r88_rwa_exp_notcov_crm_rwa = r88_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR88_unsecu_exp_credit_risk_rwa() {
+		return r88_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR88_unsecu_exp_credit_risk_rwa(BigDecimal r88_unsecu_exp_credit_risk_rwa) {
+		this.r88_unsecu_exp_credit_risk_rwa = r88_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR88_rwa_unsecu_exp_rwa() {
+		return r88_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR88_rwa_unsecu_exp_rwa(BigDecimal r88_rwa_unsecu_exp_rwa) {
+		this.r88_rwa_unsecu_exp_rwa = r88_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR88_tot_rwa() {
+		return r88_tot_rwa;
+	}
+
+
+
+
+
+	public void setR88_tot_rwa(BigDecimal r88_tot_rwa) {
+		this.r88_tot_rwa = r88_tot_rwa;
+	}
+
+
+
+
+
+	public String getR89_product() {
+		return r89_product;
+	}
+
+
+
+
+
+	public void setR89_product(String r89_product) {
+		this.r89_product = r89_product;
+	}
+
+
+
+
+
+	public BigDecimal getR89_exp_bef_crm() {
+		return r89_exp_bef_crm;
+	}
+
+
+
+
+
+	public void setR89_exp_bef_crm(BigDecimal r89_exp_bef_crm) {
+		this.r89_exp_bef_crm = r89_exp_bef_crm;
+	}
+
+
+
+
+
+	public BigDecimal getR89_spec_prov_past_due_exp() {
+		return r89_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public void setR89_spec_prov_past_due_exp(BigDecimal r89_spec_prov_past_due_exp) {
+		this.r89_spec_prov_past_due_exp = r89_spec_prov_past_due_exp;
+	}
+
+
+
+
+
+	public BigDecimal getR89_amt_eli_bal_sheet_net() {
+		return r89_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public void setR89_amt_eli_bal_sheet_net(BigDecimal r89_amt_eli_bal_sheet_net) {
+		this.r89_amt_eli_bal_sheet_net = r89_amt_eli_bal_sheet_net;
+	}
+
+
+
+
+
+	public BigDecimal getR89_tot_exp_aft_net() {
+		return r89_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public void setR89_tot_exp_aft_net(BigDecimal r89_tot_exp_aft_net) {
+		this.r89_tot_exp_aft_net = r89_tot_exp_aft_net;
+	}
+
+
+
+
+
+	public BigDecimal getR89_exp_eli_noncol_exp_crm_subapr() {
+		return r89_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR89_exp_eli_noncol_exp_crm_subapr(BigDecimal r89_exp_eli_noncol_exp_crm_subapr) {
+		this.r89_exp_eli_noncol_exp_crm_subapr = r89_exp_eli_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_guan_noncol_exp_crm_subapr() {
+		return r89_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR89_guan_noncol_exp_crm_subapr(BigDecimal r89_guan_noncol_exp_crm_subapr) {
+		this.r89_guan_noncol_exp_crm_subapr = r89_guan_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_cre_deri_noncol_exp_crm_subapr() {
+		return r89_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR89_cre_deri_noncol_exp_crm_subapr(BigDecimal r89_cre_deri_noncol_exp_crm_subapr) {
+		this.r89_cre_deri_noncol_exp_crm_subapr = r89_cre_deri_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_exp_cov_crm_noncol_exp_crm_subapr() {
+		return r89_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR89_exp_cov_crm_noncol_exp_crm_subapr(BigDecimal r89_exp_cov_crm_noncol_exp_crm_subapr) {
+		this.r89_exp_cov_crm_noncol_exp_crm_subapr = r89_exp_cov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_eliexp_notcov_crm_noncol_exp_crm_subapr() {
+		return r89_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR89_eliexp_notcov_crm_noncol_exp_crm_subapr(BigDecimal r89_eliexp_notcov_crm_noncol_exp_crm_subapr) {
+		this.r89_eliexp_notcov_crm_noncol_exp_crm_subapr = r89_eliexp_notcov_crm_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_riskweights_rwa_noncol_exp_crm_subapr() {
+		return r89_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR89_riskweights_rwa_noncol_exp_crm_subapr(BigDecimal r89_riskweights_rwa_noncol_exp_crm_subapr) {
+		this.r89_riskweights_rwa_noncol_exp_crm_subapr = r89_riskweights_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_rwa_cov_crm_rwa_noncol_exp_crm_subapr() {
+		return r89_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR89_rwa_cov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r89_rwa_cov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r89_rwa_cov_crm_rwa_noncol_exp_crm_subapr = r89_rwa_cov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_rw_oricount_rwa_noncol_exp_crm_subapr() {
+		return r89_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR89_rw_oricount_rwa_noncol_exp_crm_subapr(BigDecimal r89_rw_oricount_rwa_noncol_exp_crm_subapr) {
+		this.r89_rw_oricount_rwa_noncol_exp_crm_subapr = r89_rw_oricount_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_rwa_notcov_crm_rwa_noncol_exp_crm_subapr() {
+		return r89_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public void setR89_rwa_notcov_crm_rwa_noncol_exp_crm_subapr(BigDecimal r89_rwa_notcov_crm_rwa_noncol_exp_crm_subapr) {
+		this.r89_rwa_notcov_crm_rwa_noncol_exp_crm_subapr = r89_rwa_notcov_crm_rwa_noncol_exp_crm_subapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_value() {
+		return r89_value;
+	}
+
+
+
+
+
+	public void setR89_value(BigDecimal r89_value) {
+		this.r89_value = r89_value;
+	}
+
+
+
+
+
+	public BigDecimal getR89_expeli_colexp_crm_comapr() {
+		return r89_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR89_expeli_colexp_crm_comapr(BigDecimal r89_expeli_colexp_crm_comapr) {
+		this.r89_expeli_colexp_crm_comapr = r89_expeli_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_exp_aft_voladj_colexp_crm_comapr() {
+		return r89_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR89_exp_aft_voladj_colexp_crm_comapr(BigDecimal r89_exp_aft_voladj_colexp_crm_comapr) {
+		this.r89_exp_aft_voladj_colexp_crm_comapr = r89_exp_aft_voladj_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_cash_efc_haircuts_colexp_crm_comapr() {
+		return r89_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR89_cash_efc_haircuts_colexp_crm_comapr(BigDecimal r89_cash_efc_haircuts_colexp_crm_comapr) {
+		this.r89_cash_efc_haircuts_colexp_crm_comapr = r89_cash_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr() {
+		return r89_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR89_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r89_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr) {
+		this.r89_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr = r89_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_debt_secu_efc_haircuts_colexp_crm_comapr() {
+		return r89_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR89_debt_secu_efc_haircuts_colexp_crm_comapr(BigDecimal r89_debt_secu_efc_haircuts_colexp_crm_comapr) {
+		this.r89_debt_secu_efc_haircuts_colexp_crm_comapr = r89_debt_secu_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_equities_efc_haircuts_colexp_crm_comapr() {
+		return r89_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR89_equities_efc_haircuts_colexp_crm_comapr(BigDecimal r89_equities_efc_haircuts_colexp_crm_comapr) {
+		this.r89_equities_efc_haircuts_colexp_crm_comapr = r89_equities_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_u_trust_m_funds_efc_haircuts_colexp_crm_comapr() {
+		return r89_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR89_u_trust_m_funds_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r89_u_trust_m_funds_efc_haircuts_colexp_crm_comapr) {
+		this.r89_u_trust_m_funds_efc_haircuts_colexp_crm_comapr = r89_u_trust_m_funds_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_totcol_aft_hc_efc_haircuts_colexp_crm_comapr() {
+		return r89_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR89_totcol_aft_hc_efc_haircuts_colexp_crm_comapr(
+			BigDecimal r89_totcol_aft_hc_efc_haircuts_colexp_crm_comapr) {
+		this.r89_totcol_aft_hc_efc_haircuts_colexp_crm_comapr = r89_totcol_aft_hc_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_exp_efc_haircuts_colexp_crm_comapr() {
+		return r89_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public void setR89_exp_efc_haircuts_colexp_crm_comapr(BigDecimal r89_exp_efc_haircuts_colexp_crm_comapr) {
+		this.r89_exp_efc_haircuts_colexp_crm_comapr = r89_exp_efc_haircuts_colexp_crm_comapr;
+	}
+
+
+
+
+
+	public BigDecimal getR89_rwa_exp_notcov_crm_rwa() {
+		return r89_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public void setR89_rwa_exp_notcov_crm_rwa(BigDecimal r89_rwa_exp_notcov_crm_rwa) {
+		this.r89_rwa_exp_notcov_crm_rwa = r89_rwa_exp_notcov_crm_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR89_unsecu_exp_credit_risk_rwa() {
+		return r89_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public void setR89_unsecu_exp_credit_risk_rwa(BigDecimal r89_unsecu_exp_credit_risk_rwa) {
+		this.r89_unsecu_exp_credit_risk_rwa = r89_unsecu_exp_credit_risk_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR89_rwa_unsecu_exp_rwa() {
+		return r89_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public void setR89_rwa_unsecu_exp_rwa(BigDecimal r89_rwa_unsecu_exp_rwa) {
+		this.r89_rwa_unsecu_exp_rwa = r89_rwa_unsecu_exp_rwa;
+	}
+
+
+
+
+
+	public BigDecimal getR89_tot_rwa() {
+		return r89_tot_rwa;
+	}
+
+
+
+
+
+	public void setR89_tot_rwa(BigDecimal r89_tot_rwa) {
+		this.r89_tot_rwa = r89_tot_rwa;
+	}
+
+
+
+
+
+	public Date getReport_date() {
+		return report_date;
+	}
+
+
+
+
+
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
+	}
+
+
+
+
+
+	public String getReport_version() {
+		return report_version;
+	}
+
+
+
+
+
+	public void setReport_version(String report_version) {
+		this.report_version = report_version;
+	}
+
+
+
+
+
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+
+
+
+
+
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+
+
+
+
+
+	public String getReport_code() {
+		return report_code;
+	}
+
+
+
+
+
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+
+
+
+
+
+	public String getReport_desc() {
+		return report_desc;
+	}
+
+
+
+
+
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+
+
+
+
+
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+
+
+
+
+
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+
+
+
+
+
+	public String getModify_flg() {
+		return modify_flg;
+	}
+
+
+
+
+
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+
+
+
+
+
+	public String getDel_flg() {
+		return del_flg;
+	}
+
+
+
+
+
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+
+
+
+
+
+	public M_SRWA_12B_Summary_Entity2() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
+}
