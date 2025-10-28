@@ -681,9 +681,10 @@ PURPOSE		: BRRS_M_PLLREPORT
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-							style="color:white !important; font-size: 16px; margin-right: 20px;">Report Date:
-							<span th:text="${asondate}">2025-09-16</span>
-						</span>
+												      style="color: white !important; font-size: 16px; margin-right: 20px;">
+												    Report Date:
+												    <span th:text="${asondate != null ? #dates.format(asondate, 'dd-MM-yyyy') : 'null'}">2025-07-04</span>
+												</span>
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">

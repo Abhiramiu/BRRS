@@ -688,7 +688,7 @@ function cancelModify() {
 					<div class="row">
 						<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">
-							<div class="table-wrapper table-responsive scrollable-table-container"
+							<div 
 								style="border-right: 1px solid #dee2e6; ">
 								<table
 									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
@@ -696,8 +696,8 @@ function cancelModify() {
 									<thead class="thead-light">
 									<tr>
 									
-										<tr style="background-color: #b3b6b9;">
-										    <th colspan="2" style="text-align: left; padding-left: 20px; width: 1000px;padding: 8px;background-color: #D8D8D8;">
+										<tr>
+										    <th colspan="2" style="background-color: #D8D8D8;">
 												Sector Analysis of public non-financial corporations </th>
 										</tr>
 										<tr>
@@ -705,19 +705,21 @@ function cancelModify() {
 										    <th style="text-align: right; vertical-align:center;width: 150px;background-color: #D8D8D8;">Total</th>
 										   
 										</tr>
+										
 
 										
 									</thead>
 		<tbody id="entity1" th:each="report: ${reportsummary}" style="font-family: Arial;">
 
 
+			
 
 <tr>
 
 	  
 	<td>Agriculture, Forestry, Fishing </td>
 
-	 <td id="ROW12" style="padding-left: 20px; font-weight: bold;text-align: right;">
+	 <td id="ROW12" style="padding-left: 10px; font-weight: bold;text-align: right;">
 	    <input class="display-input Show_input"
 	           type="text"
 	           th:value="${report.R12_TOTAL != null ? #numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"

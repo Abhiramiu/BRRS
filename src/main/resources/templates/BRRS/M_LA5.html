@@ -77,9 +77,10 @@ PURPOSE		: BRFREPORT
 
 		.btn-primary:not(:disabled):not(.disabled).active,
 		.btn-primary:not(:disabled):not(.disabled):active,
-		.show > .btn-primary.dropdown-toggle {
+		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
-			background-color: #cc0000; /* remove the extra zeros */
+			background-color: #cc0000;
+			/* remove the extra zeros */
 			border-color: #161617;
 		}
 
@@ -220,20 +221,22 @@ PURPOSE		: BRFREPORT
 		/* When input or select is focused or has a value, move the label up */
 		.form-control:focus~.form-legend,
 		/* When input has text (not showing placeholder) */
-		.form-control:not(:placeholder-shown) ~ .form-legend {
-		    top: -8px;
-		    font-size: 1rem;
-		    color: #007bff;
+		.form-control:not(:placeholder-shown)~.form-legend {
+			top: -8px;
+			font-size: 1rem;
+			color: #007bff;
 		}
 
 		/* Hover effect when the input/select is focused */
-		.form-control:focus:hover ~ .form-legend {
-		    color: #0056b3; /* Darker shade of blue on hover */
+		.form-control:focus:hover~.form-legend {
+			color: #0056b3;
+			/* Darker shade of blue on hover */
 		}
 
 		/* Return to normal color when focus/hover removed */
-		.form-control:not(:focus) ~ .form-legend {
-		    color: #aaa; /* Normal label color */
+		.form-control:not(:focus)~.form-legend {
+			color: #aaa;
+			/* Normal label color */
 		}
 
 
@@ -669,8 +672,9 @@ PURPOSE		: BRFREPORT
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${asondate}">2025-07-04</span>
+						      style="color: white !important; font-size: 16px; margin-right: 20px;">
+						    Report Date:
+						    <span th:text="${asondate != null ? #dates.format(asondate, 'dd-MM-yyyy') : 'null'}">2025-07-04</span>
 						</span>
 
 						<!-- Buttons -->
@@ -2885,41 +2889,41 @@ PURPOSE		: BRFREPORT
 									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
 									id="reportss">
 									<thead class="thead-light">
-																			<tr>
-																				<th></th>
-																				<th>CUST_ID</th>
-																				<th>ACCT_NUMBER</th>
-																				<th>ACCT_NAME</th>
+										<tr>
+											<th></th>
+											<th>CUST_ID</th>
+											<th>ACCT_NUMBER</th>
+											<th>ACCT_NAME</th>
 
 
 
-																				<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
-																				<th>REPORT_LABEL</th>
-																				<th>REPORT_ADDL_CRITERIA_1</th>
-																				<th>REPORT_DATE</th>
-																			</tr>
+											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
+											<th>REPORT_LABEL</th>
+											<th>REPORT_ADDL_CRITERIA_1</th>
+											<th>REPORT_DATE</th>
+										</tr>
 
-																		</thead>
+									</thead>
 
-																		<tbody th:each="report: ${reportdetails}" style="font-family: Arial;">
-																			<tr>
-																				<td><a data-toggle="tooltip" class="editrec"
-																						title="Click to Edit this Record"> <i class="fas fa-edit"
-																							onclick="editRecord(this)"></i>
-																					</a></td>
-																				<td th:text="${report.cust_id}"></td>
-																				<td th:text="${report.acct_number}"></td>
-																				<td th:text="${report.acct_name}"></td>
+									<tbody th:each="report: ${reportdetails}" style="font-family: Arial;">
+										<tr>
+											<td><a data-toggle="tooltip" class="editrec"
+													title="Click to Edit this Record"> <i class="fas fa-edit"
+														onclick="editRecord(this)"></i>
+												</a></td>
+											<td th:text="${report.cust_id}"></td>
+											<td th:text="${report.acct_number}"></td>
+											<td th:text="${report.acct_name}"></td>
 
-																				<td style="text-align:right;"
-																					th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 3, 'POINT')}">
-																				</td>
+											<td style="text-align:right;"
+												th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 3, 'POINT')}">
+											</td>
 
-																				<td th:text="${report.report_label}"></td>
-																				<td th:text="${report.report_addl_criteria_1}"></td>
-																				<td th:text="${#dates.format(report.report_date, 'dd-MM-yyyy')}"></td>
-																			</tr>
-																		</tbody>
+											<td th:text="${report.report_label}"></td>
+											<td th:text="${report.report_addl_criteria_1}"></td>
+											<td th:text="${#dates.format(report.report_date, 'dd-MM-yyyy')}"></td>
+										</tr>
+									</tbody>
 
 
 								</table>
