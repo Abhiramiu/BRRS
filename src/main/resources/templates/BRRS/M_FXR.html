@@ -1790,15 +1790,35 @@ function fileuploads(btn) {
            readonly />
 	</td>
 </tr>
-<tr>
+<!-- <tr>
     <td colspan="8"></td>
     <td style="text-align: right;">J</td>
     <td style="border: none;"></td>
     <td style="text-align: right;">K</td>
-  </tr>
-	</tbody>	
+  </tr> -->
+  
+<tr class="noborder">
+  <td colspan="8"></td>
+  <td style="text-align: right;">J</td>
+  <td></td>
+  <td style="text-align: right;">K</td>
+</tr>
+
+  
+	</tbody>
 										
 </table>
+
+<head>
+  <style>
+  /* Applies only to the row with this specific class */
+  .row23-noborder td:first-child,
+  .row23-noborder td:last-child {
+    border: none !important;
+  }
+  </style>
+</head>	
+
 <!-- Outer table to align texts (left) and data table (right) -->
 <table style="border-collapse: collapse;">
   <tr>
@@ -1818,7 +1838,7 @@ function fileuploads(btn) {
             <th style="vertical-align: middle; text-align:right; color:black;">Short</th>
             <th style="vertical-align: middle; text-align:right; color:black;">Total Gross Long &<br> Short Position</th>
             <th style="vertical-align: middle; text-align:right; color:black;">Net Position</th>
-            <th ></th>
+            
           </tr>
         </thead>
         <tbody id="entity2" th:each="report: ${reportsummary2}" style="font-family: Arial;">
@@ -1857,7 +1877,7 @@ function fileuploads(btn) {
                      style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
                      readonly />
             </td>
-            <td ></td>
+            
           </tr>
 
           <tr>
@@ -1895,25 +1915,30 @@ function fileuploads(btn) {
                      style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
                      readonly />
             </td>
-            <td ></td>
+            
           </tr>
-          <tr>
-          <td colspan="3"></td>
-          	<td id="ROW23" style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
-              <input class="display-input Show_input nonEditable"
-                     type="text"
-                     id="r23_net_position"
-                     name="r23_net_position"
-                     style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-                     readonly />
-            </td>
-            <td style="text-align:left;min-width:150px;height:30px;">L</td>
-          </tr> 
+          <tr class="row23-noborder">
+    <td colspan="3"></td>
+    
+    <td id="ROW23"
+        style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white; border: 1px solid black;">
+      <input class="display-input Show_input nonEditable"
+             type="text"
+             id="r23_net_position"
+             name="r23_net_position"
+             style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+             readonly />
+    </td>
+    
+    <td style="text-align: left; min-width: 150px; height: 30px;">L</td>
+  </tr>
         </tbody>
       </table>
     </td>
   </tr>
 </table>
+
+
 <table style="border-collapse: collapse;">
   <tr>
     <!-- Left texts -->
@@ -1926,14 +1951,14 @@ function fileuploads(btn) {
       <table class="sticky-header-table table table-bordered table-hover table-sm table-condensed" id="reports">
         <thead class="thead-light">
           <tr>
-          	<th></th>
+          	<th style="background-color: white; border: none !important;"></th>
             <th style="vertical-align: middle; text-align:right; color:black;">Greater of the Absolute <br>Value of Net Long<br> Position (J) or Net Short <br>Position (K)</th>
             <th style="vertical-align: middle; text-align:right; color:black;">Absolute <br>Value Net<br> Gold Position (L)</th>
             <th style="vertical-align: middle; text-align:left; color:black;">Capital Requirement</th>
             <th style="vertical-align: middle; text-align:right; color:black;">Capital Charge</th>
           </tr>
           <tr>
-          	<th></th>
+          	<th style="background-color: white; border: none !important;"></th>
             <th style="text-align:right; color:black;">M</th>
             <th style="text-align:right; color:black;">N</th>
             <th style="text-align:left; color:black;">P</th>
@@ -1942,7 +1967,7 @@ function fileuploads(btn) {
         </thead>
         <tbody id="entity3" th:each="report: ${reportsummary3}" style="font-family: Arial;">
             <tr>
-          	<td id="ROW29" style="font-weight:bold; text-align:left;">General risk</td>
+          	<td id="ROW29" style="font-weight:bold; text-align:left; border: none !important;" >General risk</td>
             <td style="padding-left: 20px; text-align:right;background-color: rgb(107, 122, 143); color: white;">
               <input class="display-input Show_input nonEditable"
                      type="text"
@@ -1987,7 +2012,7 @@ function fileuploads(btn) {
 
 
           </tr>
-          <tr>            
+         <!--  <tr>            
           <td colspan = 3></td>
           <td id="ROW30" style="padding-left: 20px; font-weight: bold;">
               <input class="display-input Show_input"
@@ -2000,7 +2025,7 @@ function fileuploads(btn) {
             </td>
           
             
-            </tr>
+            </tr> -->
         </tbody>
       </table>
     </td>
@@ -2227,5 +2252,12 @@ function fileuploads(btn) {
 }
 	
 </style>
+
+<style>
+  .noborder td, tr {
+    border: none !important;
+  }
+</style>
+
 
 </html>
