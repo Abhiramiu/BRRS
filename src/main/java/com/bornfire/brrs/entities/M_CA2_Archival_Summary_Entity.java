@@ -20,36 +20,36 @@ private BigDecimal r10_amount_1;
 private BigDecimal r10_amount_2;
 private String r11_product;
 private BigDecimal r11_amount_1;
-private BigDecimal r11_amount_2;
+//private BigDecimal r11_amount_2;
 private String r12_product;
 private BigDecimal r12_amount_1;
 private BigDecimal r12_amount_2;
 private String r13_product;
-private BigDecimal r13_amount_1;
+//private BigDecimal r13_amount_1;
 private BigDecimal r13_amount_2;
 private String r14_product;
-private BigDecimal r14_amount_1;
+//private BigDecimal r14_amount_1;
 private BigDecimal r14_amount_2;
 private String r15_product;
-private BigDecimal r15_amount_1;
+//private BigDecimal r15_amount_1;
 private BigDecimal r15_amount_2;
 private String r16_product;
-private BigDecimal r16_amount_1;
+//private BigDecimal r16_amount_1;
 private BigDecimal r16_amount_2;
 private String r17_product;
 private BigDecimal r17_amount_1;
 private BigDecimal r17_amount_2;
 private String r18_product;
-private BigDecimal r18_amount_1;
+//private BigDecimal r18_amount_1;
 private BigDecimal r18_amount_2;
 private String r19_product;
-private BigDecimal r19_amount_1;
+//private BigDecimal r19_amount_1;
 private BigDecimal r19_amount_2;
 private String r20_product;
 private BigDecimal r20_amount_1;
 private BigDecimal r20_amount_2;
 private String r21_product;
-private BigDecimal r21_amount_1;
+//private BigDecimal r21_amount_1;
 private BigDecimal r21_amount_2;
 private String r22_product;
 private BigDecimal r22_amount_1;
@@ -71,7 +71,7 @@ private BigDecimal r31_amount_1;
 private BigDecimal r31_amount_2;
 private String r32_product;
 private BigDecimal r32_amount_1;
-private BigDecimal r32_amount_2;
+//private BigDecimal r32_amount_2;
 private String r33_product;
 private BigDecimal r33_amount_1;
 private BigDecimal r33_amount_2;
@@ -89,19 +89,19 @@ private BigDecimal r41_amount_1;
 private BigDecimal r41_amount_2;
 private String r42_product;
 private BigDecimal r42_amount_1;
-private BigDecimal r42_amount_2;
+//private BigDecimal r42_amount_2;
 private String r43_product;
 private BigDecimal r43_amount_1;
-private BigDecimal r43_amount_2;
+//private BigDecimal r43_amount_2;
 private String r44_product;
 private BigDecimal r44_amount_1;
-private BigDecimal r44_amount_2;
+//private BigDecimal r44_amount_2;
 private String r45_product;
 private BigDecimal r45_amount_1;
 private BigDecimal r45_amount_2;
 private String r46_product;
 private BigDecimal r46_amount_1;
-private BigDecimal r46_amount_2;
+//private BigDecimal r46_amount_2;
 private String r47_product;
 private BigDecimal r47_amount_1;
 private BigDecimal r47_amount_2;
@@ -229,20 +229,20 @@ private BigDecimal r49_amount_2;
 
 
 
-
-	public BigDecimal getR11_amount_2() {
-		return r11_amount_2;
-	}
-
-
-
-
-
-
-
-	public void setR11_amount_2(BigDecimal r11_amount_2) {
-		this.r11_amount_2 = r11_amount_2;
-	}
+//
+//	public BigDecimal getR11_amount_2() {
+//		return r11_amount_2;
+//	}
+//
+//
+//
+//
+//
+//
+//
+//	public void setR11_amount_2(BigDecimal r11_amount_2) {
+//		this.r11_amount_2 = r11_amount_2;
+//	}
 
 
 
@@ -329,20 +329,20 @@ private BigDecimal r49_amount_2;
 
 
 
-
-	public BigDecimal getR13_amount_1() {
-		return r13_amount_1;
-	}
-
-
-
-
-
-
-
-	public void setR13_amount_1(BigDecimal r13_amount_1) {
-		this.r13_amount_1 = r13_amount_1;
-	}
+//
+//	public BigDecimal getR13_amount_1() {
+//		return r13_amount_1;
+//	}
+//
+//
+//
+//
+//
+//
+//
+//	public void setR13_amount_1(BigDecimal r13_amount_1) {
+//		this.r13_amount_1 = r13_amount_1;
+//	}
 
 
 
@@ -389,21 +389,21 @@ private BigDecimal r49_amount_2;
 
 
 
-
-	public BigDecimal getR14_amount_1() {
-		return r14_amount_1;
-	}
-
-
-
-
-
-
-
-	public void setR14_amount_1(BigDecimal r14_amount_1) {
-		this.r14_amount_1 = r14_amount_1;
-	}
-
+//
+//	public BigDecimal getR14_amount_1() {
+//		return r14_amount_1;
+//	}
+//
+//
+//
+//
+//
+//
+//
+//	public void setR14_amount_1(BigDecimal r14_amount_1) {
+//		this.r14_amount_1 = r14_amount_1;
+//	}
+//
 
 
 
@@ -449,20 +449,20 @@ private BigDecimal r49_amount_2;
 
 
 
-
-	public BigDecimal getR15_amount_1() {
-		return r15_amount_1;
-	}
-
-
-
-
-
-
-
-	public void setR15_amount_1(BigDecimal r15_amount_1) {
-		this.r15_amount_1 = r15_amount_1;
-	}
+//
+//	public BigDecimal getR15_amount_1() {
+//		return r15_amount_1;
+//	}
+//
+//
+//
+//
+//
+//
+//
+//	public void setR15_amount_1(BigDecimal r15_amount_1) {
+//		this.r15_amount_1 = r15_amount_1;
+//	}
 
 
 
@@ -508,25 +508,25 @@ private BigDecimal r49_amount_2;
 
 
 
-
-
-	public BigDecimal getR16_amount_1() {
-		return r16_amount_1;
-	}
-
-
-
-
-
-
-
-	public void setR16_amount_1(BigDecimal r16_amount_1) {
-		this.r16_amount_1 = r16_amount_1;
-	}
-
-
-
-
+//
+//
+//	public BigDecimal getR16_amount_1() {
+//		return r16_amount_1;
+//	}
+//
+//
+//
+//
+//
+//
+//
+//	public void setR16_amount_1(BigDecimal r16_amount_1) {
+//		this.r16_amount_1 = r16_amount_1;
+//	}
+//
+//
+//
+//
 
 
 
@@ -628,21 +628,21 @@ private BigDecimal r49_amount_2;
 
 
 
-
-
-	public BigDecimal getR18_amount_1() {
-		return r18_amount_1;
-	}
-
-
-
-
-
-
-
-	public void setR18_amount_1(BigDecimal r18_amount_1) {
-		this.r18_amount_1 = r18_amount_1;
-	}
+//
+//
+//	public BigDecimal getR18_amount_1() {
+//		return r18_amount_1;
+//	}
+//
+//
+//
+//
+//
+//
+//
+//	public void setR18_amount_1(BigDecimal r18_amount_1) {
+//		this.r18_amount_1 = r18_amount_1;
+//	}
 
 
 
@@ -689,23 +689,23 @@ private BigDecimal r49_amount_2;
 
 
 
-
-	public BigDecimal getR19_amount_1() {
-		return r19_amount_1;
-	}
-
-
-
-
-
-
-
-	public void setR19_amount_1(BigDecimal r19_amount_1) {
-		this.r19_amount_1 = r19_amount_1;
-	}
-
-
-
+//
+//	public BigDecimal getR19_amount_1() {
+//		return r19_amount_1;
+//	}
+//
+//
+//
+//
+//
+//
+//
+//	public void setR19_amount_1(BigDecimal r19_amount_1) {
+//		this.r19_amount_1 = r19_amount_1;
+//	}
+//
+//
+//
 
 
 
@@ -810,22 +810,22 @@ private BigDecimal r49_amount_2;
 
 
 
-	public BigDecimal getR21_amount_1() {
-		return r21_amount_1;
-	}
+//	public BigDecimal getR21_amount_1() {
+//		return r21_amount_1;
+//	}
+//
+//
+//
+//
+//
 
-
-
-
-
-
-
-	public void setR21_amount_1(BigDecimal r21_amount_1) {
-		this.r21_amount_1 = r21_amount_1;
-	}
-
-
-
+//
+//	public void setR21_amount_1(BigDecimal r21_amount_1) {
+//		this.r21_amount_1 = r21_amount_1;
+//	}
+//
+//
+//
 
 
 
@@ -1248,25 +1248,25 @@ private BigDecimal r49_amount_2;
 
 
 
-
-
-	public BigDecimal getR32_amount_2() {
-		return r32_amount_2;
-	}
-
-
-
+//
+//
+//	public BigDecimal getR32_amount_2() {
+//		return r32_amount_2;
+//	}
 
 
 
 
-	public void setR32_amount_2(BigDecimal r32_amount_2) {
-		this.r32_amount_2 = r32_amount_2;
-	}
 
 
-
-
+//
+//	public void setR32_amount_2(BigDecimal r32_amount_2) {
+//		this.r32_amount_2 = r32_amount_2;
+//	}
+//
+//
+//
+//
 
 
 
@@ -1609,20 +1609,20 @@ private BigDecimal r49_amount_2;
 
 
 
-
-	public BigDecimal getR42_amount_2() {
-		return r42_amount_2;
-	}
-
-
-
-
-
-
-
-	public void setR42_amount_2(BigDecimal r42_amount_2) {
-		this.r42_amount_2 = r42_amount_2;
-	}
+//
+//	public BigDecimal getR42_amount_2() {
+//		return r42_amount_2;
+//	}
+//
+//
+//
+//
+//
+//
+//
+//	public void setR42_amount_2(BigDecimal r42_amount_2) {
+//		this.r42_amount_2 = r42_amount_2;
+//	}
 
 
 
@@ -1669,25 +1669,25 @@ private BigDecimal r49_amount_2;
 
 
 
+//
+//	public BigDecimal getR43_amount_2() {
+//		return r43_amount_2;
+//	}
+//
+//
+//
+//
+//
 
-	public BigDecimal getR43_amount_2() {
-		return r43_amount_2;
-	}
-
-
-
-
-
-
-
-	public void setR43_amount_2(BigDecimal r43_amount_2) {
-		this.r43_amount_2 = r43_amount_2;
-	}
-
-
-
-
-
+//
+//	public void setR43_amount_2(BigDecimal r43_amount_2) {
+//		this.r43_amount_2 = r43_amount_2;
+//	}
+//
+//
+//
+//
+//
 
 
 	public String getR44_product() {
@@ -1728,22 +1728,22 @@ private BigDecimal r49_amount_2;
 
 
 
-
-
-	public BigDecimal getR44_amount_2() {
-		return r44_amount_2;
-	}
-
-
-
-
-
-
-
-	public void setR44_amount_2(BigDecimal r44_amount_2) {
-		this.r44_amount_2 = r44_amount_2;
-	}
-
+//
+//
+//	public BigDecimal getR44_amount_2() {
+//		return r44_amount_2;
+//	}
+//
+//
+//
+//
+//
+//
+//
+//	public void setR44_amount_2(BigDecimal r44_amount_2) {
+//		this.r44_amount_2 = r44_amount_2;
+//	}
+//
 
 
 
@@ -1848,22 +1848,22 @@ private BigDecimal r49_amount_2;
 
 
 
-
-
-	public BigDecimal getR46_amount_2() {
-		return r46_amount_2;
-	}
-
-
-
-
-
-
-
-	public void setR46_amount_2(BigDecimal r46_amount_2) {
-		this.r46_amount_2 = r46_amount_2;
-	}
-
+//
+//
+//	public BigDecimal getR46_amount_2() {
+//		return r46_amount_2;
+//	}
+//
+//
+//
+//
+//
+//
+//
+//	public void setR46_amount_2(BigDecimal r46_amount_2) {
+//		this.r46_amount_2 = r46_amount_2;
+//	}
+//
 
 
 
@@ -2205,7 +2205,10 @@ private BigDecimal r49_amount_2;
 	}
 
 
-		
+
+	
+	
+	
 
 
 	public M_CA2_Archival_Summary_Entity() {

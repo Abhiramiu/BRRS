@@ -2,12 +2,6 @@ package com.bornfire.brrs.controllers;
 
 import java.io.FileNotFoundException;
 
-
-
-
-
-
-
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -53,8 +47,10 @@ import com.bornfire.brrs.services.BRRS_M_SRWA_12G_ReportService;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity2;
 import com.bornfire.brrs.services.BRRS_M_CA5_ReportService;
-
-
+import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_CA2_ReportService;
+import com.bornfire.brrs.entities.M_SRWA_12C_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_SRWA_12C_ReportService;
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
@@ -469,6 +465,37 @@ public class BRRS_ReportsController {
 	 }
 
 
+	 @Autowired
+	 private BRRS_M_CA2_ReportService brrs_m_ca2_reportservice;
+	 
+
+	 @RequestMapping(value = "/MCA2updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	 @ResponseBody
+	 public ResponseEntity<String> updateAllReports(
+	         @RequestParam(required = false)
+	         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+	         @ModelAttribute M_CA2_Manual_Summary_Entity request1
+	        
+	 ) {
+	     try {
+	         System.out.println("Came to single controller");
+
+	         // set date into  entities
+	         request1.setReport_date(asondate);
+	       
+	         // call services
+	         brrs_m_ca2_reportservice.updateReport(request1);
+	        
+
+	         return ResponseEntity.ok("Updated Successfully");
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                              .body("Update Failed: " + e.getMessage());
+	     }
+	 }	 
+
 
 
 	 @Autowired
@@ -499,6 +526,37 @@ public class BRRS_ReportsController {
 	     }
 	 }
 	 
+	 
+	 @Autowired
+		BRRS_M_SRWA_12C_ReportService BRRS_M_SRWA_12C_reportservice;
+	 
+	 
+	 @RequestMapping(value = "/M_SRWA_12CupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	 @ResponseBody
+	 public ResponseEntity<String> updateReport(
+	     @RequestParam(required = false) 
+	     @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	     @ModelAttribute M_SRWA_12C_Summary_Entity request
+	    ) {
+
+	     try {
+	         System.out.println("came to single controller");
+	         
+	         // ✅ set the asondate into entity
+	         request.setREPORT_DATE(asondate);
+	         
+	         
+	      // call services
+	         BRRS_M_SRWA_12C_reportservice.updateReport(request);
+	         
+	         
+	         return ResponseEntity.ok(" Updated Successfully");
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                              .body("Update Failed: " + e.getMessage());
+	     }
+	 }
 	 
 
 	 @Autowired

@@ -7,6 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,6 +55,7 @@ import com.bornfire.brrs.entities.BRRS_M_CA2_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.M_CA2_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_CA2_Detail_Repo;
 import com.bornfire.brrs.entities.M_CA2_Summary_Entity;
+import com.bornfire.brrs.entities.M_FXR_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_CA2_Summary_Repo;
 import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_CA2_Manual_Summary_Repo;
@@ -107,7 +109,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 		if (type.equals("ARCHIVAL") & version != null) {
 			System.out.println(type);
 			List<M_CA2_Archival_Summary_Entity> T1Master = new ArrayList<M_CA2_Archival_Summary_Entity>();
-		//	List<M_CA2_Manual_Archival_Summary_Entity> T2Master = new ArrayList<M_CA2_Manual_Archival_Summary_Entity>();
+			List<M_CA2_Manual_Archival_Summary_Entity> T2Master = new ArrayList<M_CA2_Manual_Archival_Summary_Entity>();
 			System.out.println(version);
 			try {
 				Date d1 = dateformat.parse(todate);
@@ -116,18 +118,18 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 				// ", BRF1_REPORT_ENTITY.class)
 				// .setParameter(1, df.parse(todate)).getResultList();
 				T1Master = BRRS_M_CA2_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
-			//	T2Master = BRRS_M_CA2_Manual_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+				T2Master = BRRS_M_CA2_Manual_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
 
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 
 			mv.addObject("reportsummary", T1Master);
-		//	mv.addObject("reportsummary1", T2Master);
+			mv.addObject("reportsummary1", T2Master);
 		} else {		
 
 		List<M_CA2_Summary_Entity> T1Master = new ArrayList<M_CA2_Summary_Entity>();
-	//	List<M_CA2_Manual_Summary_Entity> T2Master = new ArrayList<M_CA2_Manual_Summary_Entity>();
+		List<M_CA2_Manual_Summary_Entity> T2Master = new ArrayList<M_CA2_Manual_Summary_Entity>();
 		
 		try {
 			Date d1 = dateformat.parse(todate);
@@ -136,14 +138,14 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			//T1Master = hs.createQuery("from  BRF1_REPORT_ENTITY a where a.report_date = ?1 ", BRF1_REPORT_ENTITY.class)
 				//	.setParameter(1, df.parse(todate)).getResultList();
 			 T1Master=BRRS_M_CA2_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-		//	 T2Master=BRRS_M_CA2_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+			 T2Master=BRRS_M_CA2_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 			 
 		
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}	
 			mv.addObject("reportsummary", T1Master);
-		//	mv.addObject("reportsummary1", T2Master);
+			mv.addObject("reportsummary1", T2Master);
 		}
 
 		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
@@ -237,7 +239,72 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 		return mv;
 	}
 
+		
+		public void updateReport(M_CA2_Manual_Summary_Entity updatedEntity) {
+		    System.out.println("Came to services1");
+		    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
+		    M_CA2_Manual_Summary_Entity existing = BRRS_M_CA2_Manual_Summary_Repo.findById(updatedEntity.getReport_date())
+		            .orElseThrow(() -> new RuntimeException(
+		                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+
+		    try {
+		        // ✅ Loop for amount_2 fields
+		        int[] amount2Rows = {11, 32, 42, 43, 44, 46};
+		        for (int i : amount2Rows) {
+		            String prefix = "R" + i + "_";
+		            String[] fields = {"amount_2"};
+
+		            for (String field : fields) {
+		                try {
+		                    String getterName = "get" + prefix + field;
+		                    String setterName = "set" + prefix + field;
+
+		                    Method getter = M_CA2_Manual_Summary_Entity.class.getMethod(getterName);
+		                    Method setter = M_CA2_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+		                    Object newValue = getter.invoke(updatedEntity);
+		                    setter.invoke(existing, newValue);
+
+		                } catch (NoSuchMethodException e) {
+		                    // Skip missing getter/setter gracefully
+		                    continue;
+		                }
+		            }
+		        }
+
+		        // ✅ Loop for amount_1 fields
+		        int[] amount1Rows = {13, 14, 15, 16, 18, 19, 21};
+		        for (int i : amount1Rows) {
+		            String prefix = "R" + i + "_";
+		            String[] fields = {"amount_1"};
+
+		            for (String field : fields) {
+		                try {
+		                    String getterName = "get" + prefix + field;
+		                    String setterName = "set" + prefix + field;
+
+		                    Method getter = M_CA2_Manual_Summary_Entity.class.getMethod(getterName);
+		                    Method setter = M_CA2_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+		                    Object newValue = getter.invoke(updatedEntity);
+		                    setter.invoke(existing, newValue);
+
+		                } catch (NoSuchMethodException e) {
+		                    continue;
+		                }
+		            }
+		        }
+
+		        // ✅ Save after all updates
+		        BRRS_M_CA2_Manual_Summary_Repo.save(existing);
+
+		    } catch (Exception e) {
+		        throw new RuntimeException("Error while updating report fields", e);
+		    }
+		}
+
+		
 	public byte[] getM_CA2Excel(String filename, String reportId, String fromdate, String todate, String currency,
 									 String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
@@ -251,6 +318,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 		// Fetch data
 
 		List<M_CA2_Summary_Entity> dataList =BRRS_M_CA2_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
+		List<M_CA2_Manual_Summary_Entity> dataList1 =BRRS_M_CA2_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_CA2 report. Returning empty result.");
@@ -315,9 +383,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 
 			int startRow = 9;
 
-			if (!dataList.isEmpty()) {
+			if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 			    for (int i = 0; i < dataList.size(); i++) {
 			        M_CA2_Summary_Entity record = dataList.get(i);
+			        M_CA2_Manual_Summary_Entity record1 = dataList1.get(i);
 			        System.out.println("rownumber=" + (startRow + i));
 
 			        Row row;
@@ -338,7 +407,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell4 = row.getCell(3);
 			        if (cell4 == null) cell4 = row.createCell(3);
 			        originalStyle = cell4.getCellStyle();
-			        if (record.getR11_amount_2() != null) cell4.setCellValue(record.getR11_amount_2().doubleValue());
+			        if (record1.getR11_amount_2() != null) cell4.setCellValue(record1.getR11_amount_2().doubleValue());
 			        else cell4.setCellValue("");
 			        cell4.setCellStyle(originalStyle);
 
@@ -347,7 +416,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR13_amount_1() != null) cell3.setCellValue(record.getR13_amount_1().doubleValue());
+			        if (record1.getR13_amount_1() != null) cell3.setCellValue(record1.getR13_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -356,7 +425,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR14_amount_1() != null) cell3.setCellValue(record.getR14_amount_1().doubleValue());
+			        if (record1.getR14_amount_1() != null) cell3.setCellValue(record1.getR14_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -365,7 +434,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR15_amount_1() != null) cell3.setCellValue(record.getR15_amount_1().doubleValue());
+			        if (record1.getR15_amount_1() != null) cell3.setCellValue(record1.getR15_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -374,7 +443,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR16_amount_1() != null) cell3.setCellValue(record.getR16_amount_1().doubleValue());
+			        if (record1.getR16_amount_1() != null) cell3.setCellValue(record1.getR16_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -383,7 +452,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR18_amount_1() != null) cell3.setCellValue(record.getR18_amount_1().doubleValue());
+			        if (record1.getR18_amount_1() != null) cell3.setCellValue(record1.getR18_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -392,7 +461,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR19_amount_1() != null) cell3.setCellValue(record.getR19_amount_1().doubleValue());
+			        if (record1.getR19_amount_1() != null) cell3.setCellValue(record1.getR19_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -410,7 +479,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR21_amount_1() != null) cell3.setCellValue(record.getR21_amount_1().doubleValue());
+			        if (record1.getR21_amount_1() != null) cell3.setCellValue(record1.getR21_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -464,7 +533,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell4 = row.getCell(3);
 			        if (cell4 == null) cell4 = row.createCell(3);
 			        originalStyle = cell4.getCellStyle();
-			        if (record.getR32_amount_2() != null) cell4.setCellValue(record.getR32_amount_2().doubleValue());
+			        if (record1.getR32_amount_2() != null) cell4.setCellValue(record1.getR32_amount_2().doubleValue());
 			        else cell4.setCellValue("");
 			        cell4.setCellStyle(originalStyle);
 
@@ -500,7 +569,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell4 = row.getCell(3);
 			        if (cell4 == null) cell4 = row.createCell(3);
 			        originalStyle = cell4.getCellStyle();
-			        if (record.getR42_amount_2() != null) cell4.setCellValue(record.getR42_amount_2().doubleValue());
+			        if (record1.getR42_amount_2() != null) cell4.setCellValue(record1.getR42_amount_2().doubleValue());
 			        else cell4.setCellValue("");
 			        cell4.setCellStyle(originalStyle);
 
@@ -509,7 +578,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell4 = row.getCell(3);
 			        if (cell4 == null) cell4 = row.createCell(3);
 			        originalStyle = cell4.getCellStyle();
-			        if (record.getR43_amount_2() != null) cell4.setCellValue(record.getR43_amount_2().doubleValue());
+			        if (record1.getR43_amount_2() != null) cell4.setCellValue(record1.getR43_amount_2().doubleValue());
 			        else cell4.setCellValue("");
 			        cell4.setCellStyle(originalStyle);
 
@@ -518,7 +587,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell4 = row.getCell(3);
 			        if (cell4 == null) cell4 = row.createCell(3);
 			        originalStyle = cell4.getCellStyle();
-			        if (record.getR44_amount_2() != null) cell4.setCellValue(record.getR44_amount_2().doubleValue());
+			        if (record1.getR44_amount_2() != null) cell4.setCellValue(record1.getR44_amount_2().doubleValue());
 			        else cell4.setCellValue("");
 			        cell4.setCellStyle(originalStyle);
 
@@ -536,7 +605,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			        cell4 = row.getCell(3);
 			        if (cell4 == null) cell4 = row.createCell(3);
 			        originalStyle = cell4.getCellStyle();
-			        if (record.getR46_amount_2() != null) cell4.setCellValue(record.getR46_amount_2().doubleValue());
+			        if (record1.getR46_amount_2() != null) cell4.setCellValue(record1.getR46_amount_2().doubleValue());
 			        else cell4.setCellValue("");
 			        cell4.setCellStyle(originalStyle);
 
@@ -821,6 +890,7 @@ public List<Object> getM_CA2Archival() {
 		List<Object> M_CA2Archivallist = new ArrayList<>();
 		try {
 			M_CA2Archivallist = BRRS_M_CA2_Archival_Summary_Repo.getM_CA2archival();
+			M_CA2Archivallist = BRRS_M_CA2_Manual_Archival_Summary_Repo.getM_CA2archival();
 			System.out.println("countser" + M_CA2Archivallist.size());
 		} catch (Exception e) {
 			// Log the exception
@@ -841,8 +911,10 @@ public List<Object> getM_CA2Archival() {
 		}
 		List<M_CA2_Archival_Summary_Entity> dataList = BRRS_M_CA2_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_CA2_Manual_Archival_Summary_Entity> dataList1 = BRRS_M_CA2_Manual_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
 
-		if (dataList.isEmpty()) {
+		if (dataList.isEmpty() || dataList1.isEmpty()) {
 			logger.warn("Service: No data found for M_CA2 report. Returning empty result.");
 			return new byte[0];
 		}
@@ -904,9 +976,10 @@ public List<Object> getM_CA2Archival() {
 			// --- End of Style Definitions ---
 	int startRow = 9;
 
-			if (!dataList.isEmpty()) {
+			if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 			    for (int i = 0; i < dataList.size(); i++) {
 			        M_CA2_Archival_Summary_Entity record = dataList.get(i);
+			        M_CA2_Manual_Archival_Summary_Entity record1 = dataList1.get(i);
 			        System.out.println("rownumber=" + (startRow + i));
 
 			        Row row;
@@ -927,7 +1000,7 @@ public List<Object> getM_CA2Archival() {
 			        cell4 = row.getCell(3);
 			        if (cell4 == null) cell4 = row.createCell(3);
 			        originalStyle = cell4.getCellStyle();
-			        if (record.getR11_amount_2() != null) cell4.setCellValue(record.getR11_amount_2().doubleValue());
+			        if (record1.getR11_amount_2() != null) cell4.setCellValue(record1.getR11_amount_2().doubleValue());
 			        else cell4.setCellValue("");
 			        cell4.setCellStyle(originalStyle);
 
@@ -936,7 +1009,7 @@ public List<Object> getM_CA2Archival() {
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR13_amount_1() != null) cell3.setCellValue(record.getR13_amount_1().doubleValue());
+			        if (record1.getR13_amount_1() != null) cell3.setCellValue(record1.getR13_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -945,7 +1018,7 @@ public List<Object> getM_CA2Archival() {
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR14_amount_1() != null) cell3.setCellValue(record.getR14_amount_1().doubleValue());
+			        if (record1.getR14_amount_1() != null) cell3.setCellValue(record1.getR14_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -954,7 +1027,7 @@ public List<Object> getM_CA2Archival() {
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR15_amount_1() != null) cell3.setCellValue(record.getR15_amount_1().doubleValue());
+			        if (record1.getR15_amount_1() != null) cell3.setCellValue(record1.getR15_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -963,7 +1036,7 @@ public List<Object> getM_CA2Archival() {
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR16_amount_1() != null) cell3.setCellValue(record.getR16_amount_1().doubleValue());
+			        if (record1.getR16_amount_1() != null) cell3.setCellValue(record1.getR16_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -972,7 +1045,7 @@ public List<Object> getM_CA2Archival() {
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR18_amount_1() != null) cell3.setCellValue(record.getR18_amount_1().doubleValue());
+			        if (record1.getR18_amount_1() != null) cell3.setCellValue(record1.getR18_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -981,7 +1054,7 @@ public List<Object> getM_CA2Archival() {
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR19_amount_1() != null) cell3.setCellValue(record.getR19_amount_1().doubleValue());
+			        if (record1.getR19_amount_1() != null) cell3.setCellValue(record1.getR19_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -999,7 +1072,7 @@ public List<Object> getM_CA2Archival() {
 			        cell3 = row.getCell(2);
 			        if (cell3 == null) cell3 = row.createCell(2);
 			        originalStyle = cell3.getCellStyle();
-			        if (record.getR21_amount_1() != null) cell3.setCellValue(record.getR21_amount_1().doubleValue());
+			        if (record1.getR21_amount_1() != null) cell3.setCellValue(record1.getR21_amount_1().doubleValue());
 			        else cell3.setCellValue("");
 			        cell3.setCellStyle(originalStyle);
 
@@ -1053,7 +1126,7 @@ public List<Object> getM_CA2Archival() {
 			        cell4 = row.getCell(3);
 			        if (cell4 == null) cell4 = row.createCell(3);
 			        originalStyle = cell4.getCellStyle();
-			        if (record.getR32_amount_2() != null) cell4.setCellValue(record.getR32_amount_2().doubleValue());
+			        if (record1.getR32_amount_2() != null) cell4.setCellValue(record1.getR32_amount_2().doubleValue());
 			        else cell4.setCellValue("");
 			        cell4.setCellStyle(originalStyle);
 
@@ -1089,7 +1162,7 @@ public List<Object> getM_CA2Archival() {
 			        cell4 = row.getCell(3);
 			        if (cell4 == null) cell4 = row.createCell(3);
 			        originalStyle = cell4.getCellStyle();
-			        if (record.getR42_amount_2() != null) cell4.setCellValue(record.getR42_amount_2().doubleValue());
+			        if (record1.getR42_amount_2() != null) cell4.setCellValue(record1.getR42_amount_2().doubleValue());
 			        else cell4.setCellValue("");
 			        cell4.setCellStyle(originalStyle);
 
@@ -1098,7 +1171,7 @@ public List<Object> getM_CA2Archival() {
 			        cell4 = row.getCell(3);
 			        if (cell4 == null) cell4 = row.createCell(3);
 			        originalStyle = cell4.getCellStyle();
-			        if (record.getR43_amount_2() != null) cell4.setCellValue(record.getR43_amount_2().doubleValue());
+			        if (record1.getR43_amount_2() != null) cell4.setCellValue(record1.getR43_amount_2().doubleValue());
 			        else cell4.setCellValue("");
 			        cell4.setCellStyle(originalStyle);
 
@@ -1107,7 +1180,7 @@ public List<Object> getM_CA2Archival() {
 			        cell4 = row.getCell(3);
 			        if (cell4 == null) cell4 = row.createCell(3);
 			        originalStyle = cell4.getCellStyle();
-			        if (record.getR44_amount_2() != null) cell4.setCellValue(record.getR44_amount_2().doubleValue());
+			        if (record1.getR44_amount_2() != null) cell4.setCellValue(record1.getR44_amount_2().doubleValue());
 			        else cell4.setCellValue("");
 			        cell4.setCellStyle(originalStyle);
 
@@ -1125,7 +1198,7 @@ public List<Object> getM_CA2Archival() {
 			        cell4 = row.getCell(3);
 			        if (cell4 == null) cell4 = row.createCell(3);
 			        originalStyle = cell4.getCellStyle();
-			        if (record.getR46_amount_2() != null) cell4.setCellValue(record.getR46_amount_2().doubleValue());
+			        if (record1.getR46_amount_2() != null) cell4.setCellValue(record1.getR46_amount_2().doubleValue());
 			        else cell4.setCellValue("");
 			        cell4.setCellStyle(originalStyle);
 
@@ -1136,8 +1209,9 @@ public List<Object> getM_CA2Archival() {
 			        originalStyle = cell4.getCellStyle();
 			        if (record.getR47_amount_2() != null) cell4.setCellValue(record.getR47_amount_2().doubleValue());
 			        else cell4.setCellValue("");
-			        cell4.setCellStyle(originalStyle);
-    }
+			        cell4.setCellStyle(originalStyle);	 
+			        }
+
 
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {

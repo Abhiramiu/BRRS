@@ -1,445 +1,465 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
-<!--
-CREATED BY	: PRAVEEN KUMAR M
-CREATED ON	: 01.08.2025
-PURPOSE		: BWRBRREPORT
--->
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
+<!-- 
+CREATED BY	: SUDEEP HEBSUR
+CREATED ON	: 31.08.2025
+PURPOSE		: BRFREPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- CSS -->
-	
-	
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
-	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
-	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
-	<!-- JavaScript -->
-	<!-- jQuery core (required first) -->
-	<!-- ✅ Your manually placed jQuery validation
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+
+
+<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
-	<!-- jQuery (required first) -->
-	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
-	<!-- ✅ jQuery Validation -->
-	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
-		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
-	<!-- Bootstrap + Others -->
-	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
-	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
-	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
-	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-	<style>
-		.btns {
-			float: right;
-			margin: 5px;
-		}
 
-		.col-sm-5 {
-			padding-bottom: 15px;
-		}
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
 
-		.list-body {
-			padding: 0px;
-		}
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
 
-		.error {
-			color: red;
-			padding-left: 10px;
-		}
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
 
-		.formline {
-			padding-bottom: 15px;
-		}
 
-		.btn-primary {
-			background-color: #E77400;
-			border-color: #0c0c0c;
-		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
-			color: #fff;
-			background-color: #cc000000;
-			border-color: #161617;
-		}
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
 
-		#finusertb {
-			width: 460px;
-		}
+.col-sm-5 {
+	padding-bottom: 15px;
+}
 
-		.dataTables_wrapper .dataTables_paginate .paginate_button {
-			padding: 0px;
-		}
-	</style>
-	<style>
-		div span {
-			font-weight: bold;
-			color: white !important;
-		}
+.list-body {
+	padding: 0px;
+}
 
-		.card {
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-			border-radius: 8px;
-		}
+.error {
+	color: red;
+	padding-left: 10px;
+}
 
-		.card-header h5 {
-			font-size: 22px;
-			color: #fff;
-			font-weight: 600;
-		}
+.formline {
+	padding-bottom: 15px;
+}
 
-		.nav-tabs .nav-link {
-			font-weight: 500;
-			border: 1px solid #dee2e6;
-			border-bottom: none;
-			border-radius: 4px 4px 0 0;
-			background-color: #f1f1f1;
-			margin-right: 5px;
-		}
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
 
-		.nav-tabs .nav-link.active {
-			background-color: #ffffff;
-			border-color: #dee2e6 #dee2e6 #ffffff;
-		}
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
 
-		.table-responsive {
-			border: 1px solid #dee2e6;
-			border-radius: 4px;
-		}
+#finusertb {
+	width: 460px;
+}
 
-		.table-hover tbody tr:hover {
-			background-color: #f3f6f9;
-		}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
 
-		thead th {
-			position: sticky;
-			top: 0;
-			background-color: #e9ecf0;
-			z-index: 1;
-		}
 
-		.table td {
-			background-color: #FFFFFF;
-		}
 
-		.card-footer {
-			padding: 10px;
-			border-top: 1px solid #ccc;
-		}
 
-		.btn-xs {
-			padding: 4px 12px;
-			font-size: 14px;
-			border-radius: 4px;
-		}
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
 
-		#BRRSvalidation th,
-		#usertable td {
-			vertical-align: middle;
-			text-align: left;
-			font-size: 16px;
-			font-family: Arial;
-		}
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
 
-		.fa-edit:hover {
-			color: #28a745;
-			transform: scale(1.1);
-		}
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
 
-		td {
-			border: 1px solid rgb(0, 164, 166);
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-		}
-	</style>
-	<style>
-		.form-group {
-			position: relative;
-			margin-bottom: 1.5rem;
-		}
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
 
-		.form-control {
-			width: 100%;
-			border: 2px solid #ccc;
-			border-radius: 8px;
-			font-size: 1rem;
-			outline: none;
-			background: transparent;
-			transition: border-color 0.3s ease, padding-top 0.3s ease;
-		}
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
 
-		.error {
-			color: red;
-			padding-top: 15px;
-		}
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
 
-		.form-control:focus {
-			border-color: #007bff;
-		}
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
 
-		.form-legend {
-			position: absolute;
-			top: 50%;
-			left: 15px;
-			transform: translateY(-50%);
-			font-size: 1rem;
-			color: #aaa;
-			background: white;
-			padding: 0 5px;
-			pointer-events: none;
-			transition: 0.3s ease;
-		}
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
 
-		/* When input or select is focused or has a value, move the label up */
-		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
+.table td {
+	background-color: #FFFFFF;
+}
 
-		/* Hover effect when the input/select is focused */
-		.form-control:focus:hover~.form-legend {
-			color: #0056b3;
-			/* Darker shade of blue on hover */
-		}
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
 
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
-		}
-	</style>
-	<style>
-		/* Red border for invalid inputs */
-		input.error,
-		select.error {
-			border: 2px solid red !important;
-		}
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
 
-		/* Error message style */
-		label.error {
-			color: red;
-			font-size: 0.85em;
-			margin-top: 5px;
-			display: block;
-		}
+#BRFvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
 
-		.underline {
-			text-decoration: underline;
-			color: #08a6f1;
-			cursor: pointer;
-		}
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
 
-		.left-arrow-circle {
-			width: 35px;
-			height: 35px;
-			border-radius: 50%;
-			background-color: white;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-right: 10px;
-			transition: background-color 0.3s, transform 0.2s;
-		}
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
 
-		.left-arrow-circle i {
-			color: rgb(107, 122, 143);
-		}
+.table-cell tbody td:hover {
+        background-color: #f0f0f0; /* Hover color for cell */
+        cursor: pointer;           /* Optional: pointer cursor */
+    }
+.table-bordered td, 
+.table-bordered th {
+	   border: 1px solid #000 !important;
+	}
+</style>
 
-		.left-arrow-circle:hover {
-			background-color: rgb(107, 122, 143);
-			cursor: pointer;
-			transform: scale(1.05);
-			border: 2px solid white;
-		}
 
-		.left-arrow-circle:hover i {
-			color: white;
-		}
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
 
-		.white-text span {
-			color: white !important;
-		}
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
 
-		.table-cell tbody td:hover {
-			background-color: #f0f0f0;
-			/* Hover color for cell */
-			cursor: pointer;
-			/* Optional: pointer cursor */
-		}
+.error {
+	color: red;
+	padding-top: 15px;
+}
 
-		.table-bordered td,
-		.table-bordered th {
-			border: 1px solid #000 !important;
-		}
-	</style>
-	<script th:inline="javascript">
-		$(document).ready(function () {
-			// hide loader on normal load
+.form-control:focus {
+	border-color: #007bff;
+}
+
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
+	) ~ .form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~ .form-legend {
+	color: #0056b3; /* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus ) ~ .form-legend {
+	color: #aaa; /* Normal label color */
+}
+</style>
+
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+
+.green-cell {
+	 background-color: rgb(107, 122, 143) !important;
+    color: white !important;
+}
+
+</style>
+
+
+<script th:inline="javascript">
+
+$(document).ready(function() {
+    // hide loader on normal load
+    $('#loader').modal('hide');
+});
+
+$(window).on('pageshow', function() {
+    // hide loader on back/forward nav
+    $('#loader').modal('hide');
+});
+
+$(window).on('beforeunload', function() {
+    // hide loader on leaving page
+    $('#loader').modal('hide');
+});
+
+	
+
+	function home() {
+        $("#loader").modal("toggle");
+		location.href = 'Dashboard'
+	}
+
+	function back() {
+        $("#loader").modal("toggle");
+
+		window.history.back();
+	}
+	
+	//to fetch summary from the database - called from the summary button
+	function showdetails() {
+    
+		showResultModal('BRRS',' Details page not available for Manual Report');
+}
+	
+	function showsummary() {
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;								
+		location.href = Callurl;
+
+	}
+    </script>
+
+<script>
+
+function activateTab(tabName) {
+    // Remove 'active' from all buttons
+    document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Add 'active' to selected button
+    if (tabName === 'summary') {
+        document.getElementById('custom-tab-btnSummary').classList.add('active');
+    } else if (tabName === 'Details') {
+        document.getElementById('custom-tab-btnDetails').classList.add('active');
+    }
+}
+
+window.onload = function() {
+    /* setTimeout(function() {
+        var selectedTab = document.getElementById("selectedTab").value;
+        alert(selectedTab);
+        activateTab(selectedTab);
+    }, 10000); */ // 10,000 milliseconds = 10 seconds
+    
+	var selectedTab = document.getElementById("selectedTab").value;
+    activateTab(selectedTab);
+};
+
+
+function downloadfile(button) {
+	var reportid = button.getAttribute('data-reportid');
+	var asondate = button.getAttribute('data-asondate');
+	var fromdate = button.getAttribute('data-fromdate');
+	var todate = button.getAttribute('data-todate');
+	var currency = button.getAttribute('data-currency');
+	var subreportid = button.getAttribute('data-subreportid');
+	var secid = button.getAttribute('data-secid');
+	var dtltype = button.getAttribute('data-dtltype');
+	var filename = button.getAttribute('data-filename');
+	
+	$('#loader').modal('show');
+
+	$.ajax({
+		url: './downloadExcel?reportid=' + reportid +
+			'&fromdate=' + fromdate +
+			'&asondate=' + asondate +
+			'&todate=' + todate +
+			'&currency=' + currency +
+			'&subreportid=' + subreportid +
+			'&secid=' + secid +
+			'&filename=' + filename,
+		type: 'GET',
+		xhrFields: {
+			responseType: 'blob'
+		},
+		success: function (data) {
 			$('#loader').modal('hide');
-		});
-		$(window).on('pageshow', function () {
-			// hide loader on back/forward nav
-			$('#loader').modal('hide');
-		});
-		$(window).on('beforeunload', function () {
-			// hide loader on leaving page
-			$('#loader').modal('hide');
-		});
 
-		function home() {
-			$("#loader").modal("toggle");
-			location.href = 'Dashboard'
-		}
-		function back() {
-			$("#loader").modal("toggle");
-			window.history.back();
-		}
+			if (data && data.size > 100) {
+				const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.style.display = 'none';
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				window.URL.revokeObjectURL(url);
+				document.body.removeChild(a);
 
-		//to fetch summary from the database - called from the summary button
-		function showdetails() {
-
-			var Callurl;
-			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-				location.href = Callurl;
-			console.log(Callurl);
-			/*  $.ajax({
-				 type: 'get',
-				 url: Callurl,
-				 beforeSend: function () {
-					 $('#loader').modal('show'); // 🔄 Show loader
-				 },
-				 success: function (data) {
-					 $('.content').html(data);
-					 //$("#detailsbtn").addClass("active");
-					 //tablepagination();
-				 },
-				 complete: function () {
-					 $('#loader').modal('hide');
-				 },
-				 error: function () {
-						  $('#loader').modal('hide');
-					 alert("Something went wrongss. Please try again.");
-				  
-				 }
-			 }); */
-		}
-
-		function showsummary() {
-			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
-			location.href = Callurl;
-		}
-
-
-	</script>
-	<script>
-		function activateTab(tabName) {
-			// Remove 'active' from all buttons
-			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
-				btn.classList.remove('active');
-			});
-			// Add 'active' to selected button
-			if (tabName === 'summary') {
-				document.getElementById('custom-tab-btnSummary').classList.add('active');
-			} else if (tabName === 'Details') {
-				document.getElementById('custom-tab-btnDetails').classList.add('active');
+				showResultModal('Success', 'The file has been downloaded successfully.');
+			} else {
+				showResultModal('Information', 'No data was available to create a download.');
 			}
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			$('#loader').modal('hide');
+			console.error("Download failed:", textStatus, errorThrown);
+			showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
 		}
-		window.onload = function () {
-			/* setTimeout(function() {
-				var selectedTab = document.getElementById("selectedTab").value;
-				alert(selectedTab);
-				activateTab(selectedTab);
-			}, 10000); */ // 10,000 milliseconds = 10 seconds
+	});
+}
 
-			var selectedTab = document.getElementById("selectedTab").value;
-			activateTab(selectedTab);
-		};
-		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			$('#loader').modal('show');
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
-		}
-		function editRecord() {
-			showResultModal('Alert', 'Development in progress');
-
-		}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
-
-		}
-		function showResultModal(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel').text(title);
-			$('#resultModalBody').text(message);
-			// Show the modal
-			$('#resultModal').modal('show');
-		}
-	</script>
+function editRecord(){
+	showResultModal('Alert', 'Development in progress');
 	
+}
+function closemodel(){
+	$('#alert').modal('hide');
+	$('#resultModal').modal('hide');
 	
-		<script>
-		
-		function startReport(button){
+}
+
+function showResultModal(title, message) {
+	// Set the text for the modal elements
+	$('#resultModalLabel').text(title);
+	$('#resultModalBody').text(message);
+
+	// Show the modal
+	$('#resultModal').modal('show');
+}
+
+</script>
+
+<script>
+
+	function startReport(button){
 			const alertMsg = document.getElementById("alertMessage");
 			const filename = button.getAttribute('data-filename');
 			const fromdate = button.getAttribute('data-fromdate');
@@ -455,8 +475,11 @@ PURPOSE		: BWRBRREPORT
 	       	 	showAlert();
 				return;
 			}
+			
+			alertMsg.innerHTML ='Download request Processing...';
+	   	 	showAlert();
 
-			const baseUrl = '/BRRS/Reports/startreport';
+			const baseUrl = '/BCDRS/Reports/startreport';
 			const downloadUrl = baseUrl +
 				'?filename=' + encodeURIComponent(filename) +
 				'&fromdate=' + encodeURIComponent(fromdate) +
@@ -479,7 +502,7 @@ PURPOSE		: BWRBRREPORT
 
 		function checkReport(jobId) {
 			const alertMsg = document.getElementById("alertMessage");
-		    fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+		    fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
 		        .then(res => res.text())
 		        .then(status => {
 		            if (status === "READY") {
@@ -490,10 +513,16 @@ PURPOSE		: BWRBRREPORT
 		                sessionStorage.removeItem("jobId");
 		                sessionStorage.removeItem("filename");                
 		                
-		            } else {
+		            } else if(status ==="PROCESSING") {
 		                alertMsg.innerHTML ='Download Is Processing…';
 		            	showAlert();
 		                setTimeout(() => checkReport(jobId), 5000);
+		            }
+		            else if(status ==="ERROR") {
+		                alertMsg.innerHTML ='No data was available to create a download.';
+		            	showAlert();
+		            	sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");  
 		            }
 		        });
 		}
@@ -505,7 +534,7 @@ PURPOSE		: BWRBRREPORT
 			//$('#loader').modal('show');
 			
 			$.ajax({
-				url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
+				url: '/BCDRS/Reports/downloaddetailExcel?jobId='+ jobId +
 					'&filename=' + filename,
 				type: 'GET',
 				xhrFields: {
@@ -526,7 +555,7 @@ PURPOSE		: BWRBRREPORT
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('BRRS', filename + ' downloaded successfully.');
+						showResultModal('Success', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -538,122 +567,381 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
-		
 
 
-		</script>
+</script>
+
+<script th:inline="javascript">
+function showdetailsbyRowAndColumn(a) { 
+    var rowId = a.getAttribute('RowId');
+    var columnId = a.getAttribute('ColumnId');
+    var cellValue = a.textContent || a.innerText;
+
+    if (cellValue !== '0') {
+        // Set dynamic message in modal (instead of confirm)
+        document.getElementById("cellresultModalLabel").innerText = 
+            "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+        // Show custom Bootstrap modal
+        $('#cellresultModal').modal('show');
+
+        // Handle Yes button
+        document.querySelector('.yes-btn').onclick = function() {
+            $('#cellresultModal').modal('hide');
+
+            // Show loader
+            const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            $('#loader').modal('show');
+
+            // Build dynamic URL
+            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+            location.href = Callurl;
+        };
+    } else {
+        // Use your custom alert modal instead of window.alert
+        showResultModal("Alert", "No Records available for this selected cell.");
+    }
+}
+</script>
+
+
+
+
+
+<script>
+function showmodify(btn) {
+
 	
+	// --- READONLY CELLS CONFIGURATION ---
+	var readonlyIds = [];
+
+	// --- NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE ---
+	for (let i = 11; i <= 16; i++) {
+	  readonlyIds.push("R" + i + "_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE");
+	}
+	for (let i = 19; i <= 28; i++) {
+	  readonlyIds.push("R" + i + "_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE");
+	}
+
+	// --- NUMBER_OF_FAILED_TRADES ---
+	[16, 27, 28].forEach(i => {
+	  readonlyIds.push("R" + i + "_NUMBER_OF_FAILED_TRADES");
+	});
+
+	// --- POSITIVE_CURRENT_EXPOSURE ---
+	[16, 27, 28].forEach(i => {
+	  readonlyIds.push("R" + i + "_POSITIVE_CURRENT_EXPOSURE");
+	});
+
+	// --- RWA ---
+	for (let i = 12; i <= 16; i++) {
+	  readonlyIds.push("R" + i + "_RWA");
+	}
+	for (let i = 20; i <= 28; i++) {
+	  readonlyIds.push("R" + i + "_RWA");
+	}
+
+	// --- APPLY READONLY SETTINGS ---
+	// Make all .Show_input editable except the ones in readonlyIds
+	$(".Show_input").each(function () {
+	  if (!readonlyIds.includes(this.id)) {
+	    $(this).removeAttr("readonly").removeAttr("disabled");
+	  }
+	});
+
+
+
+
+  
+
+
+ // ✅ Apply gray background ONLY to inputs inside D and E columns (rows 12–15 and 20–26)
+    for (let i = 12; i <= 26; i++) {
+
+        // Skip rows not in the target ranges
+        if (i >= 16 && i <= 19) {
+            continue;
+        }
+
+        // Define D and E columns
+        let columns = ["_NUMBER_OF_FAILED_TRADES", "_POSITIVE_CURRENT_EXPOSURE"];
+
+        // Apply gray background only to input fields inside the td
+        columns.forEach(col => {
+            let selector = `#R${i}${col} input`;
+            if ($(selector).length) {
+                $(selector).css("background-color", "#d3d3d3");
+            }
+        });
+    }
+
+    
+    
+    // Toggle buttons
+    $("#submitButton, #btnBack_edit").show();
+    $("#btnBack").hide();
+    
+    // Show Cancel button only when Modify is clicked
+    $("#cancelRecord").show();
+    
+    // Optionally hide the clicked Modify button
+    $(btn).hide();
+}
+
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+       
+        	
+        	
+        	
+            
+        
+
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
+
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+
+    }
+
 	
-	
-	
-	<!--<script>
-		function downloadDetailfile(button) {
-			const filename = button.getAttribute('data-filename');
-			const fromdate = button.getAttribute('data-fromdate');
-			const todate = button.getAttribute('data-todate');
-			const currency = button.getAttribute('data-currency');
-			const dtltype = button.getAttribute('data-dtltype');
-			const type = button.getAttribute('data-type');
-			const version = button.getAttribute('data-version');
-			alert(currency);
-			$('#loader').modal('show');
-			const baseUrl = '/BRRS/Reports/';
-			const downloadUrl = baseUrl + 'downloadDetailExcel' +
-				'?filename=' + encodeURIComponent(filename) +
-				'&fromdate=' + encodeURIComponent(fromdate) +
-				'&todate=' + encodeURIComponent(todate) +
-				'&currency=' + encodeURIComponent(currency) +
-				'&dtltype=' + encodeURIComponent(dtltype) +
-				'&type=' + encodeURIComponent(type) +
-				'&version=' + encodeURIComponent(version);
-			$.ajax({
-				url: downloadUrl,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename + '.xls';
-						document.body.appendChild(a);
-						a.click();
-						a.remove();
-						window.URL.revokeObjectURL(url);
-						showResultModal('Success', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download or file was empty.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error('Download error:', textStatus, errorThrown, jqXHR);
-					let errorMessage = 'An error occurred while downloading the file. Please try again.';
-					if (jqXHR.response) {
-						const reader = new FileReader();
-						reader.onload = function () {
-							errorMessage = reader.result;
-							showResultModal('Error', errorMessage);
-						};
-						reader.onerror = function () {
-							showResultModal('Error', 'An unknown error occurred during download.');
-						};
-						reader.readAsText(jqXHR.response);
-						return;
-					}
-					showResultModal('Error', errorMessage);
-				}
-			});
-		}
-	</script>-->
-	
-	<script th:inline="javascript">
-		function showdetailsbyRowAndColumn(a) {
-					var rowId = a.getAttribute('RowId');
-					var columnId = a.getAttribute('ColumnId');
-					var cellValue = a.textContent || a.innerText;
 
-					if (cellValue !== '0') {
-						// Set dynamic message
-						document.getElementById("cellresultModalLabel").innerText = 
-						    "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
-
-						// Show custom modal
-						$('#cellresultModal').modal('show');
-
-						// Handle Yes button
-						document.querySelector('.yes-btn').onclick = function() {
-							$('#cellresultModal').modal('hide');
-							const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
-						        backdrop: 'static',
-						        keyboard: false
-						    });
-							$('#loader').modal('show');
-
-							var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-							Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
-
-							location.href = Callurl;
-						};
-					} else {
-						showResultModal("Alert", "No Records available for this selected cell.");
-					}
-				}
-				
 	</script>
-	
-</head>
-<title>BRRS</title>
 
+
+<SCRIPT>
+
+//---------- Calculate RWA for R12–R15, R20–R26 + Totals + Grand Total ----------
+function calculateRwaForRows() {
+
+    // 🔹 Define static % values for both groups
+    const staticPercents = {
+        12: 8,
+        13: 50,
+        14: 75,
+        15: 100,
+        20: 100 // only R20 has 100%
+    };
+
+    // 🔹 Helper function to calculate a group (start–end range, totalRow)
+    function calculateGroup(start, end, totalRow) {
+        let totalFailedTrades = 0;  // D total
+        let totalPosExposure = 0;   // E total
+        let totalRwa = 0;           // G total
+
+        for (let i = start; i <= end; i++) {
+            // Get % for F column (default 0 if not defined)
+            let riskVal = staticPercents[i] || 0;
+            $("#R" + i + "_RISK_MULTIPLIER").text(riskVal + "%");
+
+            // --- D column: NUMBER_OF_FAILED_TRADES ---
+            let failedTrades = parseFloat($("#R" + i + "_NUMBER_OF_FAILED_TRADES input").val()?.replace(/,/g, "")) || 0;
+            totalFailedTrades += failedTrades;
+
+            // --- E column: POSITIVE_CURRENT_EXPOSURE ---
+            let posExp = parseFloat($("#R" + i + "_POSITIVE_CURRENT_EXPOSURE input").val()?.replace(/,/g, "")) || 0;
+            totalPosExposure += posExp;
+
+            // --- Calculate RWA (G column) ---
+            let riskMul = riskVal / 100;
+            let rwa = posExp * riskMul * 12.5;
+            totalRwa += rwa;
+
+            // Set RWA value in G column
+            $("#R" + i + "_RWA input").val(
+                rwa.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+            );
+        }
+
+        // ---------- Set totals (like Excel SUM) ----------
+        $("#R" + totalRow + "_NUMBER_OF_FAILED_TRADES input").val(
+            totalFailedTrades.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+        );
+        $("#R" + totalRow + "_POSITIVE_CURRENT_EXPOSURE input").val(
+            totalPosExposure.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+        );
+        $("#R" + totalRow + "_RWA input").val(
+            totalRwa.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+        );
+
+        // Return totals for grand total calculation
+        return { totalFailedTrades, totalPosExposure, totalRwa };
+    }
+
+    // 🔹 Run for both groups
+    const group1 = calculateGroup(12, 15, 16);  // → totals in R16
+    const group2 = calculateGroup(20, 26, 27);  // → totals in R27
+
+    // ---------- Grand Total Row (R28 = R16 + R27) ----------
+    const grandFailedTrades = group1.totalFailedTrades + group2.totalFailedTrades;
+    const grandPosExposure = group1.totalPosExposure + group2.totalPosExposure;
+    const grandRwa = group1.totalRwa + group2.totalRwa;
+
+    $("#R28_NUMBER_OF_FAILED_TRADES input").val(
+        grandFailedTrades.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+    );
+    $("#R28_POSITIVE_CURRENT_EXPOSURE input").val(
+        grandPosExposure.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+    );
+    $("#R28_RWA input").val(
+        grandRwa.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+    );
+}
+
+// ---------- Initialize and attach listeners ----------
+$(document).ready(function() {
+    // Initial calculation
+    calculateRwaForRows();
+
+    // Recalculate when relevant inputs change
+    const rowsToWatch = [
+        ...Array.from({ length: 4 }, (_, k) => 12 + k),  // 12–15
+        ...Array.from({ length: 7 }, (_, k) => 20 + k)   // 20–26
+    ];
+
+    rowsToWatch.forEach(i => {
+        $("#R" + i + "_NUMBER_OF_FAILED_TRADES input, #R" + i + "_POSITIVE_CURRENT_EXPOSURE input").on("input", function() {
+            calculateRwaForRows();
+        });
+    });
+});
+
+
+
+
+
+
+
+
+
+
+</SCRIPT>
+
+
+
+<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
+	    setTimeout(function () {
+	        location.reload();
+	    }, 300);
+	}
+
+	
+	function fileuploads(btn) {
+	    const asondate = btn.getAttribute("data-todate");
+	    const type = btn.getAttribute("data-type");
+
+	    // Show loader
+	    $('#loader').modal('show');
+
+	    try {
+	        // ✅ Step 1: Calculate totals
+	        calculateRwaForRows();
+
+	        // ✅ Step 2: Remove commas from all text inputs
+	        $("#fileupload input[type='text']").each(function () {
+	            $(this).val($(this).val().replace(/,/g, ''));
+	        });
+
+	        // ✅ Step 3: Validate form
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
+	        }
+
+	        // ✅ Step 4: Build FormData
+	        const formData = new FormData();
+	        formData.append("asondate", asondate);
+	        formData.append("type", type);
+
+	        $('#fileupload').find(':input').each(function () {
+	            const name = $(this).attr('name');
+	            if (name) {
+	                formData.append(name, $(this).val());
+	            }
+	        });
+
+	        // ✅ Step 5: AJAX submission
+	        $.ajax({
+	            url: './M_SRWA_12CupdateAll',
+	            type: 'POST',
+	            data: formData,
+	            processData: false,
+	            contentType: false,
+	            dataType: 'text',
+	            success: function () {
+	                $("#resultModalLabel").text("Success");
+	                $("#resultModalBody").text(" Updated Successfully.");
+	                $("#resultModal").modal("show");
+	            },
+	            error: function (jqXHR) {
+	                console.error("Error response:", jqXHR.responseText);
+	                $("#resultModalLabel").text("Error");
+	                $("#resultModalBody").text("Update failed. Check console for details.");
+	                $("#resultModal").modal("show");
+	            },
+	            complete: function () {
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+	        console.error("Error in fileuploads function:", error);
+	        $('#loader').modal('hide');
+	        $("#resultModalLabel").text("Error");
+	        $("#resultModalBody").text("Unexpected error occurred. Check console.");
+	        $("#resultModal").modal("show");
+	    }
+	}
+	</script>
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+<title>BRRS</title>
 <body>
-	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
 		<div class="row">
+
 			<div th:insert="HeaderMenu :: header"></div>
+
 			<div class="card">
 				<div class="card-header"
 					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
@@ -662,56 +950,82 @@ PURPOSE		: BWRBRREPORT
 						<div class="left-arrow-circle">
 							<i class="fa fa-arrow-left"></i>
 						</div>
+
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							M-SRWA 12C ( Failed Trade)</h5>
+							M- SRWA 12c (Failed Trades): Risk Weighted Asset Disclosure for Failed Trades</h5>
 					</div>
+
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 						</span>
+
 						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='M_SRWA_12C.xls',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
-						</button>
+        <input type="hidden" id="selectedTab" th:value="${displaymode}">
+        <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();" th:if="${displaymode == 'Details'}">Summary</button>
+        <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();" th:if="${displaymode == 'summary'}">Details</button>
+        
+        
+        
+        
+        
+        <!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							th:if="${type != 'ARCHIVAL'  }"
+							id="addRecord">Modify</button>
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-								    data-fromdate=${fromdate},
-								    data-todate=${todate},
-									data-currency=${currency},  
-												data-dtltype=${dtltype}, 
-								    data-filename='M_SRWA_12CDetail',
-									data-type=${type},
-												data-version=${version}
-								  ">
-							<i class="fa fa-download"></i>
-						</button>
-
-
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn"
+							title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+							
+        
+        
+        
+        
+        
+        
+        
+        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+            th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='M-SRWA_12c.xls',
+                     data-type=${type},
+                     data-version=${version}"
+                     
+            onclick="downloadfile(this);">
+            <i class="fa fa-download"></i>
+        </button>
+        <button
+		  type="button"
+		  class="custom-tab-btn"
+		  id="custom-tab-btnAdd"
+		  th:if="${displaymode == 'Details'}"
+		  onclick="startReport(this);"
+		  th:attr="
+		    data-fromdate=${fromdate},
+		    data-todate=${todate},
+		    data-filename='M_SRWA_12CDetail'
+		  ">
+		  <i class="fa fa-download"></i>
+		</button>
 					</div>
-				</div>			
+				</div>
+			
 			<div th:if="${displaymode == 'summary'}">
 			<div class="row" >
 				<div class="col-sm-12">
+					<form action="#" method="POST" id="fileupload">
 					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
                         <!-- 1st table -->
 						
@@ -719,178 +1033,462 @@ PURPOSE		: BWRBRREPORT
                         
 							<thead class="thead-light">
   									 <!-- First header row -->
-										<tr style="background-color: #b3b6b9">
-											<th rowspan="1"
-												style="text-align: center; background-color: #fefeff;">Line
-												no.</th>
-											<th colspan="2"
-												style="text-align: center; background-color: #ffffff;">Number
-												of working days after the agreed settlement date:</th>
-											<th rowspan="1"
-												style="text-align: center; background-color: #ffffff;">Number
-												of Failed Trades</th>
-											<th colspan="1"
-												style="text-align: center; background-color: #ffffff;">Positive
-												Current Exposure</th>
-											<th colspan="1"
-												style="text-align: center; background-color: #ffffff;">Risk
-												Multiplier</th>
-											<th colspan="1"
-												style="text-align: center; background-color: #ffffff;">RWA</th>
-										</tr>
-										<tr>
-											<th style="text-align: center; background-color: #ffffff;">
-											</th>
-											<th style="text-align: center; background-color: #ffffff;">
-											</th>
-											<th style="text-align: center; background-color: #ffffff;">
-											</th>
-											<th style="text-align: center; background-color: #ffffff;">(1)</th>
-											<th style="text-align: center; background-color: #ffffff;">(2)</th>
-											<th style="text-align: center; background-color: #ffffff;">(3)</th>
-											<th style="text-align: center; background-color: #ffffff;">(4)
-												= (2) x (3) x 1250%</th>
-										</tr>
-									</thead>
+                                   <tr style="background-color: #b3b6b9">
+                                        <th rowspan="1" style="text-align: center; background-color: #D8D8D8; vertical-align: center; padding:10px; ">Line no.</th>
+                                        <th colspan="2" style="text-align: center; background-color: #D8D8D8; vertical-align: center; padding:10px;">Number of working days after the agreed settlement date:</th>
+                                        <th rowspan="1" style="text-align: right; background-color:#D8D8D8; vertical-align: center; padding:10px;">Number of Failed Trades</th>
+										 <th colspan="1" style="text-align: right; background-color:#D8D8D8; vertical-align: center; padding:10px; ">Positive Current Exposure</th>
+										  <th colspan="1" style="text-align: center; background-color:#D8D8D8; vertical-align: center; padding:10px;  ">Risk Multiplier</th>
+										   <th colspan="1" style="text-align: right; background-color:#D8D8D8; vertical-align: center; padding:10px; ">RWA</th>
+                                    </tr>
+									<tr>
+		<th style="text-align: center; background-color:#D8D8D8;"> </th>
+        <th style="text-align: center; background-color:#D8D8D8; "> </th>
+        <th style="text-align: center; background-color:#D8D8D8; "> </th>
+        <th style="text-align: right; background-color:#D8D8D8;">(1)</th>
+        <th style="text-align: right; background-color:#D8D8D8;">(2)</th>
+        <th style="text-align: center; background-color:#D8D8D8;">(3)</th>
+        <th style="text-align: center; text-align: right; background-color:#D8D8D8;">(4) = (2) x (3) x 1250%</th>
+    </tr>
+								</thead>
 
 
 								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 
-										<tr>
-											<td
-												style="text-align: right; font-weight: normal; background-color: #ffffff;">1</td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: white;"></td>
-											<td
-												style="text-align: left; font-weight: bold; background-color: white; text-decoration: underline;"
-												th:text="${report.R11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
+								        <tr>
+											<td style="text-align: right; font-weight:  normal; background-color: #ffffff;">1</td>
+                                            <td style="text-align: right;font-weight:  normal;background-color: white;"></td>
+                                   <!--          <td style="text-align: left; font-weight:  normal;background-color: white; text-decoration: underline;" th:text="${report.R11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
+                                   
+                                   
+                                  <td id="R11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE" style="font-weight: bold;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="'FAILED DvP Trades'"
+        id="R11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        name="R11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        style="background-color: #FFFFFF; width: 320px; height: 28px; border-color: transparent; text-align: left; font-weight: bold; text-decoration: underline;"
+        readonly />
+</td>
+
+                                   
+                                            <td style="text-align: right;font-weight:  normal;background-color: #adaaaa;"></td>
+											<td style="text-align: right;font-weight:  normal;background-color: #adaaaa;"></td>
+											<td style="text-align: right;font-weight:  normal;background-color: #adaaaa;"></td>
+											<td style="text-align: right;font-weight:  normal;background-color: #adaaaa;"></td>
 
 
 
 										</tr>
 
-										<tr>
-											<td style="text-align: right; font-weight: normal;">2</td>
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td style="font-weight: normal; padding-left: 30px;"
-												th:text="${report.R12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R12_NUMBER_OF_FAILED_TRADES}"
-												th:attr="RowId='R12', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R12_POSITIVE_CURRENT_EXPOSURE}"
-												th:attr="RowId='R12', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: center; font-weight: normal;"
-												th:text="${report.R12_RISK_MULTIPLIER}+ ' %'"
-												th:attr="RowId='R12', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R12_RWA}"></td>
+                                        <tr>
+											<td style="text-align: right; font-weight:  normal;">2</td>
+											<td style="text-align: right;font-weight:  normal;"></td>
+											
+                                            <!-- <td style="font-weight:  normal; padding-left: 30px;"  th:text="${report.R12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
+                                            
+                                            <td id="R12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE" style="font-weight: normal; padding-left: 20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="'From 5 to 15 days'"
+        id="R12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        name="R12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; font-weight: normal;  padding-left: 20px;"
+        readonly />
+</td>
+                                            
+                                         <!--    
+                                            <td style="text-align: right;font-weight:  normal;" th:text="${report.R12_NUMBER_OF_FAILED_TRADES}"
+											th:attr="RowId='R12', ColumnId='C2'"  onclick="showdetailsbyRowAndColumn(this)"></td> -->
+											
+											<td id="R12_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R12_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R12_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R12_NUMBER_OF_FAILED_TRADES"
+        name="R12_NUMBER_OF_FAILED_TRADES"
+        style="background-color: #FFFFFF; width:  200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+											
+											
+											<!-- <td style="text-align: right;font-weight:  normal;" th:text="${report.R12_POSITIVE_CURRENT_EXPOSURE}"
+											th:attr="RowId='R12', ColumnId='C3'"  onclick="showdetailsbyRowAndColumn(this)"></td> -->
+											
+											
+											<td id="R12_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R12_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R12_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R12_POSITIVE_CURRENT_EXPOSURE"
+        name="R12_POSITIVE_CURRENT_EXPOSURE"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+											
+											
+										<!-- 	<td style="text-align: center;font-weight:  normal;" th:text="${report.R12_RISK_MULTIPLIER}+ ' %'"
+											th:attr="RowId='R12', ColumnId='C4'"  onclick="showdetailsbyRowAndColumn(this)"></td>
+											 -->
+											 
+	<td style="text-align: center; font-weight: normal;" id="R12_RISK_MULTIPLIER"
+    th:text="'8%'">
+											<!-- <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R12_RWA}"
+											></td> -->
+											
+								<td id="R12_RWA"
+    style=" text-align: right; padding-right:10px; padding-left:20px;" class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+       
+        id="R12_RWA"
+        name="R12_RWA"
+        style="background-color: #ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+											
+											
+											
+											
 										</tr>
 										<!-- R13 -->
 										<tr>
-											<td style="text-align: right; font-weight: normal">3</td>
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td
-												style="text-align: left; font-weight: normal; padding-left: 30px;"
-												th:text="${report.R13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R13_NUMBER_OF_FAILED_TRADES}"
-												th:attr="RowId='R13', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R13_POSITIVE_CURRENT_EXPOSURE}"
-												th:attr="RowId='R13', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: center; font-weight: normal;"
-												th:text="${report.R13_RISK_MULTIPLIER}+'%'"
-												th:attr="RowId='R13', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R13_RWA}"></td>
+   										 <td style="text-align: right; font-weight: normal">3</td>
+   										 <td style="text-align: right; font-weight: normal; "></td>
+   										 
+   										 
+   										 
+   										<!--  <td style="text-align: left; font-weight: normal;  padding-left: 30px;" 
+     									   th:text="${report.R13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
+     									   
+     									   <td id="R13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+    style="font-weight: normal; text-align: left; padding-left: 20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="'From 16 to 30 days'"
+        id="R13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        name="R13_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;  padding-left: 20px;"
+        readonly />
+</td>
+     									   
+  									<!-- 	  <td style="text-align: right; font-weight: normal; " 
+  									      th:text="${report.R13_NUMBER_OF_FAILED_TRADES}" 
+   										     th:attr="RowId='R13', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+   										     
+   										     
+   								<td id="R13_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R13_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R13_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R13_NUMBER_OF_FAILED_TRADES"
+        name="R13_NUMBER_OF_FAILED_TRADES"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+   										     
+   										     
+  										<!--   <td style="text-align: right; font-weight: normal; " 
+    									    th:text="${report.R13_POSITIVE_CURRENT_EXPOSURE}" 
+  									       th:attr="RowId='R13', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+  									       
+  									       
+  									   <td id="R13_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R13_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R13_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R13_POSITIVE_CURRENT_EXPOSURE"
+        name="R13_POSITIVE_CURRENT_EXPOSURE"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+  									       
+  									       
+  									       
+  									       
+									  <!--   <td style="text-align: center; font-weight: normal; " 
+   									     th:text="${report.R13_RISK_MULTIPLIER}+'%'" 
+    								    th:attr="RowId='R13', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+    								    
+    								    
+    								    											 
+	<td style="text-align: center; font-weight: normal;" id="R13_RISK_MULTIPLIER"
+    th:text="'50%'">
+    								    
+ 									  <!--  <td style="text-align: right; font-weight: normal; background-color: 	#ADFF2F;" 
+  									      th:text="${report.R13_RWA}" ></td>
 										</tr>
+ -->
+ 
+ 
+ <td id="R13_RWA"
+    style="font-weight: normal; text-align: right;  padding-right:10px; padding-left:20px;"  class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+       
+        id="R13_RWA"
+        name="R13_RWA"
+        style="background-color: #ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+ 
+<!-- R14 -->
+<tr>
+    <td style="text-align: right; font-weight: normal; ">4</td>
+    <td style="text-align: right; font-weight: normal; "></td>
+    
+    <!-- <td style="text-align: left; font-weight: normal; padding-left: 30px;" 
+        th:text="${report.R14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
+        
+        
+        <td id="R14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+    style="font-weight: normal; text-align: left; padding-left: 20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="'From 31 to 45 days'"
+        id="R14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        name="R14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;  padding-left: 20px;"
+        readonly />
+</td>
+        
+   <!--  <td style="text-align: right; font-weight: normal; " 
+        th:text="${report.R14_NUMBER_OF_FAILED_TRADES}" 
+        th:attr="RowId='R14', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: right; font-weight: normal;" 
+        th:text="${report.R14_POSITIVE_CURRENT_EXPOSURE}" 
+        th:attr="RowId='R14', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: center; font-weight: normal; " 
+        th:text="${report.R14_RISK_MULTIPLIER}+'%'" 
+        th:attr="RowId='R14', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: right; font-weight: normal; background-color: 	#ADFF2F;" 
+        th:text="${report.R14_RWA}" 
+       ></td> -->
+       
+       
+       
+       
+       <!-- R14_NUMBER_OF_FAILED_TRADES -->
+<td id="R14_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R14_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R14_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R14_NUMBER_OF_FAILED_TRADES"
+        name="R14_NUMBER_OF_FAILED_TRADES"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
 
-										<!-- R14 -->
-										<tr>
-											<td style="text-align: right; font-weight: normal;">4</td>
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td
-												style="text-align: left; font-weight: normal; padding-left: 30px;"
-												th:text="${report.R14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R14_NUMBER_OF_FAILED_TRADES}"
-												th:attr="RowId='R14', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R14_POSITIVE_CURRENT_EXPOSURE}"
-												th:attr="RowId='R14', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: center; font-weight: normal;"
-												th:text="${report.R14_RISK_MULTIPLIER}+'%'"
-												th:attr="RowId='R14', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R14_RWA}"></td>
-										</tr>
+<!-- R14_POSITIVE_CURRENT_EXPOSURE -->
+<td id="R14_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R14_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R14_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R14_POSITIVE_CURRENT_EXPOSURE"
+        name="R14_POSITIVE_CURRENT_EXPOSURE"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
 
-										<!-- R15 -->
-										<tr>
-											<td style="text-align: right; font-weight: normal;">5</td>
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td
-												style="text-align: left; font-weight: normal; padding-left: 30px;"
-												th:text="${report.R15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R15_NUMBER_OF_FAILED_TRADES}"
-												th:attr="RowId='R15', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R15_POSITIVE_CURRENT_EXPOSURE}"
-												th:attr="RowId='R15', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: center; font-weight: normal;"
-												th:text="${report.R15_RISK_MULTIPLIER}+'%'"
-												th:attr="RowId='R15', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R15_RWA}"></td>
-										</tr>
+<!-- R14_RISK_MULTIPLIER -->
+											 
+	<td style="text-align: center; font-weight: normal;" id="R14_RISK_MULTIPLIER"
+    th:text="'75%'">
 
-										<!-- R16 -->
-										<tr>
-											<td style="text-align: right; font-weight: normal;">6</td>
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td style="text-align: left; font-weight: bold;"
-												th:text="${report.R16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R16_NUMBER_OF_FAILED_TRADES}"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R16_POSITIVE_CURRENT_EXPOSURE}"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R16_RWA}"></td>
-										</tr>
-										
+<!-- R14_RWA -->
+<td id="R14_RWA"
+    style="font-weight: normal; text-align: right;  padding-right:10px; padding-left:20px;  " class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+     
+        id="R14_RWA"
+        name="R14_RWA"
+        style="background-color: #ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+       
+</tr>
+
+<!-- R15 -->
+<tr>
+    <td style="text-align: right; font-weight: normal; ">5</td>
+    <td style="text-align: right; font-weight: normal;"></td>
+    <!-- <td style="text-align: left; font-weight: normal; padding-left: 30px;" 
+        th:text="${report.R15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+    <td style="text-align: right; font-weight: normal;" 
+        th:text="${report.R15_NUMBER_OF_FAILED_TRADES}" 
+        th:attr="RowId='R15', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: right; font-weight: normal;" 
+        th:text="${report.R15_POSITIVE_CURRENT_EXPOSURE}" 
+        th:attr="RowId='R15', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: center; font-weight: normal; " 
+        th:text="${report.R15_RISK_MULTIPLIER}+'%'" 
+        th:attr="RowId='R15', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: right; font-weight: normal; background-color: 	#ADFF2F;" 
+        th:text="${report.R15_RWA}" 
+        ></td> -->
+        
+        
+        <!-- R15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE -->
+<td id="R15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+    style="font-weight: normal; text-align: left; padding-left: 20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="'46 or more days'"
+        id="R15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        name="R15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;padding-left: 20px;"
+        readonly />
+</td>
+
+<!-- R15_NUMBER_OF_FAILED_TRADES -->
+<td id="R15_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R15_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R15_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R15_NUMBER_OF_FAILED_TRADES"
+        name="R15_NUMBER_OF_FAILED_TRADES"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+
+<!-- R15_POSITIVE_CURRENT_EXPOSURE -->
+<td id="R15_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R15_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R15_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R15_POSITIVE_CURRENT_EXPOSURE"
+        name="R15_POSITIVE_CURRENT_EXPOSURE"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+
+<!-- R15_RISK_MULTIPLIER -->
+											 
+	<td style="text-align: center; font-weight: normal;" id="R15_RISK_MULTIPLIER"
+    th:text="'100%'">
+
+<!-- R15_RWA -->
+<td id="R15_RWA"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;" class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+   
+        id="R15_RWA"
+        name="R15_RWA"
+        style="background-color: #ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+        
+</tr>
+
+<!-- R16 -->
+<tr>
+    <td style="text-align: right; font-weight: normal; ">6</td>
+    <td style="text-align: right; font-weight: normal; "></td>
+   <!--  <td style="text-align: left; font-weight: normal; " 
+    
+        th:text="${report.R16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
+        
+        
+    <!-- <td style="text-align: right; font-weight: normal; background-color: 	#ADFF2F;" 
+        th:text="${report.R16_NUMBER_OF_FAILED_TRADES}" 
+        ></td>
+    <td style="text-align: right; font-weight: normal; background-color: 	#ADFF2F;" 
+        th:text="${report.R16_POSITIVE_CURRENT_EXPOSURE}" 
+        ></td> -->
+        
+   
+    
+    <!-- <td style="text-align: right; font-weight: normal; background-color: 	#ADFF2F;" 
+        th:text="${report.R16_RWA}" 
+        ></td> -->
+        
+        
+        
+        <!-- R16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE -->
+<td id="R16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+    style="font-weight: bold; text-align: left; ">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="'TOTAL Failed DvP Trades'"
+        id="R16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        name="R16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;  font-weight: bold;"
+        readonly />
+</td>
+
+<!-- R16_NUMBER_OF_FAILED_TRADES -->
+<td id="R16_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px; "  class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R16_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R16_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R16_NUMBER_OF_FAILED_TRADES_INPUT"
+        name="R16_NUMBER_OF_FAILED_TRADES"
+        style="background-color: #ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+
+<!-- R16_POSITIVE_CURRENT_EXPOSURE -->
+<td id="R16_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px; "  class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R16_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R16_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R16_POSITIVE_CURRENT_EXPOSURE_INPUT"
+        name="R16_POSITIVE_CURRENT_EXPOSURE"
+        style="background-color: #ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+
+ <td style="text-align: right; font-weight: normal; background-color:  #adaaaa;"></td>
+ 
+ <!-- R16_RWA -->
+<td id="R16_RWA"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;  " class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R16_RWA != null ? #numbers.formatDecimal(report.R16_RWA, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R16_RWA"
+        name="R16_RWA"
+        style="background-color: #ADFF2F; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+        readonly />
+</td>
+
+</tr>
 
 
+                                       
 									</tbody>
 
 
@@ -901,359 +1499,689 @@ PURPOSE		: BWRBRREPORT
                         
 							<thead class="thead-light">
   									 <!-- First header row -->
-										<tr style="background-color: #b3b6b9">
-											<th rowspan="1"
-												style="text-align: center; background-color: #fefeff;"></th>
-											<th colspan="2"
-												style="text-align: center; background-color: #ffffff;">Number
-												of working days after the agreed settlement date:</th>
-											<th rowspan="1"
-												style="text-align: center; background-color: #ffffff;">Number
-												of Failed Trades</th>
-											<th colspan="1"
-												style="text-align: center; background-color: #ffffff;">Balance</th>
-											<th colspan="1"
-												style="text-align: center; background-color: #ffffff;">Risk
-												Multiplier</th>
-											<th colspan="1"
-												style="text-align: center; background-color: #ffffff;">RWA</th>
-										</tr>
-										<tr>
-											<th style="text-align: center; background-color: #ffffff;"></th>
-											<th style="text-align: center; background-color: #ffffff;"></th>
-											<th style="text-align: center; background-color: #ffffff;"></th>
-											<th style="text-align: center; background-color: #ffffff;">(1)</th>
-											<th style="text-align: center; background-color: #ffffff;">(2)</th>
-											<th style="text-align: center; background-color: #ffffff;">(3)</th>
-											<th style="text-align: center; background-color: #ffffff;">(4)
-												= (2) x (3) x 1250%</th>
-										</tr>
-									</thead>
+                                    <tr style="background-color: #b3b6b9">
+                                        <th rowspan="1" style="text-align: center; background-color: #D8D8D8; vertical-align: center; padding:10px;"></th>
+                                        <th colspan="2" style="text-align: center; background-color: #D8D8D8; vertical-align: center; padding:10px;">Number of working days after the agreed settlement date:</th>
+                                        <th rowspan="1" style="text-align: right; background-color:#D8D8D8; vertical-align: center; padding:10px;  ">Number of Failed Trades</th>
+										 <th colspan="1" style="text-align: right; background-color:#D8D8D8; vertical-align: center; padding:10px;  ">Balance</th>
+										  <th colspan="1" style="text-align: center; background-color:#D8D8D8; vertical-align: center; padding:10px; ">Risk Multiplier</th>
+										   <th colspan="1" style="text-align: right; background-color:#D8D8D8; vertical-align: center; padding:10px;  ">RWA</th>
+                                    </tr>
+									<tr>
+		<th style="text-align: center; background-color:#D8D8D8;"></th>
+        <th style="text-align: center; background-color:#D8D8D8;"></th>
+        <th style="text-align: center; background-color:#D8D8D8;"></th>
+        <th style="text-align: right; background-color:#D8D8D8;">(1)</th>
+        <th style="text-align: right; background-color:#D8D8D8;">(2)</th>
+        <th style="text-align: center; background-color:#D8D8D8;">(3)</th>
+        <th style="text-align: right; background-color:#D8D8D8;">(4) = (2) x (3) x 1250%</th>
+    </tr>
+								</thead>
 
 
 								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 
-										<tr>
-											<td style="text-align: right; font-weight: normal;">7</td>
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td
-												style="text-align: left; font-weight: bold; background-color: white; text-decoration: underline;"
-												th:text="${report.R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: #adaaaa;"></td>
+								        <tr>
+											<td style="text-align: right; font-weight:  normal; ">7</td>
+                                            <td style="text-align: right;font-weight:  normal;"></td>
+                                            <!-- <td style="text-align: left;font-weight:  bold;background-color: white; text-decoration: underline;" th:text="${report.R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
+                                            
+                                            <!-- R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE -->
+<td id="R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+    style="font-weight: bold; text-align: left; background-color: #FFFFFF; text-decoration: underline; padding-left: 10px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="'UNSETTLED Non DvP Trades'"
+        id="R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        name="R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        style="background-color: #FFFFFF; width:300px; height: 28px; border-color: transparent; 
+               text-align: left; font-weight: bold; text-decoration: underline;"
+        readonly />
+</td>
+                                            
+                                            <td style="text-align: right;font-weight:  normal;background-color:  #adaaaa;"></td>
+											<td style="text-align: right;font-weight:  normal;background-color:  #adaaaa;"></td>
+											<td style="text-align: right;font-weight:  normal;background-color:  #adaaaa;"></td>
+											<td style="text-align: right;font-weight:  normal;background-color:  #adaaaa;"></td>
 
 
 
 										</tr>
 
-										<tr>
-											<td style="text-align: right; font-weight: normal;">8</td>
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R20_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R20_NUMBER_OF_FAILED_TRADES}"
-												th:attr="RowId='R20', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R20_POSITIVE_CURRENT_EXPOSURE}"
-												th:attr="RowId='R20', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: center; font-weight: normal;"
-												th:text="${report.R20_RISK_MULTIPLIER}+'%'"
-												th:attr="RowId='R20', ColumnId='C4'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R20_RWA}"></td>
-										</tr>
 
-										<tr>
-											<td style="text-align: right; font-weight: normal;">9</td>
-											<td></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R21_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R21_NUMBER_OF_FAILED_TRADES}"
-												th:attr="RowId='R21', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R21_POSITIVE_CURRENT_EXPOSURE}"
-												th:attr="RowId='R21', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<!--- <td style="text-align: center;font-weight:  normal;background-color: white;" 
+
+
+                                       <tr>
+    <td style="text-align: right; font-weight: normal; ">8</td>
+    <td style="text-align: right;font-weight: normal;"></td>
+    <td style="text-align: right;font-weight: normal;" th:text="${report.R20_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+   <!--  <td style="text-align: right;font-weight:  normal;"  th:text="${report.R20_NUMBER_OF_FAILED_TRADES}"
+        th:attr="RowId='R20', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+        
+        <!-- R20_NUMBER_OF_FAILED_TRADES -->
+<td id="R20_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R20_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R20_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R20_NUMBER_OF_FAILED_TRADES"
+        name="R20_NUMBER_OF_FAILED_TRADES"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; 
+               border-color: transparent; text-align: right; font-weight: normal;"
+        readonly />
+</td>
+        
+   <!--  <td style="text-align: right;font-weight:  normal;"  th:text="${report.R20_POSITIVE_CURRENT_EXPOSURE}"
+        th:attr="RowId='R20', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: center;font-weight:  normal;"  th:text="${report.R20_RISK_MULTIPLIER}+'%'"
+        th:attr="RowId='R20', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;"  th:text="${report.R20_RWA}"
+        ></td> -->
+        
+        <!-- R20_POSITIVE_CURRENT_EXPOSURE -->
+<td id="R20_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R20_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R20_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R20_POSITIVE_CURRENT_EXPOSURE"
+        name="R20_POSITIVE_CURRENT_EXPOSURE"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; 
+               border-color: transparent; text-align: right; font-weight: normal;"
+        readonly />
+</td>
+
+<!-- R20_RISK_MULTIPLIER -->
+<td id="R20_RISK_MULTIPLIER"
+    style="font-weight: normal; text-align: center; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R20_RISK_MULTIPLIER != null ? report.R20_RISK_MULTIPLIER + '%' : '0%'}"
+        id="R20_RISK_MULTIPLIER"
+        name="R20_RISK_MULTIPLIER"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; 
+               border-color: transparent; text-align: center; font-weight: normal;"
+        readonly />
+</td>
+
+<!-- R20_RWA -->
+<td id="R20_RWA"
+    style="font-weight: normal; text-align: right;  padding-right:10px; padding-left:20px;" class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R20_RWA != null ? #numbers.formatDecimal(report.R20_RWA, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R20_RWA"
+        name="R20_RWA"
+        style="background-color: #ADFF2F; width: 200px; height: 28px; 
+               border-color: transparent; text-align: right; font-weight: normal;"
+        readonly />
+</td>
+        
+</tr>
+
+<tr>
+    <td style="text-align: right; font-weight: normal; ">9</td>
+    <td></td>
+    <td style="text-align: right;font-weight:  normal;"  th:text="${report.R21_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+    
+    
+    
+    <!-- <td style="text-align: right;font-weight:  normal;" th:text="${report.R21_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R21', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: right;font-weight:  normal;" th:text="${report.R21_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R21', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+    
+    <!-- R21_NUMBER_OF_FAILED_TRADES -->
+<td id="R21_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R21_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R21_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R21_NUMBER_OF_FAILED_TRADES"
+        name="R21_NUMBER_OF_FAILED_TRADES"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; 
+               border-color: transparent; text-align: right; font-weight: normal;"
+        readonly />
+</td>
+
+<!-- R21_POSITIVE_CURRENT_EXPOSURE -->
+<td id="R21_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R21_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R21_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R21_POSITIVE_CURRENT_EXPOSURE"
+        name="R21_POSITIVE_CURRENT_EXPOSURE"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; 
+               border-color: transparent; text-align: right; font-weight: normal;"
+        readonly />
+</td>
+    
+    
+   <!--- <td style="text-align: center;font-weight:  normal;background-color: white;" 
 	th:text="${report.R21_RISK_MULTIPLIER}+'%'" th:attr="RowId='R21', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R21_RWA}"></td>
-										</tr>
+	
+	
+	<td style="text-align: right;font-weight:  normal;" ></td>
+	
+   <!--  <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R21_RWA}" ></td> -->
+   
+   <!-- R21_RWA -->
+<td id="R21_RWA"
+    style="font-weight: normal; text-align: right;  padding-right:10px; padding-left:20px;"  class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R21_RWA != null ? #numbers.formatDecimal(report.R21_RWA, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R21_RWA"
+        name="R21_RWA"
+        style="background-color: #ADFF2F; width: 200px; height: 28px; 
+               border-color: transparent; text-align: right; font-weight: normal;"
+        readonly />
+</td>
+   
+   
+   
+</tr>
 
-										<tr>
-											<td style="text-align: right; font-weight: normal;">10</td>
-											<td></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R22_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R22_NUMBER_OF_FAILED_TRADES}"
-												th:attr="RowId='R22', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R22_POSITIVE_CURRENT_EXPOSURE}"
-												th:attr="RowId='R22', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R22_RISK_MULTIPLIER}+'%'" th:attr="RowId='R22', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R22_RWA}"></td>
-										</tr>
+<tr>
+    <td style="text-align: right; font-weight: normal; ">10</td>
+    <td></td>
+    <td style="text-align: right;font-weight:  normal;" th:text="${report.R22_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+    <!-- <td style="text-align: right;font-weight:  normal;" th:text="${report.R22_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R22', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: right;font-weight:  normal;" th:text="${report.R22_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R22', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+    
+    
+    <!-- R22_NUMBER_OF_FAILED_TRADES -->
+<td id="R22_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R22_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R22_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R22_NUMBER_OF_FAILED_TRADES"
+        name="R22_NUMBER_OF_FAILED_TRADES"
+        style="background-color: #FFFFFF; width: 200px; height: 28px;
+               border-color: transparent; text-align: right; font-weight: normal;"
+        readonly />
+</td>
 
-										<tr>
-											<td style="text-align: right; font-weight: normal;">11</td>
-											<td></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R23_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R23_NUMBER_OF_FAILED_TRADES}"
-												th:attr="RowId='R23', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R23_POSITIVE_CURRENT_EXPOSURE}"
-												th:attr="RowId='R23', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R23_RISK_MULTIPLIER}+'%'" th:attr="RowId='R23', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R23_RWA}"></td>
-										</tr>
+<!-- R22_POSITIVE_CURRENT_EXPOSURE -->
+<td id="R22_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R22_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R22_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R22_POSITIVE_CURRENT_EXPOSURE"
+        name="R22_POSITIVE_CURRENT_EXPOSURE"
+        style="background-color: #FFFFFF; width: 200px; height: 28px;
+               border-color: transparent; text-align: right; font-weight: normal;"
+        readonly />
+</td>
+    
+    
+    
+  <!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R22_RISK_MULTIPLIER}+'%'" th:attr="RowId='R22', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+  
+  <td style="text-align: right;font-weight:  normal;" ></td>
+  
+  
+  <!--   <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R22_RWA}" ></td> -->
+  
+  <!-- R22_RWA -->
+<td id="R22_RWA"
+    style="font-weight: normal; text-align: right;  padding-right:10px; padding-left:20px;"  class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R22_RWA != null ? #numbers.formatDecimal(report.R22_RWA, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R22_RWA"
+        name="R22_RWA"
+        style="background-color: #ADFF2F; width: 200px; height: 28px; 
+               border-color: transparent; text-align: right; font-weight: normal;"
+        readonly />
+</td>
+  
+</tr>
 
-										<tr>
-											<td style="text-align: right; font-weight: normal;">12</td>
-											<td></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R24_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R24_NUMBER_OF_FAILED_TRADES}"
-												th:attr="RowId='R24', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R24_POSITIVE_CURRENT_EXPOSURE}"
-												th:attr="RowId='R24', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R24_RISK_MULTIPLIER}+'%'" th:attr="RowId='R24', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R24_RWA}"></td>
-										</tr>
+<tr>
+    <td style="text-align: right; font-weight: normal; ">11</td>
+    <td></td>
+    <td style="text-align: right;font-weight:  normal;" th:text="${report.R23_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+    <!-- <td style="text-align: right;font-weight:  normal;" th:text="${report.R23_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R23', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: right;font-weight:  normal;" th:text="${report.R23_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R23', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+    
+    
+    <!-- R23_NUMBER_OF_FAILED_TRADES -->
+<td id="R23_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R23_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R23_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R23_NUMBER_OF_FAILED_TRADES"
+        name="R23_NUMBER_OF_FAILED_TRADES"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; 
+               border-color: transparent; text-align: right; font-weight: normal;"
+        readonly />
+</td>
 
-										<tr>
-											<td style="text-align: right; font-weight: normal;">13</td>
-											<td></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R25_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R25_NUMBER_OF_FAILED_TRADES}"
-												th:attr="RowId='R25', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R25_POSITIVE_CURRENT_EXPOSURE}"
-												th:attr="RowId='R25', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<!-- <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R25_RISK_MULTIPLIER}+'%'" th:attr="RowId='R25', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R25_RWA}"></td>
-										</tr>
+<!-- R23_POSITIVE_CURRENT_EXPOSURE -->
+<td id="R23_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R23_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R23_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R23_POSITIVE_CURRENT_EXPOSURE"
+        name="R23_POSITIVE_CURRENT_EXPOSURE"
+        style="background-color: #FFFFFF; width: 200px; height: 28px; 
+               border-color: transparent; text-align: right; font-weight: normal;"
+        readonly />
+</td>
+    
+    
+    
+  <!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R23_RISK_MULTIPLIER}+'%'" th:attr="RowId='R23', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+  
+  
+  <td style="text-align: right;font-weight:  normal;" ></td>
+  
+  
+    <!-- <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R23_RWA}" ></td> -->
+    
+    <!-- R23_RWA -->
+<td id="R23_RWA"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;"  class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R23_RWA != null ? #numbers.formatDecimal(report.R23_RWA, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R23_RWA"
+        name="R23_RWA"
+        style="background-color: #ADFF2F; width: 200px; height: 28px;
+               border-color: transparent; text-align: right; font-weight: normal;"
+        readonly />
+        
+        
+</td>
+    
+</tr>
 
-										<tr>
-											<td style="text-align: right; font-weight: normal;">14</td>
-											<td></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R26_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R26_NUMBER_OF_FAILED_TRADES}"
-												th:attr="RowId='R26', ColumnId='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<td style="text-align: right; font-weight: normal;"
-												th:text="${report.R26_POSITIVE_CURRENT_EXPOSURE}"
-												th:attr="RowId='R26', ColumnId='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
-											<!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R26_RISK_MULTIPLIER}+'%'" th:attr="RowId='R26', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
-											<td style="text-align: right; font-weight: normal;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R26_RWA}"></td>
-										</tr>
+<tr>
+    <td style="text-align: right; font-weight: normal; ">12</td>
+    <td></td>
+    <td style="text-align: right;font-weight:  normal;" th:text="${report.R24_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+    <!-- <td style="text-align: right;font-weight:  normal;" th:text="${report.R24_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R24', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: right;font-weight:  normal;" th:text="${report.R24_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R24', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+    
+    
+    
+    
+    
+    
+    <!-- R24_NUMBER_OF_FAILED_TRADES -->
+<td id="R24_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R24_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R24_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R24_NUMBER_OF_FAILED_TRADES"
+        name="R24_NUMBER_OF_FAILED_TRADES"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; font-weight: normal;"
+        readonly />
+</td>
 
-										<tr>
-											<td style="text-align: right; font-weight: normal;">15</td>
-											<td></td>
-											<td style="text-align: left; font-weight: bold;"
-												th:text="${report.R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R27_NUMBER_OF_FAILED_TRADES}"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R27_POSITIVE_CURRENT_EXPOSURE}"></td>
-											<td
-												style="text-align: left; font-weight: normal; background-color: #adaaaa;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R27_RWA}"></td>
-										</tr>
+<!-- R24_POSITIVE_CURRENT_EXPOSURE -->
+<td id="R24_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R24_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R24_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R24_POSITIVE_CURRENT_EXPOSURE"
+        name="R24_POSITIVE_CURRENT_EXPOSURE"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; font-weight: normal;"
+        readonly />
+</td>
+    
+  <!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R24_RISK_MULTIPLIER}+'%'" th:attr="RowId='R24', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+  
+  <td style="text-align: right;font-weight:  normal;" ></td>
+  
+    <!-- <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R24_RWA}" ></td> -->
+    
+    <!-- R24_RWA -->
+<td id="R24_RWA"
+    style="text-align: right; font-weight: normal;  padding-right:10px; padding-left:20px;" class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R24_RWA != null ? #numbers.formatDecimal(report.R24_RWA, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R24_RWA"
+        name="R24_RWA"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; font-weight: normal; background-color: #ADFF2F;"
+        readonly />
+</td>
+    
+</tr>
 
-										<tr>
-											<td style="text-align: right; font-weight: normal;">16</td>
-											<td></td>
-											<td style="text-align: left; font-weight: bold;"
-												th:text="${report.R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R28_NUMBER_OF_FAILED_TRADES}"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R28_POSITIVE_CURRENT_EXPOSURE}"></td>
-											<td
-												style="text-align: left; font-weight: normal; background-color: #adaaaa;"></td>
-											<td
-												style="text-align: right; font-weight: normal; background-color: rgb(107, 122, 143);color: white;"
-												th:text="${report.R28_RWA}"></td>
-										</tr>
-										
+<tr>
+    <td style="text-align: right; font-weight: normal; ">13</td>
+    <td></td>
+    <td style="text-align: right;font-weight:  normal;" th:text="${report.R25_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+    <!-- <td style="text-align: right;font-weight:  normal;" th:text="${report.R25_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R25', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: right;font-weight:  normal;" th:text="${report.R25_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R25', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+    
+    <!-- R25_NUMBER_OF_FAILED_TRADES -->
+<td id="R25_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R25_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R25_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R25_NUMBER_OF_FAILED_TRADES"
+        name="R25_NUMBER_OF_FAILED_TRADES"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; font-weight: normal;"
+        readonly />
+</td>
+
+<!-- R25_POSITIVE_CURRENT_EXPOSURE -->
+<td id="R25_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R25_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R25_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R25_POSITIVE_CURRENT_EXPOSURE"
+        name="R25_POSITIVE_CURRENT_EXPOSURE"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; font-weight: normal;"
+        readonly />
+</td>
+    
+    
+   <!-- <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R25_RISK_MULTIPLIER}+'%'" th:attr="RowId='R25', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+   
+   
+   <td style="text-align: right;font-weight:  normal;" ></td>
+   
+   
+    <!-- <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R25_RWA}" ></td> -->
+    
+    
+    <!-- R25_RWA -->
+<td id="R25_RWA"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;" class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R25_RWA != null ? #numbers.formatDecimal(report.R25_RWA, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R25_RWA"
+        name="R25_RWA"
+        style="width: 200px; height: 28px; border-color: transparent;
+               background-color: #ADFF2F;
+               text-align: right; font-weight: normal;"
+        readonly />
+</td>
+    
+</tr>
+
+<tr>
+    <td style="text-align: right; font-weight: normal; ">14</td>
+    <td></td>
+    <td style="text-align: right;font-weight:  normal;" th:text="${report.R26_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
+    <!-- <td style="text-align: right;font-weight:  normal;" th:text="${report.R26_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R26', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
+    <td style="text-align: right;font-weight:  normal;" th:text="${report.R26_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R26', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+    
+    
+    
+    <!-- R26_NUMBER_OF_FAILED_TRADES -->
+<td id="R26_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R26_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R26_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R26_NUMBER_OF_FAILED_TRADES"
+        name="R26_NUMBER_OF_FAILED_TRADES"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; font-weight: normal;"
+        readonly />
+</td>
+
+<!-- R26_POSITIVE_CURRENT_EXPOSURE -->
+<td id="R26_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="${report.R26_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R26_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R26_POSITIVE_CURRENT_EXPOSURE"
+        name="R26_POSITIVE_CURRENT_EXPOSURE"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; font-weight: normal;"
+        readonly />
+</td>
+    
+  <!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R26_RISK_MULTIPLIER}+'%'" th:attr="RowId='R26', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
+  
+  
+  <td style="text-align: right;font-weight:  normal;" ></td>
+  
+   <!--  <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R26_RWA}" ></td> -->
+   
+   <!-- R26_RWA -->
+<td id="R26_RWA"
+    style="font-weight: normal; text-align: right;  padding-right:10px; padding-left:20px;" class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R26_RWA != null ? #numbers.formatDecimal(report.R26_RWA, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R26_RWA"
+        name="R26_RWA"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; background-color: #ADFF2F; font-weight: normal;"
+        readonly />
+</td>
+   
+</tr>
+
+<tr>
+    <td style="text-align: right; font-weight: normal; ">15</td>
+    <td></td>
+    <!-- <td style="text-align: left;font-weight:  normal;" th:text="${report.R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
+    
+    <!-- R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE -->
+<td id="R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+    style="font-weight: bold; text-align: left; padding-left:10px; background-color: #FFFFFF;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="'TOTAL Failed Non DvP Trades'"
+        id="R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        name="R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        style="width: 300px; height: 28px; border-color: transparent;
+               background-color: #FFFFFF; text-align: left; font-weight: bold;"
+        readonly />
+</td>
+    
+   <!--  <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R27_NUMBER_OF_FAILED_TRADES}" ></td>
+    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R27_POSITIVE_CURRENT_EXPOSURE}"></td> -->
+    
+    
+    <!-- R27_NUMBER_OF_FAILED_TRADES -->
+<td id="R27_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right;  padding-right:10px; padding-left:20px;" class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R27_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R27_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R27_NUMBER_OF_FAILED_TRADES"
+        name="R27_NUMBER_OF_FAILED_TRADES"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; background-color: #ADFF2F; font-weight: normal;"
+        readonly />
+</td>
+
+<!-- R27_POSITIVE_CURRENT_EXPOSURE -->
+<td id="R27_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right;  padding-right:10px; padding-left:20px;" class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R27_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R27_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R27_POSITIVE_CURRENT_EXPOSURE"
+        name="R27_POSITIVE_CURRENT_EXPOSURE"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; background-color: #ADFF2F; font-weight: normal;"
+        readonly />
+</td>
+    
+    <td style="text-align: left; font-weight: normal; background-color: #adaaaa;" ></td>
+    
+    <!-- <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R27_RWA}" ></td> -->
+    
+    <!-- R27_RWA -->
+<td id="R27_RWA"
+    style="font-weight: normal; text-align: right;  padding-right:10px; padding-left:20px;" class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R27_RWA != null ? #numbers.formatDecimal(report.R27_RWA, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R27_RWA"
+        name="R27_RWA"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; background-color: #ADFF2F; font-weight: normal;"
+        readonly />
+</td>
+    
+</tr>
+
+<tr>
+    <td style="text-align: right; font-weight: normal; ">16</td>
+    <td></td>
+   <!--  <td style="text-align: left;font-weight:  normal;" th:text="${report.R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
+   
+   <!-- R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE -->
+<td id="R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+    style="font-weight: bold; text-align: left; padding-left:10px; background-color: #FFFFFF;">
+    <input
+        class="display-input Show_input"
+        type="text"
+        th:value="'TOTAL ALL FAILED TRADES'"
+        id="R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        name="R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
+        style="width: 300px; height: 28px; border-color: transparent;
+               background-color: #FFFFFF; text-align: left; font-weight: bold;"
+        readonly />
+</td>
+   
+    <!-- <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R28_NUMBER_OF_FAILED_TRADES}" ></td>
+    <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R28_POSITIVE_CURRENT_EXPOSURE}" ></td> -->
+    
+    
+    
+    <!-- R28_NUMBER_OF_FAILED_TRADES -->
+<td id="R28_NUMBER_OF_FAILED_TRADES"
+    style="font-weight: normal; text-align: right;  padding-right:10px; padding-left:20px;" class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R28_NUMBER_OF_FAILED_TRADES != null ? #numbers.formatDecimal(report.R28_NUMBER_OF_FAILED_TRADES, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R28_NUMBER_OF_FAILED_TRADES"
+        name="R28_NUMBER_OF_FAILED_TRADES"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; background-color: #ADFF2F; font-weight: normal;"
+        readonly />
+</td>
+
+<!-- R28_POSITIVE_CURRENT_EXPOSURE -->
+<td id="R28_POSITIVE_CURRENT_EXPOSURE"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;" class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R28_POSITIVE_CURRENT_EXPOSURE != null ? #numbers.formatDecimal(report.R28_POSITIVE_CURRENT_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R28_POSITIVE_CURRENT_EXPOSURE"
+        name="R28_POSITIVE_CURRENT_EXPOSURE"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; background-color: #ADFF2F; font-weight: normal;"
+        readonly />
+</td>
+    
+    
+    <td style="text-align: left; font-weight: normal; background-color: #adaaaa;"></td>
+    
+    <!-- <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R28_RWA}"></td> -->
+    
+    <!-- R28_RWA -->
+<td id="R28_RWA"
+    style="font-weight: normal; text-align: right; padding-right:10px; padding-left:20px;" class="green-cell">
+    <input
+        class="display-input Show_input green-cell"
+        type="text"
+        th:value="${report.R28_RWA != null ? #numbers.formatDecimal(report.R28_RWA, 1, 'COMMA', 0, 'POINT') : '0'}"
+        id="R28_RWA"
+        name="R28_RWA"
+        style="width: 200px; height: 28px; border-color: transparent;
+               text-align: right; background-color: #ADFF2F; font-weight: normal;"
+        readonly />
+</td>
+    
+</tr>
 
 
+                                       
 									</tbody>
-								</table>
+
+
+			              </table>
+
 
 							</div>
+<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button"
+										class="custom-tab-btn Show_input" form="fileupload"
+										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none;">Submit</button>
+								</div>
+								</form>
+
 						</div>
 					</div>
 				</div>
-				<div th:if="${displaymode == 'Details'}">
-					<div class="row">
-						<div class="col-sm-12">
-							<div class="table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6;">
-								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reportss">
-									<thead class="thead-light">
-										<tr>
-											<th></th>
-											<th style="text-align: left;">CUST ID</th>
-											<th style="text-align: left;">ACCT NO</th>
-											<th>ACCT NAME</th>
-											<th style="text-align: right;">ACCT BALANCE</th>
-											<th style="text-align: left;">ROWID</th>
-											<th>COLUMNID</th>
-											<th>REPORT_DATE</th>
-										</tr>
-									</thead>
-									<tbody style="font-family: Arial;">
-										<tr th:each="report: ${reportdetails}">
-											<td><a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record"> <i class="fas fa-edit"
-														onclick="editRecord(this)"></i>
-												</a></td>
-											<td style="text-align: left;" th:text="${report.custId}"></td>
-											<td style="text-align: left;" th:text="${report.acctNumber}"></td>
-											<td th:text="${report.acctName}"></td>
-											<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
-											<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 3, 3, 'COMMA')}"
-											    style="text-align: right;"></td>
-											<td style="text-align: left;" th:text="${report.rowId}"></td>
-											<td th:text="${report.columnId}"></td>
-											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
-										</tr>
-									</tbody>
-								</table>
-								<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
-																	   
-																	    
-																	    
-																	<a th:if="${currentPage > 0}"
-																	 th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																	    asondate=${asondate},                             
-																	    fromdate=${fromdate},
-																	    todate=${todate},
-																	    currency=${currency},
-																	    dtltype=${dtltype},
-																	    type=${type},
-																	    version=${version},
-																	    page=${currentPage - 100},
-																	    size=100
-																	)}">
-																	    Previous
-																	</a>
-											
-																	    
-																	    <span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
-																	
-																	    
-																	    <a th:if="${currentPage < (totalPages - 1) * 100}"
-																	    	
-																	    th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																	    asondate=${asondate},
-																	    fromdate=${fromdate},
-																	    todate=${todate},
-																	    currency=${currency},
-																	    dtltype=${dtltype},
-																	    type=${type},
-																	    version=${version},
-																	    page=${currentPage + 100},
-																	    size=100
-																	)}">	
-																	    Next
-																	    </a>
-																	</div>
-								
-								
-							</div>
-						</div>
-					</div>
-				</div>
+
+				
+
 			</div>
+
+
+
 		</div>
+
+
+
 	</div>
-	
-	<!-- Custom Cellresult Modal -->
-		<div class="modal fade" id="cellresultModal">
-		  <div class="modal-dialog modal-dialog-centered">
-		    <div class="modal-content">
-		      
-		      <!-- Custom header -->
-		      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-		        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-		          Do you want to open the report?
-		        </div>
-		      </div>
 
-		      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-		        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-		          Cancel
-		        </button>
-		        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-		          Yes
-		        </button>
-		      </div>
-		    </div>
-		  </div>
-		</div>
 
-	
-	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 			<div class="modal-content" style="background: transparent;">
 				<div class="modal-body" style="text-align: center">
 					<div>
@@ -1265,153 +2193,157 @@ PURPOSE		: BWRBRREPORT
 			</div>
 		</div>
 	</div>
+
+
+
 	<!-- Custom Alert/Result Modal (Matches your existing style) -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<!-- Your custom styled header -->
 				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
 						<!-- Title will be set by JavaScript -->
 					</div>
 				</div>
-				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
 	</div>
+	
+	<!-- Custom Cellresult Modal -->
+			<div class="modal fade" id="cellresultModal">
+			  <div class="modal-dialog modal-dialog-centered">
+			    <div class="modal-content">
+			      
+			      <!-- Custom header -->
+			      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+			        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+			          Do you want to open the report?
+			        </div>
+			      </div>
+
+			      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+			        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+			          Cancel
+			        </button>
+			        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+			          Yes
+			        </button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
 
 </body>
 
-<!-- <script>
-															  $(document).ready(function () {
-															    $('#BRRSvalidation').DataTable({
-															      "paging": true,
-															      "info": false,       // turn off "Showing x of y"
-															      "searching": false,  // turn off search
-															      "ordering": false,   // turn off ordering
-															      "lengthChange": false // hide "Show x entries"
-															    });
-															  });
-	
-														</script> -->
-														
-														<style>
-														  #BRFdet td {
-														    border: 1px solid #ccc;
-														    padding: 8px;
-														  }
 
-														  #BRFdet {
-														    border-collapse: collapse;
-														    width: 100%;
-														  }
-														</style>
-														
+
 <style>
-	/* Your existing CSS - this is the correct approach */
-	.scrollable-table-container {
-		/* This is the key: it creates the scroll context */
-		max-height: 590px;
-		/* Or a suitable height like 80vh for responsive design */
-		overflow-y: auto;
-		border: 1px solid #ccc;
-	}
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 720px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
 
-	/* Your existing sticky header CSS, targeting the tr elements within the thead */
-	.scrollable-table-container thead tr:nth-child(1) {
-		position: sticky;
-		top: 0;
-		background-color: #b3b6b9;
-		z-index: 5;
-	}
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
 
-	.scrollable-table-container thead tr:nth-child(2) {
-		position: sticky;
-		top: 36px;
-		/* adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 4;
-	}
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
 
-	.scrollable-table-container thead tr:nth-child(3) {
-		position: sticky;
-		top: 72px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 3;
-	}
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
 
-	.scrollable-table-container thead tr:nth-child(4) {
-		position: sticky;
-		top: 100px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 2;
-	}
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
 
-	.scrollable-table-container thead tr:nth-child(5) {
-		position: sticky;
-		top: 135px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 1;
-	}
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
 </style>
+
+
 <style>
-	.inner {
-		max-height: 600px;
-		/* Adjust height as needed */
-		overflow: auto;
-		border: 1px solid #dee2e6;
-	}
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
 
-	/* Sticky thead */
-	#reports thead th {
-		position: sticky;
-		top: 0;
-		background-color: #f8f9fa;
-		/* Match Bootstrap thead-light */
-		z-index: 2;
-	}
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
 
-	div.dataTables_wrapper div.dataTables_paginate {
-		text-align: right !important;
-		float: right !important;
-		width: auto;
-		margin-top: 10px;
-	}
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
 
-	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-	div.dataTables_wrapper div.dataTables_info {
-		float: left !important;
-		margin-top: 10px;
-	}
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
 
-	.pagination {
-		margin: 0;
-	}
+.pagination {
+	margin: 0;
+}
 
-	.page-item.active .page-link {
-		background-color: #386276;
-		border-color: #386276;
-	}
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
 
-	.page-link {
-		color: #386276;
-	}
+.page-link {
+	color: #386276;
+}
 
-	.page-link:hover {
-		color: #2a4a5c;
-	}
+.page-link:hover {
+	color: #2a4a5c;
+}
 
-	.form-select {
-		display: inline-block;
-		width: auto;
-	}
+.form-select {
+	display: inline-block;
+	width: auto;
+}
 </style>
 
 </html>

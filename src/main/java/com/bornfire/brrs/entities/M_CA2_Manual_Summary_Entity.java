@@ -29,6 +29,7 @@ public class M_CA2_Manual_Summary_Entity {
 	private String del_flg;
 	
 	private BigDecimal r11_amount_2;
+	private BigDecimal r13_amount_1;
 	private BigDecimal r14_amount_1;
 	private BigDecimal r15_amount_1;
 	private BigDecimal r16_amount_1;
@@ -37,6 +38,7 @@ public class M_CA2_Manual_Summary_Entity {
 	private BigDecimal r21_amount_1;
 	private BigDecimal r32_amount_2;
 	private BigDecimal r42_amount_2;
+	private BigDecimal r43_amount_2;
 	private BigDecimal r44_amount_2;
 	private BigDecimal r46_amount_2;
 		
@@ -230,6 +232,48 @@ public class M_CA2_Manual_Summary_Entity {
 	public void setR46_amount_2(BigDecimal r46_amount_2) {
 		this.r46_amount_2 = r46_amount_2;
 	}
+
+
+	
+	
+
+	public BigDecimal getR13_amount_1() {
+		return r13_amount_1;
+	}
+
+
+
+
+
+
+
+	public void setR13_amount_1(BigDecimal r13_amount_1) {
+		this.r13_amount_1 = r13_amount_1;
+	}
+
+
+
+
+
+
+
+	public BigDecimal getR43_amount_2() {
+		return r43_amount_2;
+	}
+
+
+
+
+
+
+
+	public void setR43_amount_2(BigDecimal r43_amount_2) {
+		this.r43_amount_2 = r43_amount_2;
+	}
+
+
+
+
 
 
 

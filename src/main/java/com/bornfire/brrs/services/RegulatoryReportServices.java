@@ -193,7 +193,7 @@ public class RegulatoryReportServices {
 			break;
 		
 		case "M_SRWA_12C":
-			repsummary = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CView(reportId, fromdate, todate, currency, dtltype,
+			repsummary = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 			
@@ -381,11 +381,6 @@ public class RegulatoryReportServices {
 			
 		case "M_SRWA_12F":
 			repdetail = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-			
-		case "M_SRWA_12C":
-			repdetail = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
 			
@@ -594,7 +589,7 @@ public class RegulatoryReportServices {
 				
 		case "M_SRWA_12C":
 			try {
-				repfile = BRRS_M_SRWA_12C_reportservice.BRRS_M_SRWA_12CExcel(filename, reportId, fromdate, todate, currency,
+				repfile = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -874,10 +869,6 @@ public class RegulatoryReportServices {
 			return BRRS_M_SRWA_12F_reportservice.BRRS_M_SRWA_12FDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 		}
 		
-		if ("M_SRWA_12CDetail".equals(filename)) {
-			return BRRS_M_SRWA_12C_reportservice.BRRS_M_SRWA_12CDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
-		}
-		
 		if ("M_SRWA_12HDetail".equals(filename)) {
 			return BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -1026,14 +1017,11 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
-		case "M_SRWA_12C":
-			try {
-				archivalData = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		/*
+		 * case "M_SRWA_12C": try { archivalData =
+		 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
+		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
+		 */
 			
 		case "M_SRWA_12G":
 			try {
@@ -1261,9 +1249,12 @@ public class RegulatoryReportServices {
 		    fileData = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}else if (filename.equals("M_MRCDetail")) {
 		    fileData = BRRS_M_MRC_reportservice.BRRS_M_MRCDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
-		}else if (filename.equals("M_SRWA_12CDetail")) {
-		    fileData = BRRS_M_SRWA_12C_reportservice.BRRS_M_SRWA_12CDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
-		}else if (filename.equals("M_CA1Detail")) {
+		} /*
+			 * else if (filename.equals("M_SRWA_12CDetail")) { fileData =
+			 * BRRS_M_SRWA_12C_reportservice.BRRS_M_SRWA_12CDetailExcel(filename, fromdate,
+			 * todate, currency, dtltype, type ,version); }
+			 */
+		else if (filename.equals("M_CA1Detail")) {
 		    fileData = BRRS_M_CA1_reportservice.BRRS_M_CA1DetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}else if (filename.equals("M_PIDetail")) {
 		    fileData = BRRS_M_PI_reportservice.BRRS_M_PIDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
