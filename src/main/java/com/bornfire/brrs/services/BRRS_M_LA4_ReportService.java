@@ -1,21 +1,24 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -44,16 +47,16 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.M_LA4_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.M_LA4_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.M_LA4_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Detail_Repo;
-import com.bornfire.brrs.entities.M_LA4_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Summary_Repo;
-
-import java.math.BigDecimal;
+import com.bornfire.brrs.entities.BRRS_M_LA4_Summary_Repo2;
+import com.bornfire.brrs.entities.M_LA4_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_LA4_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_LA4_Detail_Entity;
+import com.bornfire.brrs.entities.M_LA4_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LA4_Summary_Entity2;
 
 @Component
 @Service
@@ -75,6 +78,9 @@ public class BRRS_M_LA4_ReportService {
 	@Autowired
 	BRRS_M_LA4_Summary_Repo M_LA4_Summary_Repo;
 
+	@Autowired
+	BRRS_M_LA4_Summary_Repo2 M_LA4_Summary_Repo2;
+	
 	@Autowired
 	BRRS_M_LA4_Archival_Detail_Repo M_LA4_Archival_Detail_Repo;
 
@@ -107,19 +113,26 @@ public class BRRS_M_LA4_ReportService {
 
 			mv.addObject("reportsummary", T1Master);
 		} else {
-			List<M_LA4_Summary_Entity> T1Master = new ArrayList<M_LA4_Summary_Entity>();
-			try {
-				Date d1 = dateformat.parse(todate);
+			List<M_LA4_Summary_Entity1> T1Master = new ArrayList<>();
+			List<M_LA4_Summary_Entity2> T2Master = new ArrayList<>();
 
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = M_LA4_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+			try {
+			    // Matches "30-Sep-2025"
+			    SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+
+			    Date d1 = dateformat.parse(todate);  // todate = "30-Sep-2025"
+
+			    T1Master = M_LA4_Summary_Repo.getdatabydateList(d1);
+			    T2Master = M_LA4_Summary_Repo2.getdatabydateList(d1);
+			    
+			    System.out.println("T1Master size for LA4 is: " + T1Master.size());
 
 			} catch (ParseException e) {
-				e.printStackTrace();
+			    e.printStackTrace();
 			}
+
 			mv.addObject("reportsummary", T1Master);
+			mv.addObject("reportsummary2", T2Master);
 		}
 
 		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
@@ -208,7 +221,7 @@ public class BRRS_M_LA4_ReportService {
 	}
 
 
-	public byte[] BRRS_M_LA4Excel(String filename, String reportId, String fromdate, String todate, String currency,
+	/*public byte[] BRRS_M_LA4Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
@@ -219,7 +232,7 @@ public class BRRS_M_LA4_ReportService {
 		}
 
 		// Fetch data
-		List<M_LA4_Summary_Entity> dataList = M_LA4_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+		List<M_LA4_Summary_Entity1> dataList = M_LA4_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_LA4 report. Returning empty result.");
@@ -281,7 +294,7 @@ public class BRRS_M_LA4_ReportService {
 				
 				if (!dataList.isEmpty()) {
 					for (int i = 0; i < dataList.size(); i++) {
-						M_LA4_Summary_Entity record = dataList.get(i);
+						M_LA4_Summary_Entity1 record = dataList.get(i);
 						System.out.println("rownumber="+startRow + i);
 						Row row = sheet.getRow(startRow + i);
 						if (row == null) {
@@ -2426,7 +2439,7 @@ public class BRRS_M_LA4_ReportService {
 			return out.toByteArray();
 		}
 	}
-
+*/
 	public byte[] BRRS_M_LA4DetailExcel(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 
@@ -4892,5 +4905,65 @@ public class BRRS_M_LA4_ReportService {
 			return new byte[0];
 		}
 	}
+	
+	
+	public void updateReport(M_LA4_Summary_Entity2 updatedEntity) {
+	    System.out.println("➡️ Entered updateReport() for LA4 Summary");
+	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+
+	    // Fetch existing record by REPORT_DATE
+	    M_LA4_Summary_Entity2 existing = M_LA4_Summary_Repo2.findById(updatedEntity.getReportDate())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+
+	    try {
+	        // 1️⃣ Loop through all R11 to R64 rows
+	        for (int i = 11; i <= 64; i++) {
+	            String prefix = "R" + i + "_";
+	            String[] fields = { "FACTORING_DEBTORS", "LEASING" };
+
+	            for (String field : fields) {
+	                // ✅ Convert field names like FACTORING_DEBTORS → FactoringDebtors
+	                String camelField = Arrays.stream(field.toLowerCase().split("_"))
+	                        .map(s -> s.substring(0, 1).toUpperCase() + s.substring(1))
+	                        .collect(Collectors.joining(""));
+
+	                // ✅ Build proper getter/setter method names like getR12FactoringDebtors()
+	                String getterName = "get" + prefix.replace("_", "") + camelField;
+	                String setterName = "set" + prefix.replace("_", "") + camelField;
+
+	                try {
+	                    Method getter = M_LA4_Summary_Entity2.class.getMethod(getterName);
+	                    Method setter = M_LA4_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Ignore missing fields safely
+	                    continue;
+	                }
+	            }
+	        }
+
+	        // 2️⃣ Update common fields (report metadata)
+	        existing.setReportVersion(updatedEntity.getReportVersion());
+	        existing.setReportFrequency(updatedEntity.getReportFrequency());
+	        existing.setReportCode(updatedEntity.getReportCode());
+	        existing.setReportDesc(updatedEntity.getReportDesc());
+	        existing.setEntityFlg(updatedEntity.getEntityFlg());
+	        existing.setModifyFlg(updatedEntity.getModifyFlg());
+	        existing.setDelFlg(updatedEntity.getDelFlg());
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("❌ Error while updating LA4 Summary fields", e);
+	    }
+
+	    // 3️⃣ Save updated entity
+	    M_LA4_Summary_Repo2.save(existing);
+	    System.out.println("✅ LA4 Summary updated successfully for date: " + updatedEntity.getReportDate());
+	}
+
+
 
 }

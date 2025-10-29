@@ -4,6 +4,10 @@ import java.io.FileNotFoundException;
 
 
 
+
+
+
+
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -39,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+
 import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA4_ReportService;
 import com.bornfire.brrs.entities.M_CA6_Summary_Entity2;
@@ -48,18 +53,27 @@ import com.bornfire.brrs.services.BRRS_M_SRWA_12G_ReportService;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity2;
 import com.bornfire.brrs.services.BRRS_M_CA5_ReportService;
+
+
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity4;
 import com.bornfire.brrs.entities.M_CA3_Summary_Entity;
+import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
+import com.bornfire.brrs.entities.M_CA6_Summary_Entity2;
 import com.bornfire.brrs.entities.M_CA7_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA7_Summary_Entity;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity1;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity2;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity3;
 import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
+import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LA4_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LIQ_Manual_Summary_Entity;
+import com.bornfire.brrs.entities.M_SFINP1_Summary_Manual_Entity;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity3;
@@ -77,19 +91,18 @@ import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity2;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity3;
 import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA3_ReportService;
+import com.bornfire.brrs.services.BRRS_M_CA4_ReportService;
+import com.bornfire.brrs.services.BRRS_M_CA6_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
+import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
+import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
+import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
+import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_ReportService;
-import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
-import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
-import com.bornfire.brrs.entities.M_LIQ_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_SFINP1_Summary_Manual_Entity;
-import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
-import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
-import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 
 @Controller
@@ -101,6 +114,13 @@ public class BRRS_ReportsController {
 	@Autowired
 	RegulatoryReportServices regreportServices;
 
+	 @Autowired
+	 private BRRS_M_AIDP_ReportService AIDPreportService;
+	 
+	 @Autowired
+	 BRRS_M_LA4_ReportService BRRS_M_LA4_ReportService;
+	 
+	 
 	private String pagesize;
 
 	public String getPagesize() {
@@ -330,12 +350,10 @@ public class BRRS_ReportsController {
 	    }
 	 
 	 
-	 @Autowired
-	 private BRRS_M_AIDP_ReportService AIDPreportService;
-	 
+	
 	 @RequestMapping(value = "/AIDPupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	 @ResponseBody
-	 public ResponseEntity<String> updateAllReports(
+	 public ResponseEntity<String> updateLA4(
 	         @RequestParam(required = false)
 	         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
@@ -365,6 +383,33 @@ public class BRRS_ReportsController {
 	                              .body("Update Failed: " + e.getMessage());
 	     }
 	 }	 
+	 
+	 @RequestMapping(value = "/updateReport", method = { RequestMethod.GET, RequestMethod.POST })
+	 @ResponseBody
+	 public ResponseEntity<String> updateAllReports(
+	         @RequestParam(required = false)
+	         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+	         @ModelAttribute M_LA4_Summary_Entity2 request1
+	         
+	 ) {
+	     try {
+	         
+	         // set date into all 4 entities
+	         request1.setReportDate(asondate);
+	         
+	         // call services
+	         BRRS_M_LA4_ReportService.updateReport(request1);
+	         
+
+	         return ResponseEntity.ok("Updated Successfully");
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                              .body("Update Failed: " + e.getMessage());
+	     }
+	 }	 
+	 
 	 
 	 @Autowired
 	 private BRRS_M_UNCONS_INVEST_ReportService UNCreportService;

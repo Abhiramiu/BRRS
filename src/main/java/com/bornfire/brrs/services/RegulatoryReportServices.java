@@ -477,7 +477,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
-		case "M_LA4":
+		/*case "M_LA4":
 			try {
 				repfile = BRRS_M_LA4_reportservice.BRRS_M_LA4Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
@@ -485,7 +485,7 @@ public class RegulatoryReportServices {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			break;
+			break;*/
 			
 		case "M_IS":
 			try {
