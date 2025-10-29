@@ -131,6 +131,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_SRWA_12B_ReportService brrs_m_srwa_12b_reportservice;
 	
+	@Autowired
+	BRRS_Q_SMME_Intrest_Income_ReportService BRRS_Q_SMME_Intrest_Income_ReportService;
+	
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
@@ -318,6 +321,12 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 			
+		case "Q_SMME":
+			
+			repsummary = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+			
 
 		}
 		
@@ -441,9 +450,15 @@ public class RegulatoryReportServices {
 					pageable, Filter,type,version );
 			break;
 			
+		case "Q_SMME":
+			repdetail = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter,type,version );
+			break;
+			
 		case "M_IRB":
 	            repdetail = brrs_m_irb_reportService.getM_IRBcurrentDtl(reportId, fromdate, todate, currency, dtltype,	
 	            		pageable, Filter,type,version );
+	            
 			
 		}
 		return repdetail;
@@ -798,6 +813,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+		
+		case "Q_SMME":
+			try {
+				repfile = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel(filename, reportId, fromdate, todate, currency,
+						dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 			
 		
 			
@@ -898,7 +923,9 @@ public class RegulatoryReportServices {
 		if ("M_LIQDetail".equals(filename)) {
 			return BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 		}
-		
+		if ("Q_SUMMEDetail".equals(filename)) {
+			return BRRS_Q_SMME_Intrest_Income_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
+		}
 		
 		
 		
@@ -1194,6 +1221,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "Q_SMME":
+			try {
+				archivalData = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 
 			
@@ -1249,6 +1285,8 @@ public class RegulatoryReportServices {
 	            fileData = brrs_m_irb_reportService.BRRS_M_IRBDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 	    }else if (filename.equals("M_LIQDetail")) {
 		    fileData = BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
+		}else if (filename.equals("M_SMMEDetail")) {
+		    fileData = BRRS_Q_SMME_Intrest_Income_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}
 		
 		
