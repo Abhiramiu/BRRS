@@ -1,10 +1,10 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,8 +13,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -220,6 +223,130 @@ public class BRRS_M_LA4_ReportService {
 	    return mv;
 	}
 
+	public byte[] BRRS_M_LA4Excel(String filename, String reportId, String fromdate, String todate,
+            String currency, String dtltype, String type, String version) throws Exception {
+		logger.info("Service: Starting Excel generation process with two-entity mapping.");
+		
+		// === ARCHIVAL handling ===
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		return getExcelM_LA4ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+		}
+		
+		// === Fetch both entities' data ===
+		List<M_LA4_Summary_Entity1> entity1List = M_LA4_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+		List<M_LA4_Summary_Entity2> entity2List = M_LA4_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
+		
+		if (entity1List.isEmpty() || entity2List.isEmpty()) {
+		logger.warn("No data found for one or both entities. Returning empty result.");
+		return new byte[0];
+		}
+		
+		M_LA4_Summary_Entity1 e1 = entity1List.get(0);
+		M_LA4_Summary_Entity2 e2 = entity2List.get(0);
+		
+		// === Load Excel template ===
+		String templateDir = env.getProperty("output.exportpathtemp");
+		Path templatePath = Paths.get(templateDir, filename);
+		if (!Files.exists(templatePath))
+		throw new FileNotFoundException("Template file not found: " + templatePath);
+		
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+		Workbook workbook = WorkbookFactory.create(templateInputStream);
+		ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+		
+		Sheet sheet = workbook.getSheetAt(0);
+		
+		// === Define rows to skip ===
+		Set<Integer> skipRows = new HashSet<>(Arrays.asList(11, 15, 29, 38, 41, 44, 49, 53, 57, 64));
+		
+		// === Start writing R11–R64 ===
+		int startRow = 10; // Excel row 11 (0-based)
+		for (int r = 11; r <= 64; r++) {
+		if (skipRows.contains(r)) continue; // Skip these rows
+		
+		String prefix = "r" + r;
+		int excelRowIndex = startRow + (r - 11);
+		
+		Row row = sheet.getRow(excelRowIndex);
+		if (row == null) continue; // skip if row missing in template
+		
+		// Helper to set value without overriding style
+		BiConsumer<Cell, BigDecimal> setValuePreserveStyle = (cell, value) -> {
+		if (value != null) {
+		  cell.setCellValue(value.doubleValue());
+		} else {
+		  cell.setBlank();
+		}
+		};
+		
+		// 🟩 Col1 → From Entity2 (FactoringDebtors)
+		Cell c1 = row.getCell(1);
+		if (c1 == null) c1 = row.createCell(1);
+		setValuePreserveStyle.accept(c1, getBigDecimalValue(e2, prefix + "FactoringDebtors"));
+		
+		// 🟩 Col2 → From Entity2 (Leasing)
+		Cell c2 = row.getCell(2);
+		if (c2 == null) c2 = row.createCell(2);
+		setValuePreserveStyle.accept(c2, getBigDecimalValue(e2, prefix + "Leasing"));
+		
+		// 🟩 Col3 → From Entity1 (Overdrafts)
+		Cell c3 = row.getCell(3);
+		if (c3 == null) c3 = row.createCell(3);
+		setValuePreserveStyle.accept(c3, getBigDecimalValue(e1, prefix + "Overdrafts"));
+		
+		// 🟩 Col4 → From Entity1 (OtherInstallmentLoans)
+		Cell c4 = row.getCell(4);
+		if (c4 == null) c4 = row.createCell(4);
+		setValuePreserveStyle.accept(c4, getBigDecimalValue(e1, prefix + "OtherInstallmentLoans"));
+		
+		// 🟩 Col5 → From Entity1 (Total)
+		Cell c5 = row.getCell(5);
+		if (c5 == null) c5 = row.createCell(5);
+		setValuePreserveStyle.accept(c5, getBigDecimalValue(e1, prefix + "Total"));
+		}
+		
+		workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+		workbook.write(out);
+		
+		// === Audit logging ===
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+		HttpServletRequest request = attrs.getRequest();
+		String userid = (String) request.getSession().getAttribute("USERID");
+		auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA4_SUMMARY", null, "BRRS_M_LA4_SUMMARYTABLE");
+		}
+		
+		logger.info("✅ Excel generation completed successfully. Bytes: {}", out.size());
+		return out.toByteArray();
+		}
+		}
+		
+
+
+	private BigDecimal getBigDecimalValue(Object obj, String fieldName) {
+	    try {
+	        Method getter = obj.getClass().getMethod("get" + capitalize(fieldName));
+	        Object value = getter.invoke(obj);
+	        return value != null ? (BigDecimal) value : null;
+	    } catch (Exception e) {
+	        return null;
+	    }
+	}
+
+	private String getStringValue(Object obj, String fieldName) {
+	    try {
+	        Method getter = obj.getClass().getMethod("get" + capitalize(fieldName));
+	        Object value = getter.invoke(obj);
+	        return value != null ? value.toString() : null;
+	    } catch (Exception e) {
+	        return null;
+	    }
+	}
+
+	private String capitalize(String str) {
+	    if (str == null || str.isEmpty()) return str;
+	    return Character.toUpperCase(str.charAt(0)) + str.substring(1);
+	}
 
 	/*public byte[] BRRS_M_LA4Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) throws Exception {
