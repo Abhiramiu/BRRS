@@ -699,7 +699,9 @@ public class BRRS_M_LIQ_ReportService {
 			}
 
 			// Get data
+			
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			System.out.println("Parsed Date: " + parsedToDate);
 			List<M_LIQ_Detail_Entity> reportData = brrs_m_liq_detail_Repo.getdatabydateList(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {

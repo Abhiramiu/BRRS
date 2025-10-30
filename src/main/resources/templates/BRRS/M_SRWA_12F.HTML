@@ -1,7 +1,7 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 <!--
-CREATED BY	: PRAVEEN KUMAR M
-CREATED ON	: 01.08.2025
+CREATED BY	: INFANT JONES J 
+CREATED ON	: 10.09.2025
 PURPOSE		: BWRBRREPORT
 -->
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
@@ -310,37 +310,12 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-
-			var Callurl;
-			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-				location.href = Callurl;
-			console.log(Callurl);
-			/*  $.ajax({
-				 type: 'get',
-				 url: Callurl,
-				 beforeSend: function () {
-					 $('#loader').modal('show'); // 🔄 Show loader
-				 },
-				 success: function (data) {
-					 $('.content').html(data);
-					 //$("#detailsbtn").addClass("active");
-					 //tablepagination();
-				 },
-				 complete: function () {
-					 $('#loader').modal('hide');
-				 },
-				 error: function () {
-						  $('#loader').modal('hide');
-					 alert("Something went wrongss. Please try again.");
-				  
-				 }
-			 }); */
+			 showResultModal('BRRS',' Details page not available for Manual Report');
 		}
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
 			location.href = Callurl;
 		}
 
@@ -379,6 +354,8 @@ PURPOSE		: BWRBRREPORT
 			var secid = button.getAttribute('data-secid');
 			var dtltype = button.getAttribute('data-dtltype');
 			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
 			$('#loader').modal('show');
 			$.ajax({
 				url: './downloadExcel?reportid=' + reportid +
@@ -388,7 +365,9 @@ PURPOSE		: BWRBRREPORT
 					'&currency=' + currency +
 					'&subreportid=' + subreportid +
 					'&secid=' + secid +
-					'&filename=' + filename,
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
 				type: 'GET',
 				xhrFields: {
 					responseType: 'blob'
@@ -418,6 +397,7 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
+		
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -437,216 +417,311 @@ PURPOSE		: BWRBRREPORT
 	</script>
 	
 	
-		<script>
-		
-		function startReport(button){
-			const alertMsg = document.getElementById("alertMessage");
-			const filename = button.getAttribute('data-filename');
-			const fromdate = button.getAttribute('data-fromdate');
-			const todate = button.getAttribute('data-todate');
-			const currency = button.getAttribute('data-currency');
-			const dtltype = button.getAttribute('data-dtltype');
-			const type = button.getAttribute('data-type');
-			const version = button.getAttribute('data-version');
-			const sessionfilename = sessionStorage.getItem("filename");
-			
-			if(sessionfilename==filename){
-				alertMsg.innerHTML ='Download request already Processing...';
-	       	 	showAlert();
-				return;
-			}
+	<script>
+	// Show Modify (enable inputs & dropdowns)
+function showmodify(btn) {
+	//$(".Show_input").removeAttr("readonly").removeAttr("disabled");
+    $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+    
+    const readonlyIds = [
+    	"R11_RISK_WEIGHTED_AMT",
+    	"R12_RISK_WEIGHTED_AMT",
+    	"R13_RISK_WEIGHTED_AMT",
+    	"R14_RISK_WEIGHTED_AMT",
+    	"R15_RISK_WEIGHTED_AMT",
+    	"R16_RISK_WEIGHTED_AMT",
+    	"R17_RISK_WEIGHTED_AMT",
+    	"R18_RISK_WEIGHTED_AMT",
+    	"R19_RISK_WEIGHTED_AMT",
+    	"R20_RISK_WEIGHTED_AMT",
+    	"R21_RISK_WEIGHTED_AMT",
+    	"R22_RISK_WEIGHTED_AMT",
+    	"R23_RISK_WEIGHTED_AMT",
+    	"R24_RISK_WEIGHTED_AMT",
+    	"R25_RISK_WEIGHTED_AMT",
+    	"R26_RISK_WEIGHTED_AMT",
+    	"R27_RISK_WEIGHTED_AMT",
+    	"R28_RISK_WEIGHTED_AMT",
+    	"R29_RISK_WEIGHTED_AMT",
+    	"R30_RISK_WEIGHTED_AMT",
+    	"R31_RISK_WEIGHTED_AMT",
+    	"R32_RISK_WEIGHTED_AMT",
+    	"R33_RISK_WEIGHTED_AMT",
+    	"R34_RISK_WEIGHTED_AMT",
+    	"R35_RISK_WEIGHTED_AMT",
+    	"R36_RISK_WEIGHTED_AMT",
+    	"R37_RISK_WEIGHTED_AMT",
+    	"R37_CREDIT_RATING",
+	    "R37_RATING_AGENCY",
+	    "R37_EXPOSURE_AMT",
+	    "R37_RISK_WEIGHT"  
+      
+    ];
 
-			const baseUrl = '/BRRS/Reports/startreport';
-			const downloadUrl = baseUrl +
-				'?filename=' + encodeURIComponent(filename) +
-				'&fromdate=' + encodeURIComponent(fromdate) +
-				'&todate=' + encodeURIComponent(todate) +
-				'&currency=' + encodeURIComponent(currency) +
-				'&dtltype=' + encodeURIComponent(dtltype) +
-				'&type=' + encodeURIComponent(type) +
-				'&version=' + encodeURIComponent(version);
-		    fetch(downloadUrl)  // ✅ no invalid characters now
-		        .then(res => res.text())
-		        .then(jobId => {
+    // 🔹 Enable editing for all inputs except formula ones
+    $(".show_input, .display-input").each(function () {
+        if (!readonlyIds.includes(this.id)) {
+            $(this).removeAttr("readonly")
+                   .removeAttr("disabled")
+                   .css({"background-color": "#d3d3d3"}); // light yellow for editable
+        } 
+    });
 
-		        	alertMsg.innerHTML ='Download request received...'+jobId;
-		       	 	showAlert();
-		            sessionStorage.setItem("jobId", jobId);
-		            sessionStorage.setItem("filename", filename);
-		            checkReport(jobId);
-		        });
-		}
+    
+    // Toggle buttons
+    $("#submitButton, #btnBack_edit").show();
+    $("#btnBack").hide();
+    
+    // Show Cancel button only when Modify is clicked
+    $("#cancelRecord").show();
+    
+    // Optionally hide the clicked Modify button
+    $(btn).hide();
+}
 
-		function checkReport(jobId) {
-			const alertMsg = document.getElementById("alertMessage");
-		    fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
-		        .then(res => res.text())
-		        .then(status => {
-		            if (status === "READY") {
-		            	alertMsg.innerHTML ='Report is ready! Downloading…';
-		           	 	showAlert();
-		                const filename = sessionStorage.getItem("filename");
-		                downloadDetailfile(jobId,filename)
-		                sessionStorage.removeItem("jobId");
-		                sessionStorage.removeItem("filename");                
-		                
-		            } else {
-		                alertMsg.innerHTML ='Download Is Processing…';
-		            	showAlert();
-		                setTimeout(() => checkReport(jobId), 5000);
-		            }
-		        });
-		}
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
 
+        for (let i = 11; i <= 37; i++) {
+            $("#R" + i + "_EQUITY").hide();
+            $("#R" + i + "_BONDS").hide();
+            $("#R" + i + "_BOBCS").hide();
+            $("#R" + i + "_TREASURY_BILLS").hide();
+            $("#R" + i + "_REPURCHASE_AGREEMENTS").hide();
+            $("#R" + i + "_COMMERCIAL_PAPER").hide();
+            $("#R" + i + "_CERTIFICATES_OF_DEPOSITS").hide();
+            $("#R" + i + "_PLEDGED_ASSETS").hide();
+            $("#R" + i + "_OTHER_SPECIFY").hide();
+            
 
+            $("#R" + i + "_EQUITY").show();
+            $("#R" + i + "_BONDS").show();
+            $("#R" + i + "_BOBCS").show();
+            $("#R" + i + "_TREASURY_BILLS").show();
+            $("#R" + i + "_REPURCHASE_AGREEMENTS").show();
+            $("#R" + i + "_COMMERCIAL_PAPER").show();
+            $("#R" + i + "_CERTIFICATES_OF_DEPOSITS").show();
+            $("#R" + i + "_PLEDGED_ASSETS").show();
+            $("#R" + i + "_OTHER_SPECIFY").show();
+        }
 
-		function downloadDetailfile(jobId,filename) {
-			
-			//$('#loader').modal('show');
-			
-			$.ajax({
-				url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
-					'&filename=' + filename,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
 
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
 
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
-		}
-		
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+}
 
 
-		</script>
 	
-	
-	
-	
-	<!--<script>
-		function downloadDetailfile(button) {
-			const filename = button.getAttribute('data-filename');
-			const fromdate = button.getAttribute('data-fromdate');
-			const todate = button.getAttribute('data-todate');
-			const currency = button.getAttribute('data-currency');
-			const dtltype = button.getAttribute('data-dtltype');
-			const type = button.getAttribute('data-type');
-			const version = button.getAttribute('data-version');
-			alert(currency);
-			$('#loader').modal('show');
-			const baseUrl = '/BRRS/Reports/';
-			const downloadUrl = baseUrl + 'downloadDetailExcel' +
-				'?filename=' + encodeURIComponent(filename) +
-				'&fromdate=' + encodeURIComponent(fromdate) +
-				'&todate=' + encodeURIComponent(todate) +
-				'&currency=' + encodeURIComponent(currency) +
-				'&dtltype=' + encodeURIComponent(dtltype) +
-				'&type=' + encodeURIComponent(type) +
-				'&version=' + encodeURIComponent(version);
-			$.ajax({
-				url: downloadUrl,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename + '.xls';
-						document.body.appendChild(a);
-						a.click();
-						a.remove();
-						window.URL.revokeObjectURL(url);
-						showResultModal('Success', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download or file was empty.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error('Download error:', textStatus, errorThrown, jqXHR);
-					let errorMessage = 'An error occurred while downloading the file. Please try again.';
-					if (jqXHR.response) {
-						const reader = new FileReader();
-						reader.onload = function () {
-							errorMessage = reader.result;
-							showResultModal('Error', errorMessage);
-						};
-						reader.onerror = function () {
-							showResultModal('Error', 'An unknown error occurred during download.');
-						};
-						reader.readAsText(jqXHR.response);
-						return;
-					}
-					showResultModal('Error', errorMessage);
-				}
-			});
-		}
-	</script>-->
-	
-	<script th:inline="javascript">
-		function showdetailsbyRowAndColumn(a) {
-					var rowId = a.getAttribute('RowId');
-					var columnId = a.getAttribute('ColumnId');
-					var cellValue = a.textContent || a.innerText;
 
-					if (cellValue !== '0') {
-						// Set dynamic message
-						document.getElementById("cellresultModalLabel").innerText = 
-						    "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
-
-						// Show custom modal
-						$('#cellresultModal').modal('show');
-
-						// Handle Yes button
-						document.querySelector('.yes-btn').onclick = function() {
-							$('#cellresultModal').modal('hide');
-							const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
-						        backdrop: 'static',
-						        keyboard: false
-						    });
-							$('#loader').modal('show');
-
-							var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-							Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
-
-							location.href = Callurl;
-						};
-					} else {
-						showResultModal("Alert", "No Records available for this selected cell.");
-					}
-				}
-				
 	</script>
 	
+	
+	<SCRIPT>
+	
+	function calculateAll_RISK_WEIGHTED_AMT() {
+	    function getVal(id) {
+	        let el = $("#" + id);
+	        if (el.length === 0) {
+	            // console.warn("Missing element:", id);
+	            return 0;
+	        }
+	        let val = el.val() || el.text();
+	        return parseFloat(val.replace(/,/g, "")) || 0;
+	    }
+
+	    // Loop through all rows R11 to R36
+	    for (let i = 11; i <= 36; i++) {
+	        let exposure = getVal("R" + i + "_EXPOSURE_AMT");
+	        let riskWeight = getVal("R" + i + "_RISK_WEIGHT");
+
+	        // Formula: Exposure × Risk Weight (%)
+	        let weightedAmt = exposure * (riskWeight / 100);
+
+	        // Display formatted result
+	        $("#R" + i + "_RISK_WEIGHTED_AMT").val(
+	            weightedAmt.toLocaleString("en-IN", { maximumFractionDigits: 0 })
+	        );
+	    }
+	}
+
+	// Auto-calculate on load and when user edits exposure or risk weight
+	$(document).ready(function () {
+	    calculateAll_RISK_WEIGHTED_AMT();
+
+	    // Attach event listener to all exposure and risk weight fields R11–R36
+	    for (let i = 11; i <= 36; i++) {
+	        $("#R" + i + "_EXPOSURE_AMT, #R" + i + "_RISK_WEIGHT").on("input", calculateAll_RISK_WEIGHTED_AMT);
+	    }
+	});
+	
+	
+
+	function calculateR37_EXPOSURE_AMT() {
+	    function getVal(id) {
+	        let el = $("#" + id);
+	        if (el.length === 0) {
+	            console.warn("Missing element:", id);
+	            return 0;
+	        }
+	        let val = el.val() || el.text();
+	        return parseFloat(val.replace(/,/g, "")) || 0;
+	    }
+
+	    let TOTAL = 0;
+	    for (let i = 11; i <= 36; i++) {
+	        TOTAL += getVal("R" + i + "_EXPOSURE_AMT");
+	    }
+
+	    $("#R37_EXPOSURE_AMT").val(
+	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0 })
+	    );
+	}
+
+	$(document).ready(function () {
+	    calculateR37_EXPOSURE_AMT();
+
+	    // Trigger recalculation whenever any input changes
+	    for (let i = 11; i <= 36; i++) {
+	        $("#R" + i + "_EXPOSURE_AMT").on("input", calculateR37_EXPOSURE_AMT);
+	    }
+	});
+
+
+	
+	function calculateR37_RISK_WEIGHTED_AMT() {
+	    function getVal(id) {
+	        const el = $("#" + id);
+	        if (el.length === 0) {
+	            console.warn("Missing element:", id);
+	            return 0;
+	        }
+	        const val = el.val() || "0";
+	        return parseFloat(val.replace(/,/g, "")) || 0;
+	    }
+
+	    // Sum of R11_RISK_WEIGHTED_AMT to R36_RISK_WEIGHTED_AMT
+	    let total = 0;
+	    for (let i = 11; i <= 36; i++) {
+	        total += getVal("R" + i + "_RISK_WEIGHTED_AMT");
+	    }
+
+	    // Display total in R37_RISK_WEIGHTED_AMT
+	    $("#R37_RISK_WEIGHTED_AMT").val(
+	        total.toLocaleString("en-IN", { maximumFractionDigits: 0 })
+	    );
+	}
+
+	$(document).ready(function () {
+	    // Run on load
+	    calculateR37_RISK_WEIGHTED_AMT();
+
+	    // Auto update whenever any source input changes
+	    for (let i = 11; i <= 36; i++) {
+	        $("#R" + i + "_RISK_WEIGHTED_AMT").on("input change keyup", calculateR37_RISK_WEIGHTED_AMT);
+	    }
+	});
+	
+
+
+	
+
+
+</SCRIPT>
+
+
+
+	<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
+	    setTimeout(function () {
+	        location.reload();
+	    }, 300);
+	}
+
+	function fileuploads(btn) {
+	    const asondate = btn.getAttribute("data-todate");
+	    $('#loader').modal('show');
+
+	    // ✅ Step 1: Calculate TOTALs
+	    calculateAll_RISK_WEIGHTED_AMT();
+	    calculateR37_EXPOSURE_AMT();
+	    calculateR37_RISK_WEIGHTED_AMT();
+	    
+	    
+	    
+
+	    // ✅ Step 2: Remove commas from inputs
+	    $("#fileupload input[type='text']").each(function () {
+	        $(this).val($(this).val().replace(/,/g, ''));
+	    });
+
+	    // ✅ Step 3: Validate form
+	    if (!$("#fileupload").valid()) {
+	        $('#loader').modal('hide');
+	        return;
+	    }
+
+	    // ✅ Step 4: Build one FormData object for all entities
+	    const formData = new FormData();
+	    formData.append("asondate", asondate);
+
+	    // Append all inputs
+	    $('#fileupload').find(':input').each(function () {
+	        const name = $(this).attr('name');
+	        if (name) {
+	            formData.append(name, $(this).val());
+	        }
+	    });
+
+	    // ✅ Step 5: Send single Ajax request
+	    $.ajax({
+	        url: './SRWA12FupdateAll',
+	        type: 'POST',
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        dataType: 'text',
+	        success: function () {
+	            $("#resultModalLabel").text("BRRS");
+	            $("#resultModalBody").text("Updated successfully");
+	            $("#resultModal").modal("show");
+	        },
+	        error: function (jqXHR) {
+	            console.error("Error response:", jqXHR.responseText);
+	            $("#resultModalLabel").text("Error");
+	            $("#resultModalBody").text("Update failed. Check console for details.");
+	            $("#resultModal").modal("show");
+	        },
+	        complete: function () {
+	            $('#loader').modal('hide');
+	        }
+	    });
+	}
+
+
+
+
+
+	</script>
 </head>
 <title>BRRS</title>
 
@@ -665,14 +740,14 @@ PURPOSE		: BWRBRREPORT
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							M-SRWA 12f - Schedule of Rated Corporates	</h5>
+							Monthly Schedule M-SRWA 12f - Schedule of Rated Corporates</h5>
 					</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+							Date: <span th:text="${asondate}">2025-06-30</span>
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -680,6 +755,25 @@ PURPOSE		: BWRBRREPORT
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
+						
+<!-- Modify button -->
+<!-- Modify button -->
+<button type="button" class="custom-tab-btn"
+        onclick="showmodify(this);"
+        title="Click to EDIT Records"
+		th:if="${type != 'ARCHIVAL'}"
+       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+        id="addRecord">Modify</button>
+        
+        
+<!-- Cancel button (hidden initially) -->
+<button type="button" class="custom-tab-btn"
+        title="Cancel editing"
+        id="cancelRecord"
+        onclick="cancelModify();"
+        style="display: none;">Cancel</button>
+
+
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
@@ -687,11 +781,13 @@ PURPOSE		: BWRBRREPORT
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${dtltype},
-                    				 data-filename='M_SRWA_12F.xls',
+                    				 data-filename='M_SRWA12F.xls',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
+						
+						
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
@@ -699,7 +795,7 @@ PURPOSE		: BWRBRREPORT
 								    data-todate=${todate},
 									data-currency=${currency},  
 												data-dtltype=${dtltype}, 
-								    data-filename='M_SRWA_12FDetail',
+								    data-filename='M_SRWA12FDetail',
 									data-type=${type},
 												data-version=${version}
 								  ">
@@ -708,22 +804,27 @@ PURPOSE		: BWRBRREPORT
 
 
 					</div>
+					
 				</div>
-			<div th:if="${displaymode == 'summary'}">
-			<div class="row" >
-				<div class="col-sm-12">
-					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
-    					<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports" >
-						
-							<thead class="thead-light">
-  									<tr style="background-color: #b3b6b9 ">
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+						<form action="#" method="POST" id="fileupload">
+						<input type="hidden" name="asondate" id="asondate" th:value="${asondate}" />
+							<div class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6; ">
+								<table
+									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light">
+		                                    <tr style="background-color: #b3b6b9;">
 										
-										<th rowspan="3" style="text-align: center; width:33%;padding-left: 20px;">Name of Corporate</th>
-										<th style="text-align: center;">Credit Rating</th>
-										<th style="text-align: center;"> Rating Agency</th>
-										<th style="text-align: center;"> Exposure Amount </th>
-										<th style="text-align: center;"> Risk-Weight </th>
-										<th style="text-align: center;"> Risk-Weighted Amount </th>
+										<th rowspan="3" style="background-color: #D8D8D8;text-align: center; width:33%;padding-left: 20px;">Name of Corporate</th>
+										<th style="background-color: #D8D8D8;text-align: center;">Credit Rating</th>
+										<th style="background-color: #D8D8D8;text-align: center;"> Rating Agency</th>
+										<th style="background-color: #D8D8D8;text-align: center;"> Exposure Amount </th>
+										<th style="background-color: #D8D8D8;text-align: center;"> Risk-Weight </th>
+										<th style="background-color: #D8D8D8;text-align: center;"> Risk-Weighted Amount </th>
 										
 
 									</tr>
@@ -738,730 +839,1764 @@ PURPOSE		: BWRBRREPORT
 								</thead>
 
 
-								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+					<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 	
-										<tr>
 
-											<td style="padding-left: 20px;" th:text="${report.R11_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R11_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R11_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R11', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R11_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R11', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R11_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R11_RISK_WEIGHTED_AMT  }"></td>
-												
-										</tr>
+<tr>
+    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R11_NAME_OF_CORPORATE, 'N/A')}"
+               id="R11_NAME_OF_CORPORATE"
+               name="R11_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
 
-										<tr>
+    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R11_CREDIT_RATING, 'N/A')}"
+               id="R11_CREDIT_RATING"
+               name="R11_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
 
-											<td style="padding-left: 20px;" th:text="${report.R12_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R12_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R12_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R12_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R12', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R12_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R12_RISK_WEIGHTED_AMT  }"></td>
+    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R11_RATING_AGENCY, 'N/A')}"
+               id="R11_RATING_AGENCY"
+               name="R11_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R11_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R11_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R11_EXPOSURE_AMT"
+               name="R11_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R11_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R11_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R11_RISK_WEIGHT"
+               name="R11_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW11" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R11_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R11_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R11_RISK_WEIGHTED_AMT"
+               name="R11_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R12_NAME_OF_CORPORATE, 'N/A')}"
+               id="R12_NAME_OF_CORPORATE"
+               name="R12_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R12_CREDIT_RATING, 'N/A')}"
+               id="R12_CREDIT_RATING"
+               name="R12_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R12_RATING_AGENCY, 'N/A')}"
+               id="R12_RATING_AGENCY"
+               name="R12_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R12_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R12_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R12_EXPOSURE_AMT"
+               name="R12_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R12_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R12_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R12_RISK_WEIGHT"
+               name="R12_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW12" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R12_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R12_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R12_RISK_WEIGHTED_AMT"
+               name="R12_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R13_NAME_OF_CORPORATE, 'N/A')}"
+               id="R13_NAME_OF_CORPORATE"
+               name="R13_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R13_CREDIT_RATING, 'N/A')}"
+               id="R13_CREDIT_RATING"
+               name="R13_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               readonly />
+    </td>
+
+    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R13_RATING_AGENCY, 'N/A')}"
+               id="R13_RATING_AGENCY"
+               name="R13_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R13_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R13_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R13_EXPOSURE_AMT"
+               name="R13_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R13_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R13_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R13_RISK_WEIGHT"
+               name="R13_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW13" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R13_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R13_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R13_RISK_WEIGHTED_AMT"
+               name="R13_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R14_NAME_OF_CORPORATE, 'N/A')}"
+               id="R14_NAME_OF_CORPORATE"
+               name="R14_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R14_CREDIT_RATING, 'N/A')}"
+               id="R14_CREDIT_RATING"
+               name="R14_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R14_RATING_AGENCY, 'N/A')}"
+               id="R14_RATING_AGENCY"
+               name="R14_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R14_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R14_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R14_EXPOSURE_AMT"
+               name="R14_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R14_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R14_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R14_RISK_WEIGHT"
+               name="R14_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW14" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R14_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R14_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R14_RISK_WEIGHTED_AMT"
+               name="R14_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW15" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R15_NAME_OF_CORPORATE, 'N/A')}"
+               id="R15_NAME_OF_CORPORATE"
+               name="R15_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW15" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R15_CREDIT_RATING, 'N/A')}"
+               id="R15_CREDIT_RATING"
+               name="R15_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW15" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R15_RATING_AGENCY, 'N/A')}"
+               id="R15_RATING_AGENCY"
+               name="R15_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW15" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R15_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R15_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R15_EXPOSURE_AMT"
+               name="R15_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW15" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R15_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R15_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R15_RISK_WEIGHT"
+               name="R15_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R15_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R15_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R15_RISK_WEIGHTED_AMT"
+               name="R15_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW16" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R16_NAME_OF_CORPORATE, 'N/A')}"
+               id="R16_NAME_OF_CORPORATE"
+               name="R16_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW16" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R16_CREDIT_RATING, 'N/A')}"
+               id="R16_CREDIT_RATING"
+               name="R16_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW16" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R16_RATING_AGENCY, 'N/A')}"
+               id="R16_RATING_AGENCY"
+               name="R16_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW16" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R16_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R16_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R16_EXPOSURE_AMT"
+               name="R16_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW16" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R16_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R16_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R16_RISK_WEIGHT"
+               name="R16_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW16" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R16_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R16_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R16_RISK_WEIGHTED_AMT"
+               name="R16_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW17" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R17_NAME_OF_CORPORATE, 'N/A')}"
+               id="R17_NAME_OF_CORPORATE"
+               name="R17_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW17" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R17_CREDIT_RATING, 'N/A')}"
+               id="R17_CREDIT_RATING"
+               name="R17_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               readonly />
+    </td>
+
+    <td id="ROW17" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R17_RATING_AGENCY, 'N/A')}"
+               id="R17_RATING_AGENCY"
+               name="R17_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW17" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R17_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R17_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R17_EXPOSURE_AMT"
+               name="R17_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW17" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R17_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R17_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R17_RISK_WEIGHT"
+               name="R17_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R17_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R17_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R17_RISK_WEIGHTED_AMT"
+               name="R17_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW18" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R18_NAME_OF_CORPORATE, 'N/A')}"
+               id="R18_NAME_OF_CORPORATE"
+               name="R18_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW18" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R18_CREDIT_RATING, 'N/A')}"
+               id="R18_CREDIT_RATING"
+               name="R18_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW18" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R18_RATING_AGENCY, 'N/A')}"
+               id="R18_RATING_AGENCY"
+               name="R18_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW18" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R18_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R18_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R18_EXPOSURE_AMT"
+               name="R18_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW18" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R18_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R18_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R18_RISK_WEIGHT"
+               name="R18_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW18" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R18_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R18_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R18_RISK_WEIGHTED_AMT"
+               name="R18_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW19" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R19_NAME_OF_CORPORATE, 'N/A')}"
+               id="R19_NAME_OF_CORPORATE"
+               name="R19_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW19" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R19_CREDIT_RATING, 'N/A')}"
+               id="R19_CREDIT_RATING"
+               name="R19_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW19" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R19_RATING_AGENCY, 'N/A')}"
+               id="R19_RATING_AGENCY"
+               name="R19_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW19" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R19_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R19_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R19_EXPOSURE_AMT"
+               name="R19_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW19" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R19_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R19_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R19_RISK_WEIGHT"
+               name="R19_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW19" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R19_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R19_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R19_RISK_WEIGHTED_AMT"
+               name="R19_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW20" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R20_NAME_OF_CORPORATE, 'N/A')}"
+               id="R20_NAME_OF_CORPORATE"
+               name="R20_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW20" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R20_CREDIT_RATING, 'N/A')}"
+               id="R20_CREDIT_RATING"
+               name="R20_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW20" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R20_RATING_AGENCY, 'N/A')}"
+               id="R20_RATING_AGENCY"
+               name="R20_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW20" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R20_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R20_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R20_EXPOSURE_AMT"
+               name="R20_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW20" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R20_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R20_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R20_RISK_WEIGHT"
+               name="R20_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW20" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R20_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R20_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R20_RISK_WEIGHTED_AMT"
+               name="R20_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW21" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R21_NAME_OF_CORPORATE, 'N/A')}"
+               id="R21_NAME_OF_CORPORATE"
+               name="R21_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW21" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R21_CREDIT_RATING, 'N/A')}"
+               id="R21_CREDIT_RATING"
+               name="R21_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW21" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R21_RATING_AGENCY, 'N/A')}"
+               id="R21_RATING_AGENCY"
+               name="R21_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW21" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R21_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R21_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R21_EXPOSURE_AMT"
+               name="R21_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW21" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R21_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R21_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R21_RISK_WEIGHT"
+               name="R21_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW21" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R21_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R21_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R21_RISK_WEIGHTED_AMT"
+               name="R21_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW22" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R22_NAME_OF_CORPORATE, 'N/A')}"
+               id="R22_NAME_OF_CORPORATE"
+               name="R22_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW22" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R22_CREDIT_RATING, 'N/A')}"
+               id="R22_CREDIT_RATING"
+               name="R22_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW22" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R22_RATING_AGENCY, 'N/A')}"
+               id="R22_RATING_AGENCY"
+               name="R22_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW22" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R22_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R22_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R22_EXPOSURE_AMT"
+               name="R22_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW22" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R22_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R22_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R22_RISK_WEIGHT"
+               name="R22_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW22" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R22_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R22_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R22_RISK_WEIGHTED_AMT"
+               name="R22_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW23" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R23_NAME_OF_CORPORATE, 'N/A')}"
+               id="R23_NAME_OF_CORPORATE"
+               name="R23_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW23" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R23_CREDIT_RATING, 'N/A')}"
+               id="R23_CREDIT_RATING"
+               name="R23_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW23" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R23_RATING_AGENCY, 'N/A')}"
+               id="R23_RATING_AGENCY"
+               name="R23_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW23" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R23_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R23_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R23_EXPOSURE_AMT"
+               name="R23_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW23" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R23_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R23_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R23_RISK_WEIGHT"
+               name="R23_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW23" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R23_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R23_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R23_RISK_WEIGHTED_AMT"
+               name="R23_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW24" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R24_NAME_OF_CORPORATE, 'N/A')}"
+               id="R24_NAME_OF_CORPORATE"
+               name="R24_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW24" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R24_CREDIT_RATING, 'N/A')}"
+               id="R24_CREDIT_RATING"
+               name="R24_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW24" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R24_RATING_AGENCY, 'N/A')}"
+               id="R24_RATING_AGENCY"
+               name="R24_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW24" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R24_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R24_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R24_EXPOSURE_AMT"
+               name="R24_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW24" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R24_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R24_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R24_RISK_WEIGHT"
+               name="R24_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW24" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R24_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R24_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R24_RISK_WEIGHTED_AMT"
+               name="R24_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW25" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R25_NAME_OF_CORPORATE, 'N/A')}"
+               id="R25_NAME_OF_CORPORATE"
+               name="R25_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW25" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R25_CREDIT_RATING, 'N/A')}"
+               id="R25_CREDIT_RATING"
+               name="R25_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW25" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R25_RATING_AGENCY, 'N/A')}"
+               id="R25_RATING_AGENCY"
+               name="R25_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW25" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R25_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R25_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R25_EXPOSURE_AMT"
+               name="R25_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW25" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R25_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R25_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R25_RISK_WEIGHT"
+               name="R25_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW25" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R25_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R25_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R25_RISK_WEIGHTED_AMT"
+               name="R25_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW26" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R26_NAME_OF_CORPORATE, 'N/A')}"
+               id="R26_NAME_OF_CORPORATE"
+               name="R26_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW26" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R26_CREDIT_RATING, 'N/A')}"
+               id="R26_CREDIT_RATING"
+               name="R26_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW26" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R26_RATING_AGENCY, 'N/A')}"
+               id="R26_RATING_AGENCY"
+               name="R26_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW26" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R26_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R26_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R26_EXPOSURE_AMT"
+               name="R26_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW26" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R26_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R26_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R26_RISK_WEIGHT"
+               name="R26_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW26" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R26_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R26_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R26_RISK_WEIGHTED_AMT"
+               name="R26_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW27" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R27_NAME_OF_CORPORATE, 'N/A')}"
+               id="R27_NAME_OF_CORPORATE"
+               name="R27_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW27" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R27_CREDIT_RATING, 'N/A')}"
+               id="R27_CREDIT_RATING"
+               name="R27_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW27" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R27_RATING_AGENCY, 'N/A')}"
+               id="R27_RATING_AGENCY"
+               name="R27_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW27" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R27_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R27_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R27_EXPOSURE_AMT"
+               name="R27_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW27" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R27_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R27_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R27_RISK_WEIGHT"
+               name="R27_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW27" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R27_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R27_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R27_RISK_WEIGHTED_AMT"
+               name="R27_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW28" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R28_NAME_OF_CORPORATE, 'N/A')}"
+               id="R28_NAME_OF_CORPORATE"
+               name="R28_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW28" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R28_CREDIT_RATING, 'N/A')}"
+               id="R28_CREDIT_RATING"
+               name="R28_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW28" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R28_RATING_AGENCY, 'N/A')}"
+               id="R28_RATING_AGENCY"
+               name="R28_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW28" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R28_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R28_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R28_EXPOSURE_AMT"
+               name="R28_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW28" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R28_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R28_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R28_RISK_WEIGHT"
+               name="R28_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW28" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R28_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R28_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R28_RISK_WEIGHTED_AMT"
+               name="R28_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW29" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R29_NAME_OF_CORPORATE, 'N/A')}"
+               id="R29_NAME_OF_CORPORATE"
+               name="R29_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW29" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R29_CREDIT_RATING, 'N/A')}"
+               id="R29_CREDIT_RATING"
+               name="R29_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW29" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R29_RATING_AGENCY, 'N/A')}"
+               id="R29_RATING_AGENCY"
+               name="R29_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW29" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R29_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R29_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R29_EXPOSURE_AMT"
+               name="R29_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW29" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R29_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R29_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R29_RISK_WEIGHT"
+               name="R29_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW29" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R29_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R29_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R29_RISK_WEIGHTED_AMT"
+               name="R29_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW30" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R30_NAME_OF_CORPORATE, 'N/A')}"
+               id="R30_NAME_OF_CORPORATE"
+               name="R30_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW30" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R30_CREDIT_RATING, 'N/A')}"
+               id="R30_CREDIT_RATING"
+               name="R30_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW30" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R30_RATING_AGENCY, 'N/A')}"
+               id="R30_RATING_AGENCY"
+               name="R30_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW30" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R30_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R30_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R30_EXPOSURE_AMT"
+               name="R30_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW30" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R30_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R30_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R30_RISK_WEIGHT"
+               name="R30_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW30" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R30_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R30_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R30_RISK_WEIGHTED_AMT"
+               name="R30_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW31" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R31_NAME_OF_CORPORATE, 'N/A')}"
+               id="R31_NAME_OF_CORPORATE"
+               name="R31_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW31" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R31_CREDIT_RATING, 'N/A')}"
+               id="R31_CREDIT_RATING"
+               name="R31_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW31" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R31_RATING_AGENCY, 'N/A')}"
+               id="R31_RATING_AGENCY"
+               name="R31_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align:left;"
+               readonly />
+    </td>
+
+    <td id="ROW31" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R31_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R31_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R31_EXPOSURE_AMT"
+               name="R31_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW31" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R31_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R31_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R31_RISK_WEIGHT"
+               name="R31_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW31" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R31_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R31_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R31_RISK_WEIGHTED_AMT"
+               name="R31_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW32" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R32_NAME_OF_CORPORATE, 'N/A')}"
+               id="R32_NAME_OF_CORPORATE"
+               name="R32_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW32" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R32_CREDIT_RATING, 'N/A')}"
+               id="R32_CREDIT_RATING"
+               name="R32_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW32" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R32_RATING_AGENCY, 'N/A')}"
+               id="R32_RATING_AGENCY"
+               name="R32_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW32" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R32_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R32_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R32_EXPOSURE_AMT"
+               name="R32_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW32" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R32_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R32_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R32_RISK_WEIGHT"
+               name="R32_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW32" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R32_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R32_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R32_RISK_WEIGHTED_AMT"
+               name="R32_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW33" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R33_NAME_OF_CORPORATE, 'N/A')}"
+               id="R33_NAME_OF_CORPORATE"
+               name="R33_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW33" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R33_CREDIT_RATING, 'N/A')}"
+               id="R33_CREDIT_RATING"
+               name="R33_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW33" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R33_RATING_AGENCY, 'N/A')}"
+               id="R33_RATING_AGENCY"
+               name="R33_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW33" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R33_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R33_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R33_EXPOSURE_AMT"
+               name="R33_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW33" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R33_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R33_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R33_RISK_WEIGHT"
+               name="R33_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW33" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R33_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R33_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R33_RISK_WEIGHTED_AMT"
+               name="R33_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW34" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R34_NAME_OF_CORPORATE, 'N/A')}"
+               id="R34_NAME_OF_CORPORATE"
+               name="R34_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW34" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R34_CREDIT_RATING, 'N/A')}"
+               id="R34_CREDIT_RATING"
+               name="R34_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW34" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R34_RATING_AGENCY, 'N/A')}"
+               id="R34_RATING_AGENCY"
+               name="R34_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW34" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R34_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R34_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R34_EXPOSURE_AMT"
+               name="R34_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW34" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R34_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R34_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R34_RISK_WEIGHT"
+               name="R34_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW34" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R34_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R34_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R34_RISK_WEIGHTED_AMT"
+               name="R34_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW35" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R35_NAME_OF_CORPORATE, 'N/A')}"
+               id="R35_NAME_OF_CORPORATE"
+               name="R35_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW35" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R35_CREDIT_RATING, 'N/A')}"
+               id="R35_CREDIT_RATING"
+               name="R35_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW35" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R35_RATING_AGENCY, 'N/A')}"
+               id="R35_RATING_AGENCY"
+               name="R35_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW35" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R35_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R35_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R35_EXPOSURE_AMT"
+               name="R35_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW35" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R35_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R35_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R35_RISK_WEIGHT"
+               name="R35_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW35" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R35_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R35_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R35_RISK_WEIGHTED_AMT"
+               name="R35_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW36" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R36_NAME_OF_CORPORATE, 'N/A')}"
+               id="R36_NAME_OF_CORPORATE"
+               name="R36_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW36" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R36_CREDIT_RATING, 'N/A')}"
+               id="R36_CREDIT_RATING"
+               name="R36_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW36" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R36_RATING_AGENCY, 'N/A')}"
+               id="R36_RATING_AGENCY"
+               name="R36_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW36" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R36_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R36_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R36_EXPOSURE_AMT"
+               name="R36_EXPOSURE_AMT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW36" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.R36_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R36_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R36_RISK_WEIGHT"
+               name="R36_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW36" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R36_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R36_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R36_RISK_WEIGHTED_AMT"
+               name="R36_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id="ROW37" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;"> 
+        <input class="display-input Show_input" type="text"
+               th:value="${#strings.defaultString(report.R37_NAME_OF_CORPORATE, 'Total')}"
+               id="R37_NAME_OF_CORPORATE"
+               name="R37_NAME_OF_CORPORATE"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW37" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_inputnonEditable" type="text"
+               th:value="${#strings.defaultString(report.R37_CREDIT_RATING, '')}"
+               id="R37_CREDIT_RATING"
+               name="R37_CREDIT_RATING"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW37" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_inputnonEditable" type="text"
+               th:value="${#strings.defaultString(report.R37_RATING_AGENCY, '')}"
+               id="R37_RATING_AGENCY"
+               name="R37_RATING_AGENCY"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               readonly />
+    </td>
+
+    <td id="ROW37" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable" type="text"
+               th:value="${report.R37_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R37_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               id="R37_EXPOSURE_AMT"
+               name="R37_EXPOSURE_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW37" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable" type="text"
+               th:value="${report.R37_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R37_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               id="R37_RISK_WEIGHT"
+               name="R37_RISK_WEIGHT"
+               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW37" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
+        <input class="display-input Show_inputnonEditable"
+               type="text"
+               th:value="${report.R37_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R37_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               id="R37_RISK_WEIGHTED_AMT"
+               name="R37_RISK_WEIGHTED_AMT"
+               style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+</tbody>	
 										
-										</tr>
+</table>
+								
 
-										<tr>
-										
-											<td style="padding-left: 20px;" th:text="${report.R13_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R13_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R13_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R13_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R13', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R13_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R13_RISK_WEIGHTED_AMT  }"></td>
 
-										</tr>
-
-										<tr>
-											
-											<td style="padding-left: 20px;" th:text="${report.R14_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R14_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R14_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R14_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R14', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R14_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R14_RISK_WEIGHTED_AMT  }"></td>
-										</tr>
-										
-																				
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R15_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R15_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R15_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R15_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R15', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R15_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R15_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R16_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R16_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R16_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R16', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R16_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R16', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R16_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R16_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R17_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R17_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R17_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R17', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R17_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R17', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R17_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R17_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
+</div>
+							<div style="text-align: center; margin-top: 10px;">
+								
+    <button id="submitButton" 
+            type="button"
+            class="custom-tab-btn Show_input" 
+            form="fileupload"
+            th:attr="data-todate=${asondate}" 
+            onclick="fileuploads(this);" 
+            style="display: none;">
+        Submit
+    </button>
+</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
 	
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R18_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R18_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R18_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R18', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R18_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R18', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R18_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R18_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R19_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R19_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R19_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R19', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R19_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R19', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R19_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R19_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
+	
+	<!-- Custom Cellresult Modal -->
+		<div class="modal fade" id="cellresultModal">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content">
+		      
+		      <!-- Custom header -->
+		      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+		        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+		          Do you want to open the report?
+		        </div>
+		      </div>
 
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R20_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R20_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R20_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R20', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R20_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R20', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R20_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R20_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
+		      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+		        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+		          Cancel
+		        </button>
+		        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+		          Yes
+		        </button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
 
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R21_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R21_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R21_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R21_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R21', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R21_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R21_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
+	
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R22_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R22_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R22_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R22_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R22', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R22_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R22_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R23_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R23_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R23_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R23_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R23', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R23_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R23_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
+</body>
 
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R24_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R24_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R24_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R24_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R24', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R24_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R24_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
+<!-- <script>
+															  $(document).ready(function () {
+															    $('#BRRSvalidation').DataTable({
+															      "paging": true,
+															      "info": false,       // turn off "Showing x of y"
+															      "searching": false,  // turn off search
+															      "ordering": false,   // turn off ordering
+															      "lengthChange": false // hide "Show x entries"
+															    });
+															  });
+	
+														</script> -->
+														
+														<style>
+														  #BRFdet td {
+														    border: 1px solid #ccc;
+														    padding: 8px;
+														  }
 
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R25_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R25_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R25_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R25_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R25', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R25_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R25_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R26_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R26_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R26_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R26_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R26', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R26_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R26_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R27_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R27_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R27_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R27_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R27', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R27_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R27_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
+														  #BRFdet {
+														    border-collapse: collapse;
+														    width: 100%;
+														  }
+														</style>
+														
+<style>
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 590px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
 
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R28_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R28_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R28_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R28_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R28', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R28_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R28_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R29_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R29_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R29_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R29_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R29', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R29_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R29_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R30_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R30_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R30_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R30_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R30', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R30_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R30_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R31_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R31_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R31_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R31', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R31_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R31', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R31_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R31_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R32_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R32_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R32_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R32', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R32_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R32', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R32_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R32_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R33_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R33_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R33_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R33', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R33_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R33', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R33_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R33_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R34_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R34_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R34_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R34', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R34_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R34', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R34_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R34_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R35_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R35_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R35_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R35', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R35_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R35', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R35_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R35_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px;" th:text="${report.R36_NAME_OF_CORPORATE}"></td>  
-											<td style="text-align: right; "
-												th:text="${report.R36_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R36_RATING_AGENCY}"></td>
-											<td style="text-align: right;" th:attr="RowId='R36', ColumnId='C4'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-											    th:text="${report.R36_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right;" th:attr="RowId='R36', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R36_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R36_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
-										
-										<tr>
-											<td style="padding-left: 20px; font-weight: bold;" th:text="${report.R37_NAME_OF_CORPORATE}"></td>   
-											<td style="text-align: right; "
-												th:text="${report.R37_CREDIT_RATING }"></td>
-											<td style="text-align: right; "
-												th:text="${report.R37_RATING_AGENCY}"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;"
-											    th:text="${report.R37_EXPOSURE_AMT  }"></td>
-											<td style="text-align: right; background-color: 	#888888;" th:attr="RowId='R37', ColumnId='C5'" 
-												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R37_RISK_WEIGHT  }"></td>
-											<td style="text-align: right; background-color: rgb(107, 122, 143);color: white;" 
-												th:text="${report.R37_RISK_WEIGHTED_AMT  }"></td>												
-										</tr>
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
+
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
+
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
+
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
+
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
+</style>
+<style>
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
+
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
+
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
+
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
+
+	.pagination {
+		margin: 0;
+	}
+
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
+
+	.page-link {
+		color: #386276;
+	}
+
+	.page-link:hover {
+		color: #2a4a5c;
+	}
+
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
+</style>
+
+</html>
 
 
-
-
-
-																			
-										</tbody>
-																		</table>
-
-																	</div>
-																</div>
-															</div>
-														</div>
-														<div th:if="${displaymode == 'Details'}">
-															<div class="row">
-																<div class="col-sm-12">
-																	<div class="table-responsive scrollable-table-container"
-																		style="border-right: 1px solid #dee2e6;">
-																		<table
-																			class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-																			id="reportss">
-																			<thead class="thead-light">
-																				<tr>
-																					<th></th>
-																					<th style="text-align: left;">CUST ID</th>
-																					<th style="text-align: left;">ACCT NO</th>
-																					<th>ACCT NAME</th>
-																					<th style="text-align: right;">ACCT BALANCE</th>
-																					<th style="text-align: left;">ROWID</th>
-																					<th>COLUMNID</th>
-																					<th>REPORT_DATE</th>
-																				</tr>
-																			</thead>
-																			<tbody style="font-family: Arial;">
-																				<tr th:each="report: ${reportdetails}">
-																					<td><a data-toggle="tooltip" class="editrec"
-																							title="Click to Edit this Record"> <i class="fas fa-edit"
-																								onclick="editRecord(this)"></i>
-																						</a></td>
-																					<td style="text-align: left;" th:text="${report.custId}"></td>
-																					<td style="text-align: left;" th:text="${report.acctNumber}"></td>
-																					<td th:text="${report.acctName}"></td>
-																					<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
-																					<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 3, 3, 'COMMA')}"
-																					    style="text-align: right;"></td>
-																					<td style="text-align: left;" th:text="${report.rowId}"></td>
-																					<td th:text="${report.columnId}"></td>
-																					<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
-																				</tr>
-																			</tbody>
-																		</table>
-																		<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
-																											   
-																											    
-																											    
-																											<a th:if="${currentPage > 0}"
-																											 th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																											    asondate=${asondate},                             
-																											    fromdate=${fromdate},
-																											    todate=${todate},
-																											    currency=${currency},
-																											    dtltype=${dtltype},
-																											    type=${type},
-																											    version=${version},
-																											    page=${currentPage - 100},
-																											    size=100
-																											)}">
-																											    Previous
-																											</a>
-																					
-																											    
-																											    <span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
-																											
-																											    
-																											    <a th:if="${currentPage < (totalPages - 1) * 100}"
-																											    	
-																											    th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																											    asondate=${asondate},
-																											    fromdate=${fromdate},
-																											    todate=${todate},
-																											    currency=${currency},
-																											    dtltype=${dtltype},
-																											    type=${type},
-																											    version=${version},
-																											    page=${currentPage + 100},
-																											    size=100
-																											)}">	
-																											    Next
-																											    </a>
-																											</div>
-																		
-																		
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-											
-											<!-- Custom Cellresult Modal -->
-												<div class="modal fade" id="cellresultModal">
-												  <div class="modal-dialog modal-dialog-centered">
-												    <div class="modal-content">
-												      
-												      <!-- Custom header -->
-												      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-												        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-												          Do you want to open the report?
-												        </div>
-												      </div>
-
-												      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-												        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-												          Cancel
-												        </button>
-												        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-												          Yes
-												        </button>
-												      </div>
-												    </div>
-												  </div>
-												</div>
-
-											
-											<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-												<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-													<div class="modal-content" style="background: transparent;">
-														<div class="modal-body" style="text-align: center">
-															<div>
-																<img th:src=@{/images/loader.gif} id="bfirelogo"
-																	style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-																	alt="Bornfire">
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-											<!-- Custom Alert/Result Modal (Matches your existing style) -->
-											<div class="modal fade" id="resultModal">
-												<div class="modal-dialog modal-dialog-centered">
-													<div class="modal-content">
-														<!-- Your custom styled header -->
-														<div class="menu-title-header">
-															<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-																<!-- Title will be set by JavaScript -->
-															</div>
-														</div>
-														<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-															<p id="resultModalBody"></p>
-															<!-- Your custom styled button -->
-															<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
-														</div>
-													</div>
-												</div>
-											</div>
-
-										</body>
-
-										<!-- <script>
-																									  $(document).ready(function () {
-																									    $('#BRRSvalidation').DataTable({
-																									      "paging": true,
-																									      "info": false,       // turn off "Showing x of y"
-																									      "searching": false,  // turn off search
-																									      "ordering": false,   // turn off ordering
-																									      "lengthChange": false // hide "Show x entries"
-																									    });
-																									  });
-											
-																								</script> -->
-																								
-																								<style>
-																								  #BRFdet td {
-																								    border: 1px solid #ccc;
-																								    padding: 8px;
-																								  }
-
-																								  #BRFdet {
-																								    border-collapse: collapse;
-																								    width: 100%;
-																								  }
-																								</style>
-																								
-										<style>
-											/* Your existing CSS - this is the correct approach */
-											.scrollable-table-container {
-												/* This is the key: it creates the scroll context */
-												max-height: 590px;
-												/* Or a suitable height like 80vh for responsive design */
-												overflow-y: auto;
-												border: 1px solid #ccc;
-											}
-
-											/* Your existing sticky header CSS, targeting the tr elements within the thead */
-											.scrollable-table-container thead tr:nth-child(1) {
-												position: sticky;
-												top: 0;
-												background-color: #b3b6b9;
-												z-index: 5;
-											}
-
-											.scrollable-table-container thead tr:nth-child(2) {
-												position: sticky;
-												top: 36px;
-												/* adjust based on row height */
-												background-color: #b3b6b9;
-												z-index: 4;
-											}
-
-											.scrollable-table-container thead tr:nth-child(3) {
-												position: sticky;
-												top: 72px;
-												/* Adjust based on row height */
-												background-color: #b3b6b9;
-												z-index: 3;
-											}
-
-											.scrollable-table-container thead tr:nth-child(4) {
-												position: sticky;
-												top: 100px;
-												/* Adjust based on row height */
-												background-color: #b3b6b9;
-												z-index: 2;
-											}
-
-											.scrollable-table-container thead tr:nth-child(5) {
-												position: sticky;
-												top: 135px;
-												/* Adjust based on row height */
-												background-color: #b3b6b9;
-												z-index: 1;
-											}
-										</style>
-										<style>
-											.inner {
-												max-height: 600px;
-												/* Adjust height as needed */
-												overflow: auto;
-												border: 1px solid #dee2e6;
-											}
-
-											/* Sticky thead */
-											#reports thead th {
-												position: sticky;
-												top: 0;
-												background-color: #f8f9fa;
-												/* Match Bootstrap thead-light */
-												z-index: 2;
-											}
-
-											div.dataTables_wrapper div.dataTables_paginate {
-												text-align: right !important;
-												float: right !important;
-												width: auto;
-												margin-top: 10px;
-											}
-
-											/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-											div.dataTables_wrapper div.dataTables_info {
-												float: left !important;
-												margin-top: 10px;
-											}
-
-											.pagination {
-												margin: 0;
-											}
-
-											.page-item.active .page-link {
-												background-color: #386276;
-												border-color: #386276;
-											}
-
-											.page-link {
-												color: #386276;
-											}
-
-											.page-link:hover {
-												color: #2a4a5c;
-											}
-
-											.form-select {
-												display: inline-block;
-												width: auto;
-											}
-										</style>
-
-										</html>

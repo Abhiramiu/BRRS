@@ -403,7 +403,7 @@ $(window).on('beforeunload', function() {
 			alertMsg.innerHTML ='Download request Processing...';
 	   	 	showAlert();
 
-			const baseUrl = '/BCDRS/Reports/startreport';
+			const baseUrl = '/BRRS/Reports/startreport';
 			const downloadUrl = baseUrl +
 				'?filename=' + encodeURIComponent(filename) +
 				'&fromdate=' + encodeURIComponent(fromdate) +
@@ -426,7 +426,7 @@ $(window).on('beforeunload', function() {
 
 		function checkReport(jobId) {
 			const alertMsg = document.getElementById("alertMessage");
-		    fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+		    fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
 		        .then(res => res.text())
 		        .then(status => {
 		            if (status === "READY") {
@@ -458,7 +458,7 @@ $(window).on('beforeunload', function() {
 			//$('#loader').modal('show');
 			
 			$.ajax({
-				url: '/BCDRS/Reports/downloaddetailExcel?jobId='+ jobId +
+				url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
 					'&filename=' + filename,
 				type: 'GET',
 				xhrFields: {

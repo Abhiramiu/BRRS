@@ -379,10 +379,7 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 			
-		case "M_SRWA_12F":
-			repdetail = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
+		
 			
 		case "M_SRWA_12H":
 			repdetail = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HcurrentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -569,7 +566,7 @@ public class RegulatoryReportServices {
 		
 		case "M_SRWA_12F":
 			try {
-				repfile = BRRS_M_SRWA_12F_reportservice.BRRS_M_SRWA_12FExcel(filename, reportId, fromdate, todate, currency,
+				repfile = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -865,9 +862,7 @@ public class RegulatoryReportServices {
 					type, version);
 		}
 		
-		if ("M_SRWA_12FDetail".equals(filename)) {
-			return BRRS_M_SRWA_12F_reportservice.BRRS_M_SRWA_12FDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
-		}
+		
 		
 		if ("M_SRWA_12HDetail".equals(filename)) {
 			return BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
@@ -1243,9 +1238,7 @@ public class RegulatoryReportServices {
 		    fileData = BRRS_M_LA4_reportservice.BRRS_M_LA4DetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
 		} else if (filename.equals("M_ISDetail")) {
 		    fileData = BRRS_M_IS_reportservice.BRRS_M_ISDetailExcel(filename, fromdate, todate, currency, dtltype, type, version);
-		} else if (filename.equals("M_SRWA_12FDetail")) {
-		    fileData = BRRS_M_SRWA_12F_reportservice.BRRS_M_SRWA_12FDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
-		}else if (filename.equals("M_SRWA_12HDetail")) {
+		} else if (filename.equals("M_SRWA_12HDetail")) {
 		    fileData = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
 		}else if (filename.equals("M_MRCDetail")) {
 		    fileData = BRRS_M_MRC_reportservice.BRRS_M_MRCDetailExcel(filename, fromdate, todate, currency, dtltype, type ,version);
