@@ -17,7 +17,7 @@ public interface BFDB_Rep extends JpaRepository<BFDB_Entity, String> {
 	@Query(value = "SELECT * FROM BRRS_BFDB WHERE report_date=? ORDER BY id", nativeQuery = true)
 	List<BFDB_Entity> Getcurrentdaydetail(Date Report_date);
 
-	@Query("SELECT DISTINCT m.report_date FROM BFDB_Entity m ORDER BY m.report_date DESC")
+	@Query(value ="SELECT DISTINCT m.report_date FROM BRRS_BFDB m ORDER BY m.report_date DESC", nativeQuery = true)
     List<Date> findDistinctReportDates();
 	
 	@Query(value = "SELECT * FROM BRRS_BFDB " +

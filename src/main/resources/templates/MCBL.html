@@ -982,13 +982,15 @@ function checkReportDate() {
 
 
 <!-- ================== DEPOSIT GENERAL (BDGF) ================== -->
-<div th:if="${selectedFileType == 'DEPOSIT_GENERAL'}" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+<div th:if="${selectedFileType == 'DEPOSIT_GENERAL'}" 
+     class="table-responsive" 
+     style="max-height: 500px; overflow-y: auto;">
   <table class="table table-bordered table-sm">
     <thead class="table-light" style="position: sticky; top: 0; z-index: 2;">
       <tr>
         <th>Account No</th>
         <th>Customer Id</th>
-        <th>Customer Name
+        <th>Customer Name</th>
         <th>Currency</th>
         <th class="text-end">Amount Deposited</th>
         <th class="text-end">Outstanding Balance</th>
@@ -998,31 +1000,38 @@ function checkReportDate() {
     </thead>
     <tbody>
       <tr th:each="record : ${BDGF_List}">
-        <td th:text="${record.acc_no}"></td>
+        <td th:text="${record.account_no}"></td>
         <td th:text="${record.customer_id}"></td>
         <td th:text="${record.customer_name}"></td>
         <td th:text="${record.currency}"></td>
-        <td class="text-end" th:text="${#numbers.formatInteger(record.amount_deposited,3,'COMMA')}"></td>
-        <td class="text-end" th:text="${#numbers.formatInteger(record.outstanding_balance,3,'COMMA')}"></td>
-        <td th:text="${#dates.format(record.maturity_date, 'dd-MM-yyyy')}"></td>
-        <td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
+        <td class="text-end" 
+            th:text="${record.amount_deposited != null ? #numbers.formatDecimal(record.amount_deposited, 0, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+        <td class="text-end" 
+            th:text="${record.outstanding_balance != null ? #numbers.formatDecimal(record.outstanding_balance, 0, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+        <td th:text="${record.maturity_date != null ? #dates.format(record.maturity_date, 'dd-MM-yyyy') : ''}"></td>
+        <td th:text="${record.report_date != null ? #dates.format(record.report_date, 'dd-MM-yyyy') : ''}"></td>
       </tr>
       <tr th:if="${#lists.isEmpty(BDGF_List)}">
-        <td colspan="6" class="text-center">No records found</td>
+        <td colspan="8" class="text-center">No records found</td>
       </tr>
     </tbody>
   </table>
 </div>
 
 
+
 <!-- ================== DEPOSIT BOOK (BFDB) ================== -->
-<div th:if="${selectedFileType == 'DEPOSIT_BOOK'}" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+<div th:if="${selectedFileType == 'DEPOSIT_BOOK'}" 
+     class="table-responsive" 
+     style="max-height: 500px; overflow-y: auto;">
   <table class="table table-bordered table-sm">
     <thead class="table-light">
       <tr>
         <th>Account No</th>
         <th>Customer Id</th>
-        <th>Account Name</th>
+        <th>Customer Name</th>
+        <th>Scheme Code</th>
+        <th>Scheme Desc</th>
         <th>Currency</th>
         <th>GL Sub Head</th>
         <th class="text-end">Balance As On</th>
@@ -1032,15 +1041,18 @@ function checkReportDate() {
     <tbody>
       <tr th:each="record : ${BFDB_List}">
         <td th:text="${record.account_no}"></td>
-        <td th:text="${record.cust_id}"></td>
-        <td th:text="${record.acct_name}"></td>
-        <td th:text="${record.ccy}"></td>
+        <td th:text="${record.customer_id}"></td>
+        <td th:text="${record.customer_name}"></td>
+        <td th:text="${record.schm_code}"></td>
+        <td th:text="${record.schm_desc}"></td>
+        <td th:text="${record.currency}"></td>
         <td th:text="${record.gl_sub_head_code}"></td>
-        <td class="text-end" th:text="${#numbers.formatInteger(record.balance_as_on,3,'COMMA')}"></td>
+        <td class="text-end" 
+            th:text="${#numbers.formatInteger(record.balance_as_on,3,'COMMA')}"></td>
         <td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
       </tr>
       <tr th:if="${#lists.isEmpty(BFDB_List)}">
-        <td colspan="5" class="text-center">No records found</td>
+        <td colspan="9" class="text-center">No records found</td>
       </tr>
     </tbody>
   </table>
@@ -1053,10 +1065,10 @@ function checkReportDate() {
     <thead class="table-light">
       <tr>
         <th>Account No</th>
-        <th>Customer Id</th>
-        <th>Account Name</th>
-       <th>Scheme Code</th>
-       <th>Scheme Desc</th>
+        <th>Customer ID</th>
+        <th>Customer Name</th>
+        <th>Scheme Code</th>
+        <th>Scheme Description</th>
         <th>Currency</th>
         <th class="text-end">Balance As On</th>
         <th>Report Date</th>
@@ -1065,16 +1077,17 @@ function checkReportDate() {
     <tbody>
       <tr th:each="record : ${BLBF_List}">
         <td th:text="${record.account_no}"></td>
-        <td th:text="${record.cust_id}"></td>
-        <td th:text="${record.acct_name}"></td>
+        <td th:text="${record.customer_id}"></td>
+        <td th:text="${record.customer_name}"></td>
         <td th:text="${record.schm_code}"></td>
         <td th:text="${record.schm_desc}"></td>
-        <td th:text="${record.ccy}"></td>
-        <td class="text-end" th:text="${#numbers.formatInteger(record.balance_as_on,3,'COMMA')}"></td>
+        <td th:text="${record.currency}"></td>
+        <td class="text-end" th:text="${#numbers.formatDecimal(record.balance_as_on, 0, 'COMMA', 2, 'POINT')}"></td>
         <td th:text="${#dates.format(record.report_date, 'dd-MM-yyyy')}"></td>
       </tr>
+
       <tr th:if="${#lists.isEmpty(BLBF_List)}">
-        <td colspan="5" class="text-center">No records found</td>
+        <td colspan="8" class="text-center">No records found</td>
       </tr>
     </tbody>
   </table>

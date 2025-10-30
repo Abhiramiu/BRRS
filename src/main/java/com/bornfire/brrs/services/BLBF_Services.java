@@ -108,7 +108,13 @@ public class BLBF_Services {
 	        DataFormatter formatter = new DataFormatter();
 	        FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
-	        // BRRS_BLBF insert
+	        // 🟩 Prepare DELETE statements for duplicates
+	        String deleteBLBF = "DELETE FROM BRRS_BLBF WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
+	        String deleteMaster = "DELETE FROM GENERAL_MASTER_TABLE WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
+	        PreparedStatement stmtDeleteBLBF = conn.prepareStatement(deleteBLBF);
+	        PreparedStatement stmtDeleteMaster = conn.prepareStatement(deleteMaster);
+
+	        // 🟩 Insert queries
 	        String insertBLBF = "INSERT INTO BRRS_BLBF (SOL_ID, CUSTOMER_ID, ACCOUNT_NO, CUSTOMER_NAME, SCHM_CODE, SCHM_DESC, "
 	                + "ACCT_OPEN_DATE, APPROVED_LIMIT, SANCTION_LIMIT, DISBURSED_AMT, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, "
 	                + "RATE_OF_INTEREST, HUNDRED, ACCRUED_INT_AMT, MONTHLY_INTEREST, LAST_INTEREST_DEBIT_DATE, ACCT_CLS_FLG, "
@@ -118,7 +124,6 @@ public class BLBF_Services {
 	                + "REPORT_DATE, MAT_BUCKET, ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG) "
 	                + "VALUES (" + String.join(",", Collections.nCopies(52, "?")) + ")";
 
-	        // GENERAL_MASTER_TABLE insert
 	        String insertMaster = "INSERT INTO GENERAL_MASTER_TABLE (ID, SOL_ID, CUSTOMER_ID, ACCOUNT_NO, CUSTOMER_NAME, SCHM_CODE, SCHM_DESC, "
 	                + "ACCT_OPEN_DATE, APPROVED_LIMIT, SANCTION_LIMIT, DISBURSED_AMT, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, "
 	                + "HUNDRED, ACCRUED_INT_AMT, MONTHLY_INTEREST, LAST_INTEREST_DEBIT_DATE, ACCT_CLS_FLG, ACCT_CLOSE_DATE, "
@@ -149,11 +154,24 @@ public class BLBF_Services {
 	            if (emptyRow) continue;
 
 	            try {
-	                // --- BRRS_BLBF ---
+	                // --- Get key columns ---
+	                String accountNo = getCellStringSafe(row, 2, formatter, evaluator);
+	                java.sql.Date reportDate = getCellDateSafe(row, 46, formatter, evaluator);
+
+	                // 🟩 Delete existing rows before insert
+	                stmtDeleteBLBF.setString(1, accountNo);
+	                stmtDeleteBLBF.setDate(2, reportDate);
+	                stmtDeleteBLBF.executeUpdate();
+
+	                stmtDeleteMaster.setString(1, accountNo);
+	                stmtDeleteMaster.setDate(2, reportDate);
+	                stmtDeleteMaster.executeUpdate();
+
+	                // --- BRRS_BLBF insert ---
 	                int col = 0;
 	                stmtBLBF.setString(++col, getCellStringSafe(row, 0, formatter, evaluator)); // SOL_ID
 	                stmtBLBF.setString(++col, getCellStringSafe(row, 1, formatter, evaluator)); // CUSTOMER_ID
-	                stmtBLBF.setString(++col, getCellStringSafe(row, 2, formatter, evaluator)); // ACCOUNT_NO
+	                stmtBLBF.setString(++col, accountNo); // ACCOUNT_NO
 	                stmtBLBF.setString(++col, getCellStringSafe(row, 3, formatter, evaluator)); // CUSTOMER_NAME
 	                stmtBLBF.setString(++col, getCellStringSafe(row, 4, formatter, evaluator)); // SCHM_CODE
 	                stmtBLBF.setString(++col, getCellStringSafe(row, 5, formatter, evaluator)); // SCHM_DESC
@@ -197,23 +215,20 @@ public class BLBF_Services {
 	                stmtBLBF.setBigDecimal(++col, getCellDecimalSafe(row, 43, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
 	                stmtBLBF.setString(++col, getCellStringSafe(row, 44, formatter, evaluator)); // STAGE
 	                stmtBLBF.setBigDecimal(++col, getCellDecimalSafe(row, 45, formatter, evaluator)); // ECL_PROVISION
-	                stmtBLBF.setDate(++col, getCellDateSafe(row, 46, formatter, evaluator)); // REPORT_DATE
+	                stmtBLBF.setDate(++col, reportDate); // REPORT_DATE
 	                stmtBLBF.setBigDecimal(++col, getCellDecimalSafe(row, 47, formatter, evaluator)); // MAT_BUCKET
-
-	                // Audit columns
 	                stmtBLBF.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
 	                stmtBLBF.setString(++col, userid);
 	                stmtBLBF.setString(++col, "Y"); // ENTRY_FLG
 	                stmtBLBF.setString(++col, "N"); // DEL_FLG
-
 	                stmtBLBF.addBatch();
 
-	                // --- GENERAL_MASTER_TABLE ---
+	                // --- GENERAL_MASTER_TABLE insert ---
 	                col = 0;
-	                stmtMaster.setString(++col, sequence.generateRequestUUId()); // ID
+	                stmtMaster.setString(++col, sequence.generateRequestUUId());
 	                stmtMaster.setString(++col, getCellStringSafe(row, 0, formatter, evaluator)); // SOL_ID
 	                stmtMaster.setString(++col, getCellStringSafe(row, 1, formatter, evaluator)); // CUSTOMER_ID
-	                stmtMaster.setString(++col, getCellStringSafe(row, 2, formatter, evaluator)); // ACCOUNT_NO
+	                stmtMaster.setString(++col, accountNo);
 	                stmtMaster.setString(++col, getCellStringSafe(row, 3, formatter, evaluator)); // CUSTOMER_NAME
 	                stmtMaster.setString(++col, getCellStringSafe(row, 4, formatter, evaluator)); // SCHM_CODE
 	                stmtMaster.setString(++col, getCellStringSafe(row, 5, formatter, evaluator)); // SCHM_DESC
@@ -256,16 +271,13 @@ public class BLBF_Services {
 	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 43, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
 	                stmtMaster.setString(++col, getCellStringSafe(row, 44, formatter, evaluator)); // STAGE
 	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 45, formatter, evaluator)); // ECL_PROVISION
-	                stmtMaster.setDate(++col, getCellDateSafe(row, 46, formatter, evaluator)); // REPORT_DATE
+	                stmtMaster.setDate(++col, reportDate);
 	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 47, formatter, evaluator)); // MAT_BUCKET
-
-	                // Audit
-	                stmtMaster.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
+	                stmtMaster.setDate(++col, new java.sql.Date(System.currentTimeMillis()));
 	                stmtMaster.setString(++col, userid);
-	                stmtMaster.setString(++col, "Y"); // ENTRY_FLG
-	                stmtMaster.setString(++col, "N"); // DEL_FLG
+	                stmtMaster.setString(++col, "Y");
+	                stmtMaster.setString(++col, "N");
 	                stmtMaster.setString(++col, "Y"); // BLBF_FLG
-
 	                stmtMaster.addBatch();
 
 	                savedCount++;
@@ -289,13 +301,14 @@ public class BLBF_Services {
 	        conn.commit();
 
 	        long duration = System.currentTimeMillis() - startTime;
-	        return "BLBF Added successfully. Saved: " + savedCount + ", Skipped: " + skippedCount + ". Time taken: " + duration + " ms";
+	        return "✅ BLBF Added successfully. Saved: " + savedCount + ", Skipped: " + skippedCount + ". Time taken: " + duration + " ms";
 
 	    } catch (Exception e) {
-	        logger.error("Error while processing BLBF Excel: {}", e.getMessage(), e);
+	        logger.error("❌ Error while processing BLBF Excel: {}", e.getMessage(), e);
 	        return "Error Occurred while reading Excel: " + e.getMessage();
 	    }
 	}
+
 
 
 	// ===== Helper methods =====
