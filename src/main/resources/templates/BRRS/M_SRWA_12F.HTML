@@ -747,7 +747,7 @@ function cancelModify() {
 						<!-- 📅 Date -->
 						<span class="white-text"
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${asondate}">2025-06-30</span>
+							Date:<span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
