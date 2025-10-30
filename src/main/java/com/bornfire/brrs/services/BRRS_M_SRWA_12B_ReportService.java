@@ -12,24 +12,22 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
+
+
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -39,14 +37,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 
-import com.bornfire.brrs.controllers.BRRS_ReportsController;
 
 import com.bornfire.brrs.entities.M_SRWA_12B_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_SRWA_12B_Archival_Summary_Entity2;
@@ -136,97 +130,76 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12B_Rep
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_SRWA_12BView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
-		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;	
-		
-		System.out.println("testing");
-		System.out.println(version);
-		 System.out.println("Came to view method");
-
-		if (type.equals("ARCHIVAL") & version != null) {
-			//System.out.println(type);
-			List<M_SRWA_12B_Archival_Summary_Entity1> T1Master = new ArrayList<M_SRWA_12B_Archival_Summary_Entity1>();
-			List<M_SRWA_12B_Archival_Summary_Entity2> T2Master = new ArrayList<M_SRWA_12B_Archival_Summary_Entity2>();
-			List<M_SRWA_12B_Archival_Summary_Entity3> T3Master = new ArrayList<M_SRWA_12B_Archival_Summary_Entity3>();
-			List<M_SRWA_12B_Archival_Summary_Entity4> T4Master = new ArrayList<M_SRWA_12B_Archival_Summary_Entity4>();
-			List<M_SRWA_12B_Archival_Summary_Entity5> T5Master = new ArrayList<M_SRWA_12B_Archival_Summary_Entity5>();
-			List<M_SRWA_12B_Archival_Summary_Entity6> T6Master = new ArrayList<M_SRWA_12B_Archival_Summary_Entity6>();
-			List<M_SRWA_12B_Archival_Summary_Entity7> T7Master = new ArrayList<M_SRWA_12B_Archival_Summary_Entity7>();
-			//System.out.println(version);
-			try {
-				Date d1 = dateformat.parse(todate);
-
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = BRRS_M_SRWA_12B_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate), version);
-				T2Master = BRRS_M_SRWA_12B_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
-				T3Master = BRRS_M_SRWA_12B_Archival_Summary_Repo3.getdatabydateListarchival(dateformat.parse(todate), version);
-				T4Master = BRRS_M_SRWA_12B_Archival_Summary_Repo4.getdatabydateListarchival(dateformat.parse(todate), version);
-				T5Master = BRRS_M_SRWA_12B_Archival_Summary_Repo5.getdatabydateListarchival(dateformat.parse(todate), version);
-				T6Master = BRRS_M_SRWA_12B_Archival_Summary_Repo6.getdatabydateListarchival(dateformat.parse(todate), version);
-				T7Master = BRRS_M_SRWA_12B_Archival_Summary_Repo7.getdatabydateListarchival(dateformat.parse(todate), version);
-
-			} catch (ParseException e) {
+				            String dtltype, Pageable pageable, String type, String version) {
+				ModelAndView mv = new ModelAndView();
+				Session hs = sessionFactory.getCurrentSession();
+				int pageSize = pageable.getPageSize();
+				int currentPage = pageable.getPageNumber();
+				//int startItem = currentPage * pageSize;
+				
+				System.out.println("Testing: Came to M_SRWA_12B view method");
+				System.out.println("Version: " + version);
+				
+				try {
+				Date parsedDate = dateformat.parse(todate);
+				
+				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+				
+				List<M_SRWA_12B_Archival_Summary_Entity1> T1Master = safeList(BRRS_M_SRWA_12B_Archival_Summary_Repo1.getdatabydateListarchival(parsedDate, version));
+				List<M_SRWA_12B_Archival_Summary_Entity2> T2Master = safeList(BRRS_M_SRWA_12B_Archival_Summary_Repo2.getdatabydateListarchival(parsedDate, version));
+				List<M_SRWA_12B_Archival_Summary_Entity3> T3Master = safeList(BRRS_M_SRWA_12B_Archival_Summary_Repo3.getdatabydateListarchival(parsedDate, version));
+				List<M_SRWA_12B_Archival_Summary_Entity4> T4Master = safeList(BRRS_M_SRWA_12B_Archival_Summary_Repo4.getdatabydateListarchival(parsedDate, version));
+				List<M_SRWA_12B_Archival_Summary_Entity5> T5Master = safeList(BRRS_M_SRWA_12B_Archival_Summary_Repo5.getdatabydateListarchival(parsedDate, version));
+				List<M_SRWA_12B_Archival_Summary_Entity6> T6Master = safeList(BRRS_M_SRWA_12B_Archival_Summary_Repo6.getdatabydateListarchival(parsedDate, version));
+				List<M_SRWA_12B_Archival_Summary_Entity7> T7Master = safeList(BRRS_M_SRWA_12B_Archival_Summary_Repo7.getdatabydateListarchival(parsedDate, version));
+				
+				mv.addObject("reportsummary1", T1Master);
+				mv.addObject("reportsummary2", T2Master);
+				mv.addObject("reportsummary3", T3Master);
+				mv.addObject("reportsummary4", T4Master);
+				mv.addObject("reportsummary5", T5Master);
+				mv.addObject("reportsummary6", T6Master);
+				mv.addObject("reportsummary7", T7Master);
+				
+				} else {
+				List<M_SRWA_12B_Summary_Entity1> T1Master = safeList(BRRS_M_SRWA_12B_Summary_Repo1.getdatabydateList(parsedDate));
+				List<M_SRWA_12B_Summary_Entity2> T2Master = safeList(BRRS_M_SRWA_12B_Summary_Repo2.getdatabydateList(parsedDate));
+				List<M_SRWA_12B_Summary_Entity3> T3Master = safeList(BRRS_M_SRWA_12B_Summary_Repo3.getdatabydateList(parsedDate));
+				List<M_SRWA_12B_Summary_Entity4> T4Master = safeList(BRRS_M_SRWA_12B_Summary_Repo4.getdatabydateList(parsedDate));
+				List<M_SRWA_12B_Summary_Entity5> T5Master = safeList(BRRS_M_SRWA_12B_Summary_Repo5.getdatabydateList(parsedDate));
+				List<M_SRWA_12B_Summary_Entity6> T6Master = safeList(BRRS_M_SRWA_12B_Summary_Repo6.getdatabydateList(parsedDate));
+				List<M_SRWA_12B_Summary_Entity7> T7Master = safeList(BRRS_M_SRWA_12B_Summary_Repo7.getdatabydateList(parsedDate));
+				
+				mv.addObject("report_date", dateformat.format(parsedDate));
+				
+				mv.addObject("reportsummary1", T1Master);
+				mv.addObject("reportsummary2", T2Master);
+				mv.addObject("reportsummary3", T3Master);
+				mv.addObject("reportsummary4", T4Master);
+				mv.addObject("reportsummary5", T5Master);
+				mv.addObject("reportsummary6", T6Master);
+				mv.addObject("reportsummary7", T7Master);
+				}
+				
+				} catch (ParseException e) {
 				e.printStackTrace();
-			}
+				}
+				
+				mv.setViewName("BRRS/M_SRWA_12B");
+				mv.addObject("displaymode", "summary");
+				
+				System.out.println("Returning view: " + mv.getViewName());
+				return mv;
+				}
+				
+				/**
+				* 🔹 Utility method to remove nulls safely
+				*/
+				private <T> List<T> safeList(List<T> list) {
+				if (list == null) return new ArrayList<>();
+				return list.stream().filter(Objects::nonNull).collect(Collectors.toList());
+				}
 
-			mv.addObject("reportsummary1", T1Master);
-			mv.addObject("reportsummary2", T2Master);
-			mv.addObject("reportsummary3", T3Master);
-			mv.addObject("reportsummary4", T4Master);
-			mv.addObject("reportsummary5", T5Master);
-			mv.addObject("reportsummary6", T6Master);
-			mv.addObject("reportsummary7", T7Master);
-		} else {
-		
-		List<M_SRWA_12B_Summary_Entity1> T1Master = new ArrayList<M_SRWA_12B_Summary_Entity1>();
-		List<M_SRWA_12B_Summary_Entity2> T2Master = new ArrayList<M_SRWA_12B_Summary_Entity2>();
-		List<M_SRWA_12B_Summary_Entity3> T3Master = new ArrayList<M_SRWA_12B_Summary_Entity3>();
-		List<M_SRWA_12B_Summary_Entity4> T4Master = new ArrayList<M_SRWA_12B_Summary_Entity4>();
-		List<M_SRWA_12B_Summary_Entity5> T5Master = new ArrayList<M_SRWA_12B_Summary_Entity5>();
-		List<M_SRWA_12B_Summary_Entity6> T6Master = new ArrayList<M_SRWA_12B_Summary_Entity6>();
-		List<M_SRWA_12B_Summary_Entity7> T7Master = new ArrayList<M_SRWA_12B_Summary_Entity7>();
-		try {
-			Date d1 = dateformat.parse(todate);
-			// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
-			//T1Master = hs.createQuery("from  BRF1_REPORT_ENTITY a where a.report_date = ?1 ", BRF1_REPORT_ENTITY.class)
-				//	.setParameter(1, df.parse(todate)).getResultList();
-			 T1Master = BRRS_M_SRWA_12B_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
-			 T2Master = BRRS_M_SRWA_12B_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
-			 T3Master = BRRS_M_SRWA_12B_Summary_Repo3.getdatabydateList(dateformat.parse(todate));
-			 T4Master = BRRS_M_SRWA_12B_Summary_Repo4.getdatabydateList(dateformat.parse(todate));
-			 T5Master = BRRS_M_SRWA_12B_Summary_Repo5.getdatabydateList(dateformat.parse(todate));
-			 T6Master = BRRS_M_SRWA_12B_Summary_Repo6.getdatabydateList(dateformat.parse(todate));
-			 T7Master = BRRS_M_SRWA_12B_Summary_Repo7.getdatabydateList(dateformat.parse(todate));
-			 mv.addObject("report_date", dateformat.format(d1));
-		
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		mv.addObject("reportsummary1", T1Master);
-		mv.addObject("reportsummary2", T2Master);
-		mv.addObject("reportsummary3", T3Master);
-		mv.addObject("reportsummary4", T4Master);
-		mv.addObject("reportsummary5", T5Master);
-		mv.addObject("reportsummary6", T6Master);
-		mv.addObject("reportsummary7", T7Master);
-		}
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
-		mv.setViewName("BRRS/M_SRWA_12B");
-		//mv.addObject("reportmaster", T1Master);
-		mv.addObject("displaymode", "summary");
-		//mv.addObject("reportsflag", "reportsflag");
-		//mv.addObject("menu", reportId);
-		System.out.println("scv " + mv.getViewName());
-		return mv;
-	}
 
 	public void updateReport1(M_SRWA_12B_Summary_Entity1 updatedEntity) {
 	    System.out.println("Came to services1");
