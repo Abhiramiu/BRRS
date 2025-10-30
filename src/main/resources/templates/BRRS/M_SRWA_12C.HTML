@@ -423,7 +423,7 @@ function downloadfile(button) {
 				window.URL.revokeObjectURL(url);
 				document.body.removeChild(a);
 
-				showResultModal('Success', 'The file has been downloaded successfully.');
+				showResultModal('BRRS', filename + ' downloaded successfully.');
 			} else {
 				showResultModal('Information', 'No data was available to create a download.');
 			}
@@ -895,7 +895,7 @@ $(document).ready(function() {
 	            contentType: false,
 	            dataType: 'text',
 	            success: function () {
-	                $("#resultModalLabel").text("Success");
+	                $("#resultModalLabel").text("BRRS");
 	                $("#resultModalBody").text(" Updated Successfully.");
 	                $("#resultModal").modal("show");
 	            },

@@ -809,7 +809,7 @@ PURPOSE		: BWRBRREPORT
 				contentType: false,
 				dataType: 'text',
 				success: function () {
-					$("#resultModalLabel").text("Success");
+					$("#resultModalLabel").text("BRRS");
 					$("#resultModalBody").text("Updated Successfully");
 					$("#resultModal").modal("show");
 				},
@@ -855,7 +855,7 @@ PURPOSE		: BWRBRREPORT
 						<!-- 📅 Date -->
 						<span class="white-text"
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${asondate}">2025-07-04</span>
+							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">

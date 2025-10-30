@@ -1074,6 +1074,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_FXR":
+			try {
+				archivalData = BRRS_M_FXR_reportservice.getM_FXRArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+			
 		case "M_UNCONS_INVEST":
 			try {
 				archivalData = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTArchival();

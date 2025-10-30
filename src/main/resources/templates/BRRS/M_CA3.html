@@ -732,7 +732,7 @@ PURPOSE		: BWRBRREPORT
 				contentType: false,
 				dataType: 'text',
 				success: function () {
-					$("#resultModalLabel").text("Success");
+					$("#resultModalLabel").text("BRRS");
 					$("#resultModalBody").text(" Updated Successfully.");
 					$("#resultModal").modal("show");
 				},
@@ -1014,7 +1014,7 @@ PURPOSE		: BWRBRREPORT
 											style="font-family: Arial;">
 
 											<tr>
-												<td style="text-align: center; font-weight: bold;">33</td>
+												<td style="text-align: center; vertical-align:middle; font-weight: bold;">33</td>
 												<td style="text-align: left; font-weight: normal; "> Significant
 													investments in the common shares of unconsolidated financial
 													institutions, where a bank <br>
@@ -1025,7 +1025,7 @@ PURPOSE		: BWRBRREPORT
 													threshold, the remaining balance below thresholds shall be treated
 													as other assets (para 3.16 <br>
 													- 3.18 Basel II Guidelines)</td>
-												<td id="ROW24" style="text-align: right; font-weight: bold;">
+												<td id="ROW24" style="text-align: right; vertical-align:middle; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R24_AMOUNT != null ? #numbers.formatDecimal(report.R24_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R24_AMOUNT" name="R24_AMOUNT"
@@ -1058,7 +1058,7 @@ PURPOSE		: BWRBRREPORT
 												</td>
 											</tr>
 											<tr>
-												<td style="text-align: center; font-weight: bold;">36</td>
+												<td style="text-align: center; vertical-align:middle; font-weight: bold;">36</td>
 												<td style="text-align: left; font-weight: normal; "> Aggregate
 													non-siginificant investments by the bank or its subsidiary in the
 													equity of other banks and financial institutions, where <br>
@@ -1067,7 +1067,7 @@ PURPOSE		: BWRBRREPORT
 													- instead of full deduction, only deduct the excess above the 10%
 													threshold, the remaining amount below the 10% threshold shall be
 													treated as other assets.</td>
-												<td id="ROW27" style="text-align: right; font-weight: bold;">
+												<td id="ROW27" style="text-align: right; vertical-align:middle; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R27_AMOUNT != null ? #numbers.formatDecimal(report.R27_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R27_AMOUNT" name="R27_AMOUNT"
@@ -1197,13 +1197,13 @@ PURPOSE		: BWRBRREPORT
 												</td>
 											</tr>
 											<tr>
-												<td style="text-align: center; font-weight: bold;">43</td>
+												<td style="text-align: center; vertical-align:middle; font-weight: bold;">43</td>
 												<td style="text-align: left; font-weight: normal;"> Significant
 													investments in the common shares of unconsolidated financial
 													institutions, where a bank or its subsidiary owns <br>
 													more than 10% common shares of the issuing entity (banks, insurance
 													and other financial entities)</td>
-												<td id="ROW40" style="text-align: right; font-weight: bold;">
+												<td id="ROW40" style="text-align: right; vertical-align:middle; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R40_AMOUNT != null ? #numbers.formatDecimal(report.R40_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R40_AMOUNT" name="R40_AMOUNT"
@@ -1249,7 +1249,7 @@ PURPOSE		: BWRBRREPORT
 											style="font-family: Arial;">
 
 											<tr>
-												<td style="text-align: center; font-weight: bold;">45</td>
+												<td style="text-align: center; vertical-align:middle; font-weight: bold;">45</td>
 												<td
 													style="text-align: left; font-weight: normal; word-wrap: break-word; width:150px !important;">
 													Aggregate non-siginificant investments by the bank or its subsidiary
@@ -1263,17 +1263,7 @@ PURPOSE		: BWRBRREPORT
 													treated as other assets.
 												</td>
 
-
-
-												</td>
-
-												</td>
-
-
-												</td>
-
-
-												<td id="ROW44" style="text-align: right; font-weight: bold;">
+												<td id="ROW44" style="text-align: right; vertical-align:middle; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R44_AMOUNT != null ? #numbers.formatDecimal(report.R44_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R44_AMOUNT" name="R44_AMOUNT"
@@ -1385,13 +1375,13 @@ PURPOSE		: BWRBRREPORT
 
 
 											<tr>
-												<td style="text-align: center; font-weight: bold;">52</td>
+												<td style="text-align: center; vertical-align:middle; font-weight: bold;">52</td>
 												<td style="text-align: left; font-weight: normal;"> Significant
 													investments in the common shares of unconsolidated financial
 													institutions, where a bank or its subsidiary owns more <br> than 10%
 													common shares of the issuing entity (banks, insurance and other
 													financial entities).</td>
-												<td id="ROW54" style="text-align: right; font-weight: bold;">
+												<td id="ROW54" style="text-align: right; vertical-align:middle; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R54_AMOUNT != null ? #numbers.formatDecimal(report.R54_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R54_AMOUNT" name="R54_AMOUNT"
@@ -1438,7 +1428,7 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 
 											<tr>
-												<td style="text-align: center; font-weight: bold;">54</td>
+												<td style="text-align: center; vertical-align:middle; font-weight: bold;">54</td>
 												<td style="text-align: left; font-weight: normal;"> Aggregate
 													non-siginificant investments by the bank or its subsidiary in the
 													equity of other banks and financial institutions, where <br>
@@ -1453,7 +1443,7 @@ PURPOSE		: BWRBRREPORT
 
 
 
-												<td id="ROW58" style="text-align: right; font-weight: bold;">
+												<td id="ROW58" style="text-align: right; vertical-align:middle; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R58_AMOUNT != null ? #numbers.formatDecimal(report.R58_AMOUNT, 0, 'COMMA', 0, 'POINT'): '0'}"
 														id="R58_AMOUNT" name="R58_AMOUNT"
@@ -1463,7 +1453,7 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 											<tr>
 												<td style="text-align: center; font-weight: bold;">55</td>
-												<th style="text-align: left; font-weight: normal;"
+												<th style="text-align: left; font-weight: bold;"
 													th:text="${report.R59_PRODUCT}"></th>
 												<td id="ROW59"
 													style="background-color: rgb(107, 122, 143);color: white;text-align: right; font-weight: bold;">
