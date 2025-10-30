@@ -159,15 +159,19 @@ public class BRRS_M_LA1_ReportService {
 
 			String rowId = null;
 			String columnId = null;
+			String columnId1 = null;
+			String columnId2 = null;
 
-			// ✅ Split the filter string here
 			if (filter != null && filter.contains(",")) {
-				String[] parts = filter.split(",");
-				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
-				}
+			    String[] parts = filter.split(",", -1); // preserve empty fields
+			    rowId = parts.length > 0 ? parts[0] : null;
+			    columnId = parts.length > 1 ? parts[1] : null;
+			    columnId1 = parts.length > 2 ? parts[2] : null;
+			    columnId2 = parts.length > 3 ? parts[3] : null;
 			}
+
+
+
 
 			if ("ARCHIVAL".equals(type) && version != null) {
 				System.out.println(type);
@@ -192,13 +196,19 @@ public class BRRS_M_LA1_ReportService {
 				System.out.println("Praveen");
 				// 🔹 Current branch
 				List<M_LA1_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_LA1_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
-				} else {
-					T1Dt1 = M_LA1_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
-					totalPages = M_LA1_Detail_Repo.getdatacount(parsedDate);
-					mv.addObject("pagination", "YES");
-				}
+				if (rowId != null && !rowId.isEmpty() && (
+					    (columnId != null && !columnId.isEmpty()) ||
+					    (columnId1 != null && !columnId1.isEmpty()) ||
+					    (columnId2 != null && !columnId2.isEmpty())
+					)) {
+					    System.out.println("➡ DETAIL QUERY TRIGGERED");
+					    T1Dt1 = M_LA1_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, columnId1, columnId2, parsedDate);
+					} else {
+					    System.out.println("➡ LIST QUERY TRIGGERED");
+					    T1Dt1 = M_LA1_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
+					    totalPages = M_LA1_Detail_Repo.getdatacount(parsedDate);
+					    mv.addObject("pagination", "YES");
+					}
 
 				mv.addObject("reportdetails", T1Dt1);
 				mv.addObject("reportmaster12", T1Dt1);

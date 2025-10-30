@@ -8,6 +8,7 @@ PURPOSE		: BRFREPORT
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
+
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -625,41 +626,50 @@ PURPOSE		: BRFREPORT
 
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
-			var rowId = a.getAttribute('RowId');
-			var columnId = a.getAttribute('ColumnId');
+			var rowId = a.getAttribute('RowId') || "";
+			var columnId = a.getAttribute('ColumnId') || "";
+			var columnId1 = a.getAttribute('ColumnId1') || "";
+			var columnId2 = a.getAttribute('ColumnId2') || "";
 			var cellValue = a.textContent || a.innerText;
 
-			if (cellValue !== '0') {
-				// Set dynamic message in modal (instead of confirm)
-				document.getElementById("cellresultModalLabel").innerText =
-					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+			// ✅ At least one columnId should have value
+			const hasAnyColumnId =
+				(columnId && columnId.trim() !== "") ||
+				(columnId1 && columnId1.trim() !== "") ||
+				(columnId2 && columnId2.trim() !== "");
 
-				// Show custom Bootstrap modal
+			if (cellValue !== '0' && hasAnyColumnId) {
+				document.getElementById("cellresultModalLabel").innerText =
+					"Do you want to open details for Row: " + rowId +
+					" | Column: " + (columnId || "N/A") +
+					" | Column1: " + (columnId1 || "N/A") +
+					" | Column2: " + (columnId2 || "N/A") + "?";
+
 				$('#cellresultModal').modal('show');
 
-				// Handle Yes button
 				document.querySelector('.yes-btn').onclick = function () {
 					$('#cellresultModal').modal('hide');
 
-					// Show loader
 					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
 						backdrop: 'static',
 						keyboard: false
 					});
 					$('#loader').modal('show');
 
-					// Build dynamic URL
+					// ✅ Thymeleaf-compatible URL
 					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
 
-					location.href = Callurl;
+					// ✅ Append filter params
+					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId + "," + columnId1 + "," + columnId2);
+
+					window.location.href = Callurl;
 				};
 			} else {
-				// Use your custom alert modal instead of window.alert
 				showResultModal("Alert", "No Records available for this selected cell.");
 			}
 		}
 	</script>
+
 
 
 
@@ -798,11 +808,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r12_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R12', ColumnId='C3'"
+												th:attr="RowId='R12', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r12_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R12', ColumnId='C4'"
+												th:attr="RowId='R12', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -815,11 +825,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r13_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R13', ColumnId='C3'"
+												th:attr="RowId='R13', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r13_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R13', ColumnId='C4'"
+												th:attr="RowId='R13', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -834,11 +844,11 @@ PURPOSE		: BRFREPORT
 
 											<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r14_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R14', ColumnId='C3'"
+												th:attr="RowId='R14', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r14_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R14', ColumnId='C4'"
+												th:attr="RowId='R14', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -853,28 +863,30 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r15_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R15', ColumnId='C3'"
+												th:attr="RowId='R15', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r15_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R15', ColumnId='C4'"
+												th:attr="RowId='R15', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
 										<tr>
-											<td style="font-weight: normal;padding-left: 60px;"
+											<td style="font-weight: normal;padding-left: 30px;"
 												th:text="${report.r16_product}"></td>
-											<td style="text-align: right; font-weight: normal;"
+
+
+											<td style="text-align: right; font-weight: normal ;"
 												th:text="${#numbers.formatDecimal(report.r16_approved_limit,1,'COMMA',0,'POINT')}"
 												th:attr="RowId='R16', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r16_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R16', ColumnId='C3'"
+												th:attr="RowId='R16', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r16_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R16', ColumnId='C4'"
+												th:attr="RowId='R16', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -887,11 +899,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r17_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R17', ColumnId='C3'"
+												th:attr="RowId='R17', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r17_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R17', ColumnId='C4'"
+												th:attr="RowId='R17', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -904,11 +916,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r18_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R18', ColumnId='C3'"
+												th:attr="RowId='R18', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r18_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R18', ColumnId='C4'"
+												th:attr="RowId='R18', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -921,11 +933,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r19_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R19', ColumnId='C3'"
+												th:attr="RowId='R19', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r19_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R19', ColumnId='C4'"
+												th:attr="RowId='R19', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -938,11 +950,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r20_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R20', ColumnId='C3'"
+												th:attr="RowId='R20', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r20_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R20', ColumnId='C4'"
+												th:attr="RowId='R20', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -955,11 +967,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r21_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R21', ColumnId='C3'"
+												th:attr="RowId='R21', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r21_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R21', ColumnId='C4'"
+												th:attr="RowId='R21', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -972,11 +984,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r22_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R22', ColumnId='C3'"
+												th:attr="RowId='R22', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r22_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R22', ColumnId='C4'"
+												th:attr="RowId='R22', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -989,11 +1001,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r23_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R23', ColumnId='C3'"
+												th:attr="RowId='R23', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r23_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R23', ColumnId='C4'"
+												th:attr="RowId='R23', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1006,11 +1018,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r24_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R24', ColumnId='C3'"
+												th:attr="RowId='R24', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r24_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R24', ColumnId='C4'"
+												th:attr="RowId='R24', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1023,11 +1035,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r25_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R25', ColumnId='C3'"
+												th:attr="RowId='R25', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r25_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R25', ColumnId='C4'"
+												th:attr="RowId='R25', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
@@ -1039,11 +1051,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r26_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R26', ColumnId='C3'"
+												th:attr="RowId='R26', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r26_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R26', ColumnId='C4'"
+												th:attr="RowId='R26', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1056,11 +1068,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r27_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R27', ColumnId='C3'"
+												th:attr="RowId='R27', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r27_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R27', ColumnId='C4'"
+												th:attr="RowId='R27', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1073,11 +1085,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r28_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R28', ColumnId='C3'"
+												th:attr="RowId='R28', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r28_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R28', ColumnId='C4'"
+												th:attr="RowId='R28', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1109,11 +1121,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r30_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R30', ColumnId='C3'"
+												th:attr="RowId='R30', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r30_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R30', ColumnId='C4'"
+												th:attr="RowId='R30', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1126,11 +1138,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r31_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R31', ColumnId='C3'"
+												th:attr="RowId='R31', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r31_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R31', ColumnId='C4'"
+												th:attr="RowId='R31', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1143,11 +1155,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r32_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R32', ColumnId='C3'"
+												th:attr="RowId='R32', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r32_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R32', ColumnId='C4'"
+												th:attr="RowId='R32', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1160,11 +1172,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r33_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R33', ColumnId='C3'"
+												th:attr="RowId='R33', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r33_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R33', ColumnId='C4'"
+												th:attr="RowId='R33', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1177,11 +1189,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r34_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R34', ColumnId='C3'"
+												th:attr="RowId='R34', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r34_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R34', ColumnId='C4'"
+												th:attr="RowId='R34', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1194,11 +1206,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r35_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R35', ColumnId='C3'"
+												th:attr="RowId='R35', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r35_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R35', ColumnId='C4'"
+												th:attr="RowId='R35', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1211,11 +1223,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r36_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R36', ColumnId='C3'"
+												th:attr="RowId='R36', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r36_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R36', ColumnId='C4'"
+												th:attr="RowId='R36', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1228,11 +1240,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r37_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R37', ColumnId='C3'"
+												th:attr="RowId='R37', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r37_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R37', ColumnId='C4'"
+												th:attr="RowId='R37', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1264,11 +1276,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r39_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R39', ColumnId='C3'"
+												th:attr="RowId='R39', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r39_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R39', ColumnId='C4'"
+												th:attr="RowId='R39', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1281,11 +1293,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r40_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R40', ColumnId='C3'"
+												th:attr="RowId='R40', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r40_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R40', ColumnId='C4'"
+												th:attr="RowId='R40', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1316,11 +1328,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r42_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R42', ColumnId='C3'"
+												th:attr="RowId='R42', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r42_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R42', ColumnId='C4'"
+												th:attr="RowId='R42', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1333,11 +1345,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r43_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R43', ColumnId='C3'"
+												th:attr="RowId='R43', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r43_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R43', ColumnId='C4'"
+												th:attr="RowId='R43', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1368,11 +1380,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r45_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R45', ColumnId='C3'"
+												th:attr="RowId='R45', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r45_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R45', ColumnId='C4'"
+												th:attr="RowId='R45', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1385,11 +1397,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r46_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R46', ColumnId='C3'"
+												th:attr="RowId='R46', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r46_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R46', ColumnId='C4'"
+												th:attr="RowId='R46', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1402,11 +1414,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r47_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R47', ColumnId='C3'"
+												th:attr="RowId='R47', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r47_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R47', ColumnId='C4'"
+												th:attr="RowId='R47', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1419,11 +1431,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r48_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R48', ColumnId='C3'"
+												th:attr="RowId='R48', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r48_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R48', ColumnId='C4'"
+												th:attr="RowId='R48', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1454,11 +1466,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r50_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R50', ColumnId='C3'"
+												th:attr="RowId='R50', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r50_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R50', ColumnId='C4'"
+												th:attr="RowId='R50', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1471,11 +1483,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r51_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R51', ColumnId='C3'"
+												th:attr="RowId='R51', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r51_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R51', ColumnId='C4'"
+												th:attr="RowId='R51', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1488,11 +1500,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r52_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R52', ColumnId='C3'"
+												th:attr="RowId='R52', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r52_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R52', ColumnId='C4'"
+												th:attr="RowId='R52', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1524,11 +1536,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r54_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R54', ColumnId='C3'"
+												th:attr="RowId='R54', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r54_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R54', ColumnId='C4'"
+												th:attr="RowId='R54', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1541,11 +1553,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r55_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R55', ColumnId='C3'"
+												th:attr="RowId='R55', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r55_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R55', ColumnId='C4'"
+												th:attr="RowId='R55', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1558,11 +1570,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r56_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R56', ColumnId='C3'"
+												th:attr="RowId='R56', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r56_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R56', ColumnId='C4'"
+												th:attr="RowId='R56', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1594,11 +1606,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r58_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R58', ColumnId='C3'"
+												th:attr="RowId='R58', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r58_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R58', ColumnId='C4'"
+												th:attr="RowId='R58', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1611,11 +1623,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r59_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R59', ColumnId='C3'"
+												th:attr="RowId='R59', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r59_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R59', ColumnId='C4'"
+												th:attr="RowId='R59', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1628,11 +1640,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r60_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R60', ColumnId='C3'"
+												th:attr="RowId='R60', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r60_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R60', ColumnId='C4'"
+												th:attr="RowId='R60', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1645,11 +1657,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r61_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R61', ColumnId='C3'"
+												th:attr="RowId='R61', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r61_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R61', ColumnId='C4'"
+												th:attr="RowId='R61', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1662,11 +1674,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r62_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R62', ColumnId='C3'"
+												th:attr="RowId='R62', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r62_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R62', ColumnId='C4'"
+												th:attr="RowId='R62', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1679,11 +1691,11 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r63_balance_outstanding,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R63', ColumnId='C3'"
+												th:attr="RowId='R63', ColumnId1='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;"
 												th:text="${#numbers.formatDecimal(report.r63_no_of_acct,1,'COMMA',0,'POINT')}"
-												th:attr="RowId='R63', ColumnId='C4'"
+												th:attr="RowId='R63', ColumnId2='C4'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 
@@ -1742,27 +1754,45 @@ PURPOSE		: BRFREPORT
 											<th style="text-align: right;">ACCT BALANCE</th>
 											<th style="text-align: left;">REPORT LABEL</th>
 											<th>REPORT_ADDL_CRETERIA</th>
+											<th>REPORT_ADDL_CRETERIA_2</th>
+											<th>REPORT_ADDL_CRETERIA_3</th>
 											<th>REPORT_DATE</th>
 										</tr>
 
 									</thead>
 									<tbody style="font-family: Arial;">
-										<tr th:each="report: ${reportdetails}">
-											<td><a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record"> <i class="fas fa-edit"
-														onclick="editRecord(this)"></i>
-												</a></td>
-											<td th:text="${report.cust_id}"></td>
-											<td th:text="${report.acct_number}"></td>
-											<td th:text="${report.acct_name}"></td>
-											<td th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 2)}"
-												style="text-align: right;"></td>
-											<td th:text="${report.report_label}"></td>
-											<td th:text="${report.report_addl_criteria_1}"></td>
-											<td th:text="${#dates.format(report.report_date, 'dd-MM-yyyy')}"></td>
+										<tr th:each="report : ${reportdetails}">
+											<td>
+												<a data-toggle="tooltip" class="editrec"
+													title="Click to Edit this Record">
+													<i class="fas fa-edit" onclick="editRecord(this)"></i>
+												</a>
+											</td>
 
+											<!-- Null-safe field rendering -->
+											<td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
+											<td th:text="${report.acct_number != null ? report.acct_number : '-'}"></td>
+											<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>
+											<td th:text="${report.acct_balance_in_pula != null 
+									                        ? #numbers.formatDecimal(report.acct_balance_in_pula, 1, 2) 
+									                        : '0.00'}" style="text-align: right;"></td>
+											<td th:text="${report.report_label != null ? report.report_label : '-'}">
+											</td>
+											<td
+												th:text="${report.report_addl_criteria_1 != null ? report.report_addl_criteria_1 : '-'}">
+											</td>
+											<td
+												th:text="${report.report_addl_criteria_2 != null ? report.report_addl_criteria_2 : '-'}">
+											</td>
+											<td
+												th:text="${report.report_addl_criteria_3 != null ? report.report_addl_criteria_3 : '-'}">
+											</td>
+											<td th:text="${report.report_date != null 
+									                        ? #dates.format(report.report_date, 'dd-MM-yyyy') 
+									                        : '-'}"></td>
 										</tr>
 									</tbody>
+
 
 								</table>
 								<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">

@@ -81,13 +81,13 @@ public class M_LA4_Detail_Entity {
     private Date verifyTime;
 
     @Column(name = "ENTITY_FLG")
-    private char entityFlg;
+    private String entityFlg;
 
     @Column(name = "MODIFY_FLG")
-    private char modifyFlg;
+    private String modifyFlg;
 
     @Column(name = "DEL_FLG")
-    private char delFlg;
+    private String delFlg;
 
     @Column(name = "SEGMENT")
     private String segment;
@@ -266,27 +266,27 @@ public class M_LA4_Detail_Entity {
 		this.verifyTime = verifyTime;
 	}
 
-	public char getEntityFlg() {
+	public String getEntityFlg() {
 		return entityFlg;
 	}
 
-	public void setEntityFlg(char entityFlg) {
+	public void setEntityFlg(String entityFlg) {
 		this.entityFlg = entityFlg;
 	}
 
-	public char getModifyFlg() {
+	public String getModifyFlg() {
 		return modifyFlg;
 	}
 
-	public void setModifyFlg(char modifyFlg) {
+	public void setModifyFlg(String modifyFlg) {
 		this.modifyFlg = modifyFlg;
 	}
 
-	public char getDelFlg() {
+	public String getDelFlg() {
 		return delFlg;
 	}
 
-	public void setDelFlg(char delFlg) {
+	public void setDelFlg(String delFlg) {
 		this.delFlg = delFlg;
 	}
 
@@ -319,9 +319,4 @@ public class M_LA4_Detail_Entity {
 		// TODO Auto-generated constructor stub
 	}
 
-    
-
-	   
-  
-  
 }
