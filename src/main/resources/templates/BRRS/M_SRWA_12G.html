@@ -772,7 +772,7 @@ function fileuploads(btn) {
 									
 <tbody id="entity" th:each="report: ${reportsummary1}" style="font-family: Arial;">
 <tr>
-	<td id="r11" style="padding : 4px 10px;   ">
+	<td id="r11" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r11_security_firm, 'N/A')}"
@@ -782,7 +782,7 @@ function fileuploads(btn) {
                readonly />
     </td>
     
-    <td id="r11" style="padding-left: 10px;    ">
+    <td id="r11" >
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r11_credit_rating != null ? #numbers.formatDecimal(report.r11_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -791,7 +791,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r11" style="padding : 4px 10px;    ">
+	<td id="r11" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r11_rating_agency, 'N/A')}"
@@ -800,7 +800,7 @@ function fileuploads(btn) {
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
-	<td id="r11" style="padding-left: 10px;   ">
+	<td id="r11" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r11_exposure_amount != null ? #numbers.formatDecimal(report.r11_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -809,7 +809,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r11" style="padding-left: 10px;    ">
+	<td id="r11" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r11_risk_weight != null ? #numbers.formatDecimal(report.r11_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -818,7 +818,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r11" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r11" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
     <input class="display-input Show_input nonEditable"
            type="text"
            th:value="${report.r11_risk_weighted_amount != null ? #numbers.formatDecimal(report.r11_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -829,7 +829,7 @@ function fileuploads(btn) {
 	</td>
 	</tr>
 	<tr>
-	<td id="r12" style="padding : 4px 10px;    ">
+	<td id="r12" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r12_security_firm, 'N/A')}"
@@ -839,7 +839,7 @@ function fileuploads(btn) {
                readonly />
     </td>
     
-    <td id="r12" style="padding-left: 10px;    ">
+    <td id="r12" >
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r12_credit_rating != null ? #numbers.formatDecimal(report.r12_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -848,7 +848,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r12" style="padding : 4px 10px;    ">
+	<td id="r12" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r12_rating_agency, 'N/A')}"
@@ -857,7 +857,7 @@ function fileuploads(btn) {
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
-	<td id="r12" style="padding-left: 10px;   ">
+	<td id="r12" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r12_exposure_amount != null ? #numbers.formatDecimal(report.r12_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -866,7 +866,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r12" style="padding-left: 10px;    ">
+	<td id="r12" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r12_risk_weight != null ? #numbers.formatDecimal(report.r12_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -875,7 +875,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r12" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r12" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
     <input class="display-input Show_input nonEditable"
            type="text"
            th:value="${report.r12_risk_weighted_amount != null ? #numbers.formatDecimal(report.r12_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -886,7 +886,7 @@ function fileuploads(btn) {
 	</td>
 	</tr>
 	<tr>
-	<td id="r13" style="padding : 4px 10px;    ">
+	<td id="r13" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r13_security_firm, 'N/A')}"
@@ -896,7 +896,7 @@ function fileuploads(btn) {
                readonly />
     </td>
     
-    <td id="r13" style="padding-left: 10px;    ">
+    <td id="r13" >
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r13_credit_rating != null ? #numbers.formatDecimal(report.r13_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -905,7 +905,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r13" style="padding : 4px 10px;    ">
+	<td id="r13" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r13_rating_agency, 'N/A')}"
@@ -914,7 +914,7 @@ function fileuploads(btn) {
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
-	<td id="r13" style="padding-left: 10px;   ">
+	<td id="r13" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r13_exposure_amount != null ? #numbers.formatDecimal(report.r13_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -923,7 +923,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r13" style="padding-left: 10px;    ">
+	<td id="r13" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r13_risk_weight != null ? #numbers.formatDecimal(report.r13_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -932,7 +932,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r13" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r13" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
     <input class="display-input Show_input nonEditable"
            type="text"
            th:value="${report.r13_risk_weighted_amount != null ? #numbers.formatDecimal(report.r13_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -943,7 +943,7 @@ function fileuploads(btn) {
 	</td>
 	</tr>
 	<tr>
-	<td id="r14" style="padding : 4px 10px;    ">
+	<td id="r14" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r14_security_firm, 'N/A')}"
@@ -953,7 +953,7 @@ function fileuploads(btn) {
                readonly />
     </td>
     
-    <td id="r14" style="padding-left: 10px;    ">
+    <td id="r14" >
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r14_credit_rating != null ? #numbers.formatDecimal(report.r14_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -962,7 +962,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r14" style="padding : 4px 10px;    ">
+	<td id="r14">
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r14_rating_agency, 'N/A')}"
@@ -971,7 +971,7 @@ function fileuploads(btn) {
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
-	<td id="r14" style="padding-left: 10px;   ">
+	<td id="r14" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r14_exposure_amount != null ? #numbers.formatDecimal(report.r14_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -980,7 +980,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r14" style="padding-left: 10px;    ">
+	<td id="r14" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r14_risk_weight != null ? #numbers.formatDecimal(report.r14_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -989,7 +989,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r14" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r14" style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
     <input class="display-input Show_input nonEditable"
            type="text"
            th:value="${report.r14_risk_weighted_amount != null ? #numbers.formatDecimal(report.r14_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1000,7 +1000,7 @@ function fileuploads(btn) {
 	</td>
 	</tr>
 	<tr>
-	<td id="r15" style="padding : 4px 10px;    ">
+	<td id="r15" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r15_security_firm, 'N/A')}"
@@ -1010,7 +1010,7 @@ function fileuploads(btn) {
                readonly />
     </td>
     
-    <td id="r15" style="padding-left: 10px;    ">
+    <td id="r15" >
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r15_credit_rating != null ? #numbers.formatDecimal(report.r15_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1019,7 +1019,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r15" style="padding : 4px 10px;    ">
+	<td id="r15" >
         <input class="display-input Show_input"
                type="text"
                th:value="${#strings.defaultString(report.r15_rating_agency, 'N/A')}"
@@ -1028,7 +1028,7 @@ function fileuploads(btn) {
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
-	<td id="r15" style="padding-left: 10px;   ">
+	<td id="r15" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r15_exposure_amount != null ? #numbers.formatDecimal(report.r15_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1037,7 +1037,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r15" style="padding-left: 10px;    ">
+	<td id="r15" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r15_risk_weight != null ? #numbers.formatDecimal(report.r15_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1046,7 +1046,7 @@ function fileuploads(btn) {
            style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;"
            readonly />
 	</td>
-	<td id="r15" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r15" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
     <input class="display-input Show_input nonEditable"
            type="text"
            th:value="${report.r15_risk_weighted_amount != null ? #numbers.formatDecimal(report.r15_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -1057,37 +1057,37 @@ function fileuploads(btn) {
 	</td>
 	</tr>
 	<tr>
-	<td id="r16" style="padding : 4px 10px;   ">
+	<td id="r16" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r16_security_firm, 'N/A')}"
                id="r16_security_firm" name="r16_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r16" style="padding-left: 10px;   ">
+    <td id="r16" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r16_credit_rating != null ? #numbers.formatDecimal(report.r16_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r16_credit_rating" name="r16_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r16" style="padding : 4px 10px;   ">
+	<td id="r16" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r16_rating_agency, 'N/A')}"
                id="r16_rating_agency" name="r16_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r16" style="padding-left: 10px;   ">
+	<td id="r16" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r16_exposure_amount != null ? #numbers.formatDecimal(report.r16_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r16_exposure_amount" name="r16_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r16" style="padding-left: 10px;   ">
+	<td id="r16" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r16_risk_weight != null ? #numbers.formatDecimal(report.r16_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r16_risk_weight" name="r16_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r16" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r16" style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r16_risk_weighted_amount != null ? #numbers.formatDecimal(report.r16_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r16_risk_weighted_amount" name="r16_risk_weighted_amount"
@@ -1096,37 +1096,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r17" style="padding : 4px 10px;   ">
+	<td id="r17" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r17_security_firm, 'N/A')}"
                id="r17_security_firm" name="r17_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r17" style="padding-left: 10px;   ">
+    <td id="r17" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r17_credit_rating != null ? #numbers.formatDecimal(report.r17_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r17_credit_rating" name="r17_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r17" style="padding : 4px 10px;   ">
+	<td id="r17" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r17_rating_agency, 'N/A')}"
                id="r17_rating_agency" name="r17_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r17" style="padding-left: 10px;   ">
+	<td id="r17" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r17_exposure_amount != null ? #numbers.formatDecimal(report.r17_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r17_exposure_amount" name="r17_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r17" style="padding-left: 10px;   ">
+	<td id="r17" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r17_risk_weight != null ? #numbers.formatDecimal(report.r17_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r17_risk_weight" name="r17_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r17" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r17" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r17_risk_weighted_amount != null ? #numbers.formatDecimal(report.r17_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r17_risk_weighted_amount" name="r17_risk_weighted_amount"
@@ -1135,37 +1135,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r18" style="padding : 4px 10px;   ">
+	<td id="r18" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r18_security_firm, 'N/A')}"
                id="r18_security_firm" name="r18_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r18" style="padding-left: 10px;   ">
+    <td id="r18" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r18_credit_rating != null ? #numbers.formatDecimal(report.r18_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r18_credit_rating" name="r18_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r18" style="padding : 4px 10px;   ">
+	<td id="r18" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r18_rating_agency, 'N/A')}"
                id="r18_rating_agency" name="r18_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r18" style="padding-left: 10px;   ">
+	<td id="r18" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r18_exposure_amount != null ? #numbers.formatDecimal(report.r18_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r18_exposure_amount" name="r18_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r18" style="padding-left: 10px;   ">
+	<td id="r18" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r18_risk_weight != null ? #numbers.formatDecimal(report.r18_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r18_risk_weight" name="r18_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r18" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r18" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r18_risk_weighted_amount != null ? #numbers.formatDecimal(report.r18_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r18_risk_weighted_amount" name="r18_risk_weighted_amount"
@@ -1174,37 +1174,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r19" style="padding : 4px 10px;   ">
+	<td id="r19" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r19_security_firm, 'N/A')}"
                id="r19_security_firm" name="r19_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r19" style="padding-left: 10px;   ">
+    <td id="r19" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r19_credit_rating != null ? #numbers.formatDecimal(report.r19_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r19_credit_rating" name="r19_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r19" style="padding : 4px 10px;   ">
+	<td id="r19" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r19_rating_agency, 'N/A')}"
                id="r19_rating_agency" name="r19_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r19" style="padding-left: 10px;   ">
+	<td id="r19" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r19_exposure_amount != null ? #numbers.formatDecimal(report.r19_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r19_exposure_amount" name="r19_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r19" style="padding-left: 10px;   ">
+	<td id="r19" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r19_risk_weight != null ? #numbers.formatDecimal(report.r19_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r19_risk_weight" name="r19_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r19" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r19" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r19_risk_weighted_amount != null ? #numbers.formatDecimal(report.r19_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r19_risk_weighted_amount" name="r19_risk_weighted_amount"
@@ -1213,37 +1213,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r20" style="padding : 4px 10px;   ">
+	<td id="r20" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r20_security_firm, 'N/A')}"
                id="r20_security_firm" name="r20_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r20" style="padding-left: 10px;   ">
+    <td id="r20" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r20_credit_rating != null ? #numbers.formatDecimal(report.r20_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r20_credit_rating" name="r20_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r20" style="padding : 4px 10px;   ">
+	<td id="r20" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r20_rating_agency, 'N/A')}"
                id="r20_rating_agency" name="r20_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r20" style="padding-left: 10px;   ">
+	<td id="r20" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r20_exposure_amount != null ? #numbers.formatDecimal(report.r20_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r20_exposure_amount" name="r20_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r20" style="padding-left: 10px;   ">
+	<td id="r20" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r20_risk_weight != null ? #numbers.formatDecimal(report.r20_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r20_risk_weight" name="r20_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r20" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r20" style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r20_risk_weighted_amount != null ? #numbers.formatDecimal(report.r20_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r20_risk_weighted_amount" name="r20_risk_weighted_amount"
@@ -1252,37 +1252,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r21" style="padding : 4px 10px;   ">
+	<td id="r21" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r21_security_firm, 'N/A')}"
                id="r21_security_firm" name="r21_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r21" style="padding-left: 10px;   ">
+    <td id="r21" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r21_credit_rating != null ? #numbers.formatDecimal(report.r21_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r21_credit_rating" name="r21_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r21" style="padding : 4px 10px;   ">
+	<td id="r21" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r21_rating_agency, 'N/A')}"
                id="r21_rating_agency" name="r21_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r21" style="padding-left: 10px;   ">
+	<td id="r21" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r21_exposure_amount != null ? #numbers.formatDecimal(report.r21_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r21_exposure_amount" name="r21_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r21" style="padding-left: 10px;   ">
+	<td id="r21" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r21_risk_weight != null ? #numbers.formatDecimal(report.r21_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r21_risk_weight" name="r21_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r21" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r21" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r21_risk_weighted_amount != null ? #numbers.formatDecimal(report.r21_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r21_risk_weighted_amount" name="r21_risk_weighted_amount"
@@ -1291,37 +1291,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r22" style="padding : 4px 10px;   ">
+	<td id="r22" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r22_security_firm, 'N/A')}"
                id="r22_security_firm" name="r22_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r22" style="padding-left: 10px;   ">
+    <td id="r22" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r22_credit_rating != null ? #numbers.formatDecimal(report.r22_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r22_credit_rating" name="r22_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r22" style="padding : 4px 10px;   ">
+	<td id="r22" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r22_rating_agency, 'N/A')}"
                id="r22_rating_agency" name="r22_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r22" style="padding-left: 10px;   ">
+	<td id="r22" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r22_exposure_amount != null ? #numbers.formatDecimal(report.r22_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r22_exposure_amount" name="r22_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r22" style="padding-left: 10px;   ">
+	<td id="r22" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r22_risk_weight != null ? #numbers.formatDecimal(report.r22_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r22_risk_weight" name="r22_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r22" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r22" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r22_risk_weighted_amount != null ? #numbers.formatDecimal(report.r22_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r22_risk_weighted_amount" name="r22_risk_weighted_amount"
@@ -1330,37 +1330,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r23" style="padding : 4px 10px;   ">
+	<td id="r23" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r23_security_firm, 'N/A')}"
                id="r23_security_firm" name="r23_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r23" style="padding-left: 10px;   ">
+    <td id="r23" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r23_credit_rating != null ? #numbers.formatDecimal(report.r23_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r23_credit_rating" name="r23_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r23" style="padding : 4px 10px;   ">
+	<td id="r23" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r23_rating_agency, 'N/A')}"
                id="r23_rating_agency" name="r23_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r23" style="padding-left: 10px;   ">
+	<td id="r23" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r23_exposure_amount != null ? #numbers.formatDecimal(report.r23_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r23_exposure_amount" name="r23_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r23" style="padding-left: 10px;   ">
+	<td id="r23" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r23_risk_weight != null ? #numbers.formatDecimal(report.r23_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r23_risk_weight" name="r23_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r23" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r23" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r23_risk_weighted_amount != null ? #numbers.formatDecimal(report.r23_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r23_risk_weighted_amount" name="r23_risk_weighted_amount"
@@ -1369,37 +1369,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r24" style="padding : 4px 10px;   ">
+	<td id="r24" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r24_security_firm, 'N/A')}"
                id="r24_security_firm" name="r24_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r24" style="padding-left: 10px;   ">
+    <td id="r24" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r24_credit_rating != null ? #numbers.formatDecimal(report.r24_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r24_credit_rating" name="r24_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r24" style="padding : 4px 10px;   ">
+	<td id="r24" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r24_rating_agency, 'N/A')}"
                id="r24_rating_agency" name="r24_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r24" style="padding-left: 10px;   ">
+	<td id="r24" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r24_exposure_amount != null ? #numbers.formatDecimal(report.r24_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r24_exposure_amount" name="r24_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r24" style="padding-left: 10px;   ">
+	<td id="r24" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r24_risk_weight != null ? #numbers.formatDecimal(report.r24_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r24_risk_weight" name="r24_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r24" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r24" style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r24_risk_weighted_amount != null ? #numbers.formatDecimal(report.r24_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r24_risk_weighted_amount" name="r24_risk_weighted_amount"
@@ -1408,37 +1408,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r25" style="padding : 4px 10px;   ">
+	<td id="r25" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r25_security_firm, 'N/A')}"
                id="r25_security_firm" name="r25_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r25" style="padding-left: 10px;   ">
+    <td id="r25" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r25_credit_rating != null ? #numbers.formatDecimal(report.r25_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r25_credit_rating" name="r25_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r25" style="padding : 4px 10px;   ">
+	<td id="r25" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r25_rating_agency, 'N/A')}"
                id="r25_rating_agency" name="r25_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r25" style="padding-left: 10px;   ">
+	<td id="r25" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r25_exposure_amount != null ? #numbers.formatDecimal(report.r25_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r25_exposure_amount" name="r25_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r25" style="padding-left: 10px;   ">
+	<td id="r25" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r25_risk_weight != null ? #numbers.formatDecimal(report.r25_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r25_risk_weight" name="r25_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r25" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r25" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r25_risk_weighted_amount != null ? #numbers.formatDecimal(report.r25_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r25_risk_weighted_amount" name="r25_risk_weighted_amount"
@@ -1447,37 +1447,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r26" style="padding : 4px 10px;   ">
+	<td id="r26" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r26_security_firm, 'N/A')}"
                id="r26_security_firm" name="r26_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r26" style="padding-left: 10px;   ">
+    <td id="r26" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r26_credit_rating != null ? #numbers.formatDecimal(report.r26_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r26_credit_rating" name="r26_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r26" style="padding : 4px 10px;   ">
+	<td id="r26" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r26_rating_agency, 'N/A')}"
                id="r26_rating_agency" name="r26_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r26" style="padding-left: 10px;   ">
+	<td id="r26" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r26_exposure_amount != null ? #numbers.formatDecimal(report.r26_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r26_exposure_amount" name="r26_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r26" style="padding-left: 10px;   ">
+	<td id="r26" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r26_risk_weight != null ? #numbers.formatDecimal(report.r26_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r26_risk_weight" name="r26_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r26" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r26" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r26_risk_weighted_amount != null ? #numbers.formatDecimal(report.r26_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r26_risk_weighted_amount" name="r26_risk_weighted_amount"
@@ -1486,37 +1486,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r27" style="padding : 4px 10px;   ">
+	<td id="r27" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r27_security_firm, 'N/A')}"
                id="r27_security_firm" name="r27_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r27" style="padding-left: 10px;   ">
+    <td id="r27" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r27_credit_rating != null ? #numbers.formatDecimal(report.r27_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r27_credit_rating" name="r27_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r27" style="padding : 4px 10px;   ">
+	<td id="r27" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r27_rating_agency, 'N/A')}"
                id="r27_rating_agency" name="r27_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r27" style="padding-left: 10px;   ">
+	<td id="r27" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r27_exposure_amount != null ? #numbers.formatDecimal(report.r27_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r27_exposure_amount" name="r27_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r27" style="padding-left: 10px;   ">
+	<td id="r27" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r27_risk_weight != null ? #numbers.formatDecimal(report.r27_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r27_risk_weight" name="r27_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r27" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r27" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r27_risk_weighted_amount != null ? #numbers.formatDecimal(report.r27_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r27_risk_weighted_amount" name="r27_risk_weighted_amount"
@@ -1525,37 +1525,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r28" style="padding : 4px 10px;   ">
+	<td id="r28" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r28_security_firm, 'N/A')}"
                id="r28_security_firm" name="r28_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r28" style="padding-left: 10px;   ">
+    <td id="r28" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r28_credit_rating != null ? #numbers.formatDecimal(report.r28_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r28_credit_rating" name="r28_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r28" style="padding : 4px 10px;   ">
+	<td id="r28" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r28_rating_agency, 'N/A')}"
                id="r28_rating_agency" name="r28_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r28" style="padding-left: 10px;   ">
+	<td id="r28" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r28_exposure_amount != null ? #numbers.formatDecimal(report.r28_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r28_exposure_amount" name="r28_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r28" style="padding-left: 10px;   ">
+	<td id="r28" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r28_risk_weight != null ? #numbers.formatDecimal(report.r28_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r28_risk_weight" name="r28_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r28" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r28" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r28_risk_weighted_amount != null ? #numbers.formatDecimal(report.r28_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r28_risk_weighted_amount" name="r28_risk_weighted_amount"
@@ -1564,37 +1564,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r29" style="padding : 4px 10px;   ">
+	<td id="r29" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r29_security_firm, 'N/A')}"
                id="r29_security_firm" name="r29_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r29" style="padding-left: 10px;   ">
+    <td id="r29" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r29_credit_rating != null ? #numbers.formatDecimal(report.r29_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r29_credit_rating" name="r29_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r29" style="padding : 4px 10px;   ">
+	<td id="r29" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r29_rating_agency, 'N/A')}"
                id="r29_rating_agency" name="r29_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r29" style="padding-left: 10px;   ">
+	<td id="r29" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r29_exposure_amount != null ? #numbers.formatDecimal(report.r29_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r29_exposure_amount" name="r29_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r29" style="padding-left: 10px;   ">
+	<td id="r29" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r29_risk_weight != null ? #numbers.formatDecimal(report.r29_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r29_risk_weight" name="r29_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r29" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r29" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r29_risk_weighted_amount != null ? #numbers.formatDecimal(report.r29_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r29_risk_weighted_amount" name="r29_risk_weighted_amount"
@@ -1603,37 +1603,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r30" style="padding : 4px 10px;   ">
+	<td id="r30" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r30_security_firm, 'N/A')}"
                id="r30_security_firm" name="r30_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r30" style="padding-left: 10px;   ">
+    <td id="r30" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r30_credit_rating != null ? #numbers.formatDecimal(report.r30_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r30_credit_rating" name="r30_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r30" style="padding : 4px 10px;   ">
+	<td id="r30" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r30_rating_agency, 'N/A')}"
                id="r30_rating_agency" name="r30_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r30" style="padding-left: 10px;   ">
+	<td id="r30" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r30_exposure_amount != null ? #numbers.formatDecimal(report.r30_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r30_exposure_amount" name="r30_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r30" style="padding-left: 10px;   ">
+	<td id="r30" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r30_risk_weight != null ? #numbers.formatDecimal(report.r30_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r30_risk_weight" name="r30_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r30" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r30" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r30_risk_weighted_amount != null ? #numbers.formatDecimal(report.r30_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r30_risk_weighted_amount" name="r30_risk_weighted_amount"
@@ -1642,37 +1642,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r31" style="padding : 4px 10px;   ">
+	<td id="r31" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r31_security_firm, 'N/A')}"
                id="r31_security_firm" name="r31_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r31" style="padding-left: 10px;   ">
+    <td id="r31" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r31_credit_rating != null ? #numbers.formatDecimal(report.r31_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r31_credit_rating" name="r31_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r31" style="padding : 4px 10px;   ">
+	<td id="r31" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r31_rating_agency, 'N/A')}"
                id="r31_rating_agency" name="r31_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r31" style="padding-left: 10px;   ">
+	<td id="r31" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r31_exposure_amount != null ? #numbers.formatDecimal(report.r31_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r31_exposure_amount" name="r31_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r31" style="padding-left: 10px;   ">
+	<td id="r31" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r31_risk_weight != null ? #numbers.formatDecimal(report.r31_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r31_risk_weight" name="r31_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r31" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r31" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r31_risk_weighted_amount != null ? #numbers.formatDecimal(report.r31_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r31_risk_weighted_amount" name="r31_risk_weighted_amount"
@@ -1681,37 +1681,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r32" style="padding : 4px 10px;   ">
+	<td id="r32" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r32_security_firm, 'N/A')}"
                id="r32_security_firm" name="r32_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r32" style="padding-left: 10px;   ">
+    <td id="r32" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r32_credit_rating != null ? #numbers.formatDecimal(report.r32_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r32_credit_rating" name="r32_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r32" style="padding : 4px 10px;   ">
+	<td id="r32" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r32_rating_agency, 'N/A')}"
                id="r32_rating_agency" name="r32_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r32" style="padding-left: 10px;   ">
+	<td id="r32" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r32_exposure_amount != null ? #numbers.formatDecimal(report.r32_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r32_exposure_amount" name="r32_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r32" style="padding-left: 10px;   ">
+	<td id="r32" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r32_risk_weight != null ? #numbers.formatDecimal(report.r32_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r32_risk_weight" name="r32_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r32" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r32" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r32_risk_weighted_amount != null ? #numbers.formatDecimal(report.r32_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r32_risk_weighted_amount" name="r32_risk_weighted_amount"
@@ -1720,37 +1720,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r33" style="padding : 4px 10px;   ">
+	<td id="r33" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r33_security_firm, 'N/A')}"
                id="r33_security_firm" name="r33_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r33" style="padding-left: 10px;   ">
+    <td id="r33" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r33_credit_rating != null ? #numbers.formatDecimal(report.r33_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r33_credit_rating" name="r33_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r33" style="padding : 4px 10px;   ">
+	<td id="r33" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r33_rating_agency, 'N/A')}"
                id="r33_rating_agency" name="r33_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r33" style="padding-left: 10px;   ">
+	<td id="r33" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r33_exposure_amount != null ? #numbers.formatDecimal(report.r33_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r33_exposure_amount" name="r33_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r33" style="padding-left: 10px;   ">
+	<td id="r33" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r33_risk_weight != null ? #numbers.formatDecimal(report.r33_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r33_risk_weight" name="r33_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r33" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r33" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r33_risk_weighted_amount != null ? #numbers.formatDecimal(report.r33_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r33_risk_weighted_amount" name="r33_risk_weighted_amount"
@@ -1759,37 +1759,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r34" style="padding : 4px 10px;   ">
+	<td id="r34" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r34_security_firm, 'N/A')}"
                id="r34_security_firm" name="r34_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r34" style="padding-left: 10px;   ">
+    <td id="r34" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r34_credit_rating != null ? #numbers.formatDecimal(report.r34_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r34_credit_rating" name="r34_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r34" style="padding : 4px 10px;   ">
+	<td id="r34" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r34_rating_agency, 'N/A')}"
                id="r34_rating_agency" name="r34_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r34" style="padding-left: 10px;   ">
+	<td id="r34" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r34_exposure_amount != null ? #numbers.formatDecimal(report.r34_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r34_exposure_amount" name="r34_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r34" style="padding-left: 10px;   ">
+	<td id="r34" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r34_risk_weight != null ? #numbers.formatDecimal(report.r34_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r34_risk_weight" name="r34_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r34" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r34" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r34_risk_weighted_amount != null ? #numbers.formatDecimal(report.r34_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r34_risk_weighted_amount" name="r34_risk_weighted_amount"
@@ -1798,37 +1798,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r35" style="padding : 4px 10px;   ">
+	<td id="r35" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r35_security_firm, 'N/A')}"
                id="r35_security_firm" name="r35_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r35" style="padding-left: 10px;   ">
+    <td id="r35" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r35_credit_rating != null ? #numbers.formatDecimal(report.r35_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r35_credit_rating" name="r35_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r35" style="padding : 4px 10px;   ">
+	<td id="r35" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r35_rating_agency, 'N/A')}"
                id="r35_rating_agency" name="r35_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r35" style="padding-left: 10px;   ">
+	<td id="r35" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r35_exposure_amount != null ? #numbers.formatDecimal(report.r35_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r35_exposure_amount" name="r35_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r35" style="padding-left: 10px;   ">
+	<td id="r35" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r35_risk_weight != null ? #numbers.formatDecimal(report.r35_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r35_risk_weight" name="r35_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r35" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r35" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r35_risk_weighted_amount != null ? #numbers.formatDecimal(report.r35_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r35_risk_weighted_amount" name="r35_risk_weighted_amount"
@@ -1837,37 +1837,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r36" style="padding : 4px 10px;   ">
+	<td id="r36" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r36_security_firm, 'N/A')}"
                id="r36_security_firm" name="r36_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r36" style="padding-left: 10px;   ">
+    <td id="r36" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r36_credit_rating != null ? #numbers.formatDecimal(report.r36_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r36_credit_rating" name="r36_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r36" style="padding : 4px 10px;   ">
+	<td id="r36" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r36_rating_agency, 'N/A')}"
                id="r36_rating_agency" name="r36_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r36" style="padding-left: 10px;   ">
+	<td id="r36" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r36_exposure_amount != null ? #numbers.formatDecimal(report.r36_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r36_exposure_amount" name="r36_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r36" style="padding-left: 10px;   ">
+	<td id="r36" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r36_risk_weight != null ? #numbers.formatDecimal(report.r36_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r36_risk_weight" name="r36_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r36" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r36" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r36_risk_weighted_amount != null ? #numbers.formatDecimal(report.r36_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r36_risk_weighted_amount" name="r36_risk_weighted_amount"
@@ -1876,37 +1876,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r37" style="padding : 4px 10px;   ">
+	<td id="r37" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r37_security_firm, 'N/A')}"
                id="r37_security_firm" name="r37_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r37" style="padding-left: 10px;   ">
+    <td id="r37" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r37_credit_rating != null ? #numbers.formatDecimal(report.r37_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r37_credit_rating" name="r37_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r37" style="padding : 4px 10px;   ">
+	<td id="r37" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r37_rating_agency, 'N/A')}"
                id="r37_rating_agency" name="r37_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r37" style="padding-left: 10px;   ">
+	<td id="r37" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r37_exposure_amount != null ? #numbers.formatDecimal(report.r37_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r37_exposure_amount" name="r37_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r37" style="padding-left: 10px;   ">
+	<td id="r37" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r37_risk_weight != null ? #numbers.formatDecimal(report.r37_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r37_risk_weight" name="r37_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r37" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r37" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r37_risk_weighted_amount != null ? #numbers.formatDecimal(report.r37_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r37_risk_weighted_amount" name="r37_risk_weighted_amount"
@@ -1915,37 +1915,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r38" style="padding : 4px 10px;   ">
+	<td id="r38" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r38_security_firm, 'N/A')}"
                id="r38_security_firm" name="r38_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r38" style="padding-left: 10px;   ">
+    <td id="r38" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r38_credit_rating != null ? #numbers.formatDecimal(report.r38_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r38_credit_rating" name="r38_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r38" style="padding : 4px 10px;   ">
+	<td id="r38" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r38_rating_agency, 'N/A')}"
                id="r38_rating_agency" name="r38_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r38" style="padding-left: 10px;   ">
+	<td id="r38" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r38_exposure_amount != null ? #numbers.formatDecimal(report.r38_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r38_exposure_amount" name="r38_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r38" style="padding-left: 10px;   ">
+	<td id="r38" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r38_risk_weight != null ? #numbers.formatDecimal(report.r38_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r38_risk_weight" name="r38_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r38" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r38" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r38_risk_weighted_amount != null ? #numbers.formatDecimal(report.r38_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r38_risk_weighted_amount" name="r38_risk_weighted_amount"
@@ -1954,37 +1954,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r39" style="padding : 4px 10px;   ">
+	<td id="r39" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r39_security_firm, 'N/A')}"
                id="r39_security_firm" name="r39_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r39" style="padding-left: 10px;   ">
+    <td id="r39" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r39_credit_rating != null ? #numbers.formatDecimal(report.r39_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r39_credit_rating" name="r39_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r39" style="padding : 4px 10px;   ">
+	<td id="r39" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r39_rating_agency, 'N/A')}"
                id="r39_rating_agency" name="r39_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r39" style="padding-left: 10px;   ">
+	<td id="r39" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r39_exposure_amount != null ? #numbers.formatDecimal(report.r39_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r39_exposure_amount" name="r39_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r39" style="padding-left: 10px;   ">
+	<td id="r39" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r39_risk_weight != null ? #numbers.formatDecimal(report.r39_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r39_risk_weight" name="r39_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r39" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r39" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r39_risk_weighted_amount != null ? #numbers.formatDecimal(report.r39_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r39_risk_weighted_amount" name="r39_risk_weighted_amount"
@@ -1993,37 +1993,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r40" style="padding : 4px 10px;   ">
+	<td id="r40" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r40_security_firm, 'N/A')}"
                id="r40_security_firm" name="r40_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r40" style="padding-left: 10px;   ">
+    <td id="r40" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r40_credit_rating != null ? #numbers.formatDecimal(report.r40_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r40_credit_rating" name="r40_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r40" style="padding : 4px 10px;   ">
+	<td id="r40" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r40_rating_agency, 'N/A')}"
                id="r40_rating_agency" name="r40_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r40" style="padding-left: 10px;   ">
+	<td id="r40" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r40_exposure_amount != null ? #numbers.formatDecimal(report.r40_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r40_exposure_amount" name="r40_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r40" style="padding-left: 10px;   ">
+	<td id="r40" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r40_risk_weight != null ? #numbers.formatDecimal(report.r40_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r40_risk_weight" name="r40_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r40" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r40" style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r40_risk_weighted_amount != null ? #numbers.formatDecimal(report.r40_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r40_risk_weighted_amount" name="r40_risk_weighted_amount"
@@ -2032,37 +2032,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r41" style="padding : 4px 10px;   ">
+	<td id="r41" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r41_security_firm, 'N/A')}"
                id="r41_security_firm" name="r41_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r41" style="padding-left: 10px;   ">
+    <td id="r41" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r41_credit_rating != null ? #numbers.formatDecimal(report.r41_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r41_credit_rating" name="r41_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r41" style="padding : 4px 10px;   ">
+	<td id="r41" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r41_rating_agency, 'N/A')}"
                id="r41_rating_agency" name="r41_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r41" style="padding-left: 10px;   ">
+	<td id="r41" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r41_exposure_amount != null ? #numbers.formatDecimal(report.r41_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r41_exposure_amount" name="r41_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r41" style="padding-left: 10px;   ">
+	<td id="r41" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r41_risk_weight != null ? #numbers.formatDecimal(report.r41_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r41_risk_weight" name="r41_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r41" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r41" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r41_risk_weighted_amount != null ? #numbers.formatDecimal(report.r41_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r41_risk_weighted_amount" name="r41_risk_weighted_amount"
@@ -2071,37 +2071,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r42" style="padding : 4px 10px;   ">
+	<td id="r42" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r42_security_firm, 'N/A')}"
                id="r42_security_firm" name="r42_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r42" style="padding-left: 10px;   ">
+    <td id="r42" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r42_credit_rating != null ? #numbers.formatDecimal(report.r42_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r42_credit_rating" name="r42_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r42" style="padding : 4px 10px;   ">
+	<td id="r42" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r42_rating_agency, 'N/A')}"
                id="r42_rating_agency" name="r42_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r42" style="padding-left: 10px;   ">
+	<td id="r42" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r42_exposure_amount != null ? #numbers.formatDecimal(report.r42_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r42_exposure_amount" name="r42_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r42" style="padding-left: 10px;   ">
+	<td id="r42" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r42_risk_weight != null ? #numbers.formatDecimal(report.r42_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r42_risk_weight" name="r42_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r42" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r42" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r42_risk_weighted_amount != null ? #numbers.formatDecimal(report.r42_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r42_risk_weighted_amount" name="r42_risk_weighted_amount"
@@ -2110,37 +2110,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r43" style="padding : 4px 10px;   ">
+	<td id="r43" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r43_security_firm, 'N/A')}"
                id="r43_security_firm" name="r43_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r43" style="padding-left: 10px;   ">
+    <td id="r43" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r43_credit_rating != null ? #numbers.formatDecimal(report.r43_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r43_credit_rating" name="r43_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r43" style="padding : 4px 10px;   ">
+	<td id="r43" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r43_rating_agency, 'N/A')}"
                id="r43_rating_agency" name="r43_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r43" style="padding-left: 10px;   ">
+	<td id="r43" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r43_exposure_amount != null ? #numbers.formatDecimal(report.r43_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r43_exposure_amount" name="r43_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r43" style="padding-left: 10px;   ">
+	<td id="r43" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r43_risk_weight != null ? #numbers.formatDecimal(report.r43_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r43_risk_weight" name="r43_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r43" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r43" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r43_risk_weighted_amount != null ? #numbers.formatDecimal(report.r43_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r43_risk_weighted_amount" name="r43_risk_weighted_amount"
@@ -2149,37 +2149,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r44" style="padding : 4px 10px;   ">
+	<td id="r44" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r44_security_firm, 'N/A')}"
                id="r44_security_firm" name="r44_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r44" style="padding-left: 10px;   ">
+    <td id="r44" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r44_credit_rating != null ? #numbers.formatDecimal(report.r44_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r44_credit_rating" name="r44_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r44" style="padding : 4px 10px;   ">
+	<td id="r44" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r44_rating_agency, 'N/A')}"
                id="r44_rating_agency" name="r44_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r44" style="padding-left: 10px;   ">
+	<td id="r44" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r44_exposure_amount != null ? #numbers.formatDecimal(report.r44_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r44_exposure_amount" name="r44_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r44" style="padding-left: 10px;   ">
+	<td id="r44" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r44_risk_weight != null ? #numbers.formatDecimal(report.r44_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r44_risk_weight" name="r44_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r44" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r44" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r44_risk_weighted_amount != null ? #numbers.formatDecimal(report.r44_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r44_risk_weighted_amount" name="r44_risk_weighted_amount"
@@ -2188,37 +2188,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r45" style="padding : 4px 10px;   ">
+	<td id="r45" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r45_security_firm, 'N/A')}"
                id="r45_security_firm" name="r45_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r45" style="padding-left: 10px;   ">
+    <td id="r45" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r45_credit_rating != null ? #numbers.formatDecimal(report.r45_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r45_credit_rating" name="r45_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r45" style="padding : 4px 10px;   ">
+	<td id="r45" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r45_rating_agency, 'N/A')}"
                id="r45_rating_agency" name="r45_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r45" style="padding-left: 10px;   ">
+	<td id="r45" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r45_exposure_amount != null ? #numbers.formatDecimal(report.r45_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r45_exposure_amount" name="r45_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r45" style="padding-left: 10px;   ">
+	<td id="r45" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r45_risk_weight != null ? #numbers.formatDecimal(report.r45_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r45_risk_weight" name="r45_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r45" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r45" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r45_risk_weighted_amount != null ? #numbers.formatDecimal(report.r45_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r45_risk_weighted_amount" name="r45_risk_weighted_amount"
@@ -2227,37 +2227,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r46" style="padding : 4px 10px;   ">
+	<td id="r46" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r46_security_firm, 'N/A')}"
                id="r46_security_firm" name="r46_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r46" style="padding-left: 10px;   ">
+    <td id="r46" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r46_credit_rating != null ? #numbers.formatDecimal(report.r46_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r46_credit_rating" name="r46_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r46" style="padding : 4px 10px;   ">
+	<td id="r46" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r46_rating_agency, 'N/A')}"
                id="r46_rating_agency" name="r46_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r46" style="padding-left: 10px;   ">
+	<td id="r46" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r46_exposure_amount != null ? #numbers.formatDecimal(report.r46_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r46_exposure_amount" name="r46_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r46" style="padding-left: 10px;   ">
+	<td id="r46" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r46_risk_weight != null ? #numbers.formatDecimal(report.r46_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r46_risk_weight" name="r46_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r46" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r46" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r46_risk_weighted_amount != null ? #numbers.formatDecimal(report.r46_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r46_risk_weighted_amount" name="r46_risk_weighted_amount"
@@ -2266,37 +2266,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r47" style="padding : 4px 10px;   ">
+	<td id="r47" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r47_security_firm, 'N/A')}"
                id="r47_security_firm" name="r47_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r47" style="padding-left: 10px;   ">
+    <td id="r47" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r47_credit_rating != null ? #numbers.formatDecimal(report.r47_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r47_credit_rating" name="r47_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r47" style="padding : 4px 10px;   ">
+	<td id="r47" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r47_rating_agency, 'N/A')}"
                id="r47_rating_agency" name="r47_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r47" style="padding-left: 10px;   ">
+	<td id="r47" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r47_exposure_amount != null ? #numbers.formatDecimal(report.r47_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r47_exposure_amount" name="r47_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r47" style="padding-left: 10px;   ">
+	<td id="r47" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r47_risk_weight != null ? #numbers.formatDecimal(report.r47_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r47_risk_weight" name="r47_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r47" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r47" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r47_risk_weighted_amount != null ? #numbers.formatDecimal(report.r47_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r47_risk_weighted_amount" name="r47_risk_weighted_amount"
@@ -2305,37 +2305,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r48" style="padding : 4px 10px;   ">
+	<td id="r48" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r48_security_firm, 'N/A')}"
                id="r48_security_firm" name="r48_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r48" style="padding-left: 10px;   ">
+    <td id="r48" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r48_credit_rating != null ? #numbers.formatDecimal(report.r48_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r48_credit_rating" name="r48_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r48" style="padding : 4px 10px;   ">
+	<td id="r48" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r48_rating_agency, 'N/A')}"
                id="r48_rating_agency" name="r48_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r48" style="padding-left: 10px;   ">
+	<td id="r48" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r48_exposure_amount != null ? #numbers.formatDecimal(report.r48_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r48_exposure_amount" name="r48_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r48" style="padding-left: 10px;   ">
+	<td id="r48" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r48_risk_weight != null ? #numbers.formatDecimal(report.r48_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r48_risk_weight" name="r48_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r48" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r48" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r48_risk_weighted_amount != null ? #numbers.formatDecimal(report.r48_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r48_risk_weighted_amount" name="r48_risk_weighted_amount"
@@ -2344,37 +2344,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r49" style="padding : 4px 10px;   ">
+	<td id="r49" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r49_security_firm, 'N/A')}"
                id="r49_security_firm" name="r49_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r49" style="padding-left: 10px;   ">
+    <td id="r49">
         <input class="display-input Show_input" type="text"
                th:value="${report.r49_credit_rating != null ? #numbers.formatDecimal(report.r49_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r49_credit_rating" name="r49_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r49" style="padding : 4px 10px;   ">
+	<td id="r49" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r49_rating_agency, 'N/A')}"
                id="r49_rating_agency" name="r49_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r49" style="padding-left: 10px;   ">
+	<td id="r49" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r49_exposure_amount != null ? #numbers.formatDecimal(report.r49_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r49_exposure_amount" name="r49_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r49" style="padding-left: 10px;   ">
+	<td id="r49" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r49_risk_weight != null ? #numbers.formatDecimal(report.r49_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r49_risk_weight" name="r49_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r49" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r49" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r49_risk_weighted_amount != null ? #numbers.formatDecimal(report.r49_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r49_risk_weighted_amount" name="r49_risk_weighted_amount"
@@ -2383,37 +2383,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r50" style="padding : 4px 10px;   ">
+	<td id="r50" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r50_security_firm, 'N/A')}"
                id="r50_security_firm" name="r50_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r50" style="padding-left: 10px;   ">
+    <td id="r50" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r50_credit_rating != null ? #numbers.formatDecimal(report.r50_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r50_credit_rating" name="r50_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r50" style="padding : 4px 10px;   ">
+	<td id="r50" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r50_rating_agency, 'N/A')}"
                id="r50_rating_agency" name="r50_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r50" style="padding-left: 10px;   ">
+	<td id="r50" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r50_exposure_amount != null ? #numbers.formatDecimal(report.r50_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r50_exposure_amount" name="r50_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r50" style="padding-left: 10px;   ">
+	<td id="r50" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r50_risk_weight != null ? #numbers.formatDecimal(report.r50_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r50_risk_weight" name="r50_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r50" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r50" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r50_risk_weighted_amount != null ? #numbers.formatDecimal(report.r50_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r50_risk_weighted_amount" name="r50_risk_weighted_amount"
@@ -2422,37 +2422,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r51" style="padding : 4px 10px;   ">
+	<td id="r51" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r51_security_firm, 'N/A')}"
                id="r51_security_firm" name="r51_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r51" style="padding-left: 10px;   ">
+    <td id="r51" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r51_credit_rating != null ? #numbers.formatDecimal(report.r51_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r51_credit_rating" name="r51_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r51" style="padding : 4px 10px;   ">
+	<td id="r51" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r51_rating_agency, 'N/A')}"
                id="r51_rating_agency" name="r51_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r51" style="padding-left: 10px;   ">
+	<td id="r51" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r51_exposure_amount != null ? #numbers.formatDecimal(report.r51_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r51_exposure_amount" name="r51_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r51" style="padding-left: 10px;   ">
+	<td id="r51" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r51_risk_weight != null ? #numbers.formatDecimal(report.r51_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r51_risk_weight" name="r51_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r51" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r51" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r51_risk_weighted_amount != null ? #numbers.formatDecimal(report.r51_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r51_risk_weighted_amount" name="r51_risk_weighted_amount"
@@ -2461,37 +2461,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r52" style="padding : 4px 10px;   ">
+	<td id="r52" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r52_security_firm, 'N/A')}"
                id="r52_security_firm" name="r52_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r52" style="padding-left: 10px;   ">
+    <td id="r52" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r52_credit_rating != null ? #numbers.formatDecimal(report.r52_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r52_credit_rating" name="r52_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r52" style="padding : 4px 10px;   ">
+	<td id="r52" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r52_rating_agency, 'N/A')}"
                id="r52_rating_agency" name="r52_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r52" style="padding-left: 10px;   ">
+	<td id="r52" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r52_exposure_amount != null ? #numbers.formatDecimal(report.r52_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r52_exposure_amount" name="r52_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r52" style="padding-left: 10px;   ">
+	<td id="r52" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r52_risk_weight != null ? #numbers.formatDecimal(report.r52_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r52_risk_weight" name="r52_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r52" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r52" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r52_risk_weighted_amount != null ? #numbers.formatDecimal(report.r52_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r52_risk_weighted_amount" name="r52_risk_weighted_amount"
@@ -2500,37 +2500,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r53" style="padding : 4px 10px;   ">
+	<td id="r53" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r53_security_firm, 'N/A')}"
                id="r53_security_firm" name="r53_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r53" style="padding-left: 10px;   ">
+    <td id="r53" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r53_credit_rating != null ? #numbers.formatDecimal(report.r53_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r53_credit_rating" name="r53_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r53" style="padding : 4px 10px;   ">
+	<td id="r53" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r53_rating_agency, 'N/A')}"
                id="r53_rating_agency" name="r53_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r53" style="padding-left: 10px;   ">
+	<td id="r53" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r53_exposure_amount != null ? #numbers.formatDecimal(report.r53_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r53_exposure_amount" name="r53_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r53" style="padding-left: 10px;   ">
+	<td id="r53" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r53_risk_weight != null ? #numbers.formatDecimal(report.r53_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r53_risk_weight" name="r53_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r53" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r53" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r53_risk_weighted_amount != null ? #numbers.formatDecimal(report.r53_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r53_risk_weighted_amount" name="r53_risk_weighted_amount"
@@ -2539,37 +2539,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r54" style="padding : 4px 10px;   ">
+	<td id="r54" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r54_security_firm, 'N/A')}"
                id="r54_security_firm" name="r54_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r54" style="padding-left: 10px;   ">
+    <td id="r54" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r54_credit_rating != null ? #numbers.formatDecimal(report.r54_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r54_credit_rating" name="r54_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r54" style="padding : 4px 10px;   ">
+	<td id="r54" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r54_rating_agency, 'N/A')}"
                id="r54_rating_agency" name="r54_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r54" style="padding-left: 10px;   ">
+	<td id="r54" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r54_exposure_amount != null ? #numbers.formatDecimal(report.r54_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r54_exposure_amount" name="r54_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r54" style="padding-left: 10px;   ">
+	<td id="r54" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r54_risk_weight != null ? #numbers.formatDecimal(report.r54_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r54_risk_weight" name="r54_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r54" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r54" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r54_risk_weighted_amount != null ? #numbers.formatDecimal(report.r54_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r54_risk_weighted_amount" name="r54_risk_weighted_amount"
@@ -2578,37 +2578,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r55" style="padding : 4px 10px;   ">
+	<td id="r55" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r55_security_firm, 'N/A')}"
                id="r55_security_firm" name="r55_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r55" style="padding-left: 10px;   ">
+    <td id="r55" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r55_credit_rating != null ? #numbers.formatDecimal(report.r55_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r55_credit_rating" name="r55_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r55" style="padding : 4px 10px;   ">
+	<td id="r55" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r55_rating_agency, 'N/A')}"
                id="r55_rating_agency" name="r55_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r55" style="padding-left: 10px;   ">
+	<td id="r55" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r55_exposure_amount != null ? #numbers.formatDecimal(report.r55_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r55_exposure_amount" name="r55_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r55" style="padding-left: 10px;   ">
+	<td id="r55" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r55_risk_weight != null ? #numbers.formatDecimal(report.r55_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r55_risk_weight" name="r55_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r55" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r55" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r55_risk_weighted_amount != null ? #numbers.formatDecimal(report.r55_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r55_risk_weighted_amount" name="r55_risk_weighted_amount"
@@ -2617,37 +2617,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r56" style="padding : 4px 10px;   ">
+	<td id="r56" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r56_security_firm, 'N/A')}"
                id="r56_security_firm" name="r56_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r56" style="padding-left: 10px;   ">
+    <td id="r56" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r56_credit_rating != null ? #numbers.formatDecimal(report.r56_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r56_credit_rating" name="r56_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r56" style="padding : 4px 10px;   ">
+	<td id="r56" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r56_rating_agency, 'N/A')}"
                id="r56_rating_agency" name="r56_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r56" style="padding-left: 10px;   ">
+	<td id="r56" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r56_exposure_amount != null ? #numbers.formatDecimal(report.r56_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r56_exposure_amount" name="r56_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r56" style="padding-left: 10px;   ">
+	<td id="r56" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r56_risk_weight != null ? #numbers.formatDecimal(report.r56_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r56_risk_weight" name="r56_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r56" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r56" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r56_risk_weighted_amount != null ? #numbers.formatDecimal(report.r56_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r56_risk_weighted_amount" name="r56_risk_weighted_amount"
@@ -2656,37 +2656,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r57" style="padding : 4px 10px;   ">
+	<td id="r57" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r57_security_firm, 'N/A')}"
                id="r57_security_firm" name="r57_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r57" style="padding-left: 10px;   ">
+    <td id="r57" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r57_credit_rating != null ? #numbers.formatDecimal(report.r57_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r57_credit_rating" name="r57_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r57" style="padding : 4px 10px;   ">
+	<td id="r57" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r57_rating_agency, 'N/A')}"
                id="r57_rating_agency" name="r57_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r57" style="padding-left: 10px;   ">
+	<td id="r57" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r57_exposure_amount != null ? #numbers.formatDecimal(report.r57_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r57_exposure_amount" name="r57_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r57" style="padding-left: 10px;   ">
+	<td id="r57" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r57_risk_weight != null ? #numbers.formatDecimal(report.r57_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r57_risk_weight" name="r57_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r57" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r57" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r57_risk_weighted_amount != null ? #numbers.formatDecimal(report.r57_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r57_risk_weighted_amount" name="r57_risk_weighted_amount"
@@ -2695,37 +2695,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r58" style="padding : 4px 10px;   ">
+	<td id="r58" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r58_security_firm, 'N/A')}"
                id="r58_security_firm" name="r58_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r58" style="padding-left: 10px;   ">
+    <td id="r58" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r58_credit_rating != null ? #numbers.formatDecimal(report.r58_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r58_credit_rating" name="r58_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r58" style="padding : 4px 10px;   ">
+	<td id="r58" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r58_rating_agency, 'N/A')}"
                id="r58_rating_agency" name="r58_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r58" style="padding-left: 10px;   ">
+	<td id="r58" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r58_exposure_amount != null ? #numbers.formatDecimal(report.r58_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r58_exposure_amount" name="r58_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r58" style="padding-left: 10px;   ">
+	<td id="r58" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r58_risk_weight != null ? #numbers.formatDecimal(report.r58_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r58_risk_weight" name="r58_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r58" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r58" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r58_risk_weighted_amount != null ? #numbers.formatDecimal(report.r58_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r58_risk_weighted_amount" name="r58_risk_weighted_amount"
@@ -2734,37 +2734,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r59" style="padding : 4px 10px;   ">
+	<td id="r59" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r59_security_firm, 'N/A')}"
                id="r59_security_firm" name="r59_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r59" style="padding-left: 10px;   ">
+    <td id="r59" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r59_credit_rating != null ? #numbers.formatDecimal(report.r59_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r59_credit_rating" name="r59_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r59" style="padding : 4px 10px;   ">
+	<td id="r59" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r59_rating_agency, 'N/A')}"
                id="r59_rating_agency" name="r59_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r59" style="padding-left: 10px;   ">
+	<td id="r59" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r59_exposure_amount != null ? #numbers.formatDecimal(report.r59_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r59_exposure_amount" name="r59_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r59" style="padding-left: 10px;   ">
+	<td id="r59" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r59_risk_weight != null ? #numbers.formatDecimal(report.r59_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r59_risk_weight" name="r59_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r59" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r59" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r59_risk_weighted_amount != null ? #numbers.formatDecimal(report.r59_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r59_risk_weighted_amount" name="r59_risk_weighted_amount"
@@ -2773,37 +2773,37 @@ function fileuploads(btn) {
 </tr>
 
 <tr>
-	<td id="r60" style="padding : 4px 10px;   ">
+	<td id="r60" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r60_security_firm, 'N/A')}"
                id="r60_security_firm" name="r60_security_firm"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-    <td id="r60" style="padding-left: 10px;   ">
+    <td id="r60" >
         <input class="display-input Show_input" type="text"
                th:value="${report.r60_credit_rating != null ? #numbers.formatDecimal(report.r60_credit_rating, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r60_credit_rating" name="r60_credit_rating"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r60" style="padding : 4px 10px;   ">
+	<td id="r60" >
         <input class="display-input Show_input" type="text"
                th:value="${#strings.defaultString(report.r60_rating_agency, 'N/A')}"
                id="r60_rating_agency" name="r60_rating_agency"
                style="background-color: #FFFFFF; width: 420px;   height: 28px; border-color: transparent; text-align: left;" readonly />
     </td>
-	<td id="r60" style="padding-left: 10px;   ">
+	<td id="r60" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r60_exposure_amount != null ? #numbers.formatDecimal(report.r60_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r60_exposure_amount" name="r60_exposure_amount"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r60" style="padding-left: 10px;   ">
+	<td id="r60" style="text-align: right;">
         <input class="display-input Show_input" type="text"
                th:value="${report.r60_risk_weight != null ? #numbers.formatDecimal(report.r60_risk_weight, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r60_risk_weight" name="r60_risk_weight"
                style="background-color: #FFFFFF; width: 220px;   height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
-	<td id="r60" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+	<td id="r60" style="text-align: right; background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r60_risk_weighted_amount != null ? #numbers.formatDecimal(report.r60_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r60_risk_weighted_amount" name="r60_risk_weighted_amount"
@@ -2814,14 +2814,14 @@ function fileuploads(btn) {
 <td></td>
 <td></td>
 <td></td>
-<td id="r61" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+<td id="r61" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r61_exposure_amount != null ? #numbers.formatDecimal(report.r61_exposure_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r61_exposure_amount" name="r61_exposure_amount"
                style="background-color: rgb(107, 122, 143); color: white; width: 220px;  height: 28px; border-color: transparent; text-align: right;" readonly />
 	</td>
 <td style="background-color:#D9D9D9;"></td>
-<td id="r61" style="padding-left: 10px;  background-color: rgb(107, 122, 143); color: white;">
+<td id="r61" style="text-align: right;  background-color: rgb(107, 122, 143); color: white;">
         <input class="display-input Show_input nonEditable" type="text"
                th:value="${report.r61_risk_weighted_amount != null ? #numbers.formatDecimal(report.r61_risk_weighted_amount, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="r61_risk_weighted_amount" name="r61_risk_weighted_amount"
