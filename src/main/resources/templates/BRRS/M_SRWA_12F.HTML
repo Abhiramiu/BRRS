@@ -533,39 +533,62 @@ function cancelModify() {
 	function calculateAll_RISK_WEIGHTED_AMT() {
 	    function getVal(id) {
 	        let el = $("#" + id);
-	        if (el.length === 0) {
-	            // console.warn("Missing element:", id);
-	            return 0;
-	        }
+	        if (el.length === 0) return 0;
 	        let val = el.val() || el.text();
-	        return parseFloat(val.replace(/,/g, "")) || 0;
+	        // Remove commas, spaces, and any non-numeric symbols
+	        val = val.replace(/[^0-9.\-]/g, "");
+	        return parseFloat(val) || 0;
 	    }
 
-	    // Loop through all rows R11 to R36
 	    for (let i = 11; i <= 36; i++) {
-	        let exposure = getVal("R" + i + "_EXPOSURE_AMT");
-	        let riskWeight = getVal("R" + i + "_RISK_WEIGHT");
+	        let expId = "R" + i + "_EXPOSURE_AMT";
+	        let riskId = "R" + i + "_RISK_WEIGHT";
+	        let resId = "R" + i + "_RISK_WEIGHTED_AMT";
 
-	        // Formula: Exposure × Risk Weight (%)
-	        let weightedAmt = exposure * (riskWeight / 100);
+	        let exposure = getVal(expId);
+	        let riskWeight = getVal(riskId);
 
-	        // Display formatted result
-	        $("#R" + i + "_RISK_WEIGHTED_AMT").val(
-	            weightedAmt.toLocaleString("en-IN", { maximumFractionDigits: 0 })
+	        // Formula (no divide by 100)
+	        let weightedAmt = Math.round(exposure * riskWeight);
+
+	        // Format and set the result with commas
+	        $("#" + resId).val(
+	            weightedAmt.toLocaleString("en-US", { maximumFractionDigits: 0 })
 	        );
+
+	        // Also reformat exposure & risk weight inputs to show commas
+	        if (exposure > 0)
+	            $("#" + expId).val(
+	                exposure.toLocaleString("en-US", { maximumFractionDigits: 0 })
+	            );
+
+	        if (riskWeight > 0)
+	            $("#" + riskId).val(
+	                riskWeight.toLocaleString("en-US", { maximumFractionDigits: 0 })
+	            );
 	    }
 	}
 
-	// Auto-calculate on load and when user edits exposure or risk weight
 	$(document).ready(function () {
 	    calculateAll_RISK_WEIGHTED_AMT();
 
-	    // Attach event listener to all exposure and risk weight fields R11–R36
 	    for (let i = 11; i <= 36; i++) {
-	        $("#R" + i + "_EXPOSURE_AMT, #R" + i + "_RISK_WEIGHT").on("input", calculateAll_RISK_WEIGHTED_AMT);
+	        $("#R" + i + "_EXPOSURE_AMT, #R" + i + "_RISK_WEIGHT").on("input", function () {
+	            // Remove commas while typing for proper numeric parsing
+	            let cleanVal = $(this).val().replace(/[^0-9.\-]/g, "");
+	            $(this).val(cleanVal);
+	            calculateAll_RISK_WEIGHTED_AMT();
+	        });
+
+	        // On blur, reformat the value with commas
+	        $("#R" + i + "_EXPOSURE_AMT, #R" + i + "_RISK_WEIGHT").on("blur", function () {
+	            let num = parseFloat($(this).val().replace(/,/g, ""));
+	            if (!isNaN(num))
+	                $(this).val(num.toLocaleString("en-US", { maximumFractionDigits: 0 }));
+	        });
 	    }
 	});
-	
+
 	
 
 	function calculateR37_EXPOSURE_AMT() {
@@ -585,7 +608,7 @@ function cancelModify() {
 	    }
 
 	    $("#R37_EXPOSURE_AMT").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0 })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0 })
 	    );
 	}
 
@@ -619,7 +642,7 @@ function cancelModify() {
 
 	    // Display total in R37_RISK_WEIGHTED_AMT
 	    $("#R37_RISK_WEIGHTED_AMT").val(
-	        total.toLocaleString("en-IN", { maximumFractionDigits: 0 })
+	        total.toLocaleString("en-US", { maximumFractionDigits: 0 })
 	    );
 	}
 
@@ -872,7 +895,7 @@ function cancelModify() {
 
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R11_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R11_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R11_EXPOSURE_AMT"
                name="R11_EXPOSURE_AMT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
@@ -881,7 +904,7 @@ function cancelModify() {
 
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R11_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R11_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R11_RISK_WEIGHT"
                name="R11_RISK_WEIGHT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
@@ -891,7 +914,7 @@ function cancelModify() {
     <td id="ROW11" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.R11_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R11_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R11_RISK_WEIGHTED_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R11_RISK_WEIGHTED_AMT"
                name="R11_RISK_WEIGHTED_AMT"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
@@ -929,7 +952,7 @@ function cancelModify() {
 
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R12_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R12_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R12_EXPOSURE_AMT"
                name="R12_EXPOSURE_AMT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
@@ -938,7 +961,7 @@ function cancelModify() {
 
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R12_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R12_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R12_RISK_WEIGHT"
                name="R12_RISK_WEIGHT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
@@ -948,7 +971,7 @@ function cancelModify() {
     <td id="ROW12" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.R12_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R12_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R12_RISK_WEIGHTED_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R12_RISK_WEIGHTED_AMT"
                name="R12_RISK_WEIGHTED_AMT"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
@@ -986,7 +1009,7 @@ function cancelModify() {
 
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R13_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R13_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R13_EXPOSURE_AMT"
                name="R13_EXPOSURE_AMT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
@@ -995,7 +1018,7 @@ function cancelModify() {
 
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R13_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R13_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R13_RISK_WEIGHT"
                name="R13_RISK_WEIGHT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
@@ -1005,7 +1028,7 @@ function cancelModify() {
     <td id="ROW13" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.R13_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R13_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R13_RISK_WEIGHTED_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R13_RISK_WEIGHTED_AMT"
                name="R13_RISK_WEIGHTED_AMT"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
@@ -1043,7 +1066,7 @@ function cancelModify() {
 
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R14_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R14_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R14_EXPOSURE_AMT"
                name="R14_EXPOSURE_AMT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
@@ -1052,7 +1075,7 @@ function cancelModify() {
 
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R14_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R14_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R14_RISK_WEIGHT"
                name="R14_RISK_WEIGHT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
@@ -1062,7 +1085,7 @@ function cancelModify() {
     <td id="ROW14" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.R14_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R14_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R14_RISK_WEIGHTED_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R14_RISK_WEIGHTED_AMT"
                name="R14_RISK_WEIGHTED_AMT"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
@@ -1100,7 +1123,7 @@ function cancelModify() {
 
     <td id="ROW15" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R15_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R15_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R15_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R15_EXPOSURE_AMT"
                name="R15_EXPOSURE_AMT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
@@ -1109,7 +1132,7 @@ function cancelModify() {
 
     <td id="ROW15" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R15_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R15_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R15_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R15_RISK_WEIGHT"
                name="R15_RISK_WEIGHT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
@@ -1119,7 +1142,7 @@ function cancelModify() {
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.R15_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R15_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R15_RISK_WEIGHTED_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R15_RISK_WEIGHTED_AMT"
                name="R15_RISK_WEIGHTED_AMT"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
@@ -1157,7 +1180,7 @@ function cancelModify() {
 
     <td id="ROW16" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R16_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R16_EXPOSURE_AMT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R16_EXPOSURE_AMT != null ? #numbers.formatDecimal(report.R16_EXPOSURE_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R16_EXPOSURE_AMT"
                name="R16_EXPOSURE_AMT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
@@ -1166,7 +1189,7 @@ function cancelModify() {
 
     <td id="ROW16" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R16_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R16_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R16_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R16_RISK_WEIGHT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R16_RISK_WEIGHT"
                name="R16_RISK_WEIGHT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
@@ -1176,7 +1199,7 @@ function cancelModify() {
     <td id="ROW16" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.R16_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R16_RISK_WEIGHTED_AMT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R16_RISK_WEIGHTED_AMT != null ? #numbers.formatDecimal(report.R16_RISK_WEIGHTED_AMT, 1,'COMMA', 0, 'POINT') : '0'}"
                id="R16_RISK_WEIGHTED_AMT"
                name="R16_RISK_WEIGHTED_AMT"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
