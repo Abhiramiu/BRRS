@@ -561,11 +561,10 @@ function cancelModify() {
 		        totalT2     += t2;
 		    }
 
-		    // Set totals without forcing decimals
-		    $("#R15_AMOUNT").val(totalAmount);
-		    $("#R15_PERCENT_OF_CET1_HOLDING").val(totalCet1);
-		    $("#R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING").val(totalAt1);
-		    $("#R15_PERCENT_OF_TIER_2_HOLDING").val(totalT2);
+			$("#R15_AMOUNT").val(Number(totalAmount).toLocaleString('en-US'));
+			$("#R15_PERCENT_OF_CET1_HOLDING").val(Number(totalCet1).toLocaleString('en-US'));
+			$("#R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING").val(Number(totalAt1).toLocaleString('en-US'));
+			$("#R15_PERCENT_OF_TIER_2_HOLDING").val(Number(totalT2).toLocaleString('en-US'));
 		}
 
 
@@ -786,7 +785,8 @@ function cancelModify() {
 	<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
 	        <input class="display-input Show_input"
 	               type="text"
-	               th:value="${report.R11_AMOUNT != null ? #numbers.formatDecimal(report.R11_AMOUNT, 1, 0, 'POINT') : '0'}"
+				  
+	               th:value="${report.R11_AMOUNT != null ? #numbers.formatDecimal(report.R11_AMOUNT, 1,'COMMA', 0, 'POINT') : '0'}"
 	               id="R11_AMOUNT"
 	               name="R11_AMOUNT"
 	               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -796,7 +796,7 @@ function cancelModify() {
 		<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
 		        <input class="display-input Show_input"
 		               type="text"
-		               th:value="${report.R11_PERCENT_OF_CET1_HOLDING != null ? #numbers.formatDecimal(report.R11_PERCENT_OF_CET1_HOLDING, 1, 0, 'POINT') : '0'}"
+		               th:value="${report.R11_PERCENT_OF_CET1_HOLDING != null ? #numbers.formatDecimal(report.R11_PERCENT_OF_CET1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
 		               id="R11_PERCENT_OF_CET1_HOLDING"
 		               name="R11_PERCENT_OF_CET1_HOLDING"
 		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -806,7 +806,7 @@ function cancelModify() {
 			<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
 			        <input class="display-input Show_input"
 			               type="text"
-			               th:value="${report.R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING != null ? #numbers.formatDecimal(report.R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, 1, 0, 'POINT') : '0'}"
+			               th:value="${report.R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING != null ? #numbers.formatDecimal(report.R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
 			               id="R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
 			               name="R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
 			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -816,7 +816,7 @@ function cancelModify() {
 				<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
 				        <input class="display-input Show_input"
 				               type="text"
-				               th:value="${report.R11_PERCENT_OF_TIER_2_HOLDING != null ? #numbers.formatDecimal(report.R11_PERCENT_OF_TIER_2_HOLDING, 1, 0, 'POINT') : '0'}"
+				               th:value="${report.R11_PERCENT_OF_TIER_2_HOLDING != null ? #numbers.formatDecimal(report.R11_PERCENT_OF_TIER_2_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
 				               id="R11_PERCENT_OF_TIER_2_HOLDING"
 				               name="R11_PERCENT_OF_TIER_2_HOLDING"
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -845,7 +845,7 @@ function cancelModify() {
 		<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
 		        <input class="display-input Show_input"
 		               type="text"
-		               th:value="${report.R12_PERCENT_OF_CET1_HOLDING != null ? #numbers.formatDecimal(report.R12_PERCENT_OF_CET1_HOLDING, 1, 0, 'POINT') : '0'}"
+		               th:value="${report.R12_PERCENT_OF_CET1_HOLDING != null ? #numbers.formatDecimal(report.R12_PERCENT_OF_CET1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
 		               id="R12_PERCENT_OF_CET1_HOLDING"
 		               name="R12_PERCENT_OF_CET1_HOLDING"
 		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -855,7 +855,7 @@ function cancelModify() {
 			<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
 			        <input class="display-input Show_input"
 			               type="text"
-			               th:value="${report.R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING != null ? #numbers.formatDecimal(report.R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, 1, 0, 'POINT') : '0'}"
+			               th:value="${report.R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING != null ? #numbers.formatDecimal(report.R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
 			               id="R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
 			               name="R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
 			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -865,7 +865,7 @@ function cancelModify() {
 				<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
 				        <input class="display-input Show_input"
 				               type="text"
-				               th:value="${report.R12_PERCENT_OF_TIER_2_HOLDING != null ? #numbers.formatDecimal(report.R12_PERCENT_OF_TIER_2_HOLDING, 1, 0, 'POINT') : '0'}"
+				               th:value="${report.R12_PERCENT_OF_TIER_2_HOLDING != null ? #numbers.formatDecimal(report.R12_PERCENT_OF_TIER_2_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
 				               id="R12_PERCENT_OF_TIER_2_HOLDING"
 				               name="R12_PERCENT_OF_TIER_2_HOLDING"
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -884,7 +884,7 @@ function cancelModify() {
 	<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
 	        <input class="display-input Show_input"
 	               type="text"
-	               th:value="${report.R13_AMOUNT != null ? #numbers.formatDecimal(report.R13_AMOUNT, 1,  0, 'POINT') : '0'}"
+	               th:value="${report.R13_AMOUNT != null ? #numbers.formatDecimal(report.R13_AMOUNT, 1,'COMMA',  0, 'POINT') : '0'}"
 	               id="R13_AMOUNT"
 	               name="R13_AMOUNT"
 	               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -894,7 +894,7 @@ function cancelModify() {
 		<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
 		        <input class="display-input Show_input"
 		               type="text"
-		               th:value="${report.R13_PERCENT_OF_CET1_HOLDING != null ? #numbers.formatDecimal(report.R13_PERCENT_OF_CET1_HOLDING, 1, 0, 'POINT') : '0'}"
+		               th:value="${report.R13_PERCENT_OF_CET1_HOLDING != null ? #numbers.formatDecimal(report.R13_PERCENT_OF_CET1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
 		               id="R13_PERCENT_OF_CET1_HOLDING"
 		               name="R13_PERCENT_OF_CET1_HOLDING"
 		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -904,7 +904,7 @@ function cancelModify() {
 			<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
 			        <input class="display-input Show_input"
 			               type="text"
-			               th:value="${report.R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING != null ? #numbers.formatDecimal(report.R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, 1, 0, 'POINT') : '0'}"
+			               th:value="${report.R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING != null ? #numbers.formatDecimal(report.R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
 			               id="R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
 			               name="R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
 			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -914,7 +914,7 @@ function cancelModify() {
 				<td id="ROW13" style="padding-left: 20px; font-weight: bold;">
 				        <input class="display-input Show_input"
 				               type="text"
-				               th:value="${report.R13_PERCENT_OF_TIER_2_HOLDING != null ? #numbers.formatDecimal(report.R13_PERCENT_OF_TIER_2_HOLDING, 1,  0, 'POINT') : '0'}"
+				               th:value="${report.R13_PERCENT_OF_TIER_2_HOLDING != null ? #numbers.formatDecimal(report.R13_PERCENT_OF_TIER_2_HOLDING, 1,'COMMA',  0, 'POINT') : '0'}"
 				               id="R13_PERCENT_OF_TIER_2_HOLDING"
 				               name="R13_PERCENT_OF_TIER_2_HOLDING"
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -933,7 +933,7 @@ function cancelModify() {
 	<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
 	        <input class="display-input Show_input"
 	               type="text"
-	               th:value="${report.R14_AMOUNT != null ? #numbers.formatDecimal(report.R14_AMOUNT, 1,  0, 'POINT') : '0'}"
+	               th:value="${report.R14_AMOUNT != null ? #numbers.formatDecimal(report.R14_AMOUNT, 1,'COMMA',  0, 'POINT') : '0'}"
 	               id="R14_AMOUNT"
 	               name="R14_AMOUNT"
 	               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -943,7 +943,7 @@ function cancelModify() {
 		<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
 		        <input class="display-input Show_input"
 		               type="text"
-		               th:value="${report.R14_PERCENT_OF_CET1_HOLDING != null ? #numbers.formatDecimal(report.R14_PERCENT_OF_CET1_HOLDING, 1,  0, 'POINT') : '0'}"
+		               th:value="${report.R14_PERCENT_OF_CET1_HOLDING != null ? #numbers.formatDecimal(report.R14_PERCENT_OF_CET1_HOLDING, 1,'COMMA',  0, 'POINT') : '0'}"
 		               id="R14_PERCENT_OF_CET1_HOLDING"
 		               name="R14_PERCENT_OF_CET1_HOLDING"
 		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -953,7 +953,7 @@ function cancelModify() {
 			<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
 			        <input class="display-input Show_input"
 			               type="text"
-			               th:value="${report.R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING != null ? #numbers.formatDecimal(report.R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, 1, 0, 'POINT') : '0'}"
+			               th:value="${report.R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING != null ? #numbers.formatDecimal(report.R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
 			               id="R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
 			               name="R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"
 			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -963,7 +963,7 @@ function cancelModify() {
 				<td id="ROW14" style="padding-left: 20px; font-weight: bold;">
 				        <input class="display-input Show_input"
 				               type="text"
-				               th:value="${report.R14_PERCENT_OF_TIER_2_HOLDING != null ? #numbers.formatDecimal(report.R14_PERCENT_OF_TIER_2_HOLDING, 1, 0, 'POINT') : '0'}"
+				               th:value="${report.R14_PERCENT_OF_TIER_2_HOLDING != null ? #numbers.formatDecimal(report.R14_PERCENT_OF_TIER_2_HOLDING, 1,'COMMA', 0, 'POINT') : '0'}"
 				               id="R14_PERCENT_OF_TIER_2_HOLDING"
 				               name="R14_PERCENT_OF_TIER_2_HOLDING"
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1058,7 +1058,7 @@ function cancelModify() {
 			<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
 			        <input class="display-input Show_input"
 			               type="text"
-			               th:value="${report.R22_ACCUULATED_EQUITY_INTEREST_5 != null ? #numbers.formatDecimal(report.R22_ACCUULATED_EQUITY_INTEREST_5, 1, 0, 'POINT') : '0'}"
+			               th:value="${report.R22_ACCUULATED_EQUITY_INTEREST_5 != null ? #numbers.formatDecimal(report.R22_ACCUULATED_EQUITY_INTEREST_5, 1,'COMMA', 0, 'POINT') : '0'}"
 			               id="R22_ACCUULATED_EQUITY_INTEREST_5"
 			               name="R22_ACCUULATED_EQUITY_INTEREST_5"
 			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1068,7 +1068,7 @@ function cancelModify() {
 				<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
 				        <input class="display-input Show_input"
 				               type="text"
-				               th:value="${report.R22_ASSETS != null ? #numbers.formatDecimal(report.R22_ASSETS, 1, 0, 'POINT') : '0'}"
+				               th:value="${report.R22_ASSETS != null ? #numbers.formatDecimal(report.R22_ASSETS, 1,'COMMA', 0, 'POINT') : '0'}"
 				               id="R22_ASSETS"
 				               name="R22_ASSETS"
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1078,7 +1078,7 @@ function cancelModify() {
 					<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
 					        <input class="display-input Show_input"
 					               type="text"
-					               th:value="${report.R22_LIABILITIES != null ? #numbers.formatDecimal(report.R22_LIABILITIES, 1, 0, 'POINT') : '0'}"
+					               th:value="${report.R22_LIABILITIES != null ? #numbers.formatDecimal(report.R22_LIABILITIES, 1,'COMMA', 0, 'POINT') : '0'}"
 					               id="R22_LIABILITIES"
 					               name="R22_LIABILITIES"
 					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1088,7 +1088,7 @@ function cancelModify() {
 						<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${report.R22_REVENUE != null ? #numbers.formatDecimal(report.R22_REVENUE, 1, 0, 'POINT') : '0'}"
+						               th:value="${report.R22_REVENUE != null ? #numbers.formatDecimal(report.R22_REVENUE, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R22_REVENUE"
 						               name="R22_REVENUE"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1099,7 +1099,7 @@ function cancelModify() {
 						<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R22_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R22_PROFIT_OR_LOSS, 1, 0, 'POINT') : '0'}"
+						               th:value="${R22_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R22_PROFIT_OR_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R22_PROFIT_OR_LOSS"
 						               name="R22_PROFIT_OR_LOSS"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1108,7 +1108,7 @@ function cancelModify() {
 							<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
 							        <input class="display-input Show_input"
 							               type="text"
-							               th:value="${report.R22_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R22_UNREG_SHARE_OF_LOSS, 1, 0, 'POINT') : '0'}"
+							               th:value="${report.R22_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R22_UNREG_SHARE_OF_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
 							               id="R22_UNREG_SHARE_OF_LOSS"
 							               name="R22_UNREG_SHARE_OF_LOSS"
 							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1118,7 +1118,7 @@ function cancelModify() {
 								<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
 								        <input class="display-input Show_input"
 								               type="text"
-								               th:value="${report.R22_CUMULATIVE_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R22_CUMULATIVE_UNREG_SHARE_OF_LOSS, 1, 0, 'POINT') : '0'}"
+								               th:value="${report.R22_CUMULATIVE_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R22_CUMULATIVE_UNREG_SHARE_OF_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
 								               id="R22_CUMULATIVE_UNREG_SHARE_OF_LOSS"
 								               name="R22_CUMULATIVE_UNREG_SHARE_OF_LOSS"
 								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1136,7 +1136,7 @@ function cancelModify() {
 			<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
 			        <input class="display-input Show_input"
 			               type="text"
-			               th:value="${report.R23_ACCUULATED_EQUITY_INTEREST_5 != null ? #numbers.formatDecimal(report.R23_ACCUULATED_EQUITY_INTEREST_5, 1, 0, 'POINT') : '0'}"
+			               th:value="${report.R23_ACCUULATED_EQUITY_INTEREST_5 != null ? #numbers.formatDecimal(report.R23_ACCUULATED_EQUITY_INTEREST_5, 1,'COMMA', 0, 'POINT') : '0'}"
 			               id="R23_ACCUULATED_EQUITY_INTEREST_5"
 			               name="R23_ACCUULATED_EQUITY_INTEREST_5"
 			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1146,7 +1146,7 @@ function cancelModify() {
 				<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
 				        <input class="display-input Show_input"
 				               type="text"
-				               th:value="${report.R23_ASSETS != null ? #numbers.formatDecimal(report.R23_ASSETS, 1, 0, 'POINT') : '0'}"
+				               th:value="${report.R23_ASSETS != null ? #numbers.formatDecimal(report.R23_ASSETS, 1,'COMMA', 0, 'POINT') : '0'}"
 				               id="R23_ASSETS"
 				               name="R23_ASSETS"
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1156,7 +1156,7 @@ function cancelModify() {
 					<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
 					        <input class="display-input Show_input"
 					               type="text"
-					               th:value="${report.R23_LIABILITIES != null ? #numbers.formatDecimal(report.R23_LIABILITIES, 1, 0, 'POINT') : '0'}"
+					               th:value="${report.R23_LIABILITIES != null ? #numbers.formatDecimal(report.R23_LIABILITIES, 1,'COMMA', 0, 'POINT') : '0'}"
 					               id="R23_LIABILITIES"
 					               name="R23_LIABILITIES"
 					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1166,7 +1166,7 @@ function cancelModify() {
 						<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${report.R23_REVENUE != null ? #numbers.formatDecimal(report.R23_REVENUE, 1, 0, 'POINT') : '0'}"
+						               th:value="${report.R23_REVENUE != null ? #numbers.formatDecimal(report.R23_REVENUE, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R23_REVENUE"
 						               name="R23_REVENUE"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1177,7 +1177,7 @@ function cancelModify() {
 						<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R23_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R22_PROFIT_OR_LOSS, 1, 0, 'POINT') : '0'}"
+						               th:value="${R23_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R22_PROFIT_OR_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R23_PROFIT_OR_LOSS"
 						               name="R23_PROFIT_OR_LOSS"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1186,7 +1186,7 @@ function cancelModify() {
 							<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
 							        <input class="display-input Show_input"
 							               type="text"
-							               th:value="${report.R23_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R23_UNREG_SHARE_OF_LOSS, 1, 0, 'POINT') : '0'}"
+							               th:value="${report.R23_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R23_UNREG_SHARE_OF_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
 							               id="R23_UNREG_SHARE_OF_LOSS"
 							               name="R23_UNREG_SHARE_OF_LOSS"
 							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1196,7 +1196,7 @@ function cancelModify() {
 								<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
 								        <input class="display-input Show_input"
 								               type="text"
-								               th:value="${report.R23_CUMULATIVE_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R23_CUMULATIVE_UNREG_SHARE_OF_LOSS, 1, 0, 'POINT') : '0'}"
+								               th:value="${report.R23_CUMULATIVE_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R23_CUMULATIVE_UNREG_SHARE_OF_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
 								               id="R23_CUMULATIVE_UNREG_SHARE_OF_LOSS"
 								               name="R23_CUMULATIVE_UNREG_SHARE_OF_LOSS"
 								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1213,7 +1213,7 @@ function cancelModify() {
 			<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
 			        <input class="display-input Show_input"
 			               type="text"
-			               th:value="${report.R24_ACCUULATED_EQUITY_INTEREST_5 != null ? #numbers.formatDecimal(report.R24_ACCUULATED_EQUITY_INTEREST_5, 1, 0, 'POINT') : '0'}"
+			               th:value="${report.R24_ACCUULATED_EQUITY_INTEREST_5 != null ? #numbers.formatDecimal(report.R24_ACCUULATED_EQUITY_INTEREST_5, 1,'COMMA', 0, 'POINT') : '0'}"
 			               id="R24_ACCUULATED_EQUITY_INTEREST_5"
 			               name="R24_ACCUULATED_EQUITY_INTEREST_5"
 			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1223,7 +1223,7 @@ function cancelModify() {
 				<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
 				        <input class="display-input Show_input"
 				               type="text"
-				               th:value="${report.R24_ASSETS != null ? #numbers.formatDecimal(report.R24_ASSETS, 1, 0, 'POINT') : '0'}"
+				               th:value="${report.R24_ASSETS != null ? #numbers.formatDecimal(report.R24_ASSETS, 1,'COMMA', 0, 'POINT') : '0'}"
 				               id="R24_ASSETS"
 				               name="R24_ASSETS"
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1233,7 +1233,7 @@ function cancelModify() {
 					<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
 					        <input class="display-input Show_input"
 					               type="text"
-					               th:value="${report.R24_LIABILITIES != null ? #numbers.formatDecimal(report.R24_LIABILITIES, 1, 0, 'POINT') : '0'}"
+					               th:value="${report.R24_LIABILITIES != null ? #numbers.formatDecimal(report.R24_LIABILITIES, 1,'COMMA', 0, 'POINT') : '0'}"
 					               id="R24_LIABILITIES"
 					               name="R24_LIABILITIES"
 					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1243,7 +1243,7 @@ function cancelModify() {
 						<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${report.R24_REVENUE != null ? #numbers.formatDecimal(report.R24_REVENUE, 1, 0, 'POINT') : '0'}"
+						               th:value="${report.R24_REVENUE != null ? #numbers.formatDecimal(report.R24_REVENUE, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R24_REVENUE"
 						               name="R24_REVENUE"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1254,7 +1254,7 @@ function cancelModify() {
 						<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R24_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R24_PROFIT_OR_LOSS, 1, 0, 'POINT') : '0'}"
+						               th:value="${R24_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R24_PROFIT_OR_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R24_PROFIT_OR_LOSS"
 						               name="R24_PROFIT_OR_LOSS"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1263,7 +1263,7 @@ function cancelModify() {
 							<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
 							        <input class="display-input Show_input"
 							               type="text"
-							               th:value="${report.R24_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R24_UNREG_SHARE_OF_LOSS, 1, 0, 'POINT') : '0'}"
+							               th:value="${report.R24_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R24_UNREG_SHARE_OF_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
 							               id="R24_UNREG_SHARE_OF_LOSS"
 							               name="R24_UNREG_SHARE_OF_LOSS"
 							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1273,7 +1273,7 @@ function cancelModify() {
 								<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
 								        <input class="display-input Show_input"
 								               type="text"
-								               th:value="${report.R24_CUMULATIVE_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R24_CUMULATIVE_UNREG_SHARE_OF_LOSS, 1, 0, 'POINT') : '0'}"
+								               th:value="${report.R24_CUMULATIVE_UNREG_SHARE_OF_LOSS != null ? #numbers.formatDecimal(report.R24_CUMULATIVE_UNREG_SHARE_OF_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
 								               id="R24_CUMULATIVE_UNREG_SHARE_OF_LOSS"
 								               name="R24_CUMULATIVE_UNREG_SHARE_OF_LOSS"
 								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1311,7 +1311,7 @@ function cancelModify() {
 				<td id="ROW29" style="padding-left: 20px; font-weight: bold;">
 				        <input class="display-input Show_input"
 				               type="text"
-				               th:value="${report.R29_FAIR_VALUE != null ? #numbers.formatDecimal(report.R29_FAIR_VALUE, 1, 0, 'POINT') : '0'}"
+				               th:value="${report.R29_FAIR_VALUE != null ? #numbers.formatDecimal(report.R29_FAIR_VALUE, 1,'COMMA', 0, 'POINT') : '0'}"
 				               id="R29_FAIR_VALUE"
 				               name="R29_FAIR_VALUE"
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1356,7 +1356,7 @@ function cancelModify() {
 			<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
 			        <input class="display-input Show_input"
 			               type="text"
-			               th:value="${report.R35_COMPANY != null ? #numbers.formatDecimal(report.R35_COMPANY, 1, 0, 'POINT') : '0'}"
+			               th:value="${report.R35_COMPANY != null ? #numbers.formatDecimal(report.R35_COMPANY, 1,'COMMA', 0, 'POINT') : '0'}"
 			               id="R35_COMPANY"
 			               name="R35_COMPANY"
 			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1366,7 +1366,7 @@ function cancelModify() {
 				<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
 				        <input class="display-input Show_input"
 				               type="text"
-				               th:value="${report.r35_JURISDICTION_OF_INCORP_1 != null ? #numbers.formatDecimal(report.R35_JURISDICTION_OF_INCORP_1, 1,0, 'POINT') : '0'}"
+				               th:value="${report.r35_JURISDICTION_OF_INCORP_1 != null ? #numbers.formatDecimal(report.R35_JURISDICTION_OF_INCORP_1, 1,'COMMA',0, 'POINT') : '0'}"
 				               id="R35_JURISDICTION_OF_INCORP_1"
 				               name="R35_JURISDICTION_OF_INCORP_1"
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1376,7 +1376,7 @@ function cancelModify() {
 					<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
 					        <input class="display-input Show_input"
 					               type="text"
-					               th:value="${report.R35_JURISDICTION_OF_INCORP_2 != null ? #numbers.formatDecimal(report.R35_JURISDICTION_OF_INCORP_2, 1, 0, 'POINT') : '0'}"
+					               th:value="${report.R35_JURISDICTION_OF_INCORP_2 != null ? #numbers.formatDecimal(report.R35_JURISDICTION_OF_INCORP_2, 1,'COMMA', 0, 'POINT') : '0'}"
 					               id="R35_JURISDICTION_OF_INCORP_2"
 					               name="R35_JURISDICTION_OF_INCORP_2"
 					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1386,7 +1386,7 @@ function cancelModify() {
 						<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${report.R35_LINE_OF_BUSINESS != null ? #numbers.formatDecimal(report.R35_LINE_OF_BUSINESS, 1, 0, 'POINT') : '0'}"
+						               th:value="${report.R35_LINE_OF_BUSINESS != null ? #numbers.formatDecimal(report.R35_LINE_OF_BUSINESS, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R35_LINE_OF_BUSINESS"
 						               name="R35_LINE_OF_BUSINESS"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1395,7 +1395,7 @@ function cancelModify() {
 						<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R35_CURRENCY != null ? #numbers.formatDecimal(report.R35_CURRENCY, 1, 0, 'POINT') : '0'}"
+						               th:value="${R35_CURRENCY != null ? #numbers.formatDecimal(report.R35_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R35_CURRENCY"
 						               name="R35_CURRENCY"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1404,7 +1404,7 @@ function cancelModify() {
 							<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
 							        <input class="display-input Show_input"
 							               type="text"
-							               th:value="${report.R35_SHARE_CAPITAL != null ? #numbers.formatDecimal(report.R35_SHARE_CAPITAL, 1, 0, 'POINT') : '0'}"
+							               th:value="${report.R35_SHARE_CAPITAL != null ? #numbers.formatDecimal(report.R35_SHARE_CAPITAL, 1,'COMMA', 0, 'POINT') : '0'}"
 							               id="R35_SHARE_CAPITAL"
 							               name="R35_SHARE_CAPITAL"
 							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1414,7 +1414,7 @@ function cancelModify() {
 								<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
 								        <input class="display-input Show_input"
 								               type="text"
-								               th:value="${report.R35_ACCUMULATED_EQUITY_INTEREST != null ? #numbers.formatDecimal(report.R35_ACCUMULATED_EQUITY_INTEREST, 1, 0, 'POINT') : '0'}"
+								               th:value="${report.R35_ACCUMULATED_EQUITY_INTEREST != null ? #numbers.formatDecimal(report.R35_ACCUMULATED_EQUITY_INTEREST, 1,'COMMA', 0, 'POINT') : '0'}"
 								               id="R35_ACCUMULATED_EQUITY_INTEREST"
 								               name="R35_ACCUMULATED_EQUITY_INTEREST"
 								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1428,7 +1428,7 @@ function cancelModify() {
 			<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
 			        <input class="display-input Show_input"
 			               type="text"
-			               th:value="${report.R36_COMPANY != null ? #numbers.formatDecimal(report.R36_COMPANY, 1, 0, 'POINT') : '0'}"
+			               th:value="${report.R36_COMPANY != null ? #numbers.formatDecimal(report.R36_COMPANY, 1,'COMMA', 0, 'POINT') : '0'}"
 			               id="R36_COMPANY"
 			               name="R36_COMPANY"
 			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1438,7 +1438,7 @@ function cancelModify() {
 				<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
 				        <input class="display-input Show_input"
 				               type="text"
-				               th:value="${report.R36_JURISDICTION_OF_INCORP_1 != null ? #numbers.formatDecimal(report.R36_JURISDICTION_OF_INCORP_1, 1, 0, 'POINT') : '0'}"
+				               th:value="${report.R36_JURISDICTION_OF_INCORP_1 != null ? #numbers.formatDecimal(report.R36_JURISDICTION_OF_INCORP_1, 1,'COMMA', 0, 'POINT') : '0'}"
 				               id="R36_JURISDICTION_OF_INCORP_1"
 				               name="R36_JURISDICTION_OF_INCORP_1"
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1448,7 +1448,7 @@ function cancelModify() {
 					<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
 					        <input class="display-input Show_input"
 					               type="text"
-					               th:value="${report.R36_JURISDICTION_OF_INCORP_2 != null ? #numbers.formatDecimal(report.R36_JURISDICTION_OF_INCORP_2, 1, 0, 'POINT') : '0'}"
+					               th:value="${report.R36_JURISDICTION_OF_INCORP_2 != null ? #numbers.formatDecimal(report.R36_JURISDICTION_OF_INCORP_2, 1,'COMMA', 0, 'POINT') : '0'}"
 					               id="R36_JURISDICTION_OF_INCORP_2"
 					               name="R36_JURISDICTION_OF_INCORP_2"
 					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1458,7 +1458,7 @@ function cancelModify() {
 						<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${report.R36_LINE_OF_BUSINESS != null ? #numbers.formatDecimal(report.R36_LINE_OF_BUSINESS, 1, 0, 'POINT') : '0'}"
+						               th:value="${report.R36_LINE_OF_BUSINESS != null ? #numbers.formatDecimal(report.R36_LINE_OF_BUSINESS, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R36_LINE_OF_BUSINESS"
 						               name="R36_LINE_OF_BUSINESS"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1467,7 +1467,7 @@ function cancelModify() {
 						<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R36_CURRENCY != null ? #numbers.formatDecimal(report.R35_CURRENCY, 1, 0, 'POINT') : '0'}"
+						               th:value="${R36_CURRENCY != null ? #numbers.formatDecimal(report.R35_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R36_CURRENCY"
 						               name="R36_CURRENCY"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1476,7 +1476,7 @@ function cancelModify() {
 							<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
 							        <input class="display-input Show_input"
 							               type="text"
-							               th:value="${report.R36_SHARE_CAPITAL != null ? #numbers.formatDecimal(report.R36_SHARE_CAPITAL, 1, 0, 'POINT') : '0'}"
+							               th:value="${report.R36_SHARE_CAPITAL != null ? #numbers.formatDecimal(report.R36_SHARE_CAPITAL, 1,'COMMA', 0, 'POINT') : '0'}"
 							               id="R36_SHARE_CAPITAL"
 							               name="R36_SHARE_CAPITAL"
 							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1486,7 +1486,7 @@ function cancelModify() {
 								<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
 								        <input class="display-input Show_input"
 								               type="text"
-								               th:value="${report.R36_ACCUMULATED_EQUITY_INTEREST != null ? #numbers.formatDecimal(report.R36_ACCUMULATED_EQUITY_INTEREST, 1, 0, 'POINT') : '0'}"
+								               th:value="${report.R36_ACCUMULATED_EQUITY_INTEREST != null ? #numbers.formatDecimal(report.R36_ACCUMULATED_EQUITY_INTEREST, 1,'COMMA', 0, 'POINT') : '0'}"
 								               id="R36_ACCUMULATED_EQUITY_INTEREST"
 								               name="R36_ACCUMULATED_EQUITY_INTEREST"
 								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1500,7 +1500,7 @@ function cancelModify() {
 			<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
 			        <input class="display-input Show_input"
 			               type="text"
-			               th:value="${report.R37_COMPANY != null ? #numbers.formatDecimal(report.R37_COMPANY, 1, 0, 'POINT') : '0'}"
+			               th:value="${report.R37_COMPANY != null ? #numbers.formatDecimal(report.R37_COMPANY, 1,'COMMA', 0, 'POINT') : '0'}"
 			               id="R37_COMPANY"
 			               name="R37_COMPANY"
 			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1510,7 +1510,7 @@ function cancelModify() {
 				<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
 				        <input class="display-input Show_input"
 				               type="text"
-				               th:value="${report.R37_JURISDICTION_OF_INCORP_1 != null ? #numbers.formatDecimal(report.R37_JURISDICTION_OF_INCORP_1, 1, 0, 'POINT') : '0'}"
+				               th:value="${report.R37_JURISDICTION_OF_INCORP_1 != null ? #numbers.formatDecimal(report.R37_JURISDICTION_OF_INCORP_1, 1,'COMMA', 0, 'POINT') : '0'}"
 				               id="R37_JURISDICTION_OF_INCORP_1"
 				               name="R37_JURISDICTION_OF_INCORP_1"
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1520,7 +1520,7 @@ function cancelModify() {
 					<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
 					        <input class="display-input Show_input"
 					               type="text"
-					               th:value="${report.R37_JURISDICTION_OF_INCORP_2 != null ? #numbers.formatDecimal(report.R37_JURISDICTION_OF_INCORP_2, 1, 0, 'POINT') : '0'}"
+					               th:value="${report.R37_JURISDICTION_OF_INCORP_2 != null ? #numbers.formatDecimal(report.R37_JURISDICTION_OF_INCORP_2, 1,'COMMA', 0, 'POINT') : '0'}"
 					               id="R37_JURISDICTION_OF_INCORP_2"
 					               name="R37_JURISDICTION_OF_INCORP_2"
 					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1530,7 +1530,7 @@ function cancelModify() {
 						<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${report.R37_LINE_OF_BUSINESS != null ? #numbers.formatDecimal(report.R37_LINE_OF_BUSINESS, 1, 0, 'POINT') : '0'}"
+						               th:value="${report.R37_LINE_OF_BUSINESS != null ? #numbers.formatDecimal(report.R37_LINE_OF_BUSINESS, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R37_LINE_OF_BUSINESS"
 						               name="R37_LINE_OF_BUSINESS"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1539,7 +1539,7 @@ function cancelModify() {
 						<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R37_CURRENCY != null ? #numbers.formatDecimal(report.R37_CURRENCY, 1, 0, 'POINT') : '0'}"
+						               th:value="${R37_CURRENCY != null ? #numbers.formatDecimal(report.R37_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R37_CURRENCY"
 						               name="R37_CURRENCY"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1548,7 +1548,7 @@ function cancelModify() {
 							<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
 							        <input class="display-input Show_input"
 							               type="text"
-							               th:value="${report.R37_SHARE_CAPITAL != null ? #numbers.formatDecimal(report.R37_SHARE_CAPITAL, 1, 0, 'POINT') : '0'}"
+							               th:value="${report.R37_SHARE_CAPITAL != null ? #numbers.formatDecimal(report.R37_SHARE_CAPITAL, 1,'COMMA', 0, 'POINT') : '0'}"
 							               id="R37_SHARE_CAPITAL"
 							               name="R37_SHARE_CAPITAL"
 							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1558,7 +1558,7 @@ function cancelModify() {
 								<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
 								        <input class="display-input Show_input"
 								               type="text"
-								               th:value="${report.R37_ACCUMULATED_EQUITY_INTEREST != null ? #numbers.formatDecimal(report.R37_ACCUMULATED_EQUITY_INTEREST, 1, 0, 'POINT') : '0'}"
+								               th:value="${report.R37_ACCUMULATED_EQUITY_INTEREST != null ? #numbers.formatDecimal(report.R37_ACCUMULATED_EQUITY_INTEREST, 1,'COMMA', 0, 'POINT') : '0'}"
 								               id="R37_ACCUMULATED_EQUITY_INTEREST"
 								               name="R37_ACCUMULATED_EQUITY_INTEREST"
 								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1572,7 +1572,7 @@ function cancelModify() {
 			<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
 			        <input class="display-input Show_input"
 			               type="text"
-			               th:value="${report.r38_COMPANY != null ? #numbers.formatDecimal(report.R38_COMPANY, 1, 0, 'POINT') : '0'}"
+			               th:value="${report.r38_COMPANY != null ? #numbers.formatDecimal(report.R38_COMPANY, 1,'COMMA', 0, 'POINT') : '0'}"
 			               id="R38_COMPANY"
 			               name="R38_COMPANY"
 			               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1582,7 +1582,7 @@ function cancelModify() {
 				<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
 				        <input class="display-input Show_input"
 				               type="text"
-				               th:value="${report.R38_JURISDICTION_OF_INCORP_1 != null ? #numbers.formatDecimal(report.R38_JURISDICTION_OF_INCORP_1, 1, 0, 'POINT') : '0'}"
+				               th:value="${report.R38_JURISDICTION_OF_INCORP_1 != null ? #numbers.formatDecimal(report.R38_JURISDICTION_OF_INCORP_1, 1,'COMMA', 0, 'POINT') : '0'}"
 				               id="R38_JURISDICTION_OF_INCORP_1"
 				               name="R38_JURISDICTION_OF_INCORP_1"
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1592,7 +1592,7 @@ function cancelModify() {
 					<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
 					        <input class="display-input Show_input"
 					               type="text"
-					               th:value="${report.R38_JURISDICTION_OF_INCORP_2 != null ? #numbers.formatDecimal(report.R38_JURISDICTION_OF_INCORP_2, 1, 0, 'POINT') : '0'}"
+					               th:value="${report.R38_JURISDICTION_OF_INCORP_2 != null ? #numbers.formatDecimal(report.R38_JURISDICTION_OF_INCORP_2, 1,'COMMA', 0, 'POINT') : '0'}"
 					               id="R38_JURISDICTION_OF_INCORP_2"
 					               name="R38_JURISDICTION_OF_INCORP_2"
 					               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1602,7 +1602,7 @@ function cancelModify() {
 						<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${report.R38_LINE_OF_BUSINESS != null ? #numbers.formatDecimal(report.R38_LINE_OF_BUSINESS, 1,  0, 'POINT') : '0'}"
+						               th:value="${report.R38_LINE_OF_BUSINESS != null ? #numbers.formatDecimal(report.R38_LINE_OF_BUSINESS, 1,'COMMA',  0, 'POINT') : '0'}"
 						               id="R38_LINE_OF_BUSINESS"
 						               name="R38_LINE_OF_BUSINESS"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1611,7 +1611,7 @@ function cancelModify() {
 						<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R38_CURRENCY != null ? #numbers.formatDecimal(report.R38_CURRENCY, 1, 0, 'POINT') : '0'}"
+						               th:value="${R38_CURRENCY != null ? #numbers.formatDecimal(report.R38_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R38_CURRENCY"
 						               name="R38_CURRENCY"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1620,7 +1620,7 @@ function cancelModify() {
 							<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
 							        <input class="display-input Show_input"
 							               type="text"
-							               th:value="${report.R38_SHARE_CAPITAL != null ? #numbers.formatDecimal(report.R38_SHARE_CAPITAL, 1, 0, 'POINT') : '0'}"
+							               th:value="${report.R38_SHARE_CAPITAL != null ? #numbers.formatDecimal(report.R38_SHARE_CAPITAL, 1,'COMMA', 0, 'POINT') : '0'}"
 							               id="R38_SHARE_CAPITAL"
 							               name="R38_SHARE_CAPITAL"
 							               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1630,7 +1630,7 @@ function cancelModify() {
 								<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
 								        <input class="display-input Show_input"
 								               type="text"
-								               th:value="${report.R38_ACCUMULATED_EQUITY_INTEREST != null ? #numbers.formatDecimal(report.R38_ACCUMULATED_EQUITY_INTEREST, 1, 0, 'POINT') : '0'}"
+								               th:value="${report.R38_ACCUMULATED_EQUITY_INTEREST != null ? #numbers.formatDecimal(report.R38_ACCUMULATED_EQUITY_INTEREST, 1,'COMMA', 0, 'POINT') : '0'}"
 								               id="R38_ACCUMULATED_EQUITY_INTEREST"
 								               name="R38_ACCUMULATED_EQUITY_INTEREST"
 								               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
