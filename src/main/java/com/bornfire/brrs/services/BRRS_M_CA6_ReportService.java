@@ -164,7 +164,76 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA6_ReportSe
 		
 	}
 	
-		
+	public void updateReport1(M_CA6_Summary_Entity1 entity1) {
+	    System.out.println("Report Date: " + entity1.getREPORT_DATE());
+
+	    M_CA6_Summary_Entity1 existing = M_CA6_Summary_Repo1.findById(entity1.getREPORT_DATE())
+	        .orElseThrow(() -> new RuntimeException(
+	            "Record not found for REPORT_DATE: " + entity1.getREPORT_DATE()));
+
+	    // --------------------------
+	    // Update R28–R34 amounts
+	    // --------------------------
+	    
+	    try {
+	        for (int i = 12; i <= 16; i++) {
+	            String prefix = "R" + i + "_";
+	            // You can add more fields here if needed later
+	            String[] fields = {
+	                "CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT",
+	                "AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+	            };
+
+	            for (String field : fields) {
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+	                    Method getter = M_CA6_Summary_Entity1.class.getMethod(getterName);
+	                    Method setter = M_CA6_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(entity1);
+	                    setter.invoke(existing, newValue);
+	                } catch (NoSuchMethodException e) {
+	                    // if any field is missing in entity class, skip it
+	                    continue;
+	                }
+	            }
+	        }
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating R12–R16 fields", e);
+	    }  
+	    
+	    try {
+	        for (int i = 20; i <= 24; i++) {
+	            String prefix = "R" + i + "_";
+	            // You can add more fields here if needed later
+	            String[] fields = {
+	                "CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT",
+	                "AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+	            };
+
+	            for (String field : fields) {
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+	                    Method getter = M_CA6_Summary_Entity1.class.getMethod(getterName);
+	                    Method setter = M_CA6_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(entity1);
+	                    setter.invoke(existing, newValue);
+	                } catch (NoSuchMethodException e) {
+	                    // if any field is missing in entity class, skip it
+	                    continue;
+	                }
+	            }
+	        }
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating R20-24 fields", e);
+	    }
+	    M_CA6_Summary_Repo1.save(existing);
+	}	
 	
 	public ModelAndView getM_CA6currentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String filter) {

@@ -46,6 +46,7 @@ import com.bornfire.brrs.entities.M_SRWA_12G_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12G_ReportService;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity2;
+import com.bornfire.brrs.entities.M_CA6_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_M_CA5_ReportService;
 import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA2_ReportService;
@@ -508,16 +509,19 @@ public class BRRS_ReportsController {
 	         @RequestParam(required = false)
 	         @DateTimeFormat(pattern = "yyyy-MM-dd") Date asondate,  // ✅ ISO format
 	         @RequestParam(required = false) String type,
-	         @ModelAttribute M_CA6_Summary_Entity2 request1
+	         @ModelAttribute M_CA6_Summary_Entity2 request1,
+	         @ModelAttribute M_CA6_Summary_Entity1 request2
 	 ) {
 	     try {
 	         System.out.println("Came to single controller");
 	         System.out.println(type);
 	         // set date into all 4 entities
 	         request1.setREPORT_DATE(asondate);
+	         request2.setREPORT_DATE(asondate);
 	  
 	     
 	    	 BRRS_M_CA6_ReportService.updateReport(request1);
+	    	 BRRS_M_CA6_ReportService.updateReport1(request2);
 	    
 	   return ResponseEntity.ok("Updated Successfully");
 	     }
