@@ -670,7 +670,22 @@ PURPOSE		: BRFREPORT
 		}
 	</script>
 
-
+	<script th:inline="javascript">
+			$(document).ready(function () {
+				$('#reportdetails').DataTable({
+					scrollX: true,
+					autoWidth: false,
+					paging: true,
+					searching: true,
+					lengthChange: false,
+					ordering: true,
+					pageLength: 100,
+					fixedHeader: true,
+					dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
+					language: {search: "Search:"}
+				});
+			});
+		</script>
 
 
 </head>
@@ -1744,10 +1759,11 @@ PURPOSE		: BRFREPORT
 								style="border-right: 1px solid #dee2e6;">
 								<table
 									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reportss">
+									id="reportdetails">
 									<thead class="thead-light">
 										<tr>
 											<th></th>
+											<th>S No</th>
 											<th>CUST ID</th>
 											<th>ACCT NO</th>
 											<th>ACCT NAME</th>
@@ -1761,7 +1777,7 @@ PURPOSE		: BRFREPORT
 
 									</thead>
 									<tbody style="font-family: Arial;">
-										<tr th:each="report : ${reportdetails}">
+										<tr th:each="report, srlno : ${reportdetails}">
 											<td>
 												<a data-toggle="tooltip" class="editrec"
 													title="Click to Edit this Record">
@@ -1770,6 +1786,7 @@ PURPOSE		: BRFREPORT
 											</td>
 
 											<!-- Null-safe field rendering -->
+											<td th:text="${srlno.index + 1}"></td>
 											<td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
 											<td th:text="${report.acct_number != null ? report.acct_number : '-'}"></td>
 											<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>
