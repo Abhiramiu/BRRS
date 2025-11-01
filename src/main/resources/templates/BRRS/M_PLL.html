@@ -645,7 +645,22 @@ PURPOSE		: BRRS_M_PLLREPORT
 		}
 	</script>
 
-
+	<script th:inline="javascript">
+		$(document).ready(function () {
+			$('#reportdetails').DataTable({
+				scrollX: true,
+				autoWidth: false,
+				paging: true,
+				searching: true,
+				lengthChange: false,
+				ordering: true,
+				pageLength: 100,
+				fixedHeader: true,
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
+				language: {search: "Search:"}
+			});
+		});
+	</script>
 
 
 </head>
@@ -681,9 +696,9 @@ PURPOSE		: BRRS_M_PLLREPORT
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-													style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-													Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
-												</span>
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
+							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+						</span>
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -738,235 +753,435 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</thead>
 								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 
-								<tr>
-								    <td style="font-weight:bold; padding-left:4px;" th:text="${report.r11_provi_ins_sec}"></td>
-								    <td style="font-weight:bold; text-align:right; background-color:rgb(107,122,143); color:white;"
-								        th:text="${#numbers.formatDecimal(report.r11_provi_loan_loss, 0, 'COMMA', 0, 'POINT')}"
-								        th:attr="RowId='R11', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
-								</tr>
+									<tr>
+										<td style="font-weight:bold; padding-left:4px;"
+											th:text="${report.r11_provi_ins_sec}"></td>
+										<td style="font-weight:bold; text-align:right; background-color:rgb(107,122,143); color:white;"
+											th:text="${#numbers.formatDecimal(report.r11_provi_loan_loss, 0, 'COMMA', 0, 'POINT')}"
+											th:attr="RowId='R11', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:25px;" th:text="${report.r12_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r12_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R12', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:25px;" th:text="${report.r12_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r12_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R12', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:25px;" th:text="${report.r13_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r13_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R13', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:25px;" th:text="${report.r13_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r13_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R13', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:25px;" th:text="${report.r14_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r14_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R14', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:25px;" th:text="${report.r14_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r14_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R14', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:25px;font-weight:bold;" th:text="${report.r15_provi_ins_sec}"></td>
-								    <td style="font-weight:bold;background-color:rgb(107,122,143);color:white;text-align:right;"
-								        th:text="${#numbers.formatDecimal(report.r15_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R15', ColumnId='C2'"></td></tr>
+									<tr>
+										<td style="padding-left:25px;font-weight:bold;"
+											th:text="${report.r15_provi_ins_sec}"></td>
+										<td style="font-weight:bold;background-color:rgb(107,122,143);color:white;text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r15_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R15', ColumnId='C2'"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r16_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r16_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R16', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r16_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r16_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R16', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r17_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r17_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R17', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r17_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r17_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R17', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r18_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r18_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R18', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r18_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r18_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R18', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r19_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r19_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R19', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r19_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r19_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R19', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r20_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r20_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R20', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r20_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r20_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R20', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r21_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r21_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R21', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r21_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r21_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R21', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r22_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r22_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R22', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r22_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r22_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R22', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r23_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r23_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R23', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r23_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r23_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R23', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r24_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r24_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R24', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r24_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r24_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R24', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r25_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r25_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R25', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r25_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r25_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R25', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r26_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r26_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R26', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r26_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r26_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R26', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r27_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r27_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R27', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r27_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r27_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R27', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:30px;" th:text="${report.r28_provi_ins_sec}"></td>
-								    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r28_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R28', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r28_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r28_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R28', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-								<tr><td style="padding-left:25px;font-weight:bold;" th:text="${report.r29_provi_ins_sec}"></td>
-								    <td style="font-weight:bold;background-color:rgb(107,122,143);color:white;text-align:right;"
-								        th:text="${#numbers.formatDecimal(report.r29_provi_loan_loss,1,'COMMA',0,'POINT')}"
-								        th:attr="RowId='R29', ColumnId='C2'"></td></tr>
+									<tr>
+										<td style="padding-left:25px;font-weight:bold;"
+											th:text="${report.r29_provi_ins_sec}"></td>
+										<td style="font-weight:bold;background-color:rgb(107,122,143);color:white;text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r29_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R29', ColumnId='C2'"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r30_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r30_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R30', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r30_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r30_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R30', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r31_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r31_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R31', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r31_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r31_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R31', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r32_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r32_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R32', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r32_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r32_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R32', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r33_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r33_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R33', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r33_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r33_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R33', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r34_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r34_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R34', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r34_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r34_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R34', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r35_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r35_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R35', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r35_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r35_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R35', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r36_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r36_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R36', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r36_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r36_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R36', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:25px;" th:text="${report.r37_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r37_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R37', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:25px;" th:text="${report.r37_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r37_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R37', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:25px;" th:text="${report.r38_provi_ins_sec}"></td>
-										    <td style="text-align:right;background-color:rgb(107,122,143);color:white;"
-										        th:text="${#numbers.formatDecimal(report.r38_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R38', ColumnId='C2'"></td></tr>
+									<tr>
+										<td style="padding-left:25px;" th:text="${report.r38_provi_ins_sec}"></td>
+										<td style="text-align:right;background-color:rgb(107,122,143);color:white;"
+											th:text="${#numbers.formatDecimal(report.r38_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R38', ColumnId='C2'"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r39_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r39_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R39', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r39_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r39_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R39', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r40_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r40_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R40', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r40_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r40_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R40', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="font-weight:bold; padding-left:4px;" th:text="${report.r41_provi_ins_sec}"></td>
-										    <td style="font-weight:bold;background-color:rgb(107,122,143);color:white;text-align:right;"
-										        th:text="${#numbers.formatDecimal(report.r41_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R41', ColumnId='C2'"></td></tr>
+									<tr>
+										<td style="font-weight:bold; padding-left:4px;"
+											th:text="${report.r41_provi_ins_sec}"></td>
+										<td style="font-weight:bold;background-color:rgb(107,122,143);color:white;text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r41_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R41', ColumnId='C2'"></td>
+									</tr>
 
-										<tr><td style="padding-left:25px;" th:text="${report.r42_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r42_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R42', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:25px;" th:text="${report.r42_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r42_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R42', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:25px;" th:text="${report.r43_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r43_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R43', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:25px;" th:text="${report.r43_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r43_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R43', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:25px;" th:text="${report.r44_provi_ins_sec}"></td>
-										    <td style="background-color:rgb(107,122,143);color:white;text-align:right;"
-										        th:text="${#numbers.formatDecimal(report.r44_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R44', ColumnId='C2'"></td></tr>
+									<tr>
+										<td style="padding-left:25px;" th:text="${report.r44_provi_ins_sec}"></td>
+										<td style="background-color:rgb(107,122,143);color:white;text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r44_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R44', ColumnId='C2'"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r45_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r45_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R45', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r45_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r45_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R45', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r46_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r46_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R46', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r46_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r46_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R46', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r47_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r47_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R47', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r47_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r47_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R47', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r48_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r48_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R48', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r48_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r48_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R48', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:25px;" th:text="${report.r49_provi_ins_sec}"></td>
-										    <td style="background-color:rgb(107,122,143);color:white;text-align:right;"
-										        th:text="${#numbers.formatDecimal(report.r49_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R49', ColumnId='C2'"></td></tr>
+									<tr>
+										<td style="padding-left:25px;" th:text="${report.r49_provi_ins_sec}"></td>
+										<td style="background-color:rgb(107,122,143);color:white;text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r49_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R49', ColumnId='C2'"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r50_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r50_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R50', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r50_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r50_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R50', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r51_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r51_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R51', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r51_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r51_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R51', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r52_provi_ins_sec}"></td>
-										    <td style="text-align:right;background-color:rgb(107,122,143);color:white;"
-										        th:text="${#numbers.formatDecimal(report.r52_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R52', ColumnId='C2'"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r52_provi_ins_sec}"></td>
+										<td style="text-align:right;background-color:rgb(107,122,143);color:white;"
+											th:text="${#numbers.formatDecimal(report.r52_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R52', ColumnId='C2'"></td>
+									</tr>
 
-										<tr><td style="padding-left:40px;" th:text="${report.r53_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r53_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R53', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:40px;" th:text="${report.r53_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r53_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R53', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:40px;" th:text="${report.r54_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r54_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R54', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:40px;" th:text="${report.r54_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r54_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R54', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:40px;" th:text="${report.r55_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r55_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R55', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:40px;" th:text="${report.r55_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r55_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R55', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:40px;" th:text="${report.r56_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r56_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R56', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:40px;" th:text="${report.r56_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r56_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R56', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:40px;" th:text="${report.r57_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r57_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R57', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:40px;" th:text="${report.r57_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r57_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R57', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:30px;" th:text="${report.r58_provi_ins_sec}"></td>
-										    <td style="text-align:right;background-color:rgb(107,122,143);color:white;"
-										        th:text="${#numbers.formatDecimal(report.r58_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R58', ColumnId='C2'"></td></tr>
+									<tr>
+										<td style="padding-left:30px;" th:text="${report.r58_provi_ins_sec}"></td>
+										<td style="text-align:right;background-color:rgb(107,122,143);color:white;"
+											th:text="${#numbers.formatDecimal(report.r58_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R58', ColumnId='C2'"></td>
+									</tr>
 
-										<tr><td style="padding-left:40px;" th:text="${report.r59_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r59_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R59', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:40px;" th:text="${report.r59_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r59_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R59', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:40px;" th:text="${report.r60_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r60_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R60', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:40px;" th:text="${report.r60_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r60_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R60', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:40px;" th:text="${report.r61_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r61_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R61', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:40px;" th:text="${report.r61_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r61_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R61', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:40px;" th:text="${report.r62_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r62_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R62', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:40px;" th:text="${report.r62_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r62_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R62', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="padding-left:25px;" th:text="${report.r63_provi_ins_sec}"></td>
-										    <td style="text-align:right;" th:text="${#numbers.formatDecimal(report.r63_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R63', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td></tr>
+									<tr>
+										<td style="padding-left:25px;" th:text="${report.r63_provi_ins_sec}"></td>
+										<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.r63_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R63', ColumnId='C2'"
+											onclick="showdetailsbyRowAndColumn(this)"></td>
+									</tr>
 
-										<tr><td style="font-weight:bold; padding-left:4px;" th:text="${report.r64_provi_ins_sec}"></td>
-										    <td style="font-weight:bold;text-align:right;background-color:rgb(107,122,143);color:white;"
-										        th:text="${#numbers.formatDecimal(report.r64_provi_loan_loss,1,'COMMA',0,'POINT')}"
-										        th:attr="RowId='R64', ColumnId='C2'"></td></tr>
+									<tr>
+										<td style="font-weight:bold; padding-left:4px;"
+											th:text="${report.r64_provi_ins_sec}"></td>
+										<td style="font-weight:bold;text-align:right;background-color:rgb(107,122,143);color:white;"
+											th:text="${#numbers.formatDecimal(report.r64_provi_loan_loss,1,'COMMA',0,'POINT')}"
+											th:attr="RowId='R64', ColumnId='C2'"></td>
+									</tr>
 
-								
+
 								</tbody>
 
 							</table>
@@ -983,76 +1198,49 @@ PURPOSE		: BRRS_M_PLLREPORT
 						<div class="table-responsive scrollable-table-container"
 							style="border-right: 1px solid #dee2e6;">
 							<table class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-								id="reports">
+								id="reportdetails">
 								<thead class="thead-light">
 									<tr>
 										<th></th>
+										<th>S No</th>
 										<th>CUST ID</th>
 										<th>ACCT NO</th>
 										<th>ACCT NAME</th>
-										<th style="text-align:right;">ACCT BALANCE</th>
-										<th>ROW ID</th>
+										<th style="text-align:right;">PROVISION AMOUNT</th>
+										<th style="text-align:left">ROW ID</th>
 										<th>COLUMN ID</th>
 										<th>REPORT_DATE</th>
 									</tr>
-
 								</thead>
 
-								<tbody th:each="report: ${reportdetails}" style="font-family: Arial;">
-									<tr>
-										<td><a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+								<tbody style="font-family: Arial;">
+									<tr th:each="report, srlno : ${reportdetails}">
+										<td>
+											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
 												<i class="fas fa-edit" onclick="editRecord(this)"></i>
-											</a></td>
+											</a>
+										</td>
+
+										<!-- Null-safe field rendering -->
+										<td th:text="${srlno.index + 1}"></td>
 										<td th:text="${report.custId}"></td>
 										<td th:text="${report.acctNumber}"></td>
 										<td th:text="${report.acctName}"></td>
 										<td style="text-align:right;"
-											th:text="${#numbers.formatDecimal(report.acctBalanceInPula, 1, 3, 'POINT')}">
+											th:text="${#numbers.formatDecimal(report.provision, 1, 3, 'POINT')}">
 										</td>
-										<td th:text="${report.rowId}"></td>
+										<td style="text-align:left" th:text="${report.rowId}"></td>
 										<td th:text="${report.columnId}"></td>
 										<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 
 									</tr>
 								</tbody>
+
+
 							</table>
-							<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
 
-
-
-								<a th:if="${currentPage > 0}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																									    asondate=${asondate},                             
-																									    fromdate=${fromdate},
-																									    todate=${todate},
-																									    currency=${currency},
-																									    dtltype=${dtltype},
-																									    type=${type},
-																									    version=${version},
-																									    page=${currentPage - 100},
-																									    size=100
-																									)}">
-									Previous
-								</a>
-
-
-								<span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
-
-
-								<a th:if="${currentPage < (totalPages - 1) * 100}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																									    asondate=${asondate},
-																									    fromdate=${fromdate},
-																									    todate=${todate},
-																									    currency=${currency},
-																									    dtltype=${dtltype},
-																									    type=${type},
-																									    version=${version},
-																									    page=${currentPage + 100},
-																									    size=100
-																									)}">
-									Next
-								</a>
-							</div>
 						</div>
+
 
 					</div>
 				</div>

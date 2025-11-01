@@ -46,6 +46,9 @@ public class M_PLL_Detail_Entity {
     @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
     private BigDecimal acctBalanceInPula;
     
+    @Column(name = "PROVISION", precision = 32, scale = 2)
+    private BigDecimal provision;
+    
     @Column(name = "REPORT_DATE")
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date reportDate;
@@ -83,8 +86,6 @@ public class M_PLL_Detail_Entity {
     @Column(name = "DEL_FLG", length = 1)
     private String delFlg;
 
-    
-    
 	public String getCustId() {
 		return custId;
 	}
@@ -163,6 +164,14 @@ public class M_PLL_Detail_Entity {
 
 	public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
 		this.acctBalanceInPula = acctBalanceInPula;
+	}
+
+	public BigDecimal getProvision() {
+		return provision;
+	}
+
+	public void setProvision(BigDecimal provision) {
+		this.provision = provision;
 	}
 
 	public Date getReportDate() {
@@ -253,13 +262,12 @@ public class M_PLL_Detail_Entity {
 		this.delFlg = delFlg;
 	}
 
-	
-	
-	
 	public M_PLL_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+    
     
     
     
