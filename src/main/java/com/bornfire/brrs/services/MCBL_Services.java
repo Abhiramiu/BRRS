@@ -296,13 +296,15 @@ public class MCBL_Services {
 
 	        long duration = System.currentTimeMillis() - startTime;
 
-	        String popupMessage = "MCBL processed successfully.<br>" +
+	       /* String popupMessage = "MCBL Added successfully.<br>" +
 	                "Saved rows: " + count + "<br>" +
 	                "Skipped rows: " + skippedCount + "<br>" +
 	                "New Accounts (" + newAccounts.size() + "): " + String.join(", ", newAccounts) + "<br>" +
 	                "Missing Accounts (" + missingAccounts.size() + "): " + String.join(", ", missingAccounts) + "<br>" +
 	                "Time taken: " + duration + " ms";
-
+*/
+	        String popupMessage = "MCBL Added successfully.";
+	        
 	        return popupMessage;
 
 	    } catch (Exception e) {
