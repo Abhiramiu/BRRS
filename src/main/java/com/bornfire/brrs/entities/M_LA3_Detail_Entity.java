@@ -14,7 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_M_LA3_DETAILTABLE")
 public class M_LA3_Detail_Entity {
 	
-	
+	@Id
 	private String	cust_id;
 	private String	acct_number;
 	private String	acct_name;
@@ -24,7 +24,7 @@ public class M_LA3_Detail_Entity {
 	private String	modification_remarks;
 	private String	data_entry_version;
 	private BigDecimal	acct_balance_in_pula;
-	@Id
+	
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	private Date	report_date;
 	private String	report_name;

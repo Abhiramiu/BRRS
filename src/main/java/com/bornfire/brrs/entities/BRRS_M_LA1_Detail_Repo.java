@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 
 
-public interface BRRS_M_LA1_Detail_Repo extends JpaRepository<M_LA1_Detail_Entity, Date> {
+public interface BRRS_M_LA1_Detail_Repo extends JpaRepository<M_LA1_Detail_Entity, String> {
 
     // Fetch all records for a given date
     @Query(value = "select * from BRRS_M_LA1_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)

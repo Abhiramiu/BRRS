@@ -306,6 +306,17 @@ PURPOSE		: BRFREPORT
 		}
 	</style>
 
+	<style>
+		#reportdetails,
+		#reportdetails th,
+		#reportdetails td {
+			border: 1px solid black !important;
+		}
+
+		#reportdetails {
+			border-collapse: collapse;
+		}
+	</style>
 
 	<script th:inline="javascript">
 
@@ -671,21 +682,36 @@ PURPOSE		: BRFREPORT
 	</script>
 
 	<script th:inline="javascript">
-			$(document).ready(function () {
-				$('#reportdetails').DataTable({
-					scrollX: true,
-					autoWidth: false,
-					paging: true,
-					searching: true,
-					lengthChange: false,
-					ordering: true,
-					pageLength: 100,
-					fixedHeader: true,
-					dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
-					language: {search: "Search:"}
-				});
-			});
-		</script>
+	$(document).ready(function () {
+	    $('#reportdetails').DataTable({
+	        autoWidth: true,
+	        paging: true,
+	        searching: true,
+	        lengthChange: false,
+	        ordering: false,
+	        pageLength: 100,
+	        fixedHeader: true,
+	        scrollY: false,        // ✅ no vertical scroll
+	        scrollCollapse: false, // ✅ ensures no scroll container
+	        scrollX: false,        // ✅ no horizontal scroll
+
+	        // ✅ Search (left) + pagination (right) on top only
+	        dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
+
+	        language: { 
+	            search: "Search:",
+	            paginate: {
+	                previous: "&laquo;",
+	                next: "&raquo;"
+	            }
+	        }
+	    });
+	});
+	
+	</script>
+
+
+
 
 
 </head>
@@ -712,8 +738,9 @@ PURPOSE		: BRFREPORT
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							M-LA1: LOANS AND ADVANCES</h5>
+							BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT 123</h5>
 					</div>
+
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
@@ -766,6 +793,12 @@ PURPOSE		: BRFREPORT
 									id="reportss">
 									<thead class="thead-light">
 										<!-- First header row -->
+										<tr>
+											<th style="background-color: rgb(255, 255, 255)" colspan="4">(25) MONTHLY
+												SCHEDULE: M-LA1: LOANS AND ADVANCES (P'000)</th>
+										</tr>
+
+
 										<tr style="background-color: #b3b6b9">
 											<th rowspan="2"
 												style="background-color: #D8D8D8;text-align: left;vertical-align:middle; width:50%; ">
@@ -1756,26 +1789,28 @@ PURPOSE		: BRFREPORT
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6;">
+								style="border-right: 1px solid #dee2e6; ">
 								<table
 									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
 									id="reportdetails">
 									<thead class="thead-light">
 										<tr>
-											<th></th>
+											<th> </th>
 											<th>S No</th>
 											<th>CUST ID</th>
 											<th>ACCT NO</th>
 											<th>ACCT NAME</th>
-											<th style="text-align: right;">ACCT BALANCE</th>
-											<th style="text-align: left;">REPORT LABEL</th>
-											<th>REPORT_ADDL_CRETERIA</th>
+											<th>ACCT BALANCE</th>
+											<th>SANCTION LIMIT</th>
+											<th>REPORT LABEL</th>
+											<th>REPORT_ADDL_CRETERIA_1</th>
 											<th>REPORT_ADDL_CRETERIA_2</th>
 											<th>REPORT_ADDL_CRETERIA_3</th>
 											<th>REPORT_DATE</th>
 										</tr>
 
 									</thead>
+
 									<tbody style="font-family: Arial;">
 										<tr th:each="report, srlno : ${reportdetails}">
 											<td>
@@ -1784,15 +1819,14 @@ PURPOSE		: BRFREPORT
 													<i class="fas fa-edit" onclick="editRecord(this)"></i>
 												</a>
 											</td>
-
-											<!-- Null-safe field rendering -->
 											<td th:text="${srlno.index + 1}"></td>
 											<td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
 											<td th:text="${report.acct_number != null ? report.acct_number : '-'}"></td>
 											<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>
-											<td th:text="${report.acct_balance_in_pula != null 
-									                        ? #numbers.formatDecimal(report.acct_balance_in_pula, 1, 2) 
-									                        : '0.00'}" style="text-align: right;"></td>
+											<td align="right" th:text="${report.acct_balance_in_pula != null 
+																									? #numbers.formatDecimal(report.acct_balance_in_pula, 1, 2) : '0.00'}"></td>
+											<td align="right" th:text="${report.sanction_limit != null 
+																									? #numbers.formatDecimal(report.sanction_limit, 1, 2) : '0.00'}"></td>
 											<td th:text="${report.report_label != null ? report.report_label : '-'}">
 											</td>
 											<td
@@ -1805,49 +1839,11 @@ PURPOSE		: BRFREPORT
 												th:text="${report.report_addl_criteria_3 != null ? report.report_addl_criteria_3 : '-'}">
 											</td>
 											<td th:text="${report.report_date != null 
-									                        ? #dates.format(report.report_date, 'dd-MM-yyyy') 
-									                        : '-'}"></td>
+																									? #dates.format(report.report_date, 'dd-MM-yyyy') : '-'}"></td>
 										</tr>
 									</tbody>
-
-
 								</table>
-								<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
 
-
-
-									<a th:if="${currentPage > 0}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																																	    asondate=${asondate},                             
-																																	    fromdate=${fromdate},
-																																	    todate=${todate},
-																																	    currency=${currency},
-																																	    dtltype=${dtltype},
-																																	    type=${type},
-																																	    version=${version},
-																																	    page=${currentPage - 100},
-																																	    size=100
-																																	)}">
-										Previous
-									</a>
-
-
-									<span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
-
-
-									<a th:if="${currentPage < (totalPages - 1) * 100}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																																	    asondate=${asondate},
-																																	    fromdate=${fromdate},
-																																	    todate=${todate},
-																																	    currency=${currency},
-																																	    dtltype=${dtltype},
-																																	    type=${type},
-																																	    version=${version},
-																																	    page=${currentPage + 100},
-																																	    size=100
-																																	)}">
-										Next
-									</a>
-								</div>
 							</div>
 
 
@@ -1929,9 +1925,45 @@ PURPOSE		: BRFREPORT
 		</div>
 	</div>
 
-
 </body>
+<!-- <script>
+																																  $(document).ready(function () {
+																																    $('#BRFvalidation').DataTable({
+																																      "paging": true,
+																																      "pageLength": 10,
+																																      "lengthChange": false,
+																																      "searching": true,
+																																      "ordering": true,
+																																      "autoWidth": false,
+																																      "language": {
+																																        "search": "Search:"
+																																      }
+																																    });
+																																  });
+																																</script> -->
+<!-- <script>
+																																  $(document).ready(function () {
+																																    $('#BRFvalidation').DataTable({
+																																      "paging": true,
+																																      "info": false,       // turn off "Showing x of y"
+																																      "searching": false,  // turn off search
+																																      "ordering": false,   // turn off ordering
+																																      "lengthChange": false // hide "Show x entries"
+																																    });
+																																  });
+																																</script> -->
 
+<style>
+	#reportdetails td {
+		border: 1px solid #ccc;
+		padding: 8px;
+	}
+
+	#reportdetails {
+		border-collapse: collapse;
+		width: 100%;
+	}
+</style>
 
 
 <style>
@@ -1959,6 +1991,8 @@ PURPOSE		: BRFREPORT
 		background-color: #b3b6b9;
 		z-index: 4;
 	}
+
+
 
 	.scrollable-table-container thead tr:nth-child(3) {
 		position: sticky;
@@ -2037,6 +2071,13 @@ PURPOSE		: BRFREPORT
 		display: inline-block;
 		width: auto;
 	}
+	
+	.dataTables_scrollBody {
+		overflow-y: visible !important; /* prevents vertical scroll */
+	}
+
+	
 </style>
+
 
 </html>

@@ -59,7 +59,6 @@ import com.bornfire.brrs.dto.ReportLineItemDTO;
 @Component
 @Service
 
-
 public class BRRS_M_LA1_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_LA1_ReportService.class);
 
@@ -69,7 +68,6 @@ public class BRRS_M_LA1_ReportService {
 	@Autowired
 	SessionFactory sessionFactory;
 
-	
 	@Autowired
 	BRRS_M_LA1_Summary_Repo BRRS_M_LA1_Summary_Repo;
 
@@ -84,8 +82,8 @@ public class BRRS_M_LA1_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_LA1View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+	public ModelAndView getM_LA1View(String reportId, String fromdate, String todate, String currency, String dtltype,
+			Pageable pageable, String type, String version) {
 
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
@@ -142,104 +140,120 @@ public class BRRS_M_LA1_ReportService {
 	}
 
 	public ModelAndView getM_LA1currentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String filter, String type, String version) {
+            String dtltype, Pageable pageable, String filter, String type, String version) {
 
-		int pageSize = pageable != null ? pageable.getPageSize() : 10;
-		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
+ModelAndView mv = new ModelAndView("BRRS/M_LA1");
+int pageSize = pageable != null ? pageable.getPageSize() : 10;
+int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+int totalRecords = 0;
 
-		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
+try {
+// ✅ Parse toDate
+Date parsedDate = null;
+if (todate != null && !todate.isEmpty()) {
+parsedDate = dateformat.parse(todate);
+}
 
-		try {
-			Date parsedDate = null;
-			if (todate != null && !todate.isEmpty()) {
-				parsedDate = dateformat.parse(todate);
-			}
+// ✅ Parse filter (rowId, columnIds)
+String rowId = null, columnId = null, columnId1 = null, columnId2 = null;
+if (filter != null && !filter.isEmpty()) {
+String[] parts = filter.split(",", -1);
+rowId = parts.length > 0 ? parts[0] : null;
+columnId = parts.length > 1 ? parts[1] : null;
+columnId1 = parts.length > 2 ? parts[2] : null;
+columnId2 = parts.length > 3 ? parts[3] : null;
+}
 
-			String rowId = null;
-			String columnId = null;
-			String columnId1 = null;
-			String columnId2 = null;
+// ✅ ARCHIVAL DATA BRANCH
+if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.isEmpty()) {
+logger.info("Fetching ARCHIVAL data for version {}", version);
 
-			if (filter != null && filter.contains(",")) {
-			    String[] parts = filter.split(",", -1); // preserve empty fields
-			    rowId = parts.length > 0 ? parts[0] : null;
-			    columnId = parts.length > 1 ? parts[1] : null;
-			    columnId1 = parts.length > 2 ? parts[2] : null;
-			    columnId2 = parts.length > 3 ? parts[3] : null;
-			}
+List<M_LA1_Archival_Detail_Entity> detailList;
 
+// 🔹 Filtered (ROWID + COLUMNID)
+if (rowId != null && !rowId.isEmpty() &&
+(isNotEmpty(columnId) || isNotEmpty(columnId1) || isNotEmpty(columnId2))) {
 
+logger.info("➡ ARCHIVAL DETAIL QUERY TRIGGERED (with filters)");
+detailList = M_LA1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(
+rowId, columnId, columnId1, columnId2, parsedDate
+);
 
+} else {
+logger.info("➡ ARCHIVAL LIST QUERY TRIGGERED (with pagination)");
+detailList = M_LA1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+totalRecords = M_LA1_Archival_Detail_Repo.getdatacount(parsedDate);
+mv.addObject("pagination", "YES");
+}
 
-			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				System.out.println(version);
-				// 🔹 Archival branch
-				List<M_LA1_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_LA1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
-				} else {
-					T1Dt1 = M_LA1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-					totalPages = M_LA1_Detail_Repo.getdatacount(parsedDate);
-					System.out.println(T1Dt1.size());
-					mv.addObject("pagination", "YES");
+mv.addObject("reportdetails", detailList);
+mv.addObject("reportmaster12", detailList);
+logger.info("ARCHIVAL COUNT: {}", (detailList != null ? detailList.size() : 0));
 
-				}
+} else {
+// ✅ CURRENT DATA BRANCH
+logger.info("Fetching CURRENT data for M_LA1");
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+List<M_LA1_Detail_Entity> detailList;
 
-			} else {
-				System.out.println("Praveen");
-				// 🔹 Current branch
-				List<M_LA1_Detail_Entity> T1Dt1;
-				if (rowId != null && !rowId.isEmpty() && (
-					    (columnId != null && !columnId.isEmpty()) ||
-					    (columnId1 != null && !columnId1.isEmpty()) ||
-					    (columnId2 != null && !columnId2.isEmpty())
-					)) {
-					    System.out.println("➡ DETAIL QUERY TRIGGERED");
-					    T1Dt1 = M_LA1_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, columnId1, columnId2, parsedDate);
-					} else {
-					    System.out.println("➡ LIST QUERY TRIGGERED");
-					    T1Dt1 = M_LA1_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
-					    totalPages = M_LA1_Detail_Repo.getdatacount(parsedDate);
-					    mv.addObject("pagination", "YES");
-					}
+if (rowId != null && !rowId.isEmpty() &&
+(isNotEmpty(columnId) || isNotEmpty(columnId1) || isNotEmpty(columnId2))) {
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-			}
+logger.info("➡ CURRENT DETAIL QUERY TRIGGERED (with filters)");
+detailList = M_LA1_Detail_Repo.GetDataByRowIdAndColumnId(
+rowId, columnId, columnId1, columnId2, parsedDate
+);
 
-		} catch (ParseException e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
-		} catch (Exception e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
-		}
+} else {
+logger.info("➡ CURRENT LIST QUERY TRIGGERED (with pagination)");
+detailList = M_LA1_Detail_Repo.getdatabydateList(parsedDate, currentPage * pageSize, pageSize);
+totalRecords = M_LA1_Detail_Repo.getdatacount(parsedDate);
+mv.addObject("pagination", "YES");
+}
 
-		// ✅ Common attributes
-		mv.setViewName("BRRS/M_LA1");
-		mv.addObject("displaymode", "Details");
-		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("reportsflag", "reportsflag");
-		mv.addObject("menu", reportId);
+mv.addObject("reportdetails", detailList);
+mv.addObject("reportmaster12", detailList);
+logger.info("CURRENT COUNT: {}", (detailList != null ? detailList.size() : 0));
+}
 
-		return mv;
-	}
+} catch (ParseException e) {
+logger.error("Invalid date format: {}", todate, e);
+mv.addObject("errorMessage", "Invalid date format: " + todate);
+} catch (Exception e) {
+logger.error("Unexpected error in getM_LA1currentDtl", e);
+mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+}
+
+// ✅ Common model attributes
+int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+mv.addObject("displaymode", "Details");
+mv.addObject("currentPage", currentPage);
+mv.addObject("totalPages", totalPages);
+mv.addObject("reportsflag", "reportsflag");
+mv.addObject("menu", reportId);
+
+logger.info("Total pages calculated: {}", totalPages);
+return mv;
+}
+
+	
+	
+	
+	
+	
+	
+	
+//Helper for null/empty check
+private boolean isNotEmpty(String value) {
+return value != null && !value.trim().isEmpty();
+}
+
 
 	public byte[] BRRS_M_LA1Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		List<M_LA1_Summary_Entity> dataList =BRRS_M_LA1_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
+		List<M_LA1_Summary_Entity> dataList = BRRS_M_LA1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for LA1 report. Returning empty result.");
@@ -298,7 +312,6 @@ public class BRRS_M_LA1_ReportService {
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
 			int startRow = 11;
-			
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -331,7 +344,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row12
 					// Column D
 					Cell cell3 = row.createCell(3);
@@ -356,7 +369,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row13
 					// Column C
 					cell2 = row.createCell(2);
@@ -367,7 +380,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row13
 					// Column D
 					cell3 = row.createCell(3);
@@ -378,7 +391,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row14
 					row = sheet.getRow(13);
 					// Column H
@@ -392,18 +405,18 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row14
 					// Column C
 					cell2 = row.getCell(2);
 					if (record.getR14_balance_outstanding() != null) {
 						cell2.setCellValue(record.getR14_balance_outstanding().doubleValue());
-						
+
 					} else {
 						cell2.setCellValue("");
-						
+
 					}
-					
+
 					// row14
 					// Column D
 					cell3 = row.createCell(3);
@@ -414,7 +427,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row16
 					row = sheet.getRow(15);
 					// Column H
@@ -428,7 +441,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row16
 					// Column C
 					cell2 = row.createCell(2);
@@ -439,7 +452,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row16
 					// Column D
 					cell3 = row.createCell(3);
@@ -450,7 +463,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row17
 					row = sheet.getRow(16);
 					// Column H
@@ -464,7 +477,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row17
 					// Column C
 					cell2 = row.createCell(2);
@@ -475,7 +488,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row17
 					// Column D
 					cell3 = row.createCell(3);
@@ -486,7 +499,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row18
 					row = sheet.getRow(17);
 					// Column H
@@ -500,7 +513,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row18
 					// Column C
 					cell2 = row.createCell(2);
@@ -511,7 +524,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row18
 					// Column D
 					cell3 = row.createCell(3);
@@ -522,7 +535,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row19
 					row = sheet.getRow(18);
 					// Column H
@@ -536,7 +549,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row19
 					// Column C
 					cell2 = row.createCell(2);
@@ -547,7 +560,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row19
 					// Column D
 					cell3 = row.createCell(3);
@@ -558,7 +571,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row20
 					row = sheet.getRow(19);
 					// Column H
@@ -572,7 +585,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row20
 					// Column C
 					cell2 = row.createCell(2);
@@ -583,7 +596,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row20
 					// Column D
 					cell3 = row.createCell(3);
@@ -594,7 +607,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row21
 					row = sheet.getRow(20);
 					// Column H
@@ -608,7 +621,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row21
 					// Column C
 					cell2 = row.createCell(2);
@@ -619,7 +632,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row21
 					// Column D
 					cell3 = row.createCell(3);
@@ -630,7 +643,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					row = sheet.getRow(21);
 					// Column H
@@ -644,7 +657,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row22
 					// Column C
 					cell2 = row.createCell(2);
@@ -655,7 +668,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column D
 					cell3 = row.createCell(3);
@@ -666,7 +679,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					row = sheet.getRow(22);
 					// Column H
@@ -680,7 +693,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row23
 					// Column C
 					cell2 = row.createCell(2);
@@ -691,7 +704,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					// Column D
 					cell3 = row.createCell(3);
@@ -702,7 +715,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					row = sheet.getRow(23);
 					// Column H
@@ -716,7 +729,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row24
 					// Column C
 					cell2 = row.createCell(2);
@@ -727,7 +740,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column D
 					cell3 = row.createCell(3);
@@ -738,7 +751,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row25
 					row = sheet.getRow(24);
 					// Column H
@@ -752,7 +765,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row25
 					// Column C
 					cell2 = row.createCell(2);
@@ -763,7 +776,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row25
 					// Column D
 					cell3 = row.createCell(3);
@@ -774,7 +787,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row26
 					row = sheet.getRow(25);
 					// Column H
@@ -788,7 +801,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row26
 					// Column C
 					cell2 = row.createCell(2);
@@ -799,7 +812,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row26
 					// Column D
 					cell3 = row.createCell(3);
@@ -810,7 +823,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row27
 					row = sheet.getRow(26);
 					// Column H
@@ -824,7 +837,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row27
 					// Column C
 					cell2 = row.createCell(2);
@@ -835,7 +848,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row27
 					// Column D
 					cell3 = row.createCell(3);
@@ -846,7 +859,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row28
 					row = sheet.getRow(27);
 					// Column H
@@ -860,7 +873,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row28
 					// Column C
 					cell2 = row.createCell(2);
@@ -871,7 +884,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row28
 					// Column D
 					cell3 = row.createCell(3);
@@ -882,7 +895,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row30
 					row = sheet.getRow(29);
 					// Column H
@@ -896,7 +909,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row30
 					// Column C
 					cell2 = row.createCell(2);
@@ -907,7 +920,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row30
 					// Column D
 					cell3 = row.createCell(3);
@@ -918,7 +931,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row31
 					row = sheet.getRow(30);
 					// Column H
@@ -932,7 +945,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row31
 					// Column C
 					cell2 = row.createCell(2);
@@ -943,7 +956,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row31
 					// Column D
 					cell3 = row.createCell(3);
@@ -954,7 +967,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row32
 					row = sheet.getRow(31);
 					// Column H
@@ -968,7 +981,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row32
 					// Column C
 					cell2 = row.createCell(2);
@@ -979,7 +992,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row32
 					// Column D
 					cell3 = row.createCell(3);
@@ -990,7 +1003,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row33
 					row = sheet.getRow(32);
 					// Column H
@@ -1004,7 +1017,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row33
 					// Column C
 					cell2 = row.createCell(2);
@@ -1015,7 +1028,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row33
 					// Column D
 					cell3 = row.createCell(3);
@@ -1026,7 +1039,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row34
 					row = sheet.getRow(33);
 					// Column H
@@ -1040,7 +1053,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row34
 					// Column C
 					cell2 = row.createCell(2);
@@ -1051,7 +1064,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row34
 					// Column D
 					cell3 = row.createCell(3);
@@ -1062,7 +1075,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					row = sheet.getRow(34);
 					// Column H
@@ -1076,7 +1089,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row35
 					// Column C
 					cell2 = row.createCell(2);
@@ -1087,7 +1100,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column D
 					cell3 = row.createCell(3);
@@ -1098,7 +1111,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					row = sheet.getRow(35);
 					// Column H
@@ -1112,7 +1125,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row36
 					// Column C
 					cell2 = row.createCell(2);
@@ -1123,7 +1136,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					// Column D
 					cell3 = row.createCell(3);
@@ -1134,7 +1147,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					row = sheet.getRow(36);
 					// Column H
@@ -1148,7 +1161,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row37
 					// Column C
 					cell2 = row.createCell(2);
@@ -1159,7 +1172,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column D
 					cell3 = row.createCell(3);
@@ -1170,7 +1183,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row39
 					row = sheet.getRow(38);
 					// Column H
@@ -1184,7 +1197,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row39
 					// Column C
 					cell2 = row.createCell(2);
@@ -1195,7 +1208,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row39
 					// Column D
 					cell3 = row.createCell(3);
@@ -1206,7 +1219,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row40
 					row = sheet.getRow(39);
 					// Column H
@@ -1220,7 +1233,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row40
 					// Column C
 					cell2 = row.createCell(2);
@@ -1231,7 +1244,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row40
 					// Column D
 					cell3 = row.createCell(3);
@@ -1242,7 +1255,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row42
 					row = sheet.getRow(41);
 					// Column H
@@ -1256,7 +1269,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row42
 					// Column C
 					cell2 = row.createCell(2);
@@ -1267,7 +1280,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row42
 					// Column D
 					cell3 = row.createCell(3);
@@ -1278,7 +1291,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row43
 					row = sheet.getRow(42);
 					// Column H
@@ -1292,7 +1305,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row43
 					// Column C
 					cell2 = row.createCell(2);
@@ -1303,7 +1316,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row43
 					// Column D
 					cell3 = row.createCell(3);
@@ -1314,7 +1327,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row45
 					row = sheet.getRow(44);
 					// Column H
@@ -1328,7 +1341,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row40
 					// Column C
 					cell2 = row.createCell(2);
@@ -1339,7 +1352,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row45
 					// Column D
 					cell3 = row.createCell(3);
@@ -1350,7 +1363,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row46
 					row = sheet.getRow(45);
 					// Column H
@@ -1364,7 +1377,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row46
 					// Column C
 					cell2 = row.createCell(2);
@@ -1375,7 +1388,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row46
 					// Column D
 					cell3 = row.createCell(3);
@@ -1386,7 +1399,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row47
 					row = sheet.getRow(46);
 					// Column H
@@ -1400,7 +1413,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row47
 					// Column C
 					cell2 = row.createCell(2);
@@ -1411,7 +1424,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row47
 					// Column D
 					cell3 = row.createCell(3);
@@ -1422,7 +1435,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row48
 					row = sheet.getRow(47);
 					// Column H
@@ -1436,7 +1449,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row48
 					// Column C
 					cell2 = row.createCell(2);
@@ -1447,7 +1460,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row48
 					// Column D
 					cell3 = row.createCell(3);
@@ -1458,7 +1471,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row50
 					row = sheet.getRow(49);
 					// Column H
@@ -1472,7 +1485,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row50
 					// Column C
 					cell2 = row.createCell(2);
@@ -1483,7 +1496,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row50
 					// Column D
 					cell3 = row.createCell(3);
@@ -1494,7 +1507,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row51
 					row = sheet.getRow(50);
 					// Column H
@@ -1508,7 +1521,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row51
 					// Column C
 					cell2 = row.createCell(2);
@@ -1519,7 +1532,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row51
 					// Column D
 					cell3 = row.createCell(3);
@@ -1530,7 +1543,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row52
 					row = sheet.getRow(51);
 					// Column H
@@ -1544,7 +1557,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row52
 					// Column C
 					cell2 = row.createCell(2);
@@ -1555,7 +1568,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row52
 					// Column D
 					cell3 = row.createCell(3);
@@ -1566,7 +1579,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row54
 					row = sheet.getRow(53);
 					// Column H
@@ -1580,7 +1593,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row54
 					// Column C
 					cell2 = row.createCell(2);
@@ -1591,7 +1604,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row54
 					// Column D
 					cell3 = row.createCell(3);
@@ -1602,7 +1615,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row55
 					row = sheet.getRow(54);
 					// Column H
@@ -1616,7 +1629,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row55
 					// Column C
 					cell2 = row.createCell(2);
@@ -1627,7 +1640,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row55
 					// Column D
 					cell3 = row.createCell(3);
@@ -1638,7 +1651,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row56
 					row = sheet.getRow(55);
 					// Column H
@@ -1652,7 +1665,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row56
 					// Column C
 					cell2 = row.createCell(2);
@@ -1663,7 +1676,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row56
 					// Column D
 					cell3 = row.createCell(3);
@@ -1674,7 +1687,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row58
 					row = sheet.getRow(57);
 					// Column H
@@ -1688,7 +1701,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row58
 					// Column C
 					cell2 = row.createCell(2);
@@ -1699,7 +1712,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row58
 					// Column D
 					cell3 = row.createCell(3);
@@ -1710,7 +1723,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row59
 					row = sheet.getRow(58);
 					// Column H
@@ -1724,7 +1737,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row59
 					// Column C
 					cell2 = row.createCell(2);
@@ -1735,7 +1748,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row59
 					// Column D
 					cell3 = row.createCell(3);
@@ -1746,7 +1759,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row60
 					row = sheet.getRow(59);
 					// Column H
@@ -1760,7 +1773,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row60
 					// Column C
 					cell2 = row.createCell(2);
@@ -1771,7 +1784,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row60
 					// Column D
 					cell3 = row.createCell(3);
@@ -1782,7 +1795,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row61
 					row = sheet.getRow(60);
 					// Column H
@@ -1796,7 +1809,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row61
 					// Column C
 					cell2 = row.createCell(2);
@@ -1807,7 +1820,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row61
 					// Column D
 					cell3 = row.createCell(3);
@@ -1818,7 +1831,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row62
 					row = sheet.getRow(61);
 					// Column H
@@ -1832,7 +1845,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row62
 					// Column C
 					cell2 = row.createCell(2);
@@ -1843,7 +1856,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row62
 					// Column D
 					cell3 = row.createCell(3);
@@ -1854,7 +1867,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row63
 					row = sheet.getRow(62);
 					// Column H
@@ -1868,7 +1881,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row63
 					// Column C
 					cell2 = row.createCell(2);
@@ -1879,7 +1892,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row63
 					// Column D
 					cell3 = row.createCell(3);
@@ -1890,18 +1903,6 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
-					
-					
-					
-					
-					
-
-					
-
-					
-
-					
 
 				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
@@ -2152,7 +2153,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row12
 					// Column D
 					Cell cell3 = row.createCell(3);
@@ -2177,7 +2178,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row13
 					// Column C
 					cell2 = row.createCell(2);
@@ -2188,7 +2189,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row13
 					// Column D
 					cell3 = row.createCell(3);
@@ -2199,7 +2200,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row14
 					row = sheet.getRow(13);
 					// Column H
@@ -2213,18 +2214,18 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row14
 					// Column C
 					cell2 = row.getCell(2);
 					if (record.getR14_balance_outstanding() != null) {
 						cell2.setCellValue(record.getR14_balance_outstanding().doubleValue());
-						
+
 					} else {
 						cell2.setCellValue("");
-						
+
 					}
-					
+
 					// row14
 					// Column D
 					cell3 = row.createCell(3);
@@ -2235,7 +2236,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row16
 					row = sheet.getRow(15);
 					// Column H
@@ -2249,7 +2250,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row16
 					// Column C
 					cell2 = row.createCell(2);
@@ -2260,7 +2261,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row16
 					// Column D
 					cell3 = row.createCell(3);
@@ -2271,7 +2272,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row17
 					row = sheet.getRow(16);
 					// Column H
@@ -2285,7 +2286,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row17
 					// Column C
 					cell2 = row.createCell(2);
@@ -2296,7 +2297,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row17
 					// Column D
 					cell3 = row.createCell(3);
@@ -2307,7 +2308,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row18
 					row = sheet.getRow(17);
 					// Column H
@@ -2321,7 +2322,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row18
 					// Column C
 					cell2 = row.createCell(2);
@@ -2332,7 +2333,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row18
 					// Column D
 					cell3 = row.createCell(3);
@@ -2343,7 +2344,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row19
 					row = sheet.getRow(18);
 					// Column H
@@ -2357,7 +2358,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row19
 					// Column C
 					cell2 = row.createCell(2);
@@ -2368,7 +2369,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row19
 					// Column D
 					cell3 = row.createCell(3);
@@ -2379,7 +2380,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row20
 					row = sheet.getRow(19);
 					// Column H
@@ -2393,7 +2394,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row20
 					// Column C
 					cell2 = row.createCell(2);
@@ -2404,7 +2405,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row20
 					// Column D
 					cell3 = row.createCell(3);
@@ -2415,7 +2416,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row21
 					row = sheet.getRow(20);
 					// Column H
@@ -2429,7 +2430,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row21
 					// Column C
 					cell2 = row.createCell(2);
@@ -2440,7 +2441,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row21
 					// Column D
 					cell3 = row.createCell(3);
@@ -2451,7 +2452,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					row = sheet.getRow(21);
 					// Column H
@@ -2465,7 +2466,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row22
 					// Column C
 					cell2 = row.createCell(2);
@@ -2476,7 +2477,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row22
 					// Column D
 					cell3 = row.createCell(3);
@@ -2487,7 +2488,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					row = sheet.getRow(22);
 					// Column H
@@ -2501,7 +2502,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row23
 					// Column C
 					cell2 = row.createCell(2);
@@ -2512,7 +2513,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row23
 					// Column D
 					cell3 = row.createCell(3);
@@ -2523,7 +2524,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					row = sheet.getRow(23);
 					// Column H
@@ -2537,7 +2538,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row24
 					// Column C
 					cell2 = row.createCell(2);
@@ -2548,7 +2549,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row24
 					// Column D
 					cell3 = row.createCell(3);
@@ -2559,7 +2560,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row25
 					row = sheet.getRow(24);
 					// Column H
@@ -2573,7 +2574,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row25
 					// Column C
 					cell2 = row.createCell(2);
@@ -2584,7 +2585,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row25
 					// Column D
 					cell3 = row.createCell(3);
@@ -2595,7 +2596,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row26
 					row = sheet.getRow(25);
 					// Column H
@@ -2609,7 +2610,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row26
 					// Column C
 					cell2 = row.createCell(2);
@@ -2620,7 +2621,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row26
 					// Column D
 					cell3 = row.createCell(3);
@@ -2631,7 +2632,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row27
 					row = sheet.getRow(26);
 					// Column H
@@ -2645,7 +2646,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row27
 					// Column C
 					cell2 = row.createCell(2);
@@ -2656,7 +2657,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row27
 					// Column D
 					cell3 = row.createCell(3);
@@ -2667,7 +2668,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row28
 					row = sheet.getRow(27);
 					// Column H
@@ -2681,7 +2682,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row28
 					// Column C
 					cell2 = row.createCell(2);
@@ -2692,7 +2693,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row28
 					// Column D
 					cell3 = row.createCell(3);
@@ -2703,7 +2704,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row30
 					row = sheet.getRow(29);
 					// Column H
@@ -2717,7 +2718,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row30
 					// Column C
 					cell2 = row.createCell(2);
@@ -2728,7 +2729,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row30
 					// Column D
 					cell3 = row.createCell(3);
@@ -2739,7 +2740,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row31
 					row = sheet.getRow(30);
 					// Column H
@@ -2753,7 +2754,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row31
 					// Column C
 					cell2 = row.createCell(2);
@@ -2764,7 +2765,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row31
 					// Column D
 					cell3 = row.createCell(3);
@@ -2775,7 +2776,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row32
 					row = sheet.getRow(31);
 					// Column H
@@ -2789,7 +2790,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row32
 					// Column C
 					cell2 = row.createCell(2);
@@ -2800,7 +2801,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row32
 					// Column D
 					cell3 = row.createCell(3);
@@ -2811,7 +2812,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row33
 					row = sheet.getRow(32);
 					// Column H
@@ -2825,7 +2826,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row33
 					// Column C
 					cell2 = row.createCell(2);
@@ -2836,7 +2837,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row33
 					// Column D
 					cell3 = row.createCell(3);
@@ -2847,7 +2848,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row34
 					row = sheet.getRow(33);
 					// Column H
@@ -2861,7 +2862,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row34
 					// Column C
 					cell2 = row.createCell(2);
@@ -2872,7 +2873,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row34
 					// Column D
 					cell3 = row.createCell(3);
@@ -2883,7 +2884,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					row = sheet.getRow(34);
 					// Column H
@@ -2897,7 +2898,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row35
 					// Column C
 					cell2 = row.createCell(2);
@@ -2908,7 +2909,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row35
 					// Column D
 					cell3 = row.createCell(3);
@@ -2919,7 +2920,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					row = sheet.getRow(35);
 					// Column H
@@ -2933,7 +2934,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row36
 					// Column C
 					cell2 = row.createCell(2);
@@ -2944,7 +2945,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row36
 					// Column D
 					cell3 = row.createCell(3);
@@ -2955,7 +2956,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					row = sheet.getRow(36);
 					// Column H
@@ -2969,7 +2970,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row37
 					// Column C
 					cell2 = row.createCell(2);
@@ -2980,7 +2981,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row37
 					// Column D
 					cell3 = row.createCell(3);
@@ -2991,7 +2992,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row39
 					row = sheet.getRow(38);
 					// Column H
@@ -3005,7 +3006,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row39
 					// Column C
 					cell2 = row.createCell(2);
@@ -3016,7 +3017,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row39
 					// Column D
 					cell3 = row.createCell(3);
@@ -3027,7 +3028,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row40
 					row = sheet.getRow(39);
 					// Column H
@@ -3041,7 +3042,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row40
 					// Column C
 					cell2 = row.createCell(2);
@@ -3052,7 +3053,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row40
 					// Column D
 					cell3 = row.createCell(3);
@@ -3063,7 +3064,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row42
 					row = sheet.getRow(41);
 					// Column H
@@ -3077,7 +3078,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row42
 					// Column C
 					cell2 = row.createCell(2);
@@ -3088,7 +3089,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row42
 					// Column D
 					cell3 = row.createCell(3);
@@ -3099,7 +3100,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row43
 					row = sheet.getRow(42);
 					// Column H
@@ -3113,7 +3114,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row43
 					// Column C
 					cell2 = row.createCell(2);
@@ -3124,7 +3125,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row43
 					// Column D
 					cell3 = row.createCell(3);
@@ -3135,7 +3136,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row45
 					row = sheet.getRow(44);
 					// Column H
@@ -3149,7 +3150,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row40
 					// Column C
 					cell2 = row.createCell(2);
@@ -3160,7 +3161,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row45
 					// Column D
 					cell3 = row.createCell(3);
@@ -3171,7 +3172,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row46
 					row = sheet.getRow(45);
 					// Column H
@@ -3185,7 +3186,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row46
 					// Column C
 					cell2 = row.createCell(2);
@@ -3196,7 +3197,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row46
 					// Column D
 					cell3 = row.createCell(3);
@@ -3207,7 +3208,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row47
 					row = sheet.getRow(46);
 					// Column H
@@ -3221,7 +3222,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row47
 					// Column C
 					cell2 = row.createCell(2);
@@ -3232,7 +3233,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row47
 					// Column D
 					cell3 = row.createCell(3);
@@ -3243,7 +3244,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row48
 					row = sheet.getRow(47);
 					// Column H
@@ -3257,7 +3258,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row48
 					// Column C
 					cell2 = row.createCell(2);
@@ -3268,7 +3269,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row48
 					// Column D
 					cell3 = row.createCell(3);
@@ -3279,7 +3280,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row50
 					row = sheet.getRow(49);
 					// Column H
@@ -3293,7 +3294,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row50
 					// Column C
 					cell2 = row.createCell(2);
@@ -3304,7 +3305,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row50
 					// Column D
 					cell3 = row.createCell(3);
@@ -3315,7 +3316,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row51
 					row = sheet.getRow(50);
 					// Column H
@@ -3329,7 +3330,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row51
 					// Column C
 					cell2 = row.createCell(2);
@@ -3340,7 +3341,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row51
 					// Column D
 					cell3 = row.createCell(3);
@@ -3351,7 +3352,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row52
 					row = sheet.getRow(51);
 					// Column H
@@ -3365,7 +3366,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row52
 					// Column C
 					cell2 = row.createCell(2);
@@ -3376,7 +3377,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row52
 					// Column D
 					cell3 = row.createCell(3);
@@ -3387,7 +3388,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row54
 					row = sheet.getRow(53);
 					// Column H
@@ -3401,7 +3402,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row54
 					// Column C
 					cell2 = row.createCell(2);
@@ -3412,7 +3413,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row54
 					// Column D
 					cell3 = row.createCell(3);
@@ -3423,7 +3424,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row55
 					row = sheet.getRow(54);
 					// Column H
@@ -3437,7 +3438,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row55
 					// Column C
 					cell2 = row.createCell(2);
@@ -3448,7 +3449,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row55
 					// Column D
 					cell3 = row.createCell(3);
@@ -3459,7 +3460,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row56
 					row = sheet.getRow(55);
 					// Column H
@@ -3473,7 +3474,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row56
 					// Column C
 					cell2 = row.createCell(2);
@@ -3484,7 +3485,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row56
 					// Column D
 					cell3 = row.createCell(3);
@@ -3495,7 +3496,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row58
 					row = sheet.getRow(57);
 					// Column H
@@ -3509,7 +3510,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row58
 					// Column C
 					cell2 = row.createCell(2);
@@ -3520,7 +3521,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row58
 					// Column D
 					cell3 = row.createCell(3);
@@ -3531,7 +3532,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row59
 					row = sheet.getRow(58);
 					// Column H
@@ -3545,7 +3546,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row59
 					// Column C
 					cell2 = row.createCell(2);
@@ -3556,7 +3557,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row59
 					// Column D
 					cell3 = row.createCell(3);
@@ -3567,7 +3568,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row60
 					row = sheet.getRow(59);
 					// Column H
@@ -3581,7 +3582,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row60
 					// Column C
 					cell2 = row.createCell(2);
@@ -3592,7 +3593,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row60
 					// Column D
 					cell3 = row.createCell(3);
@@ -3603,7 +3604,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row61
 					row = sheet.getRow(60);
 					// Column H
@@ -3617,7 +3618,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row61
 					// Column C
 					cell2 = row.createCell(2);
@@ -3628,7 +3629,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row61
 					// Column D
 					cell3 = row.createCell(3);
@@ -3639,7 +3640,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row62
 					row = sheet.getRow(61);
 					// Column H
@@ -3653,7 +3654,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row62
 					// Column C
 					cell2 = row.createCell(2);
@@ -3664,7 +3665,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row62
 					// Column D
 					cell3 = row.createCell(3);
@@ -3675,7 +3676,7 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
+
 					// row63
 					row = sheet.getRow(62);
 					// Column H
@@ -3689,7 +3690,7 @@ public class BRRS_M_LA1_ReportService {
 						cell1.setCellStyle(textStyle);
 
 					}
-					
+
 					// row63
 					// Column C
 					cell2 = row.createCell(2);
@@ -3700,7 +3701,7 @@ public class BRRS_M_LA1_ReportService {
 						cell2.setCellValue("");
 						cell2.setCellStyle(textStyle);
 					}
-					
+
 					// row63
 					// Column D
 					cell3 = row.createCell(3);
@@ -3711,7 +3712,6 @@ public class BRRS_M_LA1_ReportService {
 						cell3.setCellValue("");
 						cell3.setCellStyle(textStyle);
 					}
-					
 
 				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
@@ -3732,17 +3732,22 @@ public class BRRS_M_LA1_ReportService {
 			String dtltype, String type, String version) {
 		try {
 			logger.info("Generating Excel for BRRS_M_LA1 ARCHIVAL Details...");
-			System.out.println("came to Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			System.out.println("Came to Detail download service");
 
+// Only proceed if ARCHIVAL and version provided
+			if (!"ARCHIVAL".equalsIgnoreCase(type) || version == null || version.isEmpty()) {
+				logger.warn("Invalid type/version for archival download.");
+				return new byte[0];
 			}
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("MSFinP2Detail");
 
-			// Common border style
+// Create workbook and sheet
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("BRRS_M_LA1_Archival_Detail");
+
+// Border style
 			BorderStyle border = BorderStyle.THIN;
 
-			// Header style (left aligned)
+// Header style
 			CellStyle headerStyle = workbook.createCellStyle();
 			Font headerFont = workbook.createFont();
 			headerFont.setBold(true);
@@ -3756,12 +3761,12 @@ public class BRRS_M_LA1_ReportService {
 			headerStyle.setBorderLeft(border);
 			headerStyle.setBorderRight(border);
 
-			// Right-aligned header style for ACCT BALANCE
+// Right-aligned header (for numeric columns)
 			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
 			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
 			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 
-			// Default data style (left aligned)
+// Data style (text)
 			CellStyle dataStyle = workbook.createCellStyle();
 			dataStyle.setAlignment(HorizontalAlignment.LEFT);
 			dataStyle.setBorderTop(border);
@@ -3769,76 +3774,81 @@ public class BRRS_M_LA1_ReportService {
 			dataStyle.setBorderLeft(border);
 			dataStyle.setBorderRight(border);
 
-			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
+// Numeric style (3 decimal places)
+			CellStyle numericStyle = workbook.createCellStyle();
+			numericStyle.setAlignment(HorizontalAlignment.RIGHT);
+			numericStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			numericStyle.setBorderTop(border);
+			numericStyle.setBorderBottom(border);
+			numericStyle.setBorderLeft(border);
+			numericStyle.setBorderRight(border);
 
-			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
+// Header row
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "PROVISION", "ROWID", "COLUMNID",
 					"REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
-
-				if (i == 3) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-
+				cell.setCellStyle((i == 3 || i == 4) ? rightAlignedHeaderStyle : headerStyle);
 				sheet.setColumnWidth(i, 5000);
 			}
 
-			// Get data
+// Parse date
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+
+// Fetch data
 			List<M_LA1_Archival_Detail_Entity> reportData = M_LA1_Archival_Detail_Repo.getdatabydateList(parsedToDate,
 					version);
-			System.out.println("Size");
-			System.out.println(reportData.size());
-			if (reportData != null && !reportData.isEmpty()) {
+
+			if (reportData == null || reportData.isEmpty()) {
+				logger.info("No data found for BRRS_M_LA1_ARCHIVAL — only header written.");
+			} else {
 				int rowIndex = 1;
 				for (M_LA1_Archival_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
-					row.createCell(0).setCellValue(item.getCust_id());
-					row.createCell(1).setCellValue(item.getAcct_number());
-					row.createCell(2).setCellValue(item.getAcct_name());
+					row.createCell(0).setCellValue(item.getCust_id() != null ? item.getCust_id() : "");
+					row.createCell(1).setCellValue(item.getAcct_number() != null ? item.getAcct_number() : "");
+					row.createCell(2).setCellValue(item.getAcct_name() != null ? item.getAcct_name() : "");
 
-					// ACCT BALANCE (right aligned, 3 decimal places)
+// ACCT BALANCE
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcct_balance_in_pula() != null) {
-						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0.000);
-					}
-					balanceCell.setCellStyle(balanceStyle);
+					balanceCell.setCellValue(
+							item.getAcct_balance_in_pula() != null ? item.getAcct_balance_in_pula().doubleValue()
+									: 0.000);
+					balanceCell.setCellStyle(numericStyle);
 
-					row.createCell(4).setCellValue(item.getReport_label());
-					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
-					row.createCell(6)
+// PROVISION (assuming from sanction_limits)
+					Cell provisionCell = row.createCell(4);
+					provisionCell.setCellValue(
+							item.getSanction_limit() != null ? item.getSanction_limit().doubleValue() : 0.00);
+					provisionCell.setCellStyle(numericStyle);
+
+// ROWID
+					row.createCell(5).setCellValue(item.getReport_label() != null ? item.getReport_label() : "");
+
+// COLUMNID
+					row.createCell(6).setCellValue(
+							item.getReport_addl_criteria_1() != null ? item.getReport_addl_criteria_1() : "");
+
+// REPORT_DATE
+					row.createCell(7)
 							.setCellValue(item.getReport_date() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
 
-					// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
+// Apply text style to non-numeric cells
+					for (int j = 0; j < headers.length; j++) {
+						if (j != 3 && j != 4) {
 							row.getCell(j).setCellStyle(dataStyle);
 						}
 					}
 				}
-			} else {
-				logger.info("No data found for BRRS_M_LA1 — only header will be written.");
 			}
 
-			// Write to byte[]
+// Write to byte array
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			workbook.write(bos);
 			workbook.close();
@@ -3847,150 +3857,141 @@ public class BRRS_M_LA1_ReportService {
 			return bos.toByteArray();
 
 		} catch (Exception e) {
-			logger.error("Error generating BRRS_M_LA1Excel", e);
+			logger.error("Error generating BRRS_M_LA1 ARCHIVAL Excel", e);
 			return new byte[0];
 		}
 	}
-	
-	/* public List<ReportLineItemDTO> getReportData(String reportCode) {
-	        logger.info("Fetching M_LA1 summary data for reportCode={}", reportCode);
 
-	        List<M_LA1_Summary_Entity> entities = BRRS_M_LA1_Summary_Repo.findByReportCode(reportCode);
-	        logger.debug("Found {} records for reportCode={}", entities.size(), reportCode);
-
-	        List<ReportLineItemDTO> lineItems = new ArrayList<>();
-
-	        if (entities.isEmpty()) {
-	            logger.warn("No records found for reportCode={}", reportCode);
-	            return lineItems;
-	        }
-
-	        M_LA1_Summary_Entity entity = entities.get(0); // Assuming one record per reportCode
-
-	        // Loop through all 64 product fields
-	        for (int i = 11; i <= 64; i++) { // start from 11
-	            String fieldName = "r" + i + "_product"; 
-	            try {
-	                Field field = M_LA1_Summary_Entity.class.getDeclaredField(fieldName);
-	                field.setAccessible(true);
-	                String fieldDescription = (String) field.get(entity);
-
-	                if (fieldDescription != null && !fieldDescription.isEmpty()) {
-	                    String reportLabel = "Row" + i; 
-	                    lineItems.add(new ReportLineItemDTO(
-	                            reportCode,
-	                            fieldDescription,
-	                            reportLabel,
-	                            "Header for " + reportLabel,
-	                            "Remarks for " + reportLabel,
-	                            "R" + i
-	                    ));
-	                }
-
-	            } catch (NoSuchFieldException | IllegalAccessException e) {
-	                logger.warn("Could not read field {} for entity: {}", fieldName, entity, e);
-	            }
-	        }
-
-
-
-	        logger.info("Total line items generated: {}", lineItems.size());
-	        return lineItems;
-	    }
-	 
+	/*
+	 * public List<ReportLineItemDTO> getReportData(String reportCode) {
+	 * logger.info("Fetching M_LA1 summary data for reportCode={}", reportCode);
+	 * 
+	 * List<M_LA1_Summary_Entity> entities =
+	 * BRRS_M_LA1_Summary_Repo.findByReportCode(reportCode);
+	 * logger.debug("Found {} records for reportCode={}", entities.size(),
+	 * reportCode);
+	 * 
+	 * List<ReportLineItemDTO> lineItems = new ArrayList<>();
+	 * 
+	 * if (entities.isEmpty()) { logger.warn("No records found for reportCode={}",
+	 * reportCode); return lineItems; }
+	 * 
+	 * M_LA1_Summary_Entity entity = entities.get(0); // Assuming one record per
+	 * reportCode
+	 * 
+	 * // Loop through all 64 product fields for (int i = 11; i <= 64; i++) { //
+	 * start from 11 String fieldName = "r" + i + "_product"; try { Field field =
+	 * M_LA1_Summary_Entity.class.getDeclaredField(fieldName);
+	 * field.setAccessible(true); String fieldDescription = (String)
+	 * field.get(entity);
+	 * 
+	 * if (fieldDescription != null && !fieldDescription.isEmpty()) { String
+	 * reportLabel = "Row" + i; lineItems.add(new ReportLineItemDTO( reportCode,
+	 * fieldDescription, reportLabel, "Header for " + reportLabel, "Remarks for " +
+	 * reportLabel, "R" + i )); }
+	 * 
+	 * } catch (NoSuchFieldException | IllegalAccessException e) {
+	 * logger.warn("Could not read field {} for entity: {}", fieldName, entity, e);
+	 * } }
+	 * 
+	 * 
+	 * 
+	 * logger.info("Total line items generated: {}", lineItems.size()); return
+	 * lineItems; }
+	 * 
 	 */
-	 public List<ReportLineItemDTO> getReportData(String filename) throws Exception {
-			List<ReportLineItemDTO> reportData = new ArrayList<>();
+	public List<ReportLineItemDTO> getReportData(String filename) throws Exception {
+		List<ReportLineItemDTO> reportData = new ArrayList<>();
 
-			File file = new File(filename);
-			if (!file.exists()) {
-				throw new Exception("File not found: " + filename);
+		File file = new File(filename);
+		if (!file.exists()) {
+			throw new Exception("File not found: " + filename);
+		}
+
+		FileInputStream fis = new FileInputStream(file);
+		Workbook workbook = new XSSFWorkbook(fis);
+		Sheet sheet = workbook.getSheetAt(0);
+
+		final int START_ROW_INDEX = 10;
+		final int END_ROW_INDEX = 63;
+
+		Iterator<Row> rowIterator = sheet.iterator();
+		int srlNo = 1;
+
+		while (rowIterator.hasNext()) {
+			Row row = rowIterator.next();
+			int currentRowIndex = row.getRowNum();
+
+			if (currentRowIndex < START_ROW_INDEX) {
+				continue;
 			}
 
-			FileInputStream fis = new FileInputStream(file);
-			Workbook workbook = new XSSFWorkbook(fis);
-			Sheet sheet = workbook.getSheetAt(0);
+			if (currentRowIndex > END_ROW_INDEX) {
+				break;
+			}
 
-			final int START_ROW_INDEX = 10;
-			final int END_ROW_INDEX = 63;
+			Cell fieldDescCell = row.getCell(0);
 
-			Iterator<Row> rowIterator = sheet.iterator();
-			int srlNo = 1;
+			if (fieldDescCell == null || fieldDescCell.getCellType() == CellType.BLANK) {
+				continue;
+			}
 
-			while (rowIterator.hasNext()) {
-				Row row = rowIterator.next();
-				int currentRowIndex = row.getRowNum();
+			String fieldDesc = "";
+			try {
+				fieldDesc = fieldDescCell.getStringCellValue();
+			} catch (IllegalStateException e) {
 
-				if (currentRowIndex < START_ROW_INDEX) {
-					continue;
+				FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+				CellValue cellValue = evaluator.evaluate(fieldDescCell);
+				if (cellValue != null) {
+					if (cellValue.getCellType() == CellType.STRING) {
+						fieldDesc = cellValue.getStringValue();
+					} else if (cellValue.getCellType() == CellType.NUMERIC) {
+						fieldDesc = String.valueOf(cellValue.getNumberValue());
+					} else if (cellValue.getCellType() == CellType.BOOLEAN) {
+						fieldDesc = String.valueOf(cellValue.getBooleanValue());
+					}
+
 				}
+				if (fieldDesc.isEmpty() && fieldDescCell.getCellType() == CellType.FORMULA) {
 
-				if (currentRowIndex > END_ROW_INDEX) {
+					fieldDesc = fieldDescCell.getCellFormula();
+				}
+			} catch (Exception e) {
+				System.err.println("Error reading cell A" + (currentRowIndex + 1) + ": " + e.getMessage());
+				continue;
+			}
+
+			if (fieldDesc == null || fieldDesc.trim().isEmpty()) {
+				continue;
+			}
+
+			ReportLineItemDTO dto = new ReportLineItemDTO();
+			dto.setSrlNo(srlNo++);
+			dto.setFieldDescription(fieldDesc.trim());
+
+			dto.setReportLabel("R" + (currentRowIndex + 1));
+
+			boolean hasFormula = false;
+			for (int i = 0; i < row.getLastCellNum(); i++) {
+				Cell cell = row.getCell(i);
+				if (cell != null && cell.getCellType() == CellType.FORMULA) {
+					hasFormula = true;
 					break;
 				}
-
-				Cell fieldDescCell = row.getCell(0);
-
-				if (fieldDescCell == null || fieldDescCell.getCellType() == CellType.BLANK) {
-					continue;
-				}
-
-				String fieldDesc = "";
-				try {
-					fieldDesc = fieldDescCell.getStringCellValue();
-				} catch (IllegalStateException e) {
-
-					FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-					CellValue cellValue = evaluator.evaluate(fieldDescCell);
-					if (cellValue != null) {
-						if (cellValue.getCellType() == CellType.STRING) {
-							fieldDesc = cellValue.getStringValue();
-						} else if (cellValue.getCellType() == CellType.NUMERIC) {
-							fieldDesc = String.valueOf(cellValue.getNumberValue());
-						} else if (cellValue.getCellType() == CellType.BOOLEAN) {
-							fieldDesc = String.valueOf(cellValue.getBooleanValue());
-						}
-
-					}
-					if (fieldDesc.isEmpty() && fieldDescCell.getCellType() == CellType.FORMULA) {
-
-						fieldDesc = fieldDescCell.getCellFormula();
-					}
-				} catch (Exception e) {
-					System.err.println("Error reading cell A" + (currentRowIndex + 1) + ": " + e.getMessage());
-					continue;
-				}
-
-				if (fieldDesc == null || fieldDesc.trim().isEmpty()) {
-					continue;
-				}
-
-				ReportLineItemDTO dto = new ReportLineItemDTO();
-				dto.setSrlNo(srlNo++);
-				dto.setFieldDescription(fieldDesc.trim());
-
-				dto.setReportLabel("R" + (currentRowIndex + 1));
-
-				boolean hasFormula = false;
-				for (int i = 0; i < row.getLastCellNum(); i++) {
-					Cell cell = row.getCell(i);
-					if (cell != null && cell.getCellType() == CellType.FORMULA) {
-						hasFormula = true;
-						break;
-					}
-				}
-				dto.setHeader(hasFormula ? "Y" : " ");
-
-				dto.setRemarks("");
-
-				reportData.add(dto);
 			}
+			dto.setHeader(hasFormula ? "Y" : " ");
 
-			workbook.close();
-			fis.close();
+			dto.setRemarks("");
 
-			System.out.println("✅ M_LA1 Report data processed (Excel Row " + (START_ROW_INDEX + 1) + " to "
-					+ (END_ROW_INDEX + 1) + "). Total items: " + reportData.size());
-			return reportData;
+			reportData.add(dto);
 		}
+
+		workbook.close();
+		fis.close();
+
+		System.out.println("✅ M_LA1 Report data processed (Excel Row " + (START_ROW_INDEX + 1) + " to "
+				+ (END_ROW_INDEX + 1) + "). Total items: " + reportData.size());
+		return reportData;
+	}
 }
