@@ -136,6 +136,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_SIR_ReportService BRRS_M_SIR_ReportService;
+	
+	@Autowired
+	BRRS_M_EPR_ReportService  brrs_m_epr_reportservice;
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
@@ -335,6 +338,12 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 			
+			
+		case "M_EPR":
+			
+			repsummary = brrs_m_epr_reportservice.getM_EPRView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
 
 		}
 		
@@ -833,6 +842,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_EPR":
+			try {
+				
+				repfile = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 		
 			
 		}
@@ -1252,7 +1271,14 @@ public class RegulatoryReportServices {
 
 
 
-			
+		case "M_EPR":
+			try {
+				archivalData = brrs_m_epr_reportservice.getM_EPRArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		}
 		return archivalData;

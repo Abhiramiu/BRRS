@@ -1,0 +1,2943 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: ISHWARYA 
+CREATED ON	: 01.09.2025
+PURPOSE		: BRRS REPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+
+
+<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+
+
+
+
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
+
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
+
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+.table td {
+	background-color: #FFFFFF;
+}
+
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
+
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
+
+#BRFvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
+
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
+
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+
+
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
+
+.error {
+	color: red;
+	padding-top: 15px;
+}
+
+.form-control:focus {
+	border-color: #007bff;
+}
+
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
+	) ~ .form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~ .form-legend {
+	color: #0056b3; /* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus ) ~ .form-legend {
+	color: #aaa; /* Normal label color */
+}
+
+.table-cell tbody td:hover {
+        background-color: #f0f0f0; /* Hover color for cell */
+        cursor: pointer;           /* Optional: pointer cursor */
+    }
+
+	.table-bordered td, 
+	.table-bordered th {
+	     border: 1px solid #000 !important;
+	}
+</style>
+
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.green-cell {
+	 background-color: rgb(107, 122, 143) !important;
+    color: white !important;
+}
+
+
+
+</style>
+
+
+<script th:inline="javascript">
+		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+		});
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
+			$('#loader').modal('hide');
+		});
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard'
+		}
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+
+		//to fetch summary from the database - called from the summary button
+		function showdetails() {
+			showResultModal('BRRS',' Details page not available for Manual Report');
+		}
+
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+
+
+	</script>
+
+
+
+
+<script>
+	// Show Modify (enable inputs & dropdowns)
+    function showmodify(btn) {   
+    	
+    	
+    
+    	var readonlyIds = [];
+
+    	// r11–r22 → gpfsr_chrg, gpfsr_chrg1, gpfsr_chrg2
+    	for (let i = 11; i <= 22; i++) {
+    	    readonlyIds.push(
+    	        `r${i}_gpfsr_chrg`,
+    	        `r${i}_gpfsr_chrg1`,
+    	        `r${i}_gpfsr_chrg2`
+    	    );
+    	}
+
+    	// r11–r23 → tot_spe_ris_chrg, gen_mar_ris_chrg_8per, 2per_gen_mar_ris_chrg_div_port, tot_gen_mar_risk_chrg, tot_mar_ris_chrg
+    	for (let i = 11; i <= 23; i++) {
+    	    readonlyIds.push(
+    	        `r${i}_tot_spe_ris_chrg`,
+    	        `r${i}_gen_mar_ris_chrg_8per`,
+    	        `r${i}_2per_gen_mar_ris_chrg_div_port`,
+    	        `r${i}_tot_gen_mar_risk_chrg`,
+    	        `r${i}_tot_mar_ris_chrg`
+    	    );
+    	}
+
+    	// Only for r23 → net_pos_gen_mar_ris
+    	readonlyIds.push("r23_net_pos_gen_mar_ris");
+    	
+    	
+    	 // Make all .Show_input editable except the ones in readonlyIds 
+        
+        $(".Show_input").each(function () 
+        		
+        		{         if (!readonlyIds.includes(this.id)) {             $(this).removeAttr("readonly").removeAttr("disabled");         }     });
+        
+    
+    
+    
+    	// ✅ Apply gray background for rows 11–22 for specified columns
+    	 for (let i = 11; i <= 22; i++) {
+    	     // Define target columns
+    	     const columns = [
+    	         "market",
+    	         "gpfsr_nom_amt",
+    	         "gpfsr_pos_att8_per_spe_ris",
+    	         "gpfsr_nom_amt1",
+    	         "gpfsr_pos_att4_per_spe_ris",
+    	         "gpfsr_nom_amt2",
+    	         "gpfsr_pos_att2_per_spe_ris",
+    	         "net_pos_gen_mar_ris"
+    	     ];
+
+    	     // Apply gray background color
+    	     columns.forEach(col => {
+    	         const selector = `#r${i}_${col}`;
+    	         if ($(selector).length) {
+    	             $(selector).css("background-color", "#d3d3d3");
+    	         }
+    	     });
+    	 }
+    
+    
+    // Toggle buttons 
+    
+    $("#submitButton").show();  
+    $("#cancelRecord").show();   
+    $(btn).hide(); 
+    // hide the clicked Modify button
+    }
+
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+        	
+        	
+        	
+            
+        
+
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
+
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+
+    }
+
+	
+
+	</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+function activateTab(tabName) {
+    // Remove 'active' from all buttons
+    document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Add 'active' to selected button
+    if (tabName === 'summary') {
+        document.getElementById('custom-tab-btnSummary').classList.add('active');
+    } else if (tabName === 'Details') {
+        document.getElementById('custom-tab-btnDetails').classList.add('active');
+    }
+}
+
+window.onload = function() {
+    /* setTimeout(function() {
+        var selectedTab = document.getElementById("selectedTab").value;
+        alert(selectedTab);
+        activateTab(selectedTab);
+    }, 10000); */ // 10,000 milliseconds = 10 seconds
+    
+	var selectedTab = document.getElementById("selectedTab").value;
+    activateTab(selectedTab);
+};
+
+
+function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+
+
+			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
+			loader.show();
+
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+function editRecord(){
+	showResultModal('Alert', 'Development in progress');
+	
+}
+function closemodel(){
+	$('#alert').modal('hide');
+	$('#resultModal').modal('hide');
+	
+}
+
+function showResultModal(title, message) {
+	// Set the text for the modal elements
+	$('#resultModalLabel').text(title);
+	$('#resultModalBody').text(message);
+
+	// Show the modal
+	$('#resultModal').modal('show');
+}
+
+</script>
+
+<script>
+
+	function startReport(button){
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+			
+			if(sessionfilename==filename){
+				alertMsg.innerHTML ='Download request already Processing...';
+	       	 	showAlert();
+				return;
+			}
+			
+			alertMsg.innerHTML ='Download request Processing...';
+	   	 	showAlert();
+
+			const baseUrl = '/BCDRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+		    fetch(downloadUrl)  // ✅ no invalid characters now
+		        .then(res => res.text())
+		        .then(jobId => {
+
+		        	alertMsg.innerHTML ='Download request received...'+jobId;
+		       	 	showAlert();
+		            sessionStorage.setItem("jobId", jobId);
+		            sessionStorage.setItem("filename", filename);
+		            checkReport(jobId);
+		        });
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+		    fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+		        .then(res => res.text())
+		        .then(status => {
+		            if (status === "READY") {
+		            	alertMsg.innerHTML ='Report is ready! Downloading…';
+		           	 	showAlert();
+		                const filename = sessionStorage.getItem("filename");
+		                downloadDetailfile(jobId,filename)
+		                sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");                
+		                
+		            } else if(status ==="PROCESSING") {
+		                alertMsg.innerHTML ='Download Is Processing…';
+		            	showAlert();
+		                setTimeout(() => checkReport(jobId), 5000);
+		            }
+		            else if(status ==="ERROR") {
+		                alertMsg.innerHTML ='No data was available to create a download.';
+		            	showAlert();
+		            	sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");  
+		            }
+		        });
+		}
+
+
+
+		function downloadDetailfile(jobId,filename) {
+			
+			//$('#loader').modal('show');
+			
+			$.ajax({
+				url: '/BCDRS/Reports/downloaddetailExcel?jobId='+ jobId +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+
+</script>
+
+<script th:inline="javascript">
+function showdetailsbyRowAndColumn(a) { 
+    var rowId = a.getAttribute('RowId');
+    var columnId = a.getAttribute('ColumnId');
+    var cellValue = a.textContent || a.innerText;
+
+    if (cellValue !== '0') {
+        // Set dynamic message in modal (instead of confirm)
+        document.getElementById("cellresultModalLabel").innerText = 
+            "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+        // Show custom Bootstrap modal
+        $('#cellresultModal').modal('show');
+
+        // Handle Yes button
+        document.querySelector('.yes-btn').onclick = function() {
+            $('#cellresultModal').modal('hide');
+
+            // Show loader
+            const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            $('#loader').modal('show');
+
+            // Build dynamic URL
+            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+            location.href = Callurl;
+        };
+    } else {
+        // Use your custom alert modal instead of window.alert
+        showResultModal("Alert", "No Records available for this selected cell.");
+    }
+}
+</script>
+
+
+
+<script>
+
+function calculateAllGpfsrCharges() {
+    let grandTotSpeRisChrg = 0; // L23
+    let grandNetPosGenMarRis = 0; // M23
+    let grandGenMarRisChrg8 = 0; // N23
+    let grand2PerGenMarRisDiv = 0; // O23
+    let grandTotGenMarRiskChrg = 0; // P23
+    let grandTotMarRisChrg = 0; // Q23
+
+    for (let i = 11; i <= 22; i++) {
+        // --- Parse numeric inputs ---
+        let pos8 = parseFloat($("#r" + i + "_gpfsr_pos_att8_per_spe_ris").val()?.replace(/,/g, "")) || 0;
+        let pos4 = parseFloat($("#r" + i + "_gpfsr_pos_att4_per_spe_ris").val()?.replace(/,/g, "")) || 0;
+        let pos2 = parseFloat($("#r" + i + "_gpfsr_pos_att2_per_spe_ris").val()?.replace(/,/g, "")) || 0;
+
+        let netPos = parseFloat($("#r" + i + "_net_pos_gen_mar_ris").val()?.replace(/,/g, "")) || 0;
+
+        // --- Calculate L column ---
+        let chrg  = pos8 * 0.08;
+        let chrg1 = pos4 * 0.04;
+        let chrg2 = pos2 * 0.02;
+        let tot_spe_ris_chrg = chrg + chrg1 + chrg2; // L
+
+        // --- Calculate N and O columns ---
+        let genMarRisChrg8 = netPos * 0.08; // N = M * 0.08
+        let per2GenMarRisDiv = netPos * 0.02; // O = M * 0.02
+
+        // --- P column = N + O ---
+        let totGen = genMarRisChrg8 + per2GenMarRisDiv;
+
+        // --- Q column = L + P ---
+        let totMar = tot_spe_ris_chrg + totGen;
+
+        // --- Add to grand totals ---
+        grandTotSpeRisChrg += tot_spe_ris_chrg;
+        grandNetPosGenMarRis += netPos;
+        grandGenMarRisChrg8 += totMar;
+        grand2PerGenMarRisDiv += per2GenMarRisDiv;
+        grandTotGenMarRiskChrg += totGen;
+        grandTotMarRisChrg += totMar;
+
+        // --- Set formatted values per row ---
+        $("#r" + i + "_gpfsr_chrg").val(chrg.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+        $("#r" + i + "_gpfsr_chrg1").val(chrg1.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+        $("#r" + i + "_gpfsr_chrg2").val(chrg2.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+        $("#r" + i + "_tot_spe_ris_chrg").val(tot_spe_ris_chrg.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+        $("#r" + i + "_net_pos_gen_mar_ris").val(netPos.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+        $("#r" + i + "_gen_mar_ris_chrg_8per").val(genMarRisChrg8.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+        $("#r" + i + "_2per_gen_mar_ris_chrg_div_port").val(per2GenMarRisDiv.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+        $("#r" + i + "_tot_gen_mar_risk_chrg").val(totGen.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+        $("#r" + i + "_tot_mar_ris_chrg").val(totMar.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+    }
+
+    // --- Set grand totals in row 23 ---
+    $("#r23_tot_spe_ris_chrg").val(grandTotSpeRisChrg.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+    $("#r23_net_pos_gen_mar_ris").val(grandNetPosGenMarRis.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+    $("#r23_gen_mar_ris_chrg_8per").val(grandGenMarRisChrg8.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+    $("#r23_2per_gen_mar_ris_chrg_div_port").val(grand2PerGenMarRisDiv.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+    $("#r23_tot_gen_mar_risk_chrg").val(grandTotGenMarRiskChrg.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+    $("#r23_tot_mar_ris_chrg").val(grandTotMarRisChrg.toLocaleString('en-US', { minimumFractionDigits:0, maximumFractionDigits:0 }));
+}
+
+// --- Attach input listeners ---
+$(document).ready(function() {
+    calculateAllGpfsrCharges();
+
+    for (let i = 11; i <= 22; i++) {
+        $("#r" + i + "_gpfsr_pos_att8_per_spe_ris, " +
+          "#r" + i + "_gpfsr_pos_att4_per_spe_ris, " +
+          "#r" + i + "_gpfsr_pos_att2_per_spe_ris, " +
+          "#r" + i + "_net_pos_gen_mar_ris").on("input", function() {
+            calculateAllGpfsrCharges();
+        });
+    }
+});
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
+	    setTimeout(function () {
+	        location.reload();
+	    }, 300);
+	}
+
+	// This is the main function that orchestrates the entire form submission process.
+	// It is triggered by the "Update" button click.
+// Make the function global so onclick="fileuploads(this)" can see it
+window.fileuploads = function(btn) {
+    // Get the report date from the button's data attribute
+    const asondate = btn.getAttribute("data-todate");
+
+    // Show loading spinner
+    $('#loader').modal('show');
+
+    // Ensure totals are calculated before submission
+    if (typeof calculateTotals === "function") calculateTotals();
+
+    // Remove commas from all text inputs inside #fileupload
+    $("#fileupload input[type='text']").each(function () {
+        const val = $(this).val();
+        if (val && val.includes(",")) {
+            $(this).val(val.replace(/,/g, ''));
+        }
+    });
+
+    // Validate form
+    if (!$("#fileupload").valid()) {
+        $('#loader').modal('hide');
+        return;
+    }
+
+    // Prepare FormData
+    const formData1 = new FormData();
+    formData1.append("asondate", asondate);
+
+    // Append row fields to FormData
+    for (let i = 11; i <= 23; i++) {
+        ["market","gpfsr_nom_amt","gpfsr_pos_att8_per_spe_ris","gpfsr_chrg","gpfsr_nom_amt1","gpfsr_pos_att4_per_spe_ris","gpfsr_chrg1", 
+        	"gpfsr_nom_amt2","gpfsr_pos_att2_per_spe_ris","gpfsr_chrg2","tot_spe_ris_chrg","net_pos_gen_mar_ris","gen_mar_ris_chrg_8per","2per_gen_mar_ris_chrg_div_port",
+        	"tot_gen_mar_risk_chrg","tot_mar_ris_chrg"
+        	
+        	]
+        .forEach(field => {
+            const input = $("#r" + i + "_" + field);
+            if (input.length) {
+                formData1.append(input.attr("name"), input.val());
+            }
+        });
+    }
+
+    // Send AJAX request
+    $.ajax({
+        url: './M_EPRupdate',
+        type: 'POST',
+        data: formData1,
+        processData: false,
+        contentType: false,
+        dataType: 'text'
+    })
+    .done(function() {
+        $("#resultModalLabel").text("Success");
+        $("#resultModalBody").text("Updated successfully.");
+        $("#resultModal").modal("show");
+    })
+    .fail(function(jqXHR) {
+        console.error("Error response:", jqXHR.responseText);
+        $("#resultModalLabel").text("Error");
+        $("#resultModalBody").text("One or more updates failed. Check console for details.");
+        $("#resultModal").modal("show");
+    })
+    .always(function() {
+        $('#loader').modal('hide');
+    });
+};
+
+
+
+
+
+	</script>
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+<title>BRRS</title>
+<body>
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+							M-EPR: EQUITY POSITIONS RISK</h5>
+					</div>
+
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+      style="color: white !important; font-size: 16px; margin-right: 20px;">
+    Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+</span>
+
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+							
+							
+							
+								<!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							th:if="${type != 'ARCHIVAL'}"
+							id="addRecord">Modify</button>
+
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn"
+							title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+							
+							
+							
+							
+							
+							
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+							th:attr="data-reportid=${reportid}, 
+                    				 data-asondate=${asondate}, 
+                    				 data-fromdate=${fromdate}, 
+                     				 data-todate=${todate}, 
+                     				 data-currency=${currency},  
+                     				 data-dtltype=${dtltype}, 
+                     				 data-filename='M_EPR.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}"
+							onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+						
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid}, 
+             data-asondate=${asondate}, 
+             data-fromdate=${fromdate}, 
+             data-todate=${todate}, 
+             data-currency=${currency},  
+             data-dtltype=${dtltype}, 
+             data-filename='M_EPR_Detail',
+             data-type=${type},
+					data-version=${version} "
+							onclick="startReport(this)">
+							<!-- 🛠️ Fix: pass `this` -->
+							<i class="fa fa-download"></i>
+						</button>
+						
+					</div>
+				</div>
+
+
+
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+						<form action="#" method="POST" id="fileupload">
+							<div
+								class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light">
+										<tr>
+
+											<th rowspan="2"
+												style="text-align: left; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">Country</th>
+											<th rowspan="2"
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;    ">Market</th>
+											<th colspan="9"
+												style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">Gross
+												Positions for Specific Risk</th>
+											<th rowspan="2"
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">Total
+												Specific Risk Charge</th>
+											<th rowspan="2"
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">Net
+												Positions for General Market Risk</th>
+											<th rowspan="2"
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">General
+												Market Risk Change at 8 Percent</th>
+											<th rowspan="2"
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">2
+												Percent General Market Risk Change for well-diversified
+												Portfolio</th>
+											<th rowspan="2"
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">Total
+												General Market Risk Charge</th>
+											<th rowspan="2"
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">Total
+												Market Risk Change</th>
+
+
+										</tr>
+
+										<tr>
+
+
+
+											<th
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; " >Nominal
+												Amount</th>
+											<th
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   ">Positions
+												Attracting 8 Percent Specific Risk</th>
+											<th
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;  ">Charge</th>
+											<th
+												style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;  ">Nominal
+												Amount</th>
+											<th
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;  ">Positions
+												Attracting 4 Percent Specific Risk</th>
+											<th
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">Charge</th>
+											<th
+												style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;  ">Nominal
+												Amount</th>
+											<th
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">Positions
+												Attracting 2 Percent Specific Risk</th>
+											<th
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">Charge</th>
+										</tr>
+
+
+									</thead>
+
+
+									<tbody th:each="report: ${reportsummary}"
+										style="font-family: Arial;">
+
+										<tr>
+											<td style="text-align: center; font-weight: bold;">1</td>
+
+											 <td id="ROW11" style="font-weight: bold; text-align: right; padding-left: 20px;">
+    <input class="display-input Show_input" type="text"
+           th:value="${report.r11_market != null ? #numbers.formatDecimal(report.r11_market, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r11_market" name="r11_market"
+           style="background-color: #FFFFFF;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly /> 
+           
+          
+</td>
+
+
+<td id="ROW11" style="font-weight: bold; text-align: right; padding-left: 20px;">
+    <input class="display-input Show_input" type="text"
+           th:value="${report.r11_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r11_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r11_gpfsr_nom_amt" name="r11_gpfsr_nom_amt"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+<td id="ROW11" style="font-weight: bold; text-align: right; padding-left: 20px;">
+    <input class="display-input Show_input" type="text"
+           th:value="${report.r11_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r11_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r11_gpfsr_pos_att8_per_spe_ris" name="r11_gpfsr_pos_att8_per_spe_ris"
+           style="background-color: #FFFFFF; width:120px;  border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+
+<td style="font-weight: bold; text-align: right;" class="green-cell">
+    <input class="display-input Show_input green-cell" type="text"
+           th:value="${report.r11_gpfsr_chrg}" 
+           id="r11_gpfsr_chrg" name="r11_gpfsr_chrg"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+<!-- r11_gpfsr_nom_amt1 -->
+<td id="ROW11" style="font-weight: bold; text-align: right;">
+    <input class="display-input Show_input" type="text"
+           th:value="${report.r11_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r11_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r11_gpfsr_nom_amt1" name="r11_gpfsr_nom_amt1"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+<!-- r11_gpfsr_pos_att4_per_spe_ris -->
+<td id="ROW11" style="font-weight: bold; text-align: right;">
+    <input class="display-input Show_input" type="text"
+           th:value="${report.r11_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r11_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r11_gpfsr_pos_att4_per_spe_ris" name="r11_gpfsr_pos_att4_per_spe_ris"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+
+<td style="font-weight: bold; text-align: right;" class="green-cell">
+    <input class="display-input Show_input green-cell" type="text"
+           th:value="${report.r11_gpfsr_chrg1}" 
+           id="r11_gpfsr_chrg1" name="r11_gpfsr_chrg1"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+<!-- r11_gpfsr_nom_amt2 -->
+<td id="ROW11" style="font-weight: bold; text-align: right;">
+    <input class="display-input Show_input" type="text"
+           th:value="${report.r11_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r11_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r11_gpfsr_nom_amt2" name="r11_gpfsr_nom_amt2"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+<!-- r11_gpfsr_pos_att2_per_spe_ris -->
+<td id="ROW11" style="font-weight: bold; text-align: right;">
+    <input class="display-input Show_input" type="text"
+           th:value="${report.r11_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r11_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r11_gpfsr_pos_att2_per_spe_ris" name="r11_gpfsr_pos_att2_per_spe_ris"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+
+<td style="font-weight: bold; text-align: right;" class="green-cell">
+    <input class="display-input Show_input green-cell" type="text"
+           th:value="${report.r11_gpfsr_chrg2}" 
+           id="r11_gpfsr_chrg2" name="r11_gpfsr_chrg2"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+<td style="font-weight: bold; text-align: right;" class="green-cell">
+    <input class="display-input Show_input green-cell" type="text"
+           th:value="${report.r11_tot_spe_ris_chrg}" 
+           id="r11_tot_spe_ris_chrg" name="r11_tot_spe_ris_chrg"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+<td id="ROW11" style="font-weight: bold; text-align: right;">
+    <input class="display-input Show_input" type="text"
+           th:value="${report.r11_net_pos_gen_mar_ris != null ? #numbers.formatDecimal(report.r11_net_pos_gen_mar_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r11_net_pos_gen_mar_ris" name="r11_net_pos_gen_mar_ris"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+
+<td style="font-weight: bold; text-align: right;" class="green-cell">
+    <input class="display-input Show_input green-cell" type="text"
+           th:value="${report.r11_gen_mar_ris_chrg_8per}" 
+           id="r11_gen_mar_ris_chrg_8per" name="r11_gen_mar_ris_chrg_8per"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+<td style="font-weight: bold; text-align: right;" class="green-cell">
+    <input class="display-input Show_input green-cell" type="text"
+           th:value="${report.r11_2per_gen_mar_ris_chrg_div_port}" 
+           id="r11_2per_gen_mar_ris_chrg_div_port" name="r11_2per_gen_mar_ris_chrg_div_port"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+<td style="font-weight: bold; text-align: right;" class="green-cell">
+    <input class="display-input Show_input green-cell" type="text"
+           th:value="${report.r11_tot_gen_mar_risk_chrg}" 
+           id="r11_tot_gen_mar_risk_chrg" name="r11_tot_gen_mar_risk_chrg"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+
+<td style="font-weight: bold; text-align: right;" class="green-cell">
+    <input class="display-input Show_input green-cell" type="text"
+           th:value="${report.r11_tot_mar_ris_chrg}" 
+           id="r11_tot_mar_ris_chrg" name="r11_tot_mar_ris_chrg"
+           style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+</td>
+											
+
+
+
+										</tr>
+
+
+										
+
+<tr>
+    <td style="text-align: center; font-weight: bold; ">2</td>
+    <td id="ROW12" style="font-weight: bold; text-align: right; padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r12_market != null ? #numbers.formatDecimal(report.r12_market, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r12_market" name="r12_market"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r12_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r12_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r12_gpfsr_nom_amt" name="r12_gpfsr_nom_amt"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right; padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r12_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r12_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r12_gpfsr_pos_att8_per_spe_ris" name="r12_gpfsr_pos_att8_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r12_gpfsr_chrg}"
+               id="r12_gpfsr_chrg" name="r12_gpfsr_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r12_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r12_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r12_gpfsr_nom_amt1" name="r12_gpfsr_nom_amt1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r12_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r12_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r12_gpfsr_pos_att4_per_spe_ris" name="r12_gpfsr_pos_att4_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r12_gpfsr_chrg1}"
+               id="r12_gpfsr_chrg1" name="r12_gpfsr_chrg1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r12_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r12_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r12_gpfsr_nom_amt2" name="r12_gpfsr_nom_amt2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r12_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r12_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r12_gpfsr_pos_att2_per_spe_ris" name="r12_gpfsr_pos_att2_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r12_gpfsr_chrg2}"
+               id="r12_gpfsr_chrg2" name="r12_gpfsr_chrg2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r12_tot_spe_ris_chrg}"
+               id="r12_tot_spe_ris_chrg" name="r12_tot_spe_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r12_net_pos_gen_mar_ris != null ? #numbers.formatDecimal(report.r12_net_pos_gen_mar_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r12_net_pos_gen_mar_ris" name="r12_net_pos_gen_mar_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r12_gen_mar_ris_chrg_8per}"
+               id="r12_gen_mar_ris_chrg_8per" name="r12_gen_mar_ris_chrg_8per"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r12_2per_gen_mar_ris_chrg_div_port}"
+               id="r12_2per_gen_mar_ris_chrg_div_port" name="r12_2per_gen_mar_ris_chrg_div_port"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r12_tot_gen_mar_risk_chrg}"
+               id="r12_tot_gen_mar_risk_chrg" name="r12_tot_gen_mar_risk_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW12" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r12_tot_mar_ris_chrg}"
+               id="r12_tot_mar_ris_chrg" name="r12_tot_mar_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: center; font-weight: bold;">3</td>
+    <td id="ROW13" style="font-weight: bold; text-align: right; padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r13_market != null ? #numbers.formatDecimal(report.r13_market, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r13_market" name="r13_market"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r13_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r13_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r13_gpfsr_nom_amt" name="r13_gpfsr_nom_amt"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;  padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r13_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r13_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r13_gpfsr_pos_att8_per_spe_ris" name="r13_gpfsr_pos_att8_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r13_gpfsr_chrg}"
+               id="r13_gpfsr_chrg" name="r13_gpfsr_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r13_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r13_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r13_gpfsr_nom_amt1" name="r13_gpfsr_nom_amt1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r13_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r13_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r13_gpfsr_pos_att4_per_spe_ris" name="r13_gpfsr_pos_att4_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r13_gpfsr_chrg1}"
+               id="r13_gpfsr_chrg1" name="r13_gpfsr_chrg1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r13_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r13_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r13_gpfsr_nom_amt2" name="r13_gpfsr_nom_amt2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r13_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r13_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r13_gpfsr_pos_att2_per_spe_ris" name="r13_gpfsr_pos_att2_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r13_gpfsr_chrg2}"
+               id="r13_gpfsr_chrg2" name="r13_gpfsr_chrg2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r13_tot_spe_ris_chrg}"
+               id="r13_tot_spe_ris_chrg" name="r13_tot_spe_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r13_net_pos_gen_mar_ris != null ? #numbers.formatDecimal(report.r13_net_pos_gen_mar_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r13_net_pos_gen_mar_ris" name="r13_net_pos_gen_mar_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r13_gen_mar_ris_chrg_8per}"
+               id="r13_gen_mar_ris_chrg_8per" name="r13_gen_mar_ris_chrg_8per"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r13_2per_gen_mar_ris_chrg_div_port}"
+               id="r13_2per_gen_mar_ris_chrg_div_port" name="r13_2per_gen_mar_ris_chrg_div_port"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r13_tot_gen_mar_risk_chrg}"
+               id="r13_tot_gen_mar_risk_chrg" name="r13_tot_gen_mar_risk_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW13" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r13_tot_mar_ris_chrg}"
+               id="r13_tot_mar_ris_chrg" name="r13_tot_mar_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: center; font-weight: bold;">4</td>
+    <td id="ROW14" style="font-weight: bold; text-align: right; padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r14_market != null ? #numbers.formatDecimal(report.r14_market, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r14_market" name="r14_market"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r14_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r14_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r14_gpfsr_nom_amt" name="r14_gpfsr_nom_amt"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;  padding-left: 20px;" >
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r14_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r14_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r14_gpfsr_pos_att8_per_spe_ris" name="r14_gpfsr_pos_att8_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r14_gpfsr_chrg}"
+               id="r14_gpfsr_chrg" name="r14_gpfsr_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r14_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r14_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r14_gpfsr_nom_amt1" name="r14_gpfsr_nom_amt1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r14_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r14_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r14_gpfsr_pos_att4_per_spe_ris" name="r14_gpfsr_pos_att4_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r14_gpfsr_chrg1}"
+               id="r14_gpfsr_chrg1" name="r14_gpfsr_chrg1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r14_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r14_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r14_gpfsr_nom_amt2" name="r14_gpfsr_nom_amt2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r14_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r14_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r14_gpfsr_pos_att2_per_spe_ris" name="r14_gpfsr_pos_att2_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r14_gpfsr_chrg2}"
+               id="r14_gpfsr_chrg2" name="r14_gpfsr_chrg2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r14_tot_spe_ris_chrg}"
+               id="r14_tot_spe_ris_chrg" name="r14_tot_spe_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r14_net_pos_gen_mar_ris != null ? #numbers.formatDecimal(report.r14_net_pos_gen_mar_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r14_net_pos_gen_mar_ris" name="r14_net_pos_gen_mar_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r14_gen_mar_ris_chrg_8per}"
+               id="r14_gen_mar_ris_chrg_8per" name="r14_gen_mar_ris_chrg_8per"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r14_2per_gen_mar_ris_chrg_div_port}"
+               id="r14_2per_gen_mar_ris_chrg_div_port" name="r14_2per_gen_mar_ris_chrg_div_port"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r14_tot_gen_mar_risk_chrg}"
+               id="r14_tot_gen_mar_risk_chrg" name="r14_tot_gen_mar_risk_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW14" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r14_tot_mar_ris_chrg}"
+               id="r14_tot_mar_ris_chrg" name="r14_tot_mar_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: center; font-weight: bold;">5</td>
+    <td id="ROW15" style="font-weight: bold; text-align: right; padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r15_market != null ? #numbers.formatDecimal(report.r15_market, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r15_market" name="r15_market"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r15_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r15_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r15_gpfsr_nom_amt" name="r15_gpfsr_nom_amt"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;  padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r15_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r15_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r15_gpfsr_pos_att8_per_spe_ris" name="r15_gpfsr_pos_att8_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r15_gpfsr_chrg}"
+               id="r15_gpfsr_chrg" name="r15_gpfsr_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r15_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r15_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r15_gpfsr_nom_amt1" name="r15_gpfsr_nom_amt1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r15_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r15_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r15_gpfsr_pos_att4_per_spe_ris" name="r15_gpfsr_pos_att4_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r15_gpfsr_chrg1}"
+               id="r15_gpfsr_chrg1" name="r15_gpfsr_chrg1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r15_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r15_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r15_gpfsr_nom_amt2" name="r15_gpfsr_nom_amt2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r15_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r15_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r15_gpfsr_pos_att2_per_spe_ris" name="r15_gpfsr_pos_att2_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r15_gpfsr_chrg2}"
+               id="r15_gpfsr_chrg2" name="r15_gpfsr_chrg2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r15_tot_spe_ris_chrg}"
+               id="r15_tot_spe_ris_chrg" name="r15_tot_spe_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r15_net_pos_gen_mar_ris != null ? #numbers.formatDecimal(report.r15_net_pos_gen_mar_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r15_net_pos_gen_mar_ris" name="r15_net_pos_gen_mar_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r15_gen_mar_ris_chrg_8per}"
+               id="r15_gen_mar_ris_chrg_8per" name="r15_gen_mar_ris_chrg_8per"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r15_2per_gen_mar_ris_chrg_div_port}"
+               id="r15_2per_gen_mar_ris_chrg_div_port" name="r15_2per_gen_mar_ris_chrg_div_port"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r15_tot_gen_mar_risk_chrg}"
+               id="r15_tot_gen_mar_risk_chrg" name="r15_tot_gen_mar_risk_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW15" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r15_tot_mar_ris_chrg}"
+               id="r15_tot_mar_ris_chrg" name="r15_tot_mar_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: center; font-weight: bold;">6</td>
+    <td id="ROW16" style="font-weight: bold; text-align: right; padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r16_market != null ? #numbers.formatDecimal(report.r16_market, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r16_market" name="r16_market"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r16_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r16_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r16_gpfsr_nom_amt" name="r16_gpfsr_nom_amt"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;  padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r16_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r16_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r16_gpfsr_pos_att8_per_spe_ris" name="r16_gpfsr_pos_att8_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r16_gpfsr_chrg}"
+               id="r16_gpfsr_chrg" name="r16_gpfsr_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r16_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r16_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r16_gpfsr_nom_amt1" name="r16_gpfsr_nom_amt1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r16_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r16_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r16_gpfsr_pos_att4_per_spe_ris" name="r16_gpfsr_pos_att4_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r16_gpfsr_chrg1}"
+               id="r16_gpfsr_chrg1" name="r16_gpfsr_chrg1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r16_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r16_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r16_gpfsr_nom_amt2" name="r16_gpfsr_nom_amt2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r16_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r16_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r16_gpfsr_pos_att2_per_spe_ris" name="r16_gpfsr_pos_att2_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r16_gpfsr_chrg2}"
+               id="r16_gpfsr_chrg2" name="r16_gpfsr_chrg2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r16_tot_spe_ris_chrg}"
+               id="r16_tot_spe_ris_chrg" name="r16_tot_spe_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r16_net_pos_gen_mar_ris != null ? #numbers.formatDecimal(report.r16_net_pos_gen_mar_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r16_net_pos_gen_mar_ris" name="r16_net_pos_gen_mar_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r16_gen_mar_ris_chrg_8per}"
+               id="r16_gen_mar_ris_chrg_8per" name="r16_gen_mar_ris_chrg_8per"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r16_2per_gen_mar_ris_chrg_div_port}"
+               id="r16_2per_gen_mar_ris_chrg_div_port" name="r16_2per_gen_mar_ris_chrg_div_port"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r16_tot_gen_mar_risk_chrg}"
+               id="r16_tot_gen_mar_risk_chrg" name="r16_tot_gen_mar_risk_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW16" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r16_tot_mar_ris_chrg}"
+               id="r16_tot_mar_ris_chrg" name="r16_tot_mar_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: center; font-weight: bold;">7</td>
+    <td id="ROW17" style="font-weight: bold; text-align: right; padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r17_market != null ? #numbers.formatDecimal(report.r17_market, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r17_market" name="r17_market"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r17_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r17_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r17_gpfsr_nom_amt" name="r17_gpfsr_nom_amt"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;  padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r17_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r17_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r17_gpfsr_pos_att8_per_spe_ris" name="r17_gpfsr_pos_att8_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r17_gpfsr_chrg}"
+               id="r17_gpfsr_chrg" name="r17_gpfsr_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r17_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r17_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r17_gpfsr_nom_amt1" name="r17_gpfsr_nom_amt1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r17_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r17_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r17_gpfsr_pos_att4_per_spe_ris" name="r17_gpfsr_pos_att4_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r17_gpfsr_chrg1}"
+               id="r17_gpfsr_chrg1" name="r17_gpfsr_chrg1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r17_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r17_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r17_gpfsr_nom_amt2" name="r17_gpfsr_nom_amt2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r17_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r17_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r17_gpfsr_pos_att2_per_spe_ris" name="r17_gpfsr_pos_att2_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r17_gpfsr_chrg2}"
+               id="r17_gpfsr_chrg2" name="r17_gpfsr_chrg2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r17_tot_spe_ris_chrg}"
+               id="r17_tot_spe_ris_chrg" name="r17_tot_spe_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r17_net_pos_gen_mar_ris != null ? #numbers.formatDecimal(report.r17_net_pos_gen_mar_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r17_net_pos_gen_mar_ris" name="r17_net_pos_gen_mar_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r17_gen_mar_ris_chrg_8per}"
+               id="r17_gen_mar_ris_chrg_8per" name="r17_gen_mar_ris_chrg_8per"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r17_2per_gen_mar_ris_chrg_div_port}"
+               id="r17_2per_gen_mar_ris_chrg_div_port" name="r17_2per_gen_mar_ris_chrg_div_port"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r17_tot_gen_mar_risk_chrg}"
+               id="r17_tot_gen_mar_risk_chrg" name="r17_tot_gen_mar_risk_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW17" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r17_tot_mar_ris_chrg}"
+               id="r17_tot_mar_ris_chrg" name="r17_tot_mar_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: center; font-weight: bold;">8</td>
+    <td id="ROW18" style="font-weight: bold; text-align: right; padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r18_market != null ? #numbers.formatDecimal(report.r18_market, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r18_market" name="r18_market"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r18_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r18_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r18_gpfsr_nom_amt" name="r18_gpfsr_nom_amt"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right; padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r18_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r18_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r18_gpfsr_pos_att8_per_spe_ris" name="r18_gpfsr_pos_att8_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r18_gpfsr_chrg}"
+               id="r18_gpfsr_chrg" name="r18_gpfsr_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r18_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r18_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r18_gpfsr_nom_amt1" name="r18_gpfsr_nom_amt1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r18_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r18_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r18_gpfsr_pos_att4_per_spe_ris" name="r18_gpfsr_pos_att4_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r18_gpfsr_chrg1}"
+               id="r18_gpfsr_chrg1" name="r18_gpfsr_chrg1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r18_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r18_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r18_gpfsr_nom_amt2" name="r18_gpfsr_nom_amt2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r18_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r18_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r18_gpfsr_pos_att2_per_spe_ris" name="r18_gpfsr_pos_att2_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r18_gpfsr_chrg2}"
+               id="r18_gpfsr_chrg2" name="r18_gpfsr_chrg2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r18_tot_spe_ris_chrg}"
+               id="r18_tot_spe_ris_chrg" name="r18_tot_spe_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r18_net_pos_gen_mar_ris != null ? #numbers.formatDecimal(report.r18_net_pos_gen_mar_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r18_net_pos_gen_mar_ris" name="r18_net_pos_gen_mar_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r18_gen_mar_ris_chrg_8per}"
+               id="r18_gen_mar_ris_chrg_8per" name="r18_gen_mar_ris_chrg_8per"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r18_2per_gen_mar_ris_chrg_div_port}"
+               id="r18_2per_gen_mar_ris_chrg_div_port" name="r18_2per_gen_mar_ris_chrg_div_port"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r18_tot_gen_mar_risk_chrg}"
+               id="r18_tot_gen_mar_risk_chrg" name="r18_tot_gen_mar_risk_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW18" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r18_tot_mar_ris_chrg}"
+               id="r18_tot_mar_ris_chrg" name="r18_tot_mar_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: center; font-weight: bold;">9</td>
+    <td id="ROW19" style="font-weight: bold; text-align: right; padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r19_market != null ? #numbers.formatDecimal(report.r19_market, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r19_market" name="r19_market"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r19_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r19_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r19_gpfsr_nom_amt" name="r19_gpfsr_nom_amt"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;  padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r19_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r19_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r19_gpfsr_pos_att8_per_spe_ris" name="r19_gpfsr_pos_att8_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r19_gpfsr_chrg}"
+               id="r19_gpfsr_chrg" name="r19_gpfsr_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r19_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r19_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r19_gpfsr_nom_amt1" name="r19_gpfsr_nom_amt1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r19_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r19_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r19_gpfsr_pos_att4_per_spe_ris" name="r19_gpfsr_pos_att4_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r19_gpfsr_chrg1}"
+               id="r19_gpfsr_chrg1" name="r19_gpfsr_chrg1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r19_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r19_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r19_gpfsr_nom_amt2" name="r19_gpfsr_nom_amt2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r19_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r19_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r19_gpfsr_pos_att2_per_spe_ris" name="r19_gpfsr_pos_att2_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r19_gpfsr_chrg2}"
+               id="r19_gpfsr_chrg2" name="r19_gpfsr_chrg2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r19_tot_spe_ris_chrg}"
+               id="r19_tot_spe_ris_chrg" name="r19_tot_spe_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r19_net_pos_gen_mar_ris != null ? #numbers.formatDecimal(report.r19_net_pos_gen_mar_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r19_net_pos_gen_mar_ris" name="r19_net_pos_gen_mar_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r19_gen_mar_ris_chrg_8per}"
+               id="r19_gen_mar_ris_chrg_8per" name="r19_gen_mar_ris_chrg_8per"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r19_2per_gen_mar_ris_chrg_div_port}"
+               id="r19_2per_gen_mar_ris_chrg_div_port" name="r19_2per_gen_mar_ris_chrg_div_port"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r19_tot_gen_mar_risk_chrg}"
+               id="r19_tot_gen_mar_risk_chrg" name="r19_tot_gen_mar_risk_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW19" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r19_tot_mar_ris_chrg}"
+               id="r19_tot_mar_ris_chrg" name="r19_tot_mar_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: center; font-weight: bold;">10</td>
+    <td id="ROW20" style="font-weight: bold; text-align: right; padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r20_market != null ? #numbers.formatDecimal(report.r20_market, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r20_market" name="r20_market"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r20_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r20_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r20_gpfsr_nom_amt" name="r20_gpfsr_nom_amt"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;  padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r20_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r20_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r20_gpfsr_pos_att8_per_spe_ris" name="r20_gpfsr_pos_att8_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r20_gpfsr_chrg}"
+               id="r20_gpfsr_chrg" name="r20_gpfsr_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r20_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r20_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r20_gpfsr_nom_amt1" name="r20_gpfsr_nom_amt1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r20_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r20_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r20_gpfsr_pos_att4_per_spe_ris" name="r20_gpfsr_pos_att4_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r20_gpfsr_chrg1}"
+               id="r20_gpfsr_chrg1" name="r20_gpfsr_chrg1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r20_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r20_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r20_gpfsr_nom_amt2" name="r20_gpfsr_nom_amt2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r20_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r20_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r20_gpfsr_pos_att2_per_spe_ris" name="r20_gpfsr_pos_att2_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r20_gpfsr_chrg2}"
+               id="r20_gpfsr_chrg2" name="r20_gpfsr_chrg2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r20_tot_spe_ris_chrg}"
+               id="r20_tot_spe_ris_chrg" name="r20_tot_spe_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r20_net_pos_gen_mar_ris != null ? #numbers.formatDecimal(report.r20_net_pos_gen_mar_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r20_net_pos_gen_mar_ris" name="r20_net_pos_gen_mar_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r20_gen_mar_ris_chrg_8per}"
+               id="r20_gen_mar_ris_chrg_8per" name="r20_gen_mar_ris_chrg_8per"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r20_2per_gen_mar_ris_chrg_div_port}"
+               id="r20_2per_gen_mar_ris_chrg_div_port" name="r20_2per_gen_mar_ris_chrg_div_port"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r20_tot_gen_mar_risk_chrg}"
+               id="r20_tot_gen_mar_risk_chrg" name="r20_tot_gen_mar_risk_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW20" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r20_tot_mar_ris_chrg}"
+               id="r20_tot_mar_ris_chrg" name="r20_tot_mar_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: center; font-weight: bold;">11</td>
+    <td id="ROW21" style="font-weight: bold; text-align: right; padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r21_market != null ? #numbers.formatDecimal(report.r21_market, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r21_market" name="r21_market"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r21_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r21_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r21_gpfsr_nom_amt" name="r21_gpfsr_nom_amt"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;  padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r21_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r21_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r21_gpfsr_pos_att8_per_spe_ris" name="r21_gpfsr_pos_att8_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r21_gpfsr_chrg}"
+               id="r21_gpfsr_chrg" name="r21_gpfsr_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r21_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r21_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r21_gpfsr_nom_amt1" name="r21_gpfsr_nom_amt1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r21_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r21_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r21_gpfsr_pos_att4_per_spe_ris" name="r21_gpfsr_pos_att4_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r21_gpfsr_chrg1}"
+               id="r21_gpfsr_chrg1" name="r21_gpfsr_chrg1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r21_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r21_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r21_gpfsr_nom_amt2" name="r21_gpfsr_nom_amt2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r21_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r21_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r21_gpfsr_pos_att2_per_spe_ris" name="r21_gpfsr_pos_att2_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r21_gpfsr_chrg2}"
+               id="r21_gpfsr_chrg2" name="r21_gpfsr_chrg2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r21_tot_spe_ris_chrg}"
+               id="r21_tot_spe_ris_chrg" name="r21_tot_spe_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r21_net_pos_gen_mar_ris != null ? #numbers.formatDecimal(report.r21_net_pos_gen_mar_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r21_net_pos_gen_mar_ris" name="r21_net_pos_gen_mar_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r21_gen_mar_ris_chrg_8per}"
+               id="r21_gen_mar_ris_chrg_8per" name="r21_gen_mar_ris_chrg_8per"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r21_2per_gen_mar_ris_chrg_div_port}"
+               id="r21_2per_gen_mar_ris_chrg_div_port" name="r21_2per_gen_mar_ris_chrg_div_port"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r21_tot_gen_mar_risk_chrg}"
+               id="r21_tot_gen_mar_risk_chrg" name="r21_tot_gen_mar_risk_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW21" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r21_tot_mar_ris_chrg}"
+               id="r21_tot_mar_ris_chrg" name="r21_tot_mar_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: center; font-weight: bold;">12</td>
+    <td id="ROW22" style="font-weight: bold; text-align: right; padding-left: 10px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r22_market != null ? #numbers.formatDecimal(report.r22_market, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r22_market" name="r22_market"
+               style="background-color: #FFFFFF; width: 200px !important; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r22_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r22_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r22_gpfsr_nom_amt" name="r22_gpfsr_nom_amt"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;  padding-left: 20px;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r22_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r22_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r22_gpfsr_pos_att8_per_spe_ris" name="r22_gpfsr_pos_att8_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r22_gpfsr_chrg}"
+               id="r22_gpfsr_chrg" name="r22_gpfsr_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r22_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r22_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r22_gpfsr_nom_amt1" name="r22_gpfsr_nom_amt1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r22_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r22_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r22_gpfsr_pos_att4_per_spe_ris" name="r22_gpfsr_pos_att4_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r22_gpfsr_chrg1}"
+               id="r22_gpfsr_chrg1" name="r22_gpfsr_chrg1"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r22_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r22_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r22_gpfsr_nom_amt2" name="r22_gpfsr_nom_amt2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r22_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r22_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r22_gpfsr_pos_att2_per_spe_ris" name="r22_gpfsr_pos_att2_per_spe_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r22_gpfsr_chrg2}"
+               id="r22_gpfsr_chrg2" name="r22_gpfsr_chrg2"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r22_tot_spe_ris_chrg}"
+               id="r22_tot_spe_ris_chrg" name="r22_tot_spe_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;">
+        <input class="display-input Show_input" type="text"
+               th:value="${report.r22_net_pos_gen_mar_ris != null ? #numbers.formatDecimal(report.r22_net_pos_gen_mar_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="r22_net_pos_gen_mar_ris" name="r22_net_pos_gen_mar_ris"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r22_gen_mar_ris_chrg_8per}"
+               id="r22_gen_mar_ris_chrg_8per" name="r22_gen_mar_ris_chrg_8per"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r22_2per_gen_mar_ris_chrg_div_port}"
+               id="r22_2per_gen_mar_ris_chrg_div_port" name="r22_2per_gen_mar_ris_chrg_div_port"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r22_tot_gen_mar_risk_chrg}"
+               id="r22_tot_gen_mar_risk_chrg" name="r22_tot_gen_mar_risk_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+    <td id="ROW22" style="font-weight: bold; text-align: right;" class="green-cell">
+        <input class="display-input Show_input green-cell" type="text"
+               th:value="${report.r22_tot_mar_ris_chrg}"
+               id="r22_tot_mar_ris_chrg" name="r22_tot_mar_ris_chrg"
+               style="background-color: #FFFFFF; width: 120px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+
+
+
+<tr>
+	<td style="text-align: center; font-weight: bold;"></td>
+
+	<td id="ROW23" style="font-weight: bold; text-align: left;" colspan="10">
+		<input class="display-input Show_input" type="text"
+			th:value="'Total capital charge across all countries'"
+			id="r23_market" name="r23_market"
+			style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: left; font-weight: bold;"
+			readonly />
+			
+			
+			<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r23_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_nom_amt" name="r23_gpfsr_nom_amt"
+			style="background-color: #FFFFFF; width:210px; height: 28px; border-color: transparent; text-align: right; padding-right:10px;"
+			readonly />
+			
+			<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r23_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_pos_att8_per_spe_ris" name="r23_gpfsr_pos_att8_per_spe_ris"
+			style="background-color: #FFFFFF; width:200px; height: 28px; border-color: transparent; text-align: right; padding-right:15px;"
+			readonly />
+			
+			
+			<input class="display-input Show_input " type="text"
+			th:value="${report.r23_gpfsr_chrg != null ? #numbers.formatDecimal(report.r23_gpfsr_chrg, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_chrg" name="r23_gpfsr_chrg"
+			style="background-color: #FFFFFF; width: 170px; height: 28px; border-color: transparent; text-align: right; padding-right:10px;"
+			readonly />
+			
+			<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r23_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_nom_amt1" name="r23_gpfsr_nom_amt1"
+			style="background-color: #FFFFFF; width: 170px; height: 28px; border-color: transparent; text-align: right; padding-right:10px;"
+			readonly />
+			
+			<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r23_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_pos_att4_per_spe_ris" name="r23_gpfsr_pos_att4_per_spe_ris"
+			style="background-color: #FFFFFF; width: 170px; height: 28px; border-color: transparent; text-align: right; padding-right:10px;"
+			readonly />
+			
+				
+			
+			<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_chrg1 != null ? #numbers.formatDecimal(report.r23_gpfsr_chrg1, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_chrg1" name="r23_gpfsr_chrg1"
+			style="background-color: #FFFFFF; width: 170px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+			
+			<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r23_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_nom_amt2" name="r23_gpfsr_nom_amt2"
+			style="background-color: #FFFFFF; width: 170px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+			
+			<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r23_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_pos_att2_per_spe_ris" name="r23_gpfsr_pos_att2_per_spe_ris"
+			style="background-color: #FFFFFF; width: 170px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+			
+			<input class="display-input Show_input " type="text"
+			th:value="${report.r23_gpfsr_chrg2 != null ? #numbers.formatDecimal(report.r23_gpfsr_chrg2, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_chrg2" name="r23_gpfsr_chrg2"
+			style="background-color: #FFFFFF; width: 170px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+			
+	</td>
+
+	<!-- <td id="ROW23" style="font-weight: bold; text-align: right;">
+		<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_nom_amt != null ? #numbers.formatDecimal(report.r23_gpfsr_nom_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_nom_amt" name="r23_gpfsr_nom_amt"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td> -->
+
+	<!-- <td id="ROW23" style="font-weight: bold; text-align: right;">
+		<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_pos_att8_per_spe_ris != null ? #numbers.formatDecimal(report.r23_gpfsr_pos_att8_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_pos_att8_per_spe_ris" name="r23_gpfsr_pos_att8_per_spe_ris"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly /> 
+	</td> -->
+
+	<!-- <td id="ROW23" style="font-weight: bold; text-align: right;" class="green-cell">
+		<input class="display-input Show_input green-cell" type="text"
+			th:value="${report.r23_gpfsr_chrg != null ? #numbers.formatDecimal(report.r23_gpfsr_chrg, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_chrg" name="r23_gpfsr_chrg"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td> -->
+
+	<!-- <td id="ROW23" style="font-weight: bold; text-align: right;">
+		<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_nom_amt1 != null ? #numbers.formatDecimal(report.r23_gpfsr_nom_amt1, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_nom_amt1" name="r23_gpfsr_nom_amt1"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td> -->
+
+<!-- 	<td id="ROW23" style="font-weight: bold; text-align: right;">
+		<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_pos_att4_per_spe_ris != null ? #numbers.formatDecimal(report.r23_gpfsr_pos_att4_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_pos_att4_per_spe_ris" name="r23_gpfsr_pos_att4_per_spe_ris"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td> -->
+
+	<!-- <td id="ROW23" style="font-weight: bold; text-align: right;" class="green-cell">
+		<input class="display-input Show_input green-cell" type="text"
+			th:value="${report.r23_gpfsr_chrg1 != null ? #numbers.formatDecimal(report.r23_gpfsr_chrg1, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_chrg1" name="r23_gpfsr_chrg1"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td> -->
+
+	<!-- <td id="ROW23" style="font-weight: bold; text-align: right;">
+		<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_nom_amt2 != null ? #numbers.formatDecimal(report.r23_gpfsr_nom_amt2, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_nom_amt2" name="r23_gpfsr_nom_amt2"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td>
+
+	<td id="ROW23" style="font-weight: bold; text-align: right;">
+		<input class="display-input Show_input" type="text"
+			th:value="${report.r23_gpfsr_pos_att2_per_spe_ris != null ? #numbers.formatDecimal(report.r23_gpfsr_pos_att2_per_spe_ris, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_pos_att2_per_spe_ris" name="r23_gpfsr_pos_att2_per_spe_ris"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td> -->
+
+	<!-- <td id="ROW23" style="font-weight: bold; text-align: right;" class="green-cell">
+		<input class="display-input Show_input green-cell" type="text"
+			th:value="${report.r23_gpfsr_chrg2 != null ? #numbers.formatDecimal(report.r23_gpfsr_chrg2, 1, 'COMMA', 0, 'POINT') : '0'}"
+			id="r23_gpfsr_chrg2" name="r23_gpfsr_chrg2"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />   
+	</td> -->
+
+	<td id="ROW23" style="font-weight: bold; text-align: right;" class="green-cell">
+		<input class="display-input Show_input green-cell" type="text"
+			th:value="${report.r23_tot_spe_ris_chrg}"
+			id="r23_tot_spe_ris_chrg" name="r23_tot_spe_ris_chrg"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td>
+
+	<td id="ROW23" style="font-weight: bold; text-align: right;" class="green-cell">
+		<input class="display-input Show_input green-cell" type="text"
+			th:value="${report.r23_net_pos_gen_mar_ris } "
+			id="r23_net_pos_gen_mar_ris" name="r23_net_pos_gen_mar_ris"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td>
+
+	<td id="ROW23" style="font-weight: bold; text-align: right;" class="green-cell">
+		<input class="display-input Show_input green-cell" type="text"
+			th:value="${report.r23_gen_mar_ris_chrg_8per }"
+			id="r23_gen_mar_ris_chrg_8per" name="r23_gen_mar_ris_chrg_8per"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td>
+
+	<td id="ROW23" style="font-weight: bold; text-align: right;" class="green-cell">
+		<input class="display-input Show_input green-cell" type="text"
+			th:value="${report.r23_2per_gen_mar_ris_chrg_div_port} "
+			id="r23_2per_gen_mar_ris_chrg_div_port" name="r23_2per_gen_mar_ris_chrg_div_port"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td>
+
+	<td id="ROW23" style="font-weight: bold; text-align: right;" class="green-cell">
+		<input class="display-input Show_input green-cell" type="text"
+			th:value="${report.r23_tot_gen_mar_risk_chrg }"
+			id="r23_tot_gen_mar_risk_chrg" name="r23_tot_gen_mar_risk_chrg"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td>
+
+	<td id="ROW23" style="font-weight: bold; text-align: right;" class="green-cell">
+		<input class="display-input Show_input green-cell" type="text"
+			th:value="${report.r23_tot_mar_ris_chrg }"
+			id="r23_tot_mar_ris_chrg" name="r23_tot_mar_ris_chrg"
+			style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+			readonly />
+	</td>
+</tr>
+
+
+									</tbody>
+
+
+								</table>
+
+							</div>
+<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button"
+										class="custom-tab-btn Show_input" form="fileupload"
+										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none;">Submit</button>
+								</div>
+
+                           </form>
+
+						</div>
+					</div>
+				</div>
+
+				
+
+			</div>
+
+
+
+		</div>
+
+
+
+	</div>
+
+
+
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel"
+						style="text-align: center; color: white;">Do you want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn"
+						data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</body>
+
+
+
+
+
+
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 820px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+
+
+<style>
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+</style>
+
+</html>
