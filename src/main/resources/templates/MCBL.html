@@ -1791,29 +1791,49 @@ function handleUploadError(message) {
    
 }*/
 </script>
+<script>
+function showUploadAlert(message, type = "success", showIcon = true) {
+    const alertDiv = document.getElementById("UploadAlert");
+    const alertMsg = alertDiv.querySelector("#alertMessage");
 
+    // Update message
+    if (showIcon)
+        alertMsg.innerHTML = `<i class="fa fa-check-circle"></i> ${message}`;
+    else
+        alertMsg.innerHTML = message;
+
+    // Set alert color
+    alertDiv.classList.remove("alert-success", "alert-danger", "alert-warning");
+    if (type === "success") alertDiv.classList.add("alert-success");
+    else if (type === "error") alertDiv.classList.add("alert-danger");
+    else alertDiv.classList.add("alert-warning");
+
+    alertDiv.style.display = "block"; // Show
+}
+
+function UploadhideAlert() {
+    document.getElementById("UploadAlert").style.display = "none";
+}
+</script>
 <script>
 function submitFileUpload(uploadType, formId, branchId, fileId, startUrl, checkUrl) {
     const requiredFields = ["#" + branchId, "#" + fileId];
     const isValid = validateFields(requiredFields);
     if (!isValid) return false;
 
-    const alertMsg = document.getElementById("alertMessage");
-    const form = document.getElementById(formId);
-    const formData = new FormData(form);
-    const uploadJobName = uploadType + "_UPLOAD";
+    const storageKey = "current" + uploadType + "JobId";
 
     // Prevent duplicate upload
-    const storageKey = "current" + uploadType + "JobId";
     if (sessionStorage.getItem(storageKey)) {
-        alertMsg.innerHTML = uploadType + " upload is already processing. Please wait.";
-        showAlert();
+        showUploadAlert(`${uploadType} upload is already processing. Please wait.`, "warning");
         return;
     }
 
+    const form = document.getElementById(formId);
+    const formData = new FormData(form);
     sessionStorage.setItem(storageKey, "TEMP_LOCK");
-    alertMsg.innerHTML = uploadType + " file upload initiated...";
-    showAlert();
+
+    showUploadAlert(`${uploadType} file upload initiated...`, "warning");
 
     $.ajax({
         url: startUrl,
@@ -1824,8 +1844,7 @@ function submitFileUpload(uploadType, formId, branchId, fileId, startUrl, checkU
         success: function(jobId) {
             if (jobId && jobId.length > 20 && jobId !== "ERROR_STARTING_JOB") {
                 sessionStorage.setItem(storageKey, jobId);
-                alertMsg.innerHTML = 'Upload job ID received: ' + jobId + '. Processing...';
-                showAlert();
+                showUploadAlert(`${uploadType} Upload Job ID: ${jobId}. Processing...`, "warning");
                 checkFileUploadStatus(uploadType, jobId, checkUrl);
             } else {
                 sessionStorage.removeItem(storageKey);
@@ -1839,9 +1858,7 @@ function submitFileUpload(uploadType, formId, branchId, fileId, startUrl, checkU
     });
 }
 
-
 function checkFileUploadStatus(uploadType, jobId, checkUrl) {
-    const alertMsg = document.getElementById("alertMessage");
     const storageKey = "current" + uploadType + "JobId";
 
     $.ajax({
@@ -1853,19 +1870,16 @@ function checkFileUploadStatus(uploadType, jobId, checkUrl) {
             if (status.startsWith("COMPLETED:")) {
                 sessionStorage.removeItem(storageKey);
                 const resultMsg = status.substring("COMPLETED:".length);
-                alertMsg.innerHTML = uploadType + " Upload Complete! " + resultMsg;
-                showAlert();
+                showUploadAlert(`${uploadType} File Processed Successfully ✅ ${resultMsg}`, "success");
                 showResultModal('Success', resultMsg);
             } else if (status === "PROCESSING") {
-                alertMsg.innerHTML = uploadType + " Upload is processing... (Job ID: " + jobId + ")";
-                showAlert();
+                showUploadAlert(`${uploadType} Upload is processing... (Job ID: ${jobId})`, "warning");
                 setTimeout(() => checkFileUploadStatus(uploadType, jobId, checkUrl), 5000);
             } else if (status.startsWith("ERROR:") || status === "NOT_FOUND") {
                 const errorMsg = status.startsWith("ERROR:")
                     ? status.substring("ERROR:".length)
                     : "The processing job could not be found or encountered a fatal error.";
-                alertMsg.innerHTML = uploadType + " Upload finished with status: " + errorMsg;
-                showAlert();
+                showUploadAlert(`${uploadType} Upload failed: ${errorMsg}`, "error");
                 showResultModal('Job Status', errorMsg);
                 sessionStorage.removeItem(storageKey);
             } else {
@@ -1874,8 +1888,7 @@ function checkFileUploadStatus(uploadType, jobId, checkUrl) {
         },
         error: function(jqXHR, textStatus) {
             if (textStatus === "timeout" || jqXHR.status === 0) {
-                alertMsg.innerHTML = uploadType + " Upload is processing... (Temporary Connection Issue)";
-                showAlert();
+                showUploadAlert(`${uploadType} Upload is processing... (Temporary Connection Issue)`, "warning");
                 setTimeout(() => checkFileUploadStatus(uploadType, jobId, checkUrl), 5000);
             } else {
                 handleUploadError(uploadType, 'Fatal error while checking upload status: ' + textStatus);
@@ -1885,13 +1898,12 @@ function checkFileUploadStatus(uploadType, jobId, checkUrl) {
 }
 
 function handleUploadError(uploadType, message) {
-    const alertMsg = document.getElementById("alertMessage");
-    console.error(uploadType + " Upload Error:", message);
-    alertMsg.innerHTML = message;
-    showAlert();
+    console.error(`${uploadType} Upload Error:`, message);
+    showUploadAlert(`${uploadType} Upload Error: ${message}`, "error");
     showResultModal('Error', message);
 }
 </script>
+
 <script>
 function submitformbfdb() {
 	submitFileUpload("BFDB", "bfdbitem", "branch_name2", "file2", "./startBFDBUpload", "./checkBFDBUpload");
@@ -1911,6 +1923,7 @@ function submitformBLBF() {
 
 </script>
 <script>
+// === MCBL Upload Logic ===
 function submitMCBLUpload() {
     const uploadType = "MCBL";
     const formId = "item";
@@ -1918,72 +1931,59 @@ function submitMCBLUpload() {
     const fileId = "file";
     const requiredFields = ["#" + branchId, "#report_date", "#" + fileId];
 
-    // Validate fields
-    const isValid = validateFields(requiredFields);
-    if (!isValid) return false;
+    if (!validateFields(requiredFields)) return false;
 
-    const alertMsg = document.getElementById("alertMessage");
     const form = document.getElementById(formId);
     const formData = new FormData(form);
     const reportDate = document.getElementById("report_date").value;
-
     const storageKey = "current" + uploadType + "JobId";
 
     // Prevent multiple uploads
     if (sessionStorage.getItem(storageKey)) {
-        alertMsg.innerHTML = uploadType + " upload is already processing. Please wait.";
-        showAlert();
+        showUploadAlert(`${uploadType} upload is already processing. Please wait.`, "warning");
         return;
     }
 
     // Initial alert
     sessionStorage.setItem(storageKey, "TEMP_LOCK");
-    alertMsg.innerHTML = uploadType + " file upload initiated...";
-    showAlert();
+    showUploadAlert(`${uploadType} file upload initiated...`, "warning");
 
-    // Start upload
+    // Start upload AJAX call
     $.ajax({
-        url: "./startMCBLUpload?reportDate=" + encodeURIComponent(reportDate),
+        url: `./startMCBLUpload?reportDate=${encodeURIComponent(reportDate)}`,
         type: "POST",
         data: formData,
         processData: false,
         contentType: false,
-        success: function (jobId) {
+        success: function(jobId) {
             if (jobId && jobId.length > 20 && jobId !== "ERROR_STARTING_JOB") {
                 sessionStorage.setItem(storageKey, jobId);
-                alertMsg.innerHTML = 'Upload job ID received: ' + jobId + '. Processing...';
-                showAlert();
-
-                // ✅ Start the repeating "processing" alert
+                showUploadAlert(`${uploadType} Upload Job ID: ${jobId}. Processing...`, "warning");
                 startProcessingAlert(uploadType, jobId, storageKey);
-
-                // Begin checking backend status
                 checkMCBLUploadStatus(uploadType, jobId);
             } else {
                 sessionStorage.removeItem(storageKey);
                 handleUploadError(uploadType, "Failed to start the upload job.");
             }
         },
-        error: function () {
+        error: function() {
             sessionStorage.removeItem(storageKey);
             handleUploadError(uploadType, "Network or server error during job initiation.");
         }
     });
 }
 
+// === Processing Alert Timer ===
 function startProcessingAlert(uploadType, jobId, storageKey) {
-    // Clear any previous intervals first
     if (window["mcblAlertTimer"]) {
         clearInterval(window["mcblAlertTimer"]);
         window["mcblAlertTimer"] = null;
     }
 
-    // Start new 7-second repeating alert
+    // Repeat "processing" alert every 5 seconds
     window["mcblAlertTimer"] = setInterval(() => {
         if (sessionStorage.getItem(storageKey)) {
-            const alertMsg = document.getElementById("alertMessage");
-            alertMsg.innerHTML = uploadType + " Upload is processing...";
-            showAlert();
+            showUploadAlert(`${uploadType} Upload is processing... (Job ID: ${jobId})`, "warning");
         } else {
             clearInterval(window["mcblAlertTimer"]);
             window["mcblAlertTimer"] = null;
@@ -1991,52 +1991,37 @@ function startProcessingAlert(uploadType, jobId, storageKey) {
     }, 5000);
 }
 
+// === Status Check ===
 function checkMCBLUploadStatus(uploadType, jobId) {
-    const alertMsg = document.getElementById("alertMessage");
     const storageKey = "current" + uploadType + "JobId";
 
     $.ajax({
-        url: "./checkMCBLUpload?jobId=" + encodeURIComponent(jobId),
+        url: `./checkMCBLUpload?jobId=${encodeURIComponent(jobId)}`,
         type: "GET",
         dataType: "text",
         timeout: 10000,
-        success: function (status) {
+        success: function(status) {
             if (status.startsWith("COMPLETED:")) {
-                // ✅ Stop repeating alert
                 sessionStorage.removeItem(storageKey);
-                if (window["mcblAlertTimer"]) {
-                    clearInterval(window["mcblAlertTimer"]);
-                    window["mcblAlertTimer"] = null;
-                }
-
+                clearProcessingTimer();
                 const resultMsg = status.substring("COMPLETED:".length);
-                alertMsg.innerHTML = uploadType + " Upload Complete! ✅ " + resultMsg;
-                showAlert();
+                showUploadAlert(`${uploadType} File Processed Successfully ✅ ${resultMsg}`, "success");
                 showResultModal("Success", resultMsg);
-            } 
-            else if (status === "PROCESSING") {
-                // Keep checking every 5 seconds
+            } else if (status === "PROCESSING") {
                 setTimeout(() => checkMCBLUploadStatus(uploadType, jobId), 5000);
-            } 
-            else if (status.startsWith("ERROR:") || status === "NOT_FOUND") {
+            } else if (status.startsWith("ERROR:") || status === "NOT_FOUND") {
                 sessionStorage.removeItem(storageKey);
-                if (window["mcblAlertTimer"]) {
-                    clearInterval(window["mcblAlertTimer"]);
-                    window["mcblAlertTimer"] = null;
-                }
-
+                clearProcessingTimer();
                 const errorMsg = status.startsWith("ERROR:")
                     ? status.substring("ERROR:".length)
-                    : "Job not found or failed.";
-                alertMsg.innerHTML = uploadType + " Upload failed ❌ " + errorMsg;
-                showAlert();
+                    : "The processing job could not be found or encountered a fatal error.";
+                showUploadAlert(`${uploadType} Upload failed ❌ ${errorMsg}`, "error");
                 showResultModal("Error", errorMsg);
-            } 
-            else {
+            } else {
                 handleUploadError(uploadType, "Unexpected status: " + status);
             }
         },
-        error: function (jqXHR, textStatus) {
+        error: function(jqXHR, textStatus) {
             if (textStatus === "timeout" || jqXHR.status === 0) {
                 setTimeout(() => checkMCBLUploadStatus(uploadType, jobId), 5000);
             } else {
@@ -2046,14 +2031,19 @@ function checkMCBLUploadStatus(uploadType, jobId) {
     });
 }
 
+// === Utility ===
+function clearProcessingTimer() {
+    if (window["mcblAlertTimer"]) {
+        clearInterval(window["mcblAlertTimer"]);
+        window["mcblAlertTimer"] = null;
+    }
+}
+
 function handleUploadError(uploadType, message) {
-    const alertMsg = document.getElementById("alertMessage");
-    console.error(uploadType + " Upload Error:", message);
-    alertMsg.innerHTML = message;
-    showAlert();
+    console.error(`${uploadType} Upload Error:`, message);
+    showUploadAlert(`${uploadType} Upload Error: ${message}`, "error");
     showResultModal("Error", message);
 }
 </script>
-
 
 </html>

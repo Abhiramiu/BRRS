@@ -912,16 +912,49 @@ color:white;
     display: block;
 }
 </style>
-
 <script>
+function showUploadAlert(message, type = "success", showIcon = true) {
+    const alertDiv = document.getElementById("UploadAlert");
+    const alertMsg = alertDiv.querySelector("#alertMessage");
+
+    // Update message
+    alertMsg.innerHTML = showIcon
+        ? `<i class="fa fa-check-circle"></i> ${message}`
+        : message;
+
+    // Set alert color
+    alertDiv.classList.remove("alert-success", "alert-danger", "alert-warning");
+    if (type === "success") alertDiv.classList.add("alert-success");
+    else if (type === "error") alertDiv.classList.add("alert-danger");
+    else alertDiv.classList.add("alert-warning");
+
+    alertDiv.style.display = "block"; // Show alert
+}
+
+function UploadhideAlert() {
+    document.getElementById("UploadAlert").style.display = "none";
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const jobTypes = ["BFDB", "BDGF", "BLBF", "MCBL"];
 
     jobTypes.forEach(type => {
         const jobId = sessionStorage.getItem("current" + type + "JobId");
+        const doneKey = "completed" + type + "Job"; // ✅ flag for finished job
+
+        console.log("🟡 Checking sessionStorage for", type, ":", jobId);
+
+        // Skip if already completed
+        if (sessionStorage.getItem(doneKey)) {
+            console.log(`✅ ${type} already completed earlier, skipping check.`);
+            return;
+        }
+
         if (jobId) {
             console.log(`Resuming ${type} job polling:`, jobId);
             checkUploadStatus(type, jobId);
+        } else {
+            console.log(`⚠️ No jobId found in sessionStorage for ${type}`);
         }
     });
 });
@@ -929,11 +962,8 @@ document.addEventListener("DOMContentLoaded", function () {
 function checkUploadStatus(type, jobId) {
     if (!jobId) return;
 
-    const alertMsg = document.getElementById("alertMessage");
-    if (!alertMsg) {
-        console.error("Alert element not found in DOM!");
-        return;
-    }
+    const storageKey = "current" + type + "JobId";
+    const doneKey = "completed" + type + "Job"; // ✅ completion marker
 
     $.ajax({
         url: `check${type}Upload?jobId=` + encodeURIComponent(jobId),
@@ -942,46 +972,45 @@ function checkUploadStatus(type, jobId) {
         timeout: 5000,
         success: function (status) {
             if (status.startsWith("COMPLETED:")) {
-                sessionStorage.removeItem("current" + type + "JobId");
-                const resultMsg = status.substring("COMPLETED:".length);
-                alertMsg.innerHTML = `✅ ${type} Upload Complete! ${resultMsg}`;
-                showAlert();
-                showResultModal('Success', resultMsg);
+                const resultMsg = status.substring("COMPLETED:".length).trim();
+                const finalMsg = `${type} Upload ${resultMsg}`;
+                showUploadAlert(`✅ ${finalMsg}`, "success");
+                showResultModal('Success', finalMsg);
+
+                // ✅ Save flag to avoid showing again on refresh
+                sessionStorage.removeItem(storageKey);
+                sessionStorage.setItem(doneKey, "true");
+                return;
             } 
             else if (status === "PROCESSING") {
-                alertMsg.innerHTML = `⏳ ${type} Upload is processing... (Job ID: ${jobId})`;
-                showAlert();
+                showUploadAlert(`${type} Upload is processing... (Job ID: ${jobId})`, "warning");
                 setTimeout(() => checkUploadStatus(type, jobId), 6000);
             } 
-            else if (status.startsWith("ERROR:") || status === "NOT_FOUND") {
-                const errorMsg = status.startsWith("ERROR:")
-                    ? status.substring("ERROR:".length)
-                    : "Job not found or failed.";
-                alertMsg.innerHTML = ` ${type} Upload finished with error: ${errorMsg}`;
-                showAlert();
+            else if (status.startsWith("ERROR:")) {
+                const errorMsg = status.substring("ERROR:".length).trim();
+                showUploadAlert(`${type} Upload failed ❌ ${errorMsg}`, "error");
                 showResultModal('Job Status', errorMsg);
-                sessionStorage.removeItem("current" + type + "JobId");
+                sessionStorage.removeItem(storageKey);
+            } 
+            else if (status === "NOT_FOUND") {
+                console.log(`${type} job not found — maybe already cleared.`);
             } 
             else {
-                alertMsg.innerHTML = `Unexpected response: ${status}`;
-                showAlert();
+                showUploadAlert(`Unexpected response: ${status}`, "warning");
             }
         },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.error(`Error checking ${type} upload status:`, textStatus, errorThrown);
+        error: function (jqXHR, textStatus) {
             if (textStatus === "timeout" || jqXHR.status === 0) {
-                alertMsg.innerHTML = `⏳ ${type} Upload is processing... (Temporary connection issue)`;
-                showAlert();
+                showUploadAlert(`${type} Upload is processing... (Temporary connection issue)`, "warning");
                 setTimeout(() => checkUploadStatus(type, jobId), 6000);
             } else {
-                alertMsg.innerHTML = `❌ Error while checking ${type} upload: ${textStatus}`;
-                showAlert();
+                showUploadAlert(`${type} Upload check failed ❌ ${textStatus}`, "error");
             }
         }
     });
 }
-</script>
 
+</script>
 
 
 
@@ -1082,6 +1111,53 @@ function hideAlert() {
 }
 
 </script>
+
+<script>
+function showUploadAlert(message, type = "info", isStatic = false) {
+    const alertDiv = document.getElementById("UploadAlert");
+    const alertMsg = document.getElementById("alertMessage");
+
+    if (!alertDiv || !alertMsg) return;
+
+    // Set message text
+    alertMsg.innerHTML = message;
+
+    // Reset and apply Bootstrap alert color classes
+    alertDiv.classList.remove("alert-danger", "alert-success", "alert-warning", "alert-info");
+    switch (type.toLowerCase()) {
+        case "success":
+            alertDiv.classList.add("alert-success");
+            break;
+        case "error":
+            alertDiv.classList.add("alert-danger");
+            break;
+        case "warning":
+            alertDiv.classList.add("alert-warning");
+            break;
+        default:
+            alertDiv.classList.add("alert-info");
+    }
+
+    // Show the alert
+    alertDiv.style.display = "block";
+
+    // Auto-hide only if not static
+    if (!isStatic) {
+        alertDiv.hideTimer = setTimeout(() => {
+            UploadhideAlert();
+        }, 7000);
+    }
+}
+
+function UploadhideAlert() {
+    const alertDiv = document.getElementById("UploadAlert");
+    if (alertDiv) {
+        alertDiv.style.display = "none";
+        if (alertDiv.hideTimer) clearTimeout(alertDiv.hideTimer);
+    }
+}
+</script>
+
 </head>
 
 <body>
@@ -1326,6 +1402,14 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 		    </button>
 		    <p id="alertMessage"><i  class="fa fa-check-circle"></i> Download request received</p>
 		</div>
+		
+<div class="alert alert-danger custom-alert" role="alert" id="UploadAlert" style="display:none;">
+    <button type="button" class="close" aria-label="Close" onclick="UploadhideAlert()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <p id="alertMessage"><i class="fa fa-check-circle"></i> Processed Successfully</p>
+</div>
+
 </body>
 
 <style>
