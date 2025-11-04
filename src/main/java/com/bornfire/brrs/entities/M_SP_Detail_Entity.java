@@ -34,8 +34,8 @@ public class M_SP_Detail_Entity {
 //    @Column(name = "COLUMN_ID", length = 100)
 //    private String columnId;
     
-    @Column(name = "REPORT_LABEL")
-    private String reportLabel;
+    @Column(name = "REPORT_LABLE")
+    private String reportLable;
 
     @Column(name = "REPORT_ADDL_CRITERIA_1")
     private String reportAddlCriteria1;
@@ -313,12 +313,12 @@ public class M_SP_Detail_Entity {
 	
 	
 	
-	public String getReportLabel() {
-		return reportLabel;
+	public String getReportLable() {
+		return reportLable;
 	}
 
-	public void setReportLabel(String reportLabel) {
-		this.reportLabel = reportLabel;
+	public void setReportLable(String reportLable) {
+		this.reportLable = reportLable;
 	}
 
 	public String getReportAddlCriteria1() {

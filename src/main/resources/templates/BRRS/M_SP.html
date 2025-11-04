@@ -599,14 +599,14 @@ function showResultModal(title, message) {
 
 <script th:inline="javascript">
 function showdetailsbyRowAndColumn(a) { 
-    var rowId = a.getAttribute('RowId');
-    var columnId = a.getAttribute('ColumnId');
+    var reportLable = a.getAttribute('reportLable');
+    var reportAddlCriteria1 = a.getAttribute('reportAddlCriteria1');
     var cellValue = a.textContent || a.innerText;
 
     if (cellValue !== '0') {
         // Set dynamic message in modal (instead of confirm)
         document.getElementById("cellresultModalLabel").innerText = 
-            "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+            "Do you want to open details for ReportLable: " + reportLable + " and ReportAddlCriteria_1: " + reportAddlCriteria1 + "?";
 
         // Show custom Bootstrap modal
         $('#cellresultModal').modal('show');
@@ -624,7 +624,7 @@ function showdetailsbyRowAndColumn(a) {
 
             // Build dynamic URL
             var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+            Callurl += "&filter=" + encodeURIComponent(reportLable + "," + reportAddlCriteria1);
 
             location.href = Callurl;
         };
@@ -681,7 +681,7 @@ function showdetailsbyRowAndColumn(a) {
                      data-todate=${todate}, 
                      data-currency=${currency},  
                      data-dtltype=${dtltype}, 
-                     data-filename='M_SP.xls',
+                     data-filename='M_SP.xlsx',
                      data-type=${type},
                      data-version=${version}"
             onclick="downloadfile(this);">
@@ -730,35 +730,35 @@ function showdetailsbyRowAndColumn(a) {
 												<!--  style="background-color: #b3b6b9"
 												style="text-align: center; background-color: #b3b6b9"-->
 											<th rowspan="1"
-												style = "font-weight:bold;color:black;">QUALIFYING STAGE 2 PROVISIONS</th>
+												style = "font-weight:bold;color:black; text-align:right;">QUALIFYING STAGE 2 PROVISIONS</th>
 <th rowspan="1"
-												style = "font-weight:bold;color:black;"> STAGE 3  PROVISIONS</th>
+												style = "font-weight:bold;color:black; text-align:right;"> STAGE 3  PROVISIONS</th>
 <th rowspan="1"
-												style = "font-weight:bold;color:black;">TOTAL SPECIFIC PROVISIONS</th>										
+												style = "font-weight:bold;color:black; text-align:right;">TOTAL SPECIFIC PROVISIONS</th>										
 										</tr>		
 											</thead>
 							<tbody th:each="report: ${reportsummary}"
 										style="font-family: Arial;">
 										<tr>  <td style="padding-left: 4px;font-weight:bold; "  th:text="${report.r9_product}"></td>
 							<td class="numfield" th:text="${report.r9_qualifi_stage_2_provisions_sp}" style="font-weight:bold;text-align:right;background-color: rgb(107, 122, 143); color: white;"></td>
-							<td class="numfield" th:text="${report.r9_stage_3_provisions_sp}" th:attr="RowId='R9', ColumnId='C3'"  style="font-weight:bold;text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
+							<td class="numfield" th:text="${report.r9_stage_3_provisions_sp}" th:attr="reportLable='R9', reportAddlCriteria1='C3'"  style="font-weight:bold;text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
 							<td class="numfield" th:text="${report.r9_total_specific_provisions}"style="font-weight:bold;text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
 
 							<tr>  <td style="padding-left: 25px; "  th:text="${report.r10_product}"></td>
-							<td class="numfield" th:text="${report.r10_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R10', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)" style="text-align:right;"></td>
-							<td class="numfield" th:text="${report.r10_stage_3_provisions_sp}" th:attr="RowId='R10', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r10_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R10', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)" style="text-align:right;"></td>
+							<td class="numfield" th:text="${report.r10_stage_3_provisions_sp}" th:attr="reportLable='R10', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r10_total_specific_provisions}"  style="text-align: right; background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
 
 
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r11_product}"></td>
-							<td class="numfield" th:text="${report.r11_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R11', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right;"></td>
-							<td class="numfield" th:text="${report.r11_stage_3_provisions_sp}" th:attr="RowId='R11', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r11_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R11', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right;"></td>
+							<td class="numfield" th:text="${report.r11_stage_3_provisions_sp}" th:attr="reportLable='R11', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r11_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r12_product}"></td>
-							<td class="numfield" th:text="${report.r12_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R12', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right;"></td>
-							<td class="numfield" th:text="${report.r12_stage_3_provisions_sp}"  th:attr="RowId='R12', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r12_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R12', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right;"></td>
+							<td class="numfield" th:text="${report.r12_stage_3_provisions_sp}"  th:attr="reportLable='R12', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r12_total_specific_provisions}"    style="text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
 							
 							<tr>  <td style="font-weight:bold;padding-left: 25px;"  th:text="${report.r13_product}"></td>
@@ -767,114 +767,114 @@ function showdetailsbyRowAndColumn(a) {
 							<td class="numfield" th:text="${report.r13_total_specific_provisions}" style="font-weight:bold;text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r14_product}"></td>
-							<td class="numfield" th:text="${report.r14_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R14', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r14_stage_3_provisions_sp}" th:attr="RowId='R14', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r14_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R14', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r14_stage_3_provisions_sp}" th:attr="reportLable='R14', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)"style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r14_total_specific_provisions}"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"th:text="${report.r15_product}"></td>
-							<td class="numfield" th:text="${report.r15_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R15', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r15_stage_3_provisions_sp}" th:attr="RowId='R15', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r15_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R15', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r15_stage_3_provisions_sp}" th:attr="reportLable='R15', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r15_total_specific_provisions}"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r16_product}"></td>
-							<td class="numfield" th:text="${report.r16_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R16', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r16_stage_3_provisions_sp}" th:attr="RowId='R16', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r16_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R16', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r16_stage_3_provisions_sp}" th:attr="reportLable='R16', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r16_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r17_product}"></td>
-							<td class="numfield" th:text="${report.r17_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R17', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r17_stage_3_provisions_sp}" th:attr="RowId='R17', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r17_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R17', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r17_stage_3_provisions_sp}" th:attr="reportLable='R17', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r17_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r18_product}"></td>
-							<td class="numfield" th:text="${report.r18_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R18', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r18_stage_3_provisions_sp}" th:attr="RowId='R18', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r18_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R18', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r18_stage_3_provisions_sp}" th:attr="reportLable='R18', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r18_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r19_product}"></td>
-							<td class="numfield" th:text="${report.r19_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R19', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r19_stage_3_provisions_sp}" th:attr="RowId='R19', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;"></td>
+							<td class="numfield" th:text="${report.r19_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R19', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r19_stage_3_provisions_sp}" th:attr="reportLable='R19', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;"></td>
 							<td class="numfield" th:text="${report.r19_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r20_product}"></td>
-							<td class="numfield" th:text="${report.r20_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R20', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r20_stage_3_provisions_sp}"  th:attr="RowId='R20', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td class="numfield" th:text="${report.r20_total_specific_provisions}"  th:attr="RowId='R20', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
+							<td class="numfield" th:text="${report.r20_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R20', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r20_stage_3_provisions_sp}"  th:attr="reportLable='R20', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r20_total_specific_provisions}"  th:attr="reportLable='R20', reportAddlCriteria1='C4'"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r21_product}"></td>
-							<td class="numfield" th:text="${report.r21_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R21', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r21_stage_3_provisions_sp}"  th:attr="RowId='R21', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;"></td>
-							<td class="numfield" th:text="${report.r21_total_specific_provisions}" th:attr="RowId='R21', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
+							<td class="numfield" th:text="${report.r21_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R21', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r21_stage_3_provisions_sp}"  th:attr="reportLable='R21', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;"></td>
+							<td class="numfield" th:text="${report.r21_total_specific_provisions}" th:attr="reportLable='R21', reportAddlCriteria1='C4'"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r22_product}"></td>
-							<td class="numfield" th:text="${report.r22_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R22', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r22_stage_3_provisions_sp}" th:attr="RowId='R22', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r22_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R22', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r22_stage_3_provisions_sp}" th:attr="reportLable='R22', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r22_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r23_product}"></td>
-							<td class="numfield" th:text="${report.r23_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R23', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r23_stage_3_provisions_sp}" th:attr="RowId='R23', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r23_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R23', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r23_stage_3_provisions_sp}" th:attr="reportLable='R23', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r23_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r24_product}"></td>
-							<td class="numfield" th:text="${report.r24_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R24', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r24_stage_3_provisions_sp}"  th:attr="RowId='R24', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td class="numfield" th:text="${report.r24_total_specific_provisions}" th:attr="RowId='R24', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
+							<td class="numfield" th:text="${report.r24_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R24', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r24_stage_3_provisions_sp}"  th:attr="reportLable='R24', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r24_total_specific_provisions}" th:attr="reportLable='R24', reportAddlCriteria1='C4'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r25_product}"></td>
-							<td class="numfield" th:text="${report.r25_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R25', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r25_stage_3_provisions_sp}" th:attr="RowId='R25', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r25_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R25', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r25_stage_3_provisions_sp}" th:attr="reportLable='R25', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r25_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r26_product}"></td>
-							<td class="numfield" th:text="${report.r26_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R26', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r26_stage_3_provisions_sp}" th:attr="RowId='R26', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r26_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R26', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r26_stage_3_provisions_sp}" th:attr="reportLable='R26', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r26_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="font-weight:bold;padding-left: 25px;"th:text="${report.r27_product}"></td>
 							<td class="numfield" th:text="${report.r27_qualifi_stage_2_provisions_sp}"  style="font-weight:bold;text-align:right; background-color: rgb(107, 122, 143); color: white;"></td>
-							<td class="numfield" th:text="${report.r27_stage_3_provisions_sp}" th:attr="RowId='R27', ColumnId='C3'"  style="font-weight:bold;text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
+							<td class="numfield" th:text="${report.r27_stage_3_provisions_sp}" th:attr="reportLable='R27', reportAddlCriteria1='C3'"  style="font-weight:bold;text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
 							<td class="numfield" th:text="${report.r27_total_specific_provisions}"  style="font-weight:bold;text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"th:text="${report.r28_product}"></td>
-							<td class="numfield" th:text="${report.r28_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R28', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r28_stage_3_provisions_sp}" th:attr="RowId='R28', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r28_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R28', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r28_stage_3_provisions_sp}" th:attr="reportLable='R28', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r28_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r29_product}"></td>
-							<td class="numfield" th:text="${report.r29_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R29', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r29_stage_3_provisions_sp}" th:attr="RowId='R29', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;"></td>
+							<td class="numfield" th:text="${report.r29_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R29', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r29_stage_3_provisions_sp}" th:attr="reportLable='R29', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;"></td>
 							<td class="numfield" th:text="${report.r29_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r30_product}"></td>
-							<td class="numfield" th:text="${report.r30_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R30', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r30_stage_3_provisions_sp}" th:attr="RowId='R30', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r30_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R30', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r30_stage_3_provisions_sp}" th:attr="reportLable='R30', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r30_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r31_product}"></td>
-							<td class="numfield" th:text="${report.r31_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R31', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r31_stage_3_provisions_sp}"  th:attr="RowId='R31', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td class="numfield" th:text="${report.r31_total_specific_provisions}" th:attr="RowId='R31', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
+							<td class="numfield" th:text="${report.r31_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R31', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r31_stage_3_provisions_sp}"  th:attr="reportLable='R31', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r31_total_specific_provisions}" th:attr="reportLable='R31', reportAddlCriteria1='C4'"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r32_product}"></td>
-							<td class="numfield" th:text="${report.r32_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R32', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r32_stage_3_provisions_sp}" th:attr="RowId='R32', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r32_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R32', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r32_stage_3_provisions_sp}" th:attr="reportLable='R32', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r32_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r33_product}"></td>
-							<td class="numfield" th:text="${report.r33_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R33', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r33_stage_3_provisions_sp}" th:attr="RowId='R33', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r33_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R33', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r33_stage_3_provisions_sp}" th:attr="reportLable='R33', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r33_total_specific_provisions}" style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r34_product}"></td>
-							<td class="numfield" th:text="${report.r34_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R34', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r34_stage_3_provisions_sp}" th:attr="RowId='R34', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r34_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R34', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r34_stage_3_provisions_sp}" th:attr="reportLable='R34', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r34_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r35_product}"></td>
-							<td class="numfield" th:text="${report.r35_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R35', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r35_stage_3_provisions_sp}"  th:attr="RowId='R35', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td class="numfield" th:text="${report.r35_total_specific_provisions}" th:attr="RowId='R35', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
+							<td class="numfield" th:text="${report.r35_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R35', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r35_stage_3_provisions_sp}"  th:attr="reportLable='R35', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r35_total_specific_provisions}" th:attr="reportLable='R35', reportAddlCriteria1='C4'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r36_product}"></td>
 							<td class="numfield" th:text="${report.r36_qualifi_stage_2_provisions_sp}"  style="text-align:right; background-color: rgb(107, 122, 143); color: white;"></td>
@@ -882,14 +882,14 @@ function showdetailsbyRowAndColumn(a) {
 							<td class="numfield" th:text="${report.r36_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r37_product}"></td>
-							<td class="numfield" th:text="${report.r37_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R37', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r37_stage_3_provisions_sp}" th:attr="RowId='R37', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r37_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R37', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r37_stage_3_provisions_sp}" th:attr="reportLable='R37', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r37_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r38_product}"></td>
-							<td class="numfield" th:text="${report.r38_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R38', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r38_stage_3_provisions_sp}"  th:attr="RowId='R38', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;"></td>
-							<td class="numfield" th:text="${report.r38_total_specific_provisions}" th:attr="RowId='R38', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
+							<td class="numfield" th:text="${report.r38_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R38', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r38_stage_3_provisions_sp}"  th:attr="reportLable='R38', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;"></td>
+							<td class="numfield" th:text="${report.r38_total_specific_provisions}" th:attr="reportLable='R38', reportAddlCriteria1='C4'"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="font-weight:bold;padding-left: 4px;" th:text="${report.r39_product}"></td>
 							<td class="numfield" th:text="${report.r39_qualifi_stage_2_provisions_sp}" style="font-weight:bold;text-align:right; background-color: rgb(107, 122, 143); color: white;"></td>
@@ -897,13 +897,13 @@ function showdetailsbyRowAndColumn(a) {
 							<td class="numfield" th:text="${report.r39_total_specific_provisions}" style="font-weight:bold;text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r40_product}"></td>
-							<td class="numfield" th:text="${report.r40_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R40', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r40_stage_3_provisions_sp}"  th:attr="RowId='R40', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;"></td>
-							<td class="numfield" th:text="${report.r40_total_specific_provisions}" th:attr="RowId='R40', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
+							<td class="numfield" th:text="${report.r40_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R40', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r40_stage_3_provisions_sp}"  th:attr="reportLable='R40', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;"></td>
+							<td class="numfield" th:text="${report.r40_total_specific_provisions}" th:attr="reportLable='R40', reportAddlCriteria1='C4'"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r41_product}"></td>
-							<td class="numfield" th:text="${report.r41_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R41', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r41_stage_3_provisions_sp}" th:attr="RowId='R41', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r41_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R41', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r41_stage_3_provisions_sp}" th:attr="reportLable='R41', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r41_total_specific_provisions}"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r42_product}"></td>
@@ -912,23 +912,23 @@ function showdetailsbyRowAndColumn(a) {
 							<td class="numfield" th:text="${report.r42_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r43_product}"></td>
-							<td class="numfield" th:text="${report.r43_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R43', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r43_stage_3_provisions_sp}" th:attr="RowId='R43', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r43_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R43', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r43_stage_3_provisions_sp}" th:attr="reportLable='R43', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r43_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r44_product}"></td>
-							<td class="numfield" th:text="${report.r44_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R44', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r44_stage_3_provisions_sp}"  th:attr="RowId='R44', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;"></td>
-							<td class="numfield" th:text="${report.r44_total_specific_provisions}" th:attr="RowId='R44', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
+							<td class="numfield" th:text="${report.r44_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R44', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r44_stage_3_provisions_sp}"  th:attr="reportLable='R44', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right;"></td>
+							<td class="numfield" th:text="${report.r44_total_specific_provisions}" th:attr="reportLable='R44', reportAddlCriteria1='C4'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r45_product}"></td>
-							<td class="numfield" th:text="${report.r45_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R45', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r45_stage_3_provisions_sp}" th:attr="RowId='R45', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r45_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R45', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r45_stage_3_provisions_sp}" th:attr="reportLable='R45', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r45_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r46_product}"></td>
-							<td class="numfield" th:text="${report.r46_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R46', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r46_stage_3_provisions_sp}" th:attr="RowId='R46', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r46_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R46', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r46_stage_3_provisions_sp}" th:attr="reportLable='R46', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r46_total_specific_provisions}"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="font-weight:bold;padding-left: 25px;"  th:text="${report.r47_product}"></td>
@@ -937,18 +937,18 @@ function showdetailsbyRowAndColumn(a) {
 							<td class="numfield" th:text="${report.r47_total_specific_provisions}"   style="font-weight:bold;text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r48_product}"></td>
-							<td class="numfield" th:text="${report.r48_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R48', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r48_stage_3_provisions_sp}" th:attr="RowId='R48', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r48_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R48', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r48_stage_3_provisions_sp}" th:attr="reportLable='R48', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r48_total_specific_provisions}" style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r49_product}"></td>
-							<td class="numfield" th:text="${report.r49_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R49', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r49_stage_3_provisions_sp}"  th:attr="RowId='R49', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td class="numfield" th:text="${report.r49_total_specific_provisions}" th:attr="RowId='R49', ColumnId='C4'"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
+							<td class="numfield" th:text="${report.r49_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R49', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r49_stage_3_provisions_sp}"  th:attr="reportLable='R49', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r49_total_specific_provisions}" th:attr="reportLable='R49', reportAddlCriteria1='C4'"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r50_product}"></td>
-							<td class="numfield" th:text="${report.r50_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R50', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r50_stage_3_provisions_sp}" th:attr="RowId='R50', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r50_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R50', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r50_stage_3_provisions_sp}" th:attr="reportLable='R50', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r50_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="font-weight:bold;padding-left: 25px;"  th:text="${report.r51_product}"></td>
@@ -957,18 +957,18 @@ function showdetailsbyRowAndColumn(a) {
 							<td class="numfield" th:text="${report.r51_total_specific_provisions}"   style="font-weight:bold;text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r52_product}"></td>
-							<td class="numfield" th:text="${report.r52_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R52', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r52_stage_3_provisions_sp}" th:attr="RowId='R52', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r52_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R52', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r52_stage_3_provisions_sp}" th:attr="reportLable='R52', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r52_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r53_product}"></td>
-							<td class="numfield" th:text="${report.r53_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R53', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r53_stage_3_provisions_sp}" th:attr="RowId='R53', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r53_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R53', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r53_stage_3_provisions_sp}" th:attr="reportLable='R53', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r53_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r54_product}"></td>
-							<td class="numfield" th:text="${report.r54_qualifi_stage_2_provisions_sp}"   th:attr="RowId='R54', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)" style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r54_stage_3_provisions_sp}"  th:attr="RowId='R54', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r54_qualifi_stage_2_provisions_sp}"   th:attr="reportLable='R54', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)" style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r54_stage_3_provisions_sp}"  th:attr="reportLable='R54', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r54_total_specific_provisions}"  style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r55_product}"></td>
@@ -977,38 +977,38 @@ function showdetailsbyRowAndColumn(a) {
 							<td class="numfield" th:text="${report.r55_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r56_product}"></td>
-							<td class="numfield" th:text="${report.r56_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R56', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r56_stage_3_provisions_sp}"  th:attr="RowId='R56', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
-							<td class="numfield" th:text="${report.r56_total_specific_provisions}" th:attr="RowId='R56', ColumnId='C4'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
+							<td class="numfield" th:text="${report.r56_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R56', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r56_stage_3_provisions_sp}"  th:attr="reportLable='R56', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r56_total_specific_provisions}" th:attr="reportLable='R56', reportAddlCriteria1='C4'"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
 							
 	 					<tr>  <td style="padding-left: 25px;"  th:text="${report.r57_product}"></td>
-							<td class="numfield" th:text="${report.r57_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R57', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r57_stage_3_provisions_sp}" th:attr="RowId='R57', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r57_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R57', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r57_stage_3_provisions_sp}" th:attr="reportLable='R57', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r57_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r58_product}"></td>
-							<td class="numfield" th:text="${report.r58_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R58', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r58_stage_3_provisions_sp}" th:attr="RowId='R58', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r58_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R58', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r58_stage_3_provisions_sp}" th:attr="reportLable='R58', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r58_total_specific_provisions}"    style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r59_product}"></td>
-							<td class="numfield" th:text="${report.r59_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R59', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r59_stage_3_provisions_sp}" th:attr="RowId='R59', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r59_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R59', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r59_stage_3_provisions_sp}" th:attr="reportLable='R59', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r59_total_specific_provisions}"   style="text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;" th:text="${report.r60_product}"></td>
-							<td class="numfield" th:text="${report.r60_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R60', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r60_stage_3_provisions_sp}" th:attr="RowId='R60', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r60_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R60', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r60_stage_3_provisions_sp}" th:attr="reportLable='R60', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r60_total_specific_provisions}"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 25px;"  th:text="${report.r61_product}"></td>
-							<td class="numfield" th:text="${report.r61_qualifi_stage_2_provisions_sp}"  th:attr="RowId='R61', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
-							<td class="numfield" th:text="${report.r61_stage_3_provisions_sp}"  th:attr="RowId='R61', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
+							<td class="numfield" th:text="${report.r61_qualifi_stage_2_provisions_sp}"  th:attr="reportLable='R61', reportAddlCriteria1='C2'" onclick="showdetailsbyRowAndColumn(this)"  style="text-align:right; "></td>
+							<td class="numfield" th:text="${report.r61_stage_3_provisions_sp}"  th:attr="reportLable='R61', reportAddlCriteria1='C3'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>
 							<td class="numfield" th:text="${report.r61_total_specific_provisions}"  style="text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
 
 							<tr>  <td  style="font-weight:bold;padding-left: 4px; font-weight:bold;"  th:text="${report.r62_product}"></td>
 							<td class="numfield" th:text="${report.r62_qualifi_stage_2_provisions_sp}" style="font-weight:bold;text-align:right;background-color: rgb(107, 122, 143); color: white; "></td>
-							<td class="numfield" th:text="${report.r62_stage_3_provisions_sp}" th:attr="RowId='R62', ColumnId='C3'"  style="font-weight:bold;text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
+							<td class="numfield" th:text="${report.r62_stage_3_provisions_sp}" th:attr="reportLable='R62', reportAddlCriteria1='C3'"  style="font-weight:bold;text-align: right; background-color: rgb(107, 122, 143); color: white;"></td>
 							<td class="numfield" th:text="${report.r62_total_specific_provisions}"  style="font-weight:bold;text-align: right;background-color: rgb(107, 122, 143); color: white; "></td>  </tr>
 										</tbody>
 								</table>
@@ -1052,7 +1052,7 @@ function showdetailsbyRowAndColumn(a) {
 											<td th:text="${report.acctNumber}"></td>
 											<td th:text="${report.acctName}"></td>
 											<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInPula, 1, 3, 'POINT')}"></td>
-											<td th:text="${report.reportLabel}"></td>
+											<td th:text="${report.reportLable}"></td>
 											<td th:text="${report.reportAddlCriteria1}"></td>
 											<td
 												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
