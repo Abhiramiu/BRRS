@@ -23,6 +23,8 @@ public interface BRRS_M_PLL_Detail_Repo extends JpaRepository<M_PLL_Detail_Entit
 	@Query(value = "select * from BRRS_M_PLL_DETAILTABLE where ROW_ID =?1 and COLUMN_ID=?2 AND REPORT_DATE=?3", nativeQuery = true)
 	List<M_PLL_Detail_Entity> GetDataByRowIdAndColumnId(String rowId,String ColumnId,Date reportdate);
 	
+	M_PLL_Detail_Entity findByAcctNumber(String acctNumber);
+	
 	
 	
 	

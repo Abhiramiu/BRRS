@@ -13,8 +13,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -1742,5 +1745,27 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	    }
 	}
 
+
+public boolean updateProvision(M_PLL_Detail_Entity mpllData) {
+    try {
+        M_PLL_Detail_Entity existing = BRRS_M_PLL_Detail_Repo.findByAcctNumber(mpllData.getAcctNumber());
+
+        if (existing != null) {
+            existing.setProvision(mpllData.getProvision());
+            BRRS_M_PLL_Detail_Repo.save(existing);
+            return true;
+        } else {
+            System.out.println("Record not found for Account No: " + mpllData.getAcctNumber());
+            return false;
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    }
 }
+}
+
+
+
 

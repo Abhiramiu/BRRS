@@ -42,6 +42,7 @@ import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity4;
 import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
+import com.bornfire.brrs.entities.BRRS_M_PLL_Detail_Repo;
 import com.bornfire.brrs.entities.M_CA3_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
@@ -60,6 +61,7 @@ import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LA4_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LIQ_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_SECL_Summary_Entity;
+import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
 import com.bornfire.brrs.entities.M_SFINP1_Summary_Manual_Entity;
 import com.bornfire.brrs.entities.M_SIR_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SIR_Summary_Entity;
@@ -102,6 +104,7 @@ import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SECL_ReportService;
+import com.bornfire.brrs.services.BRRS_M_PLL_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12A_ReportService;
@@ -1128,6 +1131,7 @@ public class BRRS_ReportsController {
 		 }
 		 
 		 @Autowired
+
 		 BRRS_M_SIR_ReportService BRRS_M_SIR_ReportService;
 		 @RequestMapping(value = "/MSIRupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 		 @ResponseBody
@@ -1241,6 +1245,45 @@ public class BRRS_ReportsController {
 		                              .body("Update Failed: " + e.getMessage());
 		     }
 		 }
+
+		    private BRRS_M_PLL_ReportService brrsMpllReportService;
+		 
+		 
+		 	@RequestMapping(value = "/updateMPLL", method = { RequestMethod.GET, RequestMethod.POST })
+		 	@ResponseBody
+		    public String updateMPLL(@ModelAttribute M_PLL_Detail_Entity mpllData) {
+		    	System.out.println("Came to Controller ");
+		        System.out.println("Received update for ACCT_NO: " + mpllData.getAcctNumber());
+		        System.out.println("Provision value: " + mpllData.getProvision());
+
+		        boolean updated = brrsMpllReportService.updateProvision(mpllData);
+
+		        if (updated) {
+		            return "Provision updated successfully!";
+		        } else {
+		            return "Record not found for update!";
+		        }
+		    }
+		 	
+		 	@Autowired
+		    private BRRS_M_PLL_Detail_Repo M_PLL_Detail_Repo;
+			
+			@RequestMapping(value = "/MPLL_Detail", method = {RequestMethod.GET, RequestMethod.POST})
+			public String showMPLLDetail(@RequestParam(required = false) String formmode,
+			                             @RequestParam(required = false) String acctNo,
+			                             Model model) {
+
+			    	     
+			  
+			        model.addAttribute("displaymode", "Details");
+			        model.addAttribute("formmode", formmode);
+			        model.addAttribute("mpllData",M_PLL_Detail_Repo .findByAcctNumber(acctNo));
+			    
+
+			    return "MPLL_Detail"; // your Thymeleaf HTML page
+			}
+		 
+
 		
 		
 }
