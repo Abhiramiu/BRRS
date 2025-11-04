@@ -54,6 +54,9 @@ import com.bornfire.brrs.entities.M_SRWA_12C_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12C_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12F_ReportService;
+import com.bornfire.brrs.entities.M_SIR_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_SIR_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_SIR_ReportService;
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
@@ -1089,6 +1092,39 @@ public class BRRS_ReportsController {
 		     }
 		 }
 		 
+		 @Autowired
+		 BRRS_M_SIR_ReportService BRRS_M_SIR_ReportService;
+		 @RequestMapping(value = "/MSIRupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+		 @ResponseBody
+		 public ResponseEntity<String> updateAllReports(
+		         @RequestParam(required = false)
+		         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		         @RequestParam(required = false) String type,
+		         @ModelAttribute M_SIR_Summary_Entity request1
+		 ) {
+		     try {
+		         System.out.println("Came to single controller");
+		         System.out.println(type);
+		         // set date into all 4 entities
+		         request1.setReport_date(asondate);
+		        
+		     if(type.equals("ARCHIVAL")) {
+		         M_SIR_Archival_Summary_Entity Archivalrequest1 = new M_SIR_Archival_Summary_Entity();
+		         BeanUtils.copyProperties(request1,Archivalrequest1);	
+		     }
+		     else {
+		         BRRS_M_SIR_ReportService.updateReport(request1);
+		     }
+		     return ResponseEntity.ok("All Reports Updated Successfully");
+		     }
+		     catch (Exception e) {
+		         e.printStackTrace();
+		         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                              .body("Update Failed: " + e.getMessage());
+		     }
+		 }
+		
+		
 		
 		
 }

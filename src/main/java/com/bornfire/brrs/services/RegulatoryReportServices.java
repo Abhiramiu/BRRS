@@ -133,7 +133,9 @@ public class RegulatoryReportServices {
 	
 	@Autowired
 	BRRS_Q_SMME_Intrest_Income_ReportService BRRS_Q_SMME_Intrest_Income_ReportService;
-	
+
+	@Autowired
+	BRRS_M_SIR_ReportService BRRS_M_SIR_ReportService;
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
@@ -324,6 +326,12 @@ public class RegulatoryReportServices {
 		case "Q_SMME":
 			
 			repsummary = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+			
+		case "M_SIR":
+			
+			repsummary = BRRS_M_SIR_ReportService.getM_SIRView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 			
@@ -815,6 +823,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+		case "M_SIR":
+			try {
+				repfile = BRRS_M_SIR_ReportService.getM_SIRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 			
 		
 			
@@ -1223,6 +1240,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_SIR":
+			try {
+				archivalData = BRRS_M_SIR_ReportService.getM_SIRArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+
 
 
 			
