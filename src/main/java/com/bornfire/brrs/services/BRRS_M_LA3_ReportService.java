@@ -1920,24 +1920,24 @@ public class BRRS_M_LA3_ReportService {
 				for (M_LA3_Archival_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
+					row.createCell(0).setCellValue(item.getCust_id());
+					row.createCell(1).setCellValue(item.getAcct_number());
+					row.createCell(2).setCellValue(item.getAcct_name());
 
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					if (item.getAcct_balance_in_pula() != null) {
+						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getRowId());
-					row.createCell(5).setCellValue(item.getColumnId());
+					row.createCell(4).setCellValue(item.getReport_label());
+					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
 					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+							.setCellValue(item.getReport_date() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
 
 					// Apply data style for all other cells
