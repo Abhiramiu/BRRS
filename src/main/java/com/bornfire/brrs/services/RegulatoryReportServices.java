@@ -132,6 +132,9 @@ public class RegulatoryReportServices {
 	BRRS_M_SRWA_12B_ReportService brrs_m_srwa_12b_reportservice;
 	
 	@Autowired
+	BRRS_M_SECL_ReportService brrs_m_secl_reportservice;
+	
+	@Autowired
 	BRRS_Q_SMME_Intrest_Income_ReportService BRRS_Q_SMME_Intrest_Income_ReportService;
 
 	@Autowired
@@ -324,6 +327,10 @@ public class RegulatoryReportServices {
 			
 			repsummary = brrs_m_srwa_12b_reportservice.getM_SRWA_12BView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
+			break;
+			
+		case "M_SECL":
+			repsummary = brrs_m_secl_reportservice.getM_SECLView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
 			break;
 			
 		case "Q_SMME":
@@ -813,6 +820,15 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_SECL":
+			try {
+				repfile = brrs_m_secl_reportservice.getM_SECLExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		case "M_FXR":
 			try {
 				repfile = BRRS_M_FXR_reportservice.getM_FXRExcel(filename, reportId, fromdate, todate, currency,
@@ -1033,6 +1049,15 @@ public class RegulatoryReportServices {
 		case "M_CA7":
 			try {
 				archivalData = BRRS_M_CA7_reportservice.getM_CA7Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_SECL":
+			try {
+				archivalData = brrs_m_secl_reportservice.getM_SECLArchival();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
