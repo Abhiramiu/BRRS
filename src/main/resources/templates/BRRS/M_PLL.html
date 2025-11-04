@@ -321,6 +321,19 @@ PURPOSE		: BRRS_M_PLLREPORT
 			border-collapse: collapse;
 		}
 	</style>
+	
+	<style>
+			#reportdetails,
+			#reportdetails th,
+			#reportdetails td {
+				
+				border: 1px solid black !important;
+			}
+
+			#reportdetails {
+				border-collapse: collapse;
+			}
+		</style>
 
 
 	<script th:inline="javascript">
@@ -646,22 +659,24 @@ PURPOSE		: BRRS_M_PLLREPORT
 	</script>
 
 	<script th:inline="javascript">
-		$(document).ready(function () {
-			$('#reportdetails').DataTable({
-				scrollX: true,
-				autoWidth: false,
-				paging: true,
-				searching: true,
-				lengthChange: false,
-				ordering: true,
-				pageLength: 100,
-				fixedHeader: true,
-				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
-				language: {search: "Search:"}
-			});
-		});
+	  $(document).ready(function () {
+	    $('#reportdetails').DataTable({
+	      scrollX: true,
+	      scrollY: false,
+	      autoWidth: true,
+	      paging: true,
+	      searching: true,
+	      lengthChange: false,
+	      ordering: true,
+	      pageLength: 100,
+	      fixedHeader: true,
+	      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
+	      language: { search: "Search:" }
+	    });
+	  });
 	</script>
 
+	
 
 </head>
 
@@ -687,7 +702,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top:10px; font-weight: bold; color: white;">
-							M-PLL: PROVISIONS FOR LOAN LOSS
+							BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT
 						</h5>
 
 					</div>
@@ -739,6 +754,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 							style="border-right: 1px solid #dee2e6;max-height:700px; overflow-y: auto;">
 							<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 								id="reports">
+								<p>(30) MONTHLY SCHEDULE: M-PLL: PROVISIONS FOR LOAN LOSS  (P'000)</p>
 								<thead class="thead-light"
 									style="position: sticky; top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
 									<tr style="background-color: black; ">
@@ -1202,9 +1218,9 @@ PURPOSE		: BRRS_M_PLLREPORT
 								<thead class="thead-light">
 									<tr>
 										<th></th>
-										<th>S No</th>
+										<th style=>S No</th>
 										<th>CUST ID</th>
-										<th>ACCT NO</th>
+										<th style="text-align:left">ACCT NO</thstyle="text-align:left">
 										<th>ACCT NAME</th>
 										<th style="text-align:right;">PROVISION AMOUNT</th>
 										<th style="text-align:left">ROW ID</th>
@@ -1224,7 +1240,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 										<!-- Null-safe field rendering -->
 										<td th:text="${srlno.index + 1}"></td>
 										<td th:text="${report.custId}"></td>
-										<td th:text="${report.acctNumber}"></td>
+										<td style="text-align:left" th:text="${report.acctNumber}"></td>
 										<td th:text="${report.acctName}"></td>
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.provision, 1, 3, 'POINT')}">
@@ -1321,42 +1337,22 @@ PURPOSE		: BRRS_M_PLLREPORT
 	</div>
 
 </body>
-<!-- <script>
-															  $(document).ready(function () {
-															    $('#BRFvalidation').DataTable({
-															      "paging": true,
-															      "pageLength": 10,
-															      "lengthChange": false,
-															      "searching": true,
-															      "ordering": true,
-															      "autoWidth": false,
-															      "language": {
-															        "search": "Search:"
-															      }
-															    });
-															  });
-															</script> -->
-<!-- <script>
-															  $(document).ready(function () {
-															    $('#BRFvalidation').DataTable({
-															      "paging": true,
-															      "info": false,       // turn off "Showing x of y"
-															      "searching": false,  // turn off search
-															      "ordering": false,   // turn off ordering
-															      "lengthChange": false // hide "Show x entries"
-															    });
-															  });
-															</script> -->
-
 
 
 <style>
+	
+	.dataTables_scrollHeadInner,
+	table.dataTable {
+	  width: 100% !important;
+	}
+	
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
 		/* This is the key: it creates the scroll context */
 		max-height: 700px;
 		/* Or a suitable height like 80vh for responsive design */
 		overflow-y: auto;
+		overflow-x: hidden; 
 		border: 1px solid #ccc;
 	}
 
