@@ -1280,23 +1280,36 @@ public class BRRS_ReportsController {
 		    }
 		 	
 		 	@Autowired
-		    private BRRS_M_PLL_Detail_Repo M_PLL_Detail_Repo;
-			
-			@RequestMapping(value = "/MPLL_Detail", method = {RequestMethod.GET, RequestMethod.POST})
-			public String showMPLLDetail(@RequestParam(required = false) String formmode,
-			                             @RequestParam(required = false) String acctNo,
-			                             Model model) {
+		 	private BRRS_M_PLL_Detail_Repo M_PLL_Detail_Repo;
 
-			    	     
-			  
-			        model.addAttribute("displaymode", "edit");
-			        model.addAttribute("formmode", "edit");
-			        model.addAttribute("mpllData",M_PLL_Detail_Repo .findByAcctNumber(acctNo));
-			    
+		 	@RequestMapping(value = "/MPLL_Detail", method = {RequestMethod.GET, RequestMethod.POST})
+		 	public String showMPLLDetail(@RequestParam(required = false) String formmode,
+		 	                             @RequestParam(required = false) String acctNo,
+		 	                             Model model) {
 
-			    return "BRRS/M_PLL"; // your Thymeleaf HTML page
-			}
-		 
+		 	    // 1. Fetch the entity from the database
+		 	    M_PLL_Detail_Entity mpllEntity = M_PLL_Detail_Repo.findByAcctNumber(acctNo);
+
+		 	    // 2. A good practice is to check if the entity was found
+		 	    if (mpllEntity != null) {
+		 	        // 3. Get the report date from the entity
+		 	        Date reportDate = mpllEntity.getReportDate(); // Assuming the method is getReportDate()
+
+		 	        // 4. Format the date into a String (e.g., "dd/MM/yyyy")
+		 	        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+		 	        String formattedDate = formatter.format(reportDate);
+
+		 	        // 5. Add the formatted date to the model so the header can use it
+		 	        model.addAttribute("asondate", formattedDate);
+		 	    }
+		 	    
+		 	    // Add the other attributes as before
+		 	    model.addAttribute("displaymode", "edit");
+		 	    model.addAttribute("formmode", "edit");
+		 	    model.addAttribute("mpllData", M_PLL_Detail_Repo .findByAcctNumber(acctNo)); // Pass the fetched entity to the form
+
+		 	    return "BRRS/M_PLL"; // your Thymeleaf HTML page
+		 	}		 
 
 			 @Autowired
 			 private BRRS_M_SRWA_12B_ReportService brrs_m_srwa_12b_reportservice;
