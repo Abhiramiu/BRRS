@@ -337,10 +337,9 @@ $(window).on('beforeunload', function() {
 
 		window.history.back();
 	}
-	
 	function showdetails() {
-						 showResultModal('BRRS',' Details page not available for Manual Report');
-					}
+				 showResultModal('BRRS',' Details page not available for Manual Report');
+			}
 	
 	function showsummary() {
 		var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
@@ -785,7 +784,7 @@ function calculateFinalTotal() {
 function calculateAll(){
     calculateCapitalForRange(13,17,"r12");
     calculateCapitalForRange(19,23,"r18");
-    calculateCapitalForRange(24,25,26);
+    calculateCapitalForRange(24,26);
     calculateCapitalForRange(28,32,"r27");
     calculateTotal33();
     calculateFinalTotal();
@@ -814,14 +813,13 @@ $(document).ready(function(){
 });
 </script>
 <script>
-	function closemodel(){
-		$("#resultModel").modal("hide");
-		$('#loader').modal('hide');
-		setTimeout(function () {
-	        location.reload();
-	    }, 300);		
+
+	function closemodel() {
+	    $('#alert').modal('hide');
+	    $('#resultModal').modal('hide');
+	    $('#loader').modal('hide');
 	}
-	
+
 	function fileuploads(btn){
 		const asondate = btn.getAttribute("data-todate");
 		const type = btn.getAttribute("data-type");
@@ -831,7 +829,7 @@ $(document).ready(function(){
 		
 		calculateCapitalForRange(13,17,"r12");
 		   calculateCapitalForRange(19,23,"r18");
-		   calculateCapitalForRange(24,25,26);
+		   calculateCapitalForRange(24,26);
 		   calculateCapitalForRange(28,32,"r27");
 		   calculateTotal33();
 		   calculateFinalTotal();
@@ -870,17 +868,14 @@ $(document).ready(function(){
 		        contentType: false,
 		        dataType: 'text',
 				success: function () {
-				    $("#resultModalLabel").text("Success");
+				    $("#resultModalLabel").text("BRRS");
 				    $("#resultModalBody").text("Updated Successfully.");
 				    $("#resultModal").modal("show");
 
-				   
-				    setTimeout(function () {
-				        
-				        location.reload();
-
-				      
-				    }, 2000); 
+				    // 🟢 Wait for user to close the modal manually
+				    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+				        location.reload(); // reload ONLY when modal is closed
+				    });
 				},
 
 		        error: function (jqXHR) {
@@ -932,8 +927,9 @@ $(document).ready(function(){
 
 						<!-- Buttons -->
         <input type="hidden" id="selectedTab" th:value="${displaymode}">
-        <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();" th:if="${displaymode == 'Details'}">Summary</button>
-		<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();" th:if="${displaymode == 'summary'}">Details</button>
+        <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();" th:if="${displaymode == 'Details'}">Summary</button>		<button type="button" class="custom-tab-btn"
+									id="custom-tab-btnDetails" onclick="showdetails();"
+									th:if="${displaymode == 'summary'}">Details</button>
 		<!-- Modify button -->
 				<button type="button" class="custom-tab-btn"
 				        onclick="showmodify(this);"
@@ -1012,24 +1008,25 @@ $(document).ready(function(){
 													       <th colspan="3" style="text-align: center;background-color: #D8D8D8;font-weight:normal;">&gt; 24 months</th>
 													     </tr>
 														<tr>
-														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;"></th>
+														 	<th rowspan = "2" style="text-align: center;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
+															           vertical-align: bottom;">Amount</th>
 														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
 														 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
-														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;"></th>
+															<th rowspan = "2" style="text-align: center;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
+															          vertical-align: bottom;">Amount</th>
 														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
 														 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
-														 	<th style="text-align: center;background-color: #D8D8D8;"></th>
+															<th rowspan = "2" style="text-align: center;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
+																	vertical-align: bottom;">Amount</th>
 														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
 														 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
 														 </tr>
 													     <tr>
-													       <th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Amount</th>
+													 
 													       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Charge</th>
 													       <th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Charge</th>
-													       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Amount</th>
 													       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Charge</th>
 													       <th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Charge</th>
-													       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Amount</th>
 													       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Charge</th>
 													       <th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Charge</th>
 												   		</tr>
@@ -1058,7 +1055,10 @@ $(document).ready(function(){
     th:text="${report.r12_product}">
 </td>
 
-	  <td style="background-color:rgb(107, 122, 143)">
+	  <td style="text-align: center; 
+           vertical-align: middle; 
+           background-color:rgb(107, 122, 143);
+           font-weight: normal;">
 	    <input class="display-input show_input"
 	           type="text"
 	           th:value="${report.r12_amt_6m != null ? #numbers.formatDecimal(report.r12_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -1072,7 +1072,11 @@ $(document).ready(function(){
 	 <td style="background-color:rgb(192, 192, 192);">
 	    </td>
 		
-	 <td style="background-color:rgb(107, 122, 143)">
+	 <td style="background-color:rgb(107, 122, 143);
+	 text-align: center; 
+	            vertical-align: middle; 
+	            background-color:rgb(107, 122, 143);
+	            font-weight: normal;">
 	    <input class="display-input show_input"
 	           type="text"
 	           th:value="${report.r12_capital_6m != null ? #numbers.formatDecimal(report.r12_capital_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -1082,7 +1086,10 @@ $(document).ready(function(){
 	           readonly />
 	  </td>
 	  
-	 <td style="background-color:rgb(107, 122, 143)">
+	 <td style="background-color:rgb(107, 122, 143);	  text-align: center; 
+	             vertical-align: middle; 
+	             background-color:rgb(107, 122, 143);
+	             font-weight: normal;">
 	      <input class="display-input show_input"
 	             type="text"
 	             th:value="${report.r12_amt_6to24m != null ? #numbers.formatDecimal(report.r12_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1096,7 +1103,11 @@ $(document).ready(function(){
 		<td style="background-color:rgb(192, 192, 192);">
 		   </td>
 		  
-		  <td style="background-color:rgb(107, 122, 143);">
+		  <td style="background-color:rgb(107, 122, 143);
+		  text-align: center; 
+		             vertical-align: middle; 
+		             background-color:rgb(107, 122, 143);
+		             font-weight: normal;">
 		      <input class="display-input show_input"
 		             type="text"
 		             th:value="${report.r12_capital_6to24m != null ? #numbers.formatDecimal(report.r12_capital_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1106,7 +1117,11 @@ $(document).ready(function(){
 		             readonly />
 		    </td>
 
-			<td style="background-color:rgb(107, 122, 143);">
+			<td style="background-color:rgb(107, 122, 143);			
+						text-align: center; 
+			           vertical-align: middle; 
+			           background-color:rgb(107, 122, 143);
+			           font-weight: normal;">
 			    <input class="display-input show_input"
 			           type="text"
 			           th:value="${report.r12_amt_gt24m != null ? #numbers.formatDecimal(report.r12_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1120,7 +1135,11 @@ $(document).ready(function(){
 			  <td style="background-color:rgb(192, 192, 192);">
 			     </td>
 			  
-			  <td style="background-color:rgb(107, 122, 143);">
+			  <td style="background-color:rgb(107, 122, 143);
+			  text-align: center; 
+			             vertical-align: middle; 
+			             background-color:rgb(107, 122, 143);
+			             font-weight: normal;">
 			      <input class="display-input show_input"
 			             type="text"
 			             th:value="${report.r12_capital_gt24m != null ? #numbers.formatDecimal(report.r12_capital_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1152,7 +1171,7 @@ $(document).ready(function(){
 		    th:text="${report.r13_product}">
 		</td>
 
-	  <td>
+	  <td style="padding-left: 20px;">
 	    <input class="display-input show_input"
 	           type="text"
 	           th:value="${report.r13_amt_6m != null ? #numbers.formatDecimal(report.r13_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -1182,7 +1201,7 @@ $(document).ready(function(){
 	           readonly />
 	  </td>
 	  
-	  <td>
+	  <td style="padding-left: 20px;">
 	      <input class="display-input show_input"
 	             type="text"
 	             th:value="${report.r13_amt_6to24m != null ? #numbers.formatDecimal(report.r13_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1212,7 +1231,7 @@ $(document).ready(function(){
 	                 readonly />
 	        </td>
 
-	        <td>
+	        <td style="padding-left: 20px;">
 	            <input class="display-input show_input"
 	                   type="text"
 	                   th:value="${report.r13_amt_gt24m != null ? #numbers.formatDecimal(report.r13_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1262,7 +1281,7 @@ $(document).ready(function(){
 		    th:text="${report.r14_product}">
 		</td>
 
-	  <td>
+	  <td style="padding-left: 20px;">
 	    <input class="display-input show_input"
 	           type="text"
 	           th:value="${report.r14_amt_6m != null ? #numbers.formatDecimal(report.r14_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -1292,7 +1311,7 @@ $(document).ready(function(){
 	           readonly />
 	  </td>
 	  
-	  <td>
+	  <td style="padding-left: 20px;">
 	      <input class="display-input show_input"
 	             type="text"
 	             th:value="${report.r14_amt_6to24m != null ? #numbers.formatDecimal(report.r14_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1322,7 +1341,7 @@ $(document).ready(function(){
 	                 readonly />
 	        </td>
 
-	        <td>
+	        <td style="padding-left: 20px;">
 	            <input class="display-input show_input"
 	                   type="text"
 	                   th:value="${report.r14_amt_gt24m != null ? #numbers.formatDecimal(report.r14_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1374,7 +1393,7 @@ $(document).ready(function(){
 		</td>
 
 
-	  <td>
+	  <td style="padding-left: 20px;">
 	    <input class="display-input show_input"
 	           type="text"
 	           th:value="${report.r15_amt_6m != null ? #numbers.formatDecimal(report.r15_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -1404,7 +1423,7 @@ $(document).ready(function(){
 	           readonly />
 	  </td>
 	  
-	  <td>
+	  <td style="padding-left: 20px;">
 	      <input class="display-input show_input"
 	             type="text"
 	             th:value="${report.r15_amt_6to24m != null ? #numbers.formatDecimal(report.r15_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1434,7 +1453,7 @@ $(document).ready(function(){
 	                 readonly />
 	        </td>
 
-	        <td>
+	        <td style="padding-left: 20px;">
 	            <input class="display-input show_input"
 	                   type="text"
 	                   th:value="${report.r15_amt_gt24m != null ? #numbers.formatDecimal(report.r15_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1482,7 +1501,7 @@ $(document).ready(function(){
 		    th:title="${report.r16_product}"
 		    th:text="${report.r16_product}">
 		</td>
-	  <td>
+	  <td style="padding-left: 20px;">
 	    <input class="display-input show_input"
 	           type="text"
 	           th:value="${report.r16_amt_6m != null ? #numbers.formatDecimal(report.r16_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -1512,7 +1531,7 @@ $(document).ready(function(){
 	           readonly />
 	  </td>
 	  
-	  <td>
+	  <td style="padding-left: 20px;">
 	      <input class="display-input show_input"
 	             type="text"
 	             th:value="${report.r16_amt_6to24m != null ? #numbers.formatDecimal(report.r16_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1542,7 +1561,7 @@ $(document).ready(function(){
 	                 readonly />
 	        </td>
 
-	        <td>
+	        <td style="padding-left: 20px;">
 	            <input class="display-input show_input"
 	                   type="text"
 	                   th:value="${report.r16_amt_gt24m != null ? #numbers.formatDecimal(report.r16_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1592,7 +1611,7 @@ $(document).ready(function(){
 		    th:text="${report.r17_product}">
 		</td>
 
-	  <td>
+	  <td style="padding-left: 20px;">
 	    <input class="display-input show_input"
 	           type="text"
 	           th:value="${report.r17_amt_6m != null ? #numbers.formatDecimal(report.r17_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -1622,7 +1641,7 @@ $(document).ready(function(){
 	           readonly />
 	  </td>
 	  
-	  <td>
+	  <td style="padding-left: 20px;">
 	      <input class="display-input show_input"
 	             type="text"
 	             th:value="${report.r17_amt_6to24m != null ? #numbers.formatDecimal(report.r17_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1652,7 +1671,7 @@ $(document).ready(function(){
 	                 readonly />
 	        </td>
 
-	        <td>
+	        <td style="padding-left: 20px;">
 	            <input class="display-input show_input"
 	                   type="text"
 	                   th:value="${report.r17_amt_gt24m != null ? #numbers.formatDecimal(report.r17_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1786,14 +1805,14 @@ $(document).ready(function(){
 			  max-width: 220px;
 			  line-height: 1.2;
 			  text-align: left;
-			  vertical-align: middle;
+			  vertical-align: middle; padding-left: 20px;
 		    "
 		    th:title="${report.r19_product}"
 		    th:text="${report.r19_product}">
 		</td>
 
 
-			<td>
+			<td style="padding-left: 20px;">
 			  <input class="display-input show_input"
 			         type="text"
 			         th:value="${report.r19_amt_6m != null ? #numbers.formatDecimal(report.r19_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -1823,7 +1842,7 @@ $(document).ready(function(){
 			         readonly />
 			</td>
 
-			<td>
+			<td style="padding-left: 20px;">
 			    <input class="display-input show_input"
 			           type="text"
 			           th:value="${report.r19_amt_6to24m != null ? #numbers.formatDecimal(report.r19_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1853,7 +1872,7 @@ $(document).ready(function(){
 			               readonly />
 			      </td>
 
-			      <td>
+			      <td style="padding-left: 20px;">
 			          <input class="display-input show_input"
 			                 type="text"
 			                 th:value="${report.r19_amt_gt24m != null ? #numbers.formatDecimal(report.r19_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1897,13 +1916,13 @@ $(document).ready(function(){
 						  max-width: 220px;
 						  line-height: 1.2;
 						  text-align: left;
-						  vertical-align: middle;
+						  vertical-align: middle; padding-left: 20px;
 					    "
 					    th:title="${report.r20_product}"
 					    th:text="${report.r20_product}">
 					</td>
 				
-				<td>
+				<td style="padding-left: 20px;">
 				  <input class="display-input show_input"
 				         type="text"
 				         th:value="${report.r20_amt_6m != null ? #numbers.formatDecimal(report.r20_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -1933,7 +1952,7 @@ $(document).ready(function(){
 				         readonly />
 				</td>
 
-				<td>
+				<td style="padding-left: 20px;">
 				    <input class="display-input show_input"
 				           type="text"
 				           th:value="${report.r20_amt_6to24m != null ? #numbers.formatDecimal(report.r20_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -1963,7 +1982,7 @@ $(document).ready(function(){
 				               readonly />
 				      </td>
 
-				      <td>
+				      <td style="padding-left: 20px;">
 				          <input class="display-input show_input"
 				                 type="text"
 				                 th:value="${report.r20_amt_gt24m != null ? #numbers.formatDecimal(report.r20_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2006,14 +2025,14 @@ $(document).ready(function(){
 							  max-width: 220px;
 							  line-height: 1.2;
 							  text-align: left;
-							  vertical-align: middle;
+							  vertical-align: middle; padding-left: 20px;
 						    "
 						    th:title="${report.r21_product}"
 						    th:text="${report.r21_product}">
 						</td>
 					
 
-					<td>
+					<td style="padding-left: 20px;">
 					  <input class="display-input show_input"
 					         type="text"
 					         th:value="${report.r21_amt_6m != null ? #numbers.formatDecimal(report.r21_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2043,7 +2062,7 @@ $(document).ready(function(){
 					         readonly />
 					</td>
 
-					<td>
+					<td style="padding-left: 20px;">
 					    <input class="display-input show_input"
 					           type="text"
 					           th:value="${report.r21_amt_6to24m != null ? #numbers.formatDecimal(report.r21_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2073,7 +2092,7 @@ $(document).ready(function(){
 					               readonly />
 					      </td>
 
-					      <td>
+					      <td style="padding-left: 20px;">
 					          <input class="display-input show_input"
 					                 type="text"
 					                 th:value="${report.r21_amt_gt24m != null ? #numbers.formatDecimal(report.r21_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2116,14 +2135,14 @@ $(document).ready(function(){
 								  max-width: 220px;
 								  line-height: 1.2;
 								  text-align: left;
-								  vertical-align: middle;
+								  vertical-align: middle; padding-left: 20px;
 							    "
 							    th:title="${report.r22_product}"
 							    th:text="${report.r22_product}">
 							</td>
 					
 
-						<td>
+						<td style="padding-left: 20px;">
 						  <input class="display-input show_input"
 						         type="text"
 						         th:value="${report.r22_amt_6m != null ? #numbers.formatDecimal(report.r22_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2153,7 +2172,7 @@ $(document).ready(function(){
 						         readonly />
 						</td>
 
-						<td>
+						<td style="padding-left: 20px;">
 						    <input class="display-input show_input"
 						           type="text"
 						           th:value="${report.r22_amt_6to24m != null ? #numbers.formatDecimal(report.r22_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2183,7 +2202,7 @@ $(document).ready(function(){
 						               readonly />
 						      </td>
 
-						      <td>
+						      <td style="padding-left: 20px;">
 						          <input class="display-input show_input"
 						                 type="text"
 						                 th:value="${report.r22_amt_gt24m != null ? #numbers.formatDecimal(report.r22_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2226,12 +2245,12 @@ $(document).ready(function(){
 									  max-width: 220px;
 									  line-height: 1.2;
 									  text-align: left;
-									  vertical-align: middle;
+									  vertical-align: middle; padding-left: 20px;
 								    "
 								    th:title="${report.r23_product}"
 								    th:text="${report.r23_product}">
 								</td>
-							<td>
+							<td style="padding-left: 20px;">
 							  <input class="display-input show_input"
 							         type="text"
 							         th:value="${report.r23_amt_6m != null ? #numbers.formatDecimal(report.r23_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2261,7 +2280,7 @@ $(document).ready(function(){
 							         readonly />
 							</td>
 
-							<td>
+							<td style="padding-left: 20px;">
 							    <input class="display-input show_input"
 							           type="text"
 							           th:value="${report.r23_amt_6to24m != null ? #numbers.formatDecimal(report.r23_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2291,7 +2310,7 @@ $(document).ready(function(){
 							               readonly />
 							      </td>
 
-							      <td>
+							      <td style="padding-left: 20px;">
 							          <input class="display-input show_input"
 							                 type="text"
 							                 th:value="${report.r23_amt_gt24m != null ? #numbers.formatDecimal(report.r23_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2342,7 +2361,7 @@ $(document).ready(function(){
 									</td>
 								
 
-								<td>
+								<td style="padding-left: 20px;">
 								  <input class="display-input show_input"
 								         type="text"
 								         th:value="${report.r24_amt_6m != null ? #numbers.formatDecimal(report.r24_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2372,7 +2391,7 @@ $(document).ready(function(){
 								         readonly />
 								</td>
 
-								<td>
+								<td style="padding-left: 20px;">
 								    <input class="display-input show_input"
 								           type="text"
 								           th:value="${report.r24_amt_6to24m != null ? #numbers.formatDecimal(report.r24_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2402,7 +2421,7 @@ $(document).ready(function(){
 								               readonly />
 								      </td>
 
-								      <td>
+								      <td style="padding-left: 20px;">
 								          <input class="display-input show_input"
 								                 type="text"
 								                 th:value="${report.r24_amt_gt24m != null ? #numbers.formatDecimal(report.r24_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2455,7 +2474,7 @@ $(document).ready(function(){
 																
 
 
-									<td>
+									<td style="padding-left: 20px;">
 									  <input class="display-input show_input"
 									         type="text"
 									         th:value="${report.r25_amt_6m != null ? #numbers.formatDecimal(report.r25_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2485,7 +2504,7 @@ $(document).ready(function(){
 									         readonly />
 									</td>
 
-									<td>
+									<td style="padding-left: 20px;">
 									    <input class="display-input show_input"
 									           type="text"
 									           th:value="${report.r25_amt_6to24m != null ? #numbers.formatDecimal(report.r25_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2515,7 +2534,7 @@ $(document).ready(function(){
 									               readonly />
 									      </td>
 
-									      <td>
+									      <td style="padding-left: 20px;">
 									          <input class="display-input show_input"
 									                 type="text"
 									                 th:value="${report.r25_amt_gt24m != null ? #numbers.formatDecimal(report.r25_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2567,7 +2586,7 @@ $(document).ready(function(){
 																	
 
 
-										<td>
+										<td style="padding-left: 20px;">
 										  <input class="display-input show_input"
 										         type="text"
 										         th:value="${report.r26_amt_6m != null ? #numbers.formatDecimal(report.r26_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2597,7 +2616,7 @@ $(document).ready(function(){
 										         readonly />
 										</td>
 
-										<td>
+										<td style="padding-left: 20px;">
 										    <input class="display-input show_input"
 										           type="text"
 										           th:value="${report.r26_amt_6to24m != null ? #numbers.formatDecimal(report.r26_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2627,7 +2646,7 @@ $(document).ready(function(){
 										               readonly />
 										      </td>
 
-										      <td>
+										      <td style="padding-left: 20px;">
 										          <input class="display-input show_input"
 										                 type="text"
 										                 th:value="${report.r26_amt_gt24m != null ? #numbers.formatDecimal(report.r26_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2769,14 +2788,14 @@ $(document).ready(function(){
 												  max-width: 220px;
 												  line-height: 1.2;
 												  text-align: left;
-												  vertical-align: middle;
+												  vertical-align: middle; padding-left: 20px;
 											    "
 											    th:title="${report.r28_product}"
 											    th:text="${report.r28_product}">
 											</td>
 										
 
-				<td>
+				<td style="padding-left: 20px;">
 				  <input class="display-input show_input"
 				         type="text"
 				         th:value="${report.r28_amt_6m != null ? #numbers.formatDecimal(report.r28_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2806,7 +2825,7 @@ $(document).ready(function(){
 				         readonly />
 				</td>
 
-				<td>
+				<td style="padding-left: 20px;">
 				    <input class="display-input show_input"
 				           type="text"
 				           th:value="${report.r28_amt_6to24m != null ? #numbers.formatDecimal(report.r28_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2836,7 +2855,7 @@ $(document).ready(function(){
 				               readonly />
 				      </td>
 
-				      <td>
+				      <td style="padding-left: 20px;">
 				          <input class="display-input show_input"
 				                 type="text"
 				                 th:value="${report.r28_amt_gt24m != null ? #numbers.formatDecimal(report.r28_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2879,13 +2898,13 @@ $(document).ready(function(){
 													  max-width: 220px;
 													  line-height: 1.2;
 													  text-align: left;
-													  vertical-align: middle;
+													  vertical-align: middle; padding-left: 20px;
 												    "
 												    th:title="${report.r29_product}"
 												    th:text="${report.r29_product}">
 												</td>
 											
-			<td>
+			<td style="padding-left: 20px;">
 			  <input class="display-input show_input"
 			         type="text"
 			         th:value="${report.r29_amt_6m != null ? #numbers.formatDecimal(report.r29_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2915,7 +2934,7 @@ $(document).ready(function(){
 			         readonly />
 			</td>
 
-			<td>
+			<td style="padding-left: 20px;">
 			    <input class="display-input show_input"
 			           type="text"
 			           th:value="${report.r29_amt_6to24m != null ? #numbers.formatDecimal(report.r29_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2945,7 +2964,7 @@ $(document).ready(function(){
 			               readonly />
 			      </td>
 
-			      <td>
+			      <td style="padding-left: 20px;">
 			          <input class="display-input show_input"
 			                 type="text"
 			                 th:value="${report.r29_amt_gt24m != null ? #numbers.formatDecimal(report.r29_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2988,13 +3007,13 @@ $(document).ready(function(){
 														  max-width: 220px;
 														  line-height: 1.2;
 														  text-align: left;
-														  vertical-align: middle;
+														  vertical-align: middle; padding-left: 20px;
 													    "
 													    th:title="${report.r30_product}"
 													    th:text="${report.r30_product}">
 													</td>
 												
-			<td>
+			<td style="padding-left: 20px;">
 			  <input class="display-input show_input"
 					 type="text"
 					 th:value="${report.r30_amt_6m != null ? #numbers.formatDecimal(report.r30_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -3024,7 +3043,7 @@ $(document).ready(function(){
 					 readonly />
 			</td>
 
-			<td>
+			<td style="padding-left: 20px;">
 				<input class="display-input show_input"
 					   type="text"
 					   th:value="${report.r30_amt_6to24m != null ? #numbers.formatDecimal(report.r30_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -3054,7 +3073,7 @@ $(document).ready(function(){
 						   readonly />
 				  </td>
 
-				  <td>
+				  <td style="padding-left: 20px;">
 					  <input class="display-input show_input"
 							 type="text"
 							 th:value="${report.r30_amt_gt24m != null ? #numbers.formatDecimal(report.r30_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -3097,14 +3116,14 @@ $(document).ready(function(){
 														  max-width: 220px;
 														  line-height: 1.2;
 														  text-align: left;
-														  vertical-align: middle;
+														  vertical-align: middle; padding-left: 20px;
 													    "
 													    th:title="${report.r31_product}"
 													    th:text="${report.r31_product}">
 													</td>
 												
 
-			<td>
+			<td style="padding-left: 20px;">
 			  <input class="display-input show_input"
 					 type="text"
 					 th:value="${report.r31_amt_6m != null ? #numbers.formatDecimal(report.r31_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -3134,7 +3153,7 @@ $(document).ready(function(){
 					 readonly />
 			</td>
 
-			<td>
+			<td style="padding-left: 20px;">
 				<input class="display-input show_input"
 					   type="text"
 					   th:value="${report.r31_amt_6to24m != null ? #numbers.formatDecimal(report.r31_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -3164,7 +3183,7 @@ $(document).ready(function(){
 						   readonly />
 				  </td>
 
-				  <td>
+				  <td style="padding-left: 20px;">
 					  <input class="display-input show_input"
 							 type="text"
 							 th:value="${report.r31_amt_gt24m != null ? #numbers.formatDecimal(report.r31_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -3208,7 +3227,7 @@ $(document).ready(function(){
 														  max-width: 220px;
 														  line-height: 1.2;
 														  text-align: left;
-														  vertical-align: middle;
+														  vertical-align: middle; padding-left: 20px;
 														  
 													    "
 													    th:title="${report.r32_product}"
@@ -3216,7 +3235,7 @@ $(document).ready(function(){
 													</td>
 												
 
-			<td>
+			<td style="padding-left: 20px;">
 			  <input class="display-input show_input"
 					 type="text"
 					 th:value="${report.r32_amt_6m != null ? #numbers.formatDecimal(report.r32_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -3246,7 +3265,7 @@ $(document).ready(function(){
 					 readonly />
 			</td>
 
-			<td>
+			<td style="padding-left: 20px;">
 				<input class="display-input show_input"
 					   type="text"
 					   th:value="${report.r32_amt_6to24m != null ? #numbers.formatDecimal(report.r32_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -3276,7 +3295,7 @@ $(document).ready(function(){
 						   readonly />
 				  </td>
 
-				  <td>
+				  <td style="padding-left: 20px;">
 					  <input class="display-input show_input"
 							 type="text"
 							 th:value="${report.r32_amt_gt24m != null ? #numbers.formatDecimal(report.r32_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -3372,6 +3391,19 @@ $(document).ready(function(){
 					  			  </td>
 
 		</tr>
+		<tr>
+				<td style="height:30px;"></td>
+				<td  style="height:30px;"></td>
+				<td  style="height:30px;"></td>
+				<td  style="height:30px;"></td>
+				<td  style="height:30px;"></td>
+				<td  style="height:30px;"></td>
+				<td  style="height:30px;"></td>
+				<td  style="height:30px;"></td>
+				<td  style="height:30px;"></td>
+				<td  style="height:30px;"></td>
+				<td  style="height:30px;"></td>
+			</tr>
 		<tr>
 			        <td></td>
 			        <td  style="text-align: right; font-weight: bold;">Total Specific Risk Charge</td>
