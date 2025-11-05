@@ -1749,10 +1749,15 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 public boolean updateProvision(M_PLL_Detail_Entity mpllData) {
     try {
         M_PLL_Detail_Entity existing = BRRS_M_PLL_Detail_Repo.findByAcctNumber(mpllData.getAcctNumber());
-
+        
+        System.out.println("came to services");
         if (existing != null) {
             existing.setProvision(mpllData.getProvision());
+            existing.setAcctName(mpllData.getAcctName());
+            
+            
             BRRS_M_PLL_Detail_Repo.save(existing);
+            
             return true;
         } else {
             System.out.println("Record not found for Account No: " + mpllData.getAcctNumber());
@@ -1764,6 +1769,7 @@ public boolean updateProvision(M_PLL_Detail_Entity mpllData) {
         return false;
     }
 }
+
 }
 
 

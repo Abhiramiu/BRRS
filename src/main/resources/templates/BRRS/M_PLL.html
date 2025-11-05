@@ -692,27 +692,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 			document.getElementById('submitButton').style.display = 'inline-block';
 		}
 
-		function updateform() {
-			
-			const formData = $('#mpllData').serialize();
-			
-			
-			
+		
 
-			$.ajax({
-				url: '/BRRS/Reports/updateMPLL',
-				type: 'POST',
-				data: formData,
-				success: function (response) {
-					alert(response);
-					location.reload();
-				},
-				error: function (xhr, status, error) {
-					console.error("Update error:", error);
-					alert("Failed to update record. Please try again.");
-				}
-			});
-		}
 	</script>
 	
 	<script>
@@ -724,7 +705,47 @@ PURPOSE		: BRRS_M_PLLREPORT
 	</script>
 
 
+	<script>
+	function submitMPLLUpdate() {
+	    const formData = $('#mpllDetailForm').serialize(); // Ensure correct form ID
 
+	    // Show loader while processing
+	    $('#loader').modal('show');
+
+	    $.ajax({
+	        url: '/BRRS/Reports/updateMPLL',
+	        type: 'POST',
+	        data: formData,
+	        success: function (response) {
+	            $('#loader').modal('hide');
+
+	            // Show message via modal
+	            if (response && response.toLowerCase().includes('success')) {
+	                showResultModal('Success', response);
+	            } else {
+	                showResultModal('Information', response || 'No data updated.');
+	            }
+
+	            // Reload page after short delay
+	            setTimeout(() => {
+	                location.reload();
+	            }, 1500);
+	        },
+	        error: function (xhr, status, error) {
+	            $('#loader').modal('hide');
+	            console.error("Update error:", error);
+
+	            // Show error modal
+	            showResultModal('Error', 'Failed to update record. Please try again.');
+
+	            // Reload after delay
+	            setTimeout(() => {
+	                location.reload();
+	            }, 1500);
+	        }
+	    });
+	}
+</script>
 
 </head>
 
@@ -1257,11 +1278,11 @@ PURPOSE		: BRRS_M_PLLREPORT
 			</div>
 
 			<div th:if="${displaymode == 'Details'}">
+			
 				<div class="row">
 					<div class="col-sm-12">
 						<div class="table-responsive scrollable-table-container"
 							style="border-right: 1px solid #dee2e6;">
-							<form id="mpllData" th:object="${mpllData}">
 								<table
 									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
 									id="reportdetails">
@@ -1306,7 +1327,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 										</tr>
 									</tbody>
 								</table>
-							</form>
+							
 						</div>
 
 						<!-- Submit Button -->
@@ -1320,11 +1341,9 @@ PURPOSE		: BRRS_M_PLLREPORT
 				</div>
 			</div>
 			
-			<!-- MPLL Detail Form Screen -->
-			<div th:if="${formmode != 'list'}" class="card">
-			  <div class="card-header" style="background-color: #a60000; color: white;">
-			    <span th:text="'MPLL Details - ' + ${formmode.toUpperCase()}"></span>
-			  </div>
+	<!-- MPLL Detail Form Screen -->
+		<div th:if="${formmode == 'edit'}" class="card">
+			 
 
 			  <div class="card-body">
 			    <form th:object="${mpllData}" method="post" id="mpllDetailForm">
@@ -1332,14 +1351,14 @@ PURPOSE		: BRRS_M_PLLREPORT
 			        <label class="col-sm-2">Customer ID</label>
 			        <div class="col-sm-3">
 			          <input type="text" th:field="*{custId}" class="form-control form-control-sm"
-			                 th:readonly="${formmode != 'edit'}" />
+			                 readonly/>
 			        </div>
 
 			        <div class="col-sm-1"></div>
 
 			        <label class="col-sm-2">Account Number</label>
 			        <div class="col-sm-3">
-			          <input type="text" th:field="*{acctNumber}" class="form-control form-control-sm"
+			          <input type="text" th:field="*{acctNumber}" name="acctNumber" class="form-control form-control-sm"
 			                 readonly />
 			        </div>
 			      </div>
@@ -1348,17 +1367,17 @@ PURPOSE		: BRRS_M_PLLREPORT
 			        <label class="col-sm-2">Account Name</label>
 			        <div class="col-sm-3">
 			          <input type="text" th:field="*{acctName}" class="form-control form-control-sm"
-			                 th:readonly="${formmode != 'edit'}" />
+			                  />
 			        </div>
 
 			        <div class="col-sm-1"></div>
 
 			        <label class="col-sm-2">Provision Amount</label>
 			        <div class="col-sm-3">
-			          <input type="number" step="0.01" th:field="*{provision}" 
+			          <input type="number" step="0.01" name="provision" th:field="*{provision}" 
 			                 class="form-control form-control-sm"
 			                 style="text-align:right;"
-			                 th:readonly="${formmode != 'edit'}" />
+			                 />
 			        </div>
 			      </div>
 
@@ -1379,18 +1398,16 @@ PURPOSE		: BRRS_M_PLLREPORT
 			      <div class="row formline" style="margin-top:10px;">
 			        <label class="col-sm-2">Report Date</label>
 			        <div class="col-sm-3">
-			          <input type="date" th:field="*{reportDate}" class="form-control form-control-sm"
-			                 th:readonly="${formmode != 'edit'}" />
+			          <input type="date" th:field="*{reportDate}" name="reportDate" class="form-control form-control-sm"
+			                 readonly />
 			        </div>
 			      </div>
 
 			      <div style="text-align:center; margin-top:20px;">
-			        <button type="button" class="btn btn-primary"
+			        <button type="button" class="custom-tab-btn"
 			                th:if="${formmode == 'edit'}"
 			                onclick="submitMPLLUpdate()">Update</button>
 
-			        <button type="button" class="btn btn-secondary"
-			                onclick="location.href='/BRRS/MPLL_Detail?formmode=list'">Back</button>
 			      </div>
 			    </form>
 			  </div>
@@ -1407,7 +1424,6 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 
 
-	</div>
 
 
 

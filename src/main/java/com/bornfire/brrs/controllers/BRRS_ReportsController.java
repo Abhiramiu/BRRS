@@ -141,6 +141,10 @@ public class BRRS_ReportsController {
 	 BRRS_M_LA4_ReportService BRRS_M_LA4_ReportService;
 	 
 	 
+	 @Autowired
+	 private BRRS_M_PLL_ReportService brrsMpllReportService;
+	 
+	 
 	private String pagesize;
 
 	public String getPagesize() {
@@ -1255,7 +1259,8 @@ public class BRRS_ReportsController {
 		     }
 		 }
 
-		    private BRRS_M_PLL_ReportService brrsMpllReportService;
+		 
+		    
 		 
 		 
 		 	@RequestMapping(value = "/updateMPLL", method = { RequestMethod.GET, RequestMethod.POST })
@@ -1284,12 +1289,12 @@ public class BRRS_ReportsController {
 
 			    	     
 			  
-			        model.addAttribute("displaymode", "Details");
-			        model.addAttribute("formmode", formmode);
+			        model.addAttribute("displaymode", "edit");
+			        model.addAttribute("formmode", "edit");
 			        model.addAttribute("mpllData",M_PLL_Detail_Repo .findByAcctNumber(acctNo));
 			    
 
-			    return "MPLL_Detail"; // your Thymeleaf HTML page
+			    return "BRRS/M_PLL"; // your Thymeleaf HTML page
 			}
 		 
 
