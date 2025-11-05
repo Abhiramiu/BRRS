@@ -39,5 +39,9 @@ public interface BRRS_M_LA1_Detail_Repo extends JpaRepository<M_LA1_Detail_Entit
     );
 
 
-
+    @Query(value = "SELECT * FROM BRRS_M_LA1_DETAILTABLE WHERE ACCT_NUMBER = :acct_number", nativeQuery = true)
+    M_LA1_Detail_Entity findByAcctnumber(@Param("acct_number") String acct_number);
+	
+	
+    
 }

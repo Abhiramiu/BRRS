@@ -522,6 +522,75 @@ PURPOSE		: BRFREPORT
 	</script>
 
 	<script>
+		function openDetail(elem, mode) {
+			const acctNo = elem.getAttribute("data-acctNo");
+			// Navigate to MPLL details page with parameters
+			location.href = '/BRRS/Reports/MLA1_Detail?formmode=' + mode + '&acctNo=' + acctNo;
+		}
+	</script>
+
+	<script>
+		function submitUpdate() {
+		    const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+
+		    // ✅ Store the previous page URL
+		    const previousUrl = document.referrer; // same as going back once in history
+
+		    // Show loader while processing
+		    $('#loader').modal('show');
+
+		    $.ajax({
+		        url: '/BRRS/Reports/updateMLA1',
+		        type: 'POST',
+		        data: formData,
+		        success: function (response) {
+		            $('#loader').modal('hide');
+
+		            // Show message via modal
+		            if (response && response.toLowerCase().includes('success')) {
+		                showResultModal('Success', response);
+		            } else {
+		                showResultModal('Information', response || 'No data updated.');
+		            }
+
+		            // ✅ Redirect back to the previous page after short delay
+		            setTimeout(() => {
+		                if (previousUrl) {
+		                    window.location.href = previousUrl;
+		                } else {
+		                    // fallback: just go back if referrer not found
+		                    window.history.back();
+		                }
+		            }, 1500);
+		        },
+		        error: function (xhr, status, error) {
+		            $('#loader').modal('hide');
+		            console.error("Update error:", error);
+
+		            showResultModal('Error', 'Failed to update record. Please try again.');
+
+		            // ✅ On error also return to previous page after delay
+		            setTimeout(() => {
+		                if (previousUrl) {
+		                    window.location.href = previousUrl;
+		                } else {
+		                    window.history.back();
+		                }
+		            }, 1500);
+		        }
+		    });
+		}
+
+	</script>
+	
+	
+	
+	
+	
+	
+	
+	
+	<script>
 
 		function startReport(button) {
 			const alertMsg = document.getElementById("alertMessage");
@@ -682,32 +751,32 @@ PURPOSE		: BRFREPORT
 	</script>
 
 	<script th:inline="javascript">
-	$(document).ready(function () {
-	    $('#reportdetails').DataTable({
-	        autoWidth: true,
-	        paging: true,
-	        searching: true,
-	        lengthChange: false,
-	        ordering: false,
-	        pageLength: 100,
-	        fixedHeader: true,
-	        scrollY: false,        // ✅ no vertical scroll
-	        scrollCollapse: false, // ✅ ensures no scroll container
-	        scrollX: false,        // ✅ no horizontal scroll
+		$(document).ready(function () {
+			$('#reportdetails').DataTable({
+				autoWidth: true,
+				paging: true,
+				searching: true,
+				lengthChange: false,
+				ordering: false,
+				pageLength: 100,
+				fixedHeader: true,
+				scrollY: false,        // ✅ no vertical scroll
+				scrollCollapse: false, // ✅ ensures no scroll container
+				scrollX: false,        // ✅ no horizontal scroll
 
-	        // ✅ Search (left) + pagination (right) on top only
-	        dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
+				// ✅ Search (left) + pagination (right) on top only
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
 
-	        language: { 
-	            search: "Search:",
-	            paginate: {
-	                previous: "&laquo;",
-	                next: "&raquo;"
-	            }
-	        }
-	    });
-	});
-	
+				language: {
+					search: "Search:",
+					paginate: {
+						previous: "&laquo;",
+						next: "&raquo;"
+					}
+				}
+			});
+		});
+
 	</script>
 
 
@@ -1816,7 +1885,10 @@ PURPOSE		: BRFREPORT
 											<td>
 												<a data-toggle="tooltip" class="editrec"
 													title="Click to Edit this Record">
-													<i class="fas fa-edit" onclick="editRecord(this)"></i>
+													<i class="fas fa-edit" style="color: black; cursor:pointer;"
+														th:attr="data-acctNo=${report.acct_number}"
+														onclick="openDetail(this, 'edit')"></i>
+
 												</a>
 											</td>
 											<td th:text="${srlno.index + 1}"></td>
@@ -1846,20 +1918,116 @@ PURPOSE		: BRFREPORT
 
 							</div>
 
-
+							<!-- Submit Button -->
+							<div style="text-align: center; margin-top: 15px; background-color: white;">
+								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									onclick="updateform();" style="display: none;">
+									Submit
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
 
-			</div>
+			<!-- M_la1 Detail Form Screen -->
+				<div th:if="${formmode == 'edit'}" class="card">
+				  <div class="card-body">
+				    <form th:object="${Data}" method="post" id="DetailForm">
 
+				      <!-- Row 1 -->
+				      <div class="row formline" style="margin-top:10px;">
+				        <label class="col-sm-2">Customer ID</label>
+				        <div class="col-sm-3">
+				          <input type="text" th:field="*{cust_id}" class="form-control form-control-sm" readonly />
+				        </div>
 
+				        <div class="col-sm-1"></div>
 
-		</div>
+				        <label class="col-sm-2">Account Number</label>
+				        <div class="col-sm-3">
+				          <input type="text" th:field="*{acct_number}" class="form-control form-control-sm" readonly />
+				        </div>
+				      </div>
+
+				      <!-- Row 2 -->
+				      <div class="row formline" style="margin-top:10px;">
+				        <label class="col-sm-2">Account Name</label>
+				        <div class="col-sm-3">
+				          <input type="text" th:field="*{acct_name}" class="form-control form-control-sm" />
+				        </div>
+						
+
+				        <div class="col-sm-1"></div>
+
+				        <label class="col-sm-2">Acct Balance</label>
+				        <div class="col-sm-3">
+				          <input type="number" step="0.01" th:field="*{acct_balance_in_pula}" class="form-control form-control-sm" style="text-align:right;" />
+				        </div>
+				      </div>
+
+				      <!-- Row 3 -->
+				      <div class="row formline" style="margin-top:10px;">
+				        <label class="col-sm-2">Sanction Limit</label>
+				        <div class="col-sm-3">
+				          <input type="number" step="0.01" th:field="*{sanction_limit}" class="form-control form-control-sm" style="text-align:right;" />
+				        </div>
+
+				        <div class="col-sm-1"></div>
+
+				        <label class="col-sm-2">Report Label</label>
+				        <div class="col-sm-3">
+				          <input type="text" th:field="*{report_label}" class="form-control form-control-sm"  />
+				        </div>
+				      </div>
+
+				      <!-- Row 4 -->
+				      <div class="row formline" style="margin-top:10px;">
+				        <label class="col-sm-2">Report Addl Criteria 1</label>
+				        <div class="col-sm-3">
+				          <input type="text" th:field="*{report_addl_criteria_1}" class="form-control form-control-sm" readonly />
+				        </div>
+
+				        <div class="col-sm-1"></div>
+
+				        <label class="col-sm-2">Report Addl Criteria 2</label>
+				        <div class="col-sm-3">
+				          <input type="text" th:field="*{report_addl_criteria_2}" class="form-control form-control-sm" readonly />
+				        </div>
+				      </div>
+
+				      <!-- Row 5 -->
+				      <div class="row formline" style="margin-top:10px;">
+				        <label class="col-sm-2">Report Addl Criteria 3</label>
+				        <div class="col-sm-3">
+				          <input type="text" th:field="*{report_addl_criteria_3}" class="form-control form-control-sm" readonly />
+				        </div>
+
+				       <!-- <div class="col-sm-1"></div>
+
+				        <label class="col-sm-2">Report Date</label>
+				        <div class="col-sm-3">
+				          <input type="date" th:field="*{reportDate}" class="form-control form-control-sm" readonly />
+				        </div>
+				      </div>-->
+
+				      <!-- Update Button -->
+				      <div style="text-align:center; margin-top:20px;">
+				        <button type="button" class="custom-tab-btn" onclick="submitUpdate()">Update</button>
+				      </div>
+				    </form>
+				  </div>
+				</div>
 
 
 
 	</div>
+
+
+
+	</div>
+
+
+
 
 
 
@@ -1926,53 +2094,21 @@ PURPOSE		: BRFREPORT
 	</div>
 
 </body>
-<!-- <script>
-																																  $(document).ready(function () {
-																																    $('#BRFvalidation').DataTable({
-																																      "paging": true,
-																																      "pageLength": 10,
-																																      "lengthChange": false,
-																																      "searching": true,
-																																      "ordering": true,
-																																      "autoWidth": false,
-																																      "language": {
-																																        "search": "Search:"
-																																      }
-																																    });
-																																  });
-																																</script> -->
-<!-- <script>
-																																  $(document).ready(function () {
-																																    $('#BRFvalidation').DataTable({
-																																      "paging": true,
-																																      "info": false,       // turn off "Showing x of y"
-																																      "searching": false,  // turn off search
-																																      "ordering": false,   // turn off ordering
-																																      "lengthChange": false // hide "Show x entries"
-																																    });
-																																  });
-																																</script> -->
-
-<style>
-	#reportdetails td {
-		border: 1px solid #ccc;
-		padding: 8px;
-	}
-
-	#reportdetails {
-		border-collapse: collapse;
-		width: 100%;
-	}
-</style>
 
 
 <style>
+	.dataTables_scrollHeadInner,
+	table.dataTable {
+		width: 100% !important;
+	}
+
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
 		/* This is the key: it creates the scroll context */
-		max-height: 590px;
+		max-height: 700px;
 		/* Or a suitable height like 80vh for responsive design */
 		overflow-y: auto;
+		overflow-x: hidden;
 		border: 1px solid #ccc;
 	}
 
@@ -1991,8 +2127,6 @@ PURPOSE		: BRFREPORT
 		background-color: #b3b6b9;
 		z-index: 4;
 	}
-
-
 
 	.scrollable-table-container thead tr:nth-child(3) {
 		position: sticky;
@@ -2071,13 +2205,8 @@ PURPOSE		: BRFREPORT
 		display: inline-block;
 		width: auto;
 	}
-	
-	.dataTables_scrollBody {
-		overflow-y: visible !important; /* prevents vertical scroll */
-	}
-
-	
 </style>
+
 
 
 </html>

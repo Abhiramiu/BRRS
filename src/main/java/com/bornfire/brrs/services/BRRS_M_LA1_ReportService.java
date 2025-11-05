@@ -53,7 +53,6 @@ import com.bornfire.brrs.entities.M_LA1_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
-import com.bornfire.brrs.entities.M_LA1_Summary_Entity;
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 
 @Component
@@ -3862,44 +3861,7 @@ return value != null && !value.trim().isEmpty();
 		}
 	}
 
-	/*
-	 * public List<ReportLineItemDTO> getReportData(String reportCode) {
-	 * logger.info("Fetching M_LA1 summary data for reportCode={}", reportCode);
-	 * 
-	 * List<M_LA1_Summary_Entity> entities =
-	 * BRRS_M_LA1_Summary_Repo.findByReportCode(reportCode);
-	 * logger.debug("Found {} records for reportCode={}", entities.size(),
-	 * reportCode);
-	 * 
-	 * List<ReportLineItemDTO> lineItems = new ArrayList<>();
-	 * 
-	 * if (entities.isEmpty()) { logger.warn("No records found for reportCode={}",
-	 * reportCode); return lineItems; }
-	 * 
-	 * M_LA1_Summary_Entity entity = entities.get(0); // Assuming one record per
-	 * reportCode
-	 * 
-	 * // Loop through all 64 product fields for (int i = 11; i <= 64; i++) { //
-	 * start from 11 String fieldName = "r" + i + "_product"; try { Field field =
-	 * M_LA1_Summary_Entity.class.getDeclaredField(fieldName);
-	 * field.setAccessible(true); String fieldDescription = (String)
-	 * field.get(entity);
-	 * 
-	 * if (fieldDescription != null && !fieldDescription.isEmpty()) { String
-	 * reportLabel = "Row" + i; lineItems.add(new ReportLineItemDTO( reportCode,
-	 * fieldDescription, reportLabel, "Header for " + reportLabel, "Remarks for " +
-	 * reportLabel, "R" + i )); }
-	 * 
-	 * } catch (NoSuchFieldException | IllegalAccessException e) {
-	 * logger.warn("Could not read field {} for entity: {}", fieldName, entity, e);
-	 * } }
-	 * 
-	 * 
-	 * 
-	 * logger.info("Total line items generated: {}", lineItems.size()); return
-	 * lineItems; }
-	 * 
-	 */
+	
 	public List<ReportLineItemDTO> getReportData(String filename) throws Exception {
 		List<ReportLineItemDTO> reportData = new ArrayList<>();
 
@@ -3994,4 +3956,36 @@ return value != null && !value.trim().isEmpty();
 				+ (END_ROW_INDEX + 1) + "). Total items: " + reportData.size());
 		return reportData;
 	}
+	
+	
+	
+	public boolean updateProvision(M_LA1_Detail_Entity la1Data) {
+	    try {
+	        System.out.println("Came to LA1 Service");
+
+	        // ✅ Must match your entity field name exactly
+	        M_LA1_Detail_Entity existing = M_LA1_Detail_Repo.findByAcctnumber(la1Data.getAcct_number());
+
+	        if (existing != null) {
+	        	 existing.setAcct_name(la1Data.getAcct_name());
+	            existing.setSanction_limit(la1Data.getSanction_limit());
+	            existing.setAcct_balance_in_pula(la1Data.getAcct_balance_in_pula());
+
+	            M_LA1_Detail_Repo.save(existing);
+
+	            System.out.println("Updated successfully for ACCT_NO: " + la1Data.getAcct_number());
+	            return true;
+	        } else {
+	            System.out.println("Record not found for Account No: " + la1Data.getAcct_number());
+	            return false;
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
+	
+	
 }

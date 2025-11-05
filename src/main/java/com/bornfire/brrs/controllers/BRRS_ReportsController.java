@@ -42,6 +42,7 @@ import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity4;
+import com.bornfire.brrs.entities.BRRS_M_LA1_Detail_Repo;
 import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_PLL_Detail_Repo;
 import com.bornfire.brrs.entities.M_CA3_Summary_Entity;
@@ -56,6 +57,7 @@ import com.bornfire.brrs.entities.M_EPR_Summary_Entity;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity1;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity2;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity3;
+import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
@@ -107,6 +109,7 @@ import com.bornfire.brrs.services.BRRS_M_CA6_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
 import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
+import com.bornfire.brrs.services.BRRS_M_LA1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
@@ -139,6 +142,9 @@ public class BRRS_ReportsController {
 	 
 	 @Autowired
 	 BRRS_M_LA4_ReportService BRRS_M_LA4_ReportService;
+	 
+	 @Autowired
+	 BRRS_M_LA1_ReportService brrs_M_LA1_ReportService;
 	 
 	 
 	 @Autowired
@@ -1361,5 +1367,63 @@ public class BRRS_ReportsController {
 			     }
 			 }	 
 		
+			 
+			 
+			 @RequestMapping(value = "/updateMLA1", method = { RequestMethod.GET, RequestMethod.POST })
+			 @ResponseBody
+			 public String updateMPLL(@ModelAttribute M_LA1_Detail_Entity Data) {
+			     System.out.println("Came to Controller ");
+			     System.out.println("Received update for ACCT_NO: " + Data.getAcct_number());
+			     System.out.println("sanction value: " + Data.getSanction_limit());
+			     System.out.println("balance value: " + Data.getAcct_balance_in_pula());
+
+			     boolean updated = brrs_M_LA1_ReportService.updateProvision(Data);
+
+			     if (updated) {
+			         return "Provision updated successfully!";
+			     } else {
+			         return "Record not found for update!";
+			     }
+			 }
+
+			 @Autowired
+			 private BRRS_M_LA1_Detail_Repo M_LA1_Detail_Repo;
+
+			 @RequestMapping(value = "/MLA1_Detail", method = {RequestMethod.GET, RequestMethod.POST})
+			 public String showMLA1Detail(@RequestParam(required = false) String formmode,
+			                              @RequestParam(required = false) String acctNo,
+			                              @RequestParam(required = false) BigDecimal sanction_limit,
+			                              @RequestParam(required = false) BigDecimal acct_balance_in_pula,
+			                              Model model) {
+
+			     M_LA1_Detail_Entity la1Entity = M_LA1_Detail_Repo.findByAcctnumber(acctNo);
+
+			     if (la1Entity != null) {
+
+			         if (sanction_limit != null) {
+			             la1Entity.setSanction_limit(sanction_limit);
+			         }
+			         if (acct_balance_in_pula != null) {
+			             la1Entity.setAcct_balance_in_pula(acct_balance_in_pula);
+			         }
+
+			         if (sanction_limit != null || acct_balance_in_pula != null) {
+			             M_LA1_Detail_Repo.save(la1Entity);
+			             System.out.println("Updated Sanction Limit / Account Balance for ACCT_NO: " + acctNo);
+			         }
+
+			         Date reportDate = la1Entity.getReport_date();
+			         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			         String formattedDate = formatter.format(reportDate);
+			         model.addAttribute("asondate", formattedDate);
+			     }
+
+			     model.addAttribute("displaymode", "edit");
+			     model.addAttribute("formmode", "edit");
+			     model.addAttribute("Data", la1Entity);
+
+			     return "BRRS/M_LA1";
+			 }
+
 		
 }
