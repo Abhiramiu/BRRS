@@ -372,28 +372,9 @@ PURPOSE		: BRRS_M_PLLREPORT
 			var Callurl;
 			$('#loader').modal('show');
 			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/
-				location.href = Callurl;
+			location.href = Callurl;
 			console.log(Callurl);
-			/*  $.ajax({
-				 type: 'get',
-				 url: Callurl,
-				 beforeSend: function () {
-					 $('#loader').modal('show'); // 🔄 Show loader
-				 },
-				 success: function (data) {
-					 $('.content').html(data);
-					 //$("#detailsbtn").addClass("active");
-					 //tablepagination();
-				 },
-				 complete: function () {
-					 $('#loader').modal('hide'); 
-				 },
-				 error: function () {
-					   $('#loader').modal('hide');
-					 alert("Something went wrongss. Please try again.");
-				   
-				 }
-			 }); */
+			
 		}
 
 		function showsummary() {
@@ -488,10 +469,12 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 
 		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
+		    // Hide the modals
+		    $('#alert').modal('hide');
+		    $('#resultModal').modal('hide');
 
 		}
+
 
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -709,6 +692,9 @@ PURPOSE		: BRRS_M_PLLREPORT
 	function submitMPLLUpdate() {
 	    const formData = $('#mpllDetailForm').serialize(); // Ensure correct form ID
 
+	    // ✅ Store the previous page URL
+	    const previousUrl = document.referrer; // same as going back once in history
+
 	    // Show loader while processing
 	    $('#loader').modal('show');
 
@@ -726,25 +712,34 @@ PURPOSE		: BRRS_M_PLLREPORT
 	                showResultModal('Information', response || 'No data updated.');
 	            }
 
-	            // Reload page after short delay
+	            // ✅ Redirect back to the previous page after short delay
 	            setTimeout(() => {
-	                location.reload();
+	                if (previousUrl) {
+	                    window.location.href = previousUrl;
+	                } else {
+	                    // fallback: just go back if referrer not found
+	                    window.history.back();
+	                }
 	            }, 1500);
 	        },
 	        error: function (xhr, status, error) {
 	            $('#loader').modal('hide');
 	            console.error("Update error:", error);
 
-	            // Show error modal
 	            showResultModal('Error', 'Failed to update record. Please try again.');
 
-	            // Reload after delay
+	            // ✅ On error also return to previous page after delay
 	            setTimeout(() => {
-	                location.reload();
+	                if (previousUrl) {
+	                    window.location.href = previousUrl;
+	                } else {
+	                    window.history.back();
+	                }
 	            }, 1500);
 	        }
 	    });
 	}
+
 </script>
 
 </head>
