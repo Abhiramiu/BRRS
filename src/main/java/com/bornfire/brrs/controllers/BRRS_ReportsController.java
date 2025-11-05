@@ -63,6 +63,13 @@ import com.bornfire.brrs.entities.M_SECL_Summary_Entity;
 import com.bornfire.brrs.entities.M_SFINP1_Summary_Manual_Entity;
 import com.bornfire.brrs.entities.M_SIR_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SIR_Summary_Entity;
+import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity1;
+import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity2;
+import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity3;
+import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity4;
+import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity5;
+import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity6;
+import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity7;
 import com.bornfire.brrs.entities.M_SRWA_12C_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12G_Summary_Entity;
@@ -97,6 +104,7 @@ import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SECL_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SRWA_12A_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12C_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12F_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12G_ReportService;
@@ -1184,6 +1192,55 @@ public class BRRS_ReportsController {
 		 }
 		 
 		
+		 
+		 @Autowired
+			BRRS_M_SRWA_12A_ReportService brrs_m_srwa_12a_reportservice;
+		
+
+		 @RequestMapping(value = "/M_SRWA_12AupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+		 @ResponseBody
+		 public ResponseEntity<String> updateAllReports(
+		         @RequestParam(required = false)
+		         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+		         @ModelAttribute M_SRWA_12A_Summary_Entity1 request1,
+		         @ModelAttribute M_SRWA_12A_Summary_Entity2 request2,
+		         @ModelAttribute M_SRWA_12A_Summary_Entity3 request3,
+		         @ModelAttribute M_SRWA_12A_Summary_Entity4 request4,
+		         @ModelAttribute M_SRWA_12A_Summary_Entity5 request5,
+		         @ModelAttribute M_SRWA_12A_Summary_Entity6 request6,
+		         @ModelAttribute M_SRWA_12A_Summary_Entity7 request7
+		 ) {
+		     try {
+		         System.out.println("Came to single controller");
+
+		         // set date into all 3 entities
+		         request1.setReport_date(asondate);
+		         request2.setReport_date(asondate);
+		         request3.setReport_date(asondate);
+		         request4.setReport_date(asondate);
+		         request5.setReport_date(asondate);
+		         request6.setReport_date(asondate); 
+		         request7.setReport_date(asondate);
+		     
+
+		         // call services
+		         brrs_m_srwa_12a_reportservice.updateReport1(request1);
+		         brrs_m_srwa_12a_reportservice.updateReport2(request2);
+		         brrs_m_srwa_12a_reportservice.updateReport3(request3);
+		         brrs_m_srwa_12a_reportservice.updateReport4(request4);
+		         brrs_m_srwa_12a_reportservice.updateReport5(request5);
+		         brrs_m_srwa_12a_reportservice.updateReport6(request6);
+		         brrs_m_srwa_12a_reportservice.updateReport7(request7);
+
+
+		         return ResponseEntity.ok("All Reports Updated Successfully");
+		     } catch (Exception e) {
+		         e.printStackTrace();
+		         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                              .body("Update Failed: " + e.getMessage());
+		     }
+		 }
 		
 		
 }
