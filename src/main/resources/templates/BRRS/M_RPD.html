@@ -740,25 +740,27 @@ $(document).ready(function () {
 
     $("#submitButton, #cancelRecord").hide();
 });
-</script>
-
-<script>
+</script><script>
 function fileuploads(btn) {
     const asondate = btn.getAttribute("data-todate");
+    const type = btn.getAttribute("data-type");
+
     $('#loader').modal('show');
 
-    // Step 1: Calculate totals before submit
-    calculateAllTotals();
-
-    // Step 2: Remove commas from numeric inputs
+    // Step 1: Clean up commas before submit
     $("#fileupload input[type='text']").each(function () {
-        $(this).val($(this).val().replace(/,/g, ''));
+        let val = $(this).val();
+        if (val && typeof val === "string") {
+            $(this).val(val.replace(/,/g, ''));
+        }
     });
 
-    // Step 3: Serialize all form data
-    const formData = $("#fileupload").serialize() + "&asondate=" + encodeURIComponent(asondate);
+    // Step 2: Serialize all data
+    const formData = $("#fileupload").serialize() + 
+                     "&asondate=" + encodeURIComponent(asondate) +
+                     "&type=" + encodeURIComponent(type);
 
-    // Step 4: Send AJAX request
+    // Step 3: AJAX call
     $.ajax({
         url: './M_RPDupdateAll',
         type: 'POST',
@@ -766,28 +768,17 @@ function fileuploads(btn) {
         dataType: 'text',
         success: function (response) {
             console.log("✅ Response received:", response);
-
             $("#resultModalLabel").text("BRRS");
-            $("#resultModalBody").text("Updated successfully.");
-            $("#resultModal").modal("show");
+            $("#resultModalBody").text("Updated Successfully.");
+            $("#resultModal").modal("show"); // Show success popup
 
-            // 🔒 Lock fields again after successful save
-            $("input.show_input").each(function () {
-                $(this)
-                    .prop("readonly", true)
-                    .prop("disabled", false)
-                    .css({ "background-color": "#f9f9f9" });
+            // ✅ Wait for user to click OK before reload
+            $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+                location.reload(); // Reload only after modal is closed
             });
-
-            // Hide submit/cancel, show modify again
-            $("#submitButton, #cancelRecord").hide();
-            $("#modifyButton").show();
-
-            // Auto reload after short delay
-            setTimeout(() => location.reload(), 1500);
         },
         error: function (jqXHR) {
-            console.error("❌ Error response:", jqXHR.responseText);
+            console.error("❌ Error:", jqXHR.responseText);
             $("#resultModalLabel").text("⚠️ Error");
             $("#resultModalBody").text("Update failed. Please check console for details.");
             $("#resultModal").modal("show");
@@ -798,7 +789,6 @@ function fileuploads(btn) {
     });
 }
 </script>
-
 
 </script>
 
@@ -920,14 +910,16 @@ function fileuploads(btn) {
 
 
 	<tr>
-		<td id="ROW11" rowspan="50">
+		<td id="ROW11" rowspan="50" 
+		style="text-align: center;
+				vertical-align: middle;">
 		  <input class="display-input show_input"
 		         type="text"
 		         th:value="${#strings.defaultString(report.R11_PRODUCT, 'N/A')}"
 		         id="R11_PRODUCT"
 		         name="R11_PRODUCT"
 		         style="background-color:#FFFFFF; width: 200px; height: 28px; 
-		                border-color: transparent; text-align: left;"
+		                border-color: transparent; text-align: center;"
 		         readonly />
 		</td>
 		  <td id="ROW11">
@@ -3906,12 +3898,14 @@ function fileuploads(btn) {
 				  <tbody th:each="report2 : ${reportsummary2}">  
 					<!-- ================= R51 ================= -->
 								<tr>
-								  <td id="ROW51" rowspan="50">
+								  <td id="ROW51" rowspan="50"
+								  style="text-align: center;
+								  			vertical-align: middle;">
 								    <input class="display-input show_input" type="text"
 								           th:value="${#strings.defaultString(report2.R51_PRODUCT, 'N/A')}"
 								           id="R51_PRODUCT" name="R51_PRODUCT"
 								           style="background-color:#FFFFFF; width: 200px; height: 28px;
-								                  border-color: transparent; text-align: left;" readonly />
+								                  border-color: transparent; text-align: center;" readonly />
 								  </td>
 								  <td id="ROW51">
 								    <input class="display-input show_input" type="text"
@@ -7304,12 +7298,14 @@ function fileuploads(btn) {
 
 												  	  <tbody th:each="report3 : ${reportsummary3}">  
 														<tr>
-														  <td id="ROW101" rowspan="50">
+														  <td id="ROW101" rowspan="50"
+														  style="text-align: center;
+														  			vertical-align: middle;">
 															<input class="display-input show_input" type="text"
 																   th:value="${#strings.defaultString(report3.R101_PRODUCT, 'N/A')}"
 																   id="R101_PRODUCT" name="R101_PRODUCT"
 																   style="background-color:#FFFFFF; width: 200px; height: 28px;
-																		  border-color: transparent; text-align: left;" readonly />
+																		  border-color: transparent; text-align: center;" readonly />
 														  </td>
 														  <td id="ROW101">
 															<input class="display-input show_input" type="text"
@@ -10705,12 +10701,14 @@ function fileuploads(btn) {
 
 			<!-- ================= R151 ================= -->
 			<tr>
-			  <td id="ROW151" rowspan="50" >
+			  <td id="ROW151" rowspan="50" 
+			  style="text-align: center;
+			  			vertical-align: middle;">
 			    <input class="display-input show_input" type="text"
 			           th:value="${#strings.defaultString(report4.R151_PRODUCT, 'N/A')}"
 			           id="R151_PRODUCT" name="R151_PRODUCT"
 			           style="background-color:#FFFFFF; width: 200px; height: 28px;
-			                  border-color: transparent; text-align: left;" readonly />
+			                  border-color: transparent; text-align: center;" readonly />
 			  </td>
 			  <td id="ROW151">
 			    <input class="display-input show_input" type="text"
@@ -14027,12 +14025,14 @@ function fileuploads(btn) {
 		  <tbody th:each="report5 : ${reportsummary5}">
 		 <!-- ================= R201 ================= -->
 		 			<tr>
-		 			  <td id="ROW201" rowspan="50">
+		 			  <td id="ROW201" rowspan="50"
+					  style="text-align: center;
+					  			vertical-align: middle;">
 		 			    <input class="display-input show_input" type="text"
 		 			           th:value="${#strings.defaultString(report5.R201_PRODUCT, 'N/A')}"
 		 			           id="R201_PRODUCT" name="R201_PRODUCT"
 		 			           style="background-color:#FFFFFF; width: 200px; height: 28px;
-		 			                  border-color: transparent; text-align: left;" readonly />
+		 			                  border-color: transparent; text-align: center;" readonly />
 		 			  </td>
 		 			  <td id="ROW201">
 		 			    <input class="display-input show_input" type="text"
@@ -17351,12 +17351,14 @@ function fileuploads(btn) {
 		  <tbody th:each="report6 : ${reportsummary6}">
 		  <!-- ================= R251 ================= -->
 		 	<tr>
-		 	  <td id="ROW251" rowspan="50">
+		 	  <td id="ROW251" rowspan="50"
+			  style="text-align: center;
+			  			vertical-align: middle;">
 		 		<input class="display-input show_input" type="text"
 		 			   th:value="${#strings.defaultString(report6.R251_PRODUCT, 'N/A')}"
 		 			   id="R251_PRODUCT" name="R251_PRODUCT"
 		 			   style="background-color:#FFFFFF; width: 200px; height: 28px;
-		 					  border-color: transparent; text-align: left;" readonly />
+		 					  border-color: transparent; text-align: center;" readonly />
 		 	  </td>
 		 	  <td id="ROW251">
 		 		<input class="display-input show_input" type="text"
@@ -20700,12 +20702,14 @@ function fileuploads(btn) {
 	  <tbody th:each="report7 : ${reportsummary7}">
 	  <!-- ================= R301 ================= -->
 	 	<tr>
-	 	  <td id="ROW301" rowspan="50">
+	 	  <td id="ROW301" rowspan="50"
+		  style="text-align: center;
+		  			vertical-align: middle;">
 	 		<input class="display-input show_input" type="text"
 	 			   th:value="${#strings.defaultString(report7.R301_PRODUCT, 'N/A')}"
 	 			   id="R301_PRODUCT" name="R301_PRODUCT"
 	 			   style="background-color:#FFFFFF; width: 200px; height: 28px;
-	 					  border-color: transparent; text-align: left;" readonly />
+	 					  border-color: transparent; text-align: center;" readonly />
 	 	  </td>
 	 	  <td id="ROW301">
 	 		<input class="display-input show_input" type="text"
@@ -24114,12 +24118,14 @@ function fileuploads(btn) {
   <tbody th:each="report8 : ${reportsummary8}">
   <!-- ================= R351 ================= -->
  	<tr>
-		<td id="ROW351" rowspan="50">
+		<td id="ROW351" rowspan="50"
+		style="text-align: center;
+					vertical-align: middle;">
 		 		<input class="display-input show_input" type="text"
 		 			   th:value="${#strings.defaultString(report8.R351_PRODUCT, 'N/A')}"
 		 			   id="R351_PRODUCT" name="R351_PRODUCT"
 		 			   style="background-color:#FFFFFF; width: 200px; height: 28px;
-		 					  border-color: transparent; text-align: left;" readonly />
+		 					  border-color: transparent; text-align: center;" readonly />
 		 	  </td>
  	  <td id="ROW351">
  		<input class="display-input show_input" type="text"
@@ -27457,19 +27463,21 @@ function fileuploads(btn) {
  		<input class="display-input Show_input" type="text"
  			   th:value="${report8.R400_INTEREST_RATE != null ? #numbers.formatDecimal(report8.R400_INTEREST_RATE, 1, 0, 'POINT') : '0'}"
  			   id="R400_INTEREST_RATE" name="R400_INTEREST_RATE"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
  	  </td>
  	</tr>
  </tbody>
   <tbody th:each="report9 : ${reportsummary9}">
   <!-- ================= R401 ================= -->
  	<tr>
- 	  <td id="ROW401" rowspan="50">
+ 	  <td id="ROW401" rowspan="50"
+	  style="text-align: center;
+	  			vertical-align: middle;">
  		<input class="display-input show_input" type="text"
  			   th:value="${#strings.defaultString(report9.R401_PRODUCT, 'N/A')}"
  			   id="R401_PRODUCT" name="R401_PRODUCT"
  			   style="background-color:#FFFFFF; width: 200px; height: 28px;
- 					  border-color: transparent; text-align: left;" readonly />
+ 					  border-color: transparent; text-align: center;" readonly />
  	  </td>
  	  <td id="ROW401">
  		<input class="display-input show_input" type="text"
