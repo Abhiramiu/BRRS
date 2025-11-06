@@ -322,18 +322,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 		}
 	</style>
 
-	<style>
-		#reportdetails,
-		#reportdetails th,
-		#reportdetails td {
-
-			border: 1px solid black !important;
-		}
-
-		#reportdetails {
-			border-collapse: collapse;
-		}
-	</style>
+	
 
 
 	<script th:inline="javascript">
@@ -640,24 +629,86 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 	<script th:inline="javascript">
 		$(document).ready(function () {
-			$('#reportdetails').DataTable({
-				scrollX: true,
-				scrollY: false,
-				autoWidth: true,
-				paging: true,
-				searching: true,
-				lengthChange: false,
-				ordering: true,
-				pageLength: 100,
-				fixedHeader: true,
-				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
-				language: {search: "Search:"}
-			});
-		});
+			    $('#reportdetails').DataTable({
+			      scrollY: "400px",            // ✅ Adjust vertical scroll height
+			      scrollX: true,               // ✅ Horizontal scrolling
+			      scrollCollapse: true,
+			      autoWidth: false,
+			      paging: true,
+			      searching: true,
+			      lengthChange: false,
+			      ordering: true,
+			      pageLength: 10,
+			      fixedHeader: {
+			        header: true,
+			        footer: false
+			      },                           // ✅ Ensures header stays visible
+			      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			    });
+			  });
 
 
 
 	</script>
+	
+	<style>
+		  .dataTables_scrollHeadInner,
+		  table.dataTable {
+		    width: 100% !important;
+		    margin: -2px auto !important;
+		  }
+
+		  /* ✅ Prevent wrapping in all table cells */
+		  #reportdetails th,
+		  #reportdetails td {
+		    white-space: nowrap;
+		  }
+		</style>
+
+		
+		<style>
+			  .left-arrow-circle {
+			    background-color: white;
+			    color: #007bff;
+			    border-radius: 50%;
+			    padding: 8px;
+			    margin-right: 10px;
+			    cursor: pointer;
+			  }
+
+			  /* 🚌 Bus display style box */
+			  .boards {
+			    background-color: rgb(107, 122, 143);
+			    color: white;
+			    padding: 6px -1px;
+			    border-radius: 8px;
+			    overflow: hidden;
+			    white-space: nowrap;
+			    width: 500px; /* adjust width as needed */
+			    box-shadow: 0 0 10px rgb(107, 122, 143);
+			    position: relative;
+				transform: translateY(10px);
+			  }
+
+			  /* ✨ Scrolling animation */
+			  .scrolling-text {
+			    display: inline-block;
+			    font-family: "Courier New", monospace;
+			    font-weight: bold;
+			    letter-spacing: 1px;
+			    animation: scroll-left 10s linear infinite;
+			  }
+
+			  /* Animation keyframes */
+			  @keyframes scroll-left {
+			    0% {
+			      transform: translateX(100%);
+			    }
+			    100% {
+			      transform: translateX(-100%);
+			    }
+			  }
+			</style>
 
 	<script>
 		function editRecord(icon) {
@@ -765,9 +816,14 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top:10px; font-weight: bold; color: white;">
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 							BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT
 						</h5>
+						
+						<!-- Moving bus-board text -->
+											  <div class="boards">
+											    <p class="scrolling-text">(30) MONTHLY SCHEDULE: M-PLL: PROVISIONS FOR LOAN LOSS (P'000)</p>
+											  </div>
 
 					</div>
 
@@ -818,7 +874,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 							style="border-right: 1px solid #dee2e6;max-height:700px; overflow-y: auto;">
 							<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 								id="reports">
-								<p>(30) MONTHLY SCHEDULE: M-PLL: PROVISIONS FOR LOAN LOSS (P'000)</p>
+								
 								<thead class="thead-light"
 									style="position: sticky; top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
 									<tr style="background-color: black; ">
@@ -1276,10 +1332,10 @@ PURPOSE		: BRRS_M_PLLREPORT
 			
 				<div class="row">
 					<div class="col-sm-12">
-						<div class="table-responsive scrollable-table-container"
+						<div class="table-container"
 							style="border-right: 1px solid #dee2e6;">
 								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									class="table table-striped table-bordered table-hover"
 									id="reportdetails">
 									<thead class="thead-light">
 										<tr>
@@ -1317,7 +1373,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 											<td style="text-align:left;" th:text="${report.rowId}"></td>
 											  <td th:text="${report.columnId}"></td>
-											  <td th:text="${#dates.format(report.reportDate,'yyyy-MM-dd')}"></td>
+											  <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
 
 										</tr>
 									</tbody>
@@ -1396,7 +1452,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 			          <input type="date" th:field="*{reportDate}" name="reportDate" class="form-control form-control-sm"
 			                 readonly />
 			        </div>
-			      </div>  -->
+			      </div>   -->
 
 			      <div style="text-align:center; margin-top:20px;">
 			        <button type="button" class="custom-tab-btn"
