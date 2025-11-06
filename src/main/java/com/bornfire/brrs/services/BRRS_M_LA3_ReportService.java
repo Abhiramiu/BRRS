@@ -49,6 +49,8 @@ import com.bornfire.brrs.entities.BRRS_M_LA3_Archival_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_LA3_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA3_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_LA3_Summary_Repo2;
+import com.bornfire.brrs.entities.M_LA1_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA3_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_LA3_Archival_Summary_Entity2;
@@ -141,81 +143,104 @@ public class BRRS_M_LA3_ReportService {
 	public ModelAndView getM_LA3currentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String filter, String type, String version) {
 
+		ModelAndView mv = new ModelAndView("BRRS/M_LA3");
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
-
-		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
+		int totalRecords = 0;
 
 		try {
+// ✅ Parse toDate
 			Date parsedDate = null;
 			if (todate != null && !todate.isEmpty()) {
 				parsedDate = dateformat.parse(todate);
 			}
 
-			String rowId = null;
-			String columnId = null;
-
-			// ✅ Split filter string into rowId & columnId
-			if (filter != null && filter.contains(",")) {
-				String[] parts = filter.split(",");
-				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
-				}
+// ✅ Parse filter (rowId, columnIds)
+			String rowId = null, columnId = null, columnId1 = null, columnId2 = null;
+			if (filter != null && !filter.isEmpty()) {
+				String[] parts = filter.split(",", -1);
+				rowId = parts.length > 0 ? parts[0] : null;
+				columnId = parts.length > 1 ? parts[1] : null;
+				columnId1 = parts.length > 2 ? parts[2] : null;
+				columnId2 = parts.length > 3 ? parts[3] : null;
 			}
 
-			if ("ARCHIVAL".equals(type) && version != null) {
-				// 🔹 Archival branch
-				List<M_LA3_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_LA3_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+// ✅ ARCHIVAL DATA BRANCH
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.isEmpty()) {
+				logger.info("Fetching ARCHIVAL data for version {}", version);
+
+				List<M_LA3_Archival_Detail_Entity> detailList;
+
+// 🔹 Filtered (ROWID + COLUMNID)
+				if (rowId != null && !rowId.isEmpty()
+						&& (isNotEmpty(columnId) || isNotEmpty(columnId1) || isNotEmpty(columnId2))) {
+
+					logger.info("➡ ARCHIVAL DETAIL QUERY TRIGGERED (with filters)");
+					detailList = M_LA3_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, columnId1,
+							columnId2, parsedDate);
+
 				} else {
-					T1Dt1 = M_LA3_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+					logger.info("➡ ARCHIVAL LIST QUERY TRIGGERED (with pagination)");
+					detailList = M_LA3_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+					totalRecords = M_LA3_Archival_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
+				logger.info("ARCHIVAL COUNT: {}", (detailList != null ? detailList.size() : 0));
 
 			} else {
-				// 🔹 Current branch
-				List<M_LA3_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_LA3_DETAIL_Repo.getdatabydateListrow(parsedDate, columnId, rowId);
+// ✅ CURRENT DATA BRANCH
+				logger.info("Fetching CURRENT data for M_LA3");
+
+				List<M_LA3_Detail_Entity> detailList;
+
+				if (rowId != null && !rowId.isEmpty()
+						&& (isNotEmpty(columnId) || isNotEmpty(columnId1) || isNotEmpty(columnId2))) {
+
+					logger.info("➡ CURRENT DETAIL QUERY TRIGGERED (with filters)");
+					detailList = M_LA3_DETAIL_Repo.GetDataByRowIdAndColumnId(rowId, columnId, columnId1, columnId2,
+							parsedDate);
+
 				} else {
-					T1Dt1 = M_LA3_DETAIL_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
-					totalPages = M_LA3_DETAIL_Repo.getdatacount(parsedDate);
+					logger.info("➡ CURRENT LIST QUERY TRIGGERED (with pagination)");
+					detailList = M_LA3_DETAIL_Repo.getdatabydateList(parsedDate);
+					totalRecords = M_LA3_DETAIL_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
+				logger.info("CURRENT COUNT: {}", (detailList != null ? detailList.size() : 0));
 			}
 
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("Invalid date format: {}", todate, e);
 			mv.addObject("errorMessage", "Invalid date format: " + todate);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Unexpected error in getM_LA1currentDtl", e);
 			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
 		}
 
-		// ✅ Common attributes
-		mv.setViewName("BRRS/M_LA3");
+// ✅ Common model attributes
+		int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
 		mv.addObject("displaymode", "Details");
 		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("totalPages", totalPages);
 		mv.addObject("reportsflag", "reportsflag");
 		mv.addObject("menu", reportId);
 
+		logger.info("Total pages calculated: {}", totalPages);
 		return mv;
 	}
 
+//Helper for null/empty check
+	private boolean isNotEmpty(String value) {
+		return value != null && !value.trim().isEmpty();
+	}
+	
+	
 	public byte[] BRRS_M_LA3Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) throws Exception {
 
@@ -2026,4 +2051,33 @@ public class BRRS_M_LA3_ReportService {
 	    }
 	}
 
+	
+	public boolean updatedetail(M_LA3_Detail_Entity la3Data) {
+	    try {
+	        System.out.println("Came to LA3 Service");
+
+	        // ✅ Must match your entity field name exactly
+	        M_LA3_Detail_Entity existing = M_LA3_DETAIL_Repo.findByAcctnumber(la3Data.getAcct_number());
+
+	        if (existing != null) {
+	        	 //existing.setAcct_name(la1Data.getAcct_name());
+	            existing.setSanction_limit(la3Data.getSanction_limit());
+	            existing.setAcct_balance_in_pula(la3Data.getAcct_balance_in_pula());
+
+	            M_LA3_DETAIL_Repo.save(existing);
+
+	            System.out.println("Updated successfully for ACCT_NO: " + la3Data.getAcct_number());
+	            return true;
+	        } else {
+	            System.out.println("Record not found for Account No: " + la3Data.getAcct_number());
+	            return false;
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
+	
 }

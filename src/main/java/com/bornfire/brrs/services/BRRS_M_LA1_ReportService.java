@@ -1919,12 +1919,14 @@ public class BRRS_M_LA1_ReportService {
 						version);
 				return ARCHIVALreport;
 			}
+
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet("BRRS_M_LA1Details");
 
-// Common border style
+			// Common border style
 			BorderStyle border = BorderStyle.THIN;
-// Header style (left aligned)
+
+			// Header style (left aligned)
 			CellStyle headerStyle = workbook.createCellStyle();
 			Font headerFont = workbook.createFont();
 			headerFont.setBold(true);
@@ -1938,12 +1940,12 @@ public class BRRS_M_LA1_ReportService {
 			headerStyle.setBorderLeft(border);
 			headerStyle.setBorderRight(border);
 
-// Right-aligned header style for ACCT BALANCE
+			// Right-aligned header style for ACCT BALANCE
 			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
 			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
 			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 
-// Default data style (left aligned)
+			// Default data style (left aligned)
 			CellStyle dataStyle = workbook.createCellStyle();
 			dataStyle.setAlignment(HorizontalAlignment.LEFT);
 			dataStyle.setBorderTop(border);
@@ -1951,7 +1953,7 @@ public class BRRS_M_LA1_ReportService {
 			dataStyle.setBorderLeft(border);
 			dataStyle.setBorderRight(border);
 
-// ACCT BALANCE style (right aligned with 3 decimals)
+			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
 			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
@@ -1959,9 +1961,20 @@ public class BRRS_M_LA1_ReportService {
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
-// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
-					"REPORT_DATE" };
+
+			// sanction style (right aligned with 3 decimals)
+			CellStyle sanctionStyle = workbook.createCellStyle();
+			sanctionStyle.setAlignment(HorizontalAlignment.RIGHT);
+			sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			sanctionStyle.setBorderTop(border);
+			sanctionStyle.setBorderBottom(border);
+			sanctionStyle.setBorderLeft(border);
+			sanctionStyle.setBorderRight(border);
+
+			// Header row
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
+					"REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
+
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
@@ -1973,9 +1986,11 @@ public class BRRS_M_LA1_ReportService {
 				}
 				sheet.setColumnWidth(i, 5000);
 			}
-// Get data
+
+			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
 			List<M_LA1_Detail_Entity> reportData = M_LA1_Detail_Repo.getdatabydateList(parsedToDate);
+
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
 				for (M_LA1_Detail_Entity item : reportData) {
@@ -1983,7 +1998,8 @@ public class BRRS_M_LA1_ReportService {
 					row.createCell(0).setCellValue(item.getCust_id());
 					row.createCell(1).setCellValue(item.getAcct_number());
 					row.createCell(2).setCellValue(item.getAcct_name());
-// ACCT BALANCE (right aligned, 3 decimal places)
+
+					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
 					if (item.getAcct_balance_in_pula() != null) {
 						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
@@ -1991,28 +2007,50 @@ public class BRRS_M_LA1_ReportService {
 						balanceCell.setCellValue(0.000);
 					}
 					balanceCell.setCellStyle(balanceStyle);
-					row.createCell(4).setCellValue(item.getReport_label());
-					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
-					row.createCell(6)
+
+					// sanction (right aligned, 3 decimal places)
+					Cell sanctionCell = row.createCell(4);
+					if (item.getSanction_limit() != null) {
+						sanctionCell.setCellValue(item.getSanction_limit().doubleValue());
+					} else {
+						sanctionCell.setCellValue(0.000);
+					}
+					sanctionCell.setCellStyle(sanctionStyle);
+
+					row.createCell(5).setCellValue(item.getReport_label());
+					row.createCell(6).setCellValue(item.getReport_addl_criteria_1());
+					row.createCell(7).setCellValue(item.getReport_addl_criteria_2());
+					row.createCell(8).setCellValue(item.getReport_addl_criteria_3());
+					row.createCell(9)
 							.setCellValue(item.getReport_date() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
-// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
+
+					// Apply border style to all cells in the row
+					for (int colIndex = 0; colIndex < headers.length; colIndex++) {
+						Cell cell = row.getCell(colIndex);
+						if (cell != null) {
+							if (colIndex == 3) { // ACCT BALANCE
+								cell.setCellStyle(balanceStyle);
+							} else if (colIndex == 4) { // APPROVED LIMIT
+								cell.setCellStyle(sanctionStyle);
+							} else {
+								cell.setCellStyle(dataStyle);
+							}
 						}
 					}
 				}
 			} else {
 				logger.info("No data found for BRRS_M_LA1 — only header will be written.");
 			}
-// Write to byte[]
+
+			// Write to byte[]
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			workbook.write(bos);
 			workbook.close();
 			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
 			return bos.toByteArray();
+
 		} catch (Exception e) {
 			logger.error("Error generating BRRS_M_LA1 Excel", e);
 			return new byte[0];
@@ -3954,7 +3992,11 @@ public class BRRS_M_LA1_ReportService {
 			M_LA1_Detail_Entity existing = M_LA1_Detail_Repo.findByAcctnumber(la1Data.getAcct_number());
 
 			if (existing != null) {
+
 				existing.setAcct_name(la1Data.getAcct_name());
+
+				// existing.setAcct_name(la1Data.getAcct_name());
+
 				existing.setSanction_limit(la1Data.getSanction_limit());
 				existing.setAcct_balance_in_pula(la1Data.getAcct_balance_in_pula());
 

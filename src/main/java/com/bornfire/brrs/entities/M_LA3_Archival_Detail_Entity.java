@@ -14,8 +14,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_M_LA3_ARCHIVALTABLE_DETAIL")
 public class M_LA3_Archival_Detail_Entity {
 	
-	@Id
+	
 	private String	cust_id;
+	@Id
 	private String	acct_number;
 	private String	acct_name;
 	private String	data_type;
