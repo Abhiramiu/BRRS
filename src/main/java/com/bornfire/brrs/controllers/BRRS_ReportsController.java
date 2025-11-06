@@ -1024,6 +1024,37 @@ public class BRRS_ReportsController {
 		                              .body("Update Failed: " + e.getMessage());
 		     }
 		 }
+
+		 
+// 		 @RequestMapping(value = "/UpdateQ_BRANCHNET_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+// @ResponseBody
+// public ResponseEntity<String> updateQBranchnet(
+//         @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+//         @ModelAttribute Q_BRANCHNET_Summary_Entity1 request,
+//         HttpServletRequest req) {
+
+//     try {
+//         System.out.println("Came to Resub Controller");
+
+//         if (asondate != null) {
+//             // Set the asondate into the entity
+//             request.setReportDate(asondate);
+//             System.out.println("Set Report Date: " + asondate);
+//         } else {
+//             System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+//         }
+
+//         // Call service to create a new versioned row
+//         Q_BRANCHNETservice.updateQBranchnet(request);
+
+//         return ResponseEntity.ok("Resubmission Updated Successfully");
+
+//     } catch (Exception e) {
+//         e.printStackTrace();
+//         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                 .body("Resubmission Update Failed: " + e.getMessage());
+//     }
+// }
 		 @RequestMapping(value = "/QBRANCHNET2", method = { RequestMethod.GET, RequestMethod.POST })
 		 @ResponseBody
 		 public ResponseEntity<String> QBranchnetUpdate2(

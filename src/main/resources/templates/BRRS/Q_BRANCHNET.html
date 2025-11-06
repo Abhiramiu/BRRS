@@ -720,7 +720,6 @@ function fileuploads(btn) {
 	            }
 	        });
 	    }
-		
     
 
       const formData4 = new FormData();
@@ -883,7 +882,7 @@ function fileuploads(btn) {
 										<td id="ROW10" style="font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r10_no1_of_branches != null ? #numbers.formatDecimal(report.r10_no1_of_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r10_no1_of_branches != null ? #numbers.formatDecimal(report.r10_no1_of_branches, 1,  0, 'POINT') : '0'}"
                                         id="r10_no1_of_branches"
                                         name="r10_no1_of_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"
@@ -893,7 +892,7 @@ function fileuploads(btn) {
 										<td id="ROW10" style="font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r10_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r10_no1_of_sub_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                         th:value="${report.r10_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r10_no1_of_sub_branches, 1,  0, 'POINT') : '0'}"
                                         id="r10_no1_of_sub_branches"
                                         name="r10_no1_of_sub_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -902,7 +901,7 @@ function fileuploads(btn) {
 										<td id="ROW10" style="font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                       th:value="${report.r10_no1_of_agencies != null ? #numbers.formatDecimal(report.r10_no1_of_agencies, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                       th:value="${report.r10_no1_of_agencies != null ? #numbers.formatDecimal(report.r10_no1_of_agencies, 1,  0, 'POINT') : '0'}"
                                         id="r10_no1_of_agencies"
                                         name="r10_no1_of_agencies"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -922,7 +921,7 @@ function fileuploads(btn) {
 										<td id="ROW11" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r11_no1_of_branches != null ? #numbers.formatDecimal(report.r11_no1_of_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r11_no1_of_branches != null ? #numbers.formatDecimal(report.r11_no1_of_branches, 1,  0, 'POINT') : '0'}"
                                         id="r11_no1_of_branches"
                                         name="r11_no1_of_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -931,7 +930,7 @@ function fileuploads(btn) {
 										<td id="ROW11" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r11_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r11_no1_of_sub_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r11_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r11_no1_of_sub_branches, 1,  0, 'POINT') : '0'}"
                                         id="r11_no1_of_sub_branches"
                                         name="r11_no1_of_sub_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -940,7 +939,7 @@ function fileuploads(btn) {
 										<td id="ROW11" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r11_no1_of_agencies != null ? #numbers.formatDecimal(report.r11_no1_of_agencies, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r11_no1_of_agencies != null ? #numbers.formatDecimal(report.r11_no1_of_agencies, 1,  0, 'POINT') : '0'}"
                                         id="r11_no1_of_agencies"
                                         name="r11_no1_of_agencies"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -960,7 +959,7 @@ function fileuploads(btn) {
                                         <td id="ROW12" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r12_no1_of_branches != null ? #numbers.formatDecimal(report.r12_no1_of_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r12_no1_of_branches != null ? #numbers.formatDecimal(report.r12_no1_of_branches, 1,  0, 'POINT') : '0'}"
                                         id="r12_no1_of_branches"
                                         name="r12_no1_of_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -969,7 +968,7 @@ function fileuploads(btn) {
 										<td id="ROW12" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r12_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r12_no1_of_sub_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r12_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r12_no1_of_sub_branches, 1,  0, 'POINT') : '0'}"
                                         id="r12_no1_of_sub_branches"
                                         name="r12_no1_of_sub_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -978,7 +977,7 @@ function fileuploads(btn) {
 										<td id="ROW12" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r12_no1_of_agencies != null ? #numbers.formatDecimal(report.r12_no1_of_agencies, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r12_no1_of_agencies != null ? #numbers.formatDecimal(report.r12_no1_of_agencies, 1,  0, 'POINT') : '0'}"
                                         id="r12_no1_of_agencies"
                                         name="r12_no1_of_agencies"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -998,7 +997,7 @@ function fileuploads(btn) {
 										<td id="ROW13" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r13_no1_of_branches != null ? #numbers.formatDecimal(report.r13_no1_of_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r13_no1_of_branches != null ? #numbers.formatDecimal(report.r13_no1_of_branches, 1,  0, 'POINT') : '0'}"
                                         id="r13_no1_of_branches"
                                         name="r13_no1_of_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1007,7 +1006,7 @@ function fileuploads(btn) {
 										<td id="ROW13" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r13_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r13_no1_of_sub_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r13_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r13_no1_of_sub_branches, 1,  0, 'POINT') : '0'}"
                                         id="r13_no1_of_sub_branches"
                                         name="r13_no1_of_sub_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1016,7 +1015,7 @@ function fileuploads(btn) {
 										<td id="ROW13" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r13_no1_of_agencies != null ? #numbers.formatDecimal(report.r13_no1_of_agencies, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r13_no1_of_agencies != null ? #numbers.formatDecimal(report.r13_no1_of_agencies, 1,  0, 'POINT') : '0'}"
                                         id="r13_no1_of_agencies"
                                         name="r13_no1_of_agencies"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1036,7 +1035,7 @@ function fileuploads(btn) {
 										<td id="ROW14" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r14_no1_of_branches != null ? #numbers.formatDecimal(report.r14_no1_of_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r14_no1_of_branches != null ? #numbers.formatDecimal(report.r14_no1_of_branches, 1,  0, 'POINT') : '0'}"
                                         id="r14_no1_of_branches"
                                         name="r14_no1_of_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1045,7 +1044,7 @@ function fileuploads(btn) {
 										<td id="ROW14" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r14_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r14_no1_of_sub_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r14_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r14_no1_of_sub_branches, 1,  0, 'POINT') : '0'}"
                                         id="r14_no1_of_sub_branches"
                                         name="r14_no1_of_sub_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1054,7 +1053,7 @@ function fileuploads(btn) {
 										<td id="ROW14" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r14_no1_of_agencies != null ? #numbers.formatDecimal(report.r14_no1_of_agencies, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r14_no1_of_agencies != null ? #numbers.formatDecimal(report.r14_no1_of_agencies, 1,  0, 'POINT') : '0'}"
                                         id="r14_no1_of_agencies"
                                         name="r14_no1_of_agencies"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1074,7 +1073,7 @@ function fileuploads(btn) {
 										<td id="ROW15" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r15_no1_of_branches != null ? #numbers.formatDecimal(report.r15_no1_of_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r15_no1_of_branches != null ? #numbers.formatDecimal(report.r15_no1_of_branches, 1,  0, 'POINT') : '0'}"
                                         id="r15_no1_of_branches"
                                         name="r15_no1_of_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1083,7 +1082,7 @@ function fileuploads(btn) {
 										<td id="ROW15" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r15_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r15_no1_of_sub_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r15_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r15_no1_of_sub_branches, 1,  0, 'POINT') : '0'}"
                                         id="r15_no1_of_sub_branches"
                                         name="r15_no1_of_sub_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1092,7 +1091,7 @@ function fileuploads(btn) {
 										<td id="ROW15" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r15_no1_of_agencies != null ? #numbers.formatDecimal(report.r15_no1_of_agencies, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r15_no1_of_agencies != null ? #numbers.formatDecimal(report.r15_no1_of_agencies, 1,  0, 'POINT') : '0'}"
                                         id="r15_no1_of_agencies"
                                         name="r15_no1_of_agencies"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1113,7 +1112,7 @@ function fileuploads(btn) {
 										<td id="ROW16" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r16_no1_of_branches != null ? #numbers.formatDecimal(report.r16_no1_of_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r16_no1_of_branches != null ? #numbers.formatDecimal(report.r16_no1_of_branches, 1,  0, 'POINT') : '0'}"
                                         id="r16_no1_of_branches"
                                         name="r16_no1_of_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1122,7 +1121,7 @@ function fileuploads(btn) {
 										<td id="ROW16" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r16_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r16_no1_of_sub_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r16_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r16_no1_of_sub_branches, 1,  0, 'POINT') : '0'}"
                                         id="r16_no1_of_sub_branches"
                                         name="r16_no1_of_sub_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1131,7 +1130,7 @@ function fileuploads(btn) {
 										<td id="ROW16" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r16_no1_of_agencies != null ? #numbers.formatDecimal(report.r16_no1_of_agencies, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r16_no1_of_agencies != null ? #numbers.formatDecimal(report.r16_no1_of_agencies, 1,  0, 'POINT') : '0'}"
                                         id="r16_no1_of_agencies"
                                         name="r16_no1_of_agencies"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1152,7 +1151,7 @@ function fileuploads(btn) {
 										<td id="ROW17" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r17_no1_of_branches != null ? #numbers.formatDecimal(report.r17_no1_of_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r17_no1_of_branches != null ? #numbers.formatDecimal(report.r17_no1_of_branches, 1,  0, 'POINT') : '0'}"
                                         id="r17_no1_of_branches"
                                         name="r17_no1_of_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1161,7 +1160,7 @@ function fileuploads(btn) {
 										<td id="ROW17" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r17_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r17_no1_of_sub_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r17_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r17_no1_of_sub_branches, 1,  0, 'POINT') : '0'}"
                                         id="r17_no1_of_sub_branches"
                                         name="r17_no1_of_sub_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1170,7 +1169,7 @@ function fileuploads(btn) {
 										<td id="ROW17" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r17_no1_of_agencies != null ? #numbers.formatDecimal(report.r17_no1_of_agencies, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r17_no1_of_agencies != null ? #numbers.formatDecimal(report.r17_no1_of_agencies, 1,  0, 'POINT') : '0'}"
                                         id="r17_no1_of_agencies"
                                         name="r17_no1_of_agencies"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1191,7 +1190,7 @@ function fileuploads(btn) {
 										<td id="ROW18" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r18_no1_of_branches != null ? #numbers.formatDecimal(report.r18_no1_of_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r18_no1_of_branches != null ? #numbers.formatDecimal(report.r18_no1_of_branches, 1,  0, 'POINT') : '0'}"
                                         id="r18_no1_of_branches"
                                         name="r18_no1_of_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1200,7 +1199,7 @@ function fileuploads(btn) {
 										<td id="ROW18" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                       th:value="${report.r18_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r18_no1_of_sub_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                       th:value="${report.r18_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r18_no1_of_sub_branches, 1,  0, 'POINT') : '0'}"
                                         id="r18_no1_of_sub_branches"
                                         name="r18_no1_of_sub_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1209,7 +1208,7 @@ function fileuploads(btn) {
 										<td id="ROW18" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r18_no1_of_agencies != null ? #numbers.formatDecimal(report.r18_no1_of_agencies, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r18_no1_of_agencies != null ? #numbers.formatDecimal(report.r18_no1_of_agencies, 1,  0, 'POINT') : '0'}"
                                         id="r18_no1_of_agencies"
                                         name="r18_no1_of_agencies"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1230,7 +1229,7 @@ function fileuploads(btn) {
 										<td id="ROW19" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r19_no1_of_branches != null ? #numbers.formatDecimal(report.r19_no1_of_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r19_no1_of_branches != null ? #numbers.formatDecimal(report.r19_no1_of_branches, 1,  0, 'POINT') : '0'}"
                                         id="r19_no1_of_branches"
                                         name="r19_no1_of_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1239,7 +1238,7 @@ function fileuploads(btn) {
 										<td id="ROW19" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r19_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r19_no1_of_sub_branches, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r19_no1_of_sub_branches != null ? #numbers.formatDecimal(report.r19_no1_of_sub_branches, 1,  0, 'POINT') : '0'}"
                                         id="r19_no1_of_sub_branches"
                                         name="r19_no1_of_sub_branches"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1248,7 +1247,7 @@ function fileuploads(btn) {
 										<td id="ROW19" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r19_no1_of_agencies != null ? #numbers.formatDecimal(report.r19_no1_of_agencies, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r19_no1_of_agencies != null ? #numbers.formatDecimal(report.r19_no1_of_agencies, 1,  0, 'POINT') : '0'}"
                                         id="r19_no1_of_agencies"
                                         name="r19_no1_of_agencies"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1270,7 +1269,6 @@ function fileuploads(btn) {
                                         type="text"
                                          id="r20_no1_of_branches"
                                         name="r20_no1_of_branches"
-                                        th:value="${report.r20_no1_of_branches}"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
                                         </td>
                                          <td id="ROW20" style=" font-weight: bold;background-color: rgb(107, 122, 143);color: white;padding-left: 20px;">
@@ -1278,13 +1276,12 @@ function fileuploads(btn) {
                                         type="text"
                                         id="r20_no1_of_sub_branches"
                                         name="r20_no1_of_sub_branches"
-                                        th:value="${report.r20_no1_of_sub_branches}"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
                                          </td>
                                             <td id="ROW20" style=" font-weight: bold;background-color: rgb(107, 122, 143);color: white;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r20_no1_of_agencies}"
+                                        th:value="${report.r20_no1_of_agencies != null ? #numbers.formatDecimal(report.r20_no1_of_agencies, 1,  0, 'POINT') : '0'}"
                                         id="r20_no1_of_agencies"
                                         name="r20_no1_of_agencies"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1326,7 +1323,7 @@ function fileuploads(btn) {
 										<td id="ROW25" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r25_no_of_atms != null ? #numbers.formatDecimal(report.r25_no_of_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r25_no_of_atms != null ? #numbers.formatDecimal(report.r25_no_of_atms, 1,  0, 'POINT') : '0'}"
                                         id="r25_no_of_atms"
                                         name="r25_no_of_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1335,7 +1332,7 @@ function fileuploads(btn) {
 										<td id="ROW25" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r25_no_of_mini_atms != null ? #numbers.formatDecimal(report.r25_no_of_mini_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r25_no_of_mini_atms != null ? #numbers.formatDecimal(report.r25_no_of_mini_atms, 1,  0, 'POINT') : '0'}"
                                         id="r25_no_of_mini_atms"
                                         name="r25_no_of_mini_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1344,7 +1341,7 @@ function fileuploads(btn) {
 										<td id="ROW25" style="font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r25_encashment_points != null ? #numbers.formatDecimal(report.r25_encashment_points, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r25_encashment_points != null ? #numbers.formatDecimal(report.r25_encashment_points, 1,  0, 'POINT') : '0'}"
                                         id="r25_encashment_points"
                                         name="r25_encashment_points"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1366,7 +1363,7 @@ function fileuploads(btn) {
 										<td id="ROW26" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r26_no_of_atms != null ? #numbers.formatDecimal(report.r26_no_of_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r26_no_of_atms != null ? #numbers.formatDecimal(report.r26_no_of_atms, 1,  0, 'POINT') : '0'}"
                                         id="r26_no_of_atms"
                                         name="r26_no_of_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1375,7 +1372,7 @@ function fileuploads(btn) {
 										<td id="ROW26" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r26_no_of_mini_atms != null ? #numbers.formatDecimal(report.r26_no_of_mini_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r26_no_of_mini_atms != null ? #numbers.formatDecimal(report.r26_no_of_mini_atms, 1,  0, 'POINT') : '0'}"
                                         id="r26_no_of_mini_atms"
                                         name="r26_no_of_mini_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1384,7 +1381,7 @@ function fileuploads(btn) {
 										<td id="ROW26" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r26_encashment_points != null ? #numbers.formatDecimal(report.r26_encashment_points, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r26_encashment_points != null ? #numbers.formatDecimal(report.r26_encashment_points, 1,  0, 'POINT') : '0'}"
                                         id="r26_encashment_points"
                                         name="r26_encashment_points"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1406,7 +1403,7 @@ function fileuploads(btn) {
 										<td id="ROW27" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r27_no_of_atms != null ? #numbers.formatDecimal(report.r27_no_of_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r27_no_of_atms != null ? #numbers.formatDecimal(report.r27_no_of_atms, 1,  0, 'POINT') : '0'}"
                                         id="r27_no_of_atms"
                                         name="r27_no_of_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1415,7 +1412,7 @@ function fileuploads(btn) {
 										<td id="ROW27" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r27_no_of_mini_atms != null ? #numbers.formatDecimal(report.r27_no_of_mini_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r27_no_of_mini_atms != null ? #numbers.formatDecimal(report.r27_no_of_mini_atms, 1,  0, 'POINT') : '0'}"
                                         id="r27_no_of_mini_atms"
                                         name="r27_no_of_mini_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1424,7 +1421,7 @@ function fileuploads(btn) {
 										<td id="ROW27" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r27_encashment_points != null ? #numbers.formatDecimal(report.r27_encashment_points, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r27_encashment_points != null ? #numbers.formatDecimal(report.r27_encashment_points, 1,  0, 'POINT') : '0'}"
                                         id="r27_encashment_points"
                                         name="r27_encashment_points"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1447,7 +1444,7 @@ function fileuploads(btn) {
 										<td id="ROW28" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r28_no_of_atms != null ? #numbers.formatDecimal(report.r28_no_of_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r28_no_of_atms != null ? #numbers.formatDecimal(report.r28_no_of_atms, 1,  0, 'POINT') : '0'}"
                                         id="r28_no_of_atms"
                                         name="r28_no_of_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1456,7 +1453,7 @@ function fileuploads(btn) {
 										<td id="ROW28" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r28_no_of_mini_atms != null ? #numbers.formatDecimal(report.r28_no_of_mini_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r28_no_of_mini_atms != null ? #numbers.formatDecimal(report.r28_no_of_mini_atms, 1,  0, 'POINT') : '0'}"
                                         id="r28_no_of_mini_atms"
                                         name="r28_no_of_mini_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1465,7 +1462,7 @@ function fileuploads(btn) {
 										<td id="ROW28" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r28_encashment_points != null ? #numbers.formatDecimal(report.r28_encashment_points, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r28_encashment_points != null ? #numbers.formatDecimal(report.r28_encashment_points, 1,  0, 'POINT') : '0'}"
                                         id="r28_encashment_points"
                                         name="r28_encashment_points"
                                         style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1487,7 +1484,7 @@ function fileuploads(btn) {
 										<td id="ROW29" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r29_no_of_atms != null ? #numbers.formatDecimal(report.r29_no_of_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r29_no_of_atms != null ? #numbers.formatDecimal(report.r29_no_of_atms, 1,  0, 'POINT') : '0'}"
                                         id="r29_no_of_atms"
                                         name="r29_no_of_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 29px; border-color: transparent; text-align: right;"readonly />
@@ -1496,7 +1493,7 @@ function fileuploads(btn) {
 										<td id="ROW29" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r29_no_of_mini_atms != null ? #numbers.formatDecimal(report.r29_no_of_mini_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r29_no_of_mini_atms != null ? #numbers.formatDecimal(report.r29_no_of_mini_atms, 1,  0, 'POINT') : '0'}"
                                         id="r29_no_of_mini_atms"
                                         name="r29_no_of_mini_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 29px; border-color: transparent; text-align: right;"readonly />
@@ -1505,7 +1502,7 @@ function fileuploads(btn) {
 										<td id="ROW29" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r29_encashment_points != null ? #numbers.formatDecimal(report.r29_encashment_points, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r29_encashment_points != null ? #numbers.formatDecimal(report.r29_encashment_points, 1,  0, 'POINT') : '0'}"
                                         id="r29_encashment_points"
                                         name="r29_encashment_points"
                                         style="background-color: #FFFFFF; width: 400px; height: 29px; border-color: transparent; text-align: right;"readonly />
@@ -1527,7 +1524,7 @@ function fileuploads(btn) {
 										<td id="ROW30" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r30_no_of_atms != null ? #numbers.formatDecimal(report.r30_no_of_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r30_no_of_atms != null ? #numbers.formatDecimal(report.r30_no_of_atms, 1,  0, 'POINT') : '0'}"
                                         id="r30_no_of_atms"
                                         name="r30_no_of_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 30px; border-color: transparent; text-align: right;"readonly />
@@ -1536,7 +1533,7 @@ function fileuploads(btn) {
 										<td id="ROW30" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r30_no_of_mini_atms != null ? #numbers.formatDecimal(report.r30_no_of_mini_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r30_no_of_mini_atms != null ? #numbers.formatDecimal(report.r30_no_of_mini_atms, 1,  0, 'POINT') : '0'}"
                                         id="r30_no_of_mini_atms"
                                         name="r30_no_of_mini_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 30px; border-color: transparent; text-align: right;"readonly />
@@ -1545,7 +1542,7 @@ function fileuploads(btn) {
 										<td id="ROW30" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r30_encashment_points != null ? #numbers.formatDecimal(report.r30_encashment_points, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r30_encashment_points != null ? #numbers.formatDecimal(report.r30_encashment_points, 1,  0, 'POINT') : '0'}"
                                         id="r30_encashment_points"
                                         name="r30_encashment_points"
                                         style="background-color: #FFFFFF; width: 400px; height: 30px; border-color: transparent; text-align: right;"readonly />
@@ -1567,7 +1564,7 @@ function fileuploads(btn) {
 										<td id="ROW31" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r31_no_of_atms != null ? #numbers.formatDecimal(report.r31_no_of_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r31_no_of_atms != null ? #numbers.formatDecimal(report.r31_no_of_atms, 1,  0, 'POINT') : '0'}"
                                         id="r31_no_of_atms"
                                         name="r31_no_of_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 31px; border-color: transparent; text-align: right;"readonly />
@@ -1576,7 +1573,7 @@ function fileuploads(btn) {
 										<td id="ROW31" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r31_no_of_mini_atms != null ? #numbers.formatDecimal(report.r31_no_of_mini_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r31_no_of_mini_atms != null ? #numbers.formatDecimal(report.r31_no_of_mini_atms, 1,  0, 'POINT') : '0'}"
                                         id="r31_no_of_mini_atms"
                                         name="r31_no_of_mini_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 31px; border-color: transparent; text-align: right;"readonly />
@@ -1585,7 +1582,7 @@ function fileuploads(btn) {
 										<td id="ROW31" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r31_encashment_points != null ? #numbers.formatDecimal(report.r31_encashment_points, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r31_encashment_points != null ? #numbers.formatDecimal(report.r31_encashment_points, 1,  0, 'POINT') : '0'}"
                                         id="r31_encashment_points"
                                         name="r31_encashment_points"
                                         style="background-color: #FFFFFF; width: 400px; height: 31px; border-color: transparent; text-align: right;"readonly />
@@ -1606,7 +1603,7 @@ function fileuploads(btn) {
 										<td id="ROW32" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r32_no_of_atms != null ? #numbers.formatDecimal(report.r32_no_of_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r32_no_of_atms != null ? #numbers.formatDecimal(report.r32_no_of_atms, 1,  0, 'POINT') : '0'}"
                                         id="r32_no_of_atms"
                                         name="r32_no_of_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 32px; border-color: transparent; text-align: right;"readonly />
@@ -1615,7 +1612,7 @@ function fileuploads(btn) {
 										<td id="ROW32" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r32_no_of_mini_atms != null ? #numbers.formatDecimal(report.r32_no_of_mini_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r32_no_of_mini_atms != null ? #numbers.formatDecimal(report.r32_no_of_mini_atms, 1,  0, 'POINT') : '0'}"
                                         id="r32_no_of_mini_atms"
                                         name="r32_no_of_mini_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 32px; border-color: transparent; text-align: right;"readonly />
@@ -1624,7 +1621,7 @@ function fileuploads(btn) {
 										<td id="ROW32" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r32_encashment_points != null ? #numbers.formatDecimal(report.r32_encashment_points, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r32_encashment_points != null ? #numbers.formatDecimal(report.r32_encashment_points, 1,  0, 'POINT') : '0'}"
                                         id="r32_encashment_points"
                                         name="r32_encashment_points"
                                         style="background-color: #FFFFFF; width: 400px; height: 32px; border-color: transparent; text-align: right;"readonly />
@@ -1645,7 +1642,7 @@ function fileuploads(btn) {
 										<td id="ROW33" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r33_no_of_atms != null ? #numbers.formatDecimal(report.r33_no_of_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r33_no_of_atms != null ? #numbers.formatDecimal(report.r33_no_of_atms, 1,  0, 'POINT') : '0'}"
                                         id="r33_no_of_atms"
                                         name="r33_no_of_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 33px; border-color: transparent; text-align: right;"readonly />
@@ -1654,7 +1651,7 @@ function fileuploads(btn) {
 										<td id="ROW33" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r33_no_of_mini_atms != null ? #numbers.formatDecimal(report.r33_no_of_mini_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r33_no_of_mini_atms != null ? #numbers.formatDecimal(report.r33_no_of_mini_atms, 1,  0, 'POINT') : '0'}"
                                         id="r33_no_of_mini_atms"
                                         name="r33_no_of_mini_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 33px; border-color: transparent; text-align: right;"readonly />
@@ -1663,7 +1660,7 @@ function fileuploads(btn) {
 										<td id="ROW33" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r33_encashment_points != null ? #numbers.formatDecimal(report.r33_encashment_points, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r33_encashment_points != null ? #numbers.formatDecimal(report.r33_encashment_points, 1,  0, 'POINT') : '0'}"
                                         id="r33_encashment_points"
                                         name="r33_encashment_points"
                                         style="background-color: #FFFFFF; width: 400px; height: 33px; border-color: transparent; text-align: right;"readonly />
@@ -1684,7 +1681,7 @@ function fileuploads(btn) {
 										<td id="ROW34" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r34_no_of_atms != null ? #numbers.formatDecimal(report.r34_no_of_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r34_no_of_atms != null ? #numbers.formatDecimal(report.r34_no_of_atms, 1,  0, 'POINT') : '0'}"
                                         id="r34_no_of_atms"
                                         name="r34_no_of_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 34px; border-color: transparent; text-align: right;"readonly />
@@ -1693,7 +1690,7 @@ function fileuploads(btn) {
 										<td id="ROW34" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r34_no_of_mini_atms != null ? #numbers.formatDecimal(report.r34_no_of_mini_atms, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r34_no_of_mini_atms != null ? #numbers.formatDecimal(report.r34_no_of_mini_atms, 1,  0, 'POINT') : '0'}"
                                         id="r34_no_of_mini_atms"
                                         name="r34_no_of_mini_atms"
                                         style="background-color: #FFFFFF; width: 400px; height: 34px; border-color: transparent; text-align: right;"readonly />
@@ -1702,7 +1699,7 @@ function fileuploads(btn) {
 										<td id="ROW34" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r34_encashment_points != null ? #numbers.formatDecimal(report.r34_encashment_points, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r34_encashment_points != null ? #numbers.formatDecimal(report.r34_encashment_points, 1,  0, 'POINT') : '0'}"
                                         id="r34_encashment_points"
                                         name="r34_encashment_points"
                                         style="background-color: #FFFFFF; width: 400px; height: 34px; border-color: transparent; text-align: right;"readonly />
@@ -1723,7 +1720,7 @@ function fileuploads(btn) {
                                          <td id="ROW20" style=" font-weight: bold;background-color: rgb(107, 122, 143);color: white;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r35_atm_mini_atm_district }"
+                                        th:value="${report.r35_atm_mini_atm_district != null ? #numbers.formatDecimal(report.r35_no_of_atms, 1,  0, 'POINT') : '0'}"
                                         id="r35_no_of_atms"
                                         name="r35_no_of_atms"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1731,7 +1728,7 @@ function fileuploads(btn) {
                                          <td id="ROW20" style=" font-weight: bold;background-color: rgb(107, 122, 143);color: white;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r35_no_of_mini_atms }"
+                                        th:value="${report.r35_no_of_mini_atms != null ? #numbers.formatDecimal(report.r35_no_of_mini_atms, 1,  0, 'POINT') : '0'}"
                                         id="r35_no_of_mini_atms"
                                         name="r35_no_of_mini_atms"
                                         style="background-color: rgb(107, 122, 143);color: white;width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1739,7 +1736,7 @@ function fileuploads(btn) {
                                             <td id="ROW20" style=" font-weight: bold;background-color: rgb(107, 122, 143);color: white;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r35_encashment_points }"
+                                        th:value="${report.r35_encashment_points != null ? #numbers.formatDecimal(report.r35_encashment_points, 1,  0, 'POINT') : '0'}"
                                         id="r35_encashment_points"
                                         name="r35_encashment_points"
                                         style="background-color: rgb(107, 122, 143);color: white;width: 400px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1780,7 +1777,7 @@ function fileuploads(btn) {
 										<td id="ROW40" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r40_opening_no_of_cards != null ? #numbers.formatDecimal(report.r40_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r40_opening_no_of_cards != null ? #numbers.formatDecimal(report.r40_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r40_opening_no_of_cards"
                                         name="r40_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1789,7 +1786,7 @@ function fileuploads(btn) {
 										<td id="ROW40" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                       th:value="${report.r40_no_of_cards_issued != null ? #numbers.formatDecimal(report.r40_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                       th:value="${report.r40_no_of_cards_issued != null ? #numbers.formatDecimal(report.r40_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                          id="r40_no_of_cards_issued"
                                         name="r40_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1798,7 +1795,7 @@ function fileuploads(btn) {
 										<td id="ROW40" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r40_no_cards_of_closed != null ? #numbers.formatDecimal(report.r40_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r40_no_cards_of_closed != null ? #numbers.formatDecimal(report.r40_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r40_no_cards_of_closed"
                                         name="r40_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1806,7 +1803,7 @@ function fileuploads(btn) {
                                         <td id="ROW40" style=" font-weight: bold;background-color: rgb(107, 122, 143);color: white;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r40_closing_bal_of_active_cards }"
+                                        th:value="${report.r40_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r40_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r40_closing_bal_of_active_cards"
                                         name="r40_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1827,7 +1824,7 @@ function fileuploads(btn) {
 										<td id="ROW41" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r41_opening_no_of_cards != null ? #numbers.formatDecimal(report.r41_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r41_opening_no_of_cards != null ? #numbers.formatDecimal(report.r41_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r41_opening_no_of_cards"
                                         name="r41_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1836,7 +1833,7 @@ function fileuploads(btn) {
 										<td id="ROW41" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r41_no_of_cards_issued != null ? #numbers.formatDecimal(report.r41_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r41_no_of_cards_issued != null ? #numbers.formatDecimal(report.r41_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r41_no_of_cards_issued"
                                         name="r41_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1845,7 +1842,7 @@ function fileuploads(btn) {
 										<td id="ROW41" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r41_no_cards_of_closed != null ? #numbers.formatDecimal(report.r41_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r41_no_cards_of_closed != null ? #numbers.formatDecimal(report.r41_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r41_no_cards_of_closed"
                                         name="r41_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1853,7 +1850,7 @@ function fileuploads(btn) {
                                         <td id="ROW41" style=" font-weight: bold;background-color: rgb(107, 122, 143);color: white;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r41_closing_bal_of_active_cards }"
+                                        th:value="${report.r41_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r41_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r41_closing_bal_of_active_cards"
                                         name="r41_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1874,7 +1871,7 @@ function fileuploads(btn) {
 										<td id="ROW42" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r42_opening_no_of_cards != null ? #numbers.formatDecimal(report.r42_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r42_opening_no_of_cards != null ? #numbers.formatDecimal(report.r42_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r42_opening_no_of_cards"
                                         name="r42_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1883,7 +1880,7 @@ function fileuploads(btn) {
 										<td id="ROW42" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r42_no_of_cards_issued != null ? #numbers.formatDecimal(report.r42_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r42_no_of_cards_issued != null ? #numbers.formatDecimal(report.r42_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r42_no_of_cards_issued"
                                         name="r42_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1892,7 +1889,7 @@ function fileuploads(btn) {
 										<td id="ROW42" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r42_no_cards_of_closed != null ? #numbers.formatDecimal(report.r42_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r42_no_cards_of_closed != null ? #numbers.formatDecimal(report.r42_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r42_no_cards_of_closed"
                                         name="r42_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1900,7 +1897,7 @@ function fileuploads(btn) {
                                         <td id="ROW42" style=" font-weight: bold;background-color: rgb(107, 122, 143);color: white;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r42_closing_bal_of_active_cards }"
+                                        th:value="${report.r42_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r42_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r42_closing_bal_of_active_cards"
                                         name="r42_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1921,7 +1918,7 @@ function fileuploads(btn) {
 										<td id="ROW43" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r43_opening_no_of_cards != null ? #numbers.formatDecimal(report.r43_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r43_opening_no_of_cards != null ? #numbers.formatDecimal(report.r43_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r43_opening_no_of_cards"
                                         name="r43_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1930,7 +1927,7 @@ function fileuploads(btn) {
 										<td id="ROW43" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r43_no_of_cards_issued != null ? #numbers.formatDecimal(report.r43_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r43_no_of_cards_issued != null ? #numbers.formatDecimal(report.r43_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r43_no_of_cards_issued"
                                         name="r43_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1939,7 +1936,7 @@ function fileuploads(btn) {
 										<td id="ROW43" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r43_no_cards_of_closed != null ? #numbers.formatDecimal(report.r43_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r43_no_cards_of_closed != null ? #numbers.formatDecimal(report.r43_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r43_no_cards_of_closed"
                                         name="r43_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1947,7 +1944,7 @@ function fileuploads(btn) {
                                         <td id="ROW43" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r43_closing_bal_of_active_cards }"
+                                        th:value="${report.r43_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r43_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r43_closing_bal_of_active_cards"
                                         name="r43_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1968,7 +1965,7 @@ function fileuploads(btn) {
 										<td id="ROW44" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r44_opening_no_of_cards != null ? #numbers.formatDecimal(report.r44_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r44_opening_no_of_cards != null ? #numbers.formatDecimal(report.r44_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r44_opening_no_of_cards"
                                         name="r44_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1977,7 +1974,7 @@ function fileuploads(btn) {
 										<td id="ROW44" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r44_no_of_cards_issued != null ? #numbers.formatDecimal(report.r44_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r44_no_of_cards_issued != null ? #numbers.formatDecimal(report.r44_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r44_no_of_cards_issued"
                                         name="r44_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1986,7 +1983,7 @@ function fileuploads(btn) {
 										<td id="ROW44" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r44_no_cards_of_closed != null ? #numbers.formatDecimal(report.r44_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r44_no_cards_of_closed != null ? #numbers.formatDecimal(report.r44_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r44_no_cards_of_closed"
                                         name="r44_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -1994,7 +1991,7 @@ function fileuploads(btn) {
                                         <td id="ROW44" style=" font-weight: bold;background-color: rgb(107, 122, 143);color: white;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r44_closing_bal_of_active_cards}"
+                                        th:value="${report.r44_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r44_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r44_closing_bal_of_active_cards"
                                         name="r44_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2015,7 +2012,7 @@ function fileuploads(btn) {
 										<td id="ROW45" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r45_opening_no_of_cards != null ? #numbers.formatDecimal(report.r45_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r45_opening_no_of_cards != null ? #numbers.formatDecimal(report.r45_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r45_opening_no_of_cards"
                                         name="r45_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2024,7 +2021,7 @@ function fileuploads(btn) {
 										<td id="ROW45" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r45_no_of_cards_issued != null ? #numbers.formatDecimal(report.r45_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r45_no_of_cards_issued != null ? #numbers.formatDecimal(report.r45_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r45_no_of_cards_issued"
                                         name="r45_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2033,7 +2030,7 @@ function fileuploads(btn) {
 										<td id="ROW45" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r45_no_cards_of_closed != null ? #numbers.formatDecimal(report.r45_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r45_no_cards_of_closed != null ? #numbers.formatDecimal(report.r45_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r45_no_cards_of_closed"
                                         name="r45_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2041,7 +2038,7 @@ function fileuploads(btn) {
                                         <td id="ROW45" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r45_closing_bal_of_active_cards }"
+                                        th:value="${report.r45_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r45_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r45_closing_bal_of_active_cards"
                                         name="r45_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2062,7 +2059,7 @@ function fileuploads(btn) {
 										<td id="ROW46" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                       th:value="${report.r46_opening_no_of_cards != null ? #numbers.formatDecimal(report.r46_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                       th:value="${report.r46_opening_no_of_cards != null ? #numbers.formatDecimal(report.r46_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r46_opening_no_of_cards"
                                         name="r46_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2071,7 +2068,7 @@ function fileuploads(btn) {
 										<td id="ROW46" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r46_no_of_cards_issued != null ? #numbers.formatDecimal(report.r46_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                         th:value="${report.r46_no_of_cards_issued != null ? #numbers.formatDecimal(report.r46_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r46_no_of_cards_issued"
                                         name="r46_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2080,7 +2077,7 @@ function fileuploads(btn) {
 										<td id="ROW46" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r46_no_cards_of_closed != null ? #numbers.formatDecimal(report.r46_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                         th:value="${report.r46_no_cards_of_closed != null ? #numbers.formatDecimal(report.r46_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r46_no_cards_of_closed"
                                         name="r46_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2088,7 +2085,7 @@ function fileuploads(btn) {
                                         <td id="ROW46" style=" font-weight: bold;background-color: rgb(107, 122, 143);color: white;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r46_closing_bal_of_active_cards }"
+                                         th:value="${report.r46_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r46_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r46_closing_bal_of_active_cards"
                                         name="r46_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2109,7 +2106,7 @@ function fileuploads(btn) {
 										<td id="ROW47" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r47_opening_no_of_cards != null ? #numbers.formatDecimal(report.r47_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                         th:value="${report.r47_opening_no_of_cards != null ? #numbers.formatDecimal(report.r47_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r47_opening_no_of_cards"
                                         name="r47_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2118,7 +2115,7 @@ function fileuploads(btn) {
 										<td id="ROW47" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r47_no_of_cards_issued != null ? #numbers.formatDecimal(report.r47_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                         th:value="${report.r47_no_of_cards_issued != null ? #numbers.formatDecimal(report.r47_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r47_no_of_cards_issued"
                                         name="r47_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2127,7 +2124,7 @@ function fileuploads(btn) {
 										<td id="ROW47" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r47_no_cards_of_closed != null ? #numbers.formatDecimal(report.r47_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                         th:value="${report.r47_no_cards_of_closed != null ? #numbers.formatDecimal(report.r47_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r47_no_cards_of_closed"
                                         name="r47_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2135,7 +2132,7 @@ function fileuploads(btn) {
                                         <td id="ROW47" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r47_closing_bal_of_active_cards }"
+                                         th:value="${report.r47_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r47_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r47_closing_bal_of_active_cards"
                                         name="r47_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2156,7 +2153,7 @@ function fileuploads(btn) {
 										<td id="ROW48" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r48_opening_no_of_cards != null ? #numbers.formatDecimal(report.r48_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                         th:value="${report.r48_opening_no_of_cards != null ? #numbers.formatDecimal(report.r48_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r48_opening_no_of_cards"
                                         name="r48_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2165,7 +2162,7 @@ function fileuploads(btn) {
 										<td id="ROW48" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r48_no_of_cards_issued != null ? #numbers.formatDecimal(report.r48_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r48_no_of_cards_issued != null ? #numbers.formatDecimal(report.r48_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r48_no_of_cards_issued"
                                         name="r48_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2174,7 +2171,7 @@ function fileuploads(btn) {
 										<td id="ROW48" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r48_no_cards_of_closed != null ? #numbers.formatDecimal(report.r48_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                         th:value="${report.r48_no_cards_of_closed != null ? #numbers.formatDecimal(report.r48_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r48_no_cards_of_closed"
                                         name="r48_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2182,7 +2179,7 @@ function fileuploads(btn) {
                                         <td id="ROW48" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r48_closing_bal_of_active_cards }"
+                                         th:value="${report.r48_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r48_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r48_closing_bal_of_active_cards"
                                         name="r48_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2202,7 +2199,7 @@ function fileuploads(btn) {
 										<td id="ROW49" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r49_opening_no_of_cards != null ? #numbers.formatDecimal(report.r49_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                         th:value="${report.r49_opening_no_of_cards != null ? #numbers.formatDecimal(report.r49_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r49_opening_no_of_cards"
                                         name="r49_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2211,7 +2208,7 @@ function fileuploads(btn) {
 										<td id="ROW49" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r49_no_of_cards_issued != null ? #numbers.formatDecimal(report.r49_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r49_no_of_cards_issued != null ? #numbers.formatDecimal(report.r49_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r49_no_of_cards_issued"
                                         name="r49_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2220,7 +2217,7 @@ function fileuploads(btn) {
 										<td id="ROW49" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r49_no_cards_of_closed != null ? #numbers.formatDecimal(report.r49_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                         th:value="${report.r49_no_cards_of_closed != null ? #numbers.formatDecimal(report.r49_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r49_no_cards_of_closed"
                                         name="r49_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2228,7 +2225,7 @@ function fileuploads(btn) {
                                         <td id="ROW49" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r49_closing_bal_of_active_cards }"
+                                         th:value="${report.r49_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r49_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r49_closing_bal_of_active_cards"
                                         name="r49_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2248,7 +2245,7 @@ function fileuploads(btn) {
                                          <td id="ROW20" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r50_opening_no_of_cards != null ? #numbers.formatDecimal(report.r50_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r50_opening_no_of_cards != null ? #numbers.formatDecimal(report.r50_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r50_opening_no_of_cards"
                                         name="r50_opening_no_of_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2256,7 +2253,7 @@ function fileuploads(btn) {
                                          <td id="ROW20" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r50_no_of_cards_issued != null ? #numbers.formatDecimal(report.r50_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r50_no_of_cards_issued != null ? #numbers.formatDecimal(report.r50_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r50_no_of_cards_issued"
                                         name="r50_no_of_cards_issued"
                                         style="background-color: rgb(107, 122, 143);color: white;width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2264,7 +2261,7 @@ function fileuploads(btn) {
                                             <td id="ROW20" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r50_no_cards_of_closed != null ? #numbers.formatDecimal(report.r50_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r50_no_cards_of_closed != null ? #numbers.formatDecimal(report.r50_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r50_no_cards_of_closed"
                                         name="r50_no_cards_of_closed"
                                         style="background-color: rgb(107, 122, 143);color: white;width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2272,7 +2269,7 @@ function fileuploads(btn) {
                                           <td id="ROW20" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r50_closing_bal_of_active_cards }"
+                                        th:value="${report.r50_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r50_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r50_closing_bal_of_active_cards"
                                         name="r50_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white;width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2310,7 +2307,7 @@ function fileuploads(btn) {
 										<td id="ROW55" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r55_opening_no_of_cards != null ? #numbers.formatDecimal(report.r55_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                         th:value="${report.r55_opening_no_of_cards != null ? #numbers.formatDecimal(report.r55_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r55_opening_no_of_cards"
                                         name="r55_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2318,7 +2315,7 @@ function fileuploads(btn) {
 										<td id="ROW55" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r55_no_of_cards_issued != null ? #numbers.formatDecimal(report.r55_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r55_no_of_cards_issued != null ? #numbers.formatDecimal(report.r55_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r55_no_of_cards_issued"
                                         name="r55_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2326,7 +2323,7 @@ function fileuploads(btn) {
 										<td id="ROW55" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r55_no_cards_of_closed != null ? #numbers.formatDecimal(report.r55_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r55_no_cards_of_closed != null ? #numbers.formatDecimal(report.r55_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r55_no_cards_of_closed"
                                         name="r55_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2334,7 +2331,7 @@ function fileuploads(btn) {
 										<td id="ROW55" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r55_closing_bal_of_active_cards }"
+                                        th:value="${report.r55_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r55_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r55_closing_bal_of_active_cards"
                                         name="r55_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2353,7 +2350,7 @@ function fileuploads(btn) {
 										<td id="ROW56" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r56_opening_no_of_cards != null ? #numbers.formatDecimal(report.r56_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r56_opening_no_of_cards != null ? #numbers.formatDecimal(report.r56_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r56_opening_no_of_cards"
                                         name="r56_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2361,7 +2358,7 @@ function fileuploads(btn) {
 										<td id="ROW56" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r56_no_of_cards_issued != null ? #numbers.formatDecimal(report.r56_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r56_no_of_cards_issued != null ? #numbers.formatDecimal(report.r56_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r56_no_of_cards_issued"
                                         name="r56_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2369,7 +2366,7 @@ function fileuploads(btn) {
 										<td id="ROW56" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r56_no_cards_of_closed != null ? #numbers.formatDecimal(report.r56_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r56_no_cards_of_closed != null ? #numbers.formatDecimal(report.r56_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r56_no_cards_of_closed"
                                         name="r56_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2377,7 +2374,7 @@ function fileuploads(btn) {
 										<td id="ROW56" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r56_closing_bal_of_active_cards }"
+                                        th:value="${report.r56_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r56_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r56_closing_bal_of_active_cards"
                                         name="r56_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2396,7 +2393,7 @@ function fileuploads(btn) {
 										<td id="ROW57" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r57_opening_no_of_cards != null ? #numbers.formatDecimal(report.r57_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r57_opening_no_of_cards != null ? #numbers.formatDecimal(report.r57_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r57_opening_no_of_cards"
                                         name="r57_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2404,7 +2401,7 @@ function fileuploads(btn) {
 										<td id="ROW57" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r57_no_of_cards_issued != null ? #numbers.formatDecimal(report.r57_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r57_no_of_cards_issued != null ? #numbers.formatDecimal(report.r57_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r57_no_of_cards_issued"
                                         name="r57_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2412,7 +2409,7 @@ function fileuploads(btn) {
 										<td id="ROW57" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r57_no_cards_of_closed != null ? #numbers.formatDecimal(report.r57_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r57_no_cards_of_closed != null ? #numbers.formatDecimal(report.r57_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r57_no_cards_of_closed"
                                         name="r57_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2420,7 +2417,7 @@ function fileuploads(btn) {
 										<td id="ROW57" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r57_closing_bal_of_active_cards }"
+                                        th:value="${report.r57_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r57_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r57_closing_bal_of_active_cards"
                                         name="r57_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white;width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2439,7 +2436,7 @@ function fileuploads(btn) {
 										<td id="ROW58" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r58_opening_no_of_cards != null ? #numbers.formatDecimal(report.r58_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r58_opening_no_of_cards != null ? #numbers.formatDecimal(report.r58_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r58_opening_no_of_cards"
                                         name="r58_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2447,7 +2444,7 @@ function fileuploads(btn) {
 										<td id="ROW58" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                       th:value="${report.r58_no_of_cards_issued != null ? #numbers.formatDecimal(report.r58_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                       th:value="${report.r58_no_of_cards_issued != null ? #numbers.formatDecimal(report.r58_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r58_no_of_cards_issued"
                                         name="r58_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2455,7 +2452,7 @@ function fileuploads(btn) {
 										<td id="ROW58" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r58_no_cards_of_closed != null ? #numbers.formatDecimal(report.r58_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                         th:value="${report.r58_no_cards_of_closed != null ? #numbers.formatDecimal(report.r58_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r58_no_cards_of_closed"
                                         name="r58_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2463,7 +2460,7 @@ function fileuploads(btn) {
 										<td id="ROW58" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                         th:value="${report.r58_closing_bal_of_active_cards}"
+                                         th:value="${report.r58_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r58_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r58_closing_bal_of_active_cards"
                                         name="r58_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2482,7 +2479,7 @@ function fileuploads(btn) {
 										<td id="ROW59" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r59_opening_no_of_cards != null ? #numbers.formatDecimal(report.r59_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r59_opening_no_of_cards != null ? #numbers.formatDecimal(report.r59_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r59_opening_no_of_cards"
                                         name="r59_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2490,7 +2487,7 @@ function fileuploads(btn) {
 										<td id="ROW59" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r59_no_of_cards_issued != null ? #numbers.formatDecimal(report.r59_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r59_no_of_cards_issued != null ? #numbers.formatDecimal(report.r59_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r59_no_of_cards_issued"
                                         name="r59_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2498,7 +2495,7 @@ function fileuploads(btn) {
 										<td id="ROW59" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                       th:value="${report.r59_no_cards_of_closed != null ? #numbers.formatDecimal(report.r59_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                       th:value="${report.r59_no_cards_of_closed != null ? #numbers.formatDecimal(report.r59_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r59_no_cards_of_closed"
                                         name="r59_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2506,7 +2503,7 @@ function fileuploads(btn) {
 										<td id="ROW59" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r59_closing_bal_of_active_cards}"
+                                        th:value="${report.r59_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r59_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r59_closing_bal_of_active_cards"
                                         name="r59_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2525,7 +2522,7 @@ function fileuploads(btn) {
 										<td id="ROW60" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                       th:value="${report.r60_opening_no_of_cards != null ? #numbers.formatDecimal(report.r60_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                       th:value="${report.r60_opening_no_of_cards != null ? #numbers.formatDecimal(report.r60_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r60_opening_no_of_cards"
                                         name="r60_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2533,7 +2530,7 @@ function fileuploads(btn) {
 										<td id="ROW60" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r60_no_of_cards_issued != null ? #numbers.formatDecimal(report.r60_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r60_no_of_cards_issued != null ? #numbers.formatDecimal(report.r60_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r60_no_of_cards_issued"
                                         name="r60_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2541,7 +2538,7 @@ function fileuploads(btn) {
 										<td id="ROW60" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r60_no_cards_of_closed != null ? #numbers.formatDecimal(report.r60_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r60_no_cards_of_closed != null ? #numbers.formatDecimal(report.r60_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r60_no_cards_of_closed"
                                         name="r60_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2549,7 +2546,7 @@ function fileuploads(btn) {
 										<td id="ROW60" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r60_closing_bal_of_active_cards }"
+                                        th:value="${report.r60_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r60_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r60_closing_bal_of_active_cards"
                                         name="r60_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2568,7 +2565,7 @@ function fileuploads(btn) {
 										<td id="ROW61" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r61_opening_no_of_cards != null ? #numbers.formatDecimal(report.r61_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r61_opening_no_of_cards != null ? #numbers.formatDecimal(report.r61_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r61_opening_no_of_cards"
                                         name="r61_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2576,7 +2573,7 @@ function fileuploads(btn) {
 										<td id="ROW61" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r61_no_of_cards_issued != null ? #numbers.formatDecimal(report.r61_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r61_no_of_cards_issued != null ? #numbers.formatDecimal(report.r61_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r61_no_of_cards_issued"
                                         name="r61_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2584,7 +2581,7 @@ function fileuploads(btn) {
 										<td id="ROW61" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r61_no_cards_of_closed != null ? #numbers.formatDecimal(report.r61_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r61_no_cards_of_closed != null ? #numbers.formatDecimal(report.r61_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r61_no_cards_of_closed"
                                         name="r61_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2592,7 +2589,7 @@ function fileuploads(btn) {
 										<td id="ROW61" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r61_closing_bal_of_active_cards }"
+                                        th:value="${report.r61_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r61_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r61_closing_bal_of_active_cards"
                                         name="r61_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2611,7 +2608,7 @@ function fileuploads(btn) {
 										<td id="ROW62" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r62_opening_no_of_cards != null ? #numbers.formatDecimal(report.r62_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r62_opening_no_of_cards != null ? #numbers.formatDecimal(report.r62_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r62_opening_no_of_cards"
                                         name="r62_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2619,7 +2616,7 @@ function fileuploads(btn) {
 										<td id="ROW62" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r62_no_of_cards_issued != null ? #numbers.formatDecimal(report.r62_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r62_no_of_cards_issued != null ? #numbers.formatDecimal(report.r62_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r62_no_of_cards_issued"
                                         name="r62_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2627,7 +2624,7 @@ function fileuploads(btn) {
 										<td id="ROW62" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r62_no_cards_of_closed != null ? #numbers.formatDecimal(report.r62_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r62_no_cards_of_closed != null ? #numbers.formatDecimal(report.r62_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r62_no_cards_of_closed"
                                         name="r62_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2635,7 +2632,7 @@ function fileuploads(btn) {
 										<td id="ROW62" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                       th:value="${report.r62_closing_bal_of_active_cards }"
+                                       th:value="${report.r62_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r62_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r62_closing_bal_of_active_cards"
                                         name="r62_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2654,7 +2651,7 @@ function fileuploads(btn) {
 										<td id="ROW63" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r63_opening_no_of_cards != null ? #numbers.formatDecimal(report.r63_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r63_opening_no_of_cards != null ? #numbers.formatDecimal(report.r63_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r63_opening_no_of_cards"
                                         name="r63_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2662,7 +2659,7 @@ function fileuploads(btn) {
 										<td id="ROW63" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r63_no_of_cards_issued != null ? #numbers.formatDecimal(report.r63_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r63_no_of_cards_issued != null ? #numbers.formatDecimal(report.r63_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r63_no_of_cards_issued"
                                         name="r63_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2670,7 +2667,7 @@ function fileuploads(btn) {
 										<td id="ROW63" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r63_no_cards_of_closed != null ? #numbers.formatDecimal(report.r63_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r63_no_cards_of_closed != null ? #numbers.formatDecimal(report.r63_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r63_no_cards_of_closed"
                                         name="r63_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2678,7 +2675,7 @@ function fileuploads(btn) {
 										<td id="ROW63" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r63_closing_bal_of_active_cards} "
+                                        th:value="${report.r63_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r63_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r63_closing_bal_of_active_cards"
                                         name="r63_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2697,7 +2694,7 @@ function fileuploads(btn) {
 										<td id="ROW64" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                       th:value="${report.r64_opening_no_of_cards != null ? #numbers.formatDecimal(report.r64_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                       th:value="${report.r64_opening_no_of_cards != null ? #numbers.formatDecimal(report.r64_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                          id="r64_opening_no_of_cards"
                                         name="r64_opening_no_of_cards"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2705,7 +2702,7 @@ function fileuploads(btn) {
 										<td id="ROW64" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r64_no_of_cards_issued != null ? #numbers.formatDecimal(report.r64_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r64_no_of_cards_issued != null ? #numbers.formatDecimal(report.r64_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r64_no_of_cards_issued"
                                         name="r64_no_of_cards_issued"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2713,7 +2710,7 @@ function fileuploads(btn) {
 										<td id="ROW64" style=" font-weight: bold;padding-left: 20px;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                       th:value="${report.r64_no_cards_of_closed != null ? #numbers.formatDecimal(report.r64_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                       th:value="${report.r64_no_cards_of_closed != null ? #numbers.formatDecimal(report.r64_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r64_no_cards_of_closed"
                                         name="r64_no_cards_of_closed"
                                         style="background-color: #FFFFFF; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2721,7 +2718,7 @@ function fileuploads(btn) {
 										<td id="ROW64" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r64_closing_bal_of_active_cards }"
+                                        th:value="${report.r64_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r64_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                          id="r64_closing_bal_of_active_cards"
                                         name="r64_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2741,7 +2738,7 @@ function fileuploads(btn) {
                                          <td id="ROW20" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r65_opening_no_of_cards != null ? #numbers.formatDecimal(report.r65_opening_no_of_cards, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r65_opening_no_of_cards != null ? #numbers.formatDecimal(report.r65_opening_no_of_cards, 1,  0, 'POINT') : '0'}"
                                         id="r65_opening_no_of_cards"
                                         name="r65_opening_no_of_cards"
                                         style="background-color: rgb(107, 122, 143);color: white; width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2749,7 +2746,7 @@ function fileuploads(btn) {
                                          <td id="ROW20" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r65_no_of_cards_issued != null ? #numbers.formatDecimal(report.r65_no_of_cards_issued, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r65_no_of_cards_issued != null ? #numbers.formatDecimal(report.r65_no_of_cards_issued, 1,  0, 'POINT') : '0'}"
                                         id="r65_no_of_cards_issued"
                                         name="r65_no_of_cards_issued"
                                         style="background-color: rgb(107, 122, 143);color: white;width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2757,7 +2754,7 @@ function fileuploads(btn) {
                                             <td id="ROW20" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r65_no_cards_of_closed != null ? #numbers.formatDecimal(report.r65_no_cards_of_closed, 0, 'COMMA', 0, 'POINT') : '0'}"
+                                        th:value="${report.r65_no_cards_of_closed != null ? #numbers.formatDecimal(report.r65_no_cards_of_closed, 1,  0, 'POINT') : '0'}"
                                         id="r65_no_cards_of_closed"
                                         name="r65_no_cards_of_closed"
                                         style="background-color: rgb(107, 122, 143);color: white;width: 270px; height: 28px; border-color: transparent; text-align: right;"readonly />
@@ -2765,7 +2762,7 @@ function fileuploads(btn) {
                                           <td id="ROW20" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);color: white;">
                                         <input class="display-input Show_input"
                                         type="text"
-                                        th:value="${report.r65_closing_bal_of_active_cards }"
+                                        th:value="${report.r65_closing_bal_of_active_cards != null ? #numbers.formatDecimal(report.r65_closing_bal_of_active_cards, 1,  0, 'POINT') : '0'}"
                                         id="r65_closing_bal_of_active_cards"
                                         name="r65_closing_bal_of_active_cards"
                                         style="background-color: rgb(107, 122, 143);color: white;width: 390px; height: 28px; border-color: transparent; text-align: right;"readonly />
