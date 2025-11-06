@@ -139,114 +139,104 @@ public class BRRS_M_LA1_ReportService {
 	}
 
 	public ModelAndView getM_LA1currentDtl(String reportId, String fromdate, String todate, String currency,
-            String dtltype, Pageable pageable, String filter, String type, String version) {
+			String dtltype, Pageable pageable, String filter, String type, String version) {
 
-ModelAndView mv = new ModelAndView("BRRS/M_LA1");
-int pageSize = pageable != null ? pageable.getPageSize() : 10;
-int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-int totalRecords = 0;
+		ModelAndView mv = new ModelAndView("BRRS/M_LA1");
+		int pageSize = pageable != null ? pageable.getPageSize() : 10;
+		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+		int totalRecords = 0;
 
-try {
+		try {
 // ✅ Parse toDate
-Date parsedDate = null;
-if (todate != null && !todate.isEmpty()) {
-parsedDate = dateformat.parse(todate);
-}
+			Date parsedDate = null;
+			if (todate != null && !todate.isEmpty()) {
+				parsedDate = dateformat.parse(todate);
+			}
 
 // ✅ Parse filter (rowId, columnIds)
-String rowId = null, columnId = null, columnId1 = null, columnId2 = null;
-if (filter != null && !filter.isEmpty()) {
-String[] parts = filter.split(",", -1);
-rowId = parts.length > 0 ? parts[0] : null;
-columnId = parts.length > 1 ? parts[1] : null;
-columnId1 = parts.length > 2 ? parts[2] : null;
-columnId2 = parts.length > 3 ? parts[3] : null;
-}
+			String rowId = null, columnId = null, columnId1 = null, columnId2 = null;
+			if (filter != null && !filter.isEmpty()) {
+				String[] parts = filter.split(",", -1);
+				rowId = parts.length > 0 ? parts[0] : null;
+				columnId = parts.length > 1 ? parts[1] : null;
+				columnId1 = parts.length > 2 ? parts[2] : null;
+				columnId2 = parts.length > 3 ? parts[3] : null;
+			}
 
 // ✅ ARCHIVAL DATA BRANCH
-if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.isEmpty()) {
-logger.info("Fetching ARCHIVAL data for version {}", version);
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.isEmpty()) {
+				logger.info("Fetching ARCHIVAL data for version {}", version);
 
-List<M_LA1_Archival_Detail_Entity> detailList;
+				List<M_LA1_Archival_Detail_Entity> detailList;
 
 // 🔹 Filtered (ROWID + COLUMNID)
-if (rowId != null && !rowId.isEmpty() &&
-(isNotEmpty(columnId) || isNotEmpty(columnId1) || isNotEmpty(columnId2))) {
+				if (rowId != null && !rowId.isEmpty()
+						&& (isNotEmpty(columnId) || isNotEmpty(columnId1) || isNotEmpty(columnId2))) {
 
-logger.info("➡ ARCHIVAL DETAIL QUERY TRIGGERED (with filters)");
-detailList = M_LA1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(
-rowId, columnId, columnId1, columnId2, parsedDate
-);
+					logger.info("➡ ARCHIVAL DETAIL QUERY TRIGGERED (with filters)");
+					detailList = M_LA1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, columnId1,
+							columnId2, parsedDate);
 
-} else {
-logger.info("➡ ARCHIVAL LIST QUERY TRIGGERED (with pagination)");
-detailList = M_LA1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-totalRecords = M_LA1_Archival_Detail_Repo.getdatacount(parsedDate);
-mv.addObject("pagination", "YES");
-}
+				} else {
+					logger.info("➡ ARCHIVAL LIST QUERY TRIGGERED (with pagination)");
+					detailList = M_LA1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+					totalRecords = M_LA1_Archival_Detail_Repo.getdatacount(parsedDate);
+					mv.addObject("pagination", "YES");
+				}
 
-mv.addObject("reportdetails", detailList);
-mv.addObject("reportmaster12", detailList);
-logger.info("ARCHIVAL COUNT: {}", (detailList != null ? detailList.size() : 0));
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
+				logger.info("ARCHIVAL COUNT: {}", (detailList != null ? detailList.size() : 0));
 
-} else {
+			} else {
 // ✅ CURRENT DATA BRANCH
-logger.info("Fetching CURRENT data for M_LA1");
+				logger.info("Fetching CURRENT data for M_LA1");
 
-List<M_LA1_Detail_Entity> detailList;
+				List<M_LA1_Detail_Entity> detailList;
 
-if (rowId != null && !rowId.isEmpty() &&
-(isNotEmpty(columnId) || isNotEmpty(columnId1) || isNotEmpty(columnId2))) {
+				if (rowId != null && !rowId.isEmpty()
+						&& (isNotEmpty(columnId) || isNotEmpty(columnId1) || isNotEmpty(columnId2))) {
 
-logger.info("➡ CURRENT DETAIL QUERY TRIGGERED (with filters)");
-detailList = M_LA1_Detail_Repo.GetDataByRowIdAndColumnId(
-rowId, columnId, columnId1, columnId2, parsedDate
-);
+					logger.info("➡ CURRENT DETAIL QUERY TRIGGERED (with filters)");
+					detailList = M_LA1_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, columnId1, columnId2,
+							parsedDate);
 
-} else {
-logger.info("➡ CURRENT LIST QUERY TRIGGERED (with pagination)");
-detailList = M_LA1_Detail_Repo.getdatabydateList(parsedDate, currentPage * pageSize, pageSize);
-totalRecords = M_LA1_Detail_Repo.getdatacount(parsedDate);
-mv.addObject("pagination", "YES");
-}
+				} else {
+					logger.info("➡ CURRENT LIST QUERY TRIGGERED (with pagination)");
+					detailList = M_LA1_Detail_Repo.getdatabydateList(parsedDate);
+					totalRecords = M_LA1_Detail_Repo.getdatacount(parsedDate);
+					mv.addObject("pagination", "YES");
+				}
 
-mv.addObject("reportdetails", detailList);
-mv.addObject("reportmaster12", detailList);
-logger.info("CURRENT COUNT: {}", (detailList != null ? detailList.size() : 0));
-}
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
+				logger.info("CURRENT COUNT: {}", (detailList != null ? detailList.size() : 0));
+			}
 
-} catch (ParseException e) {
-logger.error("Invalid date format: {}", todate, e);
-mv.addObject("errorMessage", "Invalid date format: " + todate);
-} catch (Exception e) {
-logger.error("Unexpected error in getM_LA1currentDtl", e);
-mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
-}
+		} catch (ParseException e) {
+			logger.error("Invalid date format: {}", todate, e);
+			mv.addObject("errorMessage", "Invalid date format: " + todate);
+		} catch (Exception e) {
+			logger.error("Unexpected error in getM_LA1currentDtl", e);
+			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+		}
 
 // ✅ Common model attributes
-int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
-mv.addObject("displaymode", "Details");
-mv.addObject("currentPage", currentPage);
-mv.addObject("totalPages", totalPages);
-mv.addObject("reportsflag", "reportsflag");
-mv.addObject("menu", reportId);
+		int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+		mv.addObject("displaymode", "Details");
+		mv.addObject("currentPage", currentPage);
+		mv.addObject("totalPages", totalPages);
+		mv.addObject("reportsflag", "reportsflag");
+		mv.addObject("menu", reportId);
 
-logger.info("Total pages calculated: {}", totalPages);
-return mv;
-}
+		logger.info("Total pages calculated: {}", totalPages);
+		return mv;
+	}
 
-	
-	
-	
-	
-	
-	
-	
 //Helper for null/empty check
-private boolean isNotEmpty(String value) {
-return value != null && !value.trim().isEmpty();
-}
-
+	private boolean isNotEmpty(String value) {
+		return value != null && !value.trim().isEmpty();
+	}
 
 	public byte[] BRRS_M_LA1Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) throws Exception {
@@ -3861,7 +3851,6 @@ return value != null && !value.trim().isEmpty();
 		}
 	}
 
-	
 	public List<ReportLineItemDTO> getReportData(String filename) throws Exception {
 		List<ReportLineItemDTO> reportData = new ArrayList<>();
 
@@ -3956,36 +3945,32 @@ return value != null && !value.trim().isEmpty();
 				+ (END_ROW_INDEX + 1) + "). Total items: " + reportData.size());
 		return reportData;
 	}
-	
-	
-	
+
 	public boolean updateProvision(M_LA1_Detail_Entity la1Data) {
-	    try {
-	        System.out.println("Came to LA1 Service");
+		try {
+			System.out.println("Came to LA1 Service");
 
-	        // ✅ Must match your entity field name exactly
-	        M_LA1_Detail_Entity existing = M_LA1_Detail_Repo.findByAcctnumber(la1Data.getAcct_number());
+			// ✅ Must match your entity field name exactly
+			M_LA1_Detail_Entity existing = M_LA1_Detail_Repo.findByAcctnumber(la1Data.getAcct_number());
 
-	        if (existing != null) {
-	        	 existing.setAcct_name(la1Data.getAcct_name());
-	            existing.setSanction_limit(la1Data.getSanction_limit());
-	            existing.setAcct_balance_in_pula(la1Data.getAcct_balance_in_pula());
+			if (existing != null) {
+				existing.setAcct_name(la1Data.getAcct_name());
+				existing.setSanction_limit(la1Data.getSanction_limit());
+				existing.setAcct_balance_in_pula(la1Data.getAcct_balance_in_pula());
 
-	            M_LA1_Detail_Repo.save(existing);
+				M_LA1_Detail_Repo.save(existing);
 
-	            System.out.println("Updated successfully for ACCT_NO: " + la1Data.getAcct_number());
-	            return true;
-	        } else {
-	            System.out.println("Record not found for Account No: " + la1Data.getAcct_number());
-	            return false;
-	        }
+				System.out.println("Updated successfully for ACCT_NO: " + la1Data.getAcct_number());
+				return true;
+			} else {
+				System.out.println("Record not found for Account No: " + la1Data.getAcct_number());
+				return false;
+			}
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
-	
-	
 }
