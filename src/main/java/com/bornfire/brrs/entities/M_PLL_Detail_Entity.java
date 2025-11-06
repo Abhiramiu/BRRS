@@ -51,7 +51,7 @@ public class M_PLL_Detail_Entity {
     private BigDecimal provision;
     
     @Column(name = "REPORT_DATE")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date reportDate;
 
     @Column(name = "REPORT_NAME", length = 100)

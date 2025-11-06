@@ -1,8 +1,5 @@
 package com.bornfire.brrs.services;
 
-import org.springframework.web.servlet.ModelAndView;
-
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -13,12 +10,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -41,26 +35,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
 
-
-
-import com.bornfire.brrs.entities.M_PLL_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_PLL_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.M_PLL_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_PLL_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_PLL_Detail_Repo;
-import com.bornfire.brrs.entities.M_PLL_Summary_Entity;
+import com.bornfire.brrs.entities.BRRS_M_PLL_Summary_Repo;
 import com.bornfire.brrs.entities.M_PLL_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_PLL_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
 import com.bornfire.brrs.entities.M_PLL_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_M_PLL_Summary_Repo;
 
 @Component
 @Service
@@ -1746,19 +1734,90 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	}
 
 
+//public boolean updateProvision(M_PLL_Detail_Entity mpllData) {
+//    try {
+//        M_PLL_Detail_Entity existing = BRRS_M_PLL_Detail_Repo.findByAcctNumber(mpllData.getAcctNumber());
+//        
+//        System.out.println("came to services");
+//        if (existing != null) {
+//            existing.setProvision(mpllData.getProvision());
+//            existing.setAcctName(mpllData.getAcctName());
+//            
+//            
+//            BRRS_M_PLL_Detail_Repo.save(existing);
+//            
+//            return true;
+//        } else {
+//            System.out.println("Record not found for Account No: " + mpllData.getAcctNumber());
+//            return false;
+//        }
+//
+//    } catch (Exception e) {
+//        e.printStackTrace();
+//        return false;
+//    }
+//}
+
+@Autowired
+private BRRS_M_PLL_Detail_Repo M_PLL_Detail_Repo;
+
+@Autowired
+private JdbcTemplate jdbcTemplate;  // ✅ Add this for procedure call
+
+@Transactional
 public boolean updateProvision(M_PLL_Detail_Entity mpllData) {
     try {
-        M_PLL_Detail_Entity existing = BRRS_M_PLL_Detail_Repo.findByAcctNumber(mpllData.getAcctNumber());
-        
-        System.out.println("came to services");
+        M_PLL_Detail_Entity existing = M_PLL_Detail_Repo.findByAcctNumber(mpllData.getAcctNumber());
+
+        System.out.println("Came to services");
+
         if (existing != null) {
-            existing.setProvision(mpllData.getProvision());
-            existing.setAcctName(mpllData.getAcctName());
-            
-            
-            BRRS_M_PLL_Detail_Repo.save(existing);
-            
+
+            boolean isChanged = false;
+
+            if (existing.getProvision() == null || 
+                mpllData.getProvision() == null || 
+                existing.getProvision().compareTo(mpllData.getProvision()) != 0) {
+                existing.setProvision(mpllData.getProvision());
+                isChanged = true;
+            }
+
+            if (mpllData.getAcctName() != null && 
+                !mpllData.getAcctName().equals(existing.getAcctName())) {
+                existing.setAcctName(mpllData.getAcctName());
+                isChanged = true;
+            }
+
+            if (isChanged) {
+                M_PLL_Detail_Repo.save(existing);
+                System.out.println("Record updated successfully.");
+
+                // ✅ Prepare formatted date for procedure
+                String formattedDate = new java.text.SimpleDateFormat("dd-MM-yyyy")
+                        .format(mpllData.getReportDate());
+
+                // ✅ Register callback to run procedure *after commit*
+                org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+                        new org.springframework.transaction.support.TransactionSynchronizationAdapter() {
+                            @Override
+                            public void afterCommit() {
+                                try {
+                                    System.out.println("Transaction committed — calling procedure now...");
+                                    jdbcTemplate.update("BEGIN BRRS_M_PLL_SUMMARY_PROCEDURE(?); END;", formattedDate);
+                                    System.out.println("Procedure executed successfully after commit.");
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                );
+
+            } else {
+                System.out.println("No changes detected. Procedure not executed.");
+            }
+
             return true;
+
         } else {
             System.out.println("Record not found for Account No: " + mpllData.getAcctNumber());
             return false;
@@ -1769,7 +1828,6 @@ public boolean updateProvision(M_PLL_Detail_Entity mpllData) {
         return false;
     }
 }
-
 }
 
 
