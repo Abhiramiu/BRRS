@@ -158,7 +158,8 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_INT_RATES_ReportService  brrs_m_int_rates_reportservice;
 
-
+	@Autowired
+	BRRS_M_RPD_ReportService BRRS_M_RPD_ReportService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -400,7 +401,9 @@ public class RegulatoryReportServices {
 	  			repsummary = brrs_q_rlfa2_reportservice.getQ_RLFA2View(reportId, fromdate, todate, currency, dtltype,
 	  					pageable, type, version);
 	  			break;
-	
+			case "M_RPD":
+				repsummary = BRRS_M_RPD_ReportService.getM_RPDView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
+				break;
 
 		}
 		
@@ -980,7 +983,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 		
-			
+
+		case "M_RPD":
+			try {
+				repfile = BRRS_M_RPD_ReportService.getM_RPDExcel(filename, reportId, fromdate, todate, currency,
+						dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 		}
 		return repfile;
 	}
@@ -1470,7 +1482,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
+		case "M_RPD":
+			try {
+				archivalData = BRRS_M_RPD_ReportService.getM_RPDarchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		
 		}
 		return archivalData;
 	}

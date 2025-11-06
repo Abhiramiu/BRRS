@@ -1008,15 +1008,15 @@ $(document).ready(function(){
 													       <th colspan="3" style="text-align: center;background-color: #D8D8D8;font-weight:normal;">&gt; 24 months</th>
 													     </tr>
 														<tr>
-														 	<th rowspan = "2" style="text-align: center;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
+														 	<th rowspan = "2" style="text-align: right;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
 															           vertical-align: bottom;">Amount</th>
 														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
 														 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
-															<th rowspan = "2" style="text-align: center;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
+															<th rowspan = "2" style="text-align: right;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
 															          vertical-align: bottom;">Amount</th>
 														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
 														 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
-															<th rowspan = "2" style="text-align: center;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
+															<th rowspan = "2" style="text-align: right;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
 																	vertical-align: bottom;">Amount</th>
 														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
 														 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
@@ -2361,7 +2361,7 @@ $(document).ready(function(){
 									</td>
 								
 
-								<td style="padding-left: 20px;">
+								<td style="padding-left: 20px;  vertical-align: middle;">
 								  <input class="display-input show_input"
 								         type="text"
 								         th:value="${report.r24_amt_6m != null ? #numbers.formatDecimal(report.r24_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2371,7 +2371,7 @@ $(document).ready(function(){
 								         readonly />
 								</td>
 
-								 <td style="background-color:rgb(255, 255, 255)">
+								 <td style="background-color:rgb(255, 255, 255);  vertical-align: middle;">
 								  <input class="display-input show_input"
 								         type="text"
 								         th:value="${report.r24_risk_6m != null ?  #numbers.formatDecimal(report.r24_risk_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2381,7 +2381,7 @@ $(document).ready(function(){
 								         readonly />
 								</td>
 
-								<td style="background-color:rgb(107, 122, 143);">
+								<td style="background-color:rgb(107, 122, 143);  vertical-align: middle;">
 								  <input class="display-input show_input"
 								         type="text"
 								         th:value="${report.r24_capital_6m != null ? #numbers.formatDecimal(report.r24_capital_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2391,7 +2391,7 @@ $(document).ready(function(){
 								         readonly />
 								</td>
 
-								<td style="padding-left: 20px;">
+								<td style="padding-left: 20px;  vertical-align: middle;">
 								    <input class="display-input show_input"
 								           type="text"
 								           th:value="${report.r24_amt_6to24m != null ? #numbers.formatDecimal(report.r24_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2401,7 +2401,7 @@ $(document).ready(function(){
 								           readonly />
 								  </td>
 								  
-								   <td style="background-color:rgb(255, 255, 255)">
+								   <td style="background-color:rgb(255, 255, 255); vertical-align: middle;">
 								      <input class="display-input show_input"
 								             type="text"
 								             th:value="${report.r24_risk_6to24m != null ? #numbers.formatDecimal(report.r24_risk_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2411,7 +2411,7 @@ $(document).ready(function(){
 								             readonly />
 								    </td>
 								    
-								    <td style="background-color:rgb(107, 122, 143);">
+								    <td style="background-color:rgb(107, 122, 143); vertical-align: middle;">
 								        <input class="display-input show_input"
 								               type="text"
 								               th:value="${report.r24_capital_6to24m != null ? #numbers.formatDecimal(report.r24_capital_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2421,7 +2421,7 @@ $(document).ready(function(){
 								               readonly />
 								      </td>
 
-								      <td style="padding-left: 20px;">
+								      <td style="padding-left: 20px;  vertical-align: middle;">
 								          <input class="display-input show_input"
 								                 type="text"
 								                 th:value="${report.r24_amt_gt24m != null ? #numbers.formatDecimal(report.r24_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2431,7 +2431,7 @@ $(document).ready(function(){
 								                 readonly />
 								        </td>
 
-								     <td style="background-color:rgb(255, 255, 255)">
+								     <td style="background-color:rgb(255, 255, 255); vertical-align: middle;">
 								          <input class="display-input show_input"
 								                 type="text"
 								                 th:value="${report.r24_risk_gt24m != null ? #numbers.formatDecimal(report.r24_risk_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2441,7 +2441,7 @@ $(document).ready(function(){
 								                 readonly />
 								        </td>
 								        
-								       <td style="background-color:rgb(107, 122, 143);">
+								       <td style="background-color:rgb(107, 122, 143);  vertical-align: middle;">
 								            <input class="display-input show_input"
 								                   type="text"
 								                   th:value="${report.r24_capital_gt24m != null ? #numbers.formatDecimal(report.r24_capital_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2474,7 +2474,7 @@ $(document).ready(function(){
 																
 
 
-									<td style="padding-left: 20px;">
+									<td style="padding-left: 20px; vertical-align: middle;">
 									  <input class="display-input show_input"
 									         type="text"
 									         th:value="${report.r25_amt_6m != null ? #numbers.formatDecimal(report.r25_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2484,7 +2484,7 @@ $(document).ready(function(){
 									         readonly />
 									</td>
 
-									<td style="background-color:rgb(255, 255, 255)">
+									<td style="background-color:rgb(255, 255, 255); vertical-align: middle;">
 									  <input class="display-input show_input"
 									         type="text"
 									         th:value="${report.r25_risk_6m != null ?  #numbers.formatDecimal(report.r25_risk_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2494,7 +2494,7 @@ $(document).ready(function(){
 									         readonly />
 									</td>
 
-									<td style="background-color:rgb(107, 122, 143);">
+									<td style="background-color:rgb(107, 122, 143); vertical-align: middle;">
 									  <input class="display-input show_input"
 									         type="text"
 									         th:value="${report.r25_capital_6m != null ? #numbers.formatDecimal(report.r25_capital_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2504,7 +2504,7 @@ $(document).ready(function(){
 									         readonly />
 									</td>
 
-									<td style="padding-left: 20px;">
+									<td style="padding-left: 20px; vertical-align: middle;">
 									    <input class="display-input show_input"
 									           type="text"
 									           th:value="${report.r25_amt_6to24m != null ? #numbers.formatDecimal(report.r25_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2514,7 +2514,7 @@ $(document).ready(function(){
 									           readonly />
 									  </td>
 									  
-									 	<td style="background-color:rgb(255, 255, 255)">
+									 	<td style="background-color:rgb(255, 255, 255); vertical-align: middle;">
 									      <input class="display-input show_input"
 									             type="text"
 									             th:value="${report.r25_risk_6to24m != null ? #numbers.formatDecimal(report.r25_risk_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2524,7 +2524,7 @@ $(document).ready(function(){
 									             readonly />
 									    </td>
 									    
-									   <td style="background-color:rgb(107, 122, 143);">
+									   <td style="background-color:rgb(107, 122, 143); vertical-align: middle;">
 									        <input class="display-input show_input"
 									               type="text"
 									               th:value="${report.r25_capital_6to24m != null ? #numbers.formatDecimal(report.r25_capital_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2534,7 +2534,7 @@ $(document).ready(function(){
 									               readonly />
 									      </td>
 
-									      <td style="padding-left: 20px;">
+									      <td style="padding-left: 20px; vertical-align: middle;">
 									          <input class="display-input show_input"
 									                 type="text"
 									                 th:value="${report.r25_amt_gt24m != null ? #numbers.formatDecimal(report.r25_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2544,7 +2544,7 @@ $(document).ready(function(){
 									                 readonly />
 									        </td>
 
-									    	<td style="background-color:rgb(255, 255, 255)">
+									    	<td style="background-color:rgb(255, 255, 255); vertical-align: middle;">
 									          <input class="display-input show_input"
 									                 type="text"
 									                 th:value="${report.r25_risk_gt24m != null ? #numbers.formatDecimal(report.r25_risk_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2554,7 +2554,7 @@ $(document).ready(function(){
 									                 readonly />
 									        </td>
 									        
-									        <td style="background-color:rgb(107, 122, 143);">
+									        <td style="background-color:rgb(107, 122, 143); vertical-align: middle;">
 									            <input class="display-input show_input"
 									                   type="text"
 									                   th:value="${report.r25_capital_gt24m != null ? #numbers.formatDecimal(report.r25_capital_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2586,7 +2586,7 @@ $(document).ready(function(){
 																	
 
 
-										<td style="padding-left: 20px;">
+										<td style="padding-left: 20px; vertical-align: middle;">
 										  <input class="display-input show_input"
 										         type="text"
 										         th:value="${report.r26_amt_6m != null ? #numbers.formatDecimal(report.r26_amt_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2596,7 +2596,7 @@ $(document).ready(function(){
 										         readonly />
 										</td>
 
-											<td style="background-color:rgb(255, 255, 255)">
+											<td style="background-color:rgb(255, 255, 255); vertical-align: middle;">
 										  <input class="display-input show_input"
 										         type="text"
 										         th:value="${report.r26_risk_6m != null ?  #numbers.formatDecimal(report.r26_risk_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2606,7 +2606,7 @@ $(document).ready(function(){
 										         readonly />
 										</td>
 
-										<td style="background-color:rgb(107, 122, 143);">
+										<td style="background-color:rgb(107, 122, 143); vertical-align: middle;">
 										  <input class="display-input show_input"
 										         type="text"
 										         th:value="${report.r26_capital_6m != null ? #numbers.formatDecimal(report.r26_capital_6m,0,'COMMA',0,'POINT'):'0'}"
@@ -2616,7 +2616,7 @@ $(document).ready(function(){
 										         readonly />
 										</td>
 
-										<td style="padding-left: 20px;">
+										<td style="padding-left: 20px; vertical-align: middle;">
 										    <input class="display-input show_input"
 										           type="text"
 										           th:value="${report.r26_amt_6to24m != null ? #numbers.formatDecimal(report.r26_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2626,7 +2626,7 @@ $(document).ready(function(){
 										           readonly />
 										  </td>
 										  
-										 	<td style="background-color:rgb(255, 255, 255)">
+										 	<td style="background-color:rgb(255, 255, 255); vertical-align: middle;">
 										      <input class="display-input show_input"
 										             type="text"
 										             th:value="${report.r26_risk_6to24m != null ? #numbers.formatDecimal(report.r26_risk_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2636,7 +2636,7 @@ $(document).ready(function(){
 										             readonly />
 										    </td>
 										    
-										   <td style="background-color:rgb(107, 122, 143);">
+										   <td style="background-color:rgb(107, 122, 143); vertical-align: middle;">
 										        <input class="display-input show_input"
 										               type="text"
 										               th:value="${report.r26_capital_6to24m != null ? #numbers.formatDecimal(report.r26_capital_6to24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2646,7 +2646,7 @@ $(document).ready(function(){
 										               readonly />
 										      </td>
 
-										      <td style="padding-left: 20px;">
+										      <td style="padding-left: 20px; vertical-align: middle;">
 										          <input class="display-input show_input"
 										                 type="text"
 										                 th:value="${report.r26_amt_gt24m != null ? #numbers.formatDecimal(report.r26_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2656,7 +2656,7 @@ $(document).ready(function(){
 										                 readonly />
 										        </td>
 
-										      	<td style="background-color:rgb(255, 255, 255)">
+										      	<td style="background-color:rgb(255, 255, 255); vertical-align: middle;">
 										          <input class="display-input show_input"
 										                 type="text"
 										                 th:value="${report.r26_risk_gt24m != null ? #numbers.formatDecimal(report.r26_risk_gt24m,0,'COMMA',0,'POINT'):'0'}"
@@ -2666,7 +2666,7 @@ $(document).ready(function(){
 										                 readonly />
 										        </td>
 										        
-										       <td style="background-color:rgb(107, 122, 143);">
+										       <td style="background-color:rgb(107, 122, 143); vertical-align: middle;">
 										            <input class="display-input show_input"
 										                   type="text"
 										                   th:value="${report.r26_capital_gt24m != null ? #numbers.formatDecimal(report.r26_capital_gt24m,0,'COMMA',0,'POINT'):'0'}"

@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.services.BRRS_M_RPD_ReportService;
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
@@ -141,6 +142,17 @@ import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 
+import com.bornfire.brrs.entities.M_RPD_Summary_Entity1;
+import com.bornfire.brrs.entities.M_RPD_Summary_Entity2;
+
+
+import com.bornfire.brrs.entities.M_RPD_Summary_Entity3;
+import com.bornfire.brrs.entities.M_RPD_Summary_Entity4;
+import com.bornfire.brrs.entities.M_RPD_Summary_Entity5;
+import com.bornfire.brrs.entities.M_RPD_Summary_Entity6;
+import com.bornfire.brrs.entities.M_RPD_Summary_Entity7;
+import com.bornfire.brrs.entities.M_RPD_Summary_Entity8;
+import com.bornfire.brrs.entities.M_RPD_Summary_Entity9;
 @Controller
 @ConfigurationProperties("default")
 @RequestMapping(value = "Reports")
@@ -1586,6 +1598,57 @@ public class BRRS_ReportsController {
 			         
 			         
 			         return ResponseEntity.ok(" Updated Successfully");
+			     } catch (Exception e) {
+			         e.printStackTrace();
+			         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			                              .body("Update Failed: " + e.getMessage());
+			     }
+			 }
+			 
+			 @Autowired
+			 BRRS_M_RPD_ReportService BRRS_M_RPD_ReportService;
+			 
+			 
+			 @RequestMapping(value = "/M_RPDupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+			 @ResponseBody
+			 public ResponseEntity<String> updateReport1(
+			     @RequestParam(required = false) 
+			     @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			     @ModelAttribute M_RPD_Summary_Entity1 request1,
+			     @ModelAttribute M_RPD_Summary_Entity2 request2,
+			     @ModelAttribute M_RPD_Summary_Entity3 request3,
+			     @ModelAttribute M_RPD_Summary_Entity4 request4,
+			     @ModelAttribute M_RPD_Summary_Entity5 request5,
+			     @ModelAttribute M_RPD_Summary_Entity6 request6,
+			     @ModelAttribute M_RPD_Summary_Entity7 request7,
+			     @ModelAttribute M_RPD_Summary_Entity8 request8,
+			     @ModelAttribute M_RPD_Summary_Entity9 request9
+			    
+			    ) {
+
+			     try {
+			         System.out.println("came to single controller");
+			         request1.setREPORT_DATE(asondate);
+			         request2.setREPORT_DATE(asondate);
+			         request3.setREPORT_DATE(asondate);
+			         request4.setREPORT_DATE(asondate);
+			         request5.setREPORT_DATE(asondate);
+			         request6.setREPORT_DATE(asondate);
+			         request7.setREPORT_DATE(asondate);
+			         request8.setREPORT_DATE(asondate);
+			         request9.setREPORT_DATE(asondate);
+			         
+			     	 BRRS_M_RPD_ReportService.updateReport1(request1);
+			         BRRS_M_RPD_ReportService.updateReport2(request2);
+			         BRRS_M_RPD_ReportService.updateReport3(request3);
+			         BRRS_M_RPD_ReportService.updateReport4(request4);
+			         BRRS_M_RPD_ReportService.updateReport5(request5);
+			         BRRS_M_RPD_ReportService.updateReport6(request6);
+			         BRRS_M_RPD_ReportService.updateReport7(request7);
+			         BRRS_M_RPD_ReportService.updateReport8(request8);
+			         BRRS_M_RPD_ReportService.updateReport9(request9);
+			         
+			         return ResponseEntity.ok("Updated Successfully");
 			     } catch (Exception e) {
 			         e.printStackTrace();
 			         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
