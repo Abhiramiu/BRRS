@@ -1346,6 +1346,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+			
+		case "M_SRWA_12C":
+			try {
+				archivalData = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		}
 		return archivalData;
