@@ -285,6 +285,11 @@ PURPOSE		: BWRBRREPORT
 		.table-bordered th {
 			border: 1px solid #000 !important;
 		}
+	
+		table {
+			border-collapse: separate !important;
+			  border-spacing: 0; /* or any spacing value you like */
+		}
 	</style>
 	<script th:inline="javascript">
 		$(document).ready(function () {
@@ -14805,7 +14810,7 @@ PURPOSE		: BWRBRREPORT
 
 										<thead class="thead-light">
 											<tr>
-												<th colspan="8"
+												<th colspan="7"
 													style="text-align: left; padding-left: 20px; width: 900px;">
 													DUE TO NON-AFFLIATED DOMESTIC BANKS </th>
 											</tr>
