@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService;
+
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 
 @Component
@@ -145,6 +145,9 @@ public class RegulatoryReportServices {
 	
 	@Autowired
 	BRRS_M_SRWA_12A_ReportService brrs_m_srwa_12a_reportservice;
+	
+	@Autowired
+	BRRS_M_OB_ReportService BRRS_M_OB_ReportService;
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
@@ -362,6 +365,11 @@ public class RegulatoryReportServices {
 				repsummary = brrs_m_srwa_12a_reportservice.getM_SRWA_12AView(reportId, fromdate, todate, currency, dtltype,
 						pageable, type, version);
 				break;
+				
+		case "M_OB":
+			repsummary = BRRS_M_OB_ReportService.getM_OBview(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;		
 	
 
 		}
@@ -901,6 +909,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+			
+		case "M_OB":
+			try {
+				repfile = BRRS_M_OB_ReportService.BRRS_M_OBExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;	
 		
 			
 		}
@@ -1356,6 +1374,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_OB":
+			try {
+				archivalData = BRRS_M_OB_ReportService.getM_OBArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;	
 
 		}
 		return archivalData;

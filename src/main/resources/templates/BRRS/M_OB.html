@@ -1,0 +1,2147 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: SURESH
+CREATED ON	: 11.09.2025
+PURPOSE		: BWRBRREPORT
+-->
+
+<html
+  lang="en"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- CSS -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}"
+    />
+    <link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+    <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+    <!-- JavaScript -->
+    <!-- jQuery core (required first) -->
+
+    <!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+
+    <!-- jQuery (required first) -->
+    <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+    <!-- ✅ jQuery Validation -->
+    <script
+      src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+      th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"
+    ></script>
+
+    <!-- Bootstrap + Others -->
+    <script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+    <script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+    <script
+      th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"
+    ></script>
+    <script
+      th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"
+    ></script>
+
+    <style>
+      .btns {
+        float: right;
+        margin: 5px;
+      }
+
+      .col-sm-5 {
+        padding-bottom: 15px;
+      }
+
+      .list-body {
+        padding: 0px;
+      }
+
+      .error {
+        color: red;
+        padding-left: 10px;
+      }
+
+      .formline {
+        padding-bottom: 15px;
+      }
+
+      .btn-primary {
+        background-color: #e77400;
+        border-color: #0c0c0c;
+      }
+
+      .btn-primary:not (:disabled ):not (.disabled ).active,
+      .btn-primary:not (:disabled ):not (.disabled ):active,
+      .show > .btn-primary.dropdown-toggle {
+        color: #fff;
+        background-color: #cc000000;
+        border-color: #161617;
+      }
+
+      #finusertb {
+        width: 460px;
+      }
+
+      .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0px;
+      }
+    </style>
+
+    <style>
+      div span {
+        font-weight: bold;
+        color: white !important;
+      }
+
+      .card {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+
+      .card-header h5 {
+        font-size: 22px;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .nav-tabs .nav-link {
+        font-weight: 500;
+        border: 1px solid #dee2e6;
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+        background-color: #f1f1f1;
+        margin-right: 5px;
+      }
+
+      .nav-tabs .nav-link.active {
+        background-color: #ffffff;
+        border-color: #dee2e6 #dee2e6 #ffffff;
+      }
+
+      .table-responsive {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+      }
+
+      .table-hover tbody tr:hover {
+        background-color: #f3f6f9;
+      }
+
+      thead th {
+        position: sticky;
+        top: 0;
+        background-color: #e9ecf0;
+        z-index: 1;
+      }
+
+      .table td {
+        background-color: #ffffff;
+      }
+
+      .card-footer {
+        padding: 10px;
+        border-top: 1px solid #ccc;
+      }
+
+      .btn-xs {
+        padding: 4px 12px;
+        font-size: 14px;
+        border-radius: 4px;
+      }
+
+      #BRFvalidation th,
+      #usertable td {
+        vertical-align: middle;
+        text-align: left;
+        font-size: 16px;
+        font-family: Arial;
+      }
+
+      .fa-edit:hover {
+        color: #28a745;
+        transform: scale(1.1);
+      }
+
+      td {
+        border: 1px solid rgb(0, 164, 166);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    </style>
+
+    <style>
+      .form-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+      }
+
+      .form-control {
+        width: 100%;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+        outline: none;
+        background: transparent;
+        transition: border-color 0.3s ease, padding-top 0.3s ease;
+      }
+
+      .error {
+        color: red;
+        padding-top: 15px;
+      }
+
+      .form-control:focus {
+        border-color: #007bff;
+      }
+
+      .form-legend {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        color: #aaa;
+        background: white;
+        padding: 0 5px;
+        pointer-events: none;
+        transition: 0.3s ease;
+      }
+
+      /* When input or select is focused or has a value, move the label up */
+      .form-control:focus ~ .form-legend,
+      .form-control:not (:placeholder-shown
+	) ~ .form-legend {
+        top: -8px;
+        font-size: 1rem;
+        color: #007bff;
+      }
+
+      /* Hover effect when the input/select is focused */
+      .form-control:focus:hover ~ .form-legend {
+        color: #0056b3; /* Darker shade of blue on hover */
+      }
+
+      /* Ensure the label returns to the normal color after focus or hover is removed */
+      .form-control:not (:focus ) ~ .form-legend {
+        color: #aaa; /* Normal label color */
+      }
+    </style>
+
+    <style>
+      /* Red border for invalid inputs */
+      input.error,
+      select.error {
+        border: 2px solid red !important;
+      }
+
+      /* Error message style */
+      label.error {
+        color: red;
+        font-size: 0.85em;
+        margin-top: 5px;
+        display: block;
+      }
+
+      .underline {
+        text-decoration: underline;
+        color: #08a6f1;
+        cursor: pointer;
+      }
+
+      .left-arrow-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        transition: background-color 0.3s, transform 0.2s;
+      }
+
+      .left-arrow-circle i {
+        color: rgb(107, 122, 143);
+      }
+
+      .left-arrow-circle:hover {
+        background-color: rgb(107, 122, 143);
+        cursor: pointer;
+        transform: scale(1.05);
+        border: 2px solid white;
+      }
+
+      .left-arrow-circle:hover i {
+        color: white;
+      }
+
+      .white-text span {
+        color: white !important;
+      }
+
+      .table-cell tbody td:hover {
+        background-color: #f0f0f0; /* Hover color for cell */
+        cursor: pointer; /* Optional: pointer cursor */
+      }
+
+      .table-bordered td,
+      .table-bordered th {
+        border: 1px solid #000 !important;
+      }
+    </style>
+
+    <script th:inline="javascript">
+
+      $(document).ready(function() {
+          // hide loader on normal load
+          $('#loader').modal('hide');
+      });
+
+      $(window).on('pageshow', function() {
+          // hide loader on back/forward nav
+          $('#loader').modal('hide');
+      });
+
+      $(window).on('beforeunload', function() {
+          // hide loader on leaving page
+          $('#loader').modal('hide');
+      });
+
+
+
+      	function home() {
+              $("#loader").modal("toggle");
+      		location.href = 'Dashboard'
+      	}
+
+      	function back() {
+              $("#loader").modal("toggle");
+
+      		window.history.back();
+      	}
+
+      	//to fetch summary from the database - called from the summary button
+      	//function showdetails() {
+
+      		//		var Callurl;
+      			//	$('#loader').modal('show');
+      				//Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+      					//location.href = Callurl;
+      				//c/onsole.log(Callurl);
+      				/*  $.ajax({
+      					 type: 'get',
+      					 url: Callurl,
+      					 beforeSend: function () {
+      						 $('#loader').modal('show'); // 🔄 Show loader
+      					 },
+      					 success: function (data) {
+      						 $('.content').html(data);
+      						 //$("#detailsbtn").addClass("active");
+      						 //tablepagination();
+      					 },
+      					 complete: function () {
+      						 $('#loader').modal('hide');
+      					 },
+      					 error: function () {
+      							  $('#loader').modal('hide');
+      						 alert("Something went wrongss. Please try again.");
+
+      					 }
+      				 }); */
+      			//}
+
+      	function showdetails() {
+			 showResultModal('BRRS',' Details page not available for Manual Report');
+		}
+      	function showsummary() {
+      		$('#loader').modal('show');
+      		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+      		location.href = Callurl;
+
+      	}
+    </script>
+
+<script>
+		function activateTab(tabName) {
+			// Remove 'active' from all buttons
+			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			// Add 'active' to selected button
+			if (tabName === 'summary') {
+				document.getElementById('custom-tab-btnSummary').classList.add('active');
+			} else if (tabName === 'Details') {
+				document.getElementById('custom-tab-btnDetails').classList.add('active');
+			}
+		}
+		window.onload = function () {
+			/* setTimeout(function() {
+				var selectedTab = document.getElementById("selectedTab").value;
+				alert(selectedTab);
+				activateTab(selectedTab);
+			}, 10000); */ // 10,000 milliseconds = 10 seconds
+
+			var selectedTab = document.getElementById("selectedTab").value;
+			activateTab(selectedTab);
+		};
+		function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			$('#loader').modal('show');
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', 'M_OB downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+		function editRecord() {
+			showResultModal('Alert', 'Development in progress');
+
+		}
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+	</script>
+	
+	<script>
+	// Show Modify (enable inputs & dropdowns)
+function showmodify(btn) {
+    
+    //$(".Show_input").removeAttr("readonly").removeAttr("disabled");
+    
+    // Make all editable fields editable 
+    $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+
+
+    // Highlight editable fields for rows 11 to 60
+    for (let i = 12; i <= 63; i++) {
+    if ([15, 29, 38, 41, 44, 49, 52, 58].includes(i)) continue;
+
+    let fields = ["OTHER_BORROW"];
+    fields.forEach(field => {
+        let selector = `#R${i}_${field}`;
+        if ($(selector).length) {
+            $(selector).css({ "background-color": "#d3d3d3" });
+        }
+    });
+}
+
+
+    // Show buttons
+    $("#submitButton").show();
+    $("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
+    
+    // Hide the clicked Modify button
+    $(btn).hide();
+}
+
+
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
+
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+}
+
+
+	
+
+	</script>
+	
+	<SCRIPT>
+	// Calculate total for R15_OTHER_BORROW
+	function calculateR15Totals() {
+	    let total = 0;
+
+	    for (let i = 16; i <= 28; i++) {
+	        let value = parseFloat($("#R" + i + "_OTHER_BORROW").val().replace(/,/g, "")) || 0;
+	        
+
+	        total += value;
+	    }
+
+	    // Put the totals into R15
+	    $("#R15_OTHER_BORROW").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    
+	}
+
+
+	$(document).ready(function() {
+	    // Calculate once on load
+	    calculateR15Totals();
+
+	    // Recalculate whenever R16–R28 values change
+	    for (let i = 16; i <= 28; i++) {
+	    	 //if ([15, 29].includes(i)) continue;
+	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
+	            calculateR15Totals();
+	        });
+	    }
+	});
+	
+	// Calculate total for R29_OTHER_BORROW
+	function calculateR29Totals() {
+	    let total = 0;
+
+	    for (let i = 30; i <= 36; i++) {
+	        let value = parseFloat($("#R" + i + "_OTHER_BORROW").val().replace(/,/g, "")) || 0;
+	        
+
+	        total += value;
+	    }
+
+	    // Put the totals into R29
+	    $("#R29_OTHER_BORROW").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    
+	}
+
+
+	$(document).ready(function() {
+	    // Calculate once on load
+	    calculateR29Totals();
+
+	    // Recalculate whenever R30–R36 values change
+	    for (let i = 30; i <= 36; i++) {
+	    	 //if ([15, 29].includes(i)) continue;
+	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
+	            calculateR29Totals();
+	        });
+	    }
+	});
+	
+	// Calculate total for R38_OTHER_BORROW
+	function calculateR38Totals() {
+	    let total = 0;
+
+	    for (let i = 39; i <= 40; i++) {
+	        let value = parseFloat($("#R" + i + "_OTHER_BORROW").val().replace(/,/g, "")) || 0;
+	        
+
+	        total += value;
+	    }
+
+	    // Put the totals into R38
+	    $("#R38_OTHER_BORROW").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    
+	}
+
+
+	$(document).ready(function() {
+	    // Calculate once on load
+	    calculateR38Totals();
+
+	    // Recalculate whenever R11–R16 values change
+	    for (let i = 39; i <= 40; i++) {
+	    	 //if ([15, 29].includes(i)) continue;
+	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
+	            calculateR38Totals();
+	        });
+	    }
+	});
+	
+	// Calculate total for R44_OTHER_BORROW
+	function calculateR44Totals() {
+	    let total = 0;
+
+	    for (let i = 45; i <= 48; i++) {
+	        let value = parseFloat($("#R" + i + "_OTHER_BORROW").val().replace(/,/g, "")) || 0;
+	        
+
+	        total += value;
+	    }
+
+	    // Put the totals into R44
+	    $("#R44_OTHER_BORROW").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    
+	}
+
+
+	$(document).ready(function() {
+	    // Calculate once on load
+	    calculateR44Totals();
+
+	    // Recalculate whenever R45–R48 values change
+	    for (let i = 45; i <= 48; i++) {
+	    	 //if ([15, 29].includes(i)) continue;
+	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
+	            calculateR44Totals();
+	        });
+	    }
+	});
+	
+	// Calculate total for R52_OTHER_BORROW
+	function calculateR52Totals() {
+	    let total = 0;
+
+	    for (let i = 53; i <= 57; i++) {
+	        let value = parseFloat($("#R" + i + "_OTHER_BORROW").val().replace(/,/g, "")) || 0;
+	        
+
+	        total += value;
+	    }
+
+	    // Put the totals into R52
+	    $("#R52_OTHER_BORROW").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    
+	}
+
+
+	$(document).ready(function() {
+	    // Calculate once on load
+	    calculateR52Totals();
+
+	    // Recalculate whenever R53–R57 values change
+	    for (let i = 53; i <= 57; i++) {
+	    	 //if ([15, 29].includes(i)) continue;
+	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
+	            calculateR52Totals();
+	        });
+	    }
+	});
+	
+	// Calculate total for R58_OTHER_BORROW
+	function calculateR58Totals() {
+	    let total = 0;
+
+	    for (let i = 59; i <= 62; i++) {
+	        let value = parseFloat($("#R" + i + "_OTHER_BORROW").val().replace(/,/g, "")) || 0;
+	        
+
+	        total += value;
+	    }
+
+	    // Put the totals into R58
+	    $("#R58_OTHER_BORROW").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    
+	}
+
+
+	$(document).ready(function() {
+	    // Calculate once on load
+	    calculateR58Totals();
+
+	    // Recalculate whenever R59–R62 values change
+	    for (let i = 59; i <= 62; i++) {
+	    	 //if ([15, 29].includes(i)) continue;
+	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
+	            calculateR58Totals();
+	        });
+	    }
+	});
+	
+	
+	// Calculate total for R11_OTHER_BORROW
+	function calculateR11Totals() {
+	    let total = 0;
+
+	    // Only these specific rows should be added
+	    let rowsToAdd = [12, 13, 14, 15, 29, 30];
+
+	    rowsToAdd.forEach(i => {
+	        let selector = `#R${i}_OTHER_BORROW`;
+	        let value = parseFloat($(selector).val()?.replace(/,/g, "")) || 0;
+	        total += value;
+	    });
+
+	    // Update R11 with total (formatted with commas)
+	    $("#R11_OTHER_BORROW").val(
+	        total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	}
+
+
+	$(document).ready(function() {
+	    // Calculate once on load
+	    calculateR11Totals();
+
+	    // Recalculate whenever R11–R16 values change
+	    for (let i = 12; i <= 36; i++) {
+	    	 if ([15, 29].includes(i)) continue;
+	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
+	            calculateR11Totals();
+	        });
+	    }
+	});
+
+	// Calculate total for R49_OTHER_BORROW
+	function calculateR49Totals() {
+	    let total = 0;
+
+	    // Only these specific rows should be added
+	    let rowsToAdd = [50, 51, 52, 58];
+
+	    rowsToAdd.forEach(i => {
+	        let selector = `#R${i}_OTHER_BORROW`;
+	        let value = parseFloat($(selector).val()?.replace(/,/g, "")) || 0;
+	        total += value;
+	    });
+
+	    // Update R49 with total (formatted with commas)
+	    $("#R49_OTHER_BORROW").val(
+	        total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	}
+
+
+	$(document).ready(function() {
+	    // Calculate once on load
+	    calculateR49Totals();
+
+	    // Recalculate whenever R50–R62 values change
+	    for (let i = 50; i <= 62; i++) {
+	    	 if ([52, 58].includes(i)) continue;
+	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
+	            calculateR49Totals();
+	        });
+	    }
+	});
+	
+	// Calculate total for R41_OTHER_BORROW
+	function calculateR41Totals() {
+	    let total = 0;
+
+	    // Only these specific rows should be added
+	    let rowsToAdd = [42, 43, 44, 49, 63];
+
+	    rowsToAdd.forEach(i => {
+	        let selector = `#R${i}_OTHER_BORROW`;
+	        let value = parseFloat($(selector).val()?.replace(/,/g, "")) || 0;
+	        total += value;
+	    });
+
+	    // Update R41 with total (formatted with commas)
+	    $("#R41_OTHER_BORROW").val(
+	        total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	}
+
+
+	$(document).ready(function() {
+	    // Calculate once on load
+	    calculateR41Totals();
+
+	    // Recalculate whenever R42–R63 values change
+	    for (let i = 42; i <= 63; i++) {
+	    	 if ([44, 49, 52, 58].includes(i)) continue;
+	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
+	            calculateR41Totals();
+	        });
+	    }
+	}); 
+	
+	// Calculate total for R64_OTHER_BORROW
+	function calculateR64Totals() {
+	    let total = 0;
+
+	    // Only these specific rows should be added
+	    let rowsToAdd = [11, 41];
+
+	    rowsToAdd.forEach(i => {
+	        let selector = `#R${i}_OTHER_BORROW`;
+	        let value = parseFloat($(selector).val()?.replace(/,/g, "")) || 0;
+	        total += value;
+	    });
+
+	    // Update R64 with total (formatted with commas)
+	    $("#R64_OTHER_BORROW").val(
+	        total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	}
+
+
+	$(document).ready(function() {
+	    // Calculate once on load
+	    calculateR64Totals();
+
+	    // Recalculate whenever R12–R63 values change
+	    for (let i = 12; i <= 63; i++) {
+	    	 if ([15, 29, 38, 39, 40, 44, 49, 52, 58].includes(i)) continue;
+	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
+	            calculateR64Totals();
+	        });
+	    }
+	});
+	
+	</SCRIPT>
+
+<script>
+function closemodel() {
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
+    setTimeout(function () {
+        location.reload();
+    }, 300);
+}
+
+function fileuploads(btn) {
+    var asondate = btn.getAttribute("data-todate");
+    $('#loader').modal('show');
+
+    // Pre-calculations
+    calculateR11Totals();
+    calculateR15Totals();
+    calculateR29Totals();
+    calculateR38Totals();
+    calculateR41Totals();
+    calculateR44Totals();
+    calculateR49Totals();
+    calculateR52Totals();
+    calculateR58Totals();
+    calculateR64Totals();
+    
+    console.log("✅ Calculations executed successfully");
+
+    // Remove commas from numeric inputs
+    $("#fileupload input[type='text']").each(function () {
+        var val = $(this).val();
+        if (val && val.includes(",")) {
+            $(this).val(val.replace(/,/g, ''));
+        }
+    });
+
+    if (!$("#fileupload").valid()) {
+        $('#loader').modal('hide');
+        return;
+    }
+
+    // ✅ One combined FormData for all entities
+    const formData = new FormData();
+    formData.append("asondate", asondate);
+
+    // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
+    const selectedType = $("#OBType").val(); // Get from dropdown
+    formData.append("type", selectedType);
+    console.log("Selected type:", selectedType);
+
+    // --- Entity fields (R10-R17) ---
+    for (let i = 11; i <= 64; i++) {
+        ["OTHER_BORROW"].forEach(field => {
+            const input = $("#R" + i + "_" + field);
+            if (input.length) {
+                formData.append(input.attr("name"), input.val());
+            }
+        });
+    }
+    console.log("✅ Entity executed successfully");
+
+    // ✅ Single AJAX call with type info
+    $.ajax({
+        url: './MOBupdateAll',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'text',
+        success: function (response) {
+            $("#resultModalLabel").text("BRRS");
+            $("#resultModalBody").text("Updated successfully");
+            $("#resultModal").modal("show");
+        },
+        error: function (xhr) {
+            console.log("Error response:", xhr.responseText);
+            $("#resultModalLabel").text("Error");
+            $("#resultModalBody").text("Update failed. Check console for details.");
+            $("#resultModal").modal("show");
+        },
+        complete: function () {
+            $('#loader').modal('hide');
+        }
+    });
+
+    console.log("✅ AJAX executed successfully");
+}
+</script>
+	
+	
+<!-- <script>
+		function activateTab(tabName) {
+			// Remove 'active' from all buttons
+			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			// Add 'active' to selected button
+			if (tabName === 'summary') {
+				document.getElementById('custom-tab-btnSummary').classList.add('active');
+			} else if (tabName === 'Details') {
+				document.getElementById('custom-tab-btnDetails').classList.add('active');
+			}
+		}
+		window.onload = function () {
+			/* setTimeout(function() {
+				var selectedTab = document.getElementById("selectedTab").value;
+				alert(selectedTab);
+				activateTab(selectedTab);
+			}, 10000); */ // 10,000 milliseconds = 10 seconds
+
+			var selectedTab = document.getElementById("selectedTab").value;
+			activateTab(selectedTab);
+		};
+		function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			$('#loader').modal('show');
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', 'M_OB downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+		function editRecord() {
+			showResultModal('Alert', 'Development in progress');
+
+		}
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+	</script> -->
+
+  <!-- <script th:inline="javascript">
+      function showdetailsbyRowAndColumn(a) {
+        var rowId = a.getAttribute("RowId");
+        var columnId = a.getAttribute("ColumnId");
+        var cellValue = a.textContent || a.innerText;
+
+        if (cellValue !== "0") {
+          // Set dynamic message in modal (instead of confirm)
+          document.getElementById("cellresultModalLabel").innerText =
+            "Do you want to open details for Row: " +
+            rowId +
+            " and Column: " +
+            columnId +
+            "?";
+
+          // Show custom Bootstrap modal
+          $("#cellresultModal").modal("show");
+
+          // Handle Yes button
+          document.querySelector(".yes-btn").onclick = function () {
+            $("#cellresultModal").modal("hide");
+
+            // Show loader
+            const loader = bootstrap.Modal.getOrCreateInstance(
+              document.getElementById("loader"),
+              {
+                backdrop: "static",
+                keyboard: false,
+              }
+            );
+            $("#loader").modal("show");
+
+            // Build dynamic URL
+            var Callurl =
+              /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+            location.href = Callurl;
+          };
+        } else {
+          // Use your custom alert modal instead of window.alert
+          showResultModal(
+            "Alert",
+            "No Records available for this selected cell."
+          );
+        }
+      }
+    </script> -->  
+  </head>
+
+  <title>BRRS</title>
+  <body>
+	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+			<div th:insert="HeaderMenu :: header"></div>
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">(41) MONTHLY SCHEDULE: M-OB: OTHER BORROWINGS BY SECTOR</h5>
+					</div>
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">30-06-2025</span>
+						</span>
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+						
+<!-- Modify button -->
+<button type="button" class="custom-tab-btn"
+        onclick="showmodify(this);"
+        title="Click to EDIT Records"
+		th:if="${type != 'ARCHIVAL'}"
+       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+        id="addRecord">Modify</button>
+
+<!-- Cancel button (hidden initially) -->
+<button type="button" class="custom-tab-btn"
+        title="Cancel editing"
+        id="cancelRecord"
+        onclick="cancelModify();"
+        style="display: none;">Cancel</button>
+
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+                   				 data-asondate=${asondate},
+                   				 data-fromdate=${fromdate},
+                    				 data-todate=${todate},
+                    				 data-currency=${currency}, 
+                    				 data-dtltype=${dtltype},
+                    				 data-filename='M_OB.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+						
+						
+						
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+									data-currency=${currency},  
+												data-dtltype=${dtltype}, 
+								    data-filename='M_OBDetail',
+									data-type=${type},
+												data-version=${version}
+								  ">
+							<i class="fa fa-download"></i>
+						</button>
+
+
+
+					</div>
+					
+				</div>
+          <div th:if="${displaymode == 'summary'}">
+            <div class="row">
+              <div class="col-sm-12">
+              <form action="#" method="POST" id="fileupload">
+						<input type="hidden" name="asondate" id="asondate" th:value="${asondate}" />
+                <div
+                  class="table-wrapper table-responsive scrollable-table-container"
+                  style="border-right: 1px solid #dee2e6"
+                >
+                  <table
+                  style="margin-bottom: 100px;"
+                    class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+                    id="reports"
+                  >
+                    <thead class="thead-light">
+                      <tr>
+                        <th>
+                           OTHER BORROWINGS BY INSTITUTIONAL SECTOR
+                        </th>
+                        <th 
+                          style="
+                            text-align: right;
+                            padding-left: 20px;
+                          "
+                        >OTHER BORROWINGS 
+                    </th>
+                      </tr>
+                      
+                    </thead>
+
+
+                    <tbody
+                      th:each="report: ${reportsummary}"
+                      style="font-family: Arial">
+
+<tr>
+<td style="font-weight:bold;">1.  Non-financial institutional units (sum of lines (i) to (vii)):</td>
+<td id="R11" style="text-align:right;">
+	<input class="display-input Show_input nonEditable"
+	type="text"
+	th:value="${report.R11_OTHER_BORROW != null ? #numbers.formatDecimal(report.R11_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+	id="R11_OTHER_BORROW" name="R11_OTHER_BORROW"
+	style="background-color: rgb(107, 122, 143); color: white; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+	readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:15px;">(i)    Central Government</td>
+	<td id="R12" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R12_OTHER_BORROW != null ? #numbers.formatDecimal(report.R12_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R12_OTHER_BORROW" name="R12_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:15px;">(ii)   Local Government</td>
+	<td id="R12" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R13_OTHER_BORROW != null ? #numbers.formatDecimal(report.R13_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R13_OTHER_BORROW" name="R13_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:15px;">(iii)  Public Non-Financial Corporations</td>
+	<td id="R14" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R14_OTHER_BORROW != null ? #numbers.formatDecimal(report.R14_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R14_OTHER_BORROW" name="R14_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+<td style="padding-left:15px;">(iv)  Other Non-Financial Corporations (Private business enterprises) (sum of lines (a) to (m)):</td>
+<td id="R15" style="text-align:right;">
+	<input class="display-input Show_input nonEditable"
+	type="text"
+	th:value="${report.R15_OTHER_BORROW != null ? #numbers.formatDecimal(report.R15_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+	id="R15_OTHER_BORROW" name="R15_OTHER_BORROW"
+	style="background-color: rgb(107, 122, 143); color: white; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+	readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;"> a) Agriculture, Forestry, Fishing</td>
+	<td id="R16" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R16_OTHER_BORROW != null ? #numbers.formatDecimal(report.R16_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R16_OTHER_BORROW" name="R16_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">b) Mining and Quarying</td>
+	<td id="R17" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R17_OTHER_BORROW != null ? #numbers.formatDecimal(report.R17_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R17_OTHER_BORROW" name="R17_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">c) Manufacturing</td>
+	<td id="R18" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R18_OTHER_BORROW != null ? #numbers.formatDecimal(report.R18_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R18_OTHER_BORROW" name="R18_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">d) Construction</td>
+	<td id="R19" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R19_OTHER_BORROW != null ? #numbers.formatDecimal(report.R19_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R19_OTHER_BORROW" name="R19_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">e) Commercial real estate</td>
+	<td id="R20" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R20_OTHER_BORROW != null ? #numbers.formatDecimal(report.R20_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R20_OTHER_BORROW" name="R20_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">f) Electricity</td>
+	<td id="R21" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R21_OTHER_BORROW != null ? #numbers.formatDecimal(report.R21_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R21_OTHER_BORROW" name="R21_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">g) Water</td>
+	<td id="R22" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R22_OTHER_BORROW != null ? #numbers.formatDecimal(report.R22_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R22_OTHER_BORROW" name="R22_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">h) Telecommunication and Post</td>
+	<td id="R23" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R23_OTHER_BORROW != null ? #numbers.formatDecimal(report.R23_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R23_OTHER_BORROW" name="R23_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">i) Tourism and hotels</td>
+	<td id="R24" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R24_OTHER_BORROW != null ? #numbers.formatDecimal(report.R24_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R24_OTHER_BORROW" name="R24_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">j)Transport and storage</td>
+	<td id="R25" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R25_OTHER_BORROW != null ? #numbers.formatDecimal(report.R25_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R25_OTHER_BORROW" name="R25_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;"> k) Trade, restaurants and bars</td>
+	<td id="R26" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R26_OTHER_BORROW != null ? #numbers.formatDecimal(report.R26_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R26_OTHER_BORROW" name="R26_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">l) Business Services</td>
+	<td id="R27" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R27_OTHER_BORROW != null ? #numbers.formatDecimal(report.R27_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R27_OTHER_BORROW" name="R27_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">m) Other community, social and personal services</td>
+	<td id="R28" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R28_OTHER_BORROW != null ? #numbers.formatDecimal(report.R28_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R28_OTHER_BORROW" name="R28_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+<td style="padding-left:15px;">(v)  Households (sum of lines (a) to (g)):</td>
+<td id="R29" style="text-align:right;">
+	<input class="display-input Show_input nonEditable"
+	type="text"
+	th:value="${report.R29_OTHER_BORROW != null ? #numbers.formatDecimal(report.R29_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+	id="R29_OTHER_BORROW" name="R29_OTHER_BORROW"
+	style="background-color: rgb(107, 122, 143); color: white; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+	readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">a) Residential property (owner occupied</td>
+	<td id="R30" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R30_OTHER_BORROW != null ? #numbers.formatDecimal(report.R30_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R30_OTHER_BORROW" name="R30_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">b) Residential property (rented)</td>
+	<td id="R31" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R31_OTHER_BORROW != null ? #numbers.formatDecimal(report.R31_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R31_OTHER_BORROW" name="R31_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;"> c) Personal Loans</td>
+	<td id="R32" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R32_OTHER_BORROW != null ? #numbers.formatDecimal(report.R32_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R32_OTHER_BORROW" name="R32_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">d) Motor vehicle</td>
+	<td id="R33" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R33_OTHER_BORROW != null ? #numbers.formatDecimal(report.R33_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R33_OTHER_BORROW" name="R33_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">e) Household goods</td>
+	<td id="R34" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R34_OTHER_BORROW != null ? #numbers.formatDecimal(report.R34_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R34_OTHER_BORROW" name="R34_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">f) Credit card loans</td>
+	<td id="R35" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R35_OTHER_BORROW != null ? #numbers.formatDecimal(report.R35_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R35_OTHER_BORROW" name="R35_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">g) Other*</td>
+	<td id="R36" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R36_OTHER_BORROW != null ? #numbers.formatDecimal(report.R36_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R36_OTHER_BORROW" name="R36_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:15px;">(vi)  Non-Profit Institutions Serving Households</td>
+	<td id="R37" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R37_OTHER_BORROW != null ? #numbers.formatDecimal(report.R37_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R37_OTHER_BORROW" name="R37_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+<td style="padding-left:15px;">(vii) Non-Residents** (sum of lines (a) and (b)):</td>
+<td id="R38" style="text-align:right;">
+	<input class="display-input Show_input nonEditable"
+	type="text"
+	th:value="${report.R38_OTHER_BORROW != null ? #numbers.formatDecimal(report.R38_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+	id="R38_OTHER_BORROW" name="R38_OTHER_BORROW"
+	style="background-color: rgb(107, 122, 143); color: white; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+	readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">a) OtherNon-Financial Corporations</td>
+	<td id="R39" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R39_OTHER_BORROW != null ? #numbers.formatDecimal(report.R39_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R39_OTHER_BORROW" name="R39_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">b) Households</td>
+	<td id="R40" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R40_OTHER_BORROW != null ? #numbers.formatDecimal(report.R40_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R40_OTHER_BORROW" name="R40_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+<td style="font-weight:bold;">2.  Financial institutional units (sum of lines (i) to (v)):</td>
+<td id="R41" style="text-align:right;">
+	<input class="display-input Show_input nonEditable"
+	type="text"
+	th:value="${report.R41_OTHER_BORROW != null ? #numbers.formatDecimal(report.R41_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+	id="R41_OTHER_BORROW" name="R41_OTHER_BORROW"
+	style="background-color: rgb(107, 122, 143); color: white; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+	readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:15px;">(i)    Central Bank</td>
+	<td id="R42" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R42_OTHER_BORROW != null ? #numbers.formatDecimal(report.R42_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R42_OTHER_BORROW" name="R42_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:15px;">(ii)   Commercial Banks</td>
+	<td id="R43" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R43_OTHER_BORROW != null ? #numbers.formatDecimal(report.R43_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R43_OTHER_BORROW" name="R43_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+<td style="padding-left:15px;">(iii)  Other Depository Corporations (sum of lines (a) to (d)):</td>
+<td id="R44" style="text-align:right;">
+	<input class="display-input Show_input nonEditable"
+	type="text"
+	th:value="${report.R44_OTHER_BORROW != null ? #numbers.formatDecimal(report.R44_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+	id="R44_OTHER_BORROW" name="R44_OTHER_BORROW"
+	style="background-color: rgb(107, 122, 143); color: white; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+	readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">a) Botswana Savings Bank (BSB)</td>
+	<td id="R45" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R45_OTHER_BORROW != null ? #numbers.formatDecimal(report.R45_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R45_OTHER_BORROW" name="R45_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">b) Botswana Building Society (BBS)</td>
+	<td id="R46" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R46_OTHER_BORROW != null ? #numbers.formatDecimal(report.R46_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R46_OTHER_BORROW" name="R46_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">c) Domestic Money Market Unit Trusts</td>
+	<td id="R47" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R47_OTHER_BORROW != null ? #numbers.formatDecimal(report.R47_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R47_OTHER_BORROW" name="R47_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">d) Other (specify)*</td>
+	<td id="R48" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R48_OTHER_BORROW != null ? #numbers.formatDecimal(report.R48_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R48_OTHER_BORROW" name="R48_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+<td style="padding-left:15px;">(iv)  Other Financial Corporations (sum of lines (a) to (d)):</td>
+<td id="R49" style="text-align:right;">
+	<input class="display-input Show_input nonEditable"
+	type="text"
+	th:value="${report.R49_OTHER_BORROW != null ? #numbers.formatDecimal(report.R49_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+	id="R49_OTHER_BORROW" name="R49_OTHER_BORROW"
+	style="background-color: rgb(107, 122, 143); color: white; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+	readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">a) Insurance Companies</td>
+	<td id="R50" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R50_OTHER_BORROW != null ? #numbers.formatDecimal(report.R50_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R50_OTHER_BORROW" name="R50_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:25px;">b) Pension Funds</td>
+	<td id="R51" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R51_OTHER_BORROW != null ? #numbers.formatDecimal(report.R51_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R51_OTHER_BORROW" name="R51_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+<td style="padding-left:25px;">c) Other Financial Intermediaries (sum 1 to 5)</td>
+<td id="R52" style="text-align:right;">
+	<input class="display-input Show_input nonEditable"
+	type="text"
+	th:value="${report.R52_OTHER_BORROW != null ? #numbers.formatDecimal(report.R52_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+	id="R52_OTHER_BORROW" name="R52_OTHER_BORROW"
+	style="background-color: rgb(107, 122, 143); color: white; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+	readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:35px;">1.Asset managers</td>
+	<td id="R53" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R53_OTHER_BORROW != null ? #numbers.formatDecimal(report.R53_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R53_OTHER_BORROW" name="R53_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:35px;"> 2.Finance companies</td>
+	<td id="R54" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R54_OTHER_BORROW != null ? #numbers.formatDecimal(report.R54_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R54_OTHER_BORROW" name="R54_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:35px;">3.Medical Aid Schemes</td>
+	<td id="R55" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R55_OTHER_BORROW != null ? #numbers.formatDecimal(report.R55_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R55_OTHER_BORROW" name="R55_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:35px;"> 4.Public sector financial intermediaries</td>
+	<td id="R56" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R56_OTHER_BORROW != null ? #numbers.formatDecimal(report.R56_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R56_OTHER_BORROW" name="R56_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:35px;">5.SACCOs</td>
+	<td id="R57" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R57_OTHER_BORROW != null ? #numbers.formatDecimal(report.R57_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R57_OTHER_BORROW" name="R57_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+<td style="padding-left:25px;">d) Financial Auxiliaries (sum 1 to 4)</td>
+<td id="R58" style="text-align:right;">
+	<input class="display-input Show_input nonEditable"
+	type="text"
+	th:value="${report.R58_OTHER_BORROW != null ? #numbers.formatDecimal(report.R58_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+	id="R58_OTHER_BORROW" name="R58_OTHER_BORROW"
+	style="background-color: rgb(107, 122, 143); color: white; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+	readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:35px;">1. Insurance brokers</td>
+	<td id="R59" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R59_OTHER_BORROW != null ? #numbers.formatDecimal(report.R59_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R59_OTHER_BORROW" name="R59_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:35px;">2. Fund administrators</td>
+	<td id="R60" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R60_OTHER_BORROW != null ? #numbers.formatDecimal(report.R60_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R60_OTHER_BORROW" name="R60_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:35px;"> 3. Bureau de change</td>
+	<td id="R61" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R61_OTHER_BORROW != null ? #numbers.formatDecimal(report.R61_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R61_OTHER_BORROW" name="R61_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:35px;">4. Other (specify)*</td>
+	<td id="R62" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R62_OTHER_BORROW != null ? #numbers.formatDecimal(report.R62_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R62_OTHER_BORROW" name="R62_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+
+<tr>
+    <td style="padding-left:15px;">(v)  Non-residents</td>
+	<td id="R63" style="text-align:right;">
+		<input class="display-input Show_input "
+		type="text"
+		th:value="${report.R63_OTHER_BORROW != null ? #numbers.formatDecimal(report.R63_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+		id="R63_OTHER_BORROW" name="R63_OTHER_BORROW"
+		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+		readonly /></td>
+</tr>
+  
+<tr>
+<td style="font-weight:bold;">TOTAL (Sum of lines 1 and 2)</td>
+<td id="R64" style="text-align:right;">
+	<input class="display-input Show_input nonEditable"
+	type="text"
+	th:value="${report.R64_OTHER_BORROW != null ? #numbers.formatDecimal(report.R64_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
+	id="R64_OTHER_BORROW" name="R64_OTHER_BORROW"
+	style="background-color: rgb(107, 122, 143); color: white; width: 220px; height: 28px; border-color: transparent; text-align: right;"
+	readonly /></td>
+</tr>
+
+
+
+
+                    </tbody>
+                  </table>
+                  </div>
+							<div style="text-align: center; margin-top: 10px;">
+								
+    <button id="submitButton" 
+            type="button"
+            class="custom-tab-btn Show_input" 
+            form="fileupload"
+            th:attr="data-todate=${asondate}" 
+            onclick="fileuploads(this);" 
+            style="display: none;">
+        Submit
+    </button>
+</div>
+							</form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div th:if="${displaymode == 'Details'}">
+            <div class="row">
+              <div class="col-sm-12">
+                <div
+                  class="table-responsive scrollable-table-container"
+                  style="border-right: 1px solid #dee2e6"
+                >
+                  <table
+                    class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+                    id="reportss"
+                  >
+                    <thead class="thead-light">
+                      <tr>
+                        <th></th>
+                        <th>CUST ID</th>
+                        <th>ACCT NO</th>
+                        <th>ACCT NAME</th>
+                        <th style="text-align: right">ACCT BALANCE</th>
+                        <th style="text-align: left">ROWID</th>
+                        <th>COLUMNID</th>
+                        <th>REPORT_DATE</th>
+                      </tr>
+                    </thead>
+
+                    <tbody style="font-family: Arial">
+                      <tr th:each="report: ${reportdetails}">
+                        <td>
+                          <a
+                            data-toggle="tooltip"
+                            class="editrec"
+                            title="Click to Edit this Record"
+                          >
+                            <i
+                              class="fas fa-edit"
+                              onclick="editRecord(this)"
+                            ></i>
+                          </a>
+                        </td>
+                        <td th:text="${report.CUST_ID}"></td>
+                        <td th:text="${report.ACCT_NUMBER}"></td>
+                        <td th:text="${report.ACCT_NAME}"></td>
+                        <!---	<td th:text="${report.acctBalanceInpula} "></td> -->
+                        <td
+                          th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_IN_PULA, 1, 3)}"
+                          style="text-align: right"
+                        ></td>
+
+                        <td
+                          style="text-align: left"
+                          th:text="${report.ROW_ID}"
+                        ></td>
+                        <td th:text="${report.COLUMN_ID}"></td>
+                        <td
+                          th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"
+                        ></td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div
+                    style="margin-top: 20px; text-align: center"
+                    th:if="${pagination=='YES'}"
+                  >
+                    <a
+                      th:if="${currentPage > 0}"
+                      th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																	    asondate=${asondate},                             
+																	    fromdate=${fromdate},
+																	    todate=${todate},
+																	    currency=${currency},
+																	    dtltype=${dtltype},
+																	    type=${type},
+																	    version=${version},
+																	    page=${currentPage - 100},
+																	    size=100
+																	)}"
+                    >
+                      Previous
+                    </a>
+
+                    <span
+                      >Page [[${currentPage / 100 + 1}]] of
+                      [[${totalPages}]]</span
+                    >
+
+                    <a
+                      th:if="${currentPage < (totalPages - 1) * 100}"
+                      th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																	    asondate=${asondate},
+																	    fromdate=${fromdate},
+																	    todate=${todate},
+																	    currency=${currency},
+																	    dtltype=${dtltype},
+																	    type=${type},
+																	    version=${version},
+																	    page=${currentPage + 100},
+																	    size=100
+																	)}"
+                    >
+                      Next
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="loader"
+      data-backdrop="static"
+      data-keyboard="false"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="background: transparent">
+          <div class="modal-body" style="text-align: center">
+            <div>
+              <img th:src=@{/images/loader.gif} id="bfirelogo" style="width:
+              153px; height: auto; margin-left: 18px; background-color:
+              transparent; border-color: transparent;" alt="Bornfire">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Alert/Result Modal (Matches your existing style) -->
+    <div class="modal fade" id="resultModal">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Your custom styled header -->
+          <div class="menu-title-header">
+            <div
+              class="modal-title"
+              id="resultModalLabel"
+              style="text-align: center; color: white"
+            >
+              <!-- Title will be set by JavaScript -->
+            </div>
+          </div>
+          <div class="modal-body" style="text-align: center; font-size: 1.1rem">
+            <p id="resultModalBody"></p>
+            <!-- Your custom styled button -->
+            <button
+              type="button"
+              class="custom-tab-btn"
+              onclick="closemodel()"
+              data-dismiss="modal"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Cellresult Modal -->
+    <div class="modal fade" id="cellresultModal">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Custom header -->
+          <div
+            class="menu-title-header"
+            style="
+              background-color: #6c7a91;
+              padding: 8px;
+              border-radius: 5px 5px 0 0;
+            "
+          >
+            <div
+              class="modal-title"
+              id="cellresultModalLabel"
+              style="text-align: center; color: white"
+            >
+              Do you want to open the report?
+            </div>
+          </div>
+
+          <div class="modal-body" style="text-align: center; font-size: 1.1rem">
+            <button
+              type="button"
+              class="custom-tab-btn cancel-btn"
+              data-bs-dismiss="modal"
+              style="
+                margin-right: 10px;
+                border: 2px solid #6c7a91;
+                background: white;
+                color: black;
+                border-radius: 20px;
+                padding: 5px 15px;
+              "
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="custom-tab-btn yes-btn"
+              style="
+                background: #6c7a91;
+                color: white;
+                border: none;
+                border-radius: 20px;
+                padding: 5px 20px;
+              "
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <style>
+    /* Your existing CSS - this is the correct approach */
+    .scrollable-table-container {
+      /* This is the key: it creates the scroll context */
+      max-height: 600px;
+      /* Or a suitable height like 80vh for responsive design */
+      overflow-y: auto;
+      border: 1px solid #ccc;
+    }
+
+    /* Your existing sticky header CSS, targeting the tr elements within the thead */
+    .scrollable-table-container thead tr:nth-child(1) {
+      position: sticky;
+      top: 0;
+      background-color: #b3b6b9;
+      z-index: 5;
+    }
+
+    .scrollable-table-container thead tr:nth-child(2) {
+      position: sticky;
+      top: 36px; /* adjust based on row height */
+      background-color: #b3b6b9;
+      z-index: 4;
+    }
+
+    .scrollable-table-container thead tr:nth-child(3) {
+      position: sticky;
+      top: 72px; /* Adjust based on row height */
+      background-color: #b3b6b9;
+      z-index: 3;
+    }
+
+    .scrollable-table-container thead tr:nth-child(4) {
+      position: sticky;
+      top: 100px; /* Adjust based on row height */
+      background-color: #b3b6b9;
+      z-index: 2;
+    }
+
+    .scrollable-table-container thead tr:nth-child(5) {
+      position: sticky;
+      top: 135px; /* Adjust based on row height */
+      background-color: #b3b6b9;
+      z-index: 1;
+    }
+  </style>
+
+  <style>
+    .inner {
+      max-height: 600px; /* Adjust height as needed */
+      overflow: auto;
+      border: 1px solid #dee2e6;
+    }
+
+ 	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #D8D8D8; /* light gray header */
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
+
+    div.dataTables_wrapper div.dataTables_paginate {
+      text-align: right !important;
+      float: right !important;
+      width: auto;
+      margin-top: 10px;
+    }
+
+    /* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+    div.dataTables_wrapper div.dataTables_info {
+      float: left !important;
+      margin-top: 10px;
+    }
+
+    .pagination {
+      margin: 0;
+    }
+
+    .page-item.active .page-link {
+      background-color: #386276;
+      border-color: #386276;
+    }
+
+    .page-link {
+      color: #386276;
+    }
+
+    .page-link:hover {
+      color: #2a4a5c;
+    }
+
+    .form-select {
+      display: inline-block;
+      width: auto;
+    }
+    .scrollable-table-container thead tr:nth-child(1),
+.scrollable-table-container thead tr:nth-child(2),
+.scrollable-table-container thead tr:nth-child(3),
+.scrollable-table-container thead tr:nth-child(4),
+.scrollable-table-container thead tr:nth-child(5) {
+    background-color: #D8D8D8; /* set header color */
+}
+  </style>
+</html>
