@@ -154,6 +154,10 @@ public class RegulatoryReportServices {
 	
 	@Autowired
 	BRRS_Q_RLFA2_ReportService brrs_q_rlfa2_reportservice;
+	
+	@Autowired
+	BRRS_M_INT_RATES_ReportService  brrs_m_int_rates_reportservice;
+
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
@@ -345,6 +349,10 @@ public class RegulatoryReportServices {
 			repsummary = brrs_m_secl_reportservice.getM_SECLView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
 			break;
 			
+		case "M_INT_RATES":
+			repsummary = brrs_m_int_rates_reportservice.getM_INTRATESView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
+			break;
+			
 		case "Q_SMME":
 			
 			repsummary = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate, currency, dtltype,
@@ -357,7 +365,7 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 			
-			
+        	
 		case "M_EPR":
 			
 			repsummary = brrs_m_epr_reportservice.getM_EPRView(reportId, fromdate, todate, currency, dtltype,
@@ -880,6 +888,15 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_INT_RATES":
+			try {
+				repfile = brrs_m_int_rates_reportservice.getM_INTRATESExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		case "M_FXR":
 			try {
 				repfile = BRRS_M_FXR_reportservice.getM_FXRExcel(filename, reportId, fromdate, todate, currency,
@@ -1152,6 +1169,15 @@ public class RegulatoryReportServices {
 		case "M_SECL":
 			try {
 				archivalData = brrs_m_secl_reportservice.getM_SECLArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_INT_RATES":
+			try {
+				archivalData = brrs_m_int_rates_reportservice.getM_INTRATESArchival();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

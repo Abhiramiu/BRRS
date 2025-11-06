@@ -56,7 +56,11 @@ import com.bornfire.brrs.entities.M_EPR_Summary_Entity;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity1;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity2;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity3;
+
 import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
+
+import com.bornfire.brrs.entities.M_INT_RATES_Summary_Entity;
+
 import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
@@ -111,7 +115,11 @@ import com.bornfire.brrs.services.BRRS_M_CA6_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
 import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
+
 import com.bornfire.brrs.services.BRRS_M_LA1_ReportService;
+
+import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService;
+
 import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
@@ -866,6 +874,36 @@ public class BRRS_ReportsController {
 		         
 		         // call services
 		         SECLreportService.updateReport(request1);
+		         
+		         
+		         return ResponseEntity.ok("Updated Successfully");
+		     } catch (Exception e) {
+		         e.printStackTrace();
+		         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                              .body("Update Failed: " + e.getMessage());
+		     }
+		 }
+		 
+		 
+		 @Autowired
+		 private BRRS_M_INT_RATES_ReportService INTRATESreportService;
+		
+		
+		 @RequestMapping(value = "/INTRATESupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+		 @ResponseBody
+		 public ResponseEntity<String> updateAllReports(
+		         @RequestParam(required = false)
+		         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		         @ModelAttribute M_INT_RATES_Summary_Entity request1
+		         
+		 ) {
+		     try {
+		         System.out.println("Came to single controller");
+		         // set date into all 4 entities
+		         request1.setReport_date(asondate);
+		         
+		         // call services
+		         INTRATESreportService.updateReport(request1);
 		         
 		         
 		         return ResponseEntity.ok("Updated Successfully");
