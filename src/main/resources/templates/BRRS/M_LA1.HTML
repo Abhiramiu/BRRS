@@ -306,17 +306,7 @@ PURPOSE		: BRFREPORT
 		}
 	</style>
 
-	<style>
-		#reportdetails,
-		#reportdetails th,
-		#reportdetails td {
-			border: 1px solid black !important;
-		}
 
-		#reportdetails {
-			border-collapse: collapse;
-		}
-	</style>
 
 	<script th:inline="javascript">
 
@@ -751,34 +741,83 @@ PURPOSE		: BRFREPORT
 	</script>
 
 	<script th:inline="javascript">
-		$(document).ready(function () {
-			$('#reportdetails').DataTable({
-				autoWidth: true,
-				paging: true,
-				searching: true,
-				lengthChange: false,
-				ordering: false,
-				pageLength: 100,
-				fixedHeader: true,
-				scrollY: false,        // ✅ no vertical scroll
-				scrollCollapse: false, // ✅ ensures no scroll container
-				scrollX: false,        // ✅ no horizontal scroll
-
-				// ✅ Search (left) + pagination (right) on top only
-				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
-
-				language: {
-					search: "Search:",
-					paginate: {
-						previous: "&laquo;",
-						next: "&raquo;"
-					}
-				}
-			});
-		});
-
+	  $(document).ready(function () {
+	    $('#reportdetails').DataTable({
+	      scrollY: "400px",            // ✅ Adjust vertical scroll height
+	      scrollX: true,               // ✅ Horizontal scrolling
+	      scrollCollapse: true,
+	      autoWidth: false,
+	      paging: true,
+	      searching: true,
+	      lengthChange: false,
+	      ordering: true,
+	      pageLength: 10,
+	      fixedHeader: {
+	        header: true,
+	        footer: false
+	      },                           // ✅ Ensures header stays visible
+	      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+	    });
+	  });
 	</script>
+	<style>
+	  .dataTables_scrollHeadInner,
+	  table.dataTable {
+	    width: 100% !important;
+	    margin: -2px auto !important;
+	  }
 
+	  /* ✅ Prevent wrapping in all table cells */
+	  #reportdetails th,
+	  #reportdetails td {
+	    white-space: nowrap;
+	  }
+	</style>
+
+
+	<style>
+	  .left-arrow-circle {
+	    background-color: white;
+	    color: #007bff;
+	    border-radius: 50%;
+	    padding: 8px;
+	    margin-right: 10px;
+	    cursor: pointer;
+	  }
+
+	  /* 🚌 Bus display style box */
+	  .boards {
+	    background-color: rgb(107, 122, 143);
+	    color: white;
+	    padding: 6px -1px;
+	    border-radius: 8px;
+	    overflow: hidden;
+	    white-space: nowrap;
+	    width: 500px; /* adjust width as needed */
+	    box-shadow: 0 0 10px rgb(107, 122, 143);
+	    position: relative;
+		transform: translateY(10px);
+	  }
+
+	  /* ✨ Scrolling animation */
+	  .scrolling-text {
+	    display: inline-block;
+	    font-family: "Courier New", monospace;
+	    font-weight: bold;
+	    letter-spacing: 1px;
+	    animation: scroll-left 10s linear infinite;
+	  }
+
+	  /* Animation keyframes */
+	  @keyframes scroll-left {
+	    0% {
+	      transform: translateX(100%);
+	    }
+	    100% {
+	      transform: translateX(-100%);
+	    }
+	  }
+	</style>
 
 
 
@@ -799,15 +838,20 @@ PURPOSE		: BRFREPORT
 				<div class="card-header"
 					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
 					<div style="display: flex; align-items: center;" onclick="back();">
-						<!-- ⬅️ Left circular arrow -->
-						<div class="left-arrow-circle">
-							<i class="fa fa-arrow-left"></i>
-						</div>
+					  <!-- ⬅️ Left circular arrow -->
+					  <div class="left-arrow-circle">
+					    <i class="fa fa-arrow-left"></i>
+					  </div>
 
-						<!-- Title -->
-						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT 123</h5>
+					  <!-- Title -->
+					  <h5 style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+					    BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT 123
+					  </h5>
+
+					  <!-- Moving bus-board text -->
+					  <div class="boards">
+					    <p class="scrolling-text">MONTHLY SCHEDULE: M-LA1: LOANS AND ADVANCES (P'000)</p>
+					  </div>
 					</div>
 
 
@@ -1857,25 +1901,24 @@ PURPOSE		: BRFREPORT
 				<div th:if="${displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
-							<div class="table-responsive scrollable-table-container"
+							<div class="table-container" 
 								style="border-right: 1px solid #dee2e6; ">
-								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+								<table class="table table-striped table-bordered table-hover"
 									id="reportdetails">
 									<thead class="thead-light">
 										<tr>
 											<th> </th>
 											<th>S No</th>
 											<th>CUST ID</th>
-											<th>ACCT NO</th>
+											<th>ACCT NUMBER</th>
 											<th>ACCT NAME</th>
 											<th>ACCT BALANCE</th>
 											<th>SANCTION LIMIT</th>
 											<th>REPORT LABEL</th>
-											<th>REPORT_ADDL_CRETERIA_1</th>
-											<th>REPORT_ADDL_CRETERIA_2</th>
-											<th>REPORT_ADDL_CRETERIA_3</th>
-											<th>REPORT_DATE</th>
+											<th>REPORT ADDL CRETERIA 1</th>
+											<th>REPORT ADDL CRETERIA 2</th>
+											<th>REPORT ADDL CRETERIA 3</th>
+											<th>REPORT DATE</th>
 										</tr>
 
 									</thead>
