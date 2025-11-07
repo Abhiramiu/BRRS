@@ -1,0 +1,2758 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: ISHWARYA 
+CREATED ON	: 05.11.2025
+PURPOSE		: BRRS REPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+
+
+<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+
+
+
+
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
+
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
+
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+.table td {
+	background-color: #FFFFFF;
+}
+
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
+
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
+
+#BRFvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
+
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
+
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+
+
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
+
+.error {
+	color: red;
+	padding-top: 15px;
+}
+
+.form-control:focus {
+	border-color: #007bff;
+}
+
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
+	) ~ .form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~ .form-legend {
+	color: #0056b3; /* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus ) ~ .form-legend {
+	color: #aaa; /* Normal label color */
+}
+
+.table-cell tbody td:hover {
+        background-color: #f0f0f0; /* Hover color for cell */
+        cursor: pointer;           /* Optional: pointer cursor */
+    }
+
+	.table-bordered td, 
+	.table-bordered th {
+	     border: 1px solid #000 !important;
+	}
+</style>
+
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.green-cell {
+	 background-color: rgb(107, 122, 143) !important;
+    color: white !important;
+}
+
+
+</style>
+
+
+<script th:inline="javascript">
+		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+		});
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
+			$('#loader').modal('hide');
+		});
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard'
+		}
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+
+		//to fetch summary from the database - called from the summary button
+		function showdetails() {
+    showResultModal('BRRS', 'Details page not available for Manual Report');
+}
+
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+
+
+	</script>
+
+
+
+
+<script>
+	// Show Modify (enable inputs & dropdowns)
+    function showmodify(btn) {   
+    	
+    	
+    
+    	var readonlyIds = [];
+
+    	// 🔸 r10, r14, r28, r37, r40, r43, r48, r52, r56, r63 
+    	const specificRows = [10, 14, 28, 37, 40, 43, 48, 52, 56, 63];
+    	const specificCols = ["collateral_amount", "carrying_amount", "no_of_accts"];
+
+    	specificRows.forEach(i => {
+    	    specificCols.forEach(col => {
+    	        readonlyIds.push(`r${i}_${col}`);
+    	    });
+    	});
+
+    	// 🔸 r10–r63 → rene_loans
+    	for (let i = 10; i <= 63; i++) {
+    	    readonlyIds.push(`r${i}_rene_loans`);
+    	}
+
+    	// 🔸 Make all .Show_input editable except those in readonlyIds
+    	$(".Show_input").each(function () {
+    	    if (!readonlyIds.includes(this.id)) {
+    	        $(this).removeAttr("readonly").removeAttr("disabled");
+    	    }
+    	});
+
+    
+    
+    
+     // ✅ Apply gray background for specified row ranges and columns
+        $(document).ready(function () {
+            const targetColumns = [
+                "collateral_amount",
+                "carrying_amount",
+                "no_of_accts"
+            ];
+
+            // Define all target row ranges
+            const targetRanges = [
+                [11, 13],
+                [15, 27],
+                [29, 36],
+                [38, 39],
+                [41, 42],
+                [44, 47],
+                [49, 51],
+                [53, 55],
+                [57, 62]
+            ];
+
+            // Loop through each range
+            targetRanges.forEach(([start, end]) => {
+                for (let i = start; i <= end; i++) {
+                    targetColumns.forEach(col => {
+                        const selector = `#r${i}_${col}`;
+                        if ($(selector).length) {
+                            $(selector).css("background-color", "#d3d3d3");
+                        }
+                    });
+                }
+            });
+        });
+
+    
+    
+    // Toggle buttons 
+    
+    $("#submitButton").show();  
+    $("#cancelRecord").show();   
+    $(btn).hide(); 
+    // hide the clicked Modify button
+    }
+
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+        	
+        	
+        	
+            
+        
+
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
+
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+
+    }
+
+	
+
+	</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+function activateTab(tabName) {
+    // Remove 'active' from all buttons
+    document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Add 'active' to selected button
+    if (tabName === 'summary') {
+        document.getElementById('custom-tab-btnSummary').classList.add('active');
+    } else if (tabName === 'Details') {
+        document.getElementById('custom-tab-btnDetails').classList.add('active');
+    }
+}
+
+window.onload = function() {
+    /* setTimeout(function() {
+        var selectedTab = document.getElementById("selectedTab").value;
+        alert(selectedTab);
+        activateTab(selectedTab);
+    }, 10000); */ // 10,000 milliseconds = 10 seconds
+    
+	var selectedTab = document.getElementById("selectedTab").value;
+    activateTab(selectedTab);
+};
+
+
+function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+
+
+			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
+			loader.show();
+
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+function editRecord(){
+	showResultModal('Alert', 'Development in progress');
+	
+}
+function closemodel(){
+	$('#alert').modal('hide');
+	$('#resultModal').modal('hide');
+	
+}
+
+
+ function showResultModal(title, message) {
+	// Set the text for the modal elements
+	$('#resultModalLabel').text(title);
+	$('#resultModalBody').text(message);
+
+	// Show the modal
+	$('#resultModal').modal('show');
+} 
+
+</script>
+
+<script>
+
+	function startReport(button){
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+			
+			if(sessionfilename==filename){
+				alertMsg.innerHTML ='Download request already Processing...';
+	       	 	showAlert();
+				return;
+			}
+			
+			alertMsg.innerHTML ='Download request Processing...';
+	   	 	showAlert();
+
+			const baseUrl = '/BCDRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+		    fetch(downloadUrl)  // ✅ no invalid characters now
+		        .then(res => res.text())
+		        .then(jobId => {
+
+		        	alertMsg.innerHTML ='Download request received...'+jobId;
+		       	 	showAlert();
+		            sessionStorage.setItem("jobId", jobId);
+		            sessionStorage.setItem("filename", filename);
+		            checkReport(jobId);
+		        });
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+		    fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+		        .then(res => res.text())
+		        .then(status => {
+		            if (status === "READY") {
+		            	alertMsg.innerHTML ='Report is ready! Downloading…';
+		           	 	showAlert();
+		                const filename = sessionStorage.getItem("filename");
+		                downloadDetailfile(jobId,filename)
+		                sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");                
+		                
+		            } else if(status ==="PROCESSING") {
+		                alertMsg.innerHTML ='Download Is Processing…';
+		            	showAlert();
+		                setTimeout(() => checkReport(jobId), 5000);
+		            }
+		            else if(status ==="ERROR") {
+		                alertMsg.innerHTML ='No data was available to create a download.';
+		            	showAlert();
+		            	sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");  
+		            }
+		        });
+		}
+
+
+
+		function downloadDetailfile(jobId,filename) {
+			
+			//$('#loader').modal('show');
+			
+			$.ajax({
+				url: '/BCDRS/Reports/downloaddetailExcel?jobId='+ jobId +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+
+</script>
+
+<script th:inline="javascript">
+function showdetailsbyRowAndColumn(a) { 
+    var rowId = a.getAttribute('RowId');
+    var columnId = a.getAttribute('ColumnId');
+    var cellValue = a.textContent || a.innerText;
+
+    if (cellValue !== '0') {
+        // Set dynamic message in modal (instead of confirm)
+        document.getElementById("cellresultModalLabel").innerText = 
+            "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+        // Show custom Bootstrap modal
+        $('#cellresultModal').modal('show');
+
+        // Handle Yes button
+        document.querySelector('.yes-btn').onclick = function() {
+            $('#cellresultModal').modal('hide');
+
+            // Show loader
+            const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            $('#loader').modal('show');
+
+            // Build dynamic URL
+            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+            location.href = Callurl;
+        };
+    } else {
+        // Use your custom alert modal instead of window.alert
+        showResultModal("Alert", "No Records available for this selected cell.");
+    }
+}
+</script>
+
+
+
+<script>
+
+function calculateAllTotals() {
+    // --- Totals for R14 (SUM R15–R27) ---
+    let sumCollateral14 = 0, sumCarrying14 = 0, sumAccounts14 = 0;
+    for (let i = 15; i <= 27; i++) {
+        let collateral = parseFloat($("#r" + i + "_collateral_amount").val()?.replace(/,/g, "")) || 0;
+        let carrying = parseFloat($("#r" + i + "_carrying_amount").val()?.replace(/,/g, "")) || 0;
+        let accounts = parseFloat($("#r" + i + "_no_of_accts").val()?.replace(/,/g, "")) || 0;
+        sumCollateral14 += collateral;
+        sumCarrying14 += carrying;
+        sumAccounts14 += accounts;
+    }
+    $("#r14_collateral_amount").val(sumCollateral14.toLocaleString('en-US'));
+    $("#r14_carrying_amount").val(sumCarrying14.toLocaleString('en-US'));
+    $("#r14_no_of_accts").val(sumAccounts14.toLocaleString('en-US'));
+
+    // --- Totals for R28 (SUM R29–R36) ---
+    let sumCollateral28 = 0, sumCarrying28 = 0, sumAccounts28 = 0;
+    for (let i = 29; i <= 36; i++) {
+        let collateral = parseFloat($("#r" + i + "_collateral_amount").val()?.replace(/,/g, "")) || 0;
+        let carrying = parseFloat($("#r" + i + "_carrying_amount").val()?.replace(/,/g, "")) || 0;
+        let accounts = parseFloat($("#r" + i + "_no_of_accts").val()?.replace(/,/g, "")) || 0;
+        sumCollateral28 += collateral;
+        sumCarrying28 += carrying;
+        sumAccounts28 += accounts;
+    }
+    $("#r28_collateral_amount").val(sumCollateral28.toLocaleString('en-US'));
+    $("#r28_carrying_amount").val(sumCarrying28.toLocaleString('en-US'));
+    $("#r28_no_of_accts").val(sumAccounts28.toLocaleString('en-US'));
+
+    // --- Totals for R37 (SUM R38–R39) ---
+    let sumCollateral37 = 0, sumCarrying37 = 0, sumAccounts37 = 0;
+    for (let i = 38; i <= 39; i++) {
+        let collateral = parseFloat($("#r" + i + "_collateral_amount").val()?.replace(/,/g, "")) || 0;
+        let carrying = parseFloat($("#r" + i + "_carrying_amount").val()?.replace(/,/g, "")) || 0;
+        let accounts = parseFloat($("#r" + i + "_no_of_accts").val()?.replace(/,/g, "")) || 0;
+        sumCollateral37 += collateral;
+        sumCarrying37 += carrying;
+        sumAccounts37 += accounts;
+    }
+    $("#r37_collateral_amount").val(sumCollateral37.toLocaleString('en-US'));
+    $("#r37_carrying_amount").val(sumCarrying37.toLocaleString('en-US'));
+    $("#r37_no_of_accts").val(sumAccounts37.toLocaleString('en-US'));
+
+    // --- Totals for R43 (SUM R44–R47) ---
+    let sumCollateral43 = 0, sumCarrying43 = 0, sumAccounts43 = 0;
+    for (let i = 44; i <= 47; i++) {
+        let collateral = parseFloat($("#r" + i + "_collateral_amount").val()?.replace(/,/g, "")) || 0;
+        let carrying = parseFloat($("#r" + i + "_carrying_amount").val()?.replace(/,/g, "")) || 0;
+        let accounts = parseFloat($("#r" + i + "_no_of_accts").val()?.replace(/,/g, "")) || 0;
+        sumCollateral43 += collateral;
+        sumCarrying43 += carrying;
+        sumAccounts43 += accounts;
+    }
+    $("#r43_collateral_amount").val(sumCollateral43.toLocaleString('en-US'));
+    $("#r43_carrying_amount").val(sumCarrying43.toLocaleString('en-US'));
+    $("#r43_no_of_accts").val(sumAccounts43.toLocaleString('en-US'));
+
+    // --- Totals for R52 (SUM R53–R55) ---
+    let sumCollateral52 = 0, sumCarrying52 = 0, sumAccounts52 = 0;
+    for (let i = 53; i <= 55; i++) {
+        let collateral = parseFloat($("#r" + i + "_collateral_amount").val()?.replace(/,/g, "")) || 0;
+        let carrying = parseFloat($("#r" + i + "_carrying_amount").val()?.replace(/,/g, "")) || 0;
+        let accounts = parseFloat($("#r" + i + "_no_of_accts").val()?.replace(/,/g, "")) || 0;
+        sumCollateral52 += collateral;
+        sumCarrying52 += carrying;
+        sumAccounts52 += accounts;
+    }
+    $("#r52_collateral_amount").val(sumCollateral52.toLocaleString('en-US'));
+    $("#r52_carrying_amount").val(sumCarrying52.toLocaleString('en-US'));
+    $("#r52_no_of_accts").val(sumAccounts52.toLocaleString('en-US'));
+
+    // --- Totals for R56 (SUM R57–R61) ---
+    let sumCollateral56 = 0, sumCarrying56 = 0, sumAccounts56 = 0;
+    for (let i = 57; i <= 61; i++) {
+        let collateral = parseFloat($("#r" + i + "_collateral_amount").val()?.replace(/,/g, "")) || 0;
+        let carrying = parseFloat($("#r" + i + "_carrying_amount").val()?.replace(/,/g, "")) || 0;
+        let accounts = parseFloat($("#r" + i + "_no_of_accts").val()?.replace(/,/g, "")) || 0;
+        sumCollateral56 += collateral;
+        sumCarrying56 += carrying;
+        sumAccounts56 += accounts;
+    }
+    $("#r56_collateral_amount").val(sumCollateral56.toLocaleString('en-US'));
+    $("#r56_carrying_amount").val(sumCarrying56.toLocaleString('en-US'));
+    $("#r56_no_of_accts").val(sumAccounts56.toLocaleString('en-US'));
+
+    // --- Totals for R48 = R49 + R50 + R51 + R52 + R56 ---
+    let sumCollateral48 = 0, sumCarrying48 = 0, sumAccounts48 = 0;
+    [49, 50, 51, 52, 56].forEach(i => {
+        let collateral = parseFloat($("#r" + i + "_collateral_amount").val()?.replace(/,/g, "")) || 0;
+        let carrying = parseFloat($("#r" + i + "_carrying_amount").val()?.replace(/,/g, "")) || 0;
+        let accounts = parseFloat($("#r" + i + "_no_of_accts").val()?.replace(/,/g, "")) || 0;
+        sumCollateral48 += collateral;
+        sumCarrying48 += carrying;
+        sumAccounts48 += accounts;
+    });
+    $("#r48_collateral_amount").val(sumCollateral48.toLocaleString('en-US'));
+    $("#r48_carrying_amount").val(sumCarrying48.toLocaleString('en-US'));
+    $("#r48_no_of_accts").val(sumAccounts48.toLocaleString('en-US'));
+
+    // --- Totals for R40 = R41 + R42 + R43 + R48 + R62 ---
+    let sumCollateral40 = 0, sumCarrying40 = 0, sumAccounts40 = 0;
+    [41, 42, 43, 48, 62].forEach(i => {
+        let collateral = parseFloat($("#r" + i + "_collateral_amount").val()?.replace(/,/g, "")) || 0;
+        let carrying = parseFloat($("#r" + i + "_carrying_amount").val()?.replace(/,/g, "")) || 0;
+        let accounts = parseFloat($("#r" + i + "_no_of_accts").val()?.replace(/,/g, "")) || 0;
+        sumCollateral40 += collateral;
+        sumCarrying40 += carrying;
+        sumAccounts40 += accounts;
+    });
+    $("#r40_collateral_amount").val(sumCollateral40.toLocaleString('en-US'));
+    $("#r40_carrying_amount").val(sumCarrying40.toLocaleString('en-US'));
+    $("#r40_no_of_accts").val(sumAccounts40.toLocaleString('en-US'));
+
+    // --- Totals for R10 = R11 + R12 + R13 + R14 + R28 + R37 ---
+    let sumCollateral10 = 0, sumCarrying10 = 0, sumAccounts10 = 0;
+    [11, 12, 13, 14, 28, 37].forEach(i => {
+        let collateral = parseFloat($("#r" + i + "_collateral_amount").val()?.replace(/,/g, "")) || 0;
+        let carrying = parseFloat($("#r" + i + "_carrying_amount").val()?.replace(/,/g, "")) || 0;
+        let accounts = parseFloat($("#r" + i + "_no_of_accts").val()?.replace(/,/g, "")) || 0;
+        sumCollateral10 += collateral;
+        sumCarrying10 += carrying;
+        sumAccounts10 += accounts;
+    });
+    $("#r10_collateral_amount").val(sumCollateral10.toLocaleString('en-US'));
+    $("#r10_carrying_amount").val(sumCarrying10.toLocaleString('en-US'));
+    $("#r10_no_of_accts").val(sumAccounts10.toLocaleString('en-US'));
+
+    // --- ✅ NEW: Totals for R63 = R10 + R40 ---
+    let sumCollateral63 = 0, sumCarrying63 = 0, sumAccounts63 = 0;
+    [10, 40].forEach(i => {
+        let collateral = parseFloat($("#r" + i + "_collateral_amount").val()?.replace(/,/g, "")) || 0;
+        let carrying = parseFloat($("#r" + i + "_carrying_amount").val()?.replace(/,/g, "")) || 0;
+        let accounts = parseFloat($("#r" + i + "_no_of_accts").val()?.replace(/,/g, "")) || 0;
+        sumCollateral63 += collateral;
+        sumCarrying63 += carrying;
+        sumAccounts63 += accounts;
+    });
+    $("#r63_collateral_amount").val(sumCollateral63.toLocaleString('en-US'));
+    $("#r63_carrying_amount").val(sumCarrying63.toLocaleString('en-US'));
+    $("#r63_no_of_accts").val(sumAccounts63.toLocaleString('en-US'));
+}
+
+// --- Auto-calculate on input ---
+$(document).ready(function() {
+    calculateAllTotals();
+    const updateRanges = [
+        [10, 62]
+    ];
+    updateRanges.forEach(([start, end]) => {
+        for (let i = start; i <= end; i++) {
+            $("#r" + i + "_collateral_amount, #r" + i + "_carrying_amount, #r" + i + "_no_of_accts")
+                .on("input", calculateAllTotals);
+        }
+    });
+});
+
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
+	    setTimeout(function () {
+	        location.reload();
+	    }, 300);
+	}
+	
+	
+	
+
+	// This is the main function that orchestrates the entire form submission process.
+	// It is triggered by the "Update" button click.
+// Make the function global so onclick="fileuploads(this)" can see it
+window.fileuploads = function(btn) {
+    // Get the report date from the button's data attribute
+    const asondate = btn.getAttribute("data-todate");
+
+    // Show loading spinner
+    $('#loader').modal('show');
+
+    // Ensure totals are calculated before submission
+    if (typeof calculateAllTotals === "function") calculateAllTotals();
+
+    // Remove commas from all text inputs inside #fileupload
+    $("#fileupload input[type='text']").each(function () {
+        const val = $(this).val();
+        if (val && val.includes(",")) {
+            $(this).val(val.replace(/,/g, ''));
+        }
+    });
+
+    // Validate form
+    if (!$("#fileupload").valid()) {
+        $('#loader').modal('hide');
+        return;
+    }
+
+    // Prepare FormData
+    const formData1 = new FormData();
+    formData1.append("asondate", asondate);
+
+    // Append row fields to FormData
+    for (let i = 10; i <= 63; i++) {
+        ["rene_loans", "collateral_amount","carrying_amount","no_of_accts"
+        	
+        	]
+        .forEach(field => {
+            const input = $("#r" + i + "_" + field);
+            if (input.length) {
+                formData1.append(input.attr("name"), input.val());
+            }
+        });
+    }
+
+    // Send AJAX request
+    $.ajax({
+        url: './Q_RLFA1update',
+        type: 'POST',
+        data: formData1,
+        processData: false,
+        contentType: false,
+        dataType: 'text'
+    })
+    .done(function() {
+        $("#resultModalLabel").text("BRRS");
+        $("#resultModalBody").text("Updated successfully.");
+        $("#resultModal").modal("show");
+    })
+    .fail(function(jqXHR) {
+        console.error("Error response:", jqXHR.responseText);
+        $("#resultModalLabel").text("Error");
+        $("#resultModalBody").text("One or more updates failed. Check console for details.");
+        $("#resultModal").modal("show");
+    })
+    .always(function() {
+        $('#loader').modal('hide');
+    });
+};
+
+
+
+
+
+	</script>
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+<title>BRRS</title>
+<body>
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+							 Q-RLFA1: RENEGOTIATED LOANS AND ADVANCES</h5>
+					</div>
+
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+      style="color: white !important; font-size: 16px; margin-right: 20px;">
+    Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+</span>
+
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+							
+							
+							
+								<!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							th:if="${type != 'ARCHIVAL'}"
+							id="addRecord">Modify</button>
+
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn"
+							title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+							
+							
+							
+							
+							
+							
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+							th:attr="data-reportid=${reportid}, 
+                    				 data-asondate=${asondate}, 
+                    				 data-fromdate=${fromdate}, 
+                     				 data-todate=${todate}, 
+                     				 data-currency=${currency},  
+                     				 data-dtltype=${dtltype}, 
+                     				 data-filename='Q_RLFA1.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}"
+							onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+						
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid}, 
+             data-asondate=${asondate}, 
+             data-fromdate=${fromdate}, 
+             data-todate=${todate}, 
+             data-currency=${currency},  
+             data-dtltype=${dtltype}, 
+             data-filename='Q_RLFA1_Detail',
+             data-type=${type},
+					data-version=${version} "
+							onclick="startReport(this)">
+							<!-- 🛠️ Fix: pass `this` -->
+							<i class="fa fa-download"></i>
+						</button>
+						
+					</div>
+				</div>
+
+
+
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+						<form action="#" method="POST" id="fileupload">
+							<div
+								class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light">
+									
+									
+									<tr style="background-color: #b3b6b9;">
+                                            <th style="text-align: left; font-weight: bold; background-color: #D8D8D8; padding: 10px;"> RENEGOTIATED LOANS  (Otherwise would have been impaired)")</th>
+                                            <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;">Collateral Amount</th>
+                                            <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;">Carrying Amount**</th>
+                                            <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;">No. of a/c's</th>
+                                        </tr>
+										
+
+									</thead>
+
+
+									<tbody th:each="report: ${reportsummary}"
+										style="font-family: Arial;">
+
+										 <tr>
+                                        <td id='R10' style=' font-weight: bold;'>
+                                            <input class='display-input Show_input' type='text' value='1.  Non-financial institutional units (sum of lines (i) to (vii)):' id='r10_rene_loans' name='r10_rene_loans' style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left;  font-weight: bold;'
+                                                   readonly /> </td>
+                                        <td style='padding-left: 40px; font-weight: bold;text-align: right;' class="green-cell">
+                                            <input class='display-input Show_input green-cell' type='text' th:value='${report.r10_collateral_amount != null ? #numbers.formatDecimal(report.r10_collateral_amount, 1, "COMMA",0, "POINT") : "0"}' id='r10_collateral_amount'
+                                                   name='r10_collateral_amount' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+                                        </td>
+                                        <td style='padding-left: 40px; font-weight: bold;text-align: right;' class="green-cell">
+                                            <input class='display-input Show_input green-cell' type='text' th:value='${report.r10_carrying_amount != null ? #numbers.formatDecimal(report.r10_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}' id='r10_carrying_amount'
+                                                   name='r10_carrying_amount' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+                                        </td>
+                                        <td style='padding-left: 40px; font-weight: bold;text-align: right;' class="green-cell">
+                                            <input class='display-input Show_input green-cell' type='text' th:value='${report.r10_no_of_accts != null ? #numbers.formatDecimal(report.r10_no_of_accts, 1, "COMMA",0, "POINT") : "0"}' id='r10_no_of_accts'
+                                                   name='r10_no_of_accts' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+                                        </td>
+                                    </tr>
+                                    
+                                    
+                                   <tr>
+    <td id='R11' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='   (i)    Central Government' 
+               id='r11_rene_loans' name='r11_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r11_collateral_amount != null ? #numbers.formatDecimal(report.r11_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r11_collateral_amount' name='r11_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r11_carrying_amount != null ? #numbers.formatDecimal(report.r11_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r11_carrying_amount' name='r11_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r11_no_of_accts != null ? #numbers.formatDecimal(report.r11_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r11_no_of_accts' name='r11_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R12' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='   (ii)   Local Government' 
+               id='r12_rene_loans' name='r12_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r12_collateral_amount != null ? #numbers.formatDecimal(report.r12_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r12_collateral_amount' name='r12_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r12_carrying_amount != null ? #numbers.formatDecimal(report.r12_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r12_carrying_amount' name='r12_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r12_no_of_accts != null ? #numbers.formatDecimal(report.r12_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r12_no_of_accts' name='r12_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R13' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='   (iii)  Public Non-Financial Corporations' 
+               id='r13_rene_loans' name='r13_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r13_collateral_amount != null ? #numbers.formatDecimal(report.r13_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r13_collateral_amount' name='r13_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r13_carrying_amount != null ? #numbers.formatDecimal(report.r13_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r13_carrying_amount' name='r13_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r13_no_of_accts != null ? #numbers.formatDecimal(report.r13_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r13_no_of_accts' name='r13_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R14' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='   (iv)  Other Non-Financial Corporations (Private business enterprises) (sum of lines (a) to (j)):' 
+               id='r14_rene_loans' name='r14_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r14_collateral_amount != null ? #numbers.formatDecimal(report.r14_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r14_collateral_amount' name='r14_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r14_carrying_amount != null ? #numbers.formatDecimal(report.r14_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r14_carrying_amount' name='r14_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r14_no_of_accts != null ? #numbers.formatDecimal(report.r14_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r14_no_of_accts' name='r14_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R15' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         a) Agriculture, Forestry, Fishing' 
+               id='r15_rene_loans' name='r15_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r15_collateral_amount != null ? #numbers.formatDecimal(report.r15_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r15_collateral_amount' name='r15_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r15_carrying_amount != null ? #numbers.formatDecimal(report.r15_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r15_carrying_amount' name='r15_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r15_no_of_accts != null ? #numbers.formatDecimal(report.r15_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r15_no_of_accts' name='r15_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R16' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         b) Mining and Quarying' 
+               id='r16_rene_loans' name='r16_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r16_collateral_amount != null ? #numbers.formatDecimal(report.r16_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r16_collateral_amount' name='r16_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r16_carrying_amount != null ? #numbers.formatDecimal(report.r16_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r16_carrying_amount' name='r16_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r16_no_of_accts != null ? #numbers.formatDecimal(report.r16_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r16_no_of_accts' name='r16_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R17' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         c) Manufacturing' 
+               id='r17_rene_loans' name='r17_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r17_collateral_amount != null ? #numbers.formatDecimal(report.r17_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r17_collateral_amount' name='r17_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r17_carrying_amount != null ? #numbers.formatDecimal(report.r17_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r17_carrying_amount' name='r17_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r17_no_of_accts != null ? #numbers.formatDecimal(report.r17_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r17_no_of_accts' name='r17_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R18' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         d) Construction' 
+               id='r18_rene_loans' name='r18_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r18_collateral_amount != null ? #numbers.formatDecimal(report.r18_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r18_collateral_amount' name='r18_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r18_carrying_amount != null ? #numbers.formatDecimal(report.r18_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r18_carrying_amount' name='r18_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r18_no_of_accts != null ? #numbers.formatDecimal(report.r18_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r18_no_of_accts' name='r18_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R19' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         e) Commercial real estate' 
+               id='r19_rene_loans' name='r19_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r19_collateral_amount != null ? #numbers.formatDecimal(report.r19_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r19_collateral_amount' name='r19_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r19_carrying_amount != null ? #numbers.formatDecimal(report.r19_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r19_carrying_amount' name='r19_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r19_no_of_accts != null ? #numbers.formatDecimal(report.r19_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r19_no_of_accts' name='r19_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R20' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         f) Electricity' 
+               id='r20_rene_loans' name='r20_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r20_collateral_amount != null ? #numbers.formatDecimal(report.r20_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r20_collateral_amount' name='r20_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r20_carrying_amount != null ? #numbers.formatDecimal(report.r20_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r20_carrying_amount' name='r20_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r20_no_of_accts != null ? #numbers.formatDecimal(report.r20_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r20_no_of_accts' name='r20_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R21' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         g) Water' 
+               id='r21_rene_loans' name='r21_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' >
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r21_collateral_amount != null ? #numbers.formatDecimal(report.r21_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r21_collateral_amount' name='r21_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' >
+        <input class='display-input Show_input ' type='text'
+               th:value='${report.r21_carrying_amount != null ? #numbers.formatDecimal(report.r21_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r21_carrying_amount' name='r21_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' >
+        <input class='display-input Show_input ' type='text'
+               th:value='${report.r21_no_of_accts != null ? #numbers.formatDecimal(report.r21_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r21_no_of_accts' name='r21_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R22' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         h) Telecommunication and post' 
+               id='r22_rene_loans' name='r22_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r22_collateral_amount != null ? #numbers.formatDecimal(report.r22_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r22_collateral_amount' name='r22_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r22_carrying_amount != null ? #numbers.formatDecimal(report.r22_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r22_carrying_amount' name='r22_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r22_no_of_accts != null ? #numbers.formatDecimal(report.r22_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r22_no_of_accts' name='r22_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R23' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         i) Tourism and hotels' 
+               id='r23_rene_loans' name='r23_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r23_collateral_amount != null ? #numbers.formatDecimal(report.r23_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r23_collateral_amount' name='r23_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r23_carrying_amount != null ? #numbers.formatDecimal(report.r23_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r23_carrying_amount' name='r23_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r23_no_of_accts != null ? #numbers.formatDecimal(report.r23_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r23_no_of_accts' name='r23_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R24' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         j) Transport and storage' 
+               id='r24_rene_loans' name='r24_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r24_collateral_amount != null ? #numbers.formatDecimal(report.r24_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r24_collateral_amount' name='r24_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r24_carrying_amount != null ? #numbers.formatDecimal(report.r24_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r24_carrying_amount' name='r24_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r24_no_of_accts != null ? #numbers.formatDecimal(report.r24_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r24_no_of_accts' name='r24_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R25' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         k) Trade, restaurants and bars' 
+               id='r25_rene_loans' name='r25_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r25_collateral_amount != null ? #numbers.formatDecimal(report.r25_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r25_collateral_amount' name='r25_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r25_carrying_amount != null ? #numbers.formatDecimal(report.r25_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r25_carrying_amount' name='r25_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r25_no_of_accts != null ? #numbers.formatDecimal(report.r25_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r25_no_of_accts' name='r25_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R26' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         l) Business services' 
+               id='r26_rene_loans' name='r26_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r26_collateral_amount != null ? #numbers.formatDecimal(report.r26_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r26_collateral_amount' name='r26_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r26_carrying_amount != null ? #numbers.formatDecimal(report.r26_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r26_carrying_amount' name='r26_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r26_no_of_accts != null ? #numbers.formatDecimal(report.r26_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r26_no_of_accts' name='r26_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R27' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='         j) Other community, social and personal services' 
+               id='r27_rene_loans' name='r27_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r27_collateral_amount != null ? #numbers.formatDecimal(report.r27_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r27_collateral_amount' name='r27_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r27_carrying_amount != null ? #numbers.formatDecimal(report.r27_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r27_carrying_amount' name='r27_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r27_no_of_accts != null ? #numbers.formatDecimal(report.r27_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r27_no_of_accts' name='r27_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R28' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='   (v)  Households (sum of lines (a) to (h)):' 
+               id='r28_rene_loans' name='r28_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r28_collateral_amount != null ? #numbers.formatDecimal(report.r28_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r28_collateral_amount' name='r28_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r28_carrying_amount != null ? #numbers.formatDecimal(report.r28_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r28_carrying_amount' name='r28_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r28_no_of_accts != null ? #numbers.formatDecimal(report.r28_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r28_no_of_accts' name='r28_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R29' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        a) Residential property (owner occupied)' 
+               id='r29_rene_loans' name='r29_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r29_collateral_amount != null ? #numbers.formatDecimal(report.r29_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r29_collateral_amount' name='r29_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r29_carrying_amount != null ? #numbers.formatDecimal(report.r29_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r29_carrying_amount' name='r29_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r29_no_of_accts != null ? #numbers.formatDecimal(report.r29_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r29_no_of_accts' name='r29_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R30' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        b) Residential property (rented) ' 
+               id='r30_rene_loans' name='r30_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r30_collateral_amount != null ? #numbers.formatDecimal(report.r30_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r30_collateral_amount' name='r30_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r30_carrying_amount != null ? #numbers.formatDecimal(report.r30_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r30_carrying_amount' name='r30_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r30_no_of_accts != null ? #numbers.formatDecimal(report.r30_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r30_no_of_accts' name='r30_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R31' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        c) Personal loans' 
+               id='r31_rene_loans' name='r31_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r31_collateral_amount != null ? #numbers.formatDecimal(report.r31_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r31_collateral_amount' name='r31_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r31_carrying_amount != null ? #numbers.formatDecimal(report.r31_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r31_carrying_amount' name='r31_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r31_no_of_accts != null ? #numbers.formatDecimal(report.r31_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r31_no_of_accts' name='r31_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R32' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        d) Motor vehicle' 
+               id='r32_rene_loans' name='r32_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r32_collateral_amount != null ? #numbers.formatDecimal(report.r32_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r32_collateral_amount' name='r32_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r32_carrying_amount != null ? #numbers.formatDecimal(report.r32_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r32_carrying_amount' name='r32_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r32_no_of_accts != null ? #numbers.formatDecimal(report.r32_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r32_no_of_accts' name='r32_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R33' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        e) Household goods' 
+               id='r33_rene_loans' name='r33_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r33_collateral_amount != null ? #numbers.formatDecimal(report.r33_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r33_collateral_amount' name='r33_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r33_carrying_amount != null ? #numbers.formatDecimal(report.r33_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r33_carrying_amount' name='r33_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r33_no_of_accts != null ? #numbers.formatDecimal(report.r33_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r33_no_of_accts' name='r33_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R34' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        f) Credit card loans' 
+               id='r34_rene_loans' name='r34_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r34_collateral_amount != null ? #numbers.formatDecimal(report.r34_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r34_collateral_amount' name='r34_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r34_carrying_amount != null ? #numbers.formatDecimal(report.r34_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r34_carrying_amount' name='r34_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r34_no_of_accts != null ? #numbers.formatDecimal(report.r34_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r34_no_of_accts' name='r34_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R35' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        g) Non-Profit Institutions Serving Households' 
+               id='r35_rene_loans' name='r35_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r35_collateral_amount != null ? #numbers.formatDecimal(report.r35_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r35_collateral_amount' name='r35_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r35_carrying_amount != null ? #numbers.formatDecimal(report.r35_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r35_carrying_amount' name='r35_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r35_no_of_accts != null ? #numbers.formatDecimal(report.r35_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r35_no_of_accts' name='r35_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R36' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        h)  Other*' 
+               id='r36_rene_loans' name='r36_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r36_collateral_amount != null ? #numbers.formatDecimal(report.r36_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r36_collateral_amount' name='r36_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r36_carrying_amount != null ? #numbers.formatDecimal(report.r36_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r36_carrying_amount' name='r36_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r36_no_of_accts != null ? #numbers.formatDecimal(report.r36_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r36_no_of_accts' name='r36_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R37' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='   (vi) Non-Residents (sum of lines (a) and (b)):' 
+               id='r37_rene_loans' name='r37_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r37_collateral_amount != null ? #numbers.formatDecimal(report.r37_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r37_collateral_amount' name='r37_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r37_carrying_amount != null ? #numbers.formatDecimal(report.r37_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r37_carrying_amount' name='r37_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r37_no_of_accts != null ? #numbers.formatDecimal(report.r37_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r37_no_of_accts' name='r37_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R38' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        a) Other Non-Financial Corporations' 
+               id='r38_rene_loans' name='r38_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r38_collateral_amount != null ? #numbers.formatDecimal(report.r38_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r38_collateral_amount' name='r38_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r38_carrying_amount != null ? #numbers.formatDecimal(report.r38_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r38_carrying_amount' name='r38_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r38_no_of_accts != null ? #numbers.formatDecimal(report.r38_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r38_no_of_accts' name='r38_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R39' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        b) Households' 
+               id='r39_rene_loans' name='r39_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r39_collateral_amount != null ? #numbers.formatDecimal(report.r39_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r39_collateral_amount' name='r39_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r39_carrying_amount != null ? #numbers.formatDecimal(report.r39_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r39_carrying_amount' name='r39_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r39_no_of_accts != null ? #numbers.formatDecimal(report.r39_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r39_no_of_accts' name='r39_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R40' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='2.  Financial institutional units (sum of lines (i) to (v)):' 
+               id='r40_rene_loans' name='r40_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; font-weight: bold;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r40_collateral_amount != null ? #numbers.formatDecimal(report.r40_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r40_collateral_amount' name='r40_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r40_carrying_amount != null ? #numbers.formatDecimal(report.r40_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r40_carrying_amount' name='r40_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r40_no_of_accts != null ? #numbers.formatDecimal(report.r40_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r40_no_of_accts' name='r40_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R41' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='   (i)    Central Bank' 
+               id='r41_rene_loans' name='r41_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r41_collateral_amount != null ? #numbers.formatDecimal(report.r41_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r41_collateral_amount' name='r41_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r41_carrying_amount != null ? #numbers.formatDecimal(report.r41_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r41_carrying_amount' name='r41_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r41_no_of_accts != null ? #numbers.formatDecimal(report.r41_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r41_no_of_accts' name='r41_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R42' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='   (ii)   Commercial Banks' 
+               id='r42_rene_loans' name='r42_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r42_collateral_amount != null ? #numbers.formatDecimal(report.r42_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r42_collateral_amount' name='r42_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r42_carrying_amount != null ? #numbers.formatDecimal(report.r42_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r42_carrying_amount' name='r42_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r42_no_of_accts != null ? #numbers.formatDecimal(report.r42_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r42_no_of_accts' name='r42_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R43' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='   (iii)  Other Depository Corporations (sum of lines (a) to (d)):' 
+               id='r43_rene_loans' name='r43_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r43_collateral_amount != null ? #numbers.formatDecimal(report.r43_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r43_collateral_amount' name='r43_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r43_carrying_amount != null ? #numbers.formatDecimal(report.r43_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r43_carrying_amount' name='r43_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r43_no_of_accts != null ? #numbers.formatDecimal(report.r43_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r43_no_of_accts' name='r43_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R44' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        a) Botswana Savings Bank (BSB)' 
+               id='r44_rene_loans' name='r44_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r44_collateral_amount != null ? #numbers.formatDecimal(report.r44_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r44_collateral_amount' name='r44_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r44_carrying_amount != null ? #numbers.formatDecimal(report.r44_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r44_carrying_amount' name='r44_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r44_no_of_accts != null ? #numbers.formatDecimal(report.r44_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r44_no_of_accts' name='r44_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R45' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        b) Botswana Building Society (BBS)' 
+               id='r45_rene_loans' name='r45_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r45_collateral_amount != null ? #numbers.formatDecimal(report.r45_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r45_collateral_amount' name='r45_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r45_carrying_amount != null ? #numbers.formatDecimal(report.r45_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r45_carrying_amount' name='r45_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r45_no_of_accts != null ? #numbers.formatDecimal(report.r45_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r45_no_of_accts' name='r45_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R46' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        c) Domestic Money Market Unit Trust' 
+               id='r46_rene_loans' name='r46_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r46_collateral_amount != null ? #numbers.formatDecimal(report.r46_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r46_collateral_amount' name='r46_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r46_carrying_amount != null ? #numbers.formatDecimal(report.r46_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r46_carrying_amount' name='r46_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r46_no_of_accts != null ? #numbers.formatDecimal(report.r46_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r46_no_of_accts' name='r46_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R47' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        d) Other (specify)*' 
+               id='r47_rene_loans' name='r47_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r47_collateral_amount != null ? #numbers.formatDecimal(report.r47_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r47_collateral_amount' name='r47_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r47_carrying_amount != null ? #numbers.formatDecimal(report.r47_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r47_carrying_amount' name='r47_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r47_no_of_accts != null ? #numbers.formatDecimal(report.r47_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r47_no_of_accts' name='r47_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R48' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='    (iv)  Other Financial Corporations (sum of lines (a) to (e)):' 
+               id='r48_rene_loans' name='r48_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r48_collateral_amount != null ? #numbers.formatDecimal(report.r48_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r48_collateral_amount' name='r48_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r48_carrying_amount != null ? #numbers.formatDecimal(report.r48_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r48_carrying_amount' name='r48_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r48_no_of_accts != null ? #numbers.formatDecimal(report.r48_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r48_no_of_accts' name='r48_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R49' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        a) Insurance Companies' 
+               id='r49_rene_loans' name='r49_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r49_collateral_amount != null ? #numbers.formatDecimal(report.r49_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r49_collateral_amount' name='r49_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r49_carrying_amount != null ? #numbers.formatDecimal(report.r49_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r49_carrying_amount' name='r49_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r49_no_of_accts != null ? #numbers.formatDecimal(report.r49_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r49_no_of_accts' name='r49_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R50' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        b) Pension Funds' 
+               id='r50_rene_loans' name='r50_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r50_collateral_amount != null ? #numbers.formatDecimal(report.r50_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r50_collateral_amount' name='r50_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r50_carrying_amount != null ? #numbers.formatDecimal(report.r50_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r50_carrying_amount' name='r50_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r50_no_of_accts != null ? #numbers.formatDecimal(report.r50_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r50_no_of_accts' name='r50_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R51' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        c) SACCOs' 
+               id='r51_rene_loans' name='r51_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r51_collateral_amount != null ? #numbers.formatDecimal(report.r51_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r51_collateral_amount' name='r51_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r51_carrying_amount != null ? #numbers.formatDecimal(report.r51_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r51_carrying_amount' name='r51_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r51_no_of_accts != null ? #numbers.formatDecimal(report.r51_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r51_no_of_accts' name='r51_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R52' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        d) Other Financial Intermediaries (sum 1 to 3)' 
+               id='r52_rene_loans' name='r52_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r52_collateral_amount != null ? #numbers.formatDecimal(report.r52_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r52_collateral_amount' name='r52_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r52_carrying_amount != null ? #numbers.formatDecimal(report.r52_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r52_carrying_amount' name='r52_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r52_no_of_accts != null ? #numbers.formatDecimal(report.r52_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r52_no_of_accts' name='r52_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R53' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='             1 .Finance companies' 
+               id='r53_rene_loans' name='r53_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r53_collateral_amount != null ? #numbers.formatDecimal(report.r53_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r53_collateral_amount' name='r53_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r53_carrying_amount != null ? #numbers.formatDecimal(report.r53_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r53_carrying_amount' name='r53_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r53_no_of_accts != null ? #numbers.formatDecimal(report.r53_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r53_no_of_accts' name='r53_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R54' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='             2. Medical Aid Schemes' 
+               id='r54_rene_loans' name='r54_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r54_collateral_amount != null ? #numbers.formatDecimal(report.r54_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r54_collateral_amount' name='r54_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r54_carrying_amount != null ? #numbers.formatDecimal(report.r54_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r54_carrying_amount' name='r54_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r54_no_of_accts != null ? #numbers.formatDecimal(report.r54_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r54_no_of_accts' name='r54_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R55' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='             3. Public sector financial intermediaries' 
+               id='r55_rene_loans' name='r55_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r55_collateral_amount != null ? #numbers.formatDecimal(report.r55_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r55_collateral_amount' name='r55_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r55_carrying_amount != null ? #numbers.formatDecimal(report.r55_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r55_carrying_amount' name='r55_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r55_no_of_accts != null ? #numbers.formatDecimal(report.r55_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r55_no_of_accts' name='r55_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R56' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='        e) Financial Auxiliaries (sum 1 to 5)' 
+               id='r56_rene_loans' name='r56_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r56_collateral_amount != null ? #numbers.formatDecimal(report.r56_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r56_collateral_amount' name='r56_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r56_carrying_amount != null ? #numbers.formatDecimal(report.r56_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r56_carrying_amount' name='r56_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r56_no_of_accts != null ? #numbers.formatDecimal(report.r56_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r56_no_of_accts' name='r56_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R57' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='             1.Asset managers' 
+               id='r57_rene_loans' name='r57_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r57_collateral_amount != null ? #numbers.formatDecimal(report.r57_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r57_collateral_amount' name='r57_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r57_carrying_amount != null ? #numbers.formatDecimal(report.r57_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r57_carrying_amount' name='r57_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r57_no_of_accts != null ? #numbers.formatDecimal(report.r57_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r57_no_of_accts' name='r57_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R58' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='             2. Insurance brokers' 
+               id='r58_rene_loans' name='r58_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r58_collateral_amount != null ? #numbers.formatDecimal(report.r58_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r58_collateral_amount' name='r58_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r58_carrying_amount != null ? #numbers.formatDecimal(report.r58_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r58_carrying_amount' name='r58_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r58_no_of_accts != null ? #numbers.formatDecimal(report.r58_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r58_no_of_accts' name='r58_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R59' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='             3. fund administrators' 
+               id='r59_rene_loans' name='r59_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r59_collateral_amount != null ? #numbers.formatDecimal(report.r59_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r59_collateral_amount' name='r59_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r59_carrying_amount != null ? #numbers.formatDecimal(report.r59_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r59_carrying_amount' name='r59_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r59_no_of_accts != null ? #numbers.formatDecimal(report.r59_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r59_no_of_accts' name='r59_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R60' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='             4. Bureau de change' 
+               id='r60_rene_loans' name='r60_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r60_collateral_amount != null ? #numbers.formatDecimal(report.r60_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r60_collateral_amount' name='r60_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r60_carrying_amount != null ? #numbers.formatDecimal(report.r60_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r60_carrying_amount' name='r60_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r60_no_of_accts != null ? #numbers.formatDecimal(report.r60_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r60_no_of_accts' name='r60_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R61' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='             5. Other (specify)*' 
+               id='r61_rene_loans' name='r61_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r61_collateral_amount != null ? #numbers.formatDecimal(report.r61_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r61_collateral_amount' name='r61_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r61_carrying_amount != null ? #numbers.formatDecimal(report.r61_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r61_carrying_amount' name='r61_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r61_no_of_accts != null ? #numbers.formatDecimal(report.r61_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r61_no_of_accts' name='r61_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R62' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='     (v)  Non-residents' 
+               id='r62_rene_loans' name='r62_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; ' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r62_collateral_amount != null ? #numbers.formatDecimal(report.r62_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r62_collateral_amount' name='r62_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r62_carrying_amount != null ? #numbers.formatDecimal(report.r62_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r62_carrying_amount' name='r62_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r62_no_of_accts != null ? #numbers.formatDecimal(report.r62_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r62_no_of_accts' name='r62_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R63' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='3. TOTAL ( Sum of lines 1 and 2)' 
+               id='r63_rene_loans' name='r63_rene_loans'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; font-weight: bold;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r63_collateral_amount != null ? #numbers.formatDecimal(report.r63_collateral_amount, 1, "COMMA",0, "POINT") : "0"}'
+               id='r63_collateral_amount' name='r63_collateral_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r63_carrying_amount != null ? #numbers.formatDecimal(report.r63_carrying_amount, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r63_carrying_amount' name='r63_carrying_amount'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+    <td style='padding-left: 20px; font-weight: bold; text-align: right;' class="green-cell">
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r63_no_of_accts != null ? #numbers.formatDecimal(report.r63_no_of_accts, 1, "COMMA",0, "POINT") : "0"}'
+               id='r63_no_of_accts' name='r63_no_of_accts'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+									</tbody>
+
+
+								</table>
+
+							</div>
+<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button"
+										class="custom-tab-btn Show_input" form="fileupload"
+										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none;">Submit</button>
+								</div>
+
+                           </form>
+
+						</div>
+					</div>
+				</div>
+
+				
+
+			</div>
+
+
+
+		</div>
+
+
+
+	</div>
+
+
+
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel"
+						style="text-align: center; color: white;">Do you want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn"
+						data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</body>
+
+
+
+
+
+
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 820px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+
+
+<style>
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+</style>
+
+</html>

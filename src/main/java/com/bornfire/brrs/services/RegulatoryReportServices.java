@@ -148,6 +148,12 @@ public class RegulatoryReportServices {
 	
 	@Autowired
 	BRRS_M_OB_ReportService BRRS_M_OB_ReportService;
+	
+	@Autowired
+	BRRS_Q_RLFA1_ReportService brrs_q_rlfa1_reportservice;
+	
+	@Autowired
+	BRRS_Q_RLFA2_ReportService brrs_q_rlfa2_reportservice;
 
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
@@ -370,6 +376,22 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_OB_ReportService.getM_OBview(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;		
+	
+			
+			
+			
+        case "Q_RLFA1":
+			
+			
+			repsummary = brrs_q_rlfa1_reportservice.getQ_RLFA1View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+
+		 case "Q_RLFA2":
+	  			
+	  			repsummary = brrs_q_rlfa2_reportservice.getQ_RLFA2View(reportId, fromdate, todate, currency, dtltype,
+	  					pageable, type, version);
+	  			break;
 	
 
 		}
@@ -919,6 +941,27 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;	
+			
+		case "Q_RLFA1":
+			try {
+				
+				repfile = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "Q_RLFA2":
+			try {
+				
+				repfile = brrs_q_rlfa2_reportservice.getQ_RLFA2Excel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 		
 			
 		}
@@ -1383,6 +1426,24 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;	
+			
+		case "Q_RLFA1":
+			try {
+				archivalData = brrs_q_rlfa1_reportservice.getQ_RLFA1Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "Q_RLFA2":
+			try {
+				archivalData = brrs_q_rlfa2_reportservice.getQ_RLFA2Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		}
 		return archivalData;

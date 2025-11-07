@@ -36,15 +36,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity4;
 import com.bornfire.brrs.entities.BRRS_M_LA1_Detail_Repo;
-import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_PLL_Detail_Repo;
+import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA3_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
@@ -63,8 +62,9 @@ import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LA4_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LIQ_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_SECL_Summary_Entity;
+import com.bornfire.brrs.entities.M_OB_Summary_Entity;
 import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
+import com.bornfire.brrs.entities.M_SECL_Summary_Entity;
 import com.bornfire.brrs.entities.M_SFINP1_Summary_Manual_Entity;
 import com.bornfire.brrs.entities.M_SIR_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SIR_Summary_Entity;
@@ -97,10 +97,11 @@ import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity1;
 import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity2;
 import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity3;
 import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity4;
+import com.bornfire.brrs.entities.Q_RLFA1_Summary_Entity;
+import com.bornfire.brrs.entities.Q_RLFA2_Summary_Entity;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity1;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity2;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity3;
-import com.bornfire.brrs.entities.M_OB_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA3_ReportService;
@@ -115,8 +116,9 @@ import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SECL_ReportService;
+import com.bornfire.brrs.services.BRRS_M_OB_ReportService;
 import com.bornfire.brrs.services.BRRS_M_PLL_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SECL_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12A_ReportService;
@@ -126,8 +128,9 @@ import com.bornfire.brrs.services.BRRS_M_SRWA_12F_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12G_ReportService;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService;
+import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
+import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_ReportService;
-import com.bornfire.brrs.services.BRRS_M_OB_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 
 @Controller
@@ -1489,5 +1492,67 @@ public class BRRS_ReportsController {
 			     }
 			 }
 
+			 
+			 
+			 @Autowired
+			 private BRRS_Q_RLFA2_ReportService q_rlfa2_reportService;
+			
+			 @RequestMapping(value = "/Q_RLFA2update", method = { RequestMethod.GET, RequestMethod.POST })
+			 @ResponseBody
+			 public ResponseEntity<String> updateReport(
+			     @RequestParam(required = false)
+			     @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			     @ModelAttribute Q_RLFA2_Summary_Entity request
+			    ) {
+			     try {
+			         System.out.println("came to single controller");
+			        
+			         // ✅ set the asondate into entity
+			         request.setReport_date(asondate);
+			        
+			        
+			      // call services
+			         q_rlfa2_reportService.updateReport(request);
+			        
+			        
+			         return ResponseEntity.ok("All Reports Updated Successfully");
+			     } catch (Exception e) {
+			         e.printStackTrace();
+			         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			                              .body("Update Failed: " + e.getMessage());
+			     }
+			 }
+			 
+			 
+			 @Autowired
+				BRRS_Q_RLFA1_ReportService brrs_q_rlfa1_reportservice;
+			 
+			 
+			 @RequestMapping(value = "/Q_RLFA1update", method = { RequestMethod.GET, RequestMethod.POST })
+			 @ResponseBody
+			 public ResponseEntity<String> updateReport(
+			     @RequestParam(required = false) 
+			     @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			     @ModelAttribute Q_RLFA1_Summary_Entity request
+			    ) {
+
+			     try {
+			         System.out.println("came to single controller");
+			         
+			         // ✅ set the asondate into entity
+			         request.setReport_date(asondate);
+			         
+			         
+			      // call services
+			         brrs_q_rlfa1_reportservice.updateReport(request);
+			         
+			         
+			         return ResponseEntity.ok(" Updated Successfully");
+			     } catch (Exception e) {
+			         e.printStackTrace();
+			         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			                              .body("Update Failed: " + e.getMessage());
+			     }
+			 }
 		
 }

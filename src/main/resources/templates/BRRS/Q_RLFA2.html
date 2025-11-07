@@ -1,0 +1,3412 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<!--
+CREATED BY	: ishwarya
+CREATED ON	: 19.09.2025
+PURPOSE		: BRRS MANUAL REPORT
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- CSS -->
+
+
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled):not (.disabled).active, .btn-primary:not (:disabled):not (.disabled):active,
+	.show>.btn-primary.dropdown-toggle {
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
+
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
+
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+.table td {
+	background-color: #FFFFFF;
+}
+
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
+
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
+
+#BRRSvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
+
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
+
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
+
+.error {
+	color: red;
+	padding-top: 15px;
+}
+
+.form-control:focus {
+	border-color: #007bff;
+}
+
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown)
+	 ~.form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~.form-legend {
+	color: #0056b3;
+	/* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus) ~.form-legend {
+	color: #aaa;
+	/* Normal label color */
+}
+</style>
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.table-cell tbody td:hover {
+	background-color: #f0f0f0;
+	/* Hover color for cell */
+	cursor: pointer;
+	/* Optional: pointer cursor */
+}
+
+.table-bordered td, .table-bordered th {
+	border: 1px solid #000 !important;
+}
+
+
+
+.green-cell {
+	 background-color: rgb(107, 122, 143) !important;
+    color: white !important;
+}
+
+
+
+
+
+
+</style>
+<script th:inline="javascript">
+		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+		});
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
+			$('#loader').modal('hide');
+		});
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard'
+		}
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+
+		//to fetch summary from the database - called from the summary button
+		function showdetails() {
+			showResultModal('BRRS',' Details page not available for Manual Report');
+		}
+
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+
+
+	</script>
+<script>
+		function activateTab(tabName) {
+			// Remove 'active' from all buttons
+			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			// Add 'active' to selected button
+			if (tabName === 'summary') {
+				document.getElementById('custom-tab-btnSummary').classList.add('active');
+			} else if (tabName === 'Details') {
+				document.getElementById('custom-tab-btnDetails').classList.add('active');
+			}
+		}
+		window.onload = function () {
+			/* setTimeout(function() {
+				var selectedTab = document.getElementById("selectedTab").value;
+				alert(selectedTab);
+				activateTab(selectedTab);
+			}, 10000); */ // 10,000 milliseconds = 10 seconds
+
+			var selectedTab = document.getElementById("selectedTab").value;
+			activateTab(selectedTab);
+		};
+		function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			$('#loader').modal('show');
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+		function editRecord() {
+			showResultModal('Alert', 'Development in progress');
+
+		}
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+	</script>
+
+
+
+
+
+
+
+
+<script>
+	// Show Modify (enable inputs & dropdowns)
+    function showmodify(btn) {   
+    	
+    	// List of IDs that should ALWAYS remain readonly   
+    	
+    	var readonlyIds = ["r10_orig_amt", "r10_fore_amt", "r10_no_of_acc", "r14_orig_amt", "r14_fore_amt","r14_no_of_acc", "r28_orig_amt", "r28_fore_amt", "r28_no_of_acc", "r37_orig_amt", "r37_fore_amt","r37_no_of_acc", "r40_orig_amt", "r40_fore_amt", "r40_no_of_acc", "r43_orig_amt", "r43_fore_amt","r43_no_of_acc", "r48_orig_amt", "r48_fore_amt", "r48_no_of_acc", "r52_orig_amt", "r52_fore_amt","r52_no_of_acc","r56_orig_amt", "r56_fore_amt", "r56_no_of_acc", "r63_orig_amt", "r63_fore_amt","r63_no_of_acc",
+    		
+    		"r10_sche_fore_ass", "r11_sche_fore_ass", "r12_sche_fore_ass", "r13_sche_fore_ass", "r14_sche_fore_ass", "r15_sche_fore_ass", "r16_sche_fore_ass", "r17_sche_fore_ass", "r18_sche_fore_ass", "r19_sche_fore_ass", "r20_sche_fore_ass", "r21_sche_fore_ass", "r22_sche_fore_ass",
+
+    		"r23_sche_fore_ass", "r24_sche_fore_ass", "r25_sche_fore_ass", "r26_sche_fore_ass", "r27_sche_fore_ass", "r28_sche_fore_ass", "r29_sche_fore_ass", "r30_sche_fore_ass", "r31_sche_fore_ass", "r32_sche_fore_ass", "r33_sche_fore_ass", "r34_sche_fore_ass", "r35_sche_fore_ass",
+
+    		"r36_sche_fore_ass", "r37_sche_fore_ass", "r38_sche_fore_ass", "r39_sche_fore_ass", "r40_sche_fore_ass", "r41_sche_fore_ass", "r42_sche_fore_ass", "r43_sche_fore_ass", "r44_sche_fore_ass", "r45_sche_fore_ass", "r46_sche_fore_ass", "r47_sche_fore_ass", "r48_sche_fore_ass",
+
+    		"r49_sche_fore_ass", "r50_sche_fore_ass", "r51_sche_fore_ass", "r52_sche_fore_ass", "r53_sche_fore_ass", "r54_sche_fore_ass", "r55_sche_fore_ass", "r56_sche_fore_ass", "r57_sche_fore_ass", "r58_sche_fore_ass", "r59_sche_fore_ass", "r60_sche_fore_ass", "r61_sche_fore_ass", "r62_sche_fore_ass", "r63_sche_fore_ass"
+]; 
+    	
+    // Make all .Show_input editable except the ones in readonlyIds 
+    
+    $(".Show_input").each(function () 
+    		
+    		{         if (!readonlyIds.includes(this.id)) {             $(this).removeAttr("readonly").removeAttr("disabled");         }     });
+    
+    
+    
+    
+
+ // Apply gray background for rows 10–63 (skip specific rows)
+    for (let i = 10; i <= 63; i++) {
+        // Skip unwanted rows
+        if ([10, 14, 28, 37, 40, 43, 48, 52, 56, 63].includes(i)) {
+            continue;
+        }
+
+        // Define columns
+        let columns = ["orig_amt", "fore_amt", "no_of_acc"];
+
+        // Apply styles
+        columns.forEach(col => {
+            let selector = `#r${i}_${col}`;
+            if ($(selector).length) {
+                $(selector).css("background-color", "#d3d3d3");
+            }
+        });
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // Toggle buttons 
+    
+    $("#submitButton").show();  
+    $("#cancelRecord").show();   
+    $(btn).hide(); 
+    // hide the clicked Modify button
+    }
+
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+        /* for (let i = 10; i <= 63; i++) {
+        	
+        	
+        	 $("#r" + i + "_sche_fore_ass_text").show();
+             $("#r" + i + "_orig_amt_text").show();
+             $("#r" + i + "_fore_amt_text").show();
+             $("#r" + i + "_no_of_acc_text").show();
+             
+
+             $("#r" + i + "_sche_fore_ass").hide();
+             $("#r" + i + "_orig_amt").hide();
+             $("#r" + i + "_fore_amt").hide();
+             $("#r" + i + "_no_of_acc").hide();
+         } */
+        	
+        	
+        	
+            
+        
+
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
+
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+
+    }
+
+	
+
+	</script>
+
+<SCRIPT>
+	
+	//Calculating Totals for 14'th row
+	function calculateR14Totals() {
+	    let origAmt = 0;
+	    let foreAmt = 0;
+	    let noAcc = 0;
+
+	    for (let i = 15; i <= 27; i++) {
+	    	
+	        // Get numeric values, remove commas
+	        let origAmtVal = parseFloat($("#r" + i + "_orig_amt").val().replace(/,/g, "")) || 0;
+	        let foreAmtVal = parseFloat($("#r" + i + "_fore_amt").val().replace(/,/g, "")) || 0;
+	        let noAccVal = parseFloat($("#r" + i + "_no_of_acc").val().replace(/,/g, "")) || 0;
+
+	        origAmt += origAmtVal;
+	        foreAmt += foreAmtVal;
+	        noAcc   += noAccVal;
+	    }
+
+	    // Set totals with 2 decimal formatting
+	    $("#r14_orig_amt").val(
+	    		origAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r14_fore_amt").val(
+	    		foreAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r14_no_of_acc").val(
+	    		noAcc.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+		); 
+	    
+	    
+	    
+	/*  // Set totals as rounded integers, no commas
+	 
+	    $("#r14_orig_amt").val(Math.round(origAmt));
+	    $("#r14_fore_amt").val(Math.round(foreAmt));
+	    $("#r14_no_of_acc").val(Math.round(noAcc)); */
+	}
+
+	// Call on page load
+	$(document).ready(function() {
+	    calculateR14Totals();
+
+	    // Attach listener only to R15-R27 amount fields
+	    for (let i = 15; i <= 27; i++) {
+	        $("#r" + i + "_orig_amt, #r" + i + "_fore_amt, #r" + i + "_no_of_acc").on("input", function() {
+	            calculateR14Totals();
+	            calculateR10Totals();
+	           
+	        });
+	    }
+	});
+	
+	
+	
+	//Calculating Totals for 28'th row
+	function calculateR28Totals() {
+	    let origAmt = 0;
+	    let foreAmt = 0;
+	    let noAcc = 0;
+
+	    for (let i = 29; i <= 36; i++) {
+	        // Get numeric values, remove commas
+	        
+	        let origAmtVal = parseFloat($("#r" + i + "_orig_amt").val().replace(/,/g, "")) || 0;
+	        let foreAmtVal = parseFloat($("#r" + i + "_fore_amt").val().replace(/,/g, "")) || 0;
+	        let noAccVal = parseFloat($("#r" + i + "_no_of_acc").val().replace(/,/g, "")) || 0;
+
+	        origAmt += origAmtVal;
+	        foreAmt += foreAmtVal;
+	        noAcc   += noAccVal;
+	    }
+
+	     // Set totals with 2 decimal formatting
+	    $("#r28_orig_amt").val(
+	    		origAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r28_fore_amt").val(
+	    		foreAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0})
+	    );
+	    $("#r28_no_of_acc").val(
+	    		noAcc.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+		); 
+		
+	 /* // Set totals as rounded integers, no commas
+	    $("#r28_orig_amt").val(Math.round(origAmt));
+	    $("#r28_fore_amt").val(Math.round(foreAmt));
+	    $("#r28_no_of_acc").val(Math.round(noAcc)); */
+	}
+
+	// Call on page load
+	$(document).ready(function() {
+	    calculateR28Totals();
+
+	    // Attach listener only to R29-R36 amount fields
+	    for (let i = 29; i <= 36; i++) {
+	        $("#r" + i + "_orig_amt, #r" + i + "_fore_amt, #r" + i + "_no_of_acc").on("input", function() {
+	            calculateR28Totals();
+	            calculateR10Totals();
+	        });
+	    }
+	});
+	
+	
+	//Calculating Totals for 37'th row
+	function calculateR37Totals() {
+	    let origAmt = 0;
+	    let foreAmt = 0;
+	    let noAcc = 0;
+
+	    for (let i = 38; i <= 39; i++) {
+	        // Get numeric values, remove commas
+	        
+	        let origAmtVal = parseFloat($("#r" + i + "_orig_amt").val().replace(/,/g, "")) || 0;
+	        let foreAmtVal = parseFloat($("#r" + i + "_fore_amt").val().replace(/,/g, "")) || 0;
+	        let noAccVal = parseFloat($("#r" + i + "_no_of_acc").val().replace(/,/g, "")) || 0;
+
+	        origAmt += origAmtVal;
+	        foreAmt += foreAmtVal;
+	        noAcc   += noAccVal;
+	    }
+    // Set totals with 2 decimal formatting
+	    $("#r37_orig_amt").val(
+	    		origAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0})
+	    );
+	    $("#r37_fore_amt").val(
+	    		foreAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r37_no_of_acc").val(
+	    		noAcc.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+		); 
+		
+		
+/* 	 // Set totals as rounded integers, no commas
+	    $("#r37_orig_amt").val(Math.round(origAmt));
+	    $("#r37_fore_amt").val(Math.round(foreAmt));
+	    $("#r37_no_of_acc").val(Math.round(noAcc));
+		 */
+		
+		
+	}
+
+	// Call on page load
+	$(document).ready(function() {
+	    calculateR37Totals();
+
+	    // Attach listener only to R29-R36 amount fields
+	    for (let i = 38; i <= 39; i++) {
+	        $("#r" + i + "_orig_amt, #r" + i + "_fore_amt, #r" + i + "_no_of_acc").on("input", function() {
+	            calculateR37Totals();
+	            calculateR10Totals();
+	            
+	        });
+	    }
+	});
+	
+	
+
+	
+	// Calculating Totals for 10th row
+	function calculateR10Totals() {
+	    let origAmt = 0;
+	    let foreAmt = 0;
+	    let noAcc = 0;
+
+	    // R10 = sum of R11, R12, R13, R14, R28, R37
+	    let rows = [11, 12, 13, 14, 28, 37]; 
+
+	    rows.forEach(i => {
+	        origAmt += parseFloat($("#r" + i + "_orig_amt").val().replace(/,/g, "")) || 0;
+	        foreAmt += parseFloat($("#r" + i + "_fore_amt").val().replace(/,/g, "")) || 0;
+	        noAcc   += parseFloat($("#r" + i + "_no_of_acc").val().replace(/,/g, "")) || 0;
+	    });
+
+	    // Set totals with 2 decimal formatting
+	    $("#r10_orig_amt").val(
+	        origAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r10_fore_amt").val(
+	        foreAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r10_no_of_acc").val(
+	        noAcc.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    ); 
+	    
+	    
+	/*  // Set totals as rounded integers, no commas
+	    $("#r10_orig_amt").val(Math.round(origAmt));
+	    $("#r10_fore_amt").val(Math.round(foreAmt));
+	    $("#r10_no_of_acc").val(Math.round(noAcc)); */
+	}
+
+	// Call on page load and attach listeners
+	$(document).ready(function() {
+	    calculateR10Totals(); // Calculate initially
+
+	    // Attach listener to all relevant rows
+	    [11, 12, 13, 14, 28, 37].forEach(i => {
+	        $("#r" + i + "_orig_amt, #r" + i + "_fore_amt, #r" + i + "_no_of_acc").on("input", function() {
+	            calculateR10Totals(); 
+	            calculateR63Totals();
+	        });
+	    });
+	});
+
+	
+		
+	//Calculating Totals for 43'rd row
+	function calculateR43Totals() {
+	    let origAmt = 0;
+	    let foreAmt = 0;
+	    let noAcc = 0;
+
+	    for (let i =44 ; i <= 47; i++) {
+	        // Get numeric values, remove commas
+	        
+	        let origAmtVal = parseFloat($("#r" + i + "_orig_amt").val().replace(/,/g, "")) || 0;
+	        let foreAmtVal = parseFloat($("#r" + i + "_fore_amt").val().replace(/,/g, "")) || 0;
+	        let noAccVal = parseFloat($("#r" + i + "_no_of_acc").val().replace(/,/g, "")) || 0;
+
+	        origAmt += origAmtVal;
+	        foreAmt += foreAmtVal;
+	        noAcc   += noAccVal;
+	    }
+
+	    // Set totals with 2 decimal formatting
+	    $("#r43_orig_amt").val(
+	    		origAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r43_fore_amt").val(
+	    		foreAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r43_no_of_acc").val(
+	    		noAcc.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+		); 
+		
+		
+	/*  // Set totals as rounded integers, no commas
+	    $("#r43_orig_amt").val(Math.round(origAmt));
+	    $("#r43_fore_amt").val(Math.round(foreAmt));
+	    $("#r43_no_of_acc").val(Math.round(noAcc)); */
+		
+		
+	}
+
+	// Call on page load
+	$(document).ready(function() {
+	    calculateR43Totals();
+
+	    // Attach listener only to R44-R47 amount fields
+	    for (let i = 44; i <= 47; i++) {
+	        $("#r" + i + "_orig_amt, #r" + i + "_fore_amt, #r" + i + "_no_of_acc").on("input", function() {
+	            calculateR43Totals();
+	            calculateR40Totals();
+	            
+	        });
+	    }
+	});
+	
+	
+	
+	// Calculating Totals for 52nd row
+	function calculateR52Totals() {
+	    let origAmt = 0;
+	    let foreAmt = 0;
+	    let noAcc = 0;
+
+	    // Sum values from R53 to R55
+	    for (let i = 53; i <= 55; i++) {
+	        let origAmtVal = parseFloat($("#r" + i + "_orig_amt").val().replace(/,/g, "")) || 0;
+	        let foreAmtVal = parseFloat($("#r" + i + "_fore_amt").val().replace(/,/g, "")) || 0;
+	        let noAccVal   = parseFloat($("#r" + i + "_no_of_acc").val().replace(/,/g, "")) || 0;
+
+	        origAmt += origAmtVal;
+	        foreAmt += foreAmtVal;
+	        noAcc   += noAccVal;
+	    }
+
+	  // Set totals with 2 decimal formatting
+	    $("#r52_orig_amt").val(
+	        origAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r52_fore_amt").val(
+	        foreAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r52_no_of_acc").val(
+	        noAcc.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    ); 
+	    
+	    
+	    
+	 /* // Set totals as rounded integers, no commas
+	    $("#r52_orig_amt").val(Math.round(origAmt));
+	    $("#r52_fore_amt").val(Math.round(foreAmt));
+	    $("#r52_no_of_acc").val(Math.round(noAcc));
+ */
+	}
+
+	// Call on page load and attach listeners
+	$(document).ready(function() {
+	    calculateR52Totals(); // initial calculation
+
+	    // Attach listener to R53-R55 fields
+	    for (let i = 53; i <= 55; i++) {
+	        $("#r" + i + "_orig_amt, #r" + i + "_fore_amt, #r" + i + "_no_of_acc").on("input", function() {
+	            calculateR52Totals(); 
+	            calculateR48Totals();
+	        });
+	    }
+	});
+	
+	
+	// Calculating Totals for 56th row
+	function calculateR56Totals() {
+	    let origAmt = 0, foreAmt = 0, noAcc = 0;
+
+	    // Sum values from R57 to R61
+	    for (let i = 57; i <= 61; i++) {
+	        origAmt += parseFloat($("#r" + i + "_orig_amt").val().replace(/,/g, "")) || 0;
+	        foreAmt += parseFloat($("#r" + i + "_fore_amt").val().replace(/,/g, "")) || 0;
+	        noAcc   += parseFloat($("#r" + i + "_no_of_acc").val().replace(/,/g, "")) || 0;
+	    }
+
+	     // Set totals withOUT 2 decimal formatting
+	    $("#r56_orig_amt").val(
+	        origAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r56_fore_amt").val(
+	        foreAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r56_no_of_acc").val(
+	        noAcc.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    ); 
+	    
+	    
+	/*  // Set totals as rounded integers, no commas
+	    $("#r56_orig_amt").val(Math.round(origAmt));
+	    $("#r56_fore_amt").val(Math.round(foreAmt));
+	    $("#r56_no_of_acc").val(Math.round(noAcc)); */
+
+	    
+	}
+
+	// Call on page load and attach listeners
+	$(document).ready(function() {
+	    calculateR56Totals(); // initial calculation
+
+	    // Attach listener to R57-R61 input fields
+	    for (let i = 57; i <= 61; i++) {
+	        $("#r" + i + "_orig_amt, #r" + i + "_fore_amt, #r" + i + "_no_of_acc").on("input", function() {
+	            calculateR56Totals(); // recalc when child values change
+	            calculateR48Totals(); // then update R40 using new R48 value
+	        });
+	    }
+	});
+
+	
+	
+	//Calculating Totals for 48'th row
+	function calculateR48Totals() {
+	    let origAmt = 0;
+	    let foreAmt = 0;
+	    let noAcc = 0;
+
+	  
+	        // Get numeric values, remove commas
+	        
+	       // R48 = sum of R49, R50, R51, R52, R56
+            let rows = [49, 50, 51, 52, 56];
+	        
+	        rows.forEach(i => {
+	            origAmt += parseFloat($("#r" + i + "_orig_amt").val().replace(/,/g, "")) || 0;
+	            foreAmt += parseFloat($("#r" + i + "_fore_amt").val().replace(/,/g, "")) || 0;
+	            noAcc   += parseFloat($("#r" + i + "_no_of_acc").val().replace(/,/g, "")) || 0;
+	        });
+
+	       
+	    
+
+	     // Set totals with 2 decimal formatting
+	    $("#r48_orig_amt").val(
+	    		origAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r48_fore_amt").val(
+	    		foreAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r48_no_of_acc").val(
+	    		noAcc.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+		); 
+		
+		
+	    /*  // Set totals as rounded integers, no commas
+	        $("#r48_orig_amt").val(Math.round(origAmt));
+	        $("#r48_fore_amt").val(Math.round(foreAmt));
+	        $("#r48_no_of_acc").val(Math.round(noAcc)); */
+
+	}
+
+	$(document).ready(function() {
+	    calculateR48Totals();
+
+	    // Attach listener only to R49, R50, R51, R52, R56 amount fields
+	    [49, 50, 51, 52, 56].forEach(i => {
+	        $("#r" + i + "_orig_amt, #r" + i + "_fore_amt, #r" + i + "_no_of_acc").on("input", function() {
+	            calculateR48Totals(); // update R48 first
+	            calculateR40Totals(); // then update R40 using new R48 value
+	        
+	        });
+	    });
+	});
+			    
+			
+	
+	//Calculating Totals for 40'th row
+	function calculateR40Totals() {
+	    let origAmt = 0;
+	    let foreAmt = 0;
+	    let noAcc = 0;
+
+	 
+	        // Get numeric values, remove commas
+	        
+	        let rows = [41, 42, 43, 48, 62];
+	        
+	        rows.forEach(i => {
+	            origAmt += parseFloat($("#r" + i + "_orig_amt").val().replace(/,/g, "")) || 0;
+	            foreAmt += parseFloat($("#r" + i + "_fore_amt").val().replace(/,/g, "")) || 0;
+	            noAcc   += parseFloat($("#r" + i + "_no_of_acc").val().replace(/,/g, "")) || 0;
+	        });
+
+	       
+	   
+
+	    // Set totals with 2 decimal formatting
+	    $("#r40_orig_amt").val(
+	    		origAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r40_fore_amt").val(
+	    		foreAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r40_no_of_acc").val(
+	    		noAcc.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+		); 
+		
+		
+	     /* // Set totals as rounded integers, no commas
+	        $("#r40_orig_amt").val(Math.round(origAmt));
+	        $("#r40_fore_amt").val(Math.round(foreAmt));
+	        $("#r40_no_of_acc").val(Math.round(noAcc)); */
+
+	}
+
+	// Call on page load
+	$(document).ready(function() {
+	    calculateR40Totals();
+
+	    // Attach listener only to R"41","42","43","48","62" amount fields
+	   [41,42,43,48,62].forEach(i => { 
+    $("#r" + i + "_orig_amt, #r" + i + "_fore_amt, #r" + i + "_no_of_acc").on("input", function() {
+        calculateR40Totals();
+        calculateR63Totals();
+	        });
+	    });
+	});
+	    
+	
+	
+	//Calculating Totals for 63'rd row
+	function calculateR63Totals() {
+	    let origAmt = 0;
+	    let foreAmt = 0;
+	    let noAcc = 0;
+
+	  
+	        // Get numeric values, remove commas
+	        
+	      
+	        
+	        [10, 40].forEach(i => {
+           origAmt += parseFloat($("#r" + i + "_orig_amt").val().replace(/,/g, "")) || 0;
+           foreAmt += parseFloat($("#r" + i + "_fore_amt").val().replace(/,/g, "")) || 0;
+           noAcc   += parseFloat($("#r" + i + "_no_of_acc").val().replace(/,/g, "")) || 0;
+});
+
+	       
+	   
+
+	     // Set totals with 2 decimal formatting
+	    $("#r63_orig_amt").val(
+	    		origAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r63_fore_amt").val(
+	    		foreAmt.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
+	    $("#r63_no_of_acc").val(
+	    		noAcc.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+		); 
+		
+		
+		
+	/*      // Set totals as rounded integers, no commas
+	        $("#r63_orig_amt").val(Math.round(origAmt));
+	        $("#r63_fore_amt").val(Math.round(foreAmt));
+	        $("#r63_no_of_acc").val(Math.round(noAcc));
+ */
+	}
+
+	// Call on page load
+	$(document).ready(function() {
+	    calculateR63Totals();
+
+	    // Attach listener only to R10, 40 amount fields
+	   [10, 40].forEach(i => {
+    $("#r" + i + "_orig_amt, #r" + i + "_fore_amt, #r" + i + "_no_of_acc").on("input", function() {
+        calculateR63Totals();
+	        });
+	    });
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</SCRIPT>
+
+
+<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
+	    setTimeout(function () {
+	        location.reload();
+	    }, 300);
+	}
+
+	// This is the main function that orchestrates the entire form submission process.
+	// It is triggered by the "Update" button click.
+	function fileuploads(btn) {
+	    // Get the report date from the button's data attribute.
+	    var asondate = btn.getAttribute("data-todate");
+
+	    // Show the loading spinner modal to provide visual feedback to the user.
+	    $('#loader').modal('show');
+
+	    // 1. Pre-submission steps:
+	    // Ensure all total fields are correctly calculated before we proceed.
+	    calculateR10Totals(); 
+		calculateR14Totals();
+		calculateR28Totals();
+		calculateR37Totals();
+		calculateR40Totals();
+		calculateR43Totals();
+		calculateR48Totals(); 
+		calculateR52Totals(); 
+		calculateR56Totals(); 
+		calculateR63Totals();
+
+	    // Remove commas from all number input fields. This is a crucial step
+	    // as commas can cause issues when the data is sent to the backend.
+	    $("#fileupload input[type='text']").each(function () {
+	        var val = $(this).val();
+	        if (val && val.includes(",")) {
+	            $(this).val(val.replace(/,/g, ''));
+	        }
+	    });
+
+	    // Check if the form is valid. If not, hide the loader and stop the function.
+	    if (!$("#fileupload").valid()) {
+	        $('#loader').modal('hide');
+	        return;
+	    }
+
+	    // 2. Prepare for splitting the submission:
+	    // Get all form fields once to avoid repeated DOM lookups, which improves performance.
+	    const $form = $('#fileupload');
+	    const $inputs = $form.find(':input');
+
+	    // This helper function isolates form fields for a specific "entity" or section.
+	    // It takes a range of row numbers (e.g., 11 to 50) and a total field prefix.
+	    const getEntityFields = (start, end, totalPrefix) => {
+	        // Use jQuery's filter method to select only the fields we need.
+	        return $inputs.filter(function () {
+	        	
+	            const name = $(this).attr('name');
+	            if (!name) return false;
+
+	            // Check for fields based on their row number (e.g., R11_, R12_, etc.)
+	            const rowNumberMatch = name.match(/R(\d+)_/);
+	            if (rowNumberMatch) {
+	                const rowNumber = parseInt(rowNumberMatch[1], 10);
+	                return rowNumber >= start && rowNumber <= end;
+	            }
+
+	            // Also, check for the specific total fields for this entity.
+	            return name.startsWith(totalPrefix);
+	        });
+	    };
+	    
+	    
+	 // 3. Create FormData objects for each entity:
+	    // Create a new FormData object for the first entity and append its fields.
+
+	    const formData1 = new FormData();
+	    formData1.append("asondate", asondate);
+
+	    for (let i = 10; i <= 63; i++) {
+	        ["sche_fore_ass", "orig_amt", "fore_amt", "no_of_acc"].forEach(field => {
+	            const input = $("#r" + i + "_" + field); // selects #r10_orig_amt, etc.
+	            if (input.length) {
+	                formData1.append(input.attr("name"), input.val());
+	            }
+	        });
+	    }
+
+
+
+
+	    /* // Repeat the process for the second, third, and fourth entities.
+	    const formData2 = new FormData();
+	    formData2.append("asondate", asondate);
+	    getEntityFields(56, 95, "R96_TOT").each(function () {
+	        formData2.append($(this).attr('name'), $(this).val());
+	    });
+	    
+	    const formData3 = new FormData();
+	    formData3.append("asondate", asondate);
+	    getEntityFields(101, 141, "R142_TOT").each(function () {
+	        formData3.append($(this).attr('name'), $(this).val());
+	    });
+
+	    const formData4 = new FormData();
+	    formData4.append("asondate", asondate);
+	    getEntityFields(147, 193, "R194_TOT").each(function () {
+	        formData4.append($(this).attr('name'), $(this).val());
+	    }); */
+ 
+	    // 4. Send the data:
+	    // Create an array of jQuery AJAX promises. Each promise represents a single HTTP request.
+	    const deferreds = [
+	        $.ajax({ url: './Q_RLFA2update', type: 'POST', data: formData1, processData: false, contentType: false, dataType: 'text' })
+	       /*  $.ajax({ url: './AIDPupdate2', type: 'POST', data: formData2, processData: false, contentType: false, dataType: 'text' }),
+	        $.ajax({ url: './AIDPupdate3', type: 'POST', data: formData3, processData: false, contentType: false, dataType: 'text' }),
+	        $.ajax({ url: './AIDPupdate4', type: 'POST', data: formData4, processData: false, contentType: false, dataType: 'text' }) */
+	    ];
+
+	    // 5. Handle the result:
+	    // Use $.when() to handle the outcome of all four requests simultaneously.
+	    // It will trigger the .done() callback only if ALL requests are successful.
+	    $.when(...deferreds)
+	        .done(function() {
+	            // This code runs if all four updates succeed.
+	            $("#resultModalLabel").text("Success");
+	            $("#resultModalBody").text(" Updated Successfully.");
+	            $("#resultModal").modal("show");
+	        })
+	        .fail(function(jqXHR) {
+	            // This code runs if even one of the updates fails.
+	            console.log("Error response:", jqXHR.responseText);
+	            $("#resultModalLabel").text("Error");
+	            $("#resultModalBody").text("One or more updates failed. Check console for details.");
+	            $("#resultModal").modal("show");
+	        })
+	        .always(function() {
+	             // This code always runs, regardless of success or failure.
+	             // It's a good place to hide the loader.
+	             $('#loader').modal('hide');
+	        });
+	}
+
+
+
+
+	</script>
+</head>
+<title>BRRS</title>
+
+<body>
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+			<div th:insert="HeaderMenu :: header"></div>
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+							Q-RLFA2: FORECLOSED ASSETS</h5>
+					</div>
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						</span>
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+							
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails();"
+								
+							th:if="${displaymode == 'summary'}">Details</button>
+
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							th:if="${type != 'ARCHIVAL'}"
+							id="addRecord">Modify</button>
+
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn"
+							title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+							
+							
+							
+							
+							
+							
+					<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+                   				 data-asondate=${asondate},
+                   				 data-fromdate=${fromdate},
+                    				 data-todate=${todate},
+                    				 data-currency=${currency}, 
+                    				 data-dtltype=${dtltype},
+                    				 data-filename='Q_RLFA2.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+
+
+						<!-- 
+						
+						
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+									data-currency=${currency},  
+												data-dtltype=${dtltype}, 
+								    data-filename='MSFinP2Detail',
+									data-type=${type},
+												data-version=${version}
+								  ">
+							<i class="fa fa-download"></i>
+						</button> -->
+
+
+					</div>
+
+				</div>
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<form action="#" method="POST" id="fileupload">
+								<div
+									class="table-wrapper table-responsive scrollable-table-container"
+									style="border-right: 1px solid #dee2e6;">
+									<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
+
+										<thead class="thead-light">
+
+
+
+											<tr style="background-color: #b3b6b9;">
+												<th
+													style="text-align: left; padding-left: 10px; font-weight: bold;">
+													SCHEDULE OF FORECLOSED ASSETS</th>
+												<th
+													style="text-align: center; vertical-align: center; font-weight: bold; padding-left: 10px;">Original
+													Amount</th>
+												<th
+													style="text-align: center; vertical-align: center; font-weight: bold; padding-left: 10px;">Foreclosure
+													Amount</th>
+												<th
+													style="text-align: center; vertical-align: center; font-weight: bold; padding-left: 10px;">No.
+													of Accounts</th>
+
+
+											</tr>
+
+
+										</thead>
+
+										<tbody id="entity" th:each="report: ${reportsummary}"
+											style="font-family: Arial;">
+
+
+
+											<tr>
+
+
+
+
+
+
+
+
+
+												<td id="ROW10" style="font-weight: bold;"><input
+													class="display-input Show_input" type="text"
+													th:value="'1.  Non-financial institutional units (sum of lines (i) to (vii)):'"
+													id="r10_sche_fore_ass" name="r10_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; font-weight: bold;"
+													readonly /></td>
+
+
+
+												<td id="ROW10"
+													style=" font-weight: bold; text-align: right;" class="green-cell" ><input
+													class="display-input Show_input green-cell" type="text"
+													id="r10_orig_amt" name="r10_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;" 
+													readonly /></td>
+
+
+												<td id="ROW10"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r10_fore_amt" name="r10_fore_amt"
+													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right; "
+													readonly /></td>
+
+
+												<td id="ROW10"
+													style=" font-weight: bold; text-align: right;" class="green-cell" ><input
+													class="display-input Show_input green-cell" type="text"
+													id="r10_no_of_acc" name="r10_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+
+
+
+											</tr>
+
+
+
+											<tr>
+												<td id="ROW11" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													th:value="'(i)    Central Government'"
+													id="r11_sche_fore_ass" name="r11_sche_fore_ass"
+													style="background-color: #FFFFFF; width: -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													readonly /></td>
+
+												<td id="ROW11"
+													style=" font-weight: bold; text-align: right;padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r11_orig_amt != null ? #numbers.formatDecimal(report.r11_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r11_orig_amt" name="r11_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW11"
+													style=" font-weight: bold; text-align: right;padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r11_fore_amt != null ? #numbers.formatDecimal(report.r11_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r11_fore_amt" name="r11_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW11"
+													style=" font-weight: bold; text-align: right;padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r11_no_of_acc != null ? #numbers.formatDecimal(report.r11_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r11_no_of_acc" name="r11_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+
+
+
+											<tr>
+												<td id="ROW12" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													th:value="'(ii)   Local Government'" 
+													id="r12_sche_fore_ass"
+													name="r12_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													readonly /></td>
+
+												<td id="ROW12"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r12_orig_amt != null ? #numbers.formatDecimal(report.r12_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r12_orig_amt" name="r12_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW12"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r12_fore_amt != null ? #numbers.formatDecimal(report.r12_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r12_fore_amt" name="r12_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW12"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r12_no_of_acc != null ? #numbers.formatDecimal(report.r12_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r12_no_of_acc" name="r12_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+
+											<tr>
+												<td id="ROW13" style="font-weight: bold; "><input
+													class="display-input Show_input " type="text"
+													th:value="'(iii)  Public Non-Financial Corporations'"
+													id="r13_sche_fore_ass" name="r13_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													readonly /></td>
+
+												<td id="ROW13"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r13_orig_amt != null ? #numbers.formatDecimal(report.r13_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r13_orig_amt" name="r13_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW13"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r13_fore_amt != null ? #numbers.formatDecimal(report.r13_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r13_fore_amt" name="r13_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW13"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r13_no_of_acc != null ? #numbers.formatDecimal(report.r13_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r13_no_of_acc" name="r13_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+
+											<tr>
+												<td id="ROW14" style="font-weight: bold;" ><input
+													class="display-input Show_input  " type="text"
+													th:value="'(iv)  Other Non-Financial Corporations (Private business enterprises) (sum of lines (a) to (j)):'"
+													id="r14_sche_fore_ass" name="r14_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													readonly /></td>
+
+												<td id="ROW14"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r14_orig_amt" name="r14_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW14"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r14_fore_amt" name="r14_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW14"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r14_no_of_acc" name="r14_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+											<tr>
+												<td id="ROW15" style="font-weight: bold;"><input
+													class="display-input Show_input" type="text"
+													value="a) Agriculture, Forestry, Fishing"
+													id="r15_sche_fore_ass" name="r15_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW15"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r15_orig_amt != null ? #numbers.formatDecimal(report.r15_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r15_orig_amt" name="r15_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW15"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r15_fore_amt != null ? #numbers.formatDecimal(report.r15_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r15_fore_amt" name="r15_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW15"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r15_no_of_acc != null ? #numbers.formatDecimal(report.r15_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r15_no_of_acc" name="r15_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW16" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="b) Mining and Quarying" id="r16_sche_fore_ass"
+													name="r16_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW16"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r16_orig_amt != null ? #numbers.formatDecimal(report.r16_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r16_orig_amt" name="r16_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW16"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r16_fore_amt != null ? #numbers.formatDecimal(report.r16_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r16_fore_amt" name="r16_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW16"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r16_no_of_acc != null ? #numbers.formatDecimal(report.r16_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r16_no_of_acc" name="r16_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW17" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													th:value="'c) Manufacturing'" id="r17_sche_fore_ass"
+													name="r17_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW17"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r17_orig_amt != null ? #numbers.formatDecimal(report.r17_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r17_orig_amt" name="r17_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW17"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r17_fore_amt != null ? #numbers.formatDecimal(report.r17_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r17_fore_amt" name="r17_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW17"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r17_no_of_acc != null ? #numbers.formatDecimal(report.r17_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r17_no_of_acc" name="r17_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW18" style="font-weight: bold;"><input
+													class="display-input Show_input" type="text"
+													value="d) Construction" id="r18_sche_fore_ass"
+													name="r18_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW18"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r18_orig_amt != null ? #numbers.formatDecimal(report.r18_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r18_orig_amt" name="r18_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW18"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r18_fore_amt != null ? #numbers.formatDecimal(report.r18_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r18_fore_amt" name="r18_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW18"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r18_no_of_acc != null ? #numbers.formatDecimal(report.r18_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r18_no_of_acc" name="r18_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW19" style="font-weight: bold;"><input
+													class="display-input Show_input" type="text"
+													value="e) Commercial real estate" id="r19_sche_fore_ass"
+													name="r19_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW19"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r19_orig_amt != null ? #numbers.formatDecimal(report.r19_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r19_orig_amt" name="r19_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW19"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r19_fore_amt != null ? #numbers.formatDecimal(report.r19_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r19_fore_amt" name="r19_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW19"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r19_no_of_acc != null ? #numbers.formatDecimal(report.r19_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r19_no_of_acc" name="r19_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW20" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="f) Electricity" id="r20_sche_fore_ass"
+													name="r20_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW20"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r20_orig_amt != null ? #numbers.formatDecimal(report.r20_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r20_orig_amt" name="r20_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW20"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r20_fore_amt != null ? #numbers.formatDecimal(report.r20_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r20_fore_amt" name="r20_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW20"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r20_no_of_acc != null ? #numbers.formatDecimal(report.r20_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r20_no_of_acc" name="r20_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW21" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="g) Water" id="r21_sche_fore_ass"
+													name="r21_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW21"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r21_orig_amt != null ? #numbers.formatDecimal(report.r21_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r21_orig_amt" name="r21_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW21"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r21_fore_amt != null ? #numbers.formatDecimal(report.r21_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r21_fore_amt" name="r21_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW21"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r21_no_of_acc != null ? #numbers.formatDecimal(report.r21_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r21_no_of_acc" name="r21_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW22" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="h) Telecommunication and post"
+													id="r22_sche_fore_ass" name="r22_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW22"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r22_orig_amt != null ? #numbers.formatDecimal(report.r22_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r22_orig_amt" name="r22_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW22"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r22_fore_amt != null ? #numbers.formatDecimal(report.r22_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r22_fore_amt" name="r22_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW22"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r22_no_of_acc != null ? #numbers.formatDecimal(report.r22_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r22_no_of_acc" name="r22_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW23" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="i) Tourism and hotels" id="r23_sche_fore_ass"
+													name="r23_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW23"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r23_orig_amt != null ? #numbers.formatDecimal(report.r23_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r23_orig_amt" name="r23_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW23"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r23_fore_amt != null ? #numbers.formatDecimal(report.r23_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r23_fore_amt" name="r23_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW23"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r23_no_of_acc != null ? #numbers.formatDecimal(report.r23_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r23_no_of_acc" name="r23_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW24" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="j) Transport and storage" id="r24_sche_fore_ass"
+													name="r24_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW24"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r24_orig_amt != null ? #numbers.formatDecimal(report.r24_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r24_orig_amt" name="r24_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW24"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r24_fore_amt != null ? #numbers.formatDecimal(report.r24_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r24_fore_amt" name="r24_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW24"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r24_no_of_acc != null ? #numbers.formatDecimal(report.r24_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r24_no_of_acc" name="r24_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW25" style="font-weight: bold;"><input
+													class="display-input Show_input" type="text"
+													value="k) Trade, restaurants and bars"
+													id="r25_sche_fore_ass" name="r25_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW25"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r25_orig_amt != null ? #numbers.formatDecimal(report.r25_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r25_orig_amt" name="r25_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW25"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r25_fore_amt != null ? #numbers.formatDecimal(report.r25_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r25_fore_amt" name="r25_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW25"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r25_no_of_acc != null ? #numbers.formatDecimal(report.r25_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r25_no_of_acc" name="r25_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW26" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="l) Business services " id="r26_sche_fore_ass"
+													name="r26_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW26"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r26_orig_amt != null ? #numbers.formatDecimal(report.r26_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r26_orig_amt" name="r26_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW26"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r26_fore_amt != null ? #numbers.formatDecimal(report.r26_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r26_fore_amt" name="r26_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW26"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r26_no_of_acc != null ? #numbers.formatDecimal(report.r26_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r26_no_of_acc" name="r26_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW27" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="j) Other community, social and personal services"
+													id="r27_sche_fore_ass" name="r27_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW27"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r27_orig_amt != null ? #numbers.formatDecimal(report.r27_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r27_orig_amt" name="r27_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW27"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r27_fore_amt != null ? #numbers.formatDecimal(report.r27_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r27_fore_amt" name="r27_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW27"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r27_no_of_acc != null ? #numbers.formatDecimal(report.r27_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r27_no_of_acc" name="r27_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW28" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="(v)  Households (sum of lines (a) to (h)):"
+													id="r28_sche_fore_ass" name="r28_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													readonly /></td>
+
+												<td id="ROW28"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r28_orig_amt" name="r28_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW28"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r28_fore_amt" name="r28_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW28"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r28_no_of_acc" name="r28_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW29" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="a) Residential property (owner occupied)"
+													id="r29_sche_fore_ass" name="r29_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW29"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r29_orig_amt != null ? #numbers.formatDecimal(report.r29_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r29_orig_amt" name="r29_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW29"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r29_fore_amt != null ? #numbers.formatDecimal(report.r29_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r29_fore_amt" name="r29_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW29"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r29_no_of_acc != null ? #numbers.formatDecimal(report.r29_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r29_no_of_acc" name="r29_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW30" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="b) Residential property (rented) "
+													id="r30_sche_fore_ass" name="r30_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW30"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r30_orig_amt != null ? #numbers.formatDecimal(report.r30_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r30_orig_amt" name="r30_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW30"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r30_fore_amt != null ? #numbers.formatDecimal(report.r30_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r30_fore_amt" name="r30_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW30"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r30_no_of_acc != null ? #numbers.formatDecimal(report.r30_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r30_no_of_acc" name="r30_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW31" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="c) Personal loans" id="r31_sche_fore_ass"
+													name="r31_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW31"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r31_orig_amt != null ? #numbers.formatDecimal(report.r31_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r31_orig_amt" name="r31_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW31"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r31_fore_amt != null ? #numbers.formatDecimal(report.r31_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r31_fore_amt" name="r31_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW31"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r31_no_of_acc != null ? #numbers.formatDecimal(report.r31_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r31_no_of_acc" name="r31_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW32" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="d) Motor vehicle" id="r32_sche_fore_ass"
+													name="r32_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW32"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r32_orig_amt != null ? #numbers.formatDecimal(report.r32_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r32_orig_amt" name="r32_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW32"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r32_fore_amt != null ? #numbers.formatDecimal(report.r32_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r32_fore_amt" name="r32_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW32"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r32_no_of_acc != null ? #numbers.formatDecimal(report.r32_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r32_no_of_acc" name="r32_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW33" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="e) Household goods" id="r33_sche_fore_ass"
+													name="r33_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW33"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r33_orig_amt != null ? #numbers.formatDecimal(report.r33_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r33_orig_amt" name="r33_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW33"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r33_fore_amt != null ? #numbers.formatDecimal(report.r33_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r33_fore_amt" name="r33_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW33"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r33_no_of_acc != null ? #numbers.formatDecimal(report.r33_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r33_no_of_acc" name="r33_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW34" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="f) Credit card loans" id="r34_sche_fore_ass"
+													name="r34_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW34"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r34_orig_amt != null ? #numbers.formatDecimal(report.r34_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r34_orig_amt" name="r34_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW34"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r34_fore_amt != null ? #numbers.formatDecimal(report.r34_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r34_fore_amt" name="r34_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW34"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r34_no_of_acc != null ? #numbers.formatDecimal(report.r34_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r34_no_of_acc" name="r34_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW35" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="g) Non-Profit Institutions Serving Households"
+													id="r35_sche_fore_ass" name="r35_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW35"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r35_orig_amt != null ? #numbers.formatDecimal(report.r35_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r35_orig_amt" name="r35_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW35"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r35_fore_amt != null ? #numbers.formatDecimal(report.r35_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r35_fore_amt" name="r35_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW35"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r35_no_of_acc != null ? #numbers.formatDecimal(report.r35_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r35_no_of_acc" name="r35_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW36" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="h)  Other specify" id="r36_sche_fore_ass"
+													name="r36_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW36"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r36_orig_amt != null ? #numbers.formatDecimal(report.r36_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r36_orig_amt" name="r36_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW36"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r36_fore_amt != null ? #numbers.formatDecimal(report.r36_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r36_fore_amt" name="r36_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW36"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r36_no_of_acc != null ? #numbers.formatDecimal(report.r36_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r36_no_of_acc" name="r36_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+
+											<tr>
+												<td id="ROW37" style="font-weight: bold;" ><input
+													class="display-input Show_input " type="text"
+													value="(vi) Non-Residents (sum of lines (a) and (b)):"
+													id="r37_sche_fore_ass" name="r37_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													readonly /></td>
+
+												<td id="ROW37"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r37_orig_amt" name="r37_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW37"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r37_fore_amt" name="r37_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW37"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r37_no_of_acc" name="r37_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW38" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="a) Other Non-Financial Corporations"
+													id="r38_sche_fore_ass" name="r38_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW38"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r38_orig_amt != null ? #numbers.formatDecimal(report.r38_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r38_orig_amt" name="r38_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW38"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r38_fore_amt != null ? #numbers.formatDecimal(report.r38_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r38_fore_amt" name="r38_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW38"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r38_no_of_acc != null ? #numbers.formatDecimal(report.r38_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r38_no_of_acc" name="r38_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW39" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="b) Households" id="r39_sche_fore_ass"
+													name="r39_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW39"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r39_orig_amt != null ? #numbers.formatDecimal(report.r39_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r39_orig_amt" name="r39_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW39"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r39_fore_amt != null ? #numbers.formatDecimal(report.r39_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r39_fore_amt" name="r39_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW39"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r39_no_of_acc != null ? #numbers.formatDecimal(report.r39_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r39_no_of_acc" name="r39_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW40" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="2.  Financial institutional units (sum of lines (i) to (v)):"
+													id="r40_sche_fore_ass" name="r40_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; font-weight: bold;"
+													readonly /></td>
+
+												<td id="ROW40"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r40_orig_amt" name="r40_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW40"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r40_fore_amt" name="r40_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW40"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r40_no_of_acc" name="r40_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW41" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="(i)    Central Bank" id="r41_sche_fore_ass"
+													name="r41_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													readonly /></td>
+
+												<td id="ROW41"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r41_orig_amt != null ? #numbers.formatDecimal(report.r41_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r41_orig_amt" name="r41_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW41"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r41_fore_amt != null ? #numbers.formatDecimal(report.r41_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r41_fore_amt" name="r41_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW41"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r41_no_of_acc != null ? #numbers.formatDecimal(report.r41_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r41_no_of_acc" name="r41_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW42" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="(ii)   Commercial Banks" id="r42_sche_fore_ass"
+													name="r42_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													readonly /></td>
+
+												<td id="ROW42"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r42_orig_amt != null ? #numbers.formatDecimal(report.r42_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r42_orig_amt" name="r42_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW42"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r42_fore_amt != null ? #numbers.formatDecimal(report.r42_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r42_fore_amt" name="r42_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW42"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r42_no_of_acc != null ? #numbers.formatDecimal(report.r42_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r42_no_of_acc" name="r42_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW43" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="(iii)  Other Depository Corporations (sum of lines (a) to (d)):"
+													id="r43_sche_fore_ass" name="r43_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													readonly /></td>
+
+												<td id="ROW43"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r43_orig_amt" name="r43_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW43"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r43_fore_amt" name="r43_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW43"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r43_no_of_acc" name="r43_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW44" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="a) Botswana Savings Bank (BSB)"
+													id="r44_sche_fore_ass" name="r44_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW44"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r44_orig_amt != null ? #numbers.formatDecimal(report.r44_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r44_orig_amt" name="r44_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW44"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r44_fore_amt != null ? #numbers.formatDecimal(report.r44_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r44_fore_amt" name="r44_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW44"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r44_no_of_acc != null ? #numbers.formatDecimal(report.r44_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r44_no_of_acc" name="r44_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW45" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="b) Botswana Building Society (BBS)"
+													id="r45_sche_fore_ass" name="r45_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW45"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r45_orig_amt != null ? #numbers.formatDecimal(report.r45_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r45_orig_amt" name="r45_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW45"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r45_fore_amt != null ? #numbers.formatDecimal(report.r45_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r45_fore_amt" name="r45_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW45"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r45_no_of_acc != null ? #numbers.formatDecimal(report.r45_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r45_no_of_acc" name="r45_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW46" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="c) Domestic Money Market Unit Trust"
+													id="r46_sche_fore_ass" name="r46_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW46"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r46_orig_amt != null ? #numbers.formatDecimal(report.r46_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r46_orig_amt" name="r46_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW46"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r46_fore_amt != null ? #numbers.formatDecimal(report.r46_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r46_fore_amt" name="r46_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW46"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r46_no_of_acc != null ? #numbers.formatDecimal(report.r46_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r46_no_of_acc" name="r46_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW47" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="d) Other (specify)*" id="r47_sche_fore_ass"
+													name="r47_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW47"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r47_orig_amt != null ? #numbers.formatDecimal(report.r47_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r47_orig_amt" name="r47_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW47"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r47_fore_amt != null ? #numbers.formatDecimal(report.r47_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r47_fore_amt" name="r47_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW47"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r47_no_of_acc != null ? #numbers.formatDecimal(report.r47_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r47_no_of_acc" name="r47_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW48" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="(iv)  Other Financial Corporations (sum of lines (a) to (e)):"
+													id="r48_sche_fore_ass" name="r48_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													readonly /></td>
+
+												<td id="ROW48"
+													style="  font-weight: bold; text-align: right;"class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r48_orig_amt" name="r48_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW48"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r48_fore_amt" name="r48_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW48"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r48_no_of_acc" name="r48_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW49" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="a) Insurance Companies" id="r49_sche_fore_ass"
+													name="r49_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW49"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r49_orig_amt != null ? #numbers.formatDecimal(report.r49_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r49_orig_amt" name="r49_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW49"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r49_fore_amt != null ? #numbers.formatDecimal(report.r49_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r49_fore_amt" name="r49_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW49"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r49_no_of_acc != null ? #numbers.formatDecimal(report.r49_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r49_no_of_acc" name="r49_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW50" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="b) Pension Funds" id="r50_sche_fore_ass"
+													name="r50_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW50"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r50_orig_amt != null ? #numbers.formatDecimal(report.r50_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r50_orig_amt" name="r50_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW50"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r50_fore_amt != null ? #numbers.formatDecimal(report.r50_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r50_fore_amt" name="r50_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW50"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r50_no_of_acc != null ? #numbers.formatDecimal(report.r50_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r50_no_of_acc" name="r50_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+
+
+											<tr>
+												<td id="ROW51" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="c) SACCOs" id="r51_sche_fore_ass"
+													name="r51_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW51"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r51_orig_amt != null ? #numbers.formatDecimal(report.r51_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r51_orig_amt" name="r51_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW51"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r51_fore_amt != null ? #numbers.formatDecimal(report.r51_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r51_fore_amt" name="r51_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW51"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r51_no_of_acc != null ? #numbers.formatDecimal(report.r51_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r51_no_of_acc" name="r51_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW52" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="d) Other Financial Intermediaries (sum 1 to 3)"
+													id="r52_sche_fore_ass" name="r52_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW52"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r52_orig_amt" name="r52_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW52"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r52_fore_amt" name="r52_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW52"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r52_no_of_acc" name="r52_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW53" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="1. Finance companies" id="r53_sche_fore_ass"
+													name="r53_sche_fore_ass"
+													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
+													readonly /></td>
+
+												<td id="ROW53"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r53_orig_amt != null ? #numbers.formatDecimal(report.r53_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r53_orig_amt" name="r53_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW53"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r53_fore_amt != null ? #numbers.formatDecimal(report.r53_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r53_fore_amt" name="r53_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW53"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r53_no_of_acc != null ? #numbers.formatDecimal(report.r53_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r53_no_of_acc" name="r53_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW54" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="2. Medical Aid Schemes" id="r54_sche_fore_ass"
+													name="r54_sche_fore_ass"
+													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
+													readonly /></td>
+
+												<td id="ROW54"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r54_orig_amt != null ? #numbers.formatDecimal(report.r54_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r54_orig_amt" name="r54_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW54"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r54_fore_amt != null ? #numbers.formatDecimal(report.r54_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r54_fore_amt" name="r54_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW54"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r54_no_of_acc != null ? #numbers.formatDecimal(report.r54_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r54_no_of_acc" name="r54_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW55" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="3. Public sector financial intermediaries"
+													id="r55_sche_fore_ass" name="r55_sche_fore_ass"
+													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
+													readonly /></td>
+
+												<td id="ROW55"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r55_orig_amt != null ? #numbers.formatDecimal(report.r55_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r55_orig_amt" name="r55_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW55"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r55_fore_amt != null ? #numbers.formatDecimal(report.r55_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r55_fore_amt" name="r55_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW55"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r55_no_of_acc != null ? #numbers.formatDecimal(report.r55_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r55_no_of_acc" name="r55_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW56" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="e) Financial Auxiliaries (sum 1 to 5)"
+													id="r56_sche_fore_ass" name="r56_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 45px;"
+													readonly /></td>
+
+												<td id="ROW56"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r56_orig_amt" name="r56_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW56"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r56_fore_amt" name="r56_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW56"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r56_no_of_acc" name="r56_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW57" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="1.Asset managers" id="r57_sche_fore_ass"
+													name="r57_sche_fore_ass"
+													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
+													readonly /></td>
+
+												<td id="ROW57"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;" ><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r57_orig_amt != null ? #numbers.formatDecimal(report.r57_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r57_orig_amt" name="r57_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW57"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r57_fore_amt != null ? #numbers.formatDecimal(report.r57_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r57_fore_amt" name="r57_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW57"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r57_no_of_acc != null ? #numbers.formatDecimal(report.r57_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r57_no_of_acc" name="r57_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW58" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="2. Insurance brokers" id="r58_sche_fore_ass"
+													name="r58_sche_fore_ass"
+													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
+													readonly /></td>
+
+												<td id="ROW58"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r58_orig_amt != null ? #numbers.formatDecimal(report.r58_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r58_orig_amt" name="r58_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW58"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r58_fore_amt != null ? #numbers.formatDecimal(report.r58_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r58_fore_amt" name="r58_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW58"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r58_no_of_acc != null ? #numbers.formatDecimal(report.r58_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r58_no_of_acc" name="r58_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW59" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="3. fund administrators" id="r59_sche_fore_ass"
+													name="r59_sche_fore_ass"
+													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
+													readonly /></td>
+
+												<td id="ROW59"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r59_orig_amt != null ? #numbers.formatDecimal(report.r59_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r59_orig_amt" name="r59_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW59"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r59_fore_amt != null ? #numbers.formatDecimal(report.r59_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r59_fore_amt" name="r59_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW59"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r59_no_of_acc != null ? #numbers.formatDecimal(report.r59_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r59_no_of_acc" name="r59_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW60" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="4. Bureau de change" id="r60_sche_fore_ass"
+													name="r60_sche_fore_ass"
+													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
+													readonly /></td>
+
+												<td id="ROW60"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r60_orig_amt != null ? #numbers.formatDecimal(report.r60_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r60_orig_amt" name="r60_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW60"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r60_fore_amt != null ? #numbers.formatDecimal(report.r60_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r60_fore_amt" name="r60_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW60"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r60_no_of_acc != null ? #numbers.formatDecimal(report.r60_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r60_no_of_acc" name="r60_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW61" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="5. Other (specify)*" id="r61_sche_fore_ass"
+													name="r61_sche_fore_ass"
+													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
+													readonly /></td>
+
+												<td id="ROW61"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r61_orig_amt != null ? #numbers.formatDecimal(report.r61_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r61_orig_amt" name="r61_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW61"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r61_fore_amt != null ? #numbers.formatDecimal(report.r61_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r61_fore_amt" name="r61_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW61"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r61_no_of_acc != null ? #numbers.formatDecimal(report.r61_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r61_no_of_acc" name="r61_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW62" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="(v)  Non-residents" id="r62_sche_fore_ass"
+													name="r62_sche_fore_ass"
+													style="background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; padding-left: 65px;"
+													readonly /></td>
+
+												<td id="ROW62"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r62_orig_amt != null ? #numbers.formatDecimal(report.r62_orig_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r62_orig_amt" name="r62_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW62"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r62_fore_amt != null ? #numbers.formatDecimal(report.r62_fore_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r62_fore_amt" name="r62_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW62"
+													style="  font-weight: bold; text-align: right; padding-left: 20px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report.r62_no_of_acc != null ? #numbers.formatDecimal(report.r62_no_of_acc, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r62_no_of_acc" name="r62_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+											<tr>
+												<td id="ROW63" style="font-weight: bold;"><input
+													class="display-input Show_input " type="text"
+													value="3. TOTAL ( Sum of lines 1 and 2)"
+													id="r63_sche_fore_ass" name="r63_sche_fore_ass"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: left; font-weight: bold;"
+													readonly /></td>
+
+												<td id="ROW63"
+													style="  font-weight: bold; text-align: right;"class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r63_orig_amt" name="r63_orig_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW63"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r63_fore_amt" name="r63_fore_amt"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+												<td id="ROW63"
+													style=" font-weight: bold; text-align: right;" class="green-cell"><input
+													class="display-input Show_input green-cell" type="text"
+													id="r63_no_of_acc" name="r63_no_of_acc"
+													style="background-color: #FFFFFF; width:  -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+											</tr>
+
+
+										</tbody>
+
+									</table>
+
+
+
+								</div>
+								<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button"
+										class="custom-tab-btn Show_input" form="fileupload"
+										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none;">Submit</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel"
+						style="text-align: center; color: white;">Do you want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn"
+						data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-bs-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+<!-- <script>
+															  $(document).ready(function () {
+															    $('#BRRSvalidation').DataTable({
+															      "paging": true,
+															      "info": false,       // turn off "Showing x of y"
+															      "searching": false,  // turn off search
+															      "ordering": false,   // turn off ordering
+															      "lengthChange": false // hide "Show x entries"
+															    });
+															  });
+	
+														</script> -->
+
+<style>
+#BRFdet td {
+	border: 1px solid #ccc;
+	padding: 8px;
+}
+
+#BRFdet {
+	border-collapse: collapse;
+	width: 100%;
+}
+</style>
+
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 650px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px;
+	/* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px;
+	/* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px;
+	/* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px;
+	/* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+<style>
+.inner {
+	max-height: 600px;
+	/* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa;
+	/* Match Bootstrap thead-light */
+	z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+</style>
+
+</html>
