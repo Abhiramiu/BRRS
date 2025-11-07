@@ -161,6 +161,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_RPD_ReportService BRRS_M_RPD_ReportService;
 	
+	@Autowired
+	BRRS_M_OPTR_ReportService BRRS_M_OPTR_ReportService;
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -403,6 +406,10 @@ public class RegulatoryReportServices {
 	  			break;
 			case "M_RPD":
 				repsummary = BRRS_M_RPD_ReportService.getM_RPDView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
+				break;
+				
+			case "M_OPTR":
+				repsummary = BRRS_M_OPTR_ReportService.getM_OPTRView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
 				break;
 
 		}
@@ -993,6 +1000,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_OPTR":
+			try {
+				repfile = BRRS_M_OPTR_ReportService.getM_OPTRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 		}
 		return repfile;
 	}
@@ -1482,9 +1499,19 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+		
 		case "M_RPD":
 			try {
 				archivalData = BRRS_M_RPD_ReportService.getM_RPDarchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_OPTR":
+			try {
+				archivalData = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
