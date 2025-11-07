@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,9 +22,7 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
@@ -60,6 +59,8 @@ import com.bornfire.brrs.entities.BRRSValidationsRepo;
 import com.bornfire.brrs.entities.BRRS_Report_Mast_Rep;
 import com.bornfire.brrs.entities.BankBranchMaster;
 import com.bornfire.brrs.entities.BankBranchMasterRepo;
+import com.bornfire.brrs.entities.BrrsCommonMappingEntity;
+import com.bornfire.brrs.entities.BrrsCommonMappingRepo;
 import com.bornfire.brrs.entities.BrrsMcblAccountTrackRepo;
 import com.bornfire.brrs.entities.GeneralMasterEntity;
 import com.bornfire.brrs.entities.GeneralMasterRepo;
@@ -67,6 +68,7 @@ import com.bornfire.brrs.entities.MCBL_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
 import com.bornfire.brrs.entities.MCBL_Rep;
+import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
 import com.bornfire.brrs.entities.RRReport;
 import com.bornfire.brrs.entities.RRReportRepo;
 import com.bornfire.brrs.entities.UserProfile;
@@ -76,6 +78,7 @@ import com.bornfire.brrs.services.BDGF_Services;
 import com.bornfire.brrs.services.BFDB_Services;
 import com.bornfire.brrs.services.BLBF_Services;
 import com.bornfire.brrs.services.BankBranchService;
+import com.bornfire.brrs.services.CommonMappingService;
 import com.bornfire.brrs.services.LoginServices;
 import com.bornfire.brrs.services.MCBL_Services;
 import com.bornfire.brrs.services.RegulatoryReportServices;
@@ -102,6 +105,10 @@ public class NavigationController {
 	@Autowired
 	BDGF_Services BDGF_Servicess;
 	
+	@Autowired
+    private CommonMappingService commonMappingService;
+
+		
 
 	@Autowired
 	BDGF_Rep bdgfRep;
@@ -112,6 +119,9 @@ public class NavigationController {
 	@Autowired
 	BLBF_Rep blbfRep;
 
+	@Autowired
+    private BrrsCommonMappingRepo commonMappingRepo;
+	
 
 	@Autowired
 	BFDB_Services BFDB_Servicess;
@@ -150,6 +160,9 @@ public class NavigationController {
 	@Autowired
 	private BankBranchService bankBranchService;
 
+	@Autowired
+	BrrsCommonMappingRepo CommonMappingRepo;
+	
 	private String pagesize;
 
 	public String getPagesize() {
@@ -1532,5 +1545,91 @@ public String BFDB(@RequestParam(required = false) String formmode,
 				"UNDRAWN", "SECTOR", "Period", "Effective Interest Rate", "STAGE", "ECL PROVISION", "REPORT DATE","MAT BUCKET");
 		return createExcelTemplate("LOAN BOOK", "LOAN BOOK.xlsx", headers);
 	}
+	
+	
+	
+
+	 
+	@RequestMapping(value = "getMappingData", method = { RequestMethod.GET, RequestMethod.POST })
+	public ResponseEntity<?> getMappingData(@RequestParam String selectedColumn) {
+	    System.out.println("📩 AJAX received column: " + selectedColumn);
+
+	    try {
+	        List<Object[]> data = commonMappingService.getMappingData(selectedColumn);
+
+	        if (data.isEmpty()) {
+	            return ResponseEntity.ok(Collections.singletonList(
+	                new Object[]{"No instance found for selected column", "", "", "", "", ""}
+	            ));
+	        }
+
+	        return ResponseEntity.ok(data);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                             .body(Collections.emptyList());
+	    }
+	}
+
+	
+	    
+	    
+    @RequestMapping(value = "CommonMapping", method = { RequestMethod.GET, RequestMethod.POST })
+    public String CommonMapping(
+            @RequestParam(required = false) String formmode,
+            @RequestParam(required = false) String userid,
+            @RequestParam(required = false) String selectedColumn,
+            @RequestParam(required = false) String ACCOUNT_NO,
+            @RequestParam(required = false) Optional<Integer> page,
+            @RequestParam(value = "size", required = false) Optional<Integer> size,
+            Model md,
+            HttpServletRequest req) {
+
+        System.out.println("✅ Came to CommonMapping Controller");
+
+        String roleId = (String) req.getSession().getAttribute("ROLEID");
+
+        if (formmode == null || formmode.equals("list")) {
+        md.addAttribute("menu", "COMMON MAPPING");
+		md.addAttribute("menuname", "COMMON MAPPING");
+		md.addAttribute("formmode", "list");
+		md.addAttribute("CommonList", commonMappingRepo.getAllData());
+        }
+        else if (formmode.equals("add")) {
+        	md.addAttribute("formmode", formmode);
+        	
+        }
+        else if (formmode.equals("edit") || formmode.equals("delete")) {
+            System.out.println(formmode.substring(0, 1).toUpperCase() + formmode.substring(1) + " Account no is " + ACCOUNT_NO);
+            md.addAttribute("formmode", formmode);
+
+            BrrsCommonMappingEntity entity = commonMappingRepo.getdatabyAcctNo(ACCOUNT_NO);
+
+            if (entity != null) {
+                md.addAttribute("IPSAccessRole", entity);
+            } else {
+                md.addAttribute("IPSAccessRole", new BrrsCommonMappingEntity());
+            }
+        }
+
+
+        
+        
+        return "CommonMapping";
+    }
+    
+    @RequestMapping(value = "/updateCommonMapping", method = { RequestMethod.GET, RequestMethod.POST })
+ 	@ResponseBody
+    public String updateMPLL(@ModelAttribute BrrsCommonMappingEntity CMData) {
+    	
+
+        boolean updated = commonMappingService.updateCM(CMData);
+
+        if (updated) {
+            return "Updated successfully!";
+        } else {
+            return "Record not found for update!";
+        }
+    }
 
 }

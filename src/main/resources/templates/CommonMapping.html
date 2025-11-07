@@ -1,0 +1,1103 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: KRISHNAPANDI MG 
+CREATED ON	: 14.11.2025
+PURPOSE		: Common Mapping
+ -->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<!-- CSS (Bootstrap, FontAwesome, jQuery UI, DataTables) -->
+	<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+		th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+
+	<link rel="stylesheet" type="text/css" href="/webjars/font-awesome/5.9.0/css/all.min.css"
+		th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+
+	<link rel="stylesheet" type="text/css" href="/webjars/jquery-ui/1.12.1/jquery-ui.min.css"
+		th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" />
+
+	<link rel="stylesheet" type="text/css" href="/webjars/datatables/1.10.19/css/jquery.dataTables.min.css"
+		th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
+
+	
+
+	
+	<!-- Favicon -->
+	<link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}" />
+	<link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}" />
+
+	<!-- JavaScript: jQuery must come first -->
+	<script src="/webjars/jquery/3.4.1/jquery.min.js" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+
+	<script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
+		th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+
+	<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+		th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+
+	<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+		th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+	<script src="/webjars/jquery-form/4.2.2/jquery.form.min.js"
+		th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+
+	<script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
+		th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+
+	<script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
+		th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+	
+	
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	
+	
+
+	
+	
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
+
+		.list-body {
+			padding: 0px;
+		}
+
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+
+		.formline {
+			padding-bottom: 15px;
+		}
+
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
+
+		#finusertb {
+			width: 460px;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+
+		.valids {
+			color: green;
+		}
+
+		.invalids {
+			color: red;
+		}
+
+		.error {
+			color: red !important;
+		}
+	</style>
+	<style>
+	/* Make table fully responsive */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Table cell styling */
+#usertable th, #usertable td {
+  vertical-align: middle;
+  text-align: left;
+  font-size: 16px;
+  padding: 8px 10px;
+}
+
+/* Icon styling */
+.action-icon {
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.action-icon:hover {
+  transform: scale(1.2);
+}
+
+/* Specific colors */
+.action-icon.modify { color: blue; }
+.action-icon.view { color: green; }
+.action-icon.delete { color: red; }
+.action-icon.verify { color: orange; }
+
+/* Ensure word break for long menu lists */
+#usertable td {
+  word-break: break-word;
+}
+
+</style>
+	<script th:inline="javascript">
+
+
+		function home() {
+			location.href = 'Dashboard'
+		}
+
+		function back() {
+			window.history.back();
+		}
+
+		function submitform(a) {
+			var formmode = a.getAttribute("data-formmode");
+			console.log('Form mode:', formmode);
+
+			var checkboxes = {
+				admin: document.querySelector("#Admin:checked") ? 'Y' : 'N',
+				BRRS_Reports: document.querySelector("#BRRS_Reports:checked") ? 'Y' : 'N',
+				Archival: document.querySelector("#Archival:checked") ? 'Y' : 'N',
+				AUDIT_US: document.querySelector("#AUDIT_US:checked") ? 'Y' : 'N'
+			};
+
+			var finalVar = [];
+			for (var key in checkboxes) {
+				if (checkboxes[key] === 'Y') {
+					finalVar.push(key);
+				}
+			}
+			var finalString = finalVar.join(',');
+			console.log('Final string:', finalString);
+
+			var formData = new FormData(document.getElementById("IPSAccessRole"));
+			formData.append("adminValue", checkboxes.admin);
+			formData.append("BRRS_ReportsValue", checkboxes.BRRS_Reports);
+			formData.append("Archival", checkboxes.Archival);
+			formData.append("auditUsValue", checkboxes.AUDIT_US);
+			formData.append("finalString", finalString);
+
+			if ($('#IPSAccessRole').valid()) {
+				$.ajax({
+					url: "./createAccessRole?formmode=" + encodeURIComponent(formmode),
+					type: "POST",
+					data: formData,
+					processData: false,
+					contentType: false,
+					success: function (response) {
+						console.log('Success response:', response);
+						$("#alertmsg").text(response);
+						$('#alert').modal("toggle");
+						if (formmode === 'add') {
+							document.getElementById("IPSAccessRole").reset();
+						}
+					},
+					error: function (xhr, status, error) {
+						console.error('AJAX error:', status, error);
+						$("#alertmsg").text("Error occurred: " + error);
+						$('#alert').modal("toggle");
+					}
+				});
+
+			}
+
+			return false;
+		}
+
+		document.addEventListener("DOMContentLoaded", function () {
+		    const roleIdSelect = document.getElementById("roleId");
+		    const roleDescInput = document.getElementById("roleDesc");
+		    const workClassSelect = document.getElementById("workClass");
+
+		    // Mapping of Role ID to Description
+		    const roleMap = {
+		        "MGR": "MANAGER",
+		        "ADM-M": "ADMIN-MAKER",
+		        "ADM-C": "ADMIN-CHECKER",
+		        "USR-M": "USER-MAKER",
+		        "USR-C": "USER CHECKER"
+		    };
+
+		    if (roleIdSelect) {
+		        roleIdSelect.addEventListener("change", function () {
+		            const selectedRoleId = roleIdSelect.value;
+
+		            if (selectedRoleId) {
+		                // Step 1: Check if role ID exists in DB
+		                $.ajax({
+		                    url: "./checkRoleExists",
+		                    type: "GET",
+		                    data: { roleId: selectedRoleId },
+		                    success: function (response) {
+		                        if (response === "exists") {
+		                            $("#alertmsg").text("Role ID already exists. Please select a different one.");
+		                            $('#alert').modal("toggle");
+
+		                            // Reset fields
+		                            roleIdSelect.value = "";
+		                            if (roleDescInput) roleDescInput.value = "";
+		                            if (workClassSelect) workClassSelect.value = "";
+		                        } else {
+		                            // Step 2: Auto-fill roleDesc input
+		                            if (roleDescInput) {
+		                                const mappedDesc = roleMap[selectedRoleId] || "";
+		                                roleDescInput.value = mappedDesc;
+		                            }
+
+		                            // Step 3: Set workClass based on Role ID
+		                            if (workClassSelect) {
+		                                if (selectedRoleId.endsWith("-M")) {
+		                                    workClassSelect.value = "M"; // Maker
+		                                } else if (selectedRoleId.endsWith("-C")) {
+		                                    workClassSelect.value = "C"; // Checker
+		                                } else {
+		                                    workClassSelect.value = ""; // Reset if no match
+		                                }
+		                            }
+		                        }
+		                    },
+		                    error: function (xhr, status, error) {
+		                        console.error("Error checking role ID:", error);
+		                    }
+		                });
+		            } else {
+		                // Reset if no role selected
+		                if (roleDescInput) roleDescInput.value = "";
+		                if (workClassSelect) workClassSelect.value = "";
+		            }
+		        });
+		    }
+		});
+
+		function verifySubmit(a) {
+		    var roleId = document.getElementById("roleId").value;
+
+		    if (!roleId) {
+		        $("#alertmsg").text("Role ID is required.");
+		        $('#alert').modal("toggle");
+		        return false;
+		    }
+
+		    // Create FormData (so it binds to @ModelAttribute AccessAndRoles)
+		    var formData = new FormData();
+		    formData.append("roleId", roleId);       // important for alertparam.getRoleId()
+		    formData.append("formmode", "verify");   // tells backend to run verify block
+
+		    $.ajax({
+		        url: "./createAccessRole",
+		        type: "POST",
+		        data: formData,
+		        processData: false,
+		        contentType: false,
+		        success: function (response) {
+		            $("#alertmsg").text(response);
+		            $('#alert').modal("toggle");
+		        },
+		        error: function (xhr, status, error) {
+		            $("#alertmsg").text("Error occurred: " + error);
+		            $('#alert').modal("toggle");
+		        }
+		    });
+
+		    return false;
+		}
+
+
+
+		function deleteSubmit(a) {
+		    console.log('Delete action initiated');
+		    var formmode = a.getAttribute("data-formmode");
+		    var roleid = a.getAttribute("data-roleId");  // get roleId
+
+		    var formData = new FormData(document.getElementById("IPSAccessRole"));
+		    formData.append("roleId", roleid);  // attach it manually
+
+		    $.ajax({
+		        url: "./createAccessRole?formmode=" + encodeURIComponent(formmode),
+		        type: "POST",
+		        data: formData,
+		        processData: false,
+		        contentType: false,
+		        success: function (response) {
+		            $("#alertmsg").text(response);
+		            $('#alert').modal("toggle");
+		        },
+		        error: function (xhr, status, error) {
+		            console.error('AJAX error:', status, error);
+		            $("#alertmsg").text("Error occurred: " + error);
+		            $('#alert').modal("toggle");
+		        }
+		    });
+
+		    return false;
+		}
+
+	</script>
+	<script>
+		function addrole(a) {
+			location.href = 'AccessandRoles?formmode=add';
+		}
+		
+
+		function list() {
+			location.href = 'CommonMapping?formmode=list';
+		}
+		
+	</script>
+
+
+
+	
+</head>
+<title>BRRS</title>
+
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div th:insert="HeaderMenu :: header"></div>
+			<div class="col-sm-12">
+				<!-- -------------------User List Starts----------------------------------------------------- -->
+
+				<div style="padding-right: 0px;padding-left: 0px;" th:if="${formmode}=='list'">
+
+					<div class="card" style="margin-left:10px;margin-right: 10px;">
+						<div class="card-header" 
+     style="background-color: #376275; display: flex; align-items: center; justify-content: space-between; padding: 10px 20px;">
+
+    <!-- Left: Back Icon + Title -->
+    <div style="display: flex; align-items: center;" onclick="back();">
+        <!-- Back Icon -->
+        <div class="left-arrow-circle">
+            <i class="fa fa-arrow-left"></i>
+        </div>
+        <!-- Dynamic Title -->
+        <h5 th:text="${menu}" 
+            style="font-family: verdana; font-size: 20px; font-weight: bold; color: white; margin: 0 0 0 10px;">
+        </h5>
+    </div>
+
+    <!-- Right: Add Button -->
+    <div class="custom-tab-btn-group nav-buttons" style="display: flex; align-items: center;">
+        <button type="button" class="custom-tab-btn" onclick="addrole();">Add</button>
+    </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="table-responsive" style="overflow-x: auto;">
+      <table id="commonMappingTable" class="table table-striped table-bordered table-hover nowrap" style="width:100%;">
+        <thead class="thead-light" style="background-color:#e9ecf0; font-family: verdana; font-size: 14px;">
+          <tr>
+          	<th>Action</th>
+            <th>S.No</th>
+            <th>GL Code</th>
+            <th>GL Sub Code</th>
+            <th>Account No</th>
+            <th>Currency</th>
+            <th>M_PI</th>
+            <th>M_SFINP1</th>
+            <th>M_SFINP2</th>
+            <th>M_LIQ</th>
+            <th>M_SCI_E</th>
+            <th>M_IS</th>
+            <th>M_CA1</th>
+            <th>M_CA2</th>
+            <th>M_SRWA_12A</th>
+            <th>M_OR1</th>
+            <th>M_MRC</th>
+            <th>M_IRR</th>
+            <th>M_IRB</th>
+            <th>M_GALOR</th>
+            <th>M_CALOC</th>
+            <th>M_I_S_CA</th>
+            <th>M_SP</th>
+            <th>M_DEP1</th>
+            <th>Q_SMME_INT_INCOME</th>
+            <th>M_LIQGAP</th>
+            <th>M_LA1</th>
+            <th>M_LA3</th>
+            <th>M_LA4</th>
+            <th>M_LA5</th>
+            <th>M_PLL</th>
+            <th>M_PD</th>
+            <th>M_GP</th>
+            <th>M_DEP2</th>
+            <th>M_FAS</th>
+            <th>Q_ATF</th>
+            <th>Q_SMME_LA</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr th:each="record : ${CommonList}">
+         
+          <td class="text-left">
+              <!-- Modify Icon -->
+              <i class="fa fa-edit action-icon modify"
+                 title="Modify"
+                 th:attr="data-roleId=${record.ACCOUNT_NO}"
+                 onclick="editMapping(this)"></i>
+
+              <!-- Delete Icon -->
+              <i class="fa fa-trash action-icon delete"
+                 title="Delete"
+                 th:attr="data-roleId=${record.ACCOUNT_NO}"
+                 onclick="deleteMapping(this)"></i>
+
+              
+            </td>
+            <td th:text="${record.SNO}"></td>
+            <td th:text="${record.GL_CODE}"></td>
+            <td th:text="${record.GL_SUB_CODE}"></td>
+            <td th:text="${record.ACCOUNT_NO}"></td>
+            <td th:text="${record.CURRENCY}"></td>
+            <td th:text="${record.M_PI}"></td>
+            <td th:text="${record.M_SFINP1}"></td>
+            <td th:text="${record.M_SFINP2}"></td>
+            <td th:text="${record.M_LIQ}"></td>
+            <td th:text="${record.M_SCI_E}"></td>
+            <td th:text="${record.M_IS}"></td>
+            <td th:text="${record.M_CA1}"></td>
+            <td th:text="${record.M_CA2}"></td>
+            <td th:text="${record.M_SRWA_12A}"></td>
+            <td th:text="${record.M_OR1}"></td>
+            <td th:text="${record.M_MRC}"></td>
+            <td th:text="${record.M_IRR}"></td>
+            <td th:text="${record.M_IRB}"></td>
+            <td th:text="${record.M_GALOR}"></td>
+            <td th:text="${record.M_CALOC}"></td>
+            <td th:text="${record.M_I_S_CA}"></td>
+            <td th:text="${record.M_SP}"></td>
+            <td th:text="${record.M_DEP1}"></td>
+            <td th:text="${record.Q_SMME_INT_INCOME}"></td>
+            <td th:text="${record.M_LIQGAP}"></td>
+            <td th:text="${record.M_LA1}"></td>
+            <td th:text="${record.M_LA3}"></td>
+            <td th:text="${record.M_LA4}"></td>
+            <td th:text="${record.M_LA5}"></td>
+            <td th:text="${record.M_PLL}"></td>
+            <td th:text="${record.M_PD}"></td>
+            <td th:text="${record.M_GP}"></td>
+            <td th:text="${record.M_DEP2}"></td>
+            <td th:text="${record.M_FAS}"></td>
+            <td th:text="${record.Q_ATF}"></td>
+            <td th:text="${record.Q_SMME_LA}"></td>
+            
+           
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+
+					</div>
+				</div> 
+
+<div class="row" th:if="${formmode}=='edit' OR ${formmode}=='delete'">
+<div class="col-sm-12 finuserapply">
+
+						<div th:if="${formmode}=='edit' OR ${formmode}=='delete'">
+							<div class="row">
+								<div class="col-sm-12 finuserapply">
+									<div class="card" style="margin-left: 10px; margin-right: 10px; position: relative;">
+	<div class="card-header" style="background-color: #376275; position: relative; z-index: 10;">
+		<div class="float-left">
+			<h6 style="font-size: 1.5rem; color: white;"
+				th:if="${formmode}=='edit'">COMMON MAPPING - EDIT</h6>
+			
+			<h6 style="font-size: 1.5rem; color: white;"
+				th:if="${formmode}=='delete'">COMMON MAPPING - DELETE</h6>
+		</div>
+	</div>
+
+	<div class="card-body" style="margin-top: 0px; max-height: 600px; overflow-y: auto; overflow-x: hidden; position: relative;">
+		<form action="#" th:object="${IPSAccessRole}" method="post"
+			style="margin: 20px;" autocomplete="off" id="CMForm"
+			th:fragment="finuserapply">
+
+			<div class="container mt-3">
+
+<!-- Properly aligned form with 2 fields per row -->
+
+<div class="row formline">
+    <label class="col-sm-2">S.No <span style="color:red">*</span></label>
+    <div class="col-sm-3">
+        <input type="text" id="SNO" name="SNO" th:field="*{SNO}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add'" required />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">GL Code <span style="color:red">*</span></label>
+    <div class="col-sm-3">
+        <input type="text" id="GL_CODE" name="GL_CODE" th:field="*{GL_CODE}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" required />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">GL Sub Code</label>
+    <div class="col-sm-3">
+        <input type="text" id="GL_SUB_CODE" name="GL_SUB_CODE" th:field="*{GL_SUB_CODE}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">Account No</label>
+    <div class="col-sm-3">
+        <input type="text" id="ACCOUNT_NO" name="ACCOUNT_NO" th:field="*{ACCOUNT_NO}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">Currency</label>
+    <div class="col-sm-3">
+        <input type="text" id="CURRENCY" name="CURRENCY" th:field="*{CURRENCY}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_PI</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_PI" name="M_PI" th:field="*{M_PI}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_SFINP1</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_SFINP1" name="M_SFINP1" th:field="*{M_SFINP1}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_SFINP2</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_SFINP2" name="M_SFINP2" th:field="*{M_SFINP2}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_LIQ</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_LIQ" name="M_LIQ" th:field="*{M_LIQ}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_SCI_E</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_SCI_E" name="M_SCI_E" th:field="*{M_SCI_E}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_IS</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_IS" name="M_IS" th:field="*{M_IS}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_CA1</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_CA1" name="M_CA1" th:field="*{M_CA1}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_CA2</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_CA2" name="M_CA2" th:field="*{M_CA2}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_SRWA_12A</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_SRWA_12A" name="M_SRWA_12A" th:field="*{M_SRWA_12A}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_OR1</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_OR1" name="M_OR1" th:field="*{M_OR1}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_MRC</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_MRC" name="M_MRC" th:field="*{M_MRC}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_IRR</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_IRR" name="M_IRR" th:field="*{M_IRR}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_IRB</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_IRB" name="M_IRB" th:field="*{M_IRB}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_GALOR</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_GALOR" name="M_GALOR" th:field="*{M_GALOR}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_CALOC</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_CALOC" name="M_CALOC" th:field="*{M_CALOC}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_I_S_CA</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_I_S_CA" name="M_I_S_CA" th:field="*{M_I_S_CA}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_SP</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_SP" name="M_SP" th:field="*{M_SP}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_DEP1</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_DEP1" name="M_DEP1" th:field="*{M_DEP1}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">Q_SMME_INT_INCOME</label>
+    <div class="col-sm-3">
+        <input type="text" id="Q_SMME_INT_INCOME" name="Q_SMME_INT_INCOME" th:field="*{Q_SMME_INT_INCOME}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_LIQGAP</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_LIQGAP" name="M_LIQGAP" th:field="*{M_LIQGAP}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_LA1</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_LA1" name="M_LA1" th:field="*{M_LA1}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_LA3</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_LA3" name="M_LA3" th:field="*{M_LA3}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_LA4</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_LA4" name="M_LA4" th:field="*{M_LA4}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_LA5</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_LA5" name="M_LA5" th:field="*{M_LA5}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_PLL</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_PLL" name="M_PLL" th:field="*{M_PLL}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_PD</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_PD" name="M_PD" th:field="*{M_PD}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_GP</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_GP" name="M_GP" th:field="*{M_GP}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">M_DEP2</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_DEP2" name="M_DEP2" th:field="*{M_DEP2}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">M_FAS</label>
+    <div class="col-sm-3">
+        <input type="text" id="M_FAS" name="M_FAS" th:field="*{M_FAS}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+<div class="row formline">
+    <label class="col-sm-2">Q_ATF</label>
+    <div class="col-sm-3">
+        <input type="text" id="Q_ATF" name="Q_ATF" th:field="*{Q_ATF}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+    <div class="col-sm-1"></div>
+    <label class="col-sm-2">Q_SMME_LA</label>
+    <div class="col-sm-3">
+        <input type="text" id="Q_SMME_LA" name="Q_SMME_LA" th:field="*{Q_SMME_LA}"
+               class="form-control form-control-sm"
+               th:readonly="${formmode}!='add' and ${formmode}!='edit'" />
+    </div>
+</div>
+
+<div class="row formline"><label style="height:5px;"></label></div>
+
+			</div>
+
+		</form>
+
+	</div>
+
+	<!-- Card Footer with Update Button -->
+	<div class="card-footer" style="background-color: #f8f9fa; text-align: center; padding: 15px; position: relative; z-index: 10;">
+		<button type="button" class="custom-tab-btn"
+		        th:if="${formmode == 'edit'}"
+		        onclick="submitUpdate()">Update</button>
+	</div>
+
+</div>
+								</div>
+							</div>
+
+								
+									</div>
+								</div>
+							</div>
+						</div>
+			
+			<div class="modal fade" id="alert">
+				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+					<div class="modal-content">
+						<div class="modal-body" style="text-align: center">
+							<p id="alertmsg"></p>
+							<button type="button" class="custom-tab-btn" data-bs-dismiss="modal" onclick="list()">Close</button>
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="modal fade" id="datadelete">
+				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+					<div class="modal-content">
+						<div class="modal-body" style="margin-top: 8px; text-align: center; color: #f15362;">
+							<button type="button" class="close" data-dismiss="modal">×</button>
+							Are you Sure want to delete?
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" onclick="submitformdelete(this);"
+								th:attr="data-formmode=delete">Submit</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" id="formmsg">
+				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+					<div class="modal-content">
+						<div class="modal-body" style="margin-top: 8px; text-align: center; color: aliceblue;">
+							<button type="button" class="close" data-dismiss="modal">×</button>
+							<a th:value="${msg}"></a>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" onclick="submitformdelete(this);"
+								th:attr="data-formmode=delete">Submit</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+
+</body>
+<script>
+// Redirect to edit page with selected Account No
+
+function editMapping(a) {
+    var accountNo = a.getAttribute("data-roleId");
+    location.href = 'CommonMapping?formmode=edit&ACCOUNT_NO=' + encodeURIComponent(accountNo);
+}
+
+
+// Delete confirmation and redirect or AJAX delete
+function deleteMapping(a) {
+	var accountNo = a.getAttribute("data-roleId");
+    location.href = 'CommonMapping?formmode=delete&ACCOUNT_NO=' + encodeURIComponent(accountNo);
+}
+</script>
+<script>
+function submitUpdate() {
+    const formData = $('#CMForm').serialize(); // Ensure correct form ID
+
+    // Show loader while processing
+    $('#loader').modal('show');
+
+    $.ajax({
+        url: 'updateCommonMapping',
+        type: 'POST',
+        data: formData,
+        success: function (response) {
+            $('#loader').modal('hide');
+
+            // Detect response message type
+            let messageType = 'Information';
+            if (response && response.toLowerCase().includes('success')) {
+                messageType = 'Success';
+            } else if (response && response.toLowerCase().includes('error')) {
+                messageType = 'Error';
+            }
+
+            // Update modal message text
+            $('#alertmsg').text(messageType + ': ' + response);
+
+            // Show modal
+            $('#alert').modal('show');
+        },
+        error: function (xhr, status, error) {
+            $('#loader').modal('hide');
+            console.error("Update error:", error);
+
+            // Show error in modal
+            $('#alertmsg').text('Error: Failed to update record. Please try again.');
+            $('#alert').modal('show');
+        }
+    });
+}
+</script>
+
+
+<script>
+$(document).ready(function() {
+  $('#commonMappingTable').DataTable({
+    paging: true,
+    searching: true,
+    ordering: true,
+    info: true,
+    lengthChange: false,
+    pageLength: 10
+  });
+});
+</script>
+
+
+<style>
+.table-responsive {
+  overflow: auto;
+  max-height: 500px;
+  position: relative;
+}
+
+/* Sticky Header */
+#commonMappingTable thead th {
+  position: sticky;
+  top: 0;
+  background-color: #e9ecf0;
+  z-index: 5;
+  border-bottom: 2px solid #ccc;
+}
+
+/* Common cell styling */
+#commonMappingTable th,
+#commonMappingTable td {
+  white-space: nowrap;
+  min-width: 100px;
+  text-align: center;
+}
+
+/* Fix 1st Column */
+#commonMappingTable th:nth-child(1),
+#commonMappingTable td:nth-child(1) {
+  position: sticky;
+  left: 0;
+  z-index: 6;
+  background-color: #f8f9fa;
+}
+
+/* Fix 2nd Column */
+#commonMappingTable th:nth-child(2),
+#commonMappingTable td:nth-child(2) {
+  position: sticky;
+  left: 100px;
+  z-index: 6;
+  background-color: #f8f9fa;
+}
+
+/* Fix 3rd Column */
+#commonMappingTable th:nth-child(3),
+#commonMappingTable td:nth-child(3) {
+  position: sticky;
+  left: 200px;
+  z-index: 6;
+  background-color: #f8f9fa;
+}
+
+/* Fix 4th Column */
+#commonMappingTable th:nth-child(4),
+#commonMappingTable td:nth-child(4) {
+  position: sticky;
+  left: 300px;
+  z-index: 6;
+  background-color: #f8f9fa;
+}
+
+/* Fix 5th Column */
+#commonMappingTable th:nth-child(5),
+#commonMappingTable td:nth-child(5) {
+  position: sticky;
+  left: 440px;
+  z-index: 6;
+  background-color: #f8f9fa;
+}
+</style>
+
+<style>
+.left-arrow-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+    color: rgb(107, 122, 143);
+    font-size: 16px;
+}
+
+.left-arrow-circle:hover {
+    background-color: rgb(107, 122, 143);
+    cursor: pointer;
+    transform: scale(1.05);
+    border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+    color: white;
+}
+</style>
+</html>

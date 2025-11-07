@@ -96,17 +96,17 @@ public class MCBL_Services {
 	    }
 
 	    try (InputStream is = file.getInputStream();
-	    	     Connection conn = dataSource.getConnection()) {
+	         Connection conn = dataSource.getConnection()) {
 
-	    	    Workbook workbook;
-	    	    String fileName = file.getOriginalFilename();
-	    	    if (fileName != null && fileName.toLowerCase().endsWith(".xlsx")) {
-	    	        workbook = new XSSFWorkbook(is);
-	    	    } else if (fileName != null && fileName.toLowerCase().endsWith(".xls")) {
-	    	        workbook = new HSSFWorkbook(is);
-	    	    } else {
-	    	        return "Error: Invalid file format! Please upload .xls or .xlsx file.";
-	    	    }
+	        Workbook workbook;
+	        String fileName = file.getOriginalFilename();
+	        if (fileName != null && fileName.toLowerCase().endsWith(".xlsx")) {
+	            workbook = new XSSFWorkbook(is);
+	        } else if (fileName != null && fileName.toLowerCase().endsWith(".xls")) {
+	            workbook = new HSSFWorkbook(is);
+	        } else {
+	            return "Error: Invalid file format! Please upload .xls or .xlsx file.";
+	        }
 
 	        conn.setAutoCommit(false);
 
@@ -117,8 +117,8 @@ public class MCBL_Services {
 	        // 1️⃣ Get last month report date
 	        Calendar cal = Calendar.getInstance();
 	        cal.setTime(parsedDate);
-	        cal.set(Calendar.DAY_OF_MONTH, 1); // first day of current month
-	        cal.add(Calendar.DATE, -1);        // last day of previous month
+	        cal.set(Calendar.DAY_OF_MONTH, 1);
+	        cal.add(Calendar.DATE, -1);
 	        java.sql.Date lastMonthDate = new java.sql.Date(cal.getTimeInMillis());
 
 	        // 2️⃣ Fetch last month head account numbers
@@ -144,12 +144,13 @@ public class MCBL_Services {
 	            Row row = sheet.getRow(i);
 	            if (row == null) continue;
 
+	            String headAccNo = formatter.formatCellValue(row.getCell(2)).trim();
 	            String glCode = formatter.formatCellValue(row.getCell(0)).trim();
 	            String glSubCode = formatter.formatCellValue(row.getCell(1)).trim();
-	            String headAccNo = formatter.formatCellValue(row.getCell(2)).trim();
 	            String currency = formatter.formatCellValue(row.getCell(5)).trim();
 
-	            if (!glCode.isEmpty() && !glSubCode.isEmpty() && !headAccNo.isEmpty() && !currency.isEmpty() && isNumeric(headAccNo)) {
+	            if (!glCode.isEmpty() && !glSubCode.isEmpty() && !headAccNo.isEmpty() &&
+	                !currency.isEmpty() && isNumeric(headAccNo)) {
 	                currentAccounts.add(headAccNo);
 	            }
 	        }
@@ -165,9 +166,6 @@ public class MCBL_Services {
 	        String deleteSql = "DELETE FROM BRRS_MCBL WHERE MCBL_GL_CODE = ? AND MCBL_GL_SUB_CODE = ? AND MCBL_HEAD_ACC_NO = ? AND MCBL_CURRENCY = ? AND REPORT_DATE = ?";
 	        PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
 
-	        String deleteGeneralSql = "DELETE FROM GENERAL_MASTER_TABLE WHERE MCBL_GL_CODE = ? AND GL_SUB_HEAD_CODE = ? AND ACCOUNT_NO = ? AND CURRENCY = ? AND REPORT_DATE = ?";
-	        PreparedStatement deleteGeneralStmt = conn.prepareStatement(deleteGeneralSql);
-
 	        String insertSql = "INSERT INTO BRRS_MCBL (MCBL_GL_CODE, MCBL_GL_SUB_CODE, MCBL_HEAD_ACC_NO, MCBL_DESCRIPTION, MCBL_CURRENCY, " +
 	                "MCBL_DEBIT_BALANCE, MCBL_CREDIT_BALANCE, MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, ENTRY_USER, ENTRY_DATE, REPORT_DATE, ID, ENTRY_FLG) " +
 	                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Y')";
@@ -178,7 +176,6 @@ public class MCBL_Services {
 	                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	        PreparedStatement insertGeneralStmt = conn.prepareStatement(insertGeneralSql);
 
-	        // 6️⃣ Prepare insert for added/deleted accounts table
 	        String insertTrackSql = "INSERT INTO BRRS_MCBL_ACCOUNT_TRACK (ID, REPORT_DATE, ACCOUNT_NO, CHANGE_TYPE, ENTRY_USER, ENTRY_TIME, REMARKS) " +
 	                "VALUES (?, ?, ?, ?, ?, SYSTIMESTAMP, ?)";
 	        PreparedStatement insertTrackStmt = conn.prepareStatement(insertTrackSql);
@@ -188,7 +185,7 @@ public class MCBL_Services {
 	        int skippedCount = 0;
 	        Set<String> processedKeys = new HashSet<>();
 
-	        // 7️⃣ Process Excel rows and insert
+	        // 6️⃣ Process Excel rows and insert/update
 	        for (int i = 0; i <= sheet.getLastRowNum(); i++) {
 	            Row row = sheet.getRow(i);
 	            if (row == null) continue;
@@ -199,8 +196,8 @@ public class MCBL_Services {
 	            String description = formatter.formatCellValue(row.getCell(3)).trim();
 	            String currency = formatter.formatCellValue(row.getCell(5)).trim();
 
-	            if (!glCode.isEmpty() && !glSubCode.isEmpty() && !headAccNo.isEmpty() && !currency.isEmpty()
-	                    && isNumeric(headAccNo) && isNumeric(glCode) && isNumeric(glSubCode)) {
+	            if (!glCode.isEmpty() && !glSubCode.isEmpty() && !headAccNo.isEmpty() &&
+	                !currency.isEmpty() && isNumeric(headAccNo) && isNumeric(glCode) && isNumeric(glSubCode)) {
 
 	                String uniqueKey = glCode + "|" + glSubCode + "|" + headAccNo + "|" + currency + "|" + sqlReportDate;
 	                if (!processedKeys.add(uniqueKey)) {
@@ -208,7 +205,7 @@ public class MCBL_Services {
 	                    continue;
 	                }
 
-	                // Delete old records
+	                // Delete old BRRS_MCBL record only
 	                deleteStmt.setString(1, glCode);
 	                deleteStmt.setString(2, glSubCode);
 	                deleteStmt.setString(3, headAccNo);
@@ -216,14 +213,7 @@ public class MCBL_Services {
 	                deleteStmt.setDate(5, sqlReportDate);
 	                deleteStmt.executeUpdate();
 
-	                deleteGeneralStmt.setString(1, glCode);
-	                deleteGeneralStmt.setString(2, glSubCode);
-	                deleteGeneralStmt.setString(3, headAccNo);
-	                deleteGeneralStmt.setString(4, currency);
-	                deleteGeneralStmt.setDate(5, sqlReportDate);
-	                deleteGeneralStmt.executeUpdate();
-
-	                // Insert new record
+	                // Insert new BRRS_MCBL record
 	                insertStmt.setString(1, glCode);
 	                insertStmt.setString(2, glSubCode);
 	                insertStmt.setString(3, headAccNo);
@@ -239,21 +229,59 @@ public class MCBL_Services {
 	                insertStmt.setString(13, sequence.generateRequestUUId());
 	                insertStmt.addBatch();
 
-	                insertGeneralStmt.setString(1, sequence.generateRequestUUId());
-	                insertGeneralStmt.setString(2, glCode);
-	                insertGeneralStmt.setString(3, glSubCode);
-	                insertGeneralStmt.setString(4, headAccNo);
-	                insertGeneralStmt.setString(5, description);
-	                insertGeneralStmt.setString(6, currency);
-	                insertGeneralStmt.setBigDecimal(7, getCellDecimal(row.getCell(6)));
-	                insertGeneralStmt.setBigDecimal(8, getCellDecimal(row.getCell(7)));
-	                insertGeneralStmt.setBigDecimal(9, getCellDecimal(row.getCell(8)));
-	                insertGeneralStmt.setBigDecimal(10, getCellDecimal(row.getCell(9)));
-	                insertGeneralStmt.setString(11, userid);
-	                insertGeneralStmt.setDate(12, new java.sql.Date(System.currentTimeMillis()));
-	                insertGeneralStmt.setDate(13, sqlReportDate);
-	                insertGeneralStmt.setString(14, "Y");
-	                insertGeneralStmt.addBatch();
+	                // Check if record exists in GENERAL_MASTER_TABLE
+	                String checkSql = "SELECT COUNT(*) FROM GENERAL_MASTER_TABLE WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
+	                try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+	                    checkStmt.setString(1, headAccNo);
+	                    checkStmt.setDate(2, sqlReportDate);
+	                    ResultSet rsCheck = checkStmt.executeQuery();
+	                    boolean exists = false;
+	                    if (rsCheck.next()) {
+	                        exists = rsCheck.getInt(1) > 0;
+	                    }
+
+	                    if (exists) {
+	                        // Update existing record
+	                        String updateSql = "UPDATE GENERAL_MASTER_TABLE SET " +
+	                                "MCBL_GL_CODE = ?, GL_SUB_HEAD_CODE = ?, MCBL_DESCRIPTION = ?, CURRENCY = ?, " +
+	                                "MCBL_DEBIT_BALANCE = ?, MCBL_CREDIT_BALANCE = ?, MCBL_DEBIT_EQUIVALENT = ?, MCBL_CREDIT_EQUIVALENT = ?, " +
+	                                "ENTRY_USER = ?, ENTRY_DATE = ?, MCBL_FLG = ? " +
+	                                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
+	                        try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+	                            updateStmt.setString(1, glCode);
+	                            updateStmt.setString(2, glSubCode);
+	                            updateStmt.setString(3, description);
+	                            updateStmt.setString(4, currency);
+	                            updateStmt.setBigDecimal(5, getCellDecimal(row.getCell(6)));
+	                            updateStmt.setBigDecimal(6, getCellDecimal(row.getCell(7)));
+	                            updateStmt.setBigDecimal(7, getCellDecimal(row.getCell(8)));
+	                            updateStmt.setBigDecimal(8, getCellDecimal(row.getCell(9)));
+	                            updateStmt.setString(9, userid);
+	                            updateStmt.setDate(10, new java.sql.Date(System.currentTimeMillis()));
+	                            updateStmt.setString(11, "Y");
+	                            updateStmt.setString(12, headAccNo);
+	                            updateStmt.setDate(13, sqlReportDate);
+	                            updateStmt.executeUpdate();
+	                        }
+	                    } else {
+	                        // Insert new record
+	                        insertGeneralStmt.setString(1, sequence.generateRequestUUId());
+	                        insertGeneralStmt.setString(2, glCode);
+	                        insertGeneralStmt.setString(3, glSubCode);
+	                        insertGeneralStmt.setString(4, headAccNo);
+	                        insertGeneralStmt.setString(5, description);
+	                        insertGeneralStmt.setString(6, currency);
+	                        insertGeneralStmt.setBigDecimal(7, getCellDecimal(row.getCell(6)));
+	                        insertGeneralStmt.setBigDecimal(8, getCellDecimal(row.getCell(7)));
+	                        insertGeneralStmt.setBigDecimal(9, getCellDecimal(row.getCell(8)));
+	                        insertGeneralStmt.setBigDecimal(10, getCellDecimal(row.getCell(9)));
+	                        insertGeneralStmt.setString(11, userid);
+	                        insertGeneralStmt.setDate(12, new java.sql.Date(System.currentTimeMillis()));
+	                        insertGeneralStmt.setDate(13, sqlReportDate);
+	                        insertGeneralStmt.setString(14, "Y");
+	                        insertGeneralStmt.addBatch();
+	                    }
+	                }
 
 	                count++;
 	                if (count % batchSize == 0) {
@@ -288,23 +316,13 @@ public class MCBL_Services {
 	        }
 
 	        insertTrackStmt.executeBatch();
-
-	        // Final batch commit
 	        insertStmt.executeBatch();
 	        insertGeneralStmt.executeBatch();
 	        conn.commit();
 
 	        long duration = System.currentTimeMillis() - startTime;
 
-	       /* String popupMessage = "MCBL Added successfully.<br>" +
-	                "Saved rows: " + count + "<br>" +
-	                "Skipped rows: " + skippedCount + "<br>" +
-	                "New Accounts (" + newAccounts.size() + "): " + String.join(", ", newAccounts) + "<br>" +
-	                "Missing Accounts (" + missingAccounts.size() + "): " + String.join(", ", missingAccounts) + "<br>" +
-	                "Time taken: " + duration + " ms";
-*/
 	        String popupMessage = "MCBL Added successfully.";
-	        
 	        return popupMessage;
 
 	    } catch (Exception e) {

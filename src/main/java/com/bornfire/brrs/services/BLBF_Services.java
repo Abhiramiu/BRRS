@@ -108,13 +108,36 @@ public class BLBF_Services {
 	        DataFormatter formatter = new DataFormatter();
 	        FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
-	        // 🟩 Prepare DELETE statements for duplicates
+	        // 🟩 Prepare DELETE only for BRRS_BLBF (NOT for general master)
 	        String deleteBLBF = "DELETE FROM BRRS_BLBF WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
-	        String deleteMaster = "DELETE FROM GENERAL_MASTER_TABLE WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
 	        PreparedStatement stmtDeleteBLBF = conn.prepareStatement(deleteBLBF);
-	        PreparedStatement stmtDeleteMaster = conn.prepareStatement(deleteMaster);
 
-	        // 🟩 Insert queries
+	        // 🟩 UPDATE query for GENERAL_MASTER_TABLE
+	        String updateMaster = "UPDATE GENERAL_MASTER_TABLE SET "
+	                + "SOL_ID=?, CUSTOMER_ID=?, CUSTOMER_NAME=?, SCHM_CODE=?, SCHM_DESC=?, ACCT_OPEN_DATE=?, APPROVED_LIMIT=?, "
+	                + "SANCTION_LIMIT=?, DISBURSED_AMT=?, BALANCE_AS_ON=?, CURRENCY=?, BAL_EQUI_TO_BWP=?, HUNDRED=?, "
+	                + "ACCRUED_INT_AMT=?, MONTHLY_INTEREST=?, LAST_INTEREST_DEBIT_DATE=?, ACCT_CLS_FLG=?, ACCT_CLOSE_DATE=?, "
+	                + "GENDER=?, CLASSIFICATION_CODE=?, CONSTITUTION_CODE=?, MATURITY_DATE=?, GL_SUB_HEAD_CODE=?, GL_SUB_HEAD_DESC=?, "
+	                + "TENOR_MONTH=?, EMI=?, SEGMENT=?, FACILITY=?, PAST_DUE=?, PAST_DUE_DAYS=?, ASSET=?, PROVISION=?, UNSECURED=?, "
+	                + "INT_BUCKET=?, STAFF=?, SMME=?, LABOD=?, NEW_AC=?, UNDRAWN=?, SECTOR=?, PERIOD=?, EFFECTIVE_INTEREST_RATE=?, "
+	                + "STAGE=?, ECL_PROVISION=?, MAT_BUCKET=?, ENTRY_DATE=?, ENTRY_USER=?, ENTRY_FLG=?, BLBF_FLG='Y' "
+	                + "WHERE ACCOUNT_NO=? AND REPORT_DATE=?";
+
+	        PreparedStatement stmtUpdateMaster = conn.prepareStatement(updateMaster);
+
+	        // 🟢 INSERT query for GENERAL_MASTER_TABLE (when record doesn't exist)
+	        String insertMaster = "INSERT INTO GENERAL_MASTER_TABLE (SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, SCHM_CODE, SCHM_DESC, "
+	                + "ACCT_OPEN_DATE, APPROVED_LIMIT, SANCTION_LIMIT, DISBURSED_AMT, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, "
+	                + "HUNDRED, ACCRUED_INT_AMT, MONTHLY_INTEREST, LAST_INTEREST_DEBIT_DATE, ACCT_CLS_FLG, ACCT_CLOSE_DATE, "
+	                + "GENDER, CLASSIFICATION_CODE, CONSTITUTION_CODE, MATURITY_DATE, GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, "
+	                + "TENOR_MONTH, EMI, SEGMENT, FACILITY, PAST_DUE, PAST_DUE_DAYS, ASSET, PROVISION, UNSECURED, "
+	                + "INT_BUCKET, STAFF, SMME, LABOD, NEW_AC, UNDRAWN, SECTOR, PERIOD, EFFECTIVE_INTEREST_RATE, "
+	                + "STAGE, ECL_PROVISION, MAT_BUCKET, ENTRY_DATE, ENTRY_USER, ENTRY_FLG, BLBF_FLG, ACCOUNT_NO, REPORT_DATE) "
+	                + "VALUES (" + String.join(",", Collections.nCopies(51, "?")) + ")";
+
+	        PreparedStatement stmtInsertMaster = conn.prepareStatement(insertMaster);
+
+	        // 🟩 Insert queries remain same
 	        String insertBLBF = "INSERT INTO BRRS_BLBF (SOL_ID, CUSTOMER_ID, ACCOUNT_NO, CUSTOMER_NAME, SCHM_CODE, SCHM_DESC, "
 	                + "ACCT_OPEN_DATE, APPROVED_LIMIT, SANCTION_LIMIT, DISBURSED_AMT, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, "
 	                + "RATE_OF_INTEREST, HUNDRED, ACCRUED_INT_AMT, MONTHLY_INTEREST, LAST_INTEREST_DEBIT_DATE, ACCT_CLS_FLG, "
@@ -123,18 +146,7 @@ public class BLBF_Services {
 	                + "INT_BUCKET, STAFF, SMME, LABOD, NEW_AC, UNDRAWN, SECTOR, PERIOD, EFFECTIVE_INTEREST_RATE, STAGE, ECL_PROVISION, "
 	                + "REPORT_DATE, MAT_BUCKET, ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG) "
 	                + "VALUES (" + String.join(",", Collections.nCopies(52, "?")) + ")";
-
-	        String insertMaster = "INSERT INTO GENERAL_MASTER_TABLE (ID, SOL_ID, CUSTOMER_ID, ACCOUNT_NO, CUSTOMER_NAME, SCHM_CODE, SCHM_DESC, "
-	                + "ACCT_OPEN_DATE, APPROVED_LIMIT, SANCTION_LIMIT, DISBURSED_AMT, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, "
-	                + "HUNDRED, ACCRUED_INT_AMT, MONTHLY_INTEREST, LAST_INTEREST_DEBIT_DATE, ACCT_CLS_FLG, ACCT_CLOSE_DATE, "
-	                + "GENDER, CLASSIFICATION_CODE, CONSTITUTION_CODE, MATURITY_DATE, GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, TENOR_MONTH, "
-	                + "EMI, SEGMENT, FACILITY, PAST_DUE, PAST_DUE_DAYS, ASSET, PROVISION, UNSECURED, INT_BUCKET, STAFF, SMME, LABOD, "
-	                + "NEW_AC, UNDRAWN, SECTOR, PERIOD, EFFECTIVE_INTEREST_RATE, STAGE, ECL_PROVISION, REPORT_DATE, MAT_BUCKET, "
-	                + "ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG, BLBF_FLG) "
-	                + "VALUES (" + String.join(",", Collections.nCopies(53, "?")) + ")";
-
 	        PreparedStatement stmtBLBF = conn.prepareStatement(insertBLBF);
-	        PreparedStatement stmtMaster = conn.prepareStatement(insertMaster);
 
 	        int count = 0;
 
@@ -142,7 +154,6 @@ public class BLBF_Services {
 	            Row row = sheet.getRow(i);
 	            if (row == null) continue;
 
-	            // Skip empty rows
 	            boolean emptyRow = true;
 	            for (int cn = 0; cn < row.getLastCellNum(); cn++) {
 	                Cell cell = row.getCell(cn);
@@ -154,24 +165,19 @@ public class BLBF_Services {
 	            if (emptyRow) continue;
 
 	            try {
-	                // --- Get key columns ---
 	                String accountNo = getCellStringSafe(row, 2, formatter, evaluator);
 	                java.sql.Date reportDate = getCellDateSafe(row, 46, formatter, evaluator);
 
-	                // 🟩 Delete existing rows before insert
+	                // 🟩 Delete existing BLBF only
 	                stmtDeleteBLBF.setString(1, accountNo);
 	                stmtDeleteBLBF.setDate(2, reportDate);
 	                stmtDeleteBLBF.executeUpdate();
 
-	                stmtDeleteMaster.setString(1, accountNo);
-	                stmtDeleteMaster.setDate(2, reportDate);
-	                stmtDeleteMaster.executeUpdate();
-
-	                // --- BRRS_BLBF insert ---
+	                // 🟩 Insert into BRRS_BLBF (same as before)
 	                int col = 0;
 	                stmtBLBF.setString(++col, getCellStringSafe(row, 0, formatter, evaluator)); // SOL_ID
 	                stmtBLBF.setString(++col, getCellStringSafe(row, 1, formatter, evaluator)); // CUSTOMER_ID
-	                stmtBLBF.setString(++col, accountNo); // ACCOUNT_NO
+	                stmtBLBF.setString(++col, accountNo);
 	                stmtBLBF.setString(++col, getCellStringSafe(row, 3, formatter, evaluator)); // CUSTOMER_NAME
 	                stmtBLBF.setString(++col, getCellStringSafe(row, 4, formatter, evaluator)); // SCHM_CODE
 	                stmtBLBF.setString(++col, getCellStringSafe(row, 5, formatter, evaluator)); // SCHM_DESC
@@ -215,77 +221,133 @@ public class BLBF_Services {
 	                stmtBLBF.setBigDecimal(++col, getCellDecimalSafe(row, 43, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
 	                stmtBLBF.setString(++col, getCellStringSafe(row, 44, formatter, evaluator)); // STAGE
 	                stmtBLBF.setBigDecimal(++col, getCellDecimalSafe(row, 45, formatter, evaluator)); // ECL_PROVISION
-	                stmtBLBF.setDate(++col, reportDate); // REPORT_DATE
+	                stmtBLBF.setDate(++col, reportDate);
 	                stmtBLBF.setBigDecimal(++col, getCellDecimalSafe(row, 47, formatter, evaluator)); // MAT_BUCKET
-	                stmtBLBF.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
+	                stmtBLBF.setDate(++col, new java.sql.Date(System.currentTimeMillis()));
 	                stmtBLBF.setString(++col, userid);
-	                stmtBLBF.setString(++col, "Y"); // ENTRY_FLG
-	                stmtBLBF.setString(++col, "N"); // DEL_FLG
+	                stmtBLBF.setString(++col, "Y");
+	                stmtBLBF.setString(++col, "N");
 	                stmtBLBF.addBatch();
 
-	                // --- GENERAL_MASTER_TABLE insert ---
+	                // 🟢 Try UPDATE first, if no rows affected then INSERT
 	                col = 0;
-	                stmtMaster.setString(++col, sequence.generateRequestUUId());
-	                stmtMaster.setString(++col, getCellStringSafe(row, 0, formatter, evaluator)); // SOL_ID
-	                stmtMaster.setString(++col, getCellStringSafe(row, 1, formatter, evaluator)); // CUSTOMER_ID
-	                stmtMaster.setString(++col, accountNo);
-	                stmtMaster.setString(++col, getCellStringSafe(row, 3, formatter, evaluator)); // CUSTOMER_NAME
-	                stmtMaster.setString(++col, getCellStringSafe(row, 4, formatter, evaluator)); // SCHM_CODE
-	                stmtMaster.setString(++col, getCellStringSafe(row, 5, formatter, evaluator)); // SCHM_DESC
-	                stmtMaster.setDate(++col, getCellDateSafe(row, 6, formatter, evaluator)); // ACCT_OPEN_DATE
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 7, formatter, evaluator)); // APPROVED_LIMIT
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 8, formatter, evaluator)); // SANCTION_LIMIT
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 9, formatter, evaluator)); // DISBURSED_AMT
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 10, formatter, evaluator)); // BALANCE_AS_ON
-	                stmtMaster.setString(++col, getCellStringSafe(row, 11, formatter, evaluator)); // CURRENCY
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 12, formatter, evaluator)); // BAL_EQUI_TO_BWP
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 14, formatter, evaluator)); // HUNDRED
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 15, formatter, evaluator)); // ACCRUED_INT_AMT
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 16, formatter, evaluator)); // MONTHLY_INTEREST
-	                stmtMaster.setDate(++col, getCellDateSafe(row, 17, formatter, evaluator)); // LAST_INTEREST_DEBIT_DATE
-	                stmtMaster.setString(++col, getCellStringSafe(row, 18, formatter, evaluator)); // ACCT_CLS_FLG
-	                stmtMaster.setDate(++col, getCellDateSafe(row, 19, formatter, evaluator)); // ACCT_CLOSE_DATE
-	                stmtMaster.setString(++col, getCellStringSafe(row, 20, formatter, evaluator)); // GENDER
-	                stmtMaster.setString(++col, getCellStringSafe(row, 21, formatter, evaluator)); // CLASSIFICATION_CODE
-	                stmtMaster.setString(++col, getCellStringSafe(row, 22, formatter, evaluator)); // CONSTITUTION_CODE
-	                stmtMaster.setDate(++col, getCellDateSafe(row, 23, formatter, evaluator)); // MATURITY_DATE
-	                stmtMaster.setString(++col, getCellStringSafe(row, 24, formatter, evaluator)); // GL_SUB_HEAD_CODE
-	                stmtMaster.setString(++col, getCellStringSafe(row, 25, formatter, evaluator)); // GL_SUB_HEAD_DESC
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 26, formatter, evaluator)); // TENOR_MONTH
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 27, formatter, evaluator)); // EMI
-	                stmtMaster.setString(++col, getCellStringSafe(row, 28, formatter, evaluator)); // SEGMENT
-	                stmtMaster.setString(++col, getCellStringSafe(row, 29, formatter, evaluator)); // FACILITY
-	                stmtMaster.setString(++col, getCellStringSafe(row, 30, formatter, evaluator)); // PAST_DUE
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 31, formatter, evaluator)); // PAST_DUE_DAYS
-	                stmtMaster.setString(++col, getCellStringSafe(row, 32, formatter, evaluator)); // ASSET
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 33, formatter, evaluator)); // PROVISION
-	                stmtMaster.setString(++col, getCellStringSafe(row, 34, formatter, evaluator)); // UNSECURED
-	                stmtMaster.setString(++col, getCellStringSafe(row, 35, formatter, evaluator)); // INT_BUCKET
-	                stmtMaster.setString(++col, getCellStringSafe(row, 36, formatter, evaluator)); // STAFF
-	                stmtMaster.setString(++col, getCellStringSafe(row, 37, formatter, evaluator)); // SMME
-	                stmtMaster.setString(++col, getCellStringSafe(row, 38, formatter, evaluator)); // LABOD
-	                stmtMaster.setString(++col, getCellStringSafe(row, 39, formatter, evaluator)); // NEW_AC
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 40, formatter, evaluator)); // UNDRAWN
-	                stmtMaster.setString(++col, getCellStringSafe(row, 41, formatter, evaluator)); // SECTOR
-	                stmtMaster.setString(++col, getCellStringSafe(row, 42, formatter, evaluator)); // PERIOD
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 43, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
-	                stmtMaster.setString(++col, getCellStringSafe(row, 44, formatter, evaluator)); // STAGE
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 45, formatter, evaluator)); // ECL_PROVISION
-	                stmtMaster.setDate(++col, reportDate);
-	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 47, formatter, evaluator)); // MAT_BUCKET
-	                stmtMaster.setDate(++col, new java.sql.Date(System.currentTimeMillis()));
-	                stmtMaster.setString(++col, userid);
-	                stmtMaster.setString(++col, "Y");
-	                stmtMaster.setString(++col, "N");
-	                stmtMaster.setString(++col, "Y"); // BLBF_FLG
-	                stmtMaster.addBatch();
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 0, formatter, evaluator)); // SOL_ID
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 1, formatter, evaluator)); // CUSTOMER_ID
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 3, formatter, evaluator)); // CUSTOMER_NAME
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 4, formatter, evaluator)); // SCHM_CODE
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 5, formatter, evaluator)); // SCHM_DESC
+	                stmtUpdateMaster.setDate(++col, getCellDateSafe(row, 6, formatter, evaluator)); // ACCT_OPEN_DATE
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 7, formatter, evaluator)); // APPROVED_LIMIT
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 8, formatter, evaluator)); // SANCTION_LIMIT
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 9, formatter, evaluator)); // DISBURSED_AMT
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 10, formatter, evaluator)); // BALANCE_AS_ON
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 11, formatter, evaluator)); // CURRENCY
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 12, formatter, evaluator)); // BAL_EQUI_TO_BWP
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 14, formatter, evaluator)); // HUNDRED
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 15, formatter, evaluator)); // ACCRUED_INT_AMT
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 16, formatter, evaluator)); // MONTHLY_INTEREST
+	                stmtUpdateMaster.setDate(++col, getCellDateSafe(row, 17, formatter, evaluator)); // LAST_INTEREST_DEBIT_DATE
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 18, formatter, evaluator)); // ACCT_CLS_FLG
+	                stmtUpdateMaster.setDate(++col, getCellDateSafe(row, 19, formatter, evaluator)); // ACCT_CLOSE_DATE
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 20, formatter, evaluator)); // GENDER
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 21, formatter, evaluator)); // CLASSIFICATION_CODE
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 22, formatter, evaluator)); // CONSTITUTION_CODE
+	                stmtUpdateMaster.setDate(++col, getCellDateSafe(row, 23, formatter, evaluator)); // MATURITY_DATE
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 24, formatter, evaluator)); // GL_SUB_HEAD_CODE
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 25, formatter, evaluator)); // GL_SUB_HEAD_DESC
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 26, formatter, evaluator)); // TENOR_MONTH
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 27, formatter, evaluator)); // EMI
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 28, formatter, evaluator)); // SEGMENT
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 29, formatter, evaluator)); // FACILITY
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 30, formatter, evaluator)); // PAST_DUE
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 31, formatter, evaluator)); // PAST_DUE_DAYS
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 32, formatter, evaluator)); // ASSET
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 33, formatter, evaluator)); // PROVISION
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 34, formatter, evaluator)); // UNSECURED
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 35, formatter, evaluator)); // INT_BUCKET
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 36, formatter, evaluator)); // STAFF
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 37, formatter, evaluator)); // SMME
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 38, formatter, evaluator)); // LABOD
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 39, formatter, evaluator)); // NEW_AC
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 40, formatter, evaluator)); // UNDRAWN
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 41, formatter, evaluator)); // SECTOR
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 42, formatter, evaluator)); // PERIOD
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 43, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 44, formatter, evaluator)); // STAGE
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 45, formatter, evaluator)); // ECL_PROVISION
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 47, formatter, evaluator)); // MAT_BUCKET
+	                stmtUpdateMaster.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
+	                stmtUpdateMaster.setString(++col, userid);
+	                stmtUpdateMaster.setString(++col, "Y"); // ENTRY_FLG
+	                stmtUpdateMaster.setString(++col, accountNo);
+	                stmtUpdateMaster.setDate(++col, reportDate);
+
+	                int updatedRows = stmtUpdateMaster.executeUpdate();
+
+	                // 🟢 If UPDATE didn't affect any rows, INSERT new record
+	                if (updatedRows == 0) {
+	                    col = 0;
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 0, formatter, evaluator)); // SOL_ID
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 1, formatter, evaluator)); // CUSTOMER_ID
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 3, formatter, evaluator)); // CUSTOMER_NAME
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 4, formatter, evaluator)); // SCHM_CODE
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 5, formatter, evaluator)); // SCHM_DESC
+	                    stmtInsertMaster.setDate(++col, getCellDateSafe(row, 6, formatter, evaluator)); // ACCT_OPEN_DATE
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 7, formatter, evaluator)); // APPROVED_LIMIT
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 8, formatter, evaluator)); // SANCTION_LIMIT
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 9, formatter, evaluator)); // DISBURSED_AMT
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 10, formatter, evaluator)); // BALANCE_AS_ON
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 11, formatter, evaluator)); // CURRENCY
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 12, formatter, evaluator)); // BAL_EQUI_TO_BWP
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 14, formatter, evaluator)); // HUNDRED
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 15, formatter, evaluator)); // ACCRUED_INT_AMT
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 16, formatter, evaluator)); // MONTHLY_INTEREST
+	                    stmtInsertMaster.setDate(++col, getCellDateSafe(row, 17, formatter, evaluator)); // LAST_INTEREST_DEBIT_DATE
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 18, formatter, evaluator)); // ACCT_CLS_FLG
+	                    stmtInsertMaster.setDate(++col, getCellDateSafe(row, 19, formatter, evaluator)); // ACCT_CLOSE_DATE
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 20, formatter, evaluator)); // GENDER
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 21, formatter, evaluator)); // CLASSIFICATION_CODE
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 22, formatter, evaluator)); // CONSTITUTION_CODE
+	                    stmtInsertMaster.setDate(++col, getCellDateSafe(row, 23, formatter, evaluator)); // MATURITY_DATE
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 24, formatter, evaluator)); // GL_SUB_HEAD_CODE
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 25, formatter, evaluator)); // GL_SUB_HEAD_DESC
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 26, formatter, evaluator)); // TENOR_MONTH
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 27, formatter, evaluator)); // EMI
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 28, formatter, evaluator)); // SEGMENT
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 29, formatter, evaluator)); // FACILITY
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 30, formatter, evaluator)); // PAST_DUE
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 31, formatter, evaluator)); // PAST_DUE_DAYS
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 32, formatter, evaluator)); // ASSET
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 33, formatter, evaluator)); // PROVISION
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 34, formatter, evaluator)); // UNSECURED
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 35, formatter, evaluator)); // INT_BUCKET
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 36, formatter, evaluator)); // STAFF
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 37, formatter, evaluator)); // SMME
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 38, formatter, evaluator)); // LABOD
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 39, formatter, evaluator)); // NEW_AC
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 40, formatter, evaluator)); // UNDRAWN
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 41, formatter, evaluator)); // SECTOR
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 42, formatter, evaluator)); // PERIOD
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 43, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 44, formatter, evaluator)); // STAGE
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 45, formatter, evaluator)); // ECL_PROVISION
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 47, formatter, evaluator)); // MAT_BUCKET
+	                    stmtInsertMaster.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
+	                    stmtInsertMaster.setString(++col, userid);
+	                    stmtInsertMaster.setString(++col, "Y"); // ENTRY_FLG
+	                    stmtInsertMaster.setString(++col, "Y"); // BLBF_FLG
+	                    stmtInsertMaster.setString(++col, accountNo);
+	                    stmtInsertMaster.setDate(++col, reportDate);
+
+	                    stmtInsertMaster.addBatch();
+	                }
 
 	                savedCount++;
 	                count++;
 
 	                if (count % batchSize == 0) {
 	                    stmtBLBF.executeBatch();
-	                    stmtMaster.executeBatch();
+	                    stmtInsertMaster.executeBatch();
 	                    conn.commit();
 	                    evaluator.clearAllCachedResultValues();
 	                }
@@ -297,18 +359,17 @@ public class BLBF_Services {
 	        }
 
 	        stmtBLBF.executeBatch();
-	        stmtMaster.executeBatch();
+	        stmtInsertMaster.executeBatch();
 	        conn.commit();
 
 	        long duration = System.currentTimeMillis() - startTime;
-	        return "✅ BLBF Added successfully. Saved: " + savedCount + ", Skipped: " + skippedCount + ". Time taken: " + duration + " ms";
+	        return "✅ BLBF Upload complete. Saved: " + savedCount + ", Skipped: " + skippedCount + ". Time: " + duration + " ms";
 
 	    } catch (Exception e) {
 	        logger.error("❌ Error while processing BLBF Excel: {}", e.getMessage(), e);
-	        return "Error Occurred while reading Excel: " + e.getMessage();
+	        return "Error while reading Excel: " + e.getMessage();
 	    }
 	}
-
 
 
 	// ===== Helper methods =====
