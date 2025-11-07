@@ -559,10 +559,7 @@ PURPOSE		: BRRSREPORT
 			$("#resultModal").modal("hide");
 			$('#loader').modal('hide');
 
-			// Reload the page after a short delay to ensure the modal animation completes smoothly.
-			setTimeout(function () {
-				location.reload();
-			}, 300);
+			
 		}
 
 		function fileuploads(btn) {
@@ -620,6 +617,61 @@ PURPOSE		: BRRSREPORT
 
 
 	</script>
+	
+	<script>
+				function submitUpdate() {
+				    const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+
+				    // ✅ Store the previous page URL
+				    const previousUrl = document.referrer; // same as going back once in history
+
+				    // Show loader while processing
+				    $('#loader').modal('show');
+
+				    $.ajax({
+				        url: '/BRRS/Reports/updateMLA3',
+				        type: 'POST',
+				        data: formData,
+				        success: function (response) {
+				            $('#loader').modal('hide');
+
+				            // Show message via modal
+				            if (response && response.toLowerCase().includes('success')) {
+				                showResultModal('Success', response);
+				            } else {
+				                showResultModal('Information', response || 'No data updated.');
+				            }
+
+				            // ✅ Redirect back to the previous page after short delay
+				            setTimeout(() => {
+				                if (previousUrl) {
+				                    window.location.href = previousUrl;
+				                } else {
+				                    // fallback: just go back if referrer not found
+				                    window.history.back();
+				                }
+				            }, 1500);
+				        },
+				        error: function (xhr, status, error) {
+				            $('#loader').modal('hide');
+				            console.error("Update error:", error);
+
+				            showResultModal('Error', 'Failed to update record. Please try again.');
+
+				            // ✅ On error also return to previous page after delay
+				            setTimeout(() => {
+				                if (previousUrl) {
+				                    window.location.href = previousUrl;
+				                } else {
+				                    window.history.back();
+				                }
+				            }, 1500);
+				        }
+				    });
+				}
+
+			</script>
+			
 
 	<script>
 
@@ -785,60 +837,7 @@ PURPOSE		: BRRSREPORT
 	</script>
 
 
-	<script>
-			function submitUpdate() {
-			    const formData = $('#DetailForm').serialize(); // Ensure correct form ID
-
-			    // ✅ Store the previous page URL
-			    const previousUrl = document.referrer; // same as going back once in history
-
-			    // Show loader while processing
-			    $('#loader').modal('show');
-
-			    $.ajax({
-			        url: '/BRRS/Reports/updateMLA3',
-			        type: 'POST',
-			        data: formData,
-			        success: function (response) {
-			            $('#loader').modal('hide');
-
-			            // Show message via modal
-			            if (response && response.toLowerCase().includes('success')) {
-			                showResultModal('Success', response);
-			            } else {
-			                showResultModal('Information', response || 'No data updated.');
-			            }
-
-			            // ✅ Redirect back to the previous page after short delay
-			            setTimeout(() => {
-			                if (previousUrl) {
-			                    window.location.href = previousUrl;
-			                } else {
-			                    // fallback: just go back if referrer not found
-			                    window.history.back();
-			                }
-			            }, 1500);
-			        },
-			        error: function (xhr, status, error) {
-			            $('#loader').modal('hide');
-			            console.error("Update error:", error);
-
-			            showResultModal('Error', 'Failed to update record. Please try again.');
-
-			            // ✅ On error also return to previous page after delay
-			            setTimeout(() => {
-			                if (previousUrl) {
-			                    window.location.href = previousUrl;
-			                } else {
-			                    window.history.back();
-			                }
-			            }, 1500);
-			        }
-			    });
-			}
-
-		</script>
-		
+	
 		<script th:inline="javascript">
 			  $(document).ready(function () {
 			    $('#reportdetails').DataTable({
