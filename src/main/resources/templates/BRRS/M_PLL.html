@@ -729,14 +729,19 @@ PURPOSE		: BRRS_M_PLLREPORT
 		
 
 	</script>
-	
+	<script th:inline="javascript">
+		    const reportId = [[${reportid}]];
+		</script>
 	<script>
-	  function openMPLLDetail(elem, mode) {
-	    const acctNo = elem.getAttribute("data-acctNo");
-	    // Navigate to MPLL details page with parameters
-	    location.href = '/BRRS/Reports/MPLL_Detail?formmode=' + mode + '&acctNo=' + acctNo;
-	  }
+		function openMPLLDetail(elem, mode) {
+		  const acctNo = elem.getAttribute("data-acctNo");
+		  const asondate = elem.getAttribute("data-asondate"); 
+		  location.href = '/BRRS/Reports/${reportId}/Detailspage?formmode=' + mode + '&acctNo=' + acctNo + '&asondate=' + asondate;
+		}
+
 	</script>
+	
+
 
 
 	<script>
@@ -750,7 +755,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 	    $('#loader').modal('show');
 
 	    $.ajax({
-	        url: '/BRRS/Reports/updateMPLL',
+			url: `/BRRS/Reports/${reportId}/update`,
 	        type: 'POST',
 	        data: formData,
 	        success: function (response) {
@@ -1354,15 +1359,17 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<tbody style="font-family: Arial;">
 										<tr th:each="report, srlno : ${reportdetails}">
 											<td>
-												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record">
-													<i class="fas fa-edit" 
-													   style="color: black; cursor:pointer;"
-													   th:attr="data-acctNo=${report.acctNumber}"
-													   onclick="openMPLLDetail(this, 'edit')"></i>
-
-												</a>
+											    <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+											        <i class="fas fa-edit"
+											           style="color: black; cursor:pointer;"
+											           th:attr="data-acctNo=${report.acctNumber}, 
+											                    data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
+											           onclick="openMPLLDetail(this, 'edit')">
+											        </i>
+											    </a>
 											</td>
+
+
 
 											<td th:text="${srlno.index + 1}"></td>
 											<td th:text="${report.custId}"></td>

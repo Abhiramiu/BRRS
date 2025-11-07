@@ -3,6 +3,7 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -36,9 +38,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_PLL_Archival_Detail_Repo;
@@ -53,22 +59,21 @@ import com.bornfire.brrs.entities.M_PLL_Summary_Entity;
 @Component
 @Service
 
-
 public class BRRS_M_PLL_ReportService {
-private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportService.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportService.class);
+
 	@Autowired
 	private Environment env;
-	
+
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	BRRS_M_PLL_Detail_Repo BRRS_M_PLL_Detail_Repo;
-	
+
 	@Autowired
 	BRRS_M_PLL_Summary_Repo BRRS_M_PLL_Summary_Repo;
-	
+
 	@Autowired
 	BRRS_M_PLL_Archival_Detail_Repo BRRS_M_PLL_Archival_Detail_Repo;
 
@@ -76,13 +81,14 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 	BRRS_M_PLL_Archival_Summary_Repo BRRS_M_PLL_Archival_Summary_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
-	public ModelAndView getM_PLLView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+
+	public ModelAndView getM_PLLView(String reportId, String fromdate, String todate, String currency, String dtltype,
+			Pageable pageable, String type, String version) {
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;	
+		int startItem = currentPage * pageSize;
 
 		System.out.println("testing");
 		System.out.println(version);
@@ -97,46 +103,48 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
 				// ", BRF1_REPORT_ENTITY.class)
 				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = BRRS_M_PLL_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+				T1Master = BRRS_M_PLL_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate),
+						version);
 
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 
 			mv.addObject("reportsummary", T1Master);
-		} else {		
+		} else {
 
-		List<M_PLL_Summary_Entity> T1Master = new ArrayList<M_PLL_Summary_Entity>();
-		try {
-			Date d1 = dateformat.parse(todate);
-			// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
+			List<M_PLL_Summary_Entity> T1Master = new ArrayList<M_PLL_Summary_Entity>();
+			try {
+				Date d1 = dateformat.parse(todate);
+				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
 
-			//T1Master = hs.createQuery("from  BRF1_REPORT_ENTITY a where a.report_date = ?1 ", BRF1_REPORT_ENTITY.class)
-				//	.setParameter(1, df.parse(todate)).getResultList();
-			 T1Master=BRRS_M_PLL_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-			 
-		
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}	
+				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
+				// ", BRF1_REPORT_ENTITY.class)
+				// .setParameter(1, df.parse(todate)).getResultList();
+				T1Master = BRRS_M_PLL_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 			mv.addObject("reportsummary", T1Master);
 		}
 
 		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
 
 		mv.setViewName("BRRS/M_PLL");
-		
-		//mv.addObject("reportsummary", T1Master);
-		//mv.addObject("reportmaster", T1Master);
+
+		// mv.addObject("reportsummary", T1Master);
+		// mv.addObject("reportmaster", T1Master);
 		mv.addObject("displaymode", "summary");
-		//mv.addObject("reportsflag", "reportsflag");
-		//mv.addObject("menu", reportId);
+		// mv.addObject("reportsflag", "reportsflag");
+		// mv.addObject("menu", reportId);
 		System.out.println("scv" + mv.getViewName());
 
 		return mv;
-		}
-		public ModelAndView getM_PLLcurrentDtl(String reportId, String fromdate, String todate, String currency,
-				  String dtltype, Pageable pageable, String Filter, String type, String version) {
+	}
+
+	public ModelAndView getM_PLLcurrentDtl(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String Filter, String type, String version) {
 
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
@@ -168,7 +176,8 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 				// 🔹 Archival branch
 				List<M_PLL_Archival_Detail_Entity> T1Dt1;
 				if (rowId != null && columnId != null) {
-					T1Dt1 = BRRS_M_PLL_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+					T1Dt1 = BRRS_M_PLL_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
+							version);
 				} else {
 					T1Dt1 = BRRS_M_PLL_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
 				}
@@ -213,9 +222,8 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 		return mv;
 	}
 
-
 	public byte[] getM_PLLExcel(String filename, String reportId, String fromdate, String todate, String currency,
-									 String dtltype, String type, String version) throws Exception {
+			String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
@@ -283,20 +291,20 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-			
+
 			int startRow = 11;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_PLL_Summary_Entity record = dataList.get(i);
-					System.out.println("rownumber="+startRow + i);
+					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
-			
-					//R12
-					// Column B 
+
+					// R12
+					// Column B
 					Cell cell6 = row.createCell(1);
 					if (record.getR12_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR12_provi_loan_loss().doubleValue());
@@ -305,12 +313,11 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
-																								
+
 					row = sheet.getRow(12);
-					
-					//R13
-					// Column B 
+
+					// R13
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR13_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR13_provi_loan_loss().doubleValue());
@@ -319,10 +326,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(13);
-					
-					//R14
-					// Column B 
+					row = sheet.getRow(13);
+
+					// R14
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR14_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR14_provi_loan_loss().doubleValue());
@@ -331,10 +338,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(15);
-					
-					//R16
-					// Column B 
+					row = sheet.getRow(15);
+
+					// R16
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR16_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR16_provi_loan_loss().doubleValue());
@@ -343,10 +350,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(16);
-					
-					//R17
-					// Column B 
+					row = sheet.getRow(16);
+
+					// R17
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR17_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR17_provi_loan_loss().doubleValue());
@@ -355,10 +362,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(17);
-					
-					//R18
-					// Column B 
+					row = sheet.getRow(17);
+
+					// R18
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR18_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR18_provi_loan_loss().doubleValue());
@@ -367,10 +374,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(18);
-					
-					//R19
-					// Column B 
+					row = sheet.getRow(18);
+
+					// R19
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR19_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR19_provi_loan_loss().doubleValue());
@@ -379,10 +386,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(19);
-					
-					//R20
-					// Column B 
+					row = sheet.getRow(19);
+
+					// R20
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR20_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR20_provi_loan_loss().doubleValue());
@@ -391,10 +398,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(20);
-					
-					//R21
-					// Column B 
+					row = sheet.getRow(20);
+
+					// R21
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR21_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR21_provi_loan_loss().doubleValue());
@@ -403,10 +410,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(21);
-					
-					//R22
-					// Column B 
+					row = sheet.getRow(21);
+
+					// R22
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR22_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR22_provi_loan_loss().doubleValue());
@@ -415,10 +422,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(22);
-					
-					//R23
-					// Column B 
+					row = sheet.getRow(22);
+
+					// R23
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR23_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR23_provi_loan_loss().doubleValue());
@@ -427,10 +434,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(23);
-					
-					//R24
-					// Column B 
+					row = sheet.getRow(23);
+
+					// R24
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR24_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR24_provi_loan_loss().doubleValue());
@@ -439,10 +446,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(24);
-					
-					//R25
-					// Column B 
+					row = sheet.getRow(24);
+
+					// R25
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR25_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR25_provi_loan_loss().doubleValue());
@@ -451,10 +458,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(25);
-					
-					//R26
-					// Column B 
+					row = sheet.getRow(25);
+
+					// R26
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR26_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR26_provi_loan_loss().doubleValue());
@@ -463,10 +470,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(26);
-					
-					//R27
-					// Column B 
+					row = sheet.getRow(26);
+
+					// R27
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR27_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR27_provi_loan_loss().doubleValue());
@@ -475,10 +482,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(27);
-					
-					//R28
-					// Column B 
+					row = sheet.getRow(27);
+
+					// R28
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR28_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR28_provi_loan_loss().doubleValue());
@@ -487,10 +494,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(29);
-					
-					//R30
-					// Column B 
+					row = sheet.getRow(29);
+
+					// R30
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR30_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR30_provi_loan_loss().doubleValue());
@@ -499,10 +506,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(30);
-					
-					//R31
-					// Column B 
+					row = sheet.getRow(30);
+
+					// R31
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR31_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR31_provi_loan_loss().doubleValue());
@@ -511,10 +518,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(31);
-					
-					//R32
-					// Column B 
+					row = sheet.getRow(31);
+
+					// R32
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR32_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR32_provi_loan_loss().doubleValue());
@@ -523,10 +530,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(32);
-					
-					//R33
-					// Column B 
+					row = sheet.getRow(32);
+
+					// R33
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR33_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR33_provi_loan_loss().doubleValue());
@@ -535,10 +542,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(33);
-					
-					//R34
-					// Column B 
+					row = sheet.getRow(33);
+
+					// R34
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR34_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR34_provi_loan_loss().doubleValue());
@@ -547,10 +554,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(34);
-					
-					//R35
-					// Column B 
+					row = sheet.getRow(34);
+
+					// R35
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR35_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR35_provi_loan_loss().doubleValue());
@@ -559,10 +566,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(35);
-					
-					//R36
-					// Column B 
+					row = sheet.getRow(35);
+
+					// R36
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR36_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR36_provi_loan_loss().doubleValue());
@@ -571,10 +578,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(36);
-					
-					//R37
-					// Column B 
+					row = sheet.getRow(36);
+
+					// R37
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR37_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR37_provi_loan_loss().doubleValue());
@@ -583,10 +590,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(38);
-					
-					//R39
-					// Column B 
+					row = sheet.getRow(38);
+
+					// R39
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR39_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR39_provi_loan_loss().doubleValue());
@@ -595,10 +602,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(39);
-					
-					//R40
-					// Column B 
+					row = sheet.getRow(39);
+
+					// R40
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR40_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR40_provi_loan_loss().doubleValue());
@@ -607,10 +614,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(41);
-					
-					//R42
-					// Column B 
+					row = sheet.getRow(41);
+
+					// R42
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR42_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR42_provi_loan_loss().doubleValue());
@@ -619,10 +626,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(42);
-					
-					//R43
-					// Column B 
+					row = sheet.getRow(42);
+
+					// R43
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR43_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR43_provi_loan_loss().doubleValue());
@@ -631,10 +638,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(44);
-					
-					//R45
-					// Column B 
+					row = sheet.getRow(44);
+
+					// R45
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR45_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR45_provi_loan_loss().doubleValue());
@@ -643,10 +650,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(45);
-					
-					//R46
-					// Column B 
+					row = sheet.getRow(45);
+
+					// R46
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR46_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR46_provi_loan_loss().doubleValue());
@@ -655,10 +662,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(46);
-					
-					//R47
-					// Column B 
+					row = sheet.getRow(46);
+
+					// R47
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR47_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR47_provi_loan_loss().doubleValue());
@@ -667,10 +674,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(47);
-					
-					//R48
-					// Column B 
+					row = sheet.getRow(47);
+
+					// R48
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR48_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR48_provi_loan_loss().doubleValue());
@@ -679,10 +686,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(49);
-					
-					//R50
-					// Column B 
+					row = sheet.getRow(49);
+
+					// R50
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR50_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR50_provi_loan_loss().doubleValue());
@@ -691,10 +698,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(50);
-					
-					//R51
-					// Column B 
+					row = sheet.getRow(50);
+
+					// R51
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR51_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR51_provi_loan_loss().doubleValue());
@@ -703,10 +710,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(52);
-					
-					//R53
-					// Column B 
+					row = sheet.getRow(52);
+
+					// R53
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR53_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR53_provi_loan_loss().doubleValue());
@@ -715,10 +722,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(53);
-					
-					//R54
-					// Column B 
+					row = sheet.getRow(53);
+
+					// R54
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR54_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR54_provi_loan_loss().doubleValue());
@@ -727,10 +734,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(54);
-					
-					//R55
-					// Column B 
+					row = sheet.getRow(54);
+
+					// R55
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR55_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR55_provi_loan_loss().doubleValue());
@@ -739,10 +746,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(55);
-					
-					//R56
-					// Column B 
+					row = sheet.getRow(55);
+
+					// R56
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR56_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR56_provi_loan_loss().doubleValue());
@@ -751,10 +758,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(56);
-					
-					//R57
-					// Column B 
+					row = sheet.getRow(56);
+
+					// R57
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR57_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR57_provi_loan_loss().doubleValue());
@@ -763,10 +770,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(58);
-					
-					//R59
-					// Column B 
+					row = sheet.getRow(58);
+
+					// R59
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR59_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR59_provi_loan_loss().doubleValue());
@@ -775,10 +782,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(59);
-					
-					//R60
-					// Column B 
+					row = sheet.getRow(59);
+
+					// R60
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR60_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR60_provi_loan_loss().doubleValue());
@@ -787,10 +794,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(60);
-					
-					//R61
-					// Column B 
+					row = sheet.getRow(60);
+
+					// R61
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR61_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR61_provi_loan_loss().doubleValue());
@@ -799,10 +806,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(61);
-					
-					//R62
-					// Column B 
+					row = sheet.getRow(61);
+
+					// R62
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR62_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR62_provi_loan_loss().doubleValue());
@@ -811,10 +818,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(62);
-					
-					//R63
-					// Column B 
+					row = sheet.getRow(62);
+
+					// R63
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR63_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR63_provi_loan_loss().doubleValue());
@@ -823,12 +830,11 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
-				
- 				}
+
+				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {
-				
+
 			}
 
 			// Write the final workbook content to the in-memory stream.
@@ -840,11 +846,11 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 		}
 	}
 
-	public byte[] getM_PLLDetailExcel(String filename, String fromdate, String todate, String currency,
-										   String dtltype, String type, String version) {
-	    try {
-	        logger.info("Generating Excel for M_PLL Details...");
-	        System.out.println("came to Detail download service");
+	public byte[] getM_PLLDetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
+			String type, String version) {
+		try {
+			logger.info("Generating Excel for M_PLL Details...");
+			System.out.println("came to Detail download service");
 
 			if (type.equals("ARCHIVAL") & version != null) {
 				byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
@@ -852,122 +858,121 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PLL_ReportSe
 				return ARCHIVALreport;
 			}
 
-	        XSSFWorkbook workbook = new XSSFWorkbook();
-	        XSSFSheet sheet = workbook.createSheet("M_PLLDetails");
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("M_PLLDetails");
 
-	        // Common border style
-	        BorderStyle border = BorderStyle.THIN;
+			// Common border style
+			BorderStyle border = BorderStyle.THIN;
 
-	        // Header style (left aligned)
-	        CellStyle headerStyle = workbook.createCellStyle();
-	        Font headerFont = workbook.createFont();
-	        headerFont.setBold(true);
-	        headerFont.setFontHeightInPoints((short) 10);
-	        headerStyle.setFont(headerFont);
-	        headerStyle.setAlignment(HorizontalAlignment.LEFT);
-	        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-	        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-	        headerStyle.setBorderTop(border);
-	        headerStyle.setBorderBottom(border);
-	        headerStyle.setBorderLeft(border);
-	        headerStyle.setBorderRight(border);
+			// Header style (left aligned)
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
 
-	        // Right-aligned header style for ACCT BALANCE
-	        CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-	        rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-	        rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+			// Right-aligned header style for ACCT BALANCE
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 
-	        // Default data style (left aligned)
-	        CellStyle dataStyle = workbook.createCellStyle();
-	        dataStyle.setAlignment(HorizontalAlignment.LEFT);
-	        dataStyle.setBorderTop(border);
-	        dataStyle.setBorderBottom(border);
-	        dataStyle.setBorderLeft(border);
-	        dataStyle.setBorderRight(border);
+			// Default data style (left aligned)
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
 
-	        // ACCT BALANCE style (right aligned with 3 decimals)
-	        CellStyle balanceStyle = workbook.createCellStyle();
-	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-	        balanceStyle.setBorderTop(border);
-	        balanceStyle.setBorderBottom(border);
-	        balanceStyle.setBorderLeft(border);
-	        balanceStyle.setBorderRight(border);
+			// ACCT BALANCE style (right aligned with 3 decimals)
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
 
-	        // Header row
-	        String[] headers = {
-	            "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID", "REPORT_DATE"
-	        };
+			// Header row
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
+					"REPORT_DATE" };
 
-	        XSSFRow headerRow = sheet.createRow(0);
-	        for (int i = 0; i < headers.length; i++) {
-	            Cell cell = headerRow.createCell(i);
-	            cell.setCellValue(headers[i]);
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
 
-	            if (i == 3) { // ACCT BALANCE
-	                cell.setCellStyle(rightAlignedHeaderStyle);
-	            } else {
-	                cell.setCellStyle(headerStyle);
-	            }
+				if (i == 3) { // ACCT BALANCE
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
 
-	            sheet.setColumnWidth(i, 5000);
-	        }
+				sheet.setColumnWidth(i, 5000);
+			}
 
-	        // Get data
-	        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-	        List<M_PLL_Detail_Entity> reportData = BRRS_M_PLL_Detail_Repo.getdatabydateList(parsedToDate);
+			// Get data
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			List<M_PLL_Detail_Entity> reportData = BRRS_M_PLL_Detail_Repo.getdatabydateList(parsedToDate);
 
-	        if (reportData != null && !reportData.isEmpty()) {
-	            int rowIndex = 1;
-	            for (M_PLL_Detail_Entity item : reportData) {
-	                XSSFRow row = sheet.createRow(rowIndex++);
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (M_PLL_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
 
-	                row.createCell(0).setCellValue(item.getCustId());
-	                row.createCell(1).setCellValue(item.getAcctNumber());
-	                row.createCell(2).setCellValue(item.getAcctName());
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
 
-	                // ACCT BALANCE (right aligned, 3 decimal places)
-	                Cell balanceCell = row.createCell(3);
-	                if (item.getAcctBalanceInPula() != null) {
-	                    balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
-	                } else {
-	                    balanceCell.setCellValue(0.000);
-	                }
-	                balanceCell.setCellStyle(balanceStyle);
+					// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInPula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0.000);
+					}
+					balanceCell.setCellStyle(balanceStyle);
 
-	                row.createCell(4).setCellValue(item.getRowId());
-	                row.createCell(5).setCellValue(item.getColumnId());
-	                row.createCell(6).setCellValue(
-	                    item.getReportDate() != null ?
-	                    new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
-	                );
+					row.createCell(4).setCellValue(item.getRowId());
+					row.createCell(5).setCellValue(item.getColumnId());
+					row.createCell(6)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
 
-	                // Apply data style for all other cells
-	                for (int j = 0; j < 7; j++) {
-	                    if (j != 3) {
-	                        row.getCell(j).setCellStyle(dataStyle);
-	                    }
-	                }
-	            }
-	        } else {
-	            logger.info("No data found for M_PLL — only header will be written.");
-	        }
+					// Apply data style for all other cells
+					for (int j = 0; j < 7; j++) {
+						if (j != 3) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			} else {
+				logger.info("No data found for M_PLL — only header will be written.");
+			}
 
-	        // Write to byte[]
-	        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	        workbook.write(bos);
-	        workbook.close();
+			// Write to byte[]
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
 
-	        logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-	        return bos.toByteArray();
+			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+			return bos.toByteArray();
 
-	    } catch (Exception e) {
-	        logger.error("Error generating M_PLL Excel", e);
-	        return new byte[0];
-	    }
+		} catch (Exception e) {
+			logger.error("Error generating M_PLL Excel", e);
+			return new byte[0];
+		}
 	}
 
-public List<Object> getM_PLLArchival() {
+	public List<Object> getM_PLLArchival() {
 		List<Object> M_PLLArchivallist = new ArrayList<>();
 		try {
 			M_PLLArchivallist = BRRS_M_PLL_Archival_Summary_Repo.getM_PLLarchival();
@@ -984,7 +989,7 @@ public List<Object> getM_PLLArchival() {
 	}
 
 	public byte[] getExcelM_PLLARCHIVAL(String filename, String reportId, String fromdate, String todate,
-										   String currency, String dtltype, String type, String version) throws Exception {
+			String currency, String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 		if (type.equals("ARCHIVAL") & version != null) {
 
@@ -1018,8 +1023,8 @@ public List<Object> getM_PLLArchival() {
 		// This try-with-resources block is perfect. It guarantees all resources are
 		// closed automatically.
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-			 Workbook workbook = WorkbookFactory.create(templateInputStream);
-			 ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
 			Sheet sheet = workbook.getSheetAt(0);
 
@@ -1052,20 +1057,19 @@ public List<Object> getM_PLLArchival() {
 			numberStyle.setBorderRight(BorderStyle.THIN);
 			numberStyle.setFont(font);
 			// --- End of Style Definitions ---
-	int startRow = 11;
+			int startRow = 11;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_PLL_Archival_Summary_Entity record = dataList.get(i);
-					System.out.println("rownumber="+startRow + i);
+					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
 
-					
-					//R12
-					// Column B 
+					// R12
+					// Column B
 					Cell cell6 = row.createCell(1);
 					if (record.getR12_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR12_provi_loan_loss().doubleValue());
@@ -1074,12 +1078,11 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-					
-																								
+
 					row = sheet.getRow(12);
-					
-					//R13
-					// Column B 
+
+					// R13
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR13_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR13_provi_loan_loss().doubleValue());
@@ -1088,10 +1091,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(13);
-					
-					//R14
-					// Column B 
+					row = sheet.getRow(13);
+
+					// R14
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR14_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR14_provi_loan_loss().doubleValue());
@@ -1100,10 +1103,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(15);
-					
-					//R16
-					// Column B 
+					row = sheet.getRow(15);
+
+					// R16
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR16_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR16_provi_loan_loss().doubleValue());
@@ -1112,10 +1115,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(16);
-					
-					//R17
-					// Column B 
+					row = sheet.getRow(16);
+
+					// R17
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR17_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR17_provi_loan_loss().doubleValue());
@@ -1124,10 +1127,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(17);
-					
-					//R18
-					// Column B 
+					row = sheet.getRow(17);
+
+					// R18
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR18_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR18_provi_loan_loss().doubleValue());
@@ -1136,10 +1139,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(18);
-					
-					//R19
-					// Column B 
+					row = sheet.getRow(18);
+
+					// R19
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR19_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR19_provi_loan_loss().doubleValue());
@@ -1148,10 +1151,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(19);
-					
-					//R20
-					// Column B 
+					row = sheet.getRow(19);
+
+					// R20
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR20_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR20_provi_loan_loss().doubleValue());
@@ -1160,10 +1163,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(20);
-					
-					//R21
-					// Column B 
+					row = sheet.getRow(20);
+
+					// R21
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR21_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR21_provi_loan_loss().doubleValue());
@@ -1172,10 +1175,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(21);
-					
-					//R22
-					// Column B 
+					row = sheet.getRow(21);
+
+					// R22
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR22_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR22_provi_loan_loss().doubleValue());
@@ -1184,10 +1187,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(22);
-					
-					//R23
-					// Column B 
+					row = sheet.getRow(22);
+
+					// R23
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR23_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR23_provi_loan_loss().doubleValue());
@@ -1196,10 +1199,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(23);
-					
-					//R24
-					// Column B 
+					row = sheet.getRow(23);
+
+					// R24
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR24_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR24_provi_loan_loss().doubleValue());
@@ -1208,10 +1211,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(24);
-					
-					//R25
-					// Column B 
+					row = sheet.getRow(24);
+
+					// R25
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR25_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR25_provi_loan_loss().doubleValue());
@@ -1220,10 +1223,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(25);
-					
-					//R26
-					// Column B 
+					row = sheet.getRow(25);
+
+					// R26
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR26_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR26_provi_loan_loss().doubleValue());
@@ -1232,10 +1235,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(26);
-					
-					//R27
-					// Column B 
+					row = sheet.getRow(26);
+
+					// R27
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR27_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR27_provi_loan_loss().doubleValue());
@@ -1244,10 +1247,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(27);
-					
-					//R28
-					// Column B 
+					row = sheet.getRow(27);
+
+					// R28
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR28_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR28_provi_loan_loss().doubleValue());
@@ -1256,10 +1259,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(29);
-					
-					//R30
-					// Column B 
+					row = sheet.getRow(29);
+
+					// R30
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR30_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR30_provi_loan_loss().doubleValue());
@@ -1268,10 +1271,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(30);
-					
-					//R31
-					// Column B 
+					row = sheet.getRow(30);
+
+					// R31
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR31_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR31_provi_loan_loss().doubleValue());
@@ -1280,10 +1283,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(31);
-					
-					//R32
-					// Column B 
+					row = sheet.getRow(31);
+
+					// R32
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR32_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR32_provi_loan_loss().doubleValue());
@@ -1292,10 +1295,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(32);
-					
-					//R33
-					// Column B 
+					row = sheet.getRow(32);
+
+					// R33
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR33_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR33_provi_loan_loss().doubleValue());
@@ -1304,10 +1307,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(33);
-					
-					//R34
-					// Column B 
+					row = sheet.getRow(33);
+
+					// R34
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR34_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR34_provi_loan_loss().doubleValue());
@@ -1316,10 +1319,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(34);
-					
-					//R35
-					// Column B 
+					row = sheet.getRow(34);
+
+					// R35
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR35_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR35_provi_loan_loss().doubleValue());
@@ -1328,10 +1331,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(35);
-					
-					//R36
-					// Column B 
+					row = sheet.getRow(35);
+
+					// R36
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR36_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR36_provi_loan_loss().doubleValue());
@@ -1340,10 +1343,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(36);
-					
-					//R37
-					// Column B 
+					row = sheet.getRow(36);
+
+					// R37
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR37_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR37_provi_loan_loss().doubleValue());
@@ -1352,10 +1355,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(38);
-					
-					//R39
-					// Column B 
+					row = sheet.getRow(38);
+
+					// R39
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR39_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR39_provi_loan_loss().doubleValue());
@@ -1364,10 +1367,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(39);
-					
-					//R40
-					// Column B 
+					row = sheet.getRow(39);
+
+					// R40
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR40_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR40_provi_loan_loss().doubleValue());
@@ -1376,10 +1379,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(41);
-					
-					//R42
-					// Column B 
+					row = sheet.getRow(41);
+
+					// R42
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR42_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR42_provi_loan_loss().doubleValue());
@@ -1388,10 +1391,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(42);
-					
-					//R43
-					// Column B 
+					row = sheet.getRow(42);
+
+					// R43
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR43_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR43_provi_loan_loss().doubleValue());
@@ -1400,10 +1403,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(44);
-					
-					//R45
-					// Column B 
+					row = sheet.getRow(44);
+
+					// R45
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR45_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR45_provi_loan_loss().doubleValue());
@@ -1412,10 +1415,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(45);
-					
-					//R46
-					// Column B 
+					row = sheet.getRow(45);
+
+					// R46
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR46_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR46_provi_loan_loss().doubleValue());
@@ -1424,10 +1427,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(46);
-					
-					//R47
-					// Column B 
+					row = sheet.getRow(46);
+
+					// R47
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR47_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR47_provi_loan_loss().doubleValue());
@@ -1436,10 +1439,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(47);
-					
-					//R48
-					// Column B 
+					row = sheet.getRow(47);
+
+					// R48
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR48_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR48_provi_loan_loss().doubleValue());
@@ -1448,10 +1451,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(49);
-					
-					//R50
-					// Column B 
+					row = sheet.getRow(49);
+
+					// R50
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR50_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR50_provi_loan_loss().doubleValue());
@@ -1460,10 +1463,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(50);
-					
-					//R51
-					// Column B 
+					row = sheet.getRow(50);
+
+					// R51
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR51_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR51_provi_loan_loss().doubleValue());
@@ -1472,10 +1475,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(52);
-					
-					//R53
-					// Column B 
+					row = sheet.getRow(52);
+
+					// R53
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR53_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR53_provi_loan_loss().doubleValue());
@@ -1484,10 +1487,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(53);
-					
-					//R54
-					// Column B 
+					row = sheet.getRow(53);
+
+					// R54
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR54_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR54_provi_loan_loss().doubleValue());
@@ -1496,10 +1499,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(54);
-					
-					//R55
-					// Column B 
+					row = sheet.getRow(54);
+
+					// R55
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR55_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR55_provi_loan_loss().doubleValue());
@@ -1508,10 +1511,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(55);
-					
-					//R56
-					// Column B 
+					row = sheet.getRow(55);
+
+					// R56
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR56_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR56_provi_loan_loss().doubleValue());
@@ -1520,10 +1523,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(56);
-					
-					//R57
-					// Column B 
+					row = sheet.getRow(56);
+
+					// R57
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR57_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR57_provi_loan_loss().doubleValue());
@@ -1532,10 +1535,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(58);
-					
-					//R59
-					// Column B 
+					row = sheet.getRow(58);
+
+					// R59
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR59_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR59_provi_loan_loss().doubleValue());
@@ -1544,10 +1547,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(59);
-					
-					//R60
-					// Column B 
+					row = sheet.getRow(59);
+
+					// R60
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR60_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR60_provi_loan_loss().doubleValue());
@@ -1556,10 +1559,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(60);
-					
-					//R61
-					// Column B 
+					row = sheet.getRow(60);
+
+					// R61
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR61_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR61_provi_loan_loss().doubleValue());
@@ -1568,10 +1571,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(61);
-					
-					//R62
-					// Column B 
+					row = sheet.getRow(61);
+
+					// R62
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR62_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR62_provi_loan_loss().doubleValue());
@@ -1580,10 +1583,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellValue("");
 						cell6.setCellStyle(textStyle);
 					}
-	row = sheet.getRow(62);
-					
-					//R63
-					// Column B 
+					row = sheet.getRow(62);
+
+					// R63
+					// Column B
 					cell6 = row.createCell(1);
 					if (record.getR63_provi_loan_loss() != null) {
 						cell6.setCellValue(record.getR63_provi_loan_loss().doubleValue());
@@ -1593,11 +1596,10 @@ public List<Object> getM_PLLArchival() {
 						cell6.setCellStyle(textStyle);
 					}
 
-
- 				}
+				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {
-				
+
 			}
 
 			// Write the final workbook content to the in-memory stream.
@@ -1609,130 +1611,128 @@ public List<Object> getM_PLLArchival() {
 		}
 	}
 
-public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-										 String dtltype, String type, String version) {
+	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
+			String dtltype, String type, String version) {
 		try {
 			logger.info("Generating Excel for BRRS_M_PLL ARCHIVAL Details...");
 			System.out.println("came to Detail download service");
 			if (type.equals("ARCHIVAL") & version != null) {
 
 			}
- XSSFWorkbook workbook = new XSSFWorkbook();
-	        XSSFSheet sheet = workbook.createSheet("M_PLLDetails");
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("M_PLLDetails");
 
-	        // Common border style
-	        BorderStyle border = BorderStyle.THIN;
+			// Common border style
+			BorderStyle border = BorderStyle.THIN;
 
-	        // Header style (left aligned)
-	        CellStyle headerStyle = workbook.createCellStyle();
-	        Font headerFont = workbook.createFont();
-	        headerFont.setBold(true);
-	        headerFont.setFontHeightInPoints((short) 10);
-	        headerStyle.setFont(headerFont);
-	        headerStyle.setAlignment(HorizontalAlignment.LEFT);
-	        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-	        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-	        headerStyle.setBorderTop(border);
-	        headerStyle.setBorderBottom(border);
-	        headerStyle.setBorderLeft(border);
-	        headerStyle.setBorderRight(border);
+			// Header style (left aligned)
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
 
-	        // Right-aligned header style for ACCT BALANCE
-	        CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-	        rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-	        rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+			// Right-aligned header style for ACCT BALANCE
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 
-	        // Default data style (left aligned)
-	        CellStyle dataStyle = workbook.createCellStyle();
-	        dataStyle.setAlignment(HorizontalAlignment.LEFT);
-	        dataStyle.setBorderTop(border);
-	        dataStyle.setBorderBottom(border);
-	        dataStyle.setBorderLeft(border);
-	        dataStyle.setBorderRight(border);
+			// Default data style (left aligned)
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
 
-	        // ACCT BALANCE style (right aligned with 3 decimals)
-	        CellStyle balanceStyle = workbook.createCellStyle();
-	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-	        balanceStyle.setBorderTop(border);
-	        balanceStyle.setBorderBottom(border);
-	        balanceStyle.setBorderLeft(border);
-	        balanceStyle.setBorderRight(border);
+			// ACCT BALANCE style (right aligned with 3 decimals)
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
 
-	        // Header row
-	        String[] headers = {
-	            "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID", "REPORT_DATE"
-	        };
+			// Header row
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
+					"REPORT_DATE" };
 
-	        XSSFRow headerRow = sheet.createRow(0);
-	        for (int i = 0; i < headers.length; i++) {
-	            Cell cell = headerRow.createCell(i);
-	            cell.setCellValue(headers[i]);
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
 
-	            if (i == 3) { // ACCT BALANCE
-	                cell.setCellStyle(rightAlignedHeaderStyle);
-	            } else {
-	                cell.setCellStyle(headerStyle);
-	            }
+				if (i == 3) { // ACCT BALANCE
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
 
-	            sheet.setColumnWidth(i, 5000);
-	        }
+				sheet.setColumnWidth(i, 5000);
+			}
 
-	     // Get data
-	     			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-	     			List<M_PLL_Archival_Detail_Entity> reportData = BRRS_M_PLL_Archival_Detail_Repo
-	     					.getdatabydateList(parsedToDate, version);
+			// Get data
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			List<M_PLL_Archival_Detail_Entity> reportData = BRRS_M_PLL_Archival_Detail_Repo
+					.getdatabydateList(parsedToDate, version);
 
-	     			if (reportData != null && !reportData.isEmpty()) {
-	     				int rowIndex = 1;
-	     				for (M_PLL_Archival_Detail_Entity item : reportData) {
-	     					XSSFRow row = sheet.createRow(rowIndex++);
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (M_PLL_Archival_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
 
-	     					row.createCell(0).setCellValue(item.getCustId());
-	     					row.createCell(1).setCellValue(item.getAcctNumber());
-	     					row.createCell(2).setCellValue(item.getAcctName());
+					row.createCell(0).setCellValue(item.getCustId());
+					row.createCell(1).setCellValue(item.getAcctNumber());
+					row.createCell(2).setCellValue(item.getAcctName());
 
-	                // ACCT BALANCE (right aligned, 3 decimal places)
-	                Cell balanceCell = row.createCell(3);
-	                if (item.getAcctBalanceInPula() != null) {
-	                    balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
-	                } else {
-	                    balanceCell.setCellValue(0.000);
-	                }
-	                balanceCell.setCellStyle(balanceStyle);
+					// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcctBalanceInPula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0.000);
+					}
+					balanceCell.setCellStyle(balanceStyle);
 
-	                row.createCell(4).setCellValue(item.getRowId());
-	                row.createCell(5).setCellValue(item.getColumnId());
-	                row.createCell(6).setCellValue(
-	                    item.getReportDate() != null ?
-	                    new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
-	                );
+					row.createCell(4).setCellValue(item.getRowId());
+					row.createCell(5).setCellValue(item.getColumnId());
+					row.createCell(6)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
 
-	                // Apply data style for all other cells
-	                for (int j = 0; j < 7; j++) {
-	                    if (j != 3) {
-	                        row.getCell(j).setCellStyle(dataStyle);
-	                    }
-	                }
-	            }
-	        } else {
-	            logger.info("No data found for M_PLL — only header will be written.");
-	        }
+					// Apply data style for all other cells
+					for (int j = 0; j < 7; j++) {
+						if (j != 3) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			} else {
+				logger.info("No data found for M_PLL — only header will be written.");
+			}
 
-	        // Write to byte[]
-	        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	        workbook.write(bos);
-	        workbook.close();
+			// Write to byte[]
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
 
-	        logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-	        return bos.toByteArray();
+			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+			return bos.toByteArray();
 
-	    } catch (Exception e) {
-	        logger.error("Error generating M_PLL Excel", e);
-	        return new byte[0];
-	    }
+		} catch (Exception e) {
+			logger.error("Error generating M_PLL Excel", e);
+			return new byte[0];
+		}
 	}
-
 
 //public boolean updateProvision(M_PLL_Detail_Entity mpllData) {
 //    try {
@@ -1758,78 +1758,97 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 //    }
 //}
 
-@Autowired
-private BRRS_M_PLL_Detail_Repo M_PLL_Detail_Repo;
+	@Autowired
+	private BRRS_M_PLL_Detail_Repo M_PLL_Detail_Repo;
 
-@Autowired
-private JdbcTemplate jdbcTemplate;  // ✅ Add this for procedure call
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
-@Transactional
-public boolean updateProvision(M_PLL_Detail_Entity mpllData) {
-    try {
-        M_PLL_Detail_Entity existing = M_PLL_Detail_Repo.findByAcctNumber(mpllData.getAcctNumber());
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+		ModelAndView mv = new ModelAndView("BRRS/M_PLL"); 
 
-        System.out.println("Came to services");
+		if (acctNo != null) {
+			M_PLL_Detail_Entity mpllEntity = M_PLL_Detail_Repo.findByAcctNumber(acctNo);
+			if (mpllEntity != null && mpllEntity.getReportDate() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(mpllEntity.getReportDate());
+				mv.addObject("asondate", formattedDate);
+			}
+			mv.addObject("mpllData", mpllEntity);
+		}
 
-        if (existing != null) {
+		mv.addObject("displaymode", "edit");
+		mv.addObject("formmode", formMode != null ? formMode : "edit");
+		return mv;
+	}
 
-            boolean isChanged = false;
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+		try {
+			String acctNo = request.getParameter("acctNumber");
+			String provisionStr = request.getParameter("provision");
+			String acctName = request.getParameter("acctName");
+			String reportDateStr = request.getParameter("reportDate");
 
-            if (existing.getProvision() == null || 
-                mpllData.getProvision() == null || 
-                existing.getProvision().compareTo(mpllData.getProvision()) != 0) {
-                existing.setProvision(mpllData.getProvision());
-                isChanged = true;
-            }
+			logger.info("Received update for ACCT_NO: {}", acctNo);
 
-            if (mpllData.getAcctName() != null && 
-                !mpllData.getAcctName().equals(existing.getAcctName())) {
-                existing.setAcctName(mpllData.getAcctName());
-                isChanged = true;
-            }
+			M_PLL_Detail_Entity existing = M_PLL_Detail_Repo.findByAcctNumber(acctNo);
+			if (existing == null) {
+				logger.warn("No record found for ACCT_NO: {}", acctNo);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+			}
 
-            if (isChanged) {
-                M_PLL_Detail_Repo.save(existing);
-                System.out.println("Record updated successfully.");
+			boolean isChanged = false;
 
-                // ✅ Prepare formatted date for procedure
-                String formattedDate = new java.text.SimpleDateFormat("dd-MM-yyyy")
-                        .format(mpllData.getReportDate());
+			if (acctName != null && !acctName.isEmpty()) {
+				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+					existing.setAcctName(acctName);
+					isChanged = true;
+					logger.info("Account name updated to {}", acctName);
+				}
+			}
 
-                // ✅ Register callback to run procedure *after commit*
-                org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
-                        new org.springframework.transaction.support.TransactionSynchronizationAdapter() {
-                            @Override
-                            public void afterCommit() {
-                                try {
-                                    System.out.println("Transaction committed — calling procedure now...");
-                                    jdbcTemplate.update("BEGIN BRRS_M_PLL_SUMMARY_PROCEDURE(?); END;", formattedDate);
-                                    System.out.println("Procedure executed successfully after commit.");
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                );
+			if (provisionStr != null && !provisionStr.isEmpty()) {
+				BigDecimal newProvision = new BigDecimal(provisionStr);
+				if (existing.getProvision() == null || existing.getProvision().compareTo(newProvision) != 0) {
+					existing.setProvision(newProvision);
+					isChanged = true;
+					logger.info("Provision updated to {}", newProvision);
+				}
+			}
+			if (isChanged) {
+				M_PLL_Detail_Repo.save(existing);
+				logger.info("Record updated successfully for account {}", acctNo);
 
-            } else {
-                System.out.println("No changes detected. Procedure not executed.");
-            }
+				// Format date for procedure
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
 
-            return true;
+				// Run summary procedure after commit
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+					@Override
+					public void afterCommit() {
+						try {
+							logger.info("Transaction committed — calling BRRS_M_PLL_SUMMARY_PROCEDURE({})",
+									formattedDate);
+							jdbcTemplate.update("BEGIN BRRS_M_PLL_SUMMARY_PROCEDURE(?); END;", formattedDate);
+							logger.info("Procedure executed successfully after commit.");
+						} catch (Exception e) {
+							logger.error("Error executing procedure after commit", e);
+						}
+					}
+				});
 
-        } else {
-            System.out.println("Record not found for Account No: " + mpllData.getAcctNumber());
-            return false;
-        }
+				return ResponseEntity.ok("Record updated successfully!");
+			} else {
+				logger.info("No changes detected for ACCT_NO: {}", acctNo);
+				return ResponseEntity.ok("No changes were made.");
+			}
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        return false;
-    }
+		} catch (Exception e) {
+			logger.error("Error updating M_PLL record", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+		}
+	}
+
 }
-}
-
-
-
-
