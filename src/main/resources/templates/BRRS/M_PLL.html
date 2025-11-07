@@ -322,7 +322,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 		}
 	</style>
 
-	
+
 
 
 	<script th:inline="javascript">
@@ -361,9 +361,9 @@ PURPOSE		: BRRS_M_PLLREPORT
 			var Callurl;
 			$('#loader').modal('show');
 			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 			console.log(Callurl);
-			
+
 		}
 
 		function showsummary() {
@@ -458,9 +458,9 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 
 		function closemodel() {
-		    // Hide the modals
-		    $('#alert').modal('hide');
-		    $('#resultModal').modal('hide');
+			// Hide the modals
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
 
 		}
 
@@ -629,86 +629,88 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 	<script th:inline="javascript">
 		$(document).ready(function () {
-			    $('#reportdetails').DataTable({
-			      scrollY: "400px",            // ✅ Adjust vertical scroll height
-			      scrollX: true,               // ✅ Horizontal scrolling
-			      scrollCollapse: true,
-			      autoWidth: false,
-			      paging: true,
-			      searching: true,
-			      lengthChange: false,
-			      ordering: true,
-			      pageLength: 10,
-			      fixedHeader: {
-			        header: true,
-			        footer: false
-			      },                           // ✅ Ensures header stays visible
-			      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-			    });
-			  });
+			$('#reportdetails').DataTable({
+				scrollY: "400px",            // ✅ Adjust vertical scroll height
+				scrollX: true,               // ✅ Horizontal scrolling
+				scrollCollapse: true,
+				autoWidth: false,
+				paging: true,
+				searching: true,
+				lengthChange: false,
+				ordering: true,
+				pageLength: 10,
+				fixedHeader: {
+					header: true,
+					footer: false
+				},                           // ✅ Ensures header stays visible
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			});
+		});
 
 
 
 	</script>
-	
+
 	<style>
-		  .dataTables_scrollHeadInner,
-		  table.dataTable {
-		    width: 100% !important;
-		    margin: -2px auto !important;
-		  }
+		.dataTables_scrollHeadInner,
+		table.dataTable {
+			width: 100% !important;
+			margin: -2px auto !important;
+		}
 
-		  /* ✅ Prevent wrapping in all table cells */
-		  #reportdetails th,
-		  #reportdetails td {
-		    white-space: nowrap;
-		  }
-		</style>
+		/* ✅ Prevent wrapping in all table cells */
+		#reportdetails th,
+		#reportdetails td {
+			white-space: nowrap;
+		}
+	</style>
 
-		
-		<style>
-			  .left-arrow-circle {
-			    background-color: white;
-			    color: #007bff;
-			    border-radius: 50%;
-			    padding: 8px;
-			    margin-right: 10px;
-			    cursor: pointer;
-			  }
 
-			  /* 🚌 Bus display style box */
-			  .boards {
-			    background-color: rgb(107, 122, 143);
-			    color: white;
-			    padding: 6px -1px;
-			    border-radius: 8px;
-			    overflow: hidden;
-			    white-space: nowrap;
-			    width: 500px; /* adjust width as needed */
-			    box-shadow: 0 0 10px rgb(107, 122, 143);
-			    position: relative;
-				transform: translateY(10px);
-			  }
+	<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
 
-			  /* ✨ Scrolling animation */
-			  .scrolling-text {
-			    display: inline-block;
-			    font-family: "Courier New", monospace;
-			    font-weight: bold;
-			    letter-spacing: 1px;
-			    animation: scroll-left 10s linear infinite;
-			  }
+		/* 🚌 Bus display style box */
+		.boards {
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 6px -1px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			width: 500px;
+			/* adjust width as needed */
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+			transform: translateY(10px);
+		}
 
-			  /* Animation keyframes */
-			  @keyframes scroll-left {
-			    0% {
-			      transform: translateX(100%);
-			    }
-			    100% {
-			      transform: translateX(-100%);
-			    }
-			  }
-			</style>
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
 
 	<script>
 		function editRecord(icon) {
@@ -726,77 +728,82 @@ PURPOSE		: BRRS_M_PLLREPORT
 			document.getElementById('submitButton').style.display = 'inline-block';
 		}
 
-		
+
 
 	</script>
 	<script th:inline="javascript">
-		    const reportId = [[${reportid}]];
-		</script>
+	    /*<![CDATA[*/
+	    const reportId = /*[[${reportid}]]*/ null;
+	    /*]]>*/
+	</script>
+
 	<script>
-		function openMPLLDetail(elem, mode) {
-		  const acctNo = elem.getAttribute("data-acctNo");
-		  const asondate = elem.getAttribute("data-asondate"); 
-		  location.href = '/BRRS/Reports/${reportId}/Detailspage?formmode=' + mode + '&acctNo=' + acctNo + '&asondate=' + asondate;
+	    function openMPLLDetail(elem, mode) {
+	        const acctNo = elem.getAttribute("data-acctNo");
+	        const asondate = elem.getAttribute("data-asondate");
+	        
+	        // Use the 'reportId' variable initialized above
+	        // Use backticks (`) for a template literal to easily include the variable
+	        location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+	    }
+	</script>
+
+
+
+
+	<script>
+		function submitMPLLUpdate() {
+			const formData = $('#mpllDetailForm').serialize(); // Ensure correct form ID
+
+			// ✅ Store the previous page URL
+			const previousUrl = document.referrer; // same as going back once in history
+
+			// Show loader while processing
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: `/BRRS/Reports/${reportId}/update`,
+				type: 'POST',
+				data: formData,
+				success: function (response) {
+					$('#loader').modal('hide');
+
+					// Show message via modal
+					if (response && response.toLowerCase().includes('success')) {
+						showResultModal('Success', response);
+					} else {
+						showResultModal('Information', response || 'No data updated.');
+					}
+
+					// ✅ Redirect back to the previous page after short delay
+					setTimeout(() => {
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							// fallback: just go back if referrer not found
+							window.history.back();
+						}
+					}, 1500);
+				},
+				error: function (xhr, status, error) {
+					$('#loader').modal('hide');
+					console.error("Update error:", error);
+
+					showResultModal('Error', 'Failed to update record. Please try again.');
+
+					// ✅ On error also return to previous page after delay
+					setTimeout(() => {
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							window.history.back();
+						}
+					}, 1500);
+				}
+			});
 		}
 
 	</script>
-	
-
-
-
-	<script>
-	function submitMPLLUpdate() {
-	    const formData = $('#mpllDetailForm').serialize(); // Ensure correct form ID
-
-	    // ✅ Store the previous page URL
-	    const previousUrl = document.referrer; // same as going back once in history
-
-	    // Show loader while processing
-	    $('#loader').modal('show');
-
-	    $.ajax({
-			url: `/BRRS/Reports/${reportId}/update`,
-	        type: 'POST',
-	        data: formData,
-	        success: function (response) {
-	            $('#loader').modal('hide');
-
-	            // Show message via modal
-	            if (response && response.toLowerCase().includes('success')) {
-	                showResultModal('Success', response);
-	            } else {
-	                showResultModal('Information', response || 'No data updated.');
-	            }
-
-	            // ✅ Redirect back to the previous page after short delay
-	            setTimeout(() => {
-	                if (previousUrl) {
-	                    window.location.href = previousUrl;
-	                } else {
-	                    // fallback: just go back if referrer not found
-	                    window.history.back();
-	                }
-	            }, 1500);
-	        },
-	        error: function (xhr, status, error) {
-	            $('#loader').modal('hide');
-	            console.error("Update error:", error);
-
-	            showResultModal('Error', 'Failed to update record. Please try again.');
-
-	            // ✅ On error also return to previous page after delay
-	            setTimeout(() => {
-	                if (previousUrl) {
-	                    window.location.href = previousUrl;
-	                } else {
-	                    window.history.back();
-	                }
-	            }, 1500);
-	        }
-	    });
-	}
-
-</script>
 
 </head>
 
@@ -824,11 +831,11 @@ PURPOSE		: BRRS_M_PLLREPORT
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 							BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT
 						</h5>
-						
+
 						<!-- Moving bus-board text -->
-											  <div class="boards">
-											    <p class="scrolling-text">(30) MONTHLY SCHEDULE: M-PLL: PROVISIONS FOR LOAN LOSS (P'000)</p>
-											  </div>
+						<div class="boards">
+							<p class="scrolling-text">(30) MONTHLY SCHEDULE: M-PLL: PROVISIONS FOR LOAN LOSS (P'000)</p>
+						</div>
 
 					</div>
 
@@ -879,7 +886,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 							style="border-right: 1px solid #dee2e6;max-height:700px; overflow-y: auto;">
 							<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 								id="reports">
-								
+
 								<thead class="thead-light"
 									style="position: sticky; top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
 									<tr style="background-color: black; ">
@@ -1334,58 +1341,53 @@ PURPOSE		: BRRS_M_PLLREPORT
 			</div>
 
 			<div th:if="${displaymode == 'Details'}">
-			
+
 				<div class="row">
 					<div class="col-sm-12">
-						<div class="table-container"
-							style="border-right: 1px solid #dee2e6;">
-								<table
-									class="table table-striped table-bordered table-hover"
-									id="reportdetails">
-									<thead class="thead-light">
-										<tr>
-											<th>Edit</th>
-											<th>S No</th>
-											<th>CUST ID</th>
-											<th style="text-align:left;">ACCT NO</th>
-											<th>ACCT NAME</th>
-											<th style="text-align:right;">PROVISION AMOUNT</th>
-											<th style="text-align:left;">ROW ID</th>
-											<th>COLUMN ID</th>
-											<th>REPORT DATE</th>
-										</tr>
-									</thead>
+						<div class="table-container" style="border-right: 1px solid #dee2e6;">
+							<table class="table table-striped table-bordered table-hover" id="reportdetails">
+								<thead class="thead-light">
+									<tr>
+										<th>Edit</th>
+										<th>S No</th>
+										<th>CUST ID</th>
+										<th style="text-align:left;">ACCT NO</th>
+										<th>ACCT NAME</th>
+										<th style="text-align:right;">PROVISION AMOUNT</th>
+										<th style="text-align:left;">ROW ID</th>
+										<th>COLUMN ID</th>
+										<th>REPORT DATE</th>
+									</tr>
+								</thead>
 
-									<tbody style="font-family: Arial;">
-										<tr th:each="report, srlno : ${reportdetails}">
-											<td>
-											    <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-											        <i class="fas fa-edit"
-											           style="color: black; cursor:pointer;"
-											           th:attr="data-acctNo=${report.acctNumber}, 
+								<tbody style="font-family: Arial;">
+									<tr th:each="report, srlno : ${reportdetails}">
+										<td>
+											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+												<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber}, 
 											                    data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
-											           onclick="openMPLLDetail(this, 'edit')">
-											        </i>
-											    </a>
-											</td>
+													onclick="openMPLLDetail(this, 'edit')">
+												</i>
+											</a>
+										</td>
 
 
 
-											<td th:text="${srlno.index + 1}"></td>
-											<td th:text="${report.custId}"></td>
-											 <td style="text-align:left;" th:text="${report.acctNumber}"></td>
-											 <td th:text="${report.acctName}"></td>
-											 <td th:text="${report.provision}"></td>
+										<td th:text="${srlno.index + 1}"></td>
+										<td th:text="${report.custId}"></td>
+										<td style="text-align:left;" th:text="${report.acctNumber}"></td>
+										<td th:text="${report.acctName}"></td>
+										<td th:text="${report.provision}"></td>
 
 
-											<td style="text-align:left;" th:text="${report.rowId}"></td>
-											  <td th:text="${report.columnId}"></td>
-											  <td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
+										<td style="text-align:left;" th:text="${report.rowId}"></td>
+										<td th:text="${report.columnId}"></td>
+										<td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
 
-										</tr>
-									</tbody>
-								</table>
-							
+									</tr>
+								</tbody>
+							</table>
+
 						</div>
 
 						<!-- Submit Button -->
@@ -1398,81 +1400,77 @@ PURPOSE		: BRRS_M_PLLREPORT
 					</div>
 				</div>
 			</div>
-			
-	<!-- MPLL Detail Form Screen -->
-		<div th:if="${formmode == 'edit'}" class="card">
-			 
 
-			  <div class="card-body">
-			    <form th:object="${mpllData}" method="post" id="mpllDetailForm">
-			      <div class="row formline" style="margin-top:10px;">
-			        <label class="col-sm-2">Customer ID</label>
-			        <div class="col-sm-3">
-			          <input type="text" th:field="*{custId}" class="form-control form-control-sm"
-			                 readonly/>
-			        </div>
+			<!-- MPLL Detail Form Screen -->
+			<div th:if="${formmode == 'edit'}" class="card">
 
-			        <div class="col-sm-1"></div>
 
-			        <label class="col-sm-2">Account Number</label>
-			        <div class="col-sm-3">
-			          <input type="text" th:field="*{acctNumber}" name="acctNumber" class="form-control form-control-sm"
-			                 readonly />
-			        </div>
-			      </div>
+				<div class="card-body">
+					<form th:object="${mpllData}" method="post" id="mpllDetailForm">
+						<div class="row formline" style="margin-top:10px;">
+							<label class="col-sm-2">Customer ID</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+							</div>
 
-			      <div class="row formline" style="margin-top:10px;">
-			        <label class="col-sm-2">Account Name</label>
-			        <div class="col-sm-3">
-			          <input type="text" th:field="*{acctName}" class="form-control form-control-sm"
-			                  />
-			        </div>
+							<div class="col-sm-1"></div>
 
-			        <div class="col-sm-1"></div>
+							<label class="col-sm-2">Account Number</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{acctNumber}" name="acctNumber"
+									class="form-control form-control-sm" readonly />
+							</div>
+						</div>
 
-			        <label class="col-sm-2">Provision Amount</label>
-			        <div class="col-sm-3">
-			          <input type="number" step="0.01" name="provision" th:field="*{provision}" 
-			                 class="form-control form-control-sm"
-			                 style="text-align:right;"
-			                 />
-			        </div>
-			      </div>
+						<div class="row formline" style="margin-top:10px;">
+							<label class="col-sm-2">Account Name</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{acctName}" class="form-control form-control-sm" />
+							</div>
 
-			      <div class="row formline" style="margin-top:10px;">
-			        <label class="col-sm-2">Row ID</label>
-			        <div class="col-sm-3">
-			          <input type="text" th:field="*{rowId}" class="form-control form-control-sm" readonly />
-			        </div>
+							<div class="col-sm-1"></div>
 
-			        <div class="col-sm-1"></div>
+							<label class="col-sm-2">Provision Amount</label>
+							<div class="col-sm-3">
+								<input type="number" step="0.01" name="provision" th:field="*{provision}"
+									class="form-control form-control-sm" style="text-align:right;" />
+							</div>
+						</div>
 
-			        <label class="col-sm-2">Column ID</label>
-			        <div class="col-sm-3">
-			          <input type="text" th:field="*{columnId}" class="form-control form-control-sm" readonly />
-			        </div>
-			      </div>
+						<div class="row formline" style="margin-top:10px;">
+							<label class="col-sm-2">Row ID</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{rowId}" class="form-control form-control-sm" readonly />
+							</div>
 
-				  <div class="row formline" style="margin-top:10px;">
-				      <label class="col-sm-2">Report Date</label>
-				      <div class="col-sm-3">
-				        <input type="date" name="reportDate" class="form-control form-control-sm" 
-				               th:value="${#dates.format(mpllData.reportDate, 'yyyy-MM-dd')}" />
-				      </div>
-				  </div>
+							<div class="col-sm-1"></div>
 
-			      <div style="text-align:center; margin-top:20px;">
-			        <button type="button" class="custom-tab-btn"
-			                th:if="${formmode == 'edit'}"
-			                onclick="submitMPLLUpdate()">Update</button>
+							<label class="col-sm-2">Column ID</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{columnId}" class="form-control form-control-sm"
+									readonly />
+							</div>
+						</div>
 
-			      </div>
-			    </form>
-			  </div>
+						<div class="row formline" style="margin-top:10px;">
+							<label class="col-sm-2">Report Date</label>
+							<div class="col-sm-3">
+								<input type="date" name="reportDate" class="form-control form-control-sm"
+									th:value="${#dates.format(mpllData.reportDate, 'yyyy-MM-dd')}" />
+							</div>
+						</div>
+
+						<div style="text-align:center; margin-top:20px;">
+							<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
+								onclick="submitMPLLUpdate()">Update</button>
+
+						</div>
+					</form>
+				</div>
 			</div>
 
-			
-	
+
+
 
 		</div>
 
