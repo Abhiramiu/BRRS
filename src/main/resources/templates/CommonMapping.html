@@ -869,6 +869,9 @@ PURPOSE		: Common Mapping
 		<button type="button" class="custom-tab-btn"
 		        th:if="${formmode == 'edit'}"
 		        onclick="submitUpdate()">Update</button>
+		 <button type="button" class="custom-tab-btn"
+		        th:if="${formmode == 'delete'}"
+		        onclick="SubmitDelete()">Delete</button>
 	</div>
 
 </div>
@@ -984,6 +987,41 @@ function submitUpdate() {
         }
     });
 }
+
+function SubmitDelete() {
+    const formData = $('#CMForm').serialize(); // ensure correct form ID
+
+    // Show loader while processing
+    $('#loader').modal('show');
+
+    $.ajax({
+        url: 'deleteCommonMapping',
+        type: 'POST',
+        data: formData,
+        success: function (response) {
+            $('#loader').modal('hide');
+
+            let messageType = 'Information';
+            if (response && response.toLowerCase().includes('success')) {
+                messageType = 'Success';
+            } else if (response && response.toLowerCase().includes('error')) {
+                messageType = 'Error';
+            }
+
+            $('#alertmsg').text(messageType + ': ' + response);
+            $('#alert').modal('show');
+
+           
+        },
+        error: function (xhr, status, error) {
+            $('#loader').modal('hide');
+            console.error("Delete error:", error);
+            $('#alertmsg').text('Error: Failed to delete record. Please try again.');
+            $('#alert').modal('show');
+        }
+    });
+}
+
 </script>
 
 

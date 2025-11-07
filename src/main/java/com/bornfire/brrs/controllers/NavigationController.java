@@ -1632,4 +1632,21 @@ public String BFDB(@RequestParam(required = false) String formmode,
         }
     }
 
+    @RequestMapping(value = "/deleteCommonMapping", method = { RequestMethod.GET, RequestMethod.POST })
+    @ResponseBody
+    public String deleteCommonMapping(@ModelAttribute BrrsCommonMappingEntity CMData) {
+        try {
+            boolean deleted = commonMappingService.deleteCM(CMData);
+
+            if (deleted) {
+                return "Deleted successfully!";
+            } else {
+                return "Record not found for deletion!";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error while deleting record: " + e.getMessage();
+        }
+    }
+
 }

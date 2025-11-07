@@ -69,6 +69,29 @@ public class CommonMappingService {
         query.executeUpdate();
     }
 
+    public boolean deleteCM(BrrsCommonMappingEntity CMData) {
+        try {
+            BrrsCommonMappingEntity existing = commonMappingRepo.getdatabyAcctNo(CMData.getACCOUNT_NO());
+
+            if (existing != null) {
+                // Either delete permanently or mark as deleted
+                existing.setDEL_FLG("Y");
+                existing.setMODIFY_FLG("Y");
+                existing.setMODIFY_TIME(new java.sql.Timestamp(System.currentTimeMillis()));
+               
+                commonMappingRepo.save(existing);
+                return true;
+            } else {
+                System.out.println("Record not found for Account No: " + CMData.getACCOUNT_NO());
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    
     public boolean updateCM(BrrsCommonMappingEntity CMData) {
         try {
         	BrrsCommonMappingEntity existing = commonMappingRepo.getdatabyAcctNo(CMData.getACCOUNT_NO());
