@@ -779,7 +779,7 @@ PURPOSE		: BRRSREPORT
 	<script>
 		function openDetail(elem, mode) {
 			const acctNo = elem.getAttribute("data-acctNo");
-			// Navigate to MPLL details page with parameters
+			// Navigate to MLA3 details page with parameters
 			location.href = '/BRRS/Reports/MLA3_Detail?formmode=' + mode + '&acctNo=' + acctNo;
 		}
 	</script>
@@ -839,7 +839,26 @@ PURPOSE		: BRRSREPORT
 
 		</script>
 		
-		
+		<script th:inline="javascript">
+			  $(document).ready(function () {
+			    $('#reportdetails').DataTable({
+			      scrollY: "400px",            // ✅ Adjust vertical scroll height
+			      scrollX: true,               // ✅ Horizontal scrolling
+			      scrollCollapse: true,
+			      autoWidth: false,
+			      paging: true,
+			      searching: true,
+			      lengthChange: false,
+			      ordering: true,
+			      pageLength: 100,
+			      fixedHeader: {
+			        header: true,
+			        footer: false
+			      },                           // ✅ Ensures header stays visible
+			      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			    });
+			  });
+			</script>		
 		
 		
 

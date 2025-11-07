@@ -2052,7 +2052,7 @@ public class BRRS_M_LA3_ReportService {
 	}
 
 	
-	public boolean updatedetail(M_LA3_Detail_Entity la3Data) {
+	public boolean updateProvision(M_LA3_Detail_Entity la3Data) {
 	    try {
 	        System.out.println("Came to LA3 Service");
 

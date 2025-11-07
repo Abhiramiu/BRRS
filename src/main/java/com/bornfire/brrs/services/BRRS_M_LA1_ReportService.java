@@ -3811,7 +3811,7 @@ public class BRRS_M_LA1_ReportService {
 			numericStyle.setBorderRight(border);
 
 // Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "PROVISION", "ROWID", "COLUMNID",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "SANCTION LIMIT", "REPORT LABEL", "REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3",
 					"REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
@@ -3860,8 +3860,14 @@ public class BRRS_M_LA1_ReportService {
 					row.createCell(6).setCellValue(
 							item.getReport_addl_criteria_1() != null ? item.getReport_addl_criteria_1() : "");
 
+					row.createCell(7).setCellValue(
+							item.getReport_addl_criteria_2() != null ? item.getReport_addl_criteria_2() : "");
+
+					row.createCell(8).setCellValue(
+							item.getReport_addl_criteria_3() != null ? item.getReport_addl_criteria_3() : "");
+
 // REPORT_DATE
-					row.createCell(7)
+					row.createCell(9)
 							.setCellValue(item.getReport_date() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");

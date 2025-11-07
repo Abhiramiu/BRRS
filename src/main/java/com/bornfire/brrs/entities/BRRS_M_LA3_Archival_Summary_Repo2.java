@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BRRS_M_LA3_Archival_Summary_Repo2 extends JpaRepository<M_LA3_Archival_Summary_Entity2, Date> {
 
-    @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_LA3_ARCHIVALTABLE_SUMMARY2 order by REPORT_VERSION", nativeQuery = true)
-    List<Object> getM_LA3archival();
+	  @Query(value = "select REPORT_DATE, REPORT_VERSION from BRRS_M_LA3_ARCHIVALTABLE_SUMMARY2 order by REPORT_VERSION", nativeQuery = true)
+	    List<Object> getM_LA3archival();
 
-    @Query(value = "select * from BRRS_M_LA3_ARCHIVALTABLE_SUMMARY2 where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
-    List<M_LA3_Archival_Summary_Entity2> getdatabydateListarchival(Date report_date, String report_version);
-}
+	    @Query(value = "select * from BRRS_M_LA3_ARCHIVALTABLE_SUMMARY2 where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)
+	    List<M_LA3_Archival_Summary_Entity2> getdatabydateListarchival(Date report_date, String report_version);
+	}

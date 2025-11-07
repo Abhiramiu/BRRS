@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 
 
@@ -24,4 +25,9 @@ public interface BRRS_M_LA4_Detail_Repo extends JpaRepository<M_LA4_Detail_Entit
    
 	@Query(value = "select * from BRRS_M_LA4_DETAILTABLE where ROW_ID =?1 and COLUMN_ID=?2 AND REPORT_DATE=?3", nativeQuery = true)
 	List<M_LA4_Detail_Entity> GetDataByRowIdAndColumnId(String rowId,String ColumnId,Date reportdate);
+	
+	@Query(value = "SELECT * FROM BRRS_M_LA4_DETAILTABLE WHERE ACCT_NUMBER = :acct_number", nativeQuery = true)
+    M_LA4_Detail_Entity findByAcctnumber(@Param("acct_number") String acct_number);
+	
+	
 }

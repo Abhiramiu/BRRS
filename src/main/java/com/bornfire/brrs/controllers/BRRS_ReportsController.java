@@ -1665,13 +1665,13 @@ public class BRRS_ReportsController {
 		
 			 @RequestMapping(value = "/updateMLA3", method = { RequestMethod.GET, RequestMethod.POST })
 			 @ResponseBody
-			 public String updateMPLL(@ModelAttribute M_LA3_Detail_Entity Data) {
+			 public String updateMLA3(@ModelAttribute M_LA3_Detail_Entity Data) {
 			     System.out.println("Came to Controller ");
 			     System.out.println("Received update for ACCT_NO: " + Data.getAcct_number());
 			     System.out.println("sanction value: " + Data.getSanction_limit());
 			     System.out.println("balance value: " + Data.getAcct_balance_in_pula());
 
-			     boolean updated = brrs_M_LA3_ReportService.updatedetail(Data);
+			     boolean updated = brrs_M_LA3_ReportService.updateProvision(Data);
 
 			     if (updated) {
 			         return "M_LA3 updated successfully!";
