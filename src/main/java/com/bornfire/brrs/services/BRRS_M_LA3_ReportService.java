@@ -106,9 +106,6 @@ public class BRRS_M_LA3_ReportService {
 			try {
 				Date d1 = dateformat.parse(todate);
 
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
 				T1Master = M_LA3_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate), version);
 				T1Master1 = M_LA3_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
 			} catch (ParseException e) {

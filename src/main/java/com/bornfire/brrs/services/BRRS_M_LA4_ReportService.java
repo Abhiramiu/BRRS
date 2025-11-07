@@ -55,6 +55,7 @@ import com.bornfire.brrs.entities.BRRS_M_LA4_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Summary_Repo2;
+import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA4_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA4_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA4_Detail_Entity;
@@ -5091,6 +5092,35 @@ public class BRRS_M_LA4_ReportService {
 	    System.out.println("✅ LA4 Summary updated successfully for date: " + updatedEntity.getReportDate());
 	}
 
+	public boolean updateProvision(M_LA4_Detail_Entity la4Data) {
+		try {
+			System.out.println("Came to LA1 Service");
 
+			// ✅ Must match your entity field name exactly
+			M_LA4_Detail_Entity existing = M_LA4_DETAIL_Repo.findByAcctnumber(la4Data.getAcctNumber());
+
+			if (existing != null) {
+
+				existing.setAcctName(la4Data.getAcctName());
+
+				// existing.setAcct_name(la1Data.getAcct_name());
+
+				//existing.setSanction_limit(la4Data.get());
+				existing.setAcctBalanceInpula(la4Data.getAcctBalanceInpula());
+
+				M_LA4_DETAIL_Repo.save(existing);
+
+				System.out.println("Updated successfully for ACCT_NO: " + la4Data.getAcctNumber());
+				return true;
+			} else {
+				System.out.println("Record not found for Account No: " + la4Data.getAcctNumber());
+				return false;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
 }

@@ -12,10 +12,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_M_LA4_DETAILTABLE")
 public class M_LA4_Detail_Entity {
 
-    @Id
+   
     @Column(name = "CUST_ID")
     private String custId;
-
+@Id
     @Column(name = "ACCT_NUMBER")
     private String acctNumber;
 

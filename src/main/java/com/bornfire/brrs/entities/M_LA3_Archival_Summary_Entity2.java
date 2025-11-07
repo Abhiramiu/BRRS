@@ -68,9 +68,9 @@ public class M_LA3_Archival_Summary_Entity2 {
 			private String REPORT_FREQUENCY;
 			private String REPORT_CODE;
 			private String REPORT_DESC;
-			private String ENTITY_FLY;
-			private String MODIFY_FLY;
-			private String DEL_FLY;
+			private String ENTITY_FLG;
+			private String MODIFY_FLG;
+			private String DEL_FLG;
 			public String getR36_PRODUCT() {
 				return R36_PRODUCT;
 			}
@@ -269,32 +269,29 @@ public class M_LA3_Archival_Summary_Entity2 {
 			public void setREPORT_DESC(String rEPORT_DESC) {
 				REPORT_DESC = rEPORT_DESC;
 			}
-			public String getENTITY_FLY() {
-				return ENTITY_FLY;
+			public String getENTITY_FLG() {
+				return ENTITY_FLG;
 			}
-			public void setENTITY_FLY(String eNTITY_FLY) {
-				ENTITY_FLY = eNTITY_FLY;
+			public void setENTITY_FLG(String eNTITY_FLG) {
+				ENTITY_FLG = eNTITY_FLG;
 			}
-			public String getMODIFY_FLY() {
-				return MODIFY_FLY;
+			public String getMODIFY_FLG() {
+				return MODIFY_FLG;
 			}
-			public void setMODIFY_FLY(String mODIFY_FLY) {
-				MODIFY_FLY = mODIFY_FLY;
+			public void setMODIFY_FLG(String mODIFY_FLG) {
+				MODIFY_FLG = mODIFY_FLG;
 			}
-			public String getDEL_FLY() {
-				return DEL_FLY;
+			public String getDEL_FLG() {
+				return DEL_FLG;
 			}
-			public void setDEL_FLY(String dEL_FLY) {
-				DEL_FLY = dEL_FLY;
+			public void setDEL_FLG(String dEL_FLG) {
+				DEL_FLG = dEL_FLG;
 			}
 			public M_LA3_Archival_Summary_Entity2() {
 				super();
 				// TODO Auto-generated constructor stub
 			}
 			
-		
-		
-		
 
 	}
 
