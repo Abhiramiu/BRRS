@@ -164,6 +164,16 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_OPTR_ReportService BRRS_M_OPTR_ReportService;
+	
+	
+	
+	@Autowired
+	BRRS_Q_SMME_DEP_ReportService BRRS_Q_SMME_DEP_ReportService;
+	
+	@Autowired
+	BRRS_M_BOP_ReportService BRRS_M_BOP_ReportService;
+	
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -406,6 +416,19 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_OPTR_ReportService.getM_OPTRView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
+			
+			
+		case "Q_SMME_DEP":
+  			
+  			repsummary = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPview(reportId, fromdate, todate, currency, dtltype,
+  					pageable, type, version);
+  			break;
+  			
+	 case "M_BOP":
+  			
+  			repsummary = BRRS_M_BOP_ReportService.getBRRS_M_BOPview(reportId, fromdate, todate, currency, dtltype,
+  					pageable, type, version);
+  			break;
 
 		}
 
@@ -998,6 +1021,32 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+			
+			
+			
+			
+		case "Q_SMME_DEP":
+			try {
+				
+				repfile = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_BOP":
+			try {
+				
+				repfile = BRRS_M_BOP_ReportService.getBRRS_M_BOPExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 		}
 		return repfile;
 	}
@@ -1507,6 +1556,25 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "Q_SMME_DEP":
+			try {
+				archivalData = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_BOP":
+			try {
+				archivalData = BRRS_M_BOP_ReportService.getM_BOPArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		
 
 		}
 		return archivalData;

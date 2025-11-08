@@ -1,0 +1,2891 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: ISHWARYA 
+CREATED ON	: 05.11.2025
+PURPOSE		: BRRS REPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+
+
+<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+
+
+
+
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
+
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
+
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+.table td {
+	background-color: #FFFFFF;
+}
+
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
+
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
+
+#BRFvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
+
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
+
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+
+
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
+
+.error {
+	color: red;
+	padding-top: 15px;
+}
+
+.form-control:focus {
+	border-color: #007bff;
+}
+
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
+	) ~ .form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~ .form-legend {
+	color: #0056b3; /* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus ) ~ .form-legend {
+	color: #aaa; /* Normal label color */
+}
+
+.table-cell tbody td:hover {
+        background-color: #f0f0f0; /* Hover color for cell */
+        cursor: pointer;           /* Optional: pointer cursor */
+    }
+
+	.table-bordered td, 
+	.table-bordered th {
+	     border: 1px solid #000 !important;
+	}
+</style>
+
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.green-cell {
+	 background-color: rgb(107, 122, 143) !important;
+    color: white !important;
+}
+
+
+</style>
+
+
+<script th:inline="javascript">
+		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+		});
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
+			$('#loader').modal('hide');
+		});
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard'
+		}
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+
+		//to fetch summary from the database - called from the summary button
+		function showdetails() {
+    showResultModal('BRRS', 'Details page not available for Manual Report');
+}
+
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+
+
+	</script>
+
+
+<script>
+
+function activateTab(tabName) {
+    // Remove 'active' from all buttons
+    document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Add 'active' to selected button
+    if (tabName === 'summary') {
+        document.getElementById('custom-tab-btnSummary').classList.add('active');
+    } else if (tabName === 'Details') {
+        document.getElementById('custom-tab-btnDetails').classList.add('active');
+    }
+}
+
+window.onload = function() {
+    /* setTimeout(function() {
+        var selectedTab = document.getElementById("selectedTab").value;
+        alert(selectedTab);
+        activateTab(selectedTab);
+    }, 10000); */ // 10,000 milliseconds = 10 seconds
+    
+	var selectedTab = document.getElementById("selectedTab").value;
+    activateTab(selectedTab);
+};
+
+
+function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+
+
+			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
+			loader.show();
+
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+function editRecord(){
+	showResultModal('Alert', 'Development in progress');
+	
+}
+function closemodel(){
+	$('#alert').modal('hide');
+	$('#resultModal').modal('hide');
+	
+}
+
+
+ function showResultModal(title, message) {
+	// Set the text for the modal elements
+	$('#resultModalLabel').text(title);
+	$('#resultModalBody').text(message);
+
+	// Show the modal
+	$('#resultModal').modal('show');
+} 
+
+</script>
+
+<script>
+
+	function startReport(button){
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+			
+			if(sessionfilename==filename){
+				alertMsg.innerHTML ='Download request already Processing...';
+	       	 	showAlert();
+				return;
+			}
+			
+			alertMsg.innerHTML ='Download request Processing...';
+	   	 	showAlert();
+
+			const baseUrl = '/BCDRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+		    fetch(downloadUrl)  // ✅ no invalid characters now
+		        .then(res => res.text())
+		        .then(jobId => {
+
+		        	alertMsg.innerHTML ='Download request received...'+jobId;
+		       	 	showAlert();
+		            sessionStorage.setItem("jobId", jobId);
+		            sessionStorage.setItem("filename", filename);
+		            checkReport(jobId);
+		        });
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+		    fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+		        .then(res => res.text())
+		        .then(status => {
+		            if (status === "READY") {
+		            	alertMsg.innerHTML ='Report is ready! Downloading…';
+		           	 	showAlert();
+		                const filename = sessionStorage.getItem("filename");
+		                downloadDetailfile(jobId,filename)
+		                sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");                
+		                
+		            } else if(status ==="PROCESSING") {
+		                alertMsg.innerHTML ='Download Is Processing…';
+		            	showAlert();
+		                setTimeout(() => checkReport(jobId), 5000);
+		            }
+		            else if(status ==="ERROR") {
+		                alertMsg.innerHTML ='No data was available to create a download.';
+		            	showAlert();
+		            	sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");  
+		            }
+		        });
+		}
+
+
+
+		function downloadDetailfile(jobId,filename) {
+			
+			//$('#loader').modal('show');
+			
+			$.ajax({
+				url: '/BCDRS/Reports/downloaddetailExcel?jobId='+ jobId +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+
+</script>
+
+<script th:inline="javascript">
+function showdetailsbyRowAndColumn(a) { 
+    var rowId = a.getAttribute('RowId');
+    var columnId = a.getAttribute('ColumnId');
+    var cellValue = a.textContent || a.innerText;
+
+    if (cellValue !== '0') {
+        // Set dynamic message in modal (instead of confirm)
+        document.getElementById("cellresultModalLabel").innerText = 
+            "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+        // Show custom Bootstrap modal
+        $('#cellresultModal').modal('show');
+
+        // Handle Yes button
+        document.querySelector('.yes-btn').onclick = function() {
+            $('#cellresultModal').modal('hide');
+
+            // Show loader
+            const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            $('#loader').modal('show');
+
+            // Build dynamic URL
+            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+            location.href = Callurl;
+        };
+    } else {
+        // Use your custom alert modal instead of window.alert
+        showResultModal("Alert", "No Records available for this selected cell.");
+    }
+}
+</script>
+
+
+
+
+<script>
+	// Show Modify (enable inputs & dropdowns)
+    function showmodify(btn) {   
+    	
+    	
+    	$(document).ready(function () {
+    	    var readonlyIds = [];
+
+    	    // 🔸 Partial columns (a,e,h → product, net, cp) for rows 13–36
+    	    const partialCols = ["product", "net", "cp"];
+    	    for (let i = 13; i <= 36; i++) {
+    	        partialCols.forEach(col => {
+    	            readonlyIds.push(`r${i}_${col}`);
+    	        });
+    	    }
+
+    	    // 🔸 Full columns (a–h) for specific rows fully readonly
+    	    const fullCols = [
+    	        "product",
+    	        "open_position",
+    	        "cpdm_dt_inc",
+    	        "cpdm_dt_dec",
+    	        "net",
+    	        "cpdm_dt_der",
+    	        "cpdm_dt_dto",
+    	        "cp"
+    	    ];
+    	    const fullRows = [15, 24, 27, 36];
+
+    	    fullRows.forEach(row => {
+    	        fullCols.forEach(col => {
+    	            readonlyIds.push(`r${row}_${col}`);
+    	        });
+    	    });
+
+    	    // 🔸 Make all .Show_input editable except those in readonlyIds
+    	    $(".Show_input").each(function () {
+    	        if (!readonlyIds.includes(this.id)) {
+    	            $(this).removeAttr("readonly").removeAttr("disabled");
+    	        }
+    	    });
+    	});
+
+    
+    
+    
+    	$(document).ready(function () {
+    	    // Target columns for general rows
+    	    const targetColumns = [
+    	        "open_position",
+    	        "cpdm_dt_inc",
+    	        "cpdm_dt_dec",
+    	        "cpdm_dt_der",
+    	        "cpdm_dt_dto"
+    	    ];
+
+    	    // Rows to skip
+    	    const excludeRows = [15, 24, 27, 36];
+
+    	    // Total rows to loop through
+    	    const totalRows = 50; // adjust as needed
+
+    	    // Apply gray background for general columns
+    	    for (let i = 1; i <= totalRows; i++) {
+    	        if (!excludeRows.includes(i)) {
+    	            targetColumns.forEach(col => {
+    	                const selector = `#r${i}_${col}`;
+    	                if ($(selector).length) {
+    	                    $(selector).css("background-color", "#d3d3d3");
+    	                }
+    	            });
+    	        }
+    	    }
+
+    	    // Handle r25_net and r25_cp separately
+    	    $("#r25_net, #r25_cp").css("background-color", "#d3d3d3");
+    	});
+
+
+    
+    
+    // Toggle buttons 
+    
+    $("#submitButton").show();  
+    $("#cancelRecord").show();   
+    $(btn).hide(); 
+    // hide the clicked Modify button
+    }
+
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+        	
+        	
+        	
+            
+        
+
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
+
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+
+    }
+
+	
+
+	</script>
+
+<script>
+
+function calculateRowsNetAndCP() {
+    // --- Helper function for each row (Net + CP) ---
+    function calcRow(row) {
+        // --- Net (E) ---
+        let inc = parseFloat($("#r" + row + "_cpdm_dt_inc").val()?.replace(/,/g, "")) || 0;
+        let dec = parseFloat($("#r" + row + "_cpdm_dt_dec").val()?.replace(/,/g, "")) || 0;
+        let net = inc - dec;
+        $("#r" + row + "_net").val(net.toLocaleString('en-US'));
+
+        // --- CP (H) only if the field exists ---
+        if ($("#r" + row + "_cp").length) {
+            let openPos = parseFloat($("#r" + row + "_open_position").val()?.replace(/,/g, "")) || 0;
+            let deriv = parseFloat($("#r" + row + "_cpdm_dt_der").val()?.replace(/,/g, "")) || 0;
+            let dto = parseFloat($("#r" + row + "_cpdm_dt_dto").val()?.replace(/,/g, "")) || 0;
+            let cp = openPos + net + deriv + dto;
+            $("#r" + row + "_cp").val(cp.toLocaleString('en-US'));
+        }
+    }
+
+    // --- Rows to calculate individually ---
+    const rows = [13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 26, 28, 29, 30, 31, 32, 33, 34, 35];
+    rows.forEach(row => calcRow(row));
+
+    // --- Row 15 totals (SUM B16:B23, C16:C23, D16:D23, F16:F23, G16:G23) ---
+    const sumCols15 = ['open_position', 'cpdm_dt_inc', 'cpdm_dt_dec', 'cpdm_dt_der', 'cpdm_dt_dto'];
+    sumCols15.forEach(col => {
+        let sum = 0;
+        for (let i = 16; i <= 23; i++) {
+            let val = parseFloat($("#r" + i + "_" + col).val()?.replace(/,/g, "")) || 0;
+            sum += val;
+        }
+        $("#r15_" + col).val(sum.toLocaleString('en-US'));
+    });
+
+    // --- E15 = C15 − D15 ---
+    let c15 = parseFloat($("#r15_cpdm_dt_inc").val()?.replace(/,/g, "")) || 0;
+    let d15 = parseFloat($("#r15_cpdm_dt_dec").val()?.replace(/,/g, "")) || 0;
+    let e15 = c15 - d15;
+    $("#r15_net").val(e15.toLocaleString('en-US'));
+
+    // --- H15 = B15 + E15 + F15 + G15 ---
+    let b15 = parseFloat($("#r15_open_position").val()?.replace(/,/g, "")) || 0;
+    let f15 = parseFloat($("#r15_cpdm_dt_der").val()?.replace(/,/g, "")) || 0;
+    let g15 = parseFloat($("#r15_cpdm_dt_dto").val()?.replace(/,/g, "")) || 0;
+    let h15 = b15 + e15 + f15 + g15;
+    $("#r15_cp").val(h15.toLocaleString('en-US'));
+
+    // --- Row 24 totals = row 14 + row 15 (B–H) ---
+    const cols24 = ['open_position', 'cpdm_dt_inc', 'cpdm_dt_dec', 'cpdm_dt_der', 'cpdm_dt_dto', 'net', 'cp'];
+    cols24.forEach(col => {
+        const val14 = parseFloat($("#r14_" + col).val()?.replace(/,/g, "")) || 0;
+        const val15 = parseFloat($("#r15_" + col).val()?.replace(/,/g, "")) || 0;
+        $("#r24_" + col).val((val14 + val15).toLocaleString('en-US'));
+    });
+
+    // --- Row 27 totals = SUM rows 28–35 (B, C, D, F, G) ---
+    const sumCols27 = ['open_position', 'cpdm_dt_inc', 'cpdm_dt_dec', 'cpdm_dt_der', 'cpdm_dt_dto'];
+    sumCols27.forEach(col => {
+        let sum = 0;
+        for (let i = 28; i <= 35; i++) {
+            let val = parseFloat($("#r" + i + "_" + col).val()?.replace(/,/g, "")) || 0;
+            sum += val;
+        }
+        $("#r27_" + col).val(sum.toLocaleString('en-US'));
+    });
+
+    // --- E27 = C27 − D27 ---
+    let c27 = parseFloat($("#r27_cpdm_dt_inc").val()?.replace(/,/g, "")) || 0;
+    let d27 = parseFloat($("#r27_cpdm_dt_dec").val()?.replace(/,/g, "")) || 0;
+    let e27 = c27 - d27;
+    $("#r27_net").val(e27.toLocaleString('en-US'));
+
+    // --- H27 = B27 + E27 + F27 + G27 ---
+    let b27 = parseFloat($("#r27_open_position").val()?.replace(/,/g, "")) || 0;
+    let f27 = parseFloat($("#r27_cpdm_dt_der").val()?.replace(/,/g, "")) || 0;
+    let g27 = parseFloat($("#r27_cpdm_dt_dto").val()?.replace(/,/g, "")) || 0;
+    let h27 = b27 + e27 + f27 + g27;
+    $("#r27_cp").val(h27.toLocaleString('en-US'));
+
+    // --- Row 36 totals = row 26 + row 27 (B, C, D, F, G) ---
+    const sumCols36 = ['open_position', 'cpdm_dt_inc', 'cpdm_dt_dec', 'cpdm_dt_der', 'cpdm_dt_dto'];
+    sumCols36.forEach(col => {
+        const val26 = parseFloat($("#r26_" + col).val()?.replace(/,/g, "")) || 0;
+        const val27 = parseFloat($("#r27_" + col).val()?.replace(/,/g, "")) || 0;
+        $("#r36_" + col).val((val26 + val27).toLocaleString('en-US'));
+    });
+
+    // --- E36 = C36 − D36 ---
+    let c36 = parseFloat($("#r36_cpdm_dt_inc").val()?.replace(/,/g, "")) || 0;
+    let d36 = parseFloat($("#r36_cpdm_dt_dec").val()?.replace(/,/g, "")) || 0;
+    let e36 = c36 - d36;
+    $("#r36_net").val(e36.toLocaleString('en-US'));
+
+    // --- H36 = B36 + E36 + F36 + G36 ---
+    let b36 = parseFloat($("#r36_open_position").val()?.replace(/,/g, "")) || 0;
+    let f36 = parseFloat($("#r36_cpdm_dt_der").val()?.replace(/,/g, "")) || 0;
+    let g36 = parseFloat($("#r36_cpdm_dt_dto").val()?.replace(/,/g, "")) || 0;
+    let h36 = b36 + e36 + f36 + g36;
+    $("#r36_cp").val(h36.toLocaleString('en-US'));
+}
+
+// --- Auto-trigger on input changes ---
+$(document).ready(function() {
+    calculateRowsNetAndCP(); // Initial load
+
+    const rows = [13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 26, 28, 29, 30, 31, 32, 33, 34, 35];
+    const selectors = rows
+        .map(r => `#r${r}_cpdm_dt_inc, #r${r}_cpdm_dt_dec, #r${r}_open_position, #r${r}_cpdm_dt_der, #r${r}_cpdm_dt_dto`)
+        .join(", ");
+
+    // Include rows 16–23 (row 15 sums) and 28–35 (row 27 sums)
+    const sumRows = [...Array(8).keys()].map(i => i + 16).concat([...Array(8).keys()].map(i => i + 28));
+    const sumSelectors = sumRows
+        .map(r => `#r${r}_open_position, #r${r}_cpdm_dt_inc, #r${r}_cpdm_dt_dec, #r${r}_cpdm_dt_der, #r${r}_cpdm_dt_dto`)
+        .join(", ");
+
+    const allSelectors = selectors + ", " + sumSelectors;
+
+    $(allSelectors).on("input", function() {
+        calculateRowsNetAndCP();
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
+	    setTimeout(function () {
+	        location.reload();
+	    }, 300);
+	}
+	
+	
+	
+
+	// This is the main function that orchestrates the entire form submission process.
+	// It is triggered by the "Update" button click.
+// Make the function global so onclick="fileuploads(this)" can see it
+window.fileuploads = function(btn) {
+    // Get the report date from the button's data attribute
+    const asondate = btn.getAttribute("data-todate");
+
+    // Show loading spinner
+    $('#loader').modal('show');
+
+    // Ensure totals are calculated before submission
+    if (typeof calculateAllTotals === "function") calculateAllTotals();
+
+    // Remove commas from all text inputs inside #fileupload
+    $("#fileupload input[type='text']").each(function () {
+        const val = $(this).val();
+        if (val && val.includes(",")) {
+            $(this).val(val.replace(/,/g, ''));
+        }
+    });
+
+    // Validate form
+    if (!$("#fileupload").valid()) {
+        $('#loader').modal('hide');
+        return;
+    }
+
+    // Prepare FormData
+    const formData1 = new FormData();
+    formData1.append("asondate", asondate);
+
+    // Append row fields to FormData
+    for (let i = 13; i <= 36; i++) {
+        ["product", "open_position","cpdm_dt_inc","cpdm_dt_dec","net","cpdm_dt_der","cpdm_dt_dto","cp"
+        	
+        	]
+        .forEach(field => {
+            const input = $("#r" + i + "_" + field);
+            if (input.length) {
+                formData1.append(input.attr("name"), input.val());
+            }
+        });
+    }
+
+    // Send AJAX request
+    $.ajax({
+        url: './M_BOPupdate',
+        type: 'POST',
+        data: formData1,
+        processData: false,
+        contentType: false,
+        dataType: 'text'
+    })
+    .done(function() {
+        $("#resultModalLabel").text("BRRS");
+        $("#resultModalBody").text("Updated successfully.");
+        $("#resultModal").modal("show");
+    })
+    .fail(function(jqXHR) {
+        console.error("Error response:", jqXHR.responseText);
+        $("#resultModalLabel").text("Error");
+        $("#resultModalBody").text("One or more updates failed. Check console for details.");
+        $("#resultModal").modal("show");
+    })
+    .always(function() {
+        $('#loader').modal('hide');
+    });
+};
+
+
+
+
+
+	</script>
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+<title>BRRS</title>
+<body>
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+							 M-BOP: BALANCE OF PAYMENTS</h5>
+					</div>
+
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+      style="color: white !important; font-size: 16px; margin-right: 20px;">
+    Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+</span>
+
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+							
+							
+							
+								<!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							th:if="${type != 'ARCHIVAL'}"
+							id="addRecord">Modify</button>
+
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn"
+							title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+							
+							
+							
+							
+							
+							
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+							th:attr="data-reportid=${reportid}, 
+                    				 data-asondate=${asondate}, 
+                    				 data-fromdate=${fromdate}, 
+                     				 data-todate=${todate}, 
+                     				 data-currency=${currency},  
+                     				 data-dtltype=${dtltype}, 
+                     				 data-filename='M_BOP.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}"
+							onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+						
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid}, 
+             data-asondate=${asondate}, 
+             data-fromdate=${fromdate}, 
+             data-todate=${todate}, 
+             data-currency=${currency},  
+             data-dtltype=${dtltype}, 
+             data-filename='M_BOP_Detail',
+             data-type=${type},
+					data-version=${version} "
+							onclick="startReport(this)">
+							<!-- 🛠️ Fix: pass `this` -->
+							<i class="fa fa-download"></i>
+						</button>
+						
+					</div>
+				</div>
+
+
+
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+						<form action="#" method="POST" id="fileupload">
+							<div
+								class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light">
+									
+									
+								 <tr style="background-color: #b3b6b9;">
+                                            <th style="text-align: left; font-weight: bold; background-color: #D8D8D8; padding: 10px;"></th>
+                                            <th style="text-align: right; font-weight: bold; background-color: #000000; padding: 10px;"rowspan="2"></th>
+                                            <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;" colspan="5">Change in position during the month 				</th>
+                                          <th style="text-align: right; font-weight: bold; background-color: #000000; padding: 10px;" rowspan="2"></th>
+                                        </tr> 
+										
+										 <tr style="background-color: #b3b6b9;">
+                                            <th style="text-align: left; font-weight: bold; background-color: #D8D8D8; padding: 10px;"></th>
+                                            <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;" colspan="2" >Due to transactions</th>
+                                            <th style="text-align: center; font-weight: bold; background-color: #000000; padding: 10px;" ></th>
+                                          <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;" colspan="2"></th>
+                                        </tr> 
+                                        
+                                       
+										
+										 <tr style="background-color: #b3b6b9;">
+                                            <th style="text-align: left; font-weight: bold; background-color: #D8D8D8; padding: 10px;"></th>
+                                            <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;"  rowspan="2" > Opening Position (1)</th>
+                                            <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;"rowspan="2" >Increases (2)</th>
+                                          <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Decreases (3)</th>
+                                          <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Net (2) - (3) = (4)</th>
+                                              <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Due to Exchange Rate (5)</th>
+                                              <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Due to Other (6)</th>
+                                              <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Closing Position (1+4+5+6) = (7)
+</th>
+                                        </tr> 
+									
+										 <tr style="background-color: #b3b6b9;">
+                                            <th style="text-align: left; font-weight: bold; background-color: #D8D8D8; padding: 10px;"></th>
+                                           
+
+                                        </tr> 
+                                        
+										 
+
+									</thead>
+
+
+									<tbody th:each="report: ${reportsummary}"
+										style="font-family: Arial;">
+
+										  <tr>
+                                        <td id='R13' style=' font-weight: bold;'>
+                                            <input class='display-input Show_input' type='text' value='LIABILITIES' id='r13_product' name='r13_product' style='background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: left;  font-weight: bold;'
+                                                   readonly /> </td>
+                                        <td style='padding-left: 40px; font-weight: bold;text-align: right;' >
+                                            <input class='display-input Show_input ' type='text' th:value='${report.r13_open_position != null ? #numbers.formatDecimal(report.r13_open_position, 1, "COMMA",0, "POINT") : "0"}' id='r13_open_position'
+                                                   name='r13_open_position' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+                                        </td>
+                                        <td style='padding-left: 40px; font-weight: bold;text-align: right;' >
+                                            <input class='display-input Show_input ' type='text' th:value='${report.r13_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r13_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}' id='r13_cpdm_dt_inc'
+                                                   name='r13_cpdm_dt_inc' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+                                        </td>
+                                        <td style='padding-left: 40px; font-weight: bold;text-align: right;' >
+                                            <input class='display-input Show_input ' type='text' th:value='${report.r13_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r13_cpdm_dt_dec, 1, "COMMA",0, "POINT") : "0"}' id='r13_cpdm_dt_dec'
+                                                   name='r13_cpdm_dt_dec' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+                                        </td>
+                                        
+                                         <td style='padding-left: 40px; font-weight: bold;text-align: right;' class="green-cell">
+                                            <input class='display-input Show_input green-cell' type='text' th:value='${report.r13_net != null ? #numbers.formatDecimal(report.r13_net, 1, "COMMA",0, "POINT") : "0"}' id='r13_net'
+                                                   name='r13_net' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+                                        </td>
+                                        
+                                        
+                                        <td style='padding-left: 40px; font-weight: bold;text-align: right;' >
+                                            <input class='display-input Show_input ' type='text' th:value='${report.r13_cpdm_dt_der != null ? #numbers.formatDecimal(report.r13_cpdm_dt_der, 1, "COMMA",0, "POINT") : "0"}' id='r13_cpdm_dt_der'
+                                                   name='r13_cpdm_dt_der' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+                                        </td>
+                                        
+                                        <td style='padding-left: 40px; font-weight: bold;text-align: right;' >
+                                            <input class='display-input Show_input' type='text' th:value='${report.r13_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r13_cpdm_dt_dto, 1, "COMMA",0, "POINT") : "0"}' id='r13_cpdm_dt_dto'
+                                                   name='r13_cpdm_dt_dto' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+                                        </td>
+                                        
+                                        <td style='padding-left: 40px; font-weight: bold;text-align: right;' class="green-cell">
+                                            <input class='display-input Show_input green-cell' type='text' th:value='${report.r13_cp != null ? #numbers.formatDecimal(report.r13_cp, 1, "COMMA",0, "POINT") : "0"}' id='r13_cp'
+                                                   name='r13_cp' style='background-color: #FFFFFF; width:   -webkit-fill-available; height: 28px; border-color: transparent; text-align: right;' readonly />
+                                        </td>
+                                        
+                                        
+                                        
+                                    </tr>
+                                    
+                                    
+                                    <tr>
+    <td id='R14' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='1. To foreign Direct Investors'
+               id='r14_product' name='r14_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left; font-weight: bold;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r14_open_position != null ? #numbers.formatDecimal(report.r14_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r14_open_position' name='r14_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r14_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r14_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r14_cpdm_dt_inc' name='r14_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r14_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r14_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r14_cpdm_dt_dec' name='r14_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r14_net != null ? #numbers.formatDecimal(report.r14_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r14_net' name='r14_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r14_cpdm_dt_der != null ? #numbers.formatDecimal(report.r14_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r14_cpdm_dt_der' name='r14_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r14_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r14_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r14_cpdm_dt_dto' name='r14_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r14_cp != null ? #numbers.formatDecimal(report.r14_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r14_cp' name='r14_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R15' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='2. To other non residents'
+               id='r15_product' name='r15_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left; font-weight: bold;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r15_open_position != null ? #numbers.formatDecimal(report.r15_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r15_open_position' name='r15_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r15_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r15_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r15_cpdm_dt_inc' name='r15_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r15_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r15_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r15_cpdm_dt_dec' name='r15_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r15_net != null ? #numbers.formatDecimal(report.r15_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r15_net' name='r15_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r15_cpdm_dt_der != null ? #numbers.formatDecimal(report.r15_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r15_cpdm_dt_der' name='r15_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r15_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r15_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r15_cpdm_dt_dto' name='r15_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r15_cp != null ? #numbers.formatDecimal(report.r15_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r15_cp' name='r15_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R16' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='a) Long term loans'
+               id='r16_product' name='r16_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r16_open_position != null ? #numbers.formatDecimal(report.r16_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r16_open_position' name='r16_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r16_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r16_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r16_cpdm_dt_inc' name='r16_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r16_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r16_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r16_cpdm_dt_dec' name='r16_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r16_net != null ? #numbers.formatDecimal(report.r16_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r16_net' name='r16_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r16_cpdm_dt_der != null ? #numbers.formatDecimal(report.r16_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r16_cpdm_dt_der' name='r16_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r16_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r16_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r16_cpdm_dt_dto' name='r16_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r16_cp != null ? #numbers.formatDecimal(report.r16_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r16_cp' name='r16_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R17' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='b) Short term loans'
+               id='r17_product' name='r17_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r17_open_position != null ? #numbers.formatDecimal(report.r17_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r17_open_position' name='r17_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r17_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r17_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r17_cpdm_dt_inc' name='r17_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r17_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r17_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r17_cpdm_dt_dec' name='r17_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r17_net != null ? #numbers.formatDecimal(report.r17_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r17_net' name='r17_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r17_cpdm_dt_der != null ? #numbers.formatDecimal(report.r17_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r17_cpdm_dt_der' name='r17_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r17_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r17_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r17_cpdm_dt_dto' name='r17_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r17_cp != null ? #numbers.formatDecimal(report.r17_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r17_cp' name='r17_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R18' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='c) Trade credits and advances'
+               id='r18_product' name='r18_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r18_open_position != null ? #numbers.formatDecimal(report.r18_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r18_open_position' name='r18_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r18_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r18_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r18_cpdm_dt_inc' name='r18_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r18_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r18_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r18_cpdm_dt_dec' name='r18_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r18_net != null ? #numbers.formatDecimal(report.r18_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r18_net' name='r18_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r18_cpdm_dt_der != null ? #numbers.formatDecimal(report.r18_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r18_cpdm_dt_der' name='r18_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r18_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r18_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r18_cpdm_dt_dto' name='r18_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r18_cp != null ? #numbers.formatDecimal(report.r18_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r18_cp' name='r18_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R19' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='d) Currency and Deposits'
+               id='r19_product' name='r19_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r19_open_position != null ? #numbers.formatDecimal(report.r19_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r19_open_position' name='r19_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r19_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r19_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r19_cpdm_dt_inc' name='r19_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r19_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r19_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r19_cpdm_dt_dec' name='r19_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r19_net != null ? #numbers.formatDecimal(report.r19_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r19_net' name='r19_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r19_cpdm_dt_der != null ? #numbers.formatDecimal(report.r19_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r19_cpdm_dt_der' name='r19_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r19_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r19_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r19_cpdm_dt_dto' name='r19_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r19_cp != null ? #numbers.formatDecimal(report.r19_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r19_cp' name='r19_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R20' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='e) Bonds & notes'
+               id='r20_product' name='r20_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r20_open_position != null ? #numbers.formatDecimal(report.r20_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r20_open_position' name='r20_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r20_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r20_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r20_cpdm_dt_inc' name='r20_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r20_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r20_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r20_cpdm_dt_dec' name='r20_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r20_net != null ? #numbers.formatDecimal(report.r20_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r20_net' name='r20_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r20_cpdm_dt_der != null ? #numbers.formatDecimal(report.r20_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r20_cpdm_dt_der' name='r20_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r20_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r20_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r20_cpdm_dt_dto' name='r20_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r20_cp != null ? #numbers.formatDecimal(report.r20_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r20_cp' name='r20_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R21' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='f) Money market instruments'
+               id='r21_product' name='r21_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r21_open_position != null ? #numbers.formatDecimal(report.r21_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r21_open_position' name='r21_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r21_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r21_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r21_cpdm_dt_inc' name='r21_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r21_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r21_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r21_cpdm_dt_dec' name='r21_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r21_net != null ? #numbers.formatDecimal(report.r21_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r21_net' name='r21_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r21_cpdm_dt_der != null ? #numbers.formatDecimal(report.r21_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r21_cpdm_dt_der' name='r21_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r21_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r21_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r21_cpdm_dt_dto' name='r21_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r21_cp != null ? #numbers.formatDecimal(report.r21_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r21_cp' name='r21_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R22' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='g) Financial derivatives'
+               id='r22_product' name='r22_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r22_open_position != null ? #numbers.formatDecimal(report.r22_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r22_open_position' name='r22_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r22_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r22_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r22_cpdm_dt_inc' name='r22_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r22_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r22_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r22_cpdm_dt_dec' name='r22_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r22_net != null ? #numbers.formatDecimal(report.r22_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r22_net' name='r22_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r22_cpdm_dt_der != null ? #numbers.formatDecimal(report.r22_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r22_cpdm_dt_der' name='r22_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r22_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r22_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r22_cpdm_dt_dto' name='r22_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r22_cp != null ? #numbers.formatDecimal(report.r22_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r22_cp' name='r22_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R23' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='h) Other (specify)*'
+               id='r23_product' name='r23_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r23_open_position != null ? #numbers.formatDecimal(report.r23_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r23_open_position' name='r23_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r23_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r23_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r23_cpdm_dt_inc' name='r23_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r23_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r23_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r23_cpdm_dt_dec' name='r23_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r23_net != null ? #numbers.formatDecimal(report.r23_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r23_net' name='r23_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r23_cpdm_dt_der != null ? #numbers.formatDecimal(report.r23_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r23_cpdm_dt_der' name='r23_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r23_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r23_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r23_cpdm_dt_dto' name='r23_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r23_cp != null ? #numbers.formatDecimal(report.r23_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r23_cp' name='r23_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R24' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='TOTAL'
+               id='r24_product' name='r24_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left; font-weight: bold;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r24_open_position != null ? #numbers.formatDecimal(report.r24_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r24_open_position' name='r24_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r24_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r24_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r24_cpdm_dt_inc' name='r24_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r24_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r24_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r24_cpdm_dt_dec' name='r24_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r24_net != null ? #numbers.formatDecimal(report.r24_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r24_net' name='r24_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r24_cpdm_dt_der != null ? #numbers.formatDecimal(report.r24_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r24_cpdm_dt_der' name='r24_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r24_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r24_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r24_cpdm_dt_dto' name='r24_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r24_cp != null ? #numbers.formatDecimal(report.r24_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r24_cp' name='r24_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R25' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='ASSETS'
+               id='r25_product' name='r25_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left; font-weight: bold;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r25_open_position != null ? #numbers.formatDecimal(report.r25_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r25_open_position' name='r25_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r25_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r25_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r25_cpdm_dt_inc' name='r25_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r25_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r25_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r25_cpdm_dt_dec' name='r25_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' >
+        <input class='display-input Show_input l' type='text'
+               th:value='${report.r25_net != null ? #numbers.formatDecimal(report.r25_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r25_net' name='r25_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r25_cpdm_dt_der != null ? #numbers.formatDecimal(report.r25_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r25_cpdm_dt_der' name='r25_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r25_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r25_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r25_cpdm_dt_dto' name='r25_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' >
+        <input class='display-input Show_input ' type='text'
+               th:value='${report.r25_cp != null ? #numbers.formatDecimal(report.r25_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r25_cp' name='r25_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R26' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='1. Due from direct Investment'
+               id='r26_product' name='r26_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left; font-weight: bold;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r26_open_position != null ? #numbers.formatDecimal(report.r26_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r26_open_position' name='r26_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r26_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r26_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r26_cpdm_dt_inc' name='r26_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r26_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r26_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r26_cpdm_dt_dec' name='r26_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r26_net != null ? #numbers.formatDecimal(report.r26_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r26_net' name='r26_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r26_cpdm_dt_der != null ? #numbers.formatDecimal(report.r26_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r26_cpdm_dt_der' name='r26_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r26_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r26_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r26_cpdm_dt_dto' name='r26_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r26_cp != null ? #numbers.formatDecimal(report.r26_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r26_cp' name='r26_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R27' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='2. Due from other non-residents'
+               id='r27_product' name='r27_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left; font-weight: bold;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r27_open_position != null ? #numbers.formatDecimal(report.r27_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r27_open_position' name='r27_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r27_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r27_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r27_cpdm_dt_inc' name='r27_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r27_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r27_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r27_cpdm_dt_dec' name='r27_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r27_net != null ? #numbers.formatDecimal(report.r27_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r27_net' name='r27_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell'  type='text'
+               th:value='${report.r27_cpdm_dt_der != null ? #numbers.formatDecimal(report.r27_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r27_cpdm_dt_der' name='r27_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r27_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r27_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r27_cpdm_dt_dto' name='r27_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r27_cp != null ? #numbers.formatDecimal(report.r27_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r27_cp' name='r27_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R28' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='a) Long-term loans'
+               id='r28_product' name='r28_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r28_open_position != null ? #numbers.formatDecimal(report.r28_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r28_open_position' name='r28_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r28_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r28_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r28_cpdm_dt_inc' name='r28_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r28_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r28_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r28_cpdm_dt_dec' name='r28_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r28_net != null ? #numbers.formatDecimal(report.r28_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r28_net' name='r28_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r28_cpdm_dt_der != null ? #numbers.formatDecimal(report.r28_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r28_cpdm_dt_der' name='r28_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r28_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r28_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r28_cpdm_dt_dto' name='r28_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r28_cp != null ? #numbers.formatDecimal(report.r28_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r28_cp' name='r28_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R29' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='b) Short-term loans'
+               id='r29_product' name='r29_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r29_open_position != null ? #numbers.formatDecimal(report.r29_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r29_open_position' name='r29_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r29_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r29_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r29_cpdm_dt_inc' name='r29_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r29_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r29_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r29_cpdm_dt_dec' name='r29_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r29_net != null ? #numbers.formatDecimal(report.r29_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r29_net' name='r29_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r29_cpdm_dt_der != null ? #numbers.formatDecimal(report.r29_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r29_cpdm_dt_der' name='r29_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r29_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r29_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r29_cpdm_dt_dto' name='r29_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r29_cp != null ? #numbers.formatDecimal(report.r29_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r29_cp' name='r29_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R30' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='c) Trade credits and advances'
+               id='r30_product' name='r30_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r30_open_position != null ? #numbers.formatDecimal(report.r30_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r30_open_position' name='r30_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r30_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r30_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r30_cpdm_dt_inc' name='r30_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r30_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r30_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r30_cpdm_dt_dec' name='r30_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r30_net != null ? #numbers.formatDecimal(report.r30_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r30_net' name='r30_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r30_cpdm_dt_der != null ? #numbers.formatDecimal(report.r30_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r30_cpdm_dt_der' name='r30_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r30_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r30_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r30_cpdm_dt_dto' name='r30_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r30_cp != null ? #numbers.formatDecimal(report.r30_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r30_cp' name='r30_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R31' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='d) Currency and Deposits'
+               id='r31_product' name='r31_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r31_open_position != null ? #numbers.formatDecimal(report.r31_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r31_open_position' name='r31_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r31_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r31_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r31_cpdm_dt_inc' name='r31_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r31_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r31_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r31_cpdm_dt_dec' name='r31_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r31_net != null ? #numbers.formatDecimal(report.r31_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r31_net' name='r31_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r31_cpdm_dt_der != null ? #numbers.formatDecimal(report.r31_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r31_cpdm_dt_der' name='r31_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r31_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r31_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r31_cpdm_dt_dto' name='r31_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r31_cp != null ? #numbers.formatDecimal(report.r31_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r31_cp' name='r31_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R32' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='e) Bonds & notes'
+               id='r32_product' name='r32_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r32_open_position != null ? #numbers.formatDecimal(report.r32_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r32_open_position' name='r32_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r32_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r32_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r32_cpdm_dt_inc' name='r32_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r32_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r32_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r32_cpdm_dt_dec' name='r32_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r32_net != null ? #numbers.formatDecimal(report.r32_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r32_net' name='r32_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r32_cpdm_dt_der != null ? #numbers.formatDecimal(report.r32_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r32_cpdm_dt_der' name='r32_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r32_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r32_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r32_cpdm_dt_dto' name='r32_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r32_cp != null ? #numbers.formatDecimal(report.r32_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r32_cp' name='r32_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R33' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='f) Money markets instruments'
+               id='r33_product' name='r33_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r33_open_position != null ? #numbers.formatDecimal(report.r33_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r33_open_position' name='r33_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r33_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r33_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r33_cpdm_dt_inc' name='r33_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r33_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r33_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r33_cpdm_dt_dec' name='r33_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r33_net != null ? #numbers.formatDecimal(report.r33_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r33_net' name='r33_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r33_cpdm_dt_der != null ? #numbers.formatDecimal(report.r33_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r33_cpdm_dt_der' name='r33_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r33_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r33_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r33_cpdm_dt_dto' name='r33_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r33_cp != null ? #numbers.formatDecimal(report.r33_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r33_cp' name='r33_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R34' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='g) Financial derivatives'
+               id='r34_product' name='r34_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r34_open_position != null ? #numbers.formatDecimal(report.r34_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r34_open_position' name='r34_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r34_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r34_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r34_cpdm_dt_inc' name='r34_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r34_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r34_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r34_cpdm_dt_dec' name='r34_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r34_net != null ? #numbers.formatDecimal(report.r34_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r34_net' name='r34_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r34_cpdm_dt_der != null ? #numbers.formatDecimal(report.r34_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r34_cpdm_dt_der' name='r34_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r34_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r34_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r34_cpdm_dt_dto' name='r34_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r34_cp != null ? #numbers.formatDecimal(report.r34_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r34_cp' name='r34_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R35' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='h) Other (specify)*'
+               id='r35_product' name='r35_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r35_open_position != null ? #numbers.formatDecimal(report.r35_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r35_open_position' name='r35_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r35_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r35_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r35_cpdm_dt_inc' name='r35_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r35_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r35_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r35_cpdm_dt_dec' name='r35_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r35_net != null ? #numbers.formatDecimal(report.r35_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r35_net' name='r35_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r35_cpdm_dt_der != null ? #numbers.formatDecimal(report.r35_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r35_cpdm_dt_der' name='r35_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;'>
+        <input class='display-input Show_input' type='text'
+               th:value='${report.r35_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r35_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r35_cpdm_dt_dto' name='r35_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r35_cp != null ? #numbers.formatDecimal(report.r35_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r35_cp' name='r35_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+
+<tr>
+    <td id='R36' style='font-weight: bold;'>
+        <input class='display-input Show_input' type='text' value='TOTAL'
+               id='r36_product' name='r36_product'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: left; font-weight: bold;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r36_open_position != null ? #numbers.formatDecimal(report.r36_open_position, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r36_open_position' name='r36_open_position'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r36_cpdm_dt_inc != null ? #numbers.formatDecimal(report.r36_cpdm_dt_inc, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r36_cpdm_dt_inc' name='r36_cpdm_dt_inc'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r36_cpdm_dt_dec != null ? #numbers.formatDecimal(report.r36_cpdm_dt_dec, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r36_cpdm_dt_dec' name='r36_cpdm_dt_dec'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r36_net != null ? #numbers.formatDecimal(report.r36_net, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r36_net' name='r36_net'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r36_cpdm_dt_der != null ? #numbers.formatDecimal(report.r36_cpdm_dt_der, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r36_cpdm_dt_der' name='r36_cpdm_dt_der'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r36_cpdm_dt_dto != null ? #numbers.formatDecimal(report.r36_cpdm_dt_dto, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r36_cpdm_dt_dto' name='r36_cpdm_dt_dto'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+
+    <td style='padding-left: 40px; font-weight: bold; text-align: right;' class='green-cell'>
+        <input class='display-input Show_input green-cell' type='text'
+               th:value='${report.r36_cp != null ? #numbers.formatDecimal(report.r36_cp, 1, "COMMA", 0, "POINT") : "0"}'
+               id='r36_cp' name='r36_cp'
+               style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
+                      border-color: transparent; text-align: right;' readonly />
+    </td>
+</tr>
+                                    
+                                  
+
+									</tbody>
+
+
+								</table>
+
+							</div>
+<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button"
+										class="custom-tab-btn Show_input" form="fileupload"
+										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none;">Submit</button>
+								</div>
+
+                           </form>
+
+						</div>
+					</div>
+				</div>
+
+				
+
+			</div>
+
+
+
+		</div>
+
+
+
+	</div>
+
+
+
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel"
+						style="text-align: center; color: white;">Do you want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn"
+						data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</body>
+
+
+
+
+
+
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 820px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+
+
+<style>
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+</style>
+
+</html>
