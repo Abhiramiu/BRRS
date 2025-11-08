@@ -23,9 +23,11 @@ public interface BRRS_M_LA1_Detail_Repo extends JpaRepository<M_LA1_Detail_Entit
     @Query(value = "select count(*) from BRRS_M_LA1_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)
     int getdatacount(Date reportdate);
 
+ // In your BRRS_M_LA1_Detail_Repo.java file
+
     @Query(value = "SELECT * FROM BRRS_M_LA1_DETAILTABLE " +
             "WHERE report_label = :rowId " +
-            "AND report_addl_criteria_1 = :columnId " +
+            "AND ( :columnId IS NULL OR :columnId = '' OR report_addl_criteria_1 = :columnId ) " + // Corrected Line
             "AND ( :columnId1 IS NULL OR :columnId1 = '' OR report_addl_criteria_2 = :columnId1 ) " +
             "AND ( :columnId2 IS NULL OR :columnId2 = '' OR report_addl_criteria_3 = :columnId2 ) " +
             "AND REPORT_DATE = :reportDate",
