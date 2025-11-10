@@ -181,6 +181,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_BOP_ReportService BRRS_M_BOP_ReportService;
 	
+	@Autowired
+	BRRS_M_SECA_ReportService BRRS_M_SECA_ReportService;
+	
 	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
@@ -450,6 +453,12 @@ public class RegulatoryReportServices {
   			repsummary = BRRS_M_BOP_ReportService.getBRRS_M_BOPview(reportId, fromdate, todate, currency, dtltype,
   					pageable, type, version);
   			break;
+  			
+			
+		case "M_SECA":
+			repsummary = BRRS_M_SECA_ReportService.getM_SECAview(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
+			break;
+			
 
 		}
 
@@ -1096,6 +1105,19 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_SECA":
+			try {
+				
+				repfile = BRRS_M_SECA_ReportService.BRRS_M_SECAExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+			
 		}
 		return repfile;
 	}
@@ -1646,6 +1668,15 @@ public class RegulatoryReportServices {
 		case "M_BOP":
 			try {
 				archivalData = BRRS_M_BOP_ReportService.getM_BOPArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+		
+		case "M_SECA":
+			try {
+				archivalData = BRRS_M_SECA_ReportService.getM_SECAArchival();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
