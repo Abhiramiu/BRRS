@@ -4079,10 +4079,11 @@ public class BRRS_M_LA1_ReportService {
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 	    try {
-	        String acctNo = request.getParameter("acctNo");
-	        String provisionStr = request.getParameter("provision");
-	        String acctName = request.getParameter("acctName");
-	        String reportDateStr = request.getParameter("reportDate");
+	        String acctNo = request.getParameter("acct_number");
+	        String provisionStr = request.getParameter("acct_balance_in_pula");
+	        String sanction_limit = request.getParameter("sanction_limit");
+	        String acctName = request.getParameter("acct_name");
+	        String reportDateStr = request.getParameter("report_Date");
 
 	        logger.info("Received update for ACCT_NO: {}", acctNo);
 
@@ -4109,6 +4110,16 @@ public class BRRS_M_LA1_ReportService {
 	                existing.setAcct_balance_in_pula(newProvision);
 	                isChanged = true;
 	                logger.info("Provision updated to {}", newProvision);
+	            }
+	        }
+	        
+	        if (sanction_limit != null && !sanction_limit.isEmpty()) {
+	            BigDecimal newSanctionLimit = new BigDecimal(sanction_limit);
+	            if (existing.getSanction_limit() == null ||
+	                existing.getSanction_limit().compareTo(newSanctionLimit) != 0) {
+	                existing.setSanction_limit(newSanctionLimit);
+	                isChanged = true;
+	                logger.info("Sanction limit updated to {}", newSanctionLimit);
 	            }
 	        }
 
