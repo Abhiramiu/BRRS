@@ -69,255 +69,278 @@ PURPOSE		: BWRBRREPORT
       th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"
     ></script>
 
-    <style>
-      .btns {
-        float: right;
-        margin: 5px;
-      }
 
-      .col-sm-5 {
-        padding-bottom: 15px;
-      }
 
-      .list-body {
-        padding: 0px;
-      }
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
 
-      .error {
-        color: red;
-        padding-left: 10px;
-      }
+.col-sm-5 {
+	padding-bottom: 15px;
+}
 
-      .formline {
-        padding-bottom: 15px;
-      }
+.list-body {
+	padding: 0px;
+}
 
-      .btn-primary {
-        background-color: #e77400;
-        border-color: #0c0c0c;
-      }
+.error {
+	color: red;
+	padding-left: 10px;
+}
 
-      .btn-primary:not (:disabled ):not (.disabled ).active,
-      .btn-primary:not (:disabled ):not (.disabled ):active,
-      .show > .btn-primary.dropdown-toggle {
-        color: #fff;
-        background-color: #cc000000;
-        border-color: #161617;
-      }
+.formline {
+	padding-bottom: 15px;
+}
 
-      #finusertb {
-        width: 460px;
-      }
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
 
-      .dataTables_wrapper .dataTables_paginate .paginate_button {
-        padding: 0px;
-      }
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+ 
+  
+ 
+ 
+ <style>
+ 	div span {
+    font-weight: bold;
+    color: white !important;
+	}
+  .card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+
+  .card-header h5 {
+    font-size: 22px;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .nav-tabs .nav-link {
+    font-weight: 500;
+    border: 1px solid #dee2e6;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    background-color: #f1f1f1;
+    margin-right: 5px;
+  }
+
+  .nav-tabs .nav-link.active {
+    background-color: #ffffff;
+    border-color: #dee2e6 #dee2e6 #ffffff;
+  }
+
+  .table-responsive {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #f3f6f9;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background-color: #e9ecf0;
+    z-index: 1;
+  }
+  
+.table td{
+	background-color: #FFFFFF;
+
+}
+  
+  
+
+  .card-footer {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+  }
+
+  .btn-xs {
+    padding: 4px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+
+  #BRFvalidation th, #usertable td {
+    vertical-align: middle;
+    text-align: left;
+    font-size: 16px;
+    font-family: Arial;
+  }
+
+  .fa-edit:hover {
+    color: #28a745;
+    transform: scale(1.1);
+  }
+
+
+
+td {
+  border: 1px solid rgb(0,164,166);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+</style>
+ 
+
+<style>
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            background: transparent;
+            transition: border-color 0.3s ease, padding-top 0.3s ease;
+        }
+        .error {
+    		color: red;
+    		padding-top: 15px;
+			}
+        
+        
+
+        .form-control:focus {
+            border-color: #007bff;
+        }
+
+        .form-legend {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: #aaa;
+            background: white;
+            padding: 0 5px;
+            pointer-events: none;
+            transition: 0.3s ease;
+        }
+
+        /* When input or select is focused or has a value, move the label up */
+        .form-control:focus ~ .form-legend,
+        .form-control:not(:placeholder-shown) ~ .form-legend {
+            top: -8px;
+            font-size: 1rem;
+            color: #007bff;
+        }
+
+        /* Hover effect when the input/select is focused */
+        .form-control:focus:hover ~ .form-legend {
+            color: #0056b3; /* Darker shade of blue on hover */
+        }
+
+        /* Ensure the label returns to the normal color after focus or hover is removed */
+        .form-control:not(:focus) ~ .form-legend {
+            color: #aaa; /* Normal label color */
+        }
     </style>
-
+   
     <style>
-      div span {
-        font-weight: bold;
-        color: white !important;
-      }
+/* Red border for invalid inputs */
+input.error, select.error {
+  border: 2px solid red !important;
+}
 
-      .card {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-      }
+/* Error message style */
+label.error {
+  color: red;
+  font-size: 0.85em;
+  margin-top: 5px;
+  display: block;
+}
+.underline {
+    text-decoration: underline;
+    color: #08a6f1;
+    cursor: pointer;
+}
+.left-arrow-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    transition: background-color 0.3s, transform 0.2s;
+}
 
-      .card-header h5 {
-        font-size: 22px;
-        color: #fff;
-        font-weight: 600;
-      }
+input.nonEditable {
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box;
+}
 
-      .nav-tabs .nav-link {
-        font-weight: 500;
-        border: 1px solid #dee2e6;
-        border-bottom: none;
-        border-radius: 4px 4px 0 0;
-        background-color: #f1f1f1;
-        margin-right: 5px;
-      }
+.left-arrow-circle i {
+    color: rgb(107, 122, 143);
+}
 
-      .nav-tabs .nav-link.active {
-        background-color: #ffffff;
-        border-color: #dee2e6 #dee2e6 #ffffff;
-      }
+.left-arrow-circle:hover {
+    background-color: rgb(107, 122, 143);
+    cursor: pointer;
+    transform: scale(1.05);
+    border: 2px solid white;
+}
 
-      .table-responsive {
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-      }
+.left-arrow-circle:hover i {
+    color: white;
+}
 
-      .table-hover tbody tr:hover {
-        background-color: #f3f6f9;
-      }
-
-      thead th {
-        position: sticky;
-        top: 0;
-        background-color: #e9ecf0;
-        z-index: 1;
-      }
-
-      .table td {
-        background-color: #ffffff;
-      }
-
-      .card-footer {
-        padding: 10px;
-        border-top: 1px solid #ccc;
-      }
-
-      .btn-xs {
-        padding: 4px 12px;
-        font-size: 14px;
-        border-radius: 4px;
-      }
-
-      #BRFvalidation th,
-      #usertable td {
-        vertical-align: middle;
-        text-align: left;
-        font-size: 16px;
-        font-family: Arial;
-      }
-
-      .fa-edit:hover {
-        color: #28a745;
-        transform: scale(1.1);
-      }
-
-      td {
-        border: 1px solid rgb(0, 164, 166);
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-    </style>
-
-    <style>
-      .form-group {
-        position: relative;
-        margin-bottom: 1.5rem;
-      }
-
-      .form-control {
-        width: 100%;
-        border: 2px solid #ccc;
-        border-radius: 8px;
-        font-size: 1rem;
-        outline: none;
-        background: transparent;
-        transition: border-color 0.3s ease, padding-top 0.3s ease;
-      }
-
-      .error {
-        color: red;
-        padding-top: 15px;
-      }
-
-      .form-control:focus {
-        border-color: #007bff;
-      }
-
-      .form-legend {
-        position: absolute;
-        top: 50%;
-        left: 15px;
-        transform: translateY(-50%);
-        font-size: 1rem;
-        color: #aaa;
-        background: white;
-        padding: 0 5px;
-        pointer-events: none;
-        transition: 0.3s ease;
-      }
-
-      /* When input or select is focused or has a value, move the label up */
-      .form-control:focus ~ .form-legend,
-      .form-control:not (:placeholder-shown
-	) ~ .form-legend {
-        top: -8px;
-        font-size: 1rem;
-        color: #007bff;
-      }
-
-      /* Hover effect when the input/select is focused */
-      .form-control:focus:hover ~ .form-legend {
-        color: #0056b3; /* Darker shade of blue on hover */
-      }
-
-      /* Ensure the label returns to the normal color after focus or hover is removed */
-      .form-control:not (:focus ) ~ .form-legend {
-        color: #aaa; /* Normal label color */
-      }
-    </style>
-
-    <style>
-      /* Red border for invalid inputs */
-      input.error,
-      select.error {
-        border: 2px solid red !important;
-      }
-
-      /* Error message style */
-      label.error {
-        color: red;
-        font-size: 0.85em;
-        margin-top: 5px;
-        display: block;
-      }
-
-      .underline {
-        text-decoration: underline;
-        color: #08a6f1;
-        cursor: pointer;
-      }
-
-      .left-arrow-circle {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        background-color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 10px;
-        transition: background-color 0.3s, transform 0.2s;
-      }
-
-      .left-arrow-circle i {
-        color: rgb(107, 122, 143);
-      }
-
-      .left-arrow-circle:hover {
-        background-color: rgb(107, 122, 143);
-        cursor: pointer;
-        transform: scale(1.05);
-        border: 2px solid white;
-      }
-
-      .left-arrow-circle:hover i {
-        color: white;
-      }
-
-      .white-text span {
-        color: white !important;
-      }
-
-      .table-cell tbody td:hover {
+.white-text span {
+	color: white !important;
+}
+.table-cell tbody td:hover {
         background-color: #f0f0f0; /* Hover color for cell */
-        cursor: pointer; /* Optional: pointer cursor */
-      }
+        cursor: pointer;           /* Optional: pointer cursor */
+    }
+.table-bordered td, 
+.table-bordered th {
+     border: 1px solid #000 !important;
+}
 
-      .table-bordered td,
-      .table-bordered th {
-        border: 1px solid #000 !important;
-      }
-    </style>
 
+</style>
+<style>
+  #reports, 
+  #reports th, 
+  #reports td {
+    border: 1px solid black !important;
+  }
+
+  #reports {
+    border-collapse: collapse;
+  }
+</style>
     <script th:inline="javascript">
 
       $(document).ready(function() {
@@ -542,123 +565,149 @@ function cancelModify() {
 	</script>
 	
 	<SCRIPT>
-	// Calculate total for R15_OTHER_BORROW
+	// ----------------------------------------
+	// 🔹 Calculate total for R15_OTHER_BORROW
+	// ----------------------------------------
 	function calculateR15Totals() {
 	    let total = 0;
 
 	    for (let i = 16; i <= 28; i++) {
-	        let value = parseFloat($("#R" + i + "_OTHER_BORROW").val().replace(/,/g, "")) || 0;
-	        
+	        const selector = `#R${i}_OTHER_BORROW`;
+	        const element = $(selector);
+
+	        // Works for both <input> and text elements
+	        let rawValue = element.is("input") ? element.val() : element.text();
+	        let value = parseFloat(rawValue?.replace(/,/g, "")) || 0;
 
 	        total += value;
 	    }
 
-	    // Put the totals into R15
-	    $("#R15_OTHER_BORROW").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    
+	    // Update R15 with total
+	    $("#R15_OTHER_BORROW").text(
+	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
 	}
 
-
 	$(document).ready(function() {
-	    // Calculate once on load
 	    calculateR15Totals();
 
 	    // Recalculate whenever R16–R28 values change
 	    for (let i = 16; i <= 28; i++) {
-	    	 //if ([15, 29].includes(i)) continue;
-	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
-	            calculateR15Totals();
-	        });
+	        const input = $("#R" + i + "_OTHER_BORROW");
+	        if (input.length) {
+	            input.on("input", function() {
+	                calculateR15Totals();
+	            });
+	        }
 	    }
 	});
-	
-	// Calculate total for R29_OTHER_BORROW
+
+
+	// ----------------------------------------
+	// 🔹 Calculate total for R29_OTHER_BORROW
+	// ----------------------------------------
 	function calculateR29Totals() {
 	    let total = 0;
 
 	    for (let i = 30; i <= 36; i++) {
-	        let value = parseFloat($("#R" + i + "_OTHER_BORROW").val().replace(/,/g, "")) || 0;
-	        
+	        const selector = `#R${i}_OTHER_BORROW`;
+	        const element = $(selector);
+
+	        let rawValue = element.is("input") ? element.val() : element.text();
+	        let value = parseFloat(rawValue?.replace(/,/g, "")) || 0;
 
 	        total += value;
 	    }
 
-	    // Put the totals into R29
-	    $("#R29_OTHER_BORROW").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    
+	    $("#R29_OTHER_BORROW").text(
+	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
 	}
 
-
 	$(document).ready(function() {
-	    // Calculate once on load
 	    calculateR29Totals();
 
 	    // Recalculate whenever R30–R36 values change
 	    for (let i = 30; i <= 36; i++) {
-	    	 //if ([15, 29].includes(i)) continue;
-	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
-	            calculateR29Totals();
-	        });
+	        const input = $("#R" + i + "_OTHER_BORROW");
+	        if (input.length) {
+	            input.on("input", function() {
+	                calculateR29Totals();
+	            });
+	        }
 	    }
 	});
-	
-	// Calculate total for R38_OTHER_BORROW
+
+
+	// ----------------------------------------
+	// 🔹 Calculate total for R38_OTHER_BORROW
+	// ----------------------------------------
 	function calculateR38Totals() {
 	    let total = 0;
 
 	    for (let i = 39; i <= 40; i++) {
-	        let value = parseFloat($("#R" + i + "_OTHER_BORROW").val().replace(/,/g, "")) || 0;
-	        
+	        const selector = `#R${i}_OTHER_BORROW`;
+	        const element = $(selector);
+
+	        let rawValue = element.is("input") ? element.val() : element.text();
+	        let value = parseFloat(rawValue?.replace(/,/g, "")) || 0;
 
 	        total += value;
 	    }
 
-	    // Put the totals into R38
-	    $("#R38_OTHER_BORROW").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    
+	    $("#R38_OTHER_BORROW").text(
+	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
 	}
 
-
 	$(document).ready(function() {
-	    // Calculate once on load
 	    calculateR38Totals();
 
-	    // Recalculate whenever R11–R16 values change
+	    // Recalculate whenever R39–R40 values change
 	    for (let i = 39; i <= 40; i++) {
-	    	 //if ([15, 29].includes(i)) continue;
-	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
-	            calculateR38Totals();
-	        });
+	        const input = $("#R" + i + "_OTHER_BORROW");
+	        if (input.length) {
+	            input.on("input", function() {
+	                calculateR38Totals();
+	            });
+	        }
 	    }
 	});
+
 	
 	// Calculate total for R44_OTHER_BORROW
 	function calculateR44Totals() {
 	    let total = 0;
 
 	    for (let i = 45; i <= 48; i++) {
-	        let value = parseFloat($("#R" + i + "_OTHER_BORROW").val().replace(/,/g, "")) || 0;
-	        
+	        const selector = `#R${i}_OTHER_BORROW`;
+	        const element = $(selector);
+
+	        // Handle both <input> and text-based cells safely
+	        let rawValue = element.is("input") ? element.val() : element.text();
+	        let value = parseFloat(rawValue?.replace(/,/g, "")) || 0;
 
 	        total += value;
 	    }
 
-	    // Put the totals into R44
-	    $("#R44_OTHER_BORROW").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    
+	    // Update R44 with the formatted total
+	    $("#R44_OTHER_BORROW").text(
+	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
 	}
 
-
 	$(document).ready(function() {
-	    // Calculate once on load
+	    // Calculate once on page load
 	    calculateR44Totals();
 
 	    // Recalculate whenever R45–R48 values change
 	    for (let i = 45; i <= 48; i++) {
-	    	 //if ([15, 29].includes(i)) continue;
-	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
-	            calculateR44Totals();
-	        });
+	        const input = $("#R" + i + "_OTHER_BORROW");
+	        if (input.length) {
+	            input.on("input", function() {
+	                calculateR44Totals();
+	            });
+	        }
 	    }
 	});
 	
@@ -667,17 +716,21 @@ function cancelModify() {
 	    let total = 0;
 
 	    for (let i = 53; i <= 57; i++) {
-	        let value = parseFloat($("#R" + i + "_OTHER_BORROW").val().replace(/,/g, "")) || 0;
-	        
+	        const selector = `#R${i}_OTHER_BORROW`;
+	        const element = $(selector);
+
+	        // Handle both <input> and text-based formula cells
+	        let rawValue = element.is("input") ? element.val() : element.text();
+	        let value = parseFloat(rawValue?.replace(/,/g, "")) || 0;
 
 	        total += value;
 	    }
 
-	    // Put the totals into R52
-	    $("#R52_OTHER_BORROW").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    
+	    // Update R52 (formatted with commas)
+	    $("#R52_OTHER_BORROW").text(
+	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
 	}
-
 
 	$(document).ready(function() {
 	    // Calculate once on load
@@ -685,29 +738,35 @@ function cancelModify() {
 
 	    // Recalculate whenever R53–R57 values change
 	    for (let i = 53; i <= 57; i++) {
-	    	 //if ([15, 29].includes(i)) continue;
-	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
-	            calculateR52Totals();
-	        });
+	        const input = $("#R" + i + "_OTHER_BORROW");
+	        if (input.length) {
+	            input.on("input", function() {
+	                calculateR52Totals();
+	            });
+	        }
 	    }
 	});
-	
+
 	// Calculate total for R58_OTHER_BORROW
 	function calculateR58Totals() {
 	    let total = 0;
 
 	    for (let i = 59; i <= 62; i++) {
-	        let value = parseFloat($("#R" + i + "_OTHER_BORROW").val().replace(/,/g, "")) || 0;
-	        
+	        const selector = `#R${i}_OTHER_BORROW`;
+	        const element = $(selector);
+
+	        // Handle both <input> and text elements safely
+	        let rawValue = element.is("input") ? element.val() : element.text();
+	        let value = parseFloat(rawValue?.replace(/,/g, "")) || 0;
 
 	        total += value;
 	    }
 
-	    // Put the totals into R58
-	    $("#R58_OTHER_BORROW").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    
+	    // Update R58 (formatted with commas)
+	    $("#R58_OTHER_BORROW").text(
+	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    );
 	}
-
 
 	$(document).ready(function() {
 	    // Calculate once on load
@@ -715,10 +774,12 @@ function cancelModify() {
 
 	    // Recalculate whenever R59–R62 values change
 	    for (let i = 59; i <= 62; i++) {
-	    	 //if ([15, 29].includes(i)) continue;
-	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
-	            calculateR58Totals();
-	        });
+	        const input = $("#R" + i + "_OTHER_BORROW");
+	        if (input.length) {
+	            input.on("input", function() {
+	                calculateR58Totals();
+	            });
+	        }
 	    }
 	});
 	
@@ -732,29 +793,38 @@ function cancelModify() {
 
 	    rowsToAdd.forEach(i => {
 	        let selector = `#R${i}_OTHER_BORROW`;
-	        let value = parseFloat($(selector).val()?.replace(/,/g, "")) || 0;
+	        let element = $(selector);
+
+	        // Works for both <input> and <td>/<span>
+	        let rawValue = element.is("input") ? element.val() : element.text();
+	        let value = parseFloat(rawValue?.replace(/,/g, "")) || 0;
+
 	        total += value;
 	    });
 
 	    // Update R11 with total (formatted with commas)
-	    $("#R11_OTHER_BORROW").val(
-	        total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    $("#R11_OTHER_BORROW").text(
+	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
-
 
 	$(document).ready(function() {
 	    // Calculate once on load
 	    calculateR11Totals();
 
-	    // Recalculate whenever R11–R16 values change
+	    // Recalculate whenever R12–R36 values change
 	    for (let i = 12; i <= 36; i++) {
-	    	 if ([15, 29].includes(i)) continue;
-	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
-	            calculateR11Totals();
-	        });
+	        if ([15, 29].includes(i)) continue; // Skip formula rows
+
+	        const input = $("#R" + i + "_OTHER_BORROW");
+	        if (input.length) {
+	            input.on("input", function() {
+	                calculateR11Totals();
+	            });
+	        }
 	    }
 	});
+
 
 	// Calculate total for R49_OTHER_BORROW
 	function calculateR49Totals() {
@@ -765,16 +835,25 @@ function cancelModify() {
 
 	    rowsToAdd.forEach(i => {
 	        let selector = `#R${i}_OTHER_BORROW`;
-	        let value = parseFloat($(selector).val()?.replace(/,/g, "")) || 0;
+	        let element = $(selector);
+
+	        // Safely handle both <input> and <td>/<span>
+	        let rawValue;
+	        if (element.is("input")) {
+	            rawValue = element.val();
+	        } else {
+	            rawValue = element.text();
+	        }
+
+	        let value = parseFloat(rawValue?.replace(/,/g, "")) || 0;
 	        total += value;
 	    });
 
 	    // Update R49 with total (formatted with commas)
-	    $("#R49_OTHER_BORROW").val(
-	        total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    $("#R49_OTHER_BORROW").text(
+	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
-
 
 	$(document).ready(function() {
 	    // Calculate once on load
@@ -782,14 +861,18 @@ function cancelModify() {
 
 	    // Recalculate whenever R50–R62 values change
 	    for (let i = 50; i <= 62; i++) {
-	    	 if ([52, 58].includes(i)) continue;
-	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
-	            calculateR49Totals();
-	        });
+	        if ([52, 58].includes(i)) continue; // Skip formula rows
+
+	        const input = $("#R" + i + "_OTHER_BORROW");
+	        if (input.length) {
+	            input.on("input", function() {
+	                calculateR49Totals();
+	            });
+	        }
 	    }
 	});
+
 	
-	// Calculate total for R41_OTHER_BORROW
 	function calculateR41Totals() {
 	    let total = 0;
 
@@ -798,16 +881,26 @@ function cancelModify() {
 
 	    rowsToAdd.forEach(i => {
 	        let selector = `#R${i}_OTHER_BORROW`;
-	        let value = parseFloat($(selector).val()?.replace(/,/g, "")) || 0;
+
+	        // Check if it's an input or a text element
+	        let element = $(selector);
+	        let rawValue;
+
+	        if (element.is("input")) {
+	            rawValue = element.val();
+	        } else {
+	            rawValue = element.text();
+	        }
+
+	        let value = parseFloat(rawValue?.replace(/,/g, "")) || 0;
 	        total += value;
 	    });
 
 	    // Update R41 with total (formatted with commas)
-	    $("#R41_OTHER_BORROW").val(
-	        total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    $("#R41_OTHER_BORROW").text(
+	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
-
 
 	$(document).ready(function() {
 	    // Calculate once on load
@@ -815,12 +908,12 @@ function cancelModify() {
 
 	    // Recalculate whenever R42–R63 values change
 	    for (let i = 42; i <= 63; i++) {
-	    	 if ([44, 49, 52, 58].includes(i)) continue;
 	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
 	            calculateR41Totals();
 	        });
 	    }
-	}); 
+	});
+
 	
 	// Calculate total for R64_OTHER_BORROW
 	function calculateR64Totals() {
@@ -831,16 +924,25 @@ function cancelModify() {
 
 	    rowsToAdd.forEach(i => {
 	        let selector = `#R${i}_OTHER_BORROW`;
-	        let value = parseFloat($(selector).val()?.replace(/,/g, "")) || 0;
+	        let element = $(selector);
+
+	        // Safely handle both <input> and text elements
+	        let rawValue;
+	        if (element.is("input")) {
+	            rawValue = element.val();
+	        } else {
+	            rawValue = element.text();
+	        }
+
+	        let value = parseFloat(rawValue?.replace(/,/g, "")) || 0;
 	        total += value;
 	    });
 
 	    // Update R64 with total (formatted with commas)
-	    $("#R64_OTHER_BORROW").val(
-	        total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+	    $("#R64_OTHER_BORROW").text(
+	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
-
 
 	$(document).ready(function() {
 	    // Calculate once on load
@@ -848,12 +950,17 @@ function cancelModify() {
 
 	    // Recalculate whenever R12–R63 values change
 	    for (let i = 12; i <= 63; i++) {
-	    	 if ([15, 29, 38, 39, 40, 44, 49, 52, 58].includes(i)) continue;
-	        $("#R" + i + "_OTHER_BORROW").on("input", function() {
-	            calculateR64Totals();
-	        });
+	        if ([15, 29, 38, 39, 40, 44, 49, 52, 58].includes(i)) continue;
+
+	        const input = $("#R" + i + "_OTHER_BORROW");
+	        if (input.length) {
+	            input.on("input", function() {
+	                calculateR64Totals();
+	            });
+	        }
 	    }
 	});
+
 	
 	</SCRIPT>
 
@@ -1207,13 +1314,17 @@ function fileuploads(btn) {
 
 <tr>
 <td style="font-weight:bold;">1.  Non-financial institutional units (sum of lines (i) to (vii)):</td>
-<td id="R11" style="text-align:right;">
+
+<td id="R11_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R11_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
+
+<!-- <td id="R11" style="text-align:right; width: 248px;height: 28px;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R11_OTHER_BORROW != null ? #numbers.formatDecimal(report.R11_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R11_OTHER_BORROW" name="R11_OTHER_BORROW"
-	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td>
+	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; padding:0; border-color: transparent; text-align: right;"
+	readonly /></td> -->
 </tr>
 
 <tr>
@@ -1251,13 +1362,15 @@ function fileuploads(btn) {
 
 <tr>
 <td style="padding-left:15px;">(iv)  Other Non-Financial Corporations (Private business enterprises) (sum of lines (a) to (m)):</td>
-<td id="R15" style="text-align:right;">
+<td id="R15_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R15_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
+<!-- <td id="R15" style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R15_OTHER_BORROW != null ? #numbers.formatDecimal(report.R15_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R15_OTHER_BORROW" name="R15_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td>
+	readonly /></td> -->
 </tr>
 
 <tr>
@@ -1405,13 +1518,15 @@ function fileuploads(btn) {
 
 <tr>
 <td style="padding-left:15px;">(v)  Households (sum of lines (a) to (g)):</td>
-<td id="R29" style="text-align:right;">
+<td id="R29_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R29_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
+<!-- <td id="R29" style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R29_OTHER_BORROW != null ? #numbers.formatDecimal(report.R29_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R29_OTHER_BORROW" name="R29_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td>
+	readonly /></td> -->
 </tr>
 
 <tr>
@@ -1504,13 +1619,15 @@ function fileuploads(btn) {
 
 <tr>
 <td style="padding-left:15px;">(vii) Non-Residents** (sum of lines (a) and (b)):</td>
-<td id="R38" style="text-align:right;">
+<td id="R38_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R38_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
+<!-- <td id="R38" style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R38_OTHER_BORROW != null ? #numbers.formatDecimal(report.R38_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R38_OTHER_BORROW" name="R38_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td>
+	readonly /></td> -->
 </tr>
 
 <tr>
@@ -1537,13 +1654,15 @@ function fileuploads(btn) {
 
 <tr>
 <td style="font-weight:bold;">2.  Financial institutional units (sum of lines (i) to (v)):</td>
-<td id="R41" style="text-align:right;">
+<td id="R41_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R41_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
+<!-- <td id="R41" style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R41_OTHER_BORROW != null ? #numbers.formatDecimal(report.R41_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R41_OTHER_BORROW" name="R41_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td>
+	readonly /></td> -->
 </tr>
 
 <tr>
@@ -1570,13 +1689,15 @@ function fileuploads(btn) {
 
 <tr>
 <td style="padding-left:15px;">(iii)  Other Depository Corporations (sum of lines (a) to (d)):</td>
-<td id="R44" style="text-align:right;">
+<td id="R44_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R44_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
+<!-- <td id="R44" style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R44_OTHER_BORROW != null ? #numbers.formatDecimal(report.R44_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R44_OTHER_BORROW" name="R44_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td>
+	readonly /></td> -->
 </tr>
 
 <tr>
@@ -1625,13 +1746,15 @@ function fileuploads(btn) {
 
 <tr>
 <td style="padding-left:15px;">(iv)  Other Financial Corporations (sum of lines (a) to (d)):</td>
-<td id="R49" style="text-align:right;">
+<td id="R49_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R49_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
+<!-- <td id="R49" style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R49_OTHER_BORROW != null ? #numbers.formatDecimal(report.R49_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R49_OTHER_BORROW" name="R49_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td>
+	readonly /></td> -->
 </tr>
 
 <tr>
@@ -1658,13 +1781,16 @@ function fileuploads(btn) {
 
 <tr>
 <td style="padding-left:35px;">c) Other Financial Intermediaries (sum 1 to 5)</td>
-<td id="R52" style="text-align:right;">
+<td id="R52_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R52_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
+
+<!-- <td id="R52" style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R52_OTHER_BORROW != null ? #numbers.formatDecimal(report.R52_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R52_OTHER_BORROW" name="R52_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td>
+	readonly /></td> -->
 </tr>
 
 <tr>
@@ -1724,13 +1850,15 @@ function fileuploads(btn) {
 
 <tr>
 <td style="padding-left:35px;">d) Financial Auxiliaries (sum 1 to 4)</td>
-<td id="R58" style="text-align:right;">
+<td id="R58_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R58_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
+<!-- <td id="R58" style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R58_OTHER_BORROW != null ? #numbers.formatDecimal(report.R58_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R58_OTHER_BORROW" name="R58_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td>
+	readonly /></td> -->
 </tr>
 
 <tr>
@@ -1790,13 +1918,15 @@ function fileuploads(btn) {
   
 <tr>
 <td style="font-weight:bold;">TOTAL (Sum of lines 1 and 2)</td>
-<td id="R64" style="text-align:right;">
+<td id="R64_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R64_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
+<!-- <td id="R64" style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R64_OTHER_BORROW != null ? #numbers.formatDecimal(report.R64_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R64_OTHER_BORROW" name="R64_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td>
+	readonly /></td> -->
 </tr>
 
 
@@ -2039,64 +2169,66 @@ function fileuploads(btn) {
     </div>
   </body>
 
-  <style>
-    /* Your existing CSS - this is the correct approach */
-    .scrollable-table-container {
-      /* This is the key: it creates the scroll context */
-      max-height: 600px;
-      /* Or a suitable height like 80vh for responsive design */
-      overflow-y: auto;
-      border: 1px solid #ccc;
-    }
-
-    /* Your existing sticky header CSS, targeting the tr elements within the thead */
-    .scrollable-table-container thead tr:nth-child(1) {
-      position: sticky;
-      top: 0;
-      background-color: #b3b6b9;
-      z-index: 5;
-    }
-
-    .scrollable-table-container thead tr:nth-child(2) {
-      position: sticky;
-      top: 36px; /* adjust based on row height */
-      background-color: #b3b6b9;
-      z-index: 4;
-    }
-    #reports thead th:nth-child(2) {
-  width: 250px; /* <-- Adjust this width as needed */
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 620px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
 }
 
-    .scrollable-table-container thead tr:nth-child(3) {
-      position: sticky;
-      top: 72px; /* Adjust based on row height */
-      background-color: #b3b6b9;
-      z-index: 3;
-    }
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+	
+}
 
-    .scrollable-table-container thead tr:nth-child(4) {
-      position: sticky;
-      top: 100px; /* Adjust based on row height */
-      background-color: #b3b6b9;
-      z-index: 2;
-    }
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+	
 
-    .scrollable-table-container thead tr:nth-child(5) {
-      position: sticky;
-      top: 135px; /* Adjust based on row height */
-      background-color: #b3b6b9;
-      z-index: 1;
-    }
-  </style>
+}
 
-  <style>
-    .inner {
-      max-height: 600px; /* Adjust height as needed */
-      overflow: auto;
-      border: 1px solid #dee2e6;
-    }
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+	
+}
 
- 	/* Sticky thead */
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+
+
+<style>
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
 	#reports thead th {
 		position: sticky;
 		top: 0;
@@ -2105,48 +2237,49 @@ function fileuploads(btn) {
 		z-index: 2;
 	}
 
-    div.dataTables_wrapper div.dataTables_paginate {
-      text-align: right !important;
-      float: right !important;
-      width: auto;
-      margin-top: 10px;
-    }
 
-    /* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-    div.dataTables_wrapper div.dataTables_info {
-      float: left !important;
-      margin-top: 10px;
-    }
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
 
-    .pagination {
-      margin: 0;
-    }
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
 
-    .page-item.active .page-link {
-      background-color: #386276;
-      border-color: #386276;
-    }
+.pagination {
+	margin: 0;
+}
 
-    .page-link {
-      color: #386276;
-    }
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
 
-    .page-link:hover {
-      color: #2a4a5c;
-    }
-    
-    
+.page-link {
+	color: #386276;
+}
 
-    .form-select {
-      display: inline-block;
-      width: auto;
-    }
-    .scrollable-table-container thead tr:nth-child(1),
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+	.scrollable-table-container thead tr:nth-child(1),
 .scrollable-table-container thead tr:nth-child(2),
 .scrollable-table-container thead tr:nth-child(3),
 .scrollable-table-container thead tr:nth-child(4),
 .scrollable-table-container thead tr:nth-child(5) {
     background-color: #D8D8D8; /* set header color */
 }
-  </style>
+	
+</style>
+
 </html>
