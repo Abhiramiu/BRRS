@@ -53,6 +53,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_CA6_ReportService BRRS_M_CA6_reportservice;
+	
+	@Autowired
+	BRRS_M_CR_ReportService BRRS_M_CR_reportservice;
 
 	@Autowired
 	BRRS_M_SP_ReportService BRRS_M_SP_reportservice;
@@ -228,6 +231,11 @@ public class RegulatoryReportServices {
 
 		case "M_CA5":
 			repsummary = BRRS_M_CA5_reportservice.getM_CA5View(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+			break;
+			
+		case "M_CR":
+			repsummary = BRRS_M_CR_reportservice.getM_CRView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
 
@@ -633,6 +641,16 @@ public class RegulatoryReportServices {
 		case "M_CA4":
 			try {
 				repfile = BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_CR":
+			try {
+				repfile = BRRS_M_CR_reportservice.BRRS_M_CRExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -1266,6 +1284,15 @@ public class RegulatoryReportServices {
 		case "M_CA7":
 			try {
 				archivalData = BRRS_M_CA7_reportservice.getM_CA7Archival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_CR":
+			try {
+				archivalData = BRRS_M_CR_reportservice.getM_CRArchival();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
