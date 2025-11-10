@@ -303,6 +303,13 @@ label.error {
 	.table-bordered th {
 	     border: 1px solid #000 !important;
 	}
+	th, td {
+	  text-align: right; /* for numeric columns */
+	}
+	th:first-child, td:first-child {
+	  text-align: left; /* for 'Group' column */
+	}
+
 </style>
 
 </style>
@@ -612,6 +619,23 @@ function showdetailsbyRowAndColumn(a) {
     }
 }
 </script><script>
+// ==============================
+// ✅ Utility Functions
+// ==============================
+function formatNumber(num) {
+    if (num === null || num === undefined || num === "") return "";
+    const parsed = parseFloat(num.toString().replace(/,/g, ""));
+    if (isNaN(parsed)) return "";
+    return parsed.toLocaleString('en-US'); // Indian style (1,00,000)
+}
+
+function parseNumber(val) {
+    return parseFloat(String(val).replace(/,/g, "")) || 0;
+}
+
+// ==============================
+// ✅ Enable Editing
+// ==============================
 function showmodify(btn) {
     for (let i = 11; i <= 450; i++) {
         [
@@ -652,21 +676,7 @@ function cancelModify() {
 }
 
 // ==============================
-// ✅ HELPER FUNCTIONS
-// ==============================
-function formatNumber(num) {
-    if (isNaN(num)) return "";
-    // ✅ Convert to integer and remove decimals
-    return Math.round(num).toLocaleString('en-US', { maximumFractionDigits: 0 });
-}
-
-function parseNumber(val) {
-    if (!val) return 0;
-    return parseFloat(val.toString().replace(/,/g, "")) || 0;
-}
-
-// ==============================
-// ✅ MAIN CALCULATION (Grouped Totals)
+// ✅ Calculate Totals
 // ==============================
 function calculateAllTotals() {
     let grandTotals = { limit: 0, out: 0, exc: 0, cur: 0, val: 0 };
@@ -708,7 +718,7 @@ function calculateAllTotals() {
         grandTotals.val += g.val;
     });
 
-    // 🔹 Write grand total (R451)
+    // Write grand total (R451)
     $("#R451_APPROVED_LIMIT").val(formatNumber(grandTotals.limit));
     $("#R451_OUTSTANDING_AMOUNT").val(formatNumber(grandTotals.out));
     $("#R451_EXCESS_OVER_CEILING").val(formatNumber(grandTotals.exc));
@@ -717,11 +727,10 @@ function calculateAllTotals() {
 }
 
 // ==============================
-// ✅ LIVE CALCULATION BINDING
+// ✅ Apply Formatting + Bind Events
 // ==============================
 $(document).ready(function () {
-    calculateAllTotals();
-
+    // 1️⃣ Format all numeric fields on load (so prefilled values get commas)
     for (let i = 11; i <= 450; i++) {
         [
             "_APPROVED_LIMIT",
@@ -730,24 +739,38 @@ $(document).ready(function () {
             "_CURRENT_PROVISIONS",
             "_VALUE"
         ].forEach(suffix => {
-            $("#R" + i + suffix)
-                .on("input", calculateAllTotals)
-                .on("blur", function () {
-                    $(this).val(formatNumber(parseNumber($(this).val())));
-                });
+            const input = $("#R" + i + suffix);
+            input.val(formatNumber(parseNumber(input.val()))); // format existing values
+
+            // On typing
+            input.on("input", function () {
+                let val = $(this).val().replace(/,/g, "");
+                if (!isNaN(val) && val !== "") {
+                    $(this).val(formatNumber(val));
+                }
+                calculateAllTotals();
+            });
+
+            // On blur, ensure proper formatting
+            input.on("blur", function () {
+                $(this).val(formatNumber(parseNumber($(this).val())));
+            });
         });
     }
 
+    calculateAllTotals();
     $("#submitButton, #cancelRecord").hide();
 });
-</script><script>
+
+// ==============================
+// ✅ File Upload (unchanged)
+// ==============================
 function fileuploads(btn) {
     const asondate = btn.getAttribute("data-todate");
     const type = btn.getAttribute("data-type");
 
     $('#loader').modal('show');
 
-    // Step 1: Clean up commas before submit
     $("#fileupload input[type='text']").each(function () {
         let val = $(this).val();
         if (val && typeof val === "string") {
@@ -755,32 +778,26 @@ function fileuploads(btn) {
         }
     });
 
-    // Step 2: Serialize all data
-    const formData = $("#fileupload").serialize() + 
-                     "&asondate=" + encodeURIComponent(asondate) +
-                     "&type=" + encodeURIComponent(type);
+    const formData = $("#fileupload").serialize() +
+        "&asondate=" + encodeURIComponent(asondate) +
+        "&type=" + encodeURIComponent(type);
 
-    // Step 3: AJAX call
     $.ajax({
         url: './M_RPDupdateAll',
         type: 'POST',
         data: formData,
         dataType: 'text',
         success: function (response) {
-            console.log("✅ Response received:", response);
             $("#resultModalLabel").text("BRRS");
             $("#resultModalBody").text("Updated Successfully.");
-            $("#resultModal").modal("show"); // Show success popup
-
-            // ✅ Wait for user to click OK before reload
+            $("#resultModal").modal("show");
             $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-                location.reload(); // Reload only after modal is closed
+                location.reload();
             });
         },
         error: function (jqXHR) {
-            console.error("❌ Error:", jqXHR.responseText);
             $("#resultModalLabel").text("⚠️ Error");
-            $("#resultModalBody").text("Update failed. Please check console for details.");
+            $("#resultModalBody").text("Update failed. Please check console.");
             $("#resultModal").modal("show");
         },
         complete: function () {
@@ -789,6 +806,7 @@ function fileuploads(btn) {
     });
 }
 </script>
+
 
 </script>
 
@@ -814,17 +832,15 @@ function fileuploads(btn) {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							(47) MONTHLY SCHEDULE: M-RPD: RELATED PARTY DISCLOSURES 
+							MONTHLY REPORT ON CREDIT FACILITIES EXTENDED TO RELATED PARTIES
 						</h5>
 					</div>
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
-						<!-- 📅 Date -->
-						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${asondate}">2025-07-04</span>
-						</span>
+					
+											<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+											</span>
 
 						<!-- Buttons -->
         <input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -888,17 +904,17 @@ function fileuploads(btn) {
 						    <table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports">
 								<thead>
 								    <tr style="text-align: center;">
-										<th>Group</th>
-								      <th>Names of insider borrower(s)</th>
-								      <th>Type of Facility</th>
-								      <th>Approved Limit</th>
-								      <th>Outstanding Amount</th>
-								      <th>Excess Over Ceiling</th>
-								      <th>Loan Performance Classification</th>
-								      <th>Current Provisions</th>
-								      <th>Description</th>
-								      <th>Value</th>
-								      <th>Interest Rate</th>
+										<th  style="text-align: left;">Group</th>
+								      <th  style="text-align: left;">Names of insider borrower(s) including related interests of the borrower(s)</th>
+								      <th  style="text-align: right;">Type of Facility</th>
+								      <th  style="text-align: right;">Approved Limit</th>
+								      <th  style="text-align: right;">Outstanding Amount</th>
+								      <th  style="text-align: right;">Excess Over Ceiling</th>
+								      <th  style="text-align: right;">Loan Performance Classification</th>
+								      <th  style="text-align: right;">Current Provisions</th>
+								      <th style="text-align: left;">Description</th>
+								      <th  style="text-align: right;">Value</th>
+								      <th  style="text-align: right;">Interest Rate</th>
 								    </tr>
 								  </thead>
 								  
