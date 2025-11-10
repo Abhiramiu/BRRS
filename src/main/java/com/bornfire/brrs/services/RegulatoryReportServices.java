@@ -1792,10 +1792,10 @@ public class RegulatoryReportServices {
 						request.getParameter("formmode"));
 				break;
 
-			/*
-			 * case "M_LA1": modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(
-			 * request.getParameter("acctNo"), request.getParameter("formmode") ); break;
-			 */
+			
+			  case "M_LA1": modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(
+			  request.getParameter("acctNo"), request.getParameter("formmode") ); break;
+			 
 
 			default:
 				logger.warn("No detail service found for reportId: {}", reportId);
@@ -1825,10 +1825,10 @@ public class RegulatoryReportServices {
 				response = BRRS_M_PLL_reportservice.updateDetailEdit(request);
 				break;
 
-			/*
-			 * case "M_LA1": response = BRRS_M_LA1_reportservice.updateDetailEdit(request);
-			 * break;
-			 */
+			
+			  case "M_LA1": response = BRRS_M_LA1_reportservice.updateDetailEdit(request);
+			  break;
+			 
 
 			default:
 				logger.warn("Unsupported report ID: {}", reportId);

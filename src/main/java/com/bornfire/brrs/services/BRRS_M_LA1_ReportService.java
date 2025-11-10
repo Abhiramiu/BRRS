@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -41,15 +45,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_LA1_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA1_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA1_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA1_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_PLL_Detail_Repo;
 import com.bornfire.brrs.entities.M_LA1_Summary_Entity;
+import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
@@ -3990,35 +4001,151 @@ public class BRRS_M_LA1_ReportService {
 		return reportData;
 	}
 
-	public boolean updateProvision(M_LA1_Detail_Entity la1Data) {
-		try {
-			System.out.println("Came to LA1 Service");
+//	public boolean updateProvision(M_LA1_Detail_Entity la1Data) {
+//		try {
+//			System.out.println("Came to LA1 Service");
+//
+//			// ✅ Must match your entity field name exactly
+//			M_LA1_Detail_Entity existing = M_LA1_Detail_Repo.findByAcctnumber(la1Data.getAcct_number());
+//
+//			if (existing != null) {
+//
+//				existing.setAcct_name(la1Data.getAcct_name());
+//
+//				// existing.setAcct_name(la1Data.getAcct_name());
+//
+//				existing.setSanction_limit(la1Data.getSanction_limit());
+//				existing.setAcct_balance_in_pula(la1Data.getAcct_balance_in_pula());
+//
+//				M_LA1_Detail_Repo.save(existing);
+//
+//				System.out.println("Updated successfully for ACCT_NO: " + la1Data.getAcct_number());
+//				return true;
+//			} else {
+//				System.out.println("Record not found for Account No: " + la1Data.getAcct_number());
+//				return false;
+//			}
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return false;
+//		}
+//	}
+	
+	
 
-			// ✅ Must match your entity field name exactly
-			M_LA1_Detail_Entity existing = M_LA1_Detail_Repo.findByAcctnumber(la1Data.getAcct_number());
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
-			if (existing != null) {
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_LA1"); // ✅ match the report name
+	    System.out.println("Hello");
+	    if (acctNo != null) {
+	        M_LA1_Detail_Entity la1Entity = M_LA1_Detail_Repo.findByAcctnumber(acctNo);
+	        if (la1Entity != null && la1Entity.getReport_date() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReport_date());
+	            mv.addObject("asondate", formattedDate);
+	        }
+	        mv.addObject("Data", la1Entity);
+	    }
 
-				existing.setAcct_name(la1Data.getAcct_name());
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+	
 
-				// existing.setAcct_name(la1Data.getAcct_name());
 
-				existing.setSanction_limit(la1Data.getSanction_limit());
-				existing.setAcct_balance_in_pula(la1Data.getAcct_balance_in_pula());
 
-				M_LA1_Detail_Repo.save(existing);
 
-				System.out.println("Updated successfully for ACCT_NO: " + la1Data.getAcct_number());
-				return true;
-			} else {
-				System.out.println("Record not found for Account No: " + la1Data.getAcct_number());
-				return false;
-			}
+	public ModelAndView updateDetailEdit(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_LA1"); // ✅ match the report name
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	    if (acctNo != null) {
+	        M_LA1_Detail_Entity la1Entity = M_LA1_Detail_Repo.findByAcctnumber(acctNo);
+	        if (la1Entity != null && la1Entity.getReport_date() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReport_date());
+	            mv.addObject("asondate", formattedDate);
+	            System.out.println(formattedDate);
+	        }
+	        mv.addObject("Data", la1Entity);
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+	    try {
+	        String acctNo = request.getParameter("acctNo");
+	        String provisionStr = request.getParameter("provision");
+	        String acctName = request.getParameter("acctName");
+	        String reportDateStr = request.getParameter("reportDate");
+
+	        logger.info("Received update for ACCT_NO: {}", acctNo);
+
+	        M_LA1_Detail_Entity existing = M_LA1_Detail_Repo.findByAcctnumber(acctNo);
+	        if (existing == null) {
+	            logger.warn("No record found for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+	        }
+
+	        boolean isChanged = false;
+
+	        if (acctName != null && !acctName.isEmpty()) {
+	            if (existing.getAcct_name() == null || !existing.getAcct_name().equals(acctName)) {
+	                existing.setAcct_name(acctName);
+	                isChanged = true;
+	                logger.info("Account name updated to {}", acctName);
+	            }
+	        }
+
+	        if (provisionStr != null && !provisionStr.isEmpty()) {
+	            BigDecimal newProvision = new BigDecimal(provisionStr);
+	            if (existing.getAcct_balance_in_pula() == null ||
+	                existing.getAcct_balance_in_pula().compareTo(newProvision) != 0) {
+	                existing.setAcct_balance_in_pula(newProvision);
+	                isChanged = true;
+	                logger.info("Provision updated to {}", newProvision);
+	            }
+	        }
+
+	        if (isChanged) {
+	            M_LA1_Detail_Repo.save(existing);
+	            logger.info("Record updated successfully for account {}", acctNo);
+
+	            // Format date for procedure
+	            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+	                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+	            // Run summary procedure after commit
+	            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+	                @Override
+	                public void afterCommit() {
+	                    try {
+	                        logger.info("Transaction committed — calling BRRS_M_LA1_SUMMARY_PROCEDURE({})",
+	                                formattedDate);
+	                        jdbcTemplate.update("BEGIN BRRS_M_LA1_SUMMARY_PROCEDURE(?); END;", formattedDate);
+	                        logger.info("Procedure executed successfully after commit.");
+	                    } catch (Exception e) {
+	                        logger.error("Error executing procedure after commit", e);
+	                    }
+	                }
+	            });
+
+	            return ResponseEntity.ok("Record updated successfully!");
+	        } else {
+	            logger.info("No changes detected for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.ok("No changes were made.");
+	        }
+
+	    } catch (Exception e) {
+	        logger.error("Error updating M_LA1 record", e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error updating record: " + e.getMessage());
+	    }
 	}
 
 }

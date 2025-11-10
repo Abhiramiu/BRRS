@@ -1356,59 +1356,59 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@RequestMapping(value = "/updateMLA1", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public String updateMPLL(@ModelAttribute M_LA1_Detail_Entity Data) {
-		System.out.println("Came to Controller ");
-		System.out.println("Received update for ACCT_NO: " + Data.getAcct_number());
-		System.out.println("sanction value: " + Data.getSanction_limit());
-		System.out.println("balance value: " + Data.getAcct_balance_in_pula());
-
-		boolean updated = brrs_M_LA1_ReportService.updateProvision(Data);
-
-		if (updated) {
-			return "M_LA1 Detail updated successfully!";
-		} else {
-			return "Record not found for update!";
-		}
-	}
-
-	@Autowired
-	private BRRS_M_LA1_Detail_Repo M_LA1_Detail_Repo;
-
-	@RequestMapping(value = "/MLA1_Detail", method = { RequestMethod.GET, RequestMethod.POST })
-	public String showMLA1Detail(@RequestParam(required = false) String formmode,
-			@RequestParam(required = false) String acctNo, @RequestParam(required = false) BigDecimal sanction_limit,
-			@RequestParam(required = false) BigDecimal acct_balance_in_pula, Model model) {
-
-		M_LA1_Detail_Entity la1Entity = M_LA1_Detail_Repo.findByAcctnumber(acctNo);
-
-		if (la1Entity != null) {
-
-			if (sanction_limit != null) {
-				la1Entity.setSanction_limit(sanction_limit);
-			}
-			if (acct_balance_in_pula != null) {
-				la1Entity.setAcct_balance_in_pula(acct_balance_in_pula);
-			}
-
-			if (sanction_limit != null || acct_balance_in_pula != null) {
-				M_LA1_Detail_Repo.save(la1Entity);
-				System.out.println("Updated Sanction Limit / Account Balance for ACCT_NO: " + acctNo);
-			}
-
-			Date reportDate = la1Entity.getReport_date();
-			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-			String formattedDate = formatter.format(reportDate);
-			model.addAttribute("asondate", formattedDate);
-		}
-
-		model.addAttribute("displaymode", "edit");
-		model.addAttribute("formmode", "edit");
-		model.addAttribute("Data", la1Entity);
-
-		return "BRRS/M_LA1";
-	}
+//	@RequestMapping(value = "/updateMLA1", method = { RequestMethod.GET, RequestMethod.POST })
+//	@ResponseBody
+//	public String updateMPLL(@ModelAttribute M_LA1_Detail_Entity Data) {
+//		System.out.println("Came to Controller ");
+//		System.out.println("Received update for ACCT_NO: " + Data.getAcct_number());
+//		System.out.println("sanction value: " + Data.getSanction_limit());
+//		System.out.println("balance value: " + Data.getAcct_balance_in_pula());
+//
+//		boolean updated = brrs_M_LA1_ReportService.updateProvision(Data);
+//
+//		if (updated) {
+//			return "M_LA1 Detail updated successfully!";
+//		} else {
+//			return "Record not found for update!";
+//		}
+//	}
+//
+//	@Autowired
+//	private BRRS_M_LA1_Detail_Repo M_LA1_Detail_Repo;
+//
+//	@RequestMapping(value = "/MLA1_Detail", method = { RequestMethod.GET, RequestMethod.POST })
+//	public String showMLA1Detail(@RequestParam(required = false) String formmode,
+//			@RequestParam(required = false) String acctNo, @RequestParam(required = false) BigDecimal sanction_limit,
+//			@RequestParam(required = false) BigDecimal acct_balance_in_pula, Model model) {
+//
+//		M_LA1_Detail_Entity la1Entity = M_LA1_Detail_Repo.findByAcctnumber(acctNo);
+//
+//		if (la1Entity != null) {
+//
+//			if (sanction_limit != null) {
+//				la1Entity.setSanction_limit(sanction_limit);
+//			}
+//			if (acct_balance_in_pula != null) {
+//				la1Entity.setAcct_balance_in_pula(acct_balance_in_pula);
+//			}
+//
+//			if (sanction_limit != null || acct_balance_in_pula != null) {
+//				M_LA1_Detail_Repo.save(la1Entity);
+//				System.out.println("Updated Sanction Limit / Account Balance for ACCT_NO: " + acctNo);
+//			}
+//
+//			Date reportDate = la1Entity.getReport_date();
+//			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+//			String formattedDate = formatter.format(reportDate);
+//			model.addAttribute("asondate", formattedDate);
+//		}
+//
+//		model.addAttribute("displaymode", "edit");
+//		model.addAttribute("formmode", "edit");
+//		model.addAttribute("Data", la1Entity);
+//
+//		return "BRRS/M_LA1";
+//	}
 
 	@Autowired
 	BRRS_M_OB_ReportService BRRS_M_OB_reportservice;
