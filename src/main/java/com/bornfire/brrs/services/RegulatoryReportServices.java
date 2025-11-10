@@ -134,6 +134,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_SECL_ReportService brrs_m_secl_reportservice;
+	
+	@Autowired
+	BRRS_M_SEC_ReportService brrs_m_sec_reportservice;
 
 	@Autowired
 	BRRS_Q_SMME_Intrest_Income_ReportService BRRS_Q_SMME_Intrest_Income_ReportService;
@@ -165,6 +168,8 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_OPTR_ReportService BRRS_M_OPTR_ReportService;
 	
+	@Autowired
+	BRRS_M_INT_RATES_FCA_ReportService brrs_m_int_rates_fca_reportservice;
 	
 	
 	@Autowired
@@ -417,6 +422,14 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 			
+		case "M_INT_RATES_FCA":
+			repsummary = brrs_m_int_rates_fca_reportservice.getM_INTRATESFCAView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
+			break;
+			
+		case "M_SEC":
+			repsummary = brrs_m_sec_reportservice.getM_SECView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
+			break;
+			
 			
 		case "Q_SMME_DEP":
   			
@@ -621,6 +634,24 @@ public class RegulatoryReportServices {
 			try {
 				repfile = BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_SEC":
+			try {
+				repfile = brrs_m_sec_reportservice.getM_SECExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_INT_RATES_FCA":
+			try {
+				repfile = brrs_m_int_rates_fca_reportservice.getM_INTRATESFCAExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1438,6 +1469,25 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_SEC":
+			try {
+				archivalData = brrs_m_sec_reportservice.getM_SECArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_INT_RATES_FCA":
+			try {
+				archivalData = brrs_m_int_rates_fca_reportservice.getM_INTRATESFCAArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 
 		case "Q_STAFF":
 			try {

@@ -43,6 +43,10 @@ import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity4;
 import com.bornfire.brrs.entities.BRRS_M_LA1_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA3_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity1;
+import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity2;
+import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity3;
+import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity4;
 import com.bornfire.brrs.entities.M_BOP_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA3_Summary_Entity;
@@ -57,6 +61,7 @@ import com.bornfire.brrs.entities.M_EPR_Summary_Entity;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity1;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity2;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity3;
+import com.bornfire.brrs.entities.M_INT_RATES_FCA_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
@@ -125,6 +130,7 @@ import com.bornfire.brrs.services.BRRS_M_CA6_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
 import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
+import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
@@ -136,6 +142,7 @@ import com.bornfire.brrs.services.BRRS_M_OPTR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_PLL_ReportService;
 import com.bornfire.brrs.services.BRRS_M_RPD_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SECL_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SEC_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12A_ReportService;
@@ -1054,6 +1061,74 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+	
+	 @Autowired
+	 private BRRS_M_SEC_ReportService SECreportService;
+	 
+	 @RequestMapping(value = "/SECupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	 @ResponseBody
+	 public ResponseEntity<String> updateLA4(
+	         @RequestParam(required = false)
+	         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+	         @ModelAttribute BRRS_M_SEC_Summary_Entity1 request1,
+	         @ModelAttribute BRRS_M_SEC_Summary_Entity2 request2,
+	         @ModelAttribute BRRS_M_SEC_Summary_Entity3 request3,
+	         @ModelAttribute BRRS_M_SEC_Summary_Entity4 request4
+	 ) {
+	     try {
+	         
+	         // set date into all 4 entities
+	         request1.setREPORT_DATE(asondate);
+	         request2.setREPORT_DATE(asondate);
+	         request3.setREPORT_DATE(asondate);
+	         request4.setREPORT_DATE(asondate);
+
+	         // call services
+	         SECreportService.updateReport(request1);
+	         SECreportService.updateReport2(request2);
+	         SECreportService.updateReport3(request3);
+	         SECreportService.updateReport4(request4);
+
+	         return ResponseEntity.ok("All Reports Updated Successfully");
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                              .body("Update Failed: " + e.getMessage());
+	     }
+	 }	 
+	
+	
+	
+	@Autowired
+	 private BRRS_M_INT_RATES_FCA_ReportService INTRATESFCAreportService;
+	
+	
+	 @RequestMapping(value = "/INTRATESFCAupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	 @ResponseBody
+	 public ResponseEntity<String> updateAllReports(
+	         @RequestParam(required = false)
+	         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	         @ModelAttribute M_INT_RATES_FCA_Summary_Entity request1
+	         
+	 ) {
+	     try {
+	         System.out.println("Came to single controller");
+	         // set date into all 4 entities
+	         request1.setReport_date(asondate);
+	         
+	         // call services
+	         INTRATESFCAreportService.updateReport(request1);
+	         
+	         
+	         return ResponseEntity.ok("Updated Successfully");
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                              .body("Update Failed: " + e.getMessage());
+	     }
+	 }
+	 
 
 	@Autowired
 	private BRRS_M_FXR_ReportService brrs_m_fxr_reportservice;

@@ -121,6 +121,12 @@ public class BRRS_M_LA4_ReportService {
 			List<M_LA4_Summary_Entity2> T2Master = new ArrayList<>();
 
 			try {
+				
+				// FIX the month name before parsing
+			    if(todate != null) {
+			        todate = todate.trim().replace("Sept", "Sep");
+			    }
+			    
 			    // Matches "30-Sep-2025"
 			    SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
 
