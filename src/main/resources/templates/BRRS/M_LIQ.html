@@ -986,6 +986,150 @@ $(document).ready(function() {
 	</script>
 
 
+	<script>
+			function openDetail(elem, mode) {
+				const acctNo = elem.getAttribute("data-acctNo");
+				 const asondate = elem.getAttribute("data-asondate");
+				location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+			}
+		</script>
+
+		<script>
+			function submitUpdate() {
+			    const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+
+			    // ✅ Store the previous page URL
+			    const previousUrl = document.referrer; // same as going back once in history
+
+			    // Show loader while processing
+			    $('#loader').modal('show');
+
+			    $.ajax({
+			        url: `/BRRS/Reports/${reportId}/update`,
+			        type: 'POST',
+			        data: formData,
+			        success: function (response) {
+			            $('#loader').modal('hide');
+
+			            // Show message via modal
+			            if (response && response.toLowerCase().includes('success')) {
+			                showResultModal('Success', response);
+			            } else {
+			                showResultModal('Information', response || 'No data updated.');
+			            }
+
+			            // ✅ Redirect back to the previous page after short delay
+			            setTimeout(() => {
+			                if (previousUrl) {
+			                    window.location.href = previousUrl;
+			                } else {
+			                    // fallback: just go back if referrer not found
+			                    window.history.back();
+			                }
+			            }, 1500);
+			        },
+			        error: function (xhr, status, error) {
+			            $('#loader').modal('hide');
+			            console.error("Update error:", error);
+
+			            showResultModal('Error', 'Failed to update record. Please try again.');
+
+			            // ✅ On error also return to previous page after delay
+			            setTimeout(() => {
+			                if (previousUrl) {
+			                    window.location.href = previousUrl;
+			                } else {
+			                    window.history.back();
+			                }
+			            }, 1500);
+			        }
+			    });
+			}
+
+		</script>
+		
+
+		<script th:inline="javascript">
+			  $(document).ready(function () {
+			    $('#reportdetails').DataTable({
+			      scrollY: "550px",            // ✅ Adjust vertical scroll height
+			      scrollX: true,               // ✅ Horizontal scrolling
+			      scrollCollapse: true,
+			      autoWidth: false,
+			      paging: true,
+			      searching: true,
+			      lengthChange: false,
+			      ordering: true,
+			      pageLength: 100,
+			      fixedHeader: {
+			        header: true,
+			        footer: false
+			      },                           // ✅ Ensures header stays visible
+			      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			    });
+			  });
+			</script>
+			<style>
+			  .dataTables_scrollHeadInner,
+			  table.dataTable {
+			    width: 100% !important;
+			    margin: -2px auto !important;
+			  }
+
+			  /* ✅ Prevent wrapping in all table cells */
+			  #reportdetails th,
+			  #reportdetails td {
+			    white-space: nowrap;
+			  }
+			</style>
+
+
+			<style>
+			  .left-arrow-circle {
+			    background-color: white;
+			    color: #007bff;
+			    border-radius: 50%;
+			    padding: 8px;
+			    margin-right: 10px;
+			    cursor: pointer;
+			  }
+
+			  /* 🚌 Bus display style box */
+			  .boards {
+			    background-color: rgb(107, 122, 143);
+			    color: white;
+			    padding: 6px -1px;
+			    border-radius: 8px;
+			    overflow: hidden;
+			    white-space: nowrap;
+			    width: 500px; /* adjust width as needed */
+			    box-shadow: 0 0 10px rgb(107, 122, 143);
+			    position: relative;
+				transform: translateY(10px);
+			  }
+
+			  /* ✨ Scrolling animation */
+			  .scrolling-text {
+			    display: inline-block;
+			    font-family: "Courier New", monospace;
+			    font-weight: bold;
+			    letter-spacing: 1px;
+			    animation: scroll-left 10s linear infinite;
+			  }
+
+			  /* Animation keyframes */
+			  @keyframes scroll-left {
+			    0% {
+			      transform: translateX(100%);
+			    }
+			    100% {
+			      transform: translateX(-100%);
+			    }
+			  }
+			</style>
+			
+			
+
 
 
 
@@ -1011,14 +1155,22 @@ $(document).ready(function() {
 						</div>
 
 						<!-- Title -->
-						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+										  <h5 style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+										    BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT
+										  </h5>
 
-							MONTHLY SCHEDULE : M-LIQ: LIQUIDITY 
-						</h5>
+										 
+										  <!-- Moving bus-board text -->
+										  <div class="boards">
+										    <p class="scrolling-text">(3) MONTHLY SCHEDULE :  M-LIQ: LIQUIDITY </p>
+										  </div>
+
+										</div>
+										
+										
 
 
-					</div>
+					
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
@@ -1715,12 +1867,10 @@ $(document).ready(function() {
 									<thead class="thead-light">
 										<tr>
 											<th></th>
+											<th>S No</th>
 											<th>CUST_ID</th>
 											<th>ACCT_NUMBER</th>
 											<th>ACCT_NAME</th>
-											
-											
-											
 											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
 											<th>REPORT LABLE</th>
 											<th>REPORT ADDL CRITERIA1</th>
@@ -1728,14 +1878,22 @@ $(document).ready(function() {
 										</tr>
 
 									</thead>
+									
+									<tbody style="font-family: Arial;">
+									<tr th:each="report, srlno : ${reportdetails}">
+																				<td>
+																					<a data-toggle="tooltip" class="editrec"
+																						title="Click to Edit this Record">
+																						<i class="fas fa-edit" style="color: black; cursor:pointer;"
+																							th:attr="data-acctNo=${report.acctNumber},
+																							data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
+																							onclick="openDetail(this, 'edit')"></i>
 
-									<tbody th:each="report: ${reportdetails}"
-										style="font-family: Arial;">
-										<tr>
-											<td><a data-toggle="tooltip" class="editrec"
-												title="Click to Edit this Record"> <i
-													class="fas fa-edit" onclick="editRecord(this)"></i>
-											</a></td>
+																					</a>
+																				</td>
+
+
+											<td th:text="${srlno.index + 1}"></td>
 											<td th:text="${report.custId}"></td>
 											<td th:text="${report.acctNumber}"></td>
 											<td th:text="${report.acctName}"></td>
@@ -1748,314 +1906,271 @@ $(document).ready(function() {
 											<td
 												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>
-									</tbody>
-
-
-								</table>
-								
-								
-								
-								<div style="margin-top: 20px; text-align: center;"
-									th:if="${pagination=='YES'}">
-
-
-
-									<a th:if="${currentPage > 0}"
-										th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																	    asondate=${asondate},                             
-																	    fromdate=${fromdate},
-																	    todate=${todate},
-																	    currency=${currency},
-																	    dtltype=${dtltype},
-																	    type=${type},
-																	    version=${version},
-																	    page=${currentPage - 100},
-																	    size=100
-																	)}">
-										Previous </a> <span>Page [[${currentPage / 100 + 1}]] of
-										[[${totalPages}]]</span> <a
-										th:if="${currentPage < (totalPages - 1) * 100}"
-										th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																	    asondate=${asondate},
-																	    fromdate=${fromdate},
-																	    todate=${todate},
-																	    currency=${currency},
-																	    dtltype=${dtltype},
-																	    type=${type},
-																	    version=${version},
-																	    page=${currentPage + 100},
-																	    size=100
-																	)}">
-										Next </a>
-								</div>
-
-
-						
-
-
-							</div>
-
-
-						</div>
-					</div>
-				</div>
-
-			</div>
-
-
-
-		</div>
-
-
-
-	</div>
-
-
-
-	<div class="modal fade" id="loader" data-backdrop="static"
-		data-keyboard="false">
-		<div
-			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-			<div class="modal-content" style="background: transparent;">
-				<div class="modal-body" style="text-align: center">
-					<div>
-						<img th:src=@{/images/loader.gif} id="bfirelogo"
-							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-							alt="Bornfire">
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-
-
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
-	<div class="modal fade" id="resultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<!-- Your custom styled header -->
-				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel"
-						style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
-					</div>
-				</div>
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
-					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()"
-						data-dismiss="modal">OK</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-
-	<!-- Custom Cellresult Modal -->
-	<div class="modal fade" id="cellresultModal">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-
-				<!-- Custom header -->
-				<div class="menu-title-header"
-					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
-					<div class="modal-title" id="cellresultModalLabel"
-						style="text-align: center; color: white;">Do you want to
-						open the report?</div>
-				</div>
-
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
-					<button type="button" class="custom-tab-btn cancel-btn"
-						data-bs-dismiss="modal"
-						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
-						Cancel</button>
-					<button type="button" class="custom-tab-btn yes-btn"
-						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
-						Yes</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-
-
-
-
-</body>
-
-
-
-<!-- <style>
-/* Your existing CSS - this is the correct approach */
-.scrollable-table-container {
-	/* This is the key: it creates the scroll context */
-	max-height: 750px;
-	/* Or a suitable height like 80vh for responsive design */
-	overflow-y: auto;
-	border: 1px solid #ccc;
-}
-
-/* Your existing sticky header CSS, targeting the tr elements within the thead */
-.scrollable-table-container thead tr:nth-child(1) {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9;
-	z-index: 5;
-}
-
-.scrollable-table-container thead tr:nth-child(2) {
-	position: sticky;
-	top: 36px; /* adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 4;
-}
-
-.scrollable-table-container thead tr:nth-child(3) {
-	position: sticky;
-	top: 72px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 3;
-}
-
-.scrollable-table-container thead tr:nth-child(4) {
-	position: sticky;
-	top: 100px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 2;
-}
-
-.scrollable-table-container thead tr:nth-child(5) {
-	position: sticky;
-	top: 135px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
-</style> -->
-
-
-
-<style>
-/* Your existing CSS - this is the correct approach */
-.scrollable-table-container {
-	/* This is the key: it creates the scroll context */
-	max-height: 600px;
-	/* Or a suitable height like 80vh for responsive design */
-	overflow-y: auto;
-	border: 1px solid #ccc;
-}
-
-/* Your existing sticky header CSS, targeting the tr elements within the thead */
-.scrollable-table-container thead tr:nth-child(1) {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9;
-	z-index: 5;
-}
-
-.scrollable-table-container thead tr:nth-child(2) {
-	position: sticky;
-	top: 36px; /* adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 4;
-}
-
-.scrollable-table-container thead tr:nth-child(3) {
-	position: sticky;
-	top: 72px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 3;
-}
-
-.scrollable-table-container thead tr:nth-child(4) {
-	position: sticky;
-	top: 100px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 2;
-}
-
-.scrollable-table-container thead tr:nth-child(5) {
-	position: sticky;
-	top: 135px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
-</style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<style>
-.inner {
-	max-height: 600px; /* Adjust height as needed */
-	overflow: auto;
-	border: 1px solid #dee2e6;
-}
-
-/* Sticky thead */
-#reports thead th {
-	position: sticky;
-	top: 0;
-	background-color: #f8f9fa; /* Match Bootstrap thead-light */
-	z-index: 2;
-}
-
-div.dataTables_wrapper div.dataTables_paginate {
-	text-align: right !important;
-	float: right !important;
-	width: auto;
-	margin-top: 10px;
-}
-
-/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-div.dataTables_wrapper div.dataTables_info {
-	float: left !important;
-	margin-top: 10px;
-}
-
-.pagination {
-	margin: 0;
-}
-
-.page-item.active .page-link {
-	background-color: #386276;
-	border-color: #386276;
-}
-
-.page-link {
-	color: #386276;
-}
-
-.page-link:hover {
-	color: #2a4a5c;
-}
-
-.form-select {
-	display: inline-block;
-	width: auto;
-}
-</style>
-
-
-
-
-
-
+																	</tbody>
+																	</table>
+
+																</div>
+
+																<!-- Submit Button -->
+																<div style="text-align: center; margin-top: 15px; background-color: white;">
+																	<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+																		onclick="updateform();" style="display: none;">
+																		Submit
+																	</button>
+																</div>
+															</div>
+														</div>
+													</div>
+
+												<!-- M_liq Detail Form Screen -->
+													<div th:if="${formmode == 'edit'}" class="card">
+													  <div class="card-body">
+													    <form th:object="${Data}" method="post" id="DetailForm">
+
+													      <!-- Row 1 -->
+													      <div class="row formline" style="margin-top:10px;">
+													        <label class="col-sm-2">Customer ID</label>
+													        <div class="col-sm-3">
+													          <input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+													        </div>
+															
+
+													        <div class="col-sm-1"></div>
+
+													        <label class="col-sm-2">Account Number</label>
+													        <div class="col-sm-3">
+													          <input type="text" th:field="*{acctNumber}" class="form-control form-control-sm" readonly />
+													        </div>
+													      </div>
+
+													      <!-- Row 2 -->
+													      <div class="row formline" style="margin-top:10px;">
+													        <label class="col-sm-2">Account Name</label>
+													        <div class="col-sm-3">
+													          <input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
+													        </div>
+															
+
+													        <div class="col-sm-1"></div>
+
+													        <label class="col-sm-2">Acct Balance</label>
+													        <div class="col-sm-3">
+													          <input type="number" step="0.01" th:field="*{acctBalanceInpula}" class="form-control form-control-sm" style="text-align:right;" />
+													        </div>
+													      </div>
+
+													      <!-- Row 3 -->
+													      <div class="row formline" style="margin-top:10px;">
+													        <label class="col-sm-2">Report Label</label>
+													        <div class="col-sm-3">
+													          <input type="text" th:field="*{reportLable}" class="form-control form-control-sm"  readonly />
+													        </div>
+															
+															<div class="col-sm-1"></div>
+															<label class="col-sm-2">Report Addl Criteria 1</label>
+															<div class="col-sm-3">
+															 <input type="text" th:field="*{reportAddlCriteria_1}" class="form-control form-control-sm" readonly />
+															</div>
+
+													      </div>
+
+													     
+													   
+													      <!-- Update Button -->
+													      <div style="text-align:center; margin-top:20px;">
+													        <button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}" onclick="submitUpdate()">Update</button>
+													      </div>
+													    </form>
+													  </div>
+													</div>
+
+
+
+										</div>
+
+
+
+										</div>
+
+
+
+
+
+
+										<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+											<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+												<div class="modal-content" style="background: transparent;">
+													<div class="modal-body" style="text-align: center">
+														<div>
+															<img th:src=@{/images/loader.gif} id="bfirelogo"
+																style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+																alt="Bornfire">
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+
+
+
+										<!-- Custom Alert/Result Modal (Matches your existing style) -->
+										<div class="modal fade" id="resultModal">
+											<div class="modal-dialog modal-dialog-centered">
+												<div class="modal-content">
+													<!-- Your custom styled header -->
+													<div class="menu-title-header">
+														<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+															<!-- Title will be set by JavaScript -->
+														</div>
+													</div>
+													<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+														<p id="resultModalBody"></p>
+														<!-- Your custom styled button -->
+														<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<!-- Custom Cellresult Modal -->
+										<div class="modal fade" id="cellresultModal">
+											<div class="modal-dialog modal-dialog-centered">
+												<div class="modal-content">
+
+													<!-- Custom header -->
+													<div class="menu-title-header"
+														style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+														<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+															Do you want to open the report?
+														</div>
+													</div>
+
+													<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+														<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+															style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+															Cancel
+														</button>
+														<button type="button" class="custom-tab-btn yes-btn"
+															style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+															Yes
+														</button>
+													</div>
+												</div>
+											</div>
+										</div>
+
+									</body>
+
+
+									<style>
+										.dataTables_scrollHeadInner,
+										table.dataTable {
+											width: 100% !important;
+										}
+
+										/* Your existing CSS - this is the correct approach */
+										.scrollable-table-container {
+											/* This is the key: it creates the scroll context */
+											max-height: 700px;
+											/* Or a suitable height like 80vh for responsive design */
+											overflow-y: auto;
+											overflow-x: hidden;
+											border: 1px solid #ccc;
+										}
+
+										/* Your existing sticky header CSS, targeting the tr elements within the thead */
+										.scrollable-table-container thead tr:nth-child(1) {
+											position: sticky;
+											top: 0;
+											background-color: #b3b6b9;
+											z-index: 5;
+										}
+
+										.scrollable-table-container thead tr:nth-child(2) {
+											position: sticky;
+											top: 36px;
+											/* adjust based on row height */
+											background-color: #b3b6b9;
+											z-index: 4;
+										}
+
+										.scrollable-table-container thead tr:nth-child(3) {
+											position: sticky;
+											top: 72px;
+											/* Adjust based on row height */
+											background-color: #b3b6b9;
+											z-index: 3;
+										}
+
+										.scrollable-table-container thead tr:nth-child(4) {
+											position: sticky;
+											top: 100px;
+											/* Adjust based on row height */
+											background-color: #b3b6b9;
+											z-index: 2;
+										}
+
+										.scrollable-table-container thead tr:nth-child(5) {
+											position: sticky;
+											top: 135px;
+											/* Adjust based on row height */
+											background-color: #b3b6b9;
+											z-index: 1;
+										}
+									</style>
+
+
+									<style>
+										.inner {
+											max-height: 600px;
+											/* Adjust height as needed */
+											overflow: auto;
+											border: 1px solid #dee2e6;
+										}
+
+										/* Sticky thead */
+										#reports thead th {
+											position: sticky;
+											top: 0;
+											background-color: #f8f9fa;
+											/* Match Bootstrap thead-light */
+											z-index: 2;
+										}
+
+										div.dataTables_wrapper div.dataTables_paginate {
+											text-align: right !important;
+											float: right !important;
+											width: auto;
+											margin-top: 10px;
+										}
+
+										/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+										div.dataTables_wrapper div.dataTables_info {
+											float: left !important;
+											margin-top: 10px;
+										}
+
+										.pagination {
+											margin: 0;
+										}
+
+										.page-item.active .page-link {
+											background-color: #386276;
+											border-color: #386276;
+										}
+
+										.page-link {
+											color: #386276;
+										}
+
+										.page-link:hover {
+											color: #2a4a5c;
+										}
+
+										.form-select {
+											display: inline-block;
+											width: auto;
+										}
+									</style>
 
 </html>

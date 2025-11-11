@@ -54,6 +54,7 @@ import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity4;
 import com.bornfire.brrs.entities.M_BOP_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_LIQ_Detail_Repo;
 import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_PLL_Detail_Repo;
 import com.bornfire.brrs.entities.M_CA3_Summary_Entity;
@@ -82,6 +83,7 @@ import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity3;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity4;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity5;
+import com.bornfire.brrs.entities.M_LIQ_Detail_Entity;
 import com.bornfire.brrs.entities.M_LIQ_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_OB_Summary_Entity;
 import com.bornfire.brrs.entities.M_OPTR_Summary_Entity;
@@ -198,6 +200,9 @@ public class BRRS_ReportsController {
 	
 	@Autowired
 	BRRS_M_LA4_ReportService brrs_M_LA4_ReportService;
+	
+	@Autowired
+	BRRS_M_LIQ_ReportService brrs_M_LIQ_ReportService;
 
 	@Autowired
 	private BRRS_M_PLL_ReportService brrsMpllReportService;
@@ -1761,5 +1766,53 @@ public class BRRS_ReportsController {
 		model.addAttribute("Data", la4Entity);
 
 		return "BRRS/M_LA4";
+	}
+	
+	@RequestMapping(value = "/updateMLIQ", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public String updateMLIQ(@ModelAttribute M_LIQ_Detail_Entity Data) {
+		System.out.println("Came to Controller ");
+		System.out.println("Received update for ACCT_NO: " + Data.getAcctNumber());
+		//System.out.println("sanction value: " + Data.getSanction_limit());
+		System.out.println("balance value: " + Data.getAcctBalanceInpula());
+
+		boolean updated = brrs_M_LIQ_ReportService.updateProvision(Data);
+
+		if (updated) {
+			return "M_LIQ Detail updated successfully!";
+		} else {
+			return "Record not found for update!";
+		}
+	}
+
+	@Autowired
+	private BRRS_M_LIQ_Detail_Repo M_LIQ_Detail_Repo;
+
+	@RequestMapping(value = "/MLIQ_Detail", method = { RequestMethod.GET, RequestMethod.POST })
+	public String showMLIQDetail(@RequestParam(required = false) String formmode,
+			@RequestParam(required = false) String acctNo, @RequestParam(required = false) BigDecimal sanction_limit,
+			@RequestParam(required = false) BigDecimal acct_balance_in_pula, Model model) {
+
+		M_LIQ_Detail_Entity liqEntity = M_LIQ_Detail_Repo.findByAcctnumber(acctNo);
+
+		if (liqEntity != null) {
+
+			
+			if (acct_balance_in_pula != null) {
+				liqEntity.setAcctBalanceInpula(acct_balance_in_pula);
+				
+			}
+
+			Date reportDate = liqEntity.getReportDate();
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			String formattedDate = formatter.format(reportDate);
+			model.addAttribute("asondate", formattedDate);
+		}
+
+		model.addAttribute("displaymode", "edit");
+		model.addAttribute("formmode", "edit");
+		model.addAttribute("Data", liqEntity);
+
+		return "BRRS/M_LIQ";
 	}
 }

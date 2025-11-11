@@ -17,10 +17,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class M_LIQ_Detail_Entity {
 	
 	
-	@Id
+
 	 @Column(name = "CUST_ID")
     private String custId;
-
+		@Id
     @Column(name = "ACCT_NUMBER")
     private String acctNumber;
 

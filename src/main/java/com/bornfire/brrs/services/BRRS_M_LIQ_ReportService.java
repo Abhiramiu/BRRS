@@ -1312,4 +1312,33 @@ public class BRRS_M_LIQ_ReportService {
 		m_liq_Manual_Summary_Repo.save(existing);
 	}
 
+	
+	public boolean updateProvision(M_LIQ_Detail_Entity liqData) {
+try {
+		System.out.println("Came to LIQ Service");
+
+		// ✅ Must match your entity field name exactly
+		M_LIQ_Detail_Entity existing = brrs_m_liq_detail_Repo.findByAcctnumber(liqData.getAcctNumber());
+
+		if (existing != null) {
+
+			//existing.setAcct_name(liqData.getAcctName());
+
+			existing.setAcctBalanceInpula(liqData.getAcctBalanceInpula());
+			
+
+			brrs_m_liq_detail_Repo.save(existing);
+
+			System.out.println("Updated successfully for ACCT_NO: " + liqData.getAcctNumber());
+			return true;
+		} else {
+			System.out.println("Record not found for Account No: " + liqData.getAcctNumber());
+			return false;
+		}
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		return false;
+	}
+}
 }
