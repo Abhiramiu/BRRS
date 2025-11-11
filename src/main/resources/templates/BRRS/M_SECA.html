@@ -686,7 +686,7 @@ PURPOSE		: BWRBRREPORT
     </script> -->
     
         <script th:inline="javascript">
-
+        let isDetailsModal = false;
       $(document).ready(function() {
           // hide loader on normal load
           $('#loader').modal('hide');
@@ -746,6 +746,7 @@ PURPOSE		: BWRBRREPORT
       			//}
 
       	function showdetails() {
+		    isDetailsModal = true; // mark that this modal is from Details
 			 showResultModal('BRRS',' Details page not available for Manual Report');
 		}
       	function showsummary() {
@@ -913,8 +914,8 @@ function cancelModify() {
 
 	// Calculate total for R14
 	function calculateR14Totals() {
-	    let total = 0;
 
+	    let total = 0;
 	        let C2 = parseFloat($("#R14_EQUITY").val().replace(/,/g, "")) || 0;
 	        let C3 = parseFloat($("#R14_BONDS").val().replace(/,/g, "")) || 0;
 	        let C4 = parseFloat($("#R14_BOBC").val().replace(/,/g, "")) || 0;
@@ -2537,11 +2538,23 @@ function cancelModify() {
 
 <script>
 function closemodel() {
-    $("#resultModal").modal("hide");
+	/*    $("#resultModal").modal("hide");
     $('#loader').modal('hide');
     setTimeout(function () {
         location.reload();
-    }, 300);
+        }, 300);*/
+        $("#resultModal").modal("hide");
+        $('#loader').modal('hide');
+
+        // Only reload if not from Details modal
+        if (!isDetailsModal) {
+            setTimeout(function () {
+                location.reload();
+            }, 300);
+        } else {
+            // reset flag for next modal usage
+            isDetailsModal = false;
+        }
 }
 
 function fileuploads(btn) {
