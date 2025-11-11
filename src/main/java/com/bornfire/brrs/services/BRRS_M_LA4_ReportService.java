@@ -55,7 +55,6 @@ import com.bornfire.brrs.entities.BRRS_M_LA4_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Summary_Repo2;
-import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA4_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA4_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA4_Detail_Entity;
@@ -200,7 +199,7 @@ public class BRRS_M_LA4_ReportService {
 	            if (rowId != null && columnId != null) {
 	                T1Dt1 = M_LA4_DETAIL_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
 	            } else {
-	                T1Dt1 = M_LA4_DETAIL_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
+	                T1Dt1 = M_LA4_DETAIL_Repo.getdatabydateList(parsedDate);
 	                totalPages = M_LA4_DETAIL_Repo.getdatacount(parsedDate);
 	                mv.addObject("pagination", "YES");
 	            }
@@ -2646,22 +2645,22 @@ public class BRRS_M_LA4_ReportService {
 				int rowIndex = 1;
 				for (M_LA4_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
+					row.createCell(0).setCellValue(item.getCust_id());
+					row.createCell(1).setCellValue(item.getAcct_number());
+					row.createCell(2).setCellValue(item.getAcct_name());
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					if (item.getAcct_balance_in_pula() != null) {
+						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
 					balanceCell.setCellStyle(balanceStyle);
-					row.createCell(4).setCellValue(item.getRowId());
-					row.createCell(5).setCellValue(item.getColumnId());
+					row.createCell(4).setCellValue(item.getReport_label());
+					row.createCell(5).setCellValue(item.getReport_addl_criteria1());
 					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+							.setCellValue(item.getReport_date() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
 					// Apply data style for all other cells
 					for (int j = 0; j < 7; j++) {
@@ -5103,23 +5102,24 @@ public class BRRS_M_LA4_ReportService {
 			System.out.println("Came to LA1 Service");
 
 			// ✅ Must match your entity field name exactly
-			M_LA4_Detail_Entity existing = M_LA4_DETAIL_Repo.findByAcctnumber(la4Data.getAcctNumber());
+			M_LA4_Detail_Entity existing = M_LA4_DETAIL_Repo.findByAcctnumber(la4Data.getAcct_number());
 
 			if (existing != null) {
 
-				existing.setAcctName(la4Data.getAcctName());
+				
+				existing.setAcct_name(la4Data.getAcct_name());
 
 				// existing.setAcct_name(la1Data.getAcct_name());
 
 				//existing.setSanction_limit(la4Data.get());
-				existing.setAcctBalanceInpula(la4Data.getAcctBalanceInpula());
-
+				
+				existing.setAcct_balance_in_pula(la4Data.getAcct_balance_in_pula());
 				M_LA4_DETAIL_Repo.save(existing);
 
-				System.out.println("Updated successfully for ACCT_NO: " + la4Data.getAcctNumber());
+				System.out.println("Updated successfully for ACCT_NO: " + la4Data.getAcct_number());
 				return true;
 			} else {
-				System.out.println("Record not found for Account No: " + la4Data.getAcctNumber());
+				System.out.println("Record not found for Account No: " + la4Data.getAcct_number());
 				return false;
 			}
 
