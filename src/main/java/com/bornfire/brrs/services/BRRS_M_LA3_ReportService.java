@@ -1008,11 +1008,13 @@ public class BRRS_M_LA3_ReportService {
 						version);
 				return ARCHIVALreport;
 			}
+
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("BRRS_M_LA3Details");
+			XSSFSheet sheet = workbook.createSheet("BRRS_M_LA1Details");
 
 			// Common border style
 			BorderStyle border = BorderStyle.THIN;
+
 			// Header style (left aligned)
 			CellStyle headerStyle = workbook.createCellStyle();
 			Font headerFont = workbook.createFont();
@@ -1048,9 +1050,20 @@ public class BRRS_M_LA3_ReportService {
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
+
+			// sanction style (right aligned with 3 decimals)
+			CellStyle sanctionStyle = workbook.createCellStyle();
+			sanctionStyle.setAlignment(HorizontalAlignment.RIGHT);
+			sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			sanctionStyle.setBorderTop(border);
+			sanctionStyle.setBorderBottom(border);
+			sanctionStyle.setBorderLeft(border);
+			sanctionStyle.setBorderRight(border);
+
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
-					"REPORT_DATE" };
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
+					"REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
+
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
@@ -1062,9 +1075,11 @@ public class BRRS_M_LA3_ReportService {
 				}
 				sheet.setColumnWidth(i, 5000);
 			}
+
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
 			List<M_LA3_Detail_Entity> reportData = M_LA3_DETAIL_Repo.getdatabydateList(parsedToDate);
+
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
 				for (M_LA3_Detail_Entity item : reportData) {
@@ -1072,6 +1087,7 @@ public class BRRS_M_LA3_ReportService {
 					row.createCell(0).setCellValue(item.getCust_id());
 					row.createCell(1).setCellValue(item.getAcct_number());
 					row.createCell(2).setCellValue(item.getAcct_name());
+
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
 					if (item.getAcct_balance_in_pula() != null) {
@@ -1080,28 +1096,50 @@ public class BRRS_M_LA3_ReportService {
 						balanceCell.setCellValue(0.000);
 					}
 					balanceCell.setCellStyle(balanceStyle);
-					row.createCell(4).setCellValue(item.getReport_label());
-					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
-					row.createCell(6)
+
+					// sanction (right aligned, 3 decimal places)
+					Cell sanctionCell = row.createCell(4);
+					if (item.getSanction_limit() != null) {
+						sanctionCell.setCellValue(item.getSanction_limit().doubleValue());
+					} else {
+						sanctionCell.setCellValue(0.000);
+					}
+					sanctionCell.setCellStyle(sanctionStyle);
+
+					row.createCell(5).setCellValue(item.getReport_label());
+					row.createCell(6).setCellValue(item.getReport_addl_criteria_1());
+					row.createCell(7).setCellValue(item.getReport_addl_criteria_2());
+					row.createCell(8).setCellValue(item.getReport_addl_criteria_3());
+					row.createCell(9)
 							.setCellValue(item.getReport_date() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
-					// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
+
+					// Apply border style to all cells in the row
+					for (int colIndex = 0; colIndex < headers.length; colIndex++) {
+						Cell cell = row.getCell(colIndex);
+						if (cell != null) {
+							if (colIndex == 3) { // ACCT BALANCE
+								cell.setCellStyle(balanceStyle);
+							} else if (colIndex == 4) { // APPROVED LIMIT
+								cell.setCellStyle(sanctionStyle);
+							} else {
+								cell.setCellStyle(dataStyle);
+							}
 						}
 					}
 				}
 			} else {
 				logger.info("No data found for BRRS_M_LA3 — only header will be written.");
 			}
+
 			// Write to byte[]
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			workbook.write(bos);
 			workbook.close();
 			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
 			return bos.toByteArray();
+
 		} catch (Exception e) {
 			logger.error("Error generating BRRS_M_LA3 Excel", e);
 			return new byte[0];
@@ -1924,9 +1962,20 @@ public class BRRS_M_LA3_ReportService {
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 
+			// sanction style (right aligned with 3 decimals)
+						CellStyle sanctionStyle = workbook.createCellStyle();
+						sanctionStyle.setAlignment(HorizontalAlignment.RIGHT);
+						sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+						sanctionStyle.setBorderTop(border);
+						sanctionStyle.setBorderBottom(border);
+						sanctionStyle.setBorderLeft(border);
+						sanctionStyle.setBorderRight(border);
+
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
-					"REPORT_DATE" };
+						// Header row
+						String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
+								"REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
+
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -1951,7 +2000,6 @@ public class BRRS_M_LA3_ReportService {
 				int rowIndex = 1;
 				for (M_LA3_Archival_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
-
 					row.createCell(0).setCellValue(item.getCust_id());
 					row.createCell(1).setCellValue(item.getAcct_number());
 					row.createCell(2).setCellValue(item.getAcct_name());
@@ -1965,13 +2013,25 @@ public class BRRS_M_LA3_ReportService {
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getReport_label());
-					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
-					row.createCell(6)
+					// sanction (right aligned, 3 decimal places)
+					Cell sanctionCell = row.createCell(4);
+					if (item.getSanction_limit() != null) {
+						sanctionCell.setCellValue(item.getSanction_limit().doubleValue());
+					} else {
+						sanctionCell.setCellValue(0.000);
+					}
+					sanctionCell.setCellStyle(sanctionStyle);
+
+					row.createCell(5).setCellValue(item.getReport_label());
+					row.createCell(6).setCellValue(item.getReport_addl_criteria_1());
+					row.createCell(7).setCellValue(item.getReport_addl_criteria_2());
+					row.createCell(8).setCellValue(item.getReport_addl_criteria_3());
+					row.createCell(9)
 							.setCellValue(item.getReport_date() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
 
+					
 					// Apply data style for all other cells
 					for (int j = 0; j < 7; j++) {
 						if (j != 3) {

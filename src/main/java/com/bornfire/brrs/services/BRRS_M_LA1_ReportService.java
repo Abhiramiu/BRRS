@@ -3767,144 +3767,145 @@ public class BRRS_M_LA1_ReportService {
 	}
 
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-		try {
-			logger.info("Generating Excel for BRRS_M_LA1 ARCHIVAL Details...");
-			System.out.println("Came to Detail download service");
+	        String dtltype, String type, String version) {
+	    try {
+	        logger.info("Generating Excel for BRRS_M_LA1 ARCHIVAL Details...");
+	        System.out.println("Came to Detail download service");
 
-// Only proceed if ARCHIVAL and version provided
-			if (!"ARCHIVAL".equalsIgnoreCase(type) || version == null || version.isEmpty()) {
-				logger.warn("Invalid type/version for archival download.");
-				return new byte[0];
-			}
+	        // Only proceed if ARCHIVAL and version provided
+	        if (!"ARCHIVAL".equalsIgnoreCase(type) || version == null || version.isEmpty()) {
+	            logger.warn("Invalid type/version for archival download.");
+	            return new byte[0];
+	        }
 
-// Create workbook and sheet
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("BRRS_M_LA1_Archival_Detail");
+	        // Create workbook and sheet
+	        XSSFWorkbook workbook = new XSSFWorkbook();
+	        XSSFSheet sheet = workbook.createSheet("BRRS_M_LA1_Archival_Detail");
 
-// Border style
-			BorderStyle border = BorderStyle.THIN;
+	        // Border style
+	        BorderStyle border = BorderStyle.THIN;
 
-// Header style
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
+	        // Header style
+	        CellStyle headerStyle = workbook.createCellStyle();
+	        Font headerFont = workbook.createFont();
+	        headerFont.setBold(true);
+	        headerFont.setFontHeightInPoints((short) 10);
+	        headerStyle.setFont(headerFont);
+	        headerStyle.setAlignment(HorizontalAlignment.LEFT);
+	        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+	        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	        headerStyle.setBorderTop(border);
+	        headerStyle.setBorderBottom(border);
+	        headerStyle.setBorderLeft(border);
+	        headerStyle.setBorderRight(border);
 
-// Right-aligned header (for numeric columns)
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+	        // Right-aligned header (for numeric columns)
+	        CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+	        rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+	        rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 
-// Data style (text)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
+	        // Data style (text)
+	        CellStyle dataStyle = workbook.createCellStyle();
+	        dataStyle.setAlignment(HorizontalAlignment.LEFT);
+	        dataStyle.setBorderTop(border);
+	        dataStyle.setBorderBottom(border);
+	        dataStyle.setBorderLeft(border);
+	        dataStyle.setBorderRight(border);
 
-// Numeric style (3 decimal places)
-			CellStyle numericStyle = workbook.createCellStyle();
-			numericStyle.setAlignment(HorizontalAlignment.RIGHT);
-			numericStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-			numericStyle.setBorderTop(border);
-			numericStyle.setBorderBottom(border);
-			numericStyle.setBorderLeft(border);
-			numericStyle.setBorderRight(border);
+	        // Numeric style (3 decimal places)
+	        CellStyle numericStyle = workbook.createCellStyle();
+	        numericStyle.setAlignment(HorizontalAlignment.RIGHT);
+	        numericStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+	        numericStyle.setBorderTop(border);
+	        numericStyle.setBorderBottom(border);
+	        numericStyle.setBorderLeft(border);
+	        numericStyle.setBorderRight(border);
 
-// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "SANCTION LIMIT", "REPORT LABEL", "REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3",
-					"REPORT_DATE" };
+	        // Sanction style (right aligned with 3 decimals)
+	        CellStyle sanctionStyle = workbook.createCellStyle();
+	        sanctionStyle.setAlignment(HorizontalAlignment.RIGHT);
+	        sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+	        sanctionStyle.setBorderTop(border);
+	        sanctionStyle.setBorderBottom(border);
+	        sanctionStyle.setBorderLeft(border);
+	        sanctionStyle.setBorderRight(border);
 
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-				cell.setCellStyle((i == 3 || i == 4) ? rightAlignedHeaderStyle : headerStyle);
-				sheet.setColumnWidth(i, 5000);
-			}
+	        // Header row
+	        String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
+	                "REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
 
-// Parse date
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+	        XSSFRow headerRow = sheet.createRow(0);
+	        for (int i = 0; i < headers.length; i++) {
+	            Cell cell = headerRow.createCell(i);
+	            cell.setCellValue(headers[i]);
+	            cell.setCellStyle((i == 3 || i == 4) ? rightAlignedHeaderStyle : headerStyle);
+	            sheet.setColumnWidth(i, 5000);
+	        }
 
-// Fetch data
-			List<M_LA1_Archival_Detail_Entity> reportData = M_LA1_Archival_Detail_Repo.getdatabydateList(parsedToDate,
-					version);
+	        // Parse date
+	        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
 
-			if (reportData == null || reportData.isEmpty()) {
-				logger.info("No data found for BRRS_M_LA1_ARCHIVAL — only header written.");
-			} else {
-				int rowIndex = 1;
-				for (M_LA1_Archival_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
+	        // Fetch data
+	        List<M_LA1_Archival_Detail_Entity> reportData =
+	                M_LA1_Archival_Detail_Repo.getdatabydateList(parsedToDate, version);
 
-					row.createCell(0).setCellValue(item.getCust_id() != null ? item.getCust_id() : "");
-					row.createCell(1).setCellValue(item.getAcct_number() != null ? item.getAcct_number() : "");
-					row.createCell(2).setCellValue(item.getAcct_name() != null ? item.getAcct_name() : "");
+	        if (reportData != null && !reportData.isEmpty()) {
+	            int rowIndex = 1;
+	            for (M_LA1_Archival_Detail_Entity item : reportData) {
+	                XSSFRow row = sheet.createRow(rowIndex++);
 
-// ACCT BALANCE
-					Cell balanceCell = row.createCell(3);
-					balanceCell.setCellValue(
-							item.getAcct_balance_in_pula() != null ? item.getAcct_balance_in_pula().doubleValue()
-									: 0.000);
-					balanceCell.setCellStyle(numericStyle);
+	                // Text columns
+	                row.createCell(0).setCellValue(item.getCust_id());
+	                row.createCell(1).setCellValue(item.getAcct_number());
+	                row.createCell(2).setCellValue(item.getAcct_name());
 
-// PROVISION (assuming from sanction_limits)
-					Cell provisionCell = row.createCell(4);
-					provisionCell.setCellValue(
-							item.getSanction_limit() != null ? item.getSanction_limit().doubleValue() : 0.00);
-					provisionCell.setCellStyle(numericStyle);
+	                // ACCT BALANCE (right aligned, 3 decimal places)
+	                Cell balanceCell = row.createCell(3);
+	                balanceCell.setCellValue(item.getAcct_balance_in_pula() != null
+	                        ? item.getAcct_balance_in_pula().doubleValue()
+	                        : 0.000);
+	                balanceCell.setCellStyle(numericStyle);
 
-// ROWID
-					row.createCell(5).setCellValue(item.getReport_label() != null ? item.getReport_label() : "");
+	                // APPROVED LIMIT (sanction)
+	                Cell sanctionCell = row.createCell(4);
+	                sanctionCell.setCellValue(item.getSanction_limit() != null
+	                        ? item.getSanction_limit().doubleValue()
+	                        : 0.000);
+	                sanctionCell.setCellStyle(sanctionStyle);
 
-// COLUMNID
-					row.createCell(6).setCellValue(
-							item.getReport_addl_criteria_1() != null ? item.getReport_addl_criteria_1() : "");
+	                // Remaining text columns
+	                row.createCell(5).setCellValue(item.getReport_label());
+	                row.createCell(6).setCellValue(item.getReport_addl_criteria_1());
+	                row.createCell(7).setCellValue(item.getReport_addl_criteria_2());
+	                row.createCell(8).setCellValue(item.getReport_addl_criteria_3());
+	                row.createCell(9).setCellValue(item.getReport_date() != null
+	                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
+	                        : "");
 
-					row.createCell(7).setCellValue(
-							item.getReport_addl_criteria_2() != null ? item.getReport_addl_criteria_2() : "");
+	                // Apply text style to non-numeric cells
+	                for (int j = 0; j < headers.length; j++) {
+	                    if (j != 3 && j != 4) {
+	                        row.getCell(j).setCellStyle(dataStyle);
+	                    }
+	                }
+	            }
+	        }
 
-					row.createCell(8).setCellValue(
-							item.getReport_addl_criteria_3() != null ? item.getReport_addl_criteria_3() : "");
+	        // Write to byte array
+	        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	        workbook.write(bos);
+	        workbook.close();
 
-// REPORT_DATE
-					row.createCell(9)
-							.setCellValue(item.getReport_date() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
-									: "");
+	        logger.info("Excel generation completed with {} row(s).",
+	                reportData != null ? reportData.size() : 0);
+	        return bos.toByteArray();
 
-// Apply text style to non-numeric cells
-					for (int j = 0; j < headers.length; j++) {
-						if (j != 3 && j != 4) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			}
-
-// Write to byte array
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating BRRS_M_LA1 ARCHIVAL Excel", e);
-			return new byte[0];
-		}
+	    } catch (Exception e) {
+	        logger.error("Error generating BRRS_M_LA1 ARCHIVAL Excel", e);
+	        return new byte[0];
+	    }
 	}
+
 
 	public List<ReportLineItemDTO> getReportData(String filename) throws Exception {
 		List<ReportLineItemDTO> reportData = new ArrayList<>();
