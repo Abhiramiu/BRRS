@@ -1,8 +1,8 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 
 <!-- 
-CREATED BY	: PRAVEEN KUMAR M 
-CREATED ON	: 11.06.2025
+CREATED BY	: SANTIHYA S
+
 PURPOSE		: BRRSREPORT
 -->
 
@@ -674,7 +674,10 @@ $(document).ready(function() {
 	            $("#resultModalLabel").text("BRRS");
 	            $("#resultModalBody").text("Updated Successfully.");
 	            $("#resultModal").modal("show");
-	            setTimeout(() => location.reload(), 800);
+				//  Wait for user to close the modal manually
+			    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+			        location.reload(); // reload ONLY when modal is closed
+			    });
 	        },
 	        error: function (jqXHR) {
 	            console.error("Error response:", jqXHR.responseText);
@@ -911,7 +914,7 @@ function showdetailsbyRowAndColumn(a) {
                      				 data-todate=${todate}, 
                      				 data-currency=${currency},  
                      				 data-dtltype=${dtltype}, 
-                     				 data-filename='M_CA6.xls',
+                     				 data-filename='M_CA6.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
 									 

@@ -773,11 +773,12 @@ $(document).ready(function() {
 	            $("#resultModalLabel").text("BRRS");
 	            $("#resultModalBody").text("Updated Successfully.");
 	            $("#resultModal").modal("show");
+				//  Wait for user to close the modal manually
+							    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+							        location.reload(); // reload ONLY when modal is closed
+							    });
+							},
 
-	            setTimeout(function() {
-	                location.reload();
-	            }, 800);
-	        },
 	        error: function (jqXHR) {
 	            console.error("Error response:", jqXHR.responseText);
 	            $("#resultModalLabel").text("Error");
@@ -854,7 +855,7 @@ $(document).ready(function() {
                      data-todate=${todate}, 
                      data-currency=${currency},  
                      data-dtltype=${dtltype}, 
-                     data-filename='M-CA7.xls',
+                     data-filename='M-CA7.xlsx',
                      data-type=${type},
                      data-version=${version}"
                      
