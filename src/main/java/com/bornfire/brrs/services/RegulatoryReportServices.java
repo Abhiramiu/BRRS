@@ -174,6 +174,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_INT_RATES_FCA_ReportService brrs_m_int_rates_fca_reportservice;
 	
+	@Autowired
+	BRRS_M_LARADV_ReportService brrs_m_laradv_reportservice;
+	
 	
 	@Autowired
 	BRRS_Q_SMME_DEP_ReportService BRRS_Q_SMME_DEP_ReportService;
@@ -381,6 +384,10 @@ public class RegulatoryReportServices {
 		case "M_INT_RATES":
 			repsummary = brrs_m_int_rates_reportservice.getM_INTRATESView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
+			break;
+			
+		case "M_LARADV":
+			repsummary = brrs_m_laradv_reportservice.getM_LARADVView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
 			break;
 
 		case "Q_SMME":
@@ -974,6 +981,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_LARADV":
+			try {
+				repfile = brrs_m_laradv_reportservice.getM_LARADVExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		case "M_FXR":
 			try {
@@ -1522,6 +1539,15 @@ public class RegulatoryReportServices {
 		case "M_SEC":
 			try {
 				archivalData = brrs_m_sec_reportservice.getM_SECArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "M_LARADV":
+			try {
+				archivalData = brrs_m_laradv_reportservice.getM_LARADVArchival();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

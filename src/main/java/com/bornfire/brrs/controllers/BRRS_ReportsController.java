@@ -77,6 +77,11 @@ import com.bornfire.brrs.entities.M_LA3_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LA4_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA4_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity3;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity4;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity5;
 import com.bornfire.brrs.entities.M_LIQ_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_OB_Summary_Entity;
 import com.bornfire.brrs.entities.M_OPTR_Summary_Entity;
@@ -146,6 +151,7 @@ import com.bornfire.brrs.services.BRRS_M_LA1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
+import com.bornfire.brrs.services.BRRS_M_LARADV_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OB_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OPTR_ReportService;
@@ -1127,13 +1133,55 @@ public class BRRS_ReportsController {
 	         SECreportService.updateReport3(request3);
 	         SECreportService.updateReport4(request4);
 
-	         return ResponseEntity.ok("All Reports Updated Successfully");
+	         return ResponseEntity.ok("Updated Successfully");
 	     } catch (Exception e) {
 	         e.printStackTrace();
 	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 	                              .body("Update Failed: " + e.getMessage());
 	     }
-	 }	 
+	 }	
+	 
+	 
+	 @Autowired
+	 private BRRS_M_LARADV_ReportService LARADVreportService;
+	 
+	 @RequestMapping(value = "/LARADVupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	 @ResponseBody
+	 public ResponseEntity<String> updateLA4(
+	         @RequestParam(required = false)
+	         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+	         @ModelAttribute M_LARADV_Summary_Entity1 request1,
+	         @ModelAttribute M_LARADV_Summary_Entity2 request2,
+	         @ModelAttribute M_LARADV_Summary_Entity3 request3,
+	         @ModelAttribute M_LARADV_Summary_Entity4 request4,
+	         @ModelAttribute M_LARADV_Summary_Entity5 request5
+	 ) {
+	     try {
+	         
+	         // set date into all 4 entities
+	         request1.setReport_date(asondate);
+	         request2.setReport_date(asondate);
+	         request3.setReport_date(asondate);
+	         request4.setReport_date(asondate);
+	         request5.setReport_date(asondate);
+
+	         // call services
+	         LARADVreportService.updateReport(request1);
+	         LARADVreportService.updateReport2(request2);
+	         LARADVreportService.updateReport3(request3);
+	         LARADVreportService.updateReport4(request4);
+	         LARADVreportService.updateReport5(request5);
+
+	         return ResponseEntity.ok("Updated Successfully");
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                              .body("Update Failed: " + e.getMessage());
+	     }
+	 }	
+	 
+	 
 	
 	
 	
