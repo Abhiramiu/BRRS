@@ -18,6 +18,7 @@ public class M_PLL_Archival_Detail_Entity {
 	  @Column(name = "CUST_ID", length = 100)
 	    private String custId;
 
+	  @Id
 	    @Column(name = "ACCT_NUMBER", length = 100)
 	    private String acctNumber;
 
@@ -48,7 +49,7 @@ public class M_PLL_Archival_Detail_Entity {
 	    @Column(name = "PROVISION", precision = 32, scale = 2)
 	    private BigDecimal provision;
 	    
-	    @Id
+	    
 	    @Column(name = "REPORT_DATE")
 	    @DateTimeFormat(pattern = "dd-MM-yyyy")
 	    private Date reportDate;
