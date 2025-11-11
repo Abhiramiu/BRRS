@@ -288,6 +288,7 @@ PURPOSE		: BRRSREPORT
 		
 	</style>
 	<script th:inline="javascript">
+	let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -347,6 +348,7 @@ PURPOSE		: BRRSREPORT
 			// alert("Details page not available for Manual Report");
 		//}
 		function showdetails() {
+		    isDetailsModal = true; // mark that this modal is from Details
 			 showResultModal('BRRS',' Details page not available for Manual Report');
 		}
 
@@ -974,11 +976,23 @@ function fileuploads(btn) {
 </script> -->
 <script>
 function closemodel() {
-    $("#resultModal").modal("hide");
+	/*    $("#resultModal").modal("hide");
     $('#loader').modal('hide');
     setTimeout(function () {
         location.reload();
-    }, 300);
+        }, 300);*/
+        $("#resultModal").modal("hide");
+        $('#loader').modal('hide');
+
+        // Only reload if not from Details modal
+        if (!isDetailsModal) {
+            setTimeout(function () {
+                location.reload();
+            }, 300);
+        } else {
+            // reset flag for next modal usage
+            isDetailsModal = false;
+        }
 }
 
 function fileuploads(btn) {
