@@ -32,7 +32,7 @@ public interface BRRS_M_LA4_Detail_Repo extends JpaRepository<M_LA4_Detail_Entit
 	@Query(value = "SELECT * FROM BRRS_M_LA4_DETAILTABLE WHERE ACCT_NUMBER = :acct_number", nativeQuery = true)
     M_LA4_Detail_Entity findByAcctnumber(@Param("acct_number") String acct_number);
 	
-	@Query(value = "select * from BRRS_M_LA4_DETAILTABLE where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3", nativeQuery = true)
+	@Query(value = "select * from BRRS_M_LA4_DETAILTABLE where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA1=?2 AND REPORT_DATE=?3", nativeQuery = true)
 	List<M_LA4_Detail_Entity> GetDataByRowIdAndColumnId(String rowId,String ColumnId,Date reportdate);
 	
 }

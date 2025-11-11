@@ -726,9 +726,9 @@ function Maker_Checker_Function() {
 			if (cellValue !== '0' && hasAnyColumnId) {
 				document.getElementById("cellresultModalLabel").innerText =
 					"Do you want to open details for Row: " + rowId +
-					" | Column: " + (columnId || "N/A") +
-					" | Column1: " + (columnId1 || "N/A") +
-					" | Column2: " + (columnId2 || "N/A") + "?";
+					" | Column: " + (columnId || "") +
+					" | Column1: " + (columnId1 || "") +
+					" | Column2: " + (columnId2 || "") + "";
 
 				$('#cellresultModal').modal('show');
 

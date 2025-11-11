@@ -32,7 +32,8 @@ public interface BRRS_M_LA3_Archival_Detail_Repo extends JpaRepository<M_LA3_Arc
 	 * DATA_ENTRY_VERSION);
 	 */
 	
-	 @Query(value = "SELECT * FROM BRRS_M_LA3_ARCHIVALTABLE_DETAIL " +
+
+	    @Query(value = "SELECT * FROM BRRS_M_LA3_ARCHIVALTABLE_DETAIL " +
 	            "WHERE report_label = :rowId " +
 	            "AND ( :columnId IS NULL OR :columnId = '' OR report_addl_criteria_1 = :columnId ) " + // Corrected Line
 	            "AND ( :columnId1 IS NULL OR :columnId1 = '' OR report_addl_criteria_2 = :columnId1 ) " +
@@ -46,7 +47,6 @@ public interface BRRS_M_LA3_Archival_Detail_Repo extends JpaRepository<M_LA3_Arc
 	        @Param("columnId2") String columnId2,
 	        @Param("reportDate") Date reportDate
 	    );
-
 
 }
 

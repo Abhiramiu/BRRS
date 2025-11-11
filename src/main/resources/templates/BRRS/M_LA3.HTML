@@ -821,42 +821,51 @@ PURPOSE		: BRRSREPORT
 
 
 	<script th:inline="javascript">
-		function showdetailsbyRowAndColumn(a) {
-			var rowId = a.getAttribute('rowId');
-			var columnId = a.getAttribute('columnId');
-			var cellValue = a.textContent || a.innerText;
+			function showdetailsbyRowAndColumn(a) {
+				var rowId = a.getAttribute('RowId') || "";
+				var columnId = a.getAttribute('ColumnId') || "";
+				var columnId1 = a.getAttribute('ColumnId1') || "";
+				var columnId2 = a.getAttribute('ColumnId2') || "";
+				var cellValue = a.textContent || a.innerText;
 
-			if (cellValue !== '0') {
-				// Set dynamic message in modal (instead of confirm)
-				document.getElementById("cellresultModalLabel").innerText =
-					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+				// ✅ At least one columnId should have value
+				const hasAnyColumnId =
+					(columnId && columnId.trim() !== "") ||
+					(columnId1 && columnId1.trim() !== "") ||
+					(columnId2 && columnId2.trim() !== "");
 
-				// Show custom Bootstrap modal
-				$('#cellresultModal').modal('show');
+				if (cellValue !== '0' && hasAnyColumnId) {
+					document.getElementById("cellresultModalLabel").innerText =
+						"Do you want to open details for Row: " + rowId +
+						" | Column: " + (columnId || "") +
+						" | Column1: " + (columnId1 || "") +
+						" | Column2: " + (columnId2 || "") + "";
 
-				// Handle Yes button
-				document.querySelector('.yes-btn').onclick = function () {
-					$('#cellresultModal').modal('hide');
+					$('#cellresultModal').modal('show');
 
-					// Show loader
-					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
-						backdrop: 'static',
-						keyboard: false
-					});
-					$('#loader').modal('show');
+					document.querySelector('.yes-btn').onclick = function () {
+						$('#cellresultModal').modal('hide');
 
-					// Build dynamic URL
-					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+						const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+							backdrop: 'static',
+							keyboard: false
+						});
+						$('#loader').modal('show');
 
-					location.href = Callurl;
-				};
-			} else {
-				// Use your custom alert modal instead of window.alert
-				showResultModal("Alert", "No Records available for this selected cell.");
+						// ✅ Thymeleaf-compatible URL
+						var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+
+						// ✅ Append filter params
+						Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId + "," + columnId1 + "," + columnId2);
+
+						window.location.href = Callurl;
+					};
+				} else {
+					showResultModal("Alert", "No Records available for this selected cell.");
+				}
 			}
-		}
-	</script>
+		</script>
+
 
 	</script>
 			<script th:inline="javascript">
