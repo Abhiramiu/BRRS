@@ -668,20 +668,7 @@ function showdetailsbyRowAndColumn(a) {
 	}
 </script>
 
-<style>
-		  .dataTables_scrollHeadInner,
-		  table.dataTable {
-		    width: 100% !important;
-		    margin: -2px auto !important;
-		  }
 
-		  /* ✅ Prevent wrapping in all table cells */
-		  #reportdetails th,
-		  #reportdetails td {
-		    white-space: nowrap;
-		  }
-		  
-		</style>
 		<style>
 			  .left-arrow-circle {
 			    background-color: white;
@@ -725,11 +712,45 @@ function showdetailsbyRowAndColumn(a) {
 			    }
 			  }
 			</style>
-	<script th:inline="javascript">
+			
+			<style>
+				/* Keep the header fixed and aligned */
+				.dataTables_scrollHeadInner,
+				.dataTables_scrollBody table {
+				  width: 100% !important;
+				}
+
+				/* Prevent thead shrinking at zoom */
+				.dataTables_scrollHeadInner table {
+				  width: 100% !important;
+				  min-width: 100% !important;
+				}
+
+				#reportdetails {
+				  width: 100% !important;
+				  table-layout: fixed !important;
+				}
+
+				#reportdetails th, 
+				#reportdetails td {
+				  white-space: nowrap;
+				}
+				table.dataTable th.dt-type-numeric,
+					table.dataTable th.dt-type-date,
+					table.dataTable td.dt-type-numeric,
+					table.dataTable td.dt-type-date {
+					    text-align: left !important;
+					}
+
+
+
+					  
+					</style>
+			<script th:inline="javascript">
 			  $(document).ready(function () {
-			    $('#reportdetails').DataTable({
-			      scrollY: "550px",            // ✅ Adjust vertical scroll height
-			      scrollX: true,               // ✅ Horizontal scrolling
+			    var table = $('#reportdetails').DataTable({
+			      scrollY: "550px",
+			      scrollX: true,
 			      scrollCollapse: true,
 			      autoWidth: false,
 			      paging: true,
@@ -737,12 +758,26 @@ function showdetailsbyRowAndColumn(a) {
 			      lengthChange: false,
 			      ordering: true,
 			      pageLength: 100,
-			      fixedHeader: {
-			        header: true,
-			        footer: false
-			      },                           // ✅ Ensures header stays visible
+			      fixedHeader: true, // ✅ You can simply set it to true
+				  // ✅ Column width settings
+				   columnDefs: [
+				     { width: "60px", targets: 0 },   // Edit icon column
+				     { width: "150px", targets: 1 }  ,  // S No column
+					 { width: "300px", targets: 7 }    // S No column
+				   ],
+
 			      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
 			    });
+
+			    // ✅ Fix alignment on resize / zoom
+			    $(window).on('resize', function () {
+			      table.columns.adjust().draw(false);
+			    });
+
+			    // ✅ Fix initial misalignment if loaded at non-100% zoom
+			    setTimeout(function () {
+			      table.columns.adjust().draw(false);
+			    }, 500);
 			  });
 			</script>
 
