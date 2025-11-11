@@ -261,6 +261,8 @@ PURPOSE		: BWRBRREPORT
       select.error {
         border: 2px solid red !important;
       }
+  
+      
 
       /* Error message style */
       label.error {
@@ -291,6 +293,9 @@ PURPOSE		: BWRBRREPORT
       .left-arrow-circle i {
         color: rgb(107, 122, 143);
       }
+          .no-border {
+  border: none !important;
+}
 
       .left-arrow-circle:hover {
         background-color: rgb(107, 122, 143);
@@ -1384,10 +1389,12 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 	readonly /></td> -->
                       		
                     </tr>
-                    <tr style="height:28px;">
-                   		<td></td>
-                   		<td></td>
-                   		<td></td>
+                    <tr class="no-border" style="height:28px;">
+                   		<td   colspan="3"></td>
+
+
+
+
                    		<td></td>
                    		<td></td>
                    		<td></td>
@@ -1745,5 +1752,13 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 .scrollable-table-container thead tr:nth-child(5) {
     background-color: #D8D8D8; /* set header color */
 }
+
+.scrollable-table-container table tr:last-child td:first-child  {
+  border-bottom: none !important;
+}
+.scrollable-table-container table tr:last-child td:first-child {
+  border-left: none !important;
+}
+
   </style>
 </html>
