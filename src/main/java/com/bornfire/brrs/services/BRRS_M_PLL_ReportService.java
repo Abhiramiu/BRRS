@@ -933,8 +933,8 @@ public class BRRS_M_PLL_ReportService {
 
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInPula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+					if (item.getProvision() != null) {
+						balanceCell.setCellValue(item.getProvision().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
@@ -1695,8 +1695,8 @@ public class BRRS_M_PLL_ReportService {
 
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInPula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+					if (item.getProvision() != null) {
+						balanceCell.setCellValue(item.getProvision().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
