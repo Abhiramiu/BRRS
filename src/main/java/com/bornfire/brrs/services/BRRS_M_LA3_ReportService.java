@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -37,12 +39,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.BRRS_M_LA1_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA3_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA3_Archival_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_LA3_Archival_Summary_Repo2;
@@ -74,6 +82,8 @@ public class BRRS_M_LA3_ReportService {
 
 	@Autowired
 	BRRS_M_LA3_Detail_Repo M_LA3_DETAIL_Repo;
+	
+	
 
 	@Autowired
 	BRRS_M_LA3_Summary_Repo1 M_LA3_Summary_Repo1;
@@ -2048,33 +2058,127 @@ public class BRRS_M_LA3_ReportService {
 	    }
 	}
 
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 	
-	public boolean updateProvision(M_LA3_Detail_Entity la3Data) {
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_LA3"); // ✅ match the report name
+	    System.out.println("Hello");
+	    if (acctNo != null) {
+	        M_LA3_Detail_Entity la1Entity = M_LA3_DETAIL_Repo.findByAcctnumber(acctNo);
+	        if (la1Entity != null && la1Entity.getReport_date() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReport_date());
+	            mv.addObject("asondate", formattedDate);
+	        }
+	        mv.addObject("Data", la1Entity);
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+	
+	public ModelAndView updateDetailEdit(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_LA3"); // ✅ match the report name
+
+	    if (acctNo != null) {
+	        M_LA3_Detail_Entity la1Entity = M_LA3_DETAIL_Repo.findByAcctnumber(acctNo);
+	        if (la1Entity != null && la1Entity.getReport_date() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReport_date());
+	            mv.addObject("asondate", formattedDate);
+	            System.out.println(formattedDate);
+	        }
+	        mv.addObject("Data", la1Entity);
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 	    try {
-	        System.out.println("Came to LA3 Service");
+	        String acctNo = request.getParameter("acct_number");
+	        String provisionStr = request.getParameter("acct_balance_in_pula");
+	        String sanction_limit = request.getParameter("sanction_limit");
+	        String acctName = request.getParameter("acct_name");
+	        String reportDateStr = request.getParameter("report_Date");
 
-	        // ✅ Must match your entity field name exactly
-	        M_LA3_Detail_Entity existing = M_LA3_DETAIL_Repo.findByAcctnumber(la3Data.getAcct_number());
+	        logger.info("Received update for ACCT_NO: {}", acctNo);
 
-	        if (existing != null) {
-	        	 //existing.setAcct_name(la1Data.getAcct_name());
-	            existing.setSanction_limit(la3Data.getSanction_limit());
-	            existing.setAcct_balance_in_pula(la3Data.getAcct_balance_in_pula());
+	        M_LA3_Detail_Entity existing = M_LA3_DETAIL_Repo.findByAcctnumber(acctNo);
+	        if (existing == null) {
+	            logger.warn("No record found for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+	        }
 
-	            M_LA3_DETAIL_Repo.save(existing);
+	        boolean isChanged = false;
 
-	            System.out.println("Updated successfully for ACCT_NO: " + la3Data.getAcct_number());
-	            return true;
+	        if (acctName != null && !acctName.isEmpty()) {
+	            if (existing.getAcct_name() == null || !existing.getAcct_name().equals(acctName)) {
+	                existing.setAcct_name(acctName);
+	                isChanged = true;
+	                logger.info("Account name updated to {}", acctName);
+	            }
+	        }
+
+	        if (provisionStr != null && !provisionStr.isEmpty()) {
+	            BigDecimal newProvision = new BigDecimal(provisionStr);
+	            if (existing.getAcct_balance_in_pula() == null ||
+	                existing.getAcct_balance_in_pula().compareTo(newProvision) != 0) {
+	                existing.setAcct_balance_in_pula(newProvision);
+	                isChanged = true;
+	                logger.info("Provision updated to {}", newProvision);
+	            }
+	        }
+	        
+	        if (sanction_limit != null && !sanction_limit.isEmpty()) {
+	            BigDecimal newSanctionLimit = new BigDecimal(sanction_limit);
+	            if (existing.getSanction_limit() == null ||
+	                existing.getSanction_limit().compareTo(newSanctionLimit) != 0) {
+	                existing.setSanction_limit(newSanctionLimit);
+	                isChanged = true;
+	                logger.info("Sanction limit updated to {}", newSanctionLimit);
+	            }
+	        }
+
+	        if (isChanged) {
+	        	M_LA3_DETAIL_Repo.save(existing);
+	            logger.info("Record updated successfully for account {}", acctNo);
+
+	            // Format date for procedure
+	            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+	                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+	            // Run summary procedure after commit
+	            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+	                @Override
+	                public void afterCommit() {
+	                    try {
+	                        logger.info("Transaction committed — calling BRRS_M_LA3_SUMMARY_PROCEDURE({})",
+	                                formattedDate);
+	                        jdbcTemplate.update("BEGIN BRRS_M_LA3_SUMMARY_PROCEDURE(?); END;", formattedDate);
+	                        logger.info("Procedure executed successfully after commit.");
+	                    } catch (Exception e) {
+	                        logger.error("Error executing procedure after commit", e);
+	                    }
+	                }
+	            });
+
+	            return ResponseEntity.ok("Record updated successfully!");
 	        } else {
-	            System.out.println("Record not found for Account No: " + la3Data.getAcct_number());
-	            return false;
+	            logger.info("No changes detected for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.ok("No changes were made.");
 	        }
 
 	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return false;
+	        logger.error("Error updating M_LA3 record", e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error updating record: " + e.getMessage());
 	    }
 	}
+
 
 	
 }

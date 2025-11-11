@@ -1851,7 +1851,13 @@ public class RegulatoryReportServices {
 
 			
 			  case "M_LA1": modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(
-			  request.getParameter("acctNo"), request.getParameter("formmode") ); break;
+			  request.getParameter("acctNo"), request.getParameter("formmode") );
+			  break;
+			  
+			  case "M_LA3":
+					modelAndView = BRRS_M_LA3_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 			 
 
 			default:
@@ -1885,6 +1891,11 @@ public class RegulatoryReportServices {
 			
 			  case "M_LA1": response = BRRS_M_LA1_reportservice.updateDetailEdit(request);
 			  break;
+			  
+			  case "M_LA3":
+					response = BRRS_M_LA3_reportservice.updateDetailEdit(request);
+					break;
+
 			 
 
 			default:

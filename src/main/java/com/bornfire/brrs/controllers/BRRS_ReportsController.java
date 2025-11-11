@@ -1588,59 +1588,7 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@RequestMapping(value = "/updateMLA3", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public String updateMLA3(@ModelAttribute M_LA3_Detail_Entity Data) {
-		System.out.println("Came to Controller ");
-		System.out.println("Received update for ACCT_NO: " + Data.getAcct_number());
-		System.out.println("sanction value: " + Data.getSanction_limit());
-		System.out.println("balance value: " + Data.getAcct_balance_in_pula());
 
-		boolean updated = brrs_M_LA3_ReportService.updateProvision(Data);
-
-		if (updated) {
-			return "M_LA3 updated successfully!";
-		} else {
-			return "Record not found for update!";
-		}
-	}
-
-	@Autowired
-	private BRRS_M_LA3_Detail_Repo M_LA3_Detail_Repo;
-
-	@RequestMapping(value = "/MLA3_Detail", method = { RequestMethod.GET, RequestMethod.POST })
-	public String showMLA3Detail(@RequestParam(required = false) String formmode,
-			@RequestParam(required = false) String acctNo, @RequestParam(required = false) BigDecimal sanction_limit,
-			@RequestParam(required = false) BigDecimal acct_balance_in_pula, Model model) {
-
-		M_LA3_Detail_Entity la3Entity = M_LA3_Detail_Repo.findByAcctnumber(acctNo);
-
-		if (la3Entity != null) {
-
-			if (sanction_limit != null) {
-				la3Entity.setSanction_limit(sanction_limit);
-			}
-			if (acct_balance_in_pula != null) {
-				la3Entity.setAcct_balance_in_pula(acct_balance_in_pula);
-			}
-
-			if (sanction_limit != null || acct_balance_in_pula != null) {
-				M_LA3_Detail_Repo.save(la3Entity);
-				System.out.println("Updated Sanction Limit / Account Balance for ACCT_NO: " + acctNo);
-			}
-
-			Date reportDate = la3Entity.getReport_date();
-			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-			String formattedDate = formatter.format(reportDate);
-			model.addAttribute("asondate", formattedDate);
-		}
-
-		model.addAttribute("displaymode", "edit");
-		model.addAttribute("formmode", "edit");
-		model.addAttribute("Data", la3Entity);
-
-		return "BRRS/M_LA3";
-	}
 
 	@Autowired
 	BRRS_M_OPTR_ReportService BRRS_M_OPTR_reportservice;

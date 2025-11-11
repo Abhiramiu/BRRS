@@ -661,7 +661,7 @@ PURPOSE		: BRRSREPORT
 				    $('#loader').modal('show');
 
 				    $.ajax({
-				        url: '/BRRS/Reports/updateMLA3',
+				        url: `/BRRS/Reports/${reportId}/update`,
 				        type: 'POST',
 				        data: formData,
 				        success: function (response) {
@@ -858,15 +858,24 @@ PURPOSE		: BRRSREPORT
 		}
 	</script>
 
-
-
-	<script>
-		function openDetail(elem, mode) {
-			const acctNo = elem.getAttribute("data-acctNo");
-			// Navigate to MLA3 details page with parameters
-			location.href = '/BRRS/Reports/MLA3_Detail?formmode=' + mode + '&acctNo=' + acctNo;
-		}
 	</script>
+			<script th:inline="javascript">
+			    /*<![CDATA[*/
+			    const reportId = /*[[${reportid}]]*/ null;
+			    /*]]>*/
+			</script>
+
+		<script>
+			function openDetail(elem, mode) {
+				const acctNo = elem.getAttribute("data-acctNo");
+				 const asondate = elem.getAttribute("data-asondate");
+				location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+			}
+		</script>
+
+	
+	
+	
 
 
 	
@@ -1688,7 +1697,8 @@ PURPOSE		: BRRSREPORT
 												<a data-toggle="tooltip" class="editrec"
 													title="Click to Edit this Record">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
-														th:attr="data-acctNo=${report.acct_number}"
+														th:attr="data-acctNo=${report.acct_number},
+														data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')}"
 														onclick="openDetail(this, 'edit')"></i>
 
 												</a>
@@ -1813,17 +1823,17 @@ PURPOSE		: BRRSREPORT
 										class="form-control form-control-sm" readonly />
 								</div>
 
-								<!-- <div class="col-sm-1"></div>
-
-								        <label class="col-sm-2">Report Date</label>
-								        <div class="col-sm-3">
-								          <input type="date" th:field="*{reportDate}" class="form-control form-control-sm" readonly />
-								        </div>
-								      </div>-->
+								<div class="row formline" style="margin-top:10px;">
+										<label class="col-sm-2">Report Date</label>
+										<div class="col-sm-3">
+										<input type="date" name="report_Date" class="form-control form-control-sm"
+										th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" />
+										</div>
+										</div>
 
 								<!-- Update Button -->
 								<div style="text-align:center; margin-top:20px;">
-									<button type="button" class="custom-tab-btn"
+									<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
 										onclick="submitUpdate()">Update</button>
 								</div>
 						</form>
