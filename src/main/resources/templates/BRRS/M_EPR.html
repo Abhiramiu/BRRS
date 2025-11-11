@@ -313,6 +313,9 @@ label.error {
 
 
 <script th:inline="javascript">
+
+
+let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -337,9 +340,9 @@ label.error {
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			showResultModal('BRRS',' Details page not available for Manual Report');
-		}
-
+    isDetailsModal = true; // mark that this modal is from Details
+    showResultModal('BRRS', 'Details page not available for Manual Report');
+}
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
@@ -835,14 +838,19 @@ $(document).ready(function() {
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
 	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+    // Only reload if not from Details modal
+    if (!isDetailsModal) {
+        setTimeout(function () {
+            location.reload();
+        }, 300);
+    } else {
+        // reset flag for next modal usage
+        isDetailsModal = false;
+    }
+}
 
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.
@@ -1045,30 +1053,30 @@ window.fileuploads = function(btn) {
 										<tr>
 
 											<th rowspan="2"
-												style="text-align: left; font-weight: bold; background-color: #D8D8D8; padding: 10px;  width: 200px;">Country</th>
+												style="text-align: left; font-weight: bold; background-color: #D8D8D8; padding: 10px;  width: 200px; vertical-align:middle;">Country</th>
 											<th rowspan="2"
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;   ">Market</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; vertical-align:middle;  ">Market</th>
 											<th colspan="9"
-												style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 1800px; ">Gross
+												style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 1800px;  vertical-align:middle;">Gross
 												Positions for Specific Risk</th>
 											<th rowspan="2"
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; ">Total
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;  vertical-align:middle;">Total
 												Specific Risk Charge</th>
 											<th rowspan="2"
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;">Net
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; vertical-align:middle;">Net
 												Positions for General Market Risk</th>
 											<th rowspan="2"
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; ">General
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; vertical-align:middle;">General
 												Market Risk Change at 8 Percent</th>
 											<th rowspan="2"
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;  width: 200px;">2
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;  width: 200px;vertical-align:middle;">2
 												Percent General Market Risk Change for well-diversified
 												Portfolio</th>
 											<th rowspan="2"
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; ">Total
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; vertical-align:middle;">Total
 												General Market Risk Charge</th>
 											<th rowspan="2"
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;">Total
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; vertical-align:middle;">Total
 												Market Risk Change</th>
 
 
@@ -1079,29 +1087,29 @@ window.fileuploads = function(btn) {
 
 
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;" >Nominal
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; vertical-align:middle;" >Nominal
 												Amount</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;  ">Positions
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; vertical-align:middle; ">Positions
 												Attracting 8 Percent Specific Risk</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; ">Charge</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;vertical-align:middle; ">Charge</th>
 											<th
-												style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;  ">Nominal
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; vertical-align:middle; ">Nominal
 												Amount</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; ">Positions
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;vertical-align:middle; ">Positions
 												Attracting 4 Percent Specific Risk</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;">Charge</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; vertical-align:middle;">Charge</th>
 											<th
-												style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;  ">Nominal
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; vertical-align:middle; ">Nominal
 												Amount</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; ">Positions
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; vertical-align:middle;">Positions
 												Attracting 2 Percent Specific Risk</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px; ">Charge</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; width: 200px;vertical-align:middle; ">Charge</th>
 										</tr>
 
 

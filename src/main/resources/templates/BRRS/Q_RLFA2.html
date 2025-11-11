@@ -302,6 +302,8 @@ label.error {
 
 </style>
 <script th:inline="javascript">
+
+let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -326,8 +328,9 @@ label.error {
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			showResultModal('BRRS',' Details page not available for Manual Report');
-		}
+    isDetailsModal = true; // mark that this modal is from Details
+    showResultModal('BRRS', 'Details page not available for Manual Report');
+}
 
 		function showsummary() {
 			$('#loader').modal('show');
@@ -1082,14 +1085,19 @@ function cancelModify() {
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
 	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+    // Only reload if not from Details modal
+    if (!isDetailsModal) {
+        setTimeout(function () {
+            location.reload();
+        }, 300);
+    } else {
+        // reset flag for next modal usage
+        isDetailsModal = false;
+    }
+}
 
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.
@@ -1336,16 +1344,16 @@ function cancelModify() {
 
 											<tr style="background-color: #b3b6b9;">
 												<th
-													style="text-align: left; padding-left: 10px; font-weight: bold;">
+													style="text-align: left; padding-left: 10px; font-weight: bold;width:1000px; background-color: #D8D8D8; padding: 10px;">
 													SCHEDULE OF FORECLOSED ASSETS</th>
 												<th
-													style="text-align: center; vertical-align: center; font-weight: bold; padding-left: 10px;">Original
+													style="text-align: right; vertical-align: center; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">Original
 													Amount</th>
 												<th
-													style="text-align: center; vertical-align: center; font-weight: bold; padding-left: 10px;">Foreclosure
+													style="text-align: right; vertical-align: center; font-weight: bold;background-color: #D8D8D8; padding: 10px;">Foreclosure
 													Amount</th>
 												<th
-													style="text-align: center; vertical-align: center; font-weight: bold; padding-left: 10px;">No.
+													style="text-align: right; vertical-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;">No.
 													of Accounts</th>
 
 
@@ -3310,7 +3318,7 @@ function cancelModify() {
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {
 	/* This is the key: it creates the scroll context */
-	max-height: 650px;
+	max-height:550px;
 	/* Or a suitable height like 80vh for responsive design */
 	overflow-y: auto;
 	border: 1px solid #ccc;

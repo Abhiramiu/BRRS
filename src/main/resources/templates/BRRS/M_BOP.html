@@ -312,6 +312,7 @@ label.error {
 
 
 <script th:inline="javascript">
+let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -336,6 +337,7 @@ label.error {
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+    isDetailsModal = true; // mark that this modal is from Details
     showResultModal('BRRS', 'Details page not available for Manual Report');
 }
 
@@ -887,14 +889,19 @@ $(document).ready(function() {
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
 	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+    // Only reload if not from Details modal
+    if (!isDetailsModal) {
+        setTimeout(function () {
+            location.reload();
+        }, 300);
+    } else {
+        // reset flag for next modal usage
+        isDetailsModal = false;
+    }
+}
 	
 	
 	
@@ -1115,13 +1122,13 @@ window.fileuploads = function(btn) {
 										
 										 <tr style="background-color: #b3b6b9;">
                                             <th style="text-align: left; font-weight: bold; background-color: #D8D8D8; padding: 10px;"></th>
-                                            <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;"  rowspan="2" > Opening Position (1)</th>
-                                            <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;"rowspan="2" >Increases (2)</th>
-                                          <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Decreases (3)</th>
-                                          <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Net (2) - (3) = (4)</th>
-                                              <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Due to Exchange Rate (5)</th>
-                                              <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Due to Other (6)</th>
-                                              <th style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Closing Position (1+4+5+6) = (7)
+                                            <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;"  rowspan="2" > Opening Position (1)</th>
+                                            <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;"rowspan="2" >Increases (2)</th>
+                                          <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Decreases (3)</th>
+                                          <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Net (2) - (3) = (4)</th>
+                                              <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Due to Exchange Rate (5)</th>
+                                              <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Due to Other (6)</th>
+                                              <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;" rowspan="2">Closing Position (1+4+5+6) = (7)
 </th>
                                         </tr> 
 									
@@ -1313,7 +1320,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R16' style='font-weight: bold;'>
+    <td id='R16' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='a) Long term loans'
                id='r16_product' name='r16_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -1378,7 +1385,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R17' style='font-weight: bold;'>
+    <td id='R17' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='b) Short term loans'
                id='r17_product' name='r17_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -1443,7 +1450,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R18' style='font-weight: bold;'>
+    <td id='R18' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='c) Trade credits and advances'
                id='r18_product' name='r18_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -1508,7 +1515,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R19' style='font-weight: bold;'>
+    <td id='R19' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='d) Currency and Deposits'
                id='r19_product' name='r19_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -1573,7 +1580,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R20' style='font-weight: bold;'>
+    <td id='R20' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='e) Bonds & notes'
                id='r20_product' name='r20_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -1638,7 +1645,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R21' style='font-weight: bold;'>
+    <td id='R21' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='f) Money market instruments'
                id='r21_product' name='r21_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -1703,7 +1710,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R22' style='font-weight: bold;'>
+    <td id='R22' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='g) Financial derivatives'
                id='r22_product' name='r22_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -1768,7 +1775,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R23' style='font-weight: bold;'>
+    <td id='R23' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='h) Other (specify)*'
                id='r23_product' name='r23_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -2093,7 +2100,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R28' style='font-weight: bold;'>
+    <td id='R28' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='a) Long-term loans'
                id='r28_product' name='r28_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -2158,7 +2165,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R29' style='font-weight: bold;'>
+    <td id='R29' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='b) Short-term loans'
                id='r29_product' name='r29_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -2223,7 +2230,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R30' style='font-weight: bold;'>
+    <td id='R30' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='c) Trade credits and advances'
                id='r30_product' name='r30_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -2288,7 +2295,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R31' style='font-weight: bold;'>
+    <td id='R31' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='d) Currency and Deposits'
                id='r31_product' name='r31_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -2353,7 +2360,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R32' style='font-weight: bold;'>
+    <td id='R32' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='e) Bonds & notes'
                id='r32_product' name='r32_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -2418,7 +2425,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R33' style='font-weight: bold;'>
+    <td id='R33' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='f) Money markets instruments'
                id='r33_product' name='r33_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -2483,7 +2490,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R34' style='font-weight: bold;'>
+    <td id='R34' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='g) Financial derivatives'
                id='r34_product' name='r34_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -2548,7 +2555,7 @@ window.fileuploads = function(btn) {
 </tr>
 
 <tr>
-    <td id='R35' style='font-weight: bold;'>
+    <td id='R35' style='font-weight: bold; padding-left: 20px;'>
         <input class='display-input Show_input' type='text' value='h) Other (specify)*'
                id='r35_product' name='r35_product'
                style='background-color: #FFFFFF; width: -webkit-fill-available; height: 28px;
@@ -2793,7 +2800,7 @@ window.fileuploads = function(btn) {
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {
 	/* This is the key: it creates the scroll context */
-	max-height: 820px;
+	max-height: 550px;
 	/* Or a suitable height like 80vh for responsive design */
 	overflow-y: auto;
 	border: 1px solid #ccc;

@@ -294,6 +294,8 @@ label.error {
 }
 </style>
 <script th:inline="javascript">
+
+let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -349,10 +351,9 @@ label.error {
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			showResultModal('BRRS',' Details page not available for Manual Report');
-			 
-			
-		}
+    isDetailsModal = true; // mark that this modal is from Details
+    showResultModal('BRRS', 'Details page not available for Manual Report');
+}
 
 		function showsummary() {
 			$('#loader').modal('show');
@@ -1091,14 +1092,19 @@ function cancelModify() {
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
 	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+    // Only reload if not from Details modal
+    if (!isDetailsModal) {
+        setTimeout(function () {
+            location.reload();
+        }, 300);
+    } else {
+        // reset flag for next modal usage
+        isDetailsModal = false;
+    }
+}
 
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.

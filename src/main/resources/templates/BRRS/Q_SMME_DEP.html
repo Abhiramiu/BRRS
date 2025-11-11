@@ -164,7 +164,7 @@ thead th {
 }
 
 #BRFvalidation th, #usertable td {
-	vertical-align: middle;
+	
 	text-align: left;
 	font-size: 16px;
 	font-family: Arial;
@@ -312,6 +312,8 @@ label.error {
 
 
 <script th:inline="javascript">
+
+let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -336,6 +338,7 @@ label.error {
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+    isDetailsModal = true; // mark that this modal is from Details
     showResultModal('BRRS', 'Details page not available for Manual Report');
 }
 
@@ -883,14 +886,19 @@ $(document).ready(function() {
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
 	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+    // Only reload if not from Details modal
+    if (!isDetailsModal) {
+        setTimeout(function () {
+            location.reload();
+        }, 300);
+    } else {
+        // reset flag for next modal usage
+        isDetailsModal = false;
+    }
+}
 	
 	
 	
@@ -1006,7 +1014,7 @@ window.fileuploads = function(btn) {
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+							style="font-family: arial; font-size: 20px ; padding-top: 10px; font-weight: bold; color: white;">
 							Q-SMME DEP: SMME DEPOSIT ACCOUNTS BY ECONOMIC SECTOR</h5>
 					</div>
 
@@ -1096,31 +1104,31 @@ window.fileuploads = function(btn) {
 									
 									
 									<tr style="background-color: #b3b6b9;">
-                                            <th style="text-align: left; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px; " rowspan="2">(6A) DEPOSITS</th>
-                                           <th style="text-align: center; font-weight: bold;  vertical-align: middle;background-color: #D8D8D8; padding: 10px;">Current</th>
-                                            <th style="text-align: center; font-weight: bold; vertical-align: middle;background-color: #D8D8D8; padding: 10px;">Call</th>
-                                            <th style="text-align: center; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;">Savings</th> 
-                                              <th style="text-align: center; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;" colspan="2">Notice (Days)</th>
-                                                <th style="text-align: center; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;" rowspan="2">91 Day deposit</th>
-                                            <th style="text-align: center; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;" colspan="6">Fixed Deposits (Months)</th>
-                                            <th style="text-align: right; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;"></th> 
-                                             <th style="text-align: right; font-weight: bold;  vertical-align: middle; background-color: #D8D8D8; padding: 10px;"></th>
+                                            <th style="text-align: left; font-weight: bold;  background-color: #D8D8D8; padding: 10px; " rowspan="2">(6A) DEPOSITS</th>
+                                           <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">Current</th>
+                                            <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;">Call</th>
+                                            <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">Savings</th> 
+                                              <th style="text-align: center; font-weight: bold;  background-color: #D8D8D8; padding: 10px;" colspan="2">Notice (Days)</th>
+                                                <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;" rowspan="2">91 Day deposit</th>
+                                            <th style="text-align: center; font-weight: bold;  background-color: #D8D8D8; padding: 10px;" colspan="6">Fixed Deposits (Months)</th>
+                                            <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;"></th> 
+                                             <th style="text-align: right; font-weight: bold;   background-color: #D8D8D8; padding: 10px;"></th>
                                         </tr>
                                         
                                         <tr style="background-color: #b3b6b9;">
-                                            <th style="text-align: right; font-weight: bold;  vertical-align: middle;background-color: #D8D8D8; padding: 10px;" >0</th>
-                                           <th style="text-align: right; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;">0</th>
-                                            <th style="text-align: right; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;">0</th>
-                                            <th style="text-align: right; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;">0-31</th> 
-                                              <th style="text-align: right; font-weight: bold;vertical-align: middle; background-color: #D8D8D8; padding: 10px;">32-88</th>
-                                                <th style="text-align: right; font-weight: bold;vertical-align: middle; background-color: #D8D8D8; padding: 10px;" >1-2</th>
-                                            <th style="text-align: right; font-weight: bold;vertical-align: middle; background-color: #D8D8D8; padding: 10px;" >4-6</th>
-                                            <th style="text-align: right; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;">7-12 </th> 
-                                             <th style="text-align: right; font-weight: bold;vertical-align: middle; background-color: #D8D8D8; padding: 10px;">13-18</th>
-                                               <th style="text-align: right; font-weight: bold;vertical-align: middle;  background-color: #D8D8D8; padding: 10px;">19-24</th> 
-                                             <th style="text-align: right; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;">Over 24</th>
-                                              <th style="text-align: right; font-weight: bold; vertical-align: middle;  background-color: #D8D8D8; padding: 10px;">Total</th> 
-                                             <th style="text-align: right; font-weight: bold; vertical-align: middle;  background-color: #D8D8D8; padding: 10px;">Number of Accounts</th>
+                                            <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;" >0</th>
+                                           <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">0</th>
+                                            <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">0</th>
+                                            <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">0-31</th> 
+                                              <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;">32-88</th>
+                                                <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;" >1-2</th>
+                                            <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;" >4-6</th>
+                                            <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">7-12 </th> 
+                                             <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;">13-18</th>
+                                               <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">19-24</th> 
+                                             <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">Over 24</th>
+                                              <th style="text-align: right; font-weight: bold;   background-color: #D8D8D8; padding: 10px;">Total</th> 
+                                             <th style="text-align: right; font-weight: bold;   background-color: #D8D8D8; padding: 10px;">Number of Accounts</th>
                                         </tr>
 										
 
@@ -2865,31 +2873,31 @@ window.fileuploads = function(btn) {
 <thead class="thead-light" style=" top: 0; position: sticky; border:2px solid black; background-color: #D8D8D8; z-index: 1;">
 
 <tr style="background-color: #b3b6b9;">
-                                            <th style="text-align: left; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px; " rowspan="2"></th>
-                                           <th style="text-align: center; font-weight: bold;  vertical-align: middle;background-color: #D8D8D8; padding: 10px;">Current</th>
-                                            <th style="text-align: center; font-weight: bold; vertical-align: middle;background-color: #D8D8D8; padding: 10px;">Call</th>
-                                            <th style="text-align: center; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;">Savings</th> 
-                                              <th style="text-align: center; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;" colspan="2">Notice (Days)</th>
-                                                <th style="text-align: center; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;" rowspan="2">91 Day deposit</th>
-                                            <th style="text-align: center; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;" colspan="6">Fixed Deposits (Months)</th>
-                                            <th style="text-align: right; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;"></th> 
-                                             <th style="text-align: right; font-weight: bold;  vertical-align: middle; background-color: #D8D8D8; padding: 10px;"></th>
+                                            <th style="text-align: left; font-weight: bold;  background-color: #D8D8D8; padding: 10px; " rowspan="2"></th>
+                                           <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">Current</th>
+                                            <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;">Call</th>
+                                            <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">Savings</th> 
+                                              <th style="text-align: center; font-weight: bold;  background-color: #D8D8D8; padding: 10px;" colspan="2">Notice (Days)</th>
+                                                <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;" rowspan="2">91 Day deposit</th>
+                                            <th style="text-align: center; font-weight: bold;  background-color: #D8D8D8; padding: 10px;" colspan="6">Fixed Deposits (Months)</th>
+                                            <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;"></th> 
+                                             <th style="text-align: right; font-weight: bold;   background-color: #D8D8D8; padding: 10px;"></th>
                                         </tr>
                                         
                                         <tr style="background-color: #b3b6b9;">
-                                            <th style="text-align: right; font-weight: bold;  vertical-align: middle;background-color: #D8D8D8; padding: 10px;" >0</th>
-                                           <th style="text-align: right; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;">0</th>
-                                            <th style="text-align: right; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;">0</th>
-                                            <th style="text-align: right; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;">0-31</th> 
-                                              <th style="text-align: right; font-weight: bold;vertical-align: middle; background-color: #D8D8D8; padding: 10px;">32-88</th>
-                                                <th style="text-align: right; font-weight: bold;vertical-align: middle; background-color: #D8D8D8; padding: 10px;" >1-2</th>
-                                            <th style="text-align: right; font-weight: bold;vertical-align: middle; background-color: #D8D8D8; padding: 10px;" >4-6</th>
-                                            <th style="text-align: right; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;">7-12 </th> 
-                                             <th style="text-align: right; font-weight: bold;vertical-align: middle; background-color: #D8D8D8; padding: 10px;">13-18</th>
-                                               <th style="text-align: right; font-weight: bold;vertical-align: middle;  background-color: #D8D8D8; padding: 10px;">19-24</th> 
-                                             <th style="text-align: right; font-weight: bold; vertical-align: middle; background-color: #D8D8D8; padding: 10px;">Over 24</th>
-                                              <th style="text-align: right; font-weight: bold; vertical-align: middle;  background-color: #D8D8D8; padding: 10px;">Total</th> 
-                                             <th style="text-align: right; font-weight: bold; vertical-align: middle;  background-color: #D8D8D8; padding: 10px;">Number of Accounts</th>
+                                            <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;" >0</th>
+                                           <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">0</th>
+                                            <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">0</th>
+                                            <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">0-31</th> 
+                                              <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;">32-88</th>
+                                                <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;" >1-2</th>
+                                            <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;" >4-6</th>
+                                            <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">7-12 </th> 
+                                             <th style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;">13-18</th>
+                                               <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">19-24</th> 
+                                             <th style="text-align: right; font-weight: bold;  background-color: #D8D8D8; padding: 10px;">Over 24</th>
+                                              <th style="text-align: right; font-weight: bold;   background-color: #D8D8D8; padding: 10px;">Total</th> 
+                                             <th style="text-align: right; font-weight: bold;   background-color: #D8D8D8; padding: 10px;">Number of Accounts</th>
                                         </tr>
 										
 
@@ -4730,7 +4738,7 @@ window.fileuploads = function(btn) {
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {
 	/* This is the key: it creates the scroll context */
-	max-height: 820px;
+	max-height:550px;
 	/* Or a suitable height like 80vh for responsive design */
 	overflow-y: auto;
 	border: 1px solid #ccc;

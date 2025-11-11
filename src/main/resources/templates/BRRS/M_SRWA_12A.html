@@ -25519,7 +25519,7 @@ $(document).ready(function () {
 	
 		<tr>
 		<!-- A -->
-		<td style="text-align: center;">108</td>
+		<td style="text-align: center;">109</td>
 		<!-- B -->
 		<td id="ROW153" style=" font-weight: bold; text-align: left;">
 			<input class="display-input Show_input" type="text"
@@ -25538,7 +25538,7 @@ $(document).ready(function () {
 		<!-- D -->
 		 <td id="ROW153" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r153_ccf != null ? #numbers.formatDecimal(report.r153_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r153_ccf != null ? #numbers.formatDecimal(report.r153_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r153_ccf" name="r153_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -33213,7 +33213,7 @@ $(document).ready(function () {
 			<input class="display-input Show_input" type="text"
 			 th:value="'Sales and repurchase agreement and assets sale with recourse where the credit risk remain with the bank: '"
 			 id="r187_exposure_class_off_bal" name="r187_exposure_class_off_bal"
-			 style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left;"
+			 style="background-color: #FFFFFF; width: 1000px; height: 28px; border-color: transparent; text-align: left; font-weight: bold;"
 			 readonly />
 		</td>
 		<!-- C FORMULA -->
@@ -39522,7 +39522,7 @@ $(document).ready(function () {
 		<!-- A -->
 		<td style="text-align: center;">171</td>
 		<!-- B -->
-		<td id="ROW215" style="padding-left: 20px; font-weight: bold; text-align: left;">
+		<td id="ROW215" style=" font-weight: bold; text-align: left;">
 			<input class="display-input Show_input" type="text"
 			 th:value="'Security Firms '"
 			 id="r215_exposure_class_off_bal" name="r215_exposure_class_off_bal"
@@ -48185,7 +48185,7 @@ $(document).ready(function () {
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {
 	/* This is the key: it creates the scroll context */
-	max-height: 800px;
+	max-height: 550px;
 	/* Or a suitable height like 80vh for responsive design */
 	overflow-y: auto;
 	border: 1px solid #ccc;
