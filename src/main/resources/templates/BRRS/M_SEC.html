@@ -1973,35 +1973,6 @@ $(document).ready(function () {
 </script>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	<!-- <script>
 	
 
@@ -2539,25 +2510,17 @@ function closemodel() {
 					</div>
 
 					<div class="custom-tab-btn-group nav-buttons"
-						style="display: flex; color: white; align-items: center">
+						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
-						<span class="white-text" style="
-                  color: white !important;
-                  font-size: 16px;
-                  margin-right: 20px;
-                ">Report Date: <span th:text="${asondate}">2025-09-11</span>
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
-
 						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}" />
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">
-							Summary
-						</button>
+							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">
-							Details
-						</button>
+							th:if="${displaymode == 'summary'}">Details</button>
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
@@ -2617,9 +2580,9 @@ function closemodel() {
 												(11A) Subordinated liabilities
 											</th>
 										<tr>
-											<th style="background-color: #D8D8D8;text-align: left; width:33%;padding-left: 20px;">Maturity date
+											<th style="background-color: #D8D8D8;text-align: left; ">Maturity date
 											</th>
-											<th style="background-color: #D8D8D8;text-align: left; width:33%;padding-left: 20px;">Total carrying
+											<th style="background-color: #D8D8D8;text-align: right; ">Total carrying
 												amount </th>
 										</tr>
 
@@ -2733,7 +2696,7 @@ function closemodel() {
 										<tr>
 
 											<td id="ROW11" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
+													class="display-input Show_inputnonEditable " type="text"
 													th:value="'Current year'" id="R11_PRODUCT" name="R11_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly /></td>
@@ -2749,7 +2712,7 @@ function closemodel() {
 
 										<tr>
 											<td id="ROW12" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
+													class="display-input Show_inputnonEditable " type="text"
 													th:value="'Current year + 1'" id="R12_PRODUCT" name="R12_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly /></td>
@@ -2764,7 +2727,7 @@ function closemodel() {
 										</tr>
 										<tr>
 											<td id="ROW13" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
+													class="display-input Show_inputnonEditable " type="text"
 													th:value="'Current year + 2'" id="R13_PRODUCT" name="R13_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly /></td>
@@ -2779,7 +2742,7 @@ function closemodel() {
 										</tr>
 										<tr>
 											<td id="ROW14" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
+													class="display-input Show_inputnonEditable " type="text"
 													th:value="'Current year + 3'" id="R14_PRODUCT" name="R14_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly /></td>
@@ -2794,7 +2757,7 @@ function closemodel() {
 										</tr>
 										<tr>
 											<td id="ROW15" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
+													class="display-input Show_inputnonEditable " type="text"
 													th:value="'Current year + 4'" id="R15_PRODUCT" name="R15_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly /></td>
@@ -2809,7 +2772,7 @@ function closemodel() {
 										</tr>
 										<tr>
 											<td id="ROW16" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
+													class="display-input Show_inputnonEditable " type="text"
 													th:value="'Current year + 5'" id="R16_PRODUCT" name="R16_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly /></td>
@@ -2824,7 +2787,7 @@ function closemodel() {
 										</tr>
 										<tr>
 											<td id="ROW17" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
+													class="display-input Show_inputnonEditable " type="text"
 													th:value="'More than current year + 5'" id="R17_PRODUCT"
 													name="R17_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
@@ -2840,7 +2803,7 @@ function closemodel() {
 										</tr>
 										<tr>
 											<td id="ROW18" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
+													class="display-input Show_inputnonEditable " type="text"
 													th:value="'Perpetuals'" id="R18_PRODUCT" name="R18_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly /></td>
@@ -2854,15 +2817,23 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW19" style="font-weight: bold;   "><input
-													class="display-input Show_input " type="text" th:value="'Total'"
-													id="R19_PRODUCT" name="R19_PRODUCT"
-													style="background-color: #f7f8f7; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											<td id="ROW19">
+    <input
+        class="display-input Show_inputnonEditable"
+        type="text"
+        th:value="'Total'"
+        id="R19_PRODUCT"
+        name="R19_PRODUCT"
+        style="background-color: #f7f8f7; width: 300px; height: 28px; 
+               border-color: transparent; text-align: left; padding-left: 20px; 
+               font-weight: bold; color: black;"
+        readonly />
+</td>
+
 
 												<td id="ROW19"
 													style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white; "><input
-													class="display-input Show_input green-cell" type="text"
+													class="display-input Show_inputnonEditable green-cell" type="text"
 													id="R19_TCA" name="R19_TCA"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;" 
 													readonly /></td>
@@ -2880,9 +2851,9 @@ function closemodel() {
 											</th>
 										</tr>
 										<tr>
-											<th style="background-color: #D8D8D8; text-align: left; width:33%;padding-left: 20px;">Debt
+											<th style="background-color: #D8D8D8; text-align: left;">Debt
 												certificates including bonds</th>
-											<th style="background-color: #D8D8D8; text-align: left; width:33%;padding-left: 20px;">Total carrying
+											<th style="background-color: #D8D8D8; text-align: left;">Total carrying
 												amount </th>
 										</tr>
 
@@ -2894,7 +2865,7 @@ function closemodel() {
 									<tbody th:each="report: ${reportsummary2}" style="font-family: Arial;">
 										<tr>
 											<td id="ROW11" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
+													class="display-input Show_inputnonEditable " type="text"
 													th:value="'Customer saving certificates'" id="R11_PRODUCT"
 													name="R11_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
@@ -2903,14 +2874,14 @@ function closemodel() {
 											<td id="ROW11"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
 													class="display-input Show_input" type="text"
-													th:value="${report.R11_TCA2 != null ? #numbers.formatDecimal(report.R11_TCA2, 1, 'NONE', 0, 'POINT') : '0'}"
+													th:value="${report.R11_TCA2 != null ? #numbers.formatDecimal(report.R11_TCA2, 1, 0, 'POINT') : '0'}"
 													id="R11_TCA2" name="R11_TCA2"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 										</tr>
 										<tr>
 											<td id="ROW12" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text" th:value="'Bonds'"
+													class="display-input Show_inputnonEditable " type="text" th:value="'Bonds'"
 													id="R12_PRODUCT" name="R12_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly /></td>
@@ -2918,14 +2889,14 @@ function closemodel() {
 											<td id="ROW12"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
 													class="display-input Show_input" type="text"
-													th:value="${report.R12_TCA2 != null ? #numbers.formatDecimal(report.R12_TCA2, 1, 'NONE', 0, 'POINT') : '0'}"
+													th:value="${report.R12_TCA2 != null ? #numbers.formatDecimal(report.R12_TCA2, 1, 0, 'POINT') : '0'}"
 													id="R12_TCA2" name="R12_TCA2"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 										</tr>
 										<tr>
 											<td id="ROW13" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
+													class="display-input Show_inputnonEditable" type="text"
 													th:value="'Convertible'" id="R13_PRODUCT" name="R13_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly /></td>
@@ -2933,14 +2904,14 @@ function closemodel() {
 											<td id="ROW13"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
 													class="display-input Show_input" type="text"
-													th:value="${report.R13_TCA2 != null ? #numbers.formatDecimal(report.R13_TCA2, 1, 'NONE', 0, 'POINT') : '0'}"
+													th:value="${report.R13_TCA2 != null ? #numbers.formatDecimal(report.R13_TCA2, 1, 0, 'POINT') : '0'}"
 													id="R13_TCA2" name="R13_TCA2"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 										</tr>
 										<tr>
 											<td id="ROW14" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
+													class="display-input Show_inputnonEditable " type="text"
 													th:value="'Non-convertible'" id="R14_PRODUCT" name="R14_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly /></td>
@@ -2948,14 +2919,14 @@ function closemodel() {
 											<td id="ROW14"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
 													class="display-input Show_input" type="text"
-													th:value="${report.R14_TCA2 != null ? #numbers.formatDecimal(report.R14_TCA2, 1, 'NONE', 0, 'POINT') : '0'}"
+													th:value="${report.R14_TCA2 != null ? #numbers.formatDecimal(report.R14_TCA2, 1, 0, 'POINT') : '0'}"
 													id="R14_TCA2" name="R14_TCA2"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 										</tr>
 										<tr>
 											<td id="ROW15" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text" th:value="'Other'"
+													class="display-input Show_inputnonEditable " type="text" th:value="'Other'"
 													id="R15_PRODUCT" name="R15_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly /></td>
@@ -2963,21 +2934,23 @@ function closemodel() {
 											<td id="ROW15"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
 													class="display-input Show_input" type="text"
-													th:value="${report.R15_TCA2 != null ? #numbers.formatDecimal(report.R15_TCA2, 1, 'NONE', 0, 'POINT') : '0'}"
+													th:value="${report.R15_TCA2 != null ? #numbers.formatDecimal(report.R15_TCA2, 1, 0, 'POINT') : '0'}"
 													id="R15_TCA2" name="R15_TCA2"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 										</tr>
 										<tr>
 											<td id="ROW16" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text" th:value="'Total'"
+													class="display-input Show_inputnonEditable" type="text" th:value="'Total'"
 													id="R16_PRODUCT" name="R16_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													style="background-color: #f7f8f7; width: 300px; height: 28px; 
+               border-color: transparent; text-align: left; padding-left: 20px; 
+               font-weight: bold; color: black;"
 													readonly /></td>
 											
 											<td id="ROW16"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;"><input
-													class="display-input Show_input" type="text"
+													class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R16_TCA2 != null ? #numbers.formatDecimal(report.R16_TCA2, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R16_TCA2" name="R16_TCA2"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3060,7 +3033,7 @@ function closemodel() {
 									<tbody th:each="report: ${reportsummary3}" style="font-family: Arial;">
 										<tr>
 											<td id="ROW26" style="font-weight: bold;"><input
-													class="display-input Show_input " type="text"
+													class="display-input Show_inputnonEditable " type="text"
 													th:value="'Commercial Paper'" id="R26_PRODUCT" name="R26_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly /></td>
@@ -3068,62 +3041,62 @@ function closemodel() {
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
 													class="display-input Show_input" type="text"
-													th:value="${report.R26_0_1Y_FT != null ? #numbers.formatDecimal(report.R26_0_1Y_FT, 1, 'NONE', 0, 'POINT') : '0'}"
+													th:value="${report.R26_0_1Y_FT != null ? #numbers.formatDecimal(report.R26_0_1Y_FT, 1, 0, 'POINT') : '0'}"
 													id="R26_0_1Y_FT" name="R26_0_1Y_FT"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
 													class="display-input Show_input" type="text"
-													th:value="${report.R26_0_1Y_HTM != null ? #numbers.formatDecimal(report.R26_0_1Y_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
+													th:value="${report.R26_0_1Y_HTM != null ? #numbers.formatDecimal(report.R26_0_1Y_HTM, 1, 0, 'POINT') : '0'}"
 													id="R26_0_1Y_HTM" name="R26_0_1Y_HTM"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white; "><input
-													class="display-input Show_input" type="text"
-													th:value="${report.R26_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R26_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
+													class="display-input Show_inputnonEditable" type="text"
+													th:value="${report.R26_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R26_0_1Y_TOTAL, 1, 0, 'POINT') : '0'}"
 													id="R26_0_1Y_TOTAL" name="R26_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
 													class="display-input Show_input" type="text"
-													th:value="${report.R26_1_5Y_FT != null ? #numbers.formatDecimal(report.R26_1_5Y_FT, 1, 'NONE', 0, 'POINT') : '0'}"
+													th:value="${report.R26_1_5Y_FT != null ? #numbers.formatDecimal(report.R26_1_5Y_FT, 1, 0, 'POINT') : '0'}"
 													id="R26_1_5Y_FT" name="R26_1_5Y_FT"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
 													class="display-input Show_input" type="text"
-													th:value="${report.R26_1_5Y_HTM != null ? #numbers.formatDecimal(report.R26_1_5Y_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
+													th:value="${report.R26_1_5Y_HTM != null ? #numbers.formatDecimal(report.R26_1_5Y_HTM, 1, 0, 'POINT') : '0'}"
 													id="R26_1_5Y_HTM" name="R26_1_5Y_HTM"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;"><input
-													class="display-input Show_input" type="text"
-													th:value="${report.R26_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R26_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
+													class="display-input Show_inputnonEditable" type="text"
+													th:value="${report.R26_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R26_1_5Y_TOTAL, 1, 0, 'POINT') : '0'}"
 													id="R26_1_5Y_TOTAL" name="R26_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
 													class="display-input Show_input" type="text"
-													th:value="${report.R26_O5Y_FT != null ? #numbers.formatDecimal(report.R26_O5Y_FT, 1, 'NONE', 0, 'POINT') : '0'}"
+													th:value="${report.R26_O5Y_FT != null ? #numbers.formatDecimal(report.R26_O5Y_FT, 1, 0, 'POINT') : '0'}"
 													id="R26_O5Y_FT" name="R26_O5Y_FT"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
 													class="display-input Show_input" type="text"
-													th:value="${report.R26_O5Y_HTM!= null ? #numbers.formatDecimal(report.R26_O5Y_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
+													th:value="${report.R26_O5Y_HTM!= null ? #numbers.formatDecimal(report.R26_O5Y_HTM, 1, 0, 'POINT') : '0'}"
 													id="R26_O5Y_HTM" name="R26_O5Y_HTM"
 													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;"><input
-													class="display-input Show_input" type="text"
+													class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R26_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R26_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R26_O5Y_TOTAL" name="R26_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3131,21 +3104,21 @@ function closemodel() {
 
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;"><input
-													class="display-input Show_input" type="text"
+													class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R26_T_FT != null ? #numbers.formatDecimal(report.R26_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R26_T_FT" name="R26_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;"><input
-													class="display-input Show_input" type="text"
+													class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R26_T_HTM != null ? #numbers.formatDecimal(report.R26_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R26_T_HTM" name="R26_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 													readonly /></td>
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;"><input
-													class="display-input Show_input" type="text"
+													class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R26_T_TOTAL != null ? #numbers.formatDecimal(report.R26_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R26_T_TOTAL" name="R26_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3155,7 +3128,7 @@ function closemodel() {
 										<!-- R27 -->
 										<tr>
 											<td id="ROW27" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text"
+												<input class="display-input Show_inputnonEditable " type="text"
 													th:value="'Debentures'" id="R27_PRODUCT" name="R27_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly />
@@ -3178,7 +3151,7 @@ function closemodel() {
 											</td>
 											<td id="ROW27"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R27_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R27_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R27_0_1Y_TOTAL" name="R27_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3202,7 +3175,7 @@ function closemodel() {
 											</td>
 											<td id="ROW27"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R27_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R27_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R27_1_5Y_TOTAL" name="R27_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3226,7 +3199,7 @@ function closemodel() {
 											</td>
 											<td id="ROW27"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R27_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R27_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R27_O5Y_TOTAL" name="R27_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3234,7 +3207,7 @@ function closemodel() {
 											</td>
 											<td id="ROW27"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R27_T_FT != null ? #numbers.formatDecimal(report.R27_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R27_T_FT" name="R27_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3242,7 +3215,7 @@ function closemodel() {
 											</td>
 											<td id="ROW27"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R27_T_HTM != null ? #numbers.formatDecimal(report.R27_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R27_T_HTM" name="R27_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3250,7 +3223,7 @@ function closemodel() {
 											</td>
 											<td id="ROW27"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R27_T_TOTAL != null ? #numbers.formatDecimal(report.R27_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R27_T_TOTAL" name="R27_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3261,7 +3234,7 @@ function closemodel() {
 
 										<tr>
 											<td id="ROW28" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text"
+												<input class="display-input Show_inputnonEditable " type="text"
 													th:value="'Bankers Acceptances'" id="R28_PRODUCT" name="R28_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly />
@@ -3284,7 +3257,7 @@ function closemodel() {
 											</td>
 											<td id="ROW28"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R28_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R28_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R28_0_1Y_TOTAL" name="R28_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3308,7 +3281,7 @@ function closemodel() {
 											</td>
 											<td id="ROW28"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R28_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R28_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R28_1_5Y_TOTAL" name="R28_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3332,7 +3305,7 @@ function closemodel() {
 											</td>
 											<td id="ROW28"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R28_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R28_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R28_O5Y_TOTAL" name="R28_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3340,7 +3313,7 @@ function closemodel() {
 											</td>
 											<td id="ROW28"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R28_T_FT != null ? #numbers.formatDecimal(report.R28_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R28_T_FT" name="R28_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3348,7 +3321,7 @@ function closemodel() {
 											</td>
 											<td id="ROW28"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R28_T_HTM != null ? #numbers.formatDecimal(report.R28_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R28_T_HTM" name="R28_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3356,7 +3329,7 @@ function closemodel() {
 											</td>
 											<td id="ROW28"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R28_T_TOTAL != null ? #numbers.formatDecimal(report.R28_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R28_T_TOTAL" name="R28_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3366,7 +3339,7 @@ function closemodel() {
 
 										<tr>
 											<td id="ROW29" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text"
+												<input class="display-input Show_inputnonEditable " type="text"
 													th:value="'Corporate Bonds'" id="R29_PRODUCT" name="R29_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly />
@@ -3389,7 +3362,7 @@ function closemodel() {
 											</td>
 											<td id="ROW29"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R29_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R29_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R29_0_1Y_TOTAL" name="R29_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3413,7 +3386,7 @@ function closemodel() {
 											</td>
 											<td id="ROW29"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R29_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R29_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R29_1_5Y_TOTAL" name="R29_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3437,7 +3410,7 @@ function closemodel() {
 											</td>
 											<td id="ROW29"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R29_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R29_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R29_O5Y_TOTAL" name="R29_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3445,7 +3418,7 @@ function closemodel() {
 											</td>
 											<td id="ROW29"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R29_T_FT != null ? #numbers.formatDecimal(report.R29_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R29_T_FT" name="R29_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3453,7 +3426,7 @@ function closemodel() {
 											</td>
 											<td id="ROW29"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R29_T_HTM != null ? #numbers.formatDecimal(report.R29_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R29_T_HTM" name="R29_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3461,7 +3434,7 @@ function closemodel() {
 											</td>
 											<td id="ROW29"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R29_T_TOTAL != null ? #numbers.formatDecimal(report.R29_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R29_T_TOTAL" name="R29_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3472,7 +3445,7 @@ function closemodel() {
 
 										<tr>
 											<td id="ROW30" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text" th:value="'Others'"
+												<input class="display-input Show_inputnonEditable " type="text" th:value="'Others'"
 													id="R30_PRODUCT" name="R30_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly />
@@ -3495,7 +3468,7 @@ function closemodel() {
 											</td>
 											<td id="ROW30"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R30_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R30_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R30_0_1Y_TOTAL" name="R30_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3519,7 +3492,7 @@ function closemodel() {
 											</td>
 											<td id="ROW30"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R30_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R30_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R30_1_5Y_TOTAL" name="R30_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3543,7 +3516,7 @@ function closemodel() {
 											</td>
 											<td id="ROW30"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R30_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R30_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R30_O5Y_TOTAL" name="R30_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3551,7 +3524,7 @@ function closemodel() {
 											</td>
 											<td id="ROW30"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R30_T_FT != null ? #numbers.formatDecimal(report.R30_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R30_T_FT" name="R30_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3559,7 +3532,7 @@ function closemodel() {
 											</td>
 											<td id="ROW30"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R30_T_HTM != null ? #numbers.formatDecimal(report.R30_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R30_T_HTM" name="R30_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3567,7 +3540,7 @@ function closemodel() {
 											</td>
 											<td id="ROW30"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R30_T_TOTAL != null ? #numbers.formatDecimal(report.R30_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R30_T_TOTAL" name="R30_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3577,14 +3550,16 @@ function closemodel() {
 
 										<tr>
 											<td id="ROW31" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text" th:value="'Total'"
+												<input class="display-input Show_inputnonEditable " type="text" th:value="'Total'"
 													id="R31_PRODUCT" name="R31_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													style="background-color: #f7f8f7; width: 300px; height: 28px; 
+               border-color: transparent; text-align: left; padding-left: 20px; 
+               font-weight: bold; color: black;"
 													readonly />
 											</td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R31_0_1Y_FT != null ? #numbers.formatDecimal(report.R31_0_1Y_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R31_0_1Y_FT" name="R31_0_1Y_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3592,7 +3567,7 @@ function closemodel() {
 											</td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R31_0_1Y_HTM != null ? #numbers.formatDecimal(report.R31_0_1Y_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R31_0_1Y_HTM" name="R31_0_1Y_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3600,7 +3575,7 @@ function closemodel() {
 											</td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R31_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R31_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R31_0_1Y_TOTAL" name="R31_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3608,7 +3583,7 @@ function closemodel() {
 											</td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R31_1_5Y_FT != null ? #numbers.formatDecimal(report.R31_1_5Y_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R31_1_5Y_FT" name="R31_1_5Y_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3616,7 +3591,7 @@ function closemodel() {
 											</td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R31_1_5Y_HTM != null ? #numbers.formatDecimal(report.R31_1_5Y_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R31_1_5Y_HTM" name="R31_1_5Y_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3624,7 +3599,7 @@ function closemodel() {
 											</td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R31_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R31_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R31_1_5Y_TOTAL" name="R31_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3632,7 +3607,7 @@ function closemodel() {
 											</td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R31_O5Y_FT != null ? #numbers.formatDecimal(report.R31_O5Y_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R31_O5Y_FT" name="R31_O5Y_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3640,7 +3615,7 @@ function closemodel() {
 											</td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R31_O5Y_HTM!= null ? #numbers.formatDecimal(report.R31_O5Y_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R31_O5Y_HTM" name="R31_O5Y_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3648,7 +3623,7 @@ function closemodel() {
 											</td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R31_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R31_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R31_O5Y_TOTAL" name="R31_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3656,7 +3631,7 @@ function closemodel() {
 											</td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right;background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R31_T_FT != null ? #numbers.formatDecimal(report.R31_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R31_T_FT" name="R31_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3664,7 +3639,7 @@ function closemodel() {
 											</td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R31_T_HTM != null ? #numbers.formatDecimal(report.R31_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R31_T_HTM" name="R31_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3672,7 +3647,7 @@ function closemodel() {
 											</td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R31_T_TOTAL != null ? #numbers.formatDecimal(report.R31_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R31_T_TOTAL" name="R31_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3756,7 +3731,7 @@ function closemodel() {
 									<tbody th:each="report: ${reportsummary4}" style="font-family: Arial;">
 										<tr>
 											<td id="ROW36" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text"
+												<input class="display-input Show_inputnonEditable " type="text"
 													th:value="'1. Treasury Bills'" id="R36_PRODUCT" name="R36_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly />
@@ -3779,7 +3754,7 @@ function closemodel() {
 											</td>
 											<td id="ROW36"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R36_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R36_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R36_0_1Y_TOTAL" name="R36_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3803,7 +3778,7 @@ function closemodel() {
 											</td>
 											<td id="ROW36"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R36_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R36_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R36_1_5Y_TOTAL" name="R36_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3827,7 +3802,7 @@ function closemodel() {
 											</td>
 											<td id="ROW36"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R36_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R36_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R36_O5Y_TOTAL" name="R36_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3835,7 +3810,7 @@ function closemodel() {
 											</td>
 											<td id="ROW36"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R36_T_FT != null ? #numbers.formatDecimal(report.R36_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R36_T_FT" name="R36_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3843,7 +3818,7 @@ function closemodel() {
 											</td>
 											<td id="ROW36"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R36_T_HTM != null ? #numbers.formatDecimal(report.R36_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R36_T_HTM" name="R36_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3851,7 +3826,7 @@ function closemodel() {
 											</td>
 											<td id="ROW36"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R36_T_TOTAL != null ? #numbers.formatDecimal(report.R36_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R36_T_TOTAL" name="R36_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3884,7 +3859,7 @@ function closemodel() {
 											</td>
 											<td id="ROW37"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R37_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R37_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R37_0_1Y_TOTAL" name="R37_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3908,7 +3883,7 @@ function closemodel() {
 											</td>
 											<td id="ROW37"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R37_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R37_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R37_1_5Y_TOTAL" name="R37_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3932,7 +3907,7 @@ function closemodel() {
 											</td>
 											<td id="ROW37"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R37_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R37_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R37_O5Y_TOTAL" name="R37_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3940,7 +3915,7 @@ function closemodel() {
 											</td>
 											<td id="ROW37"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R37_T_FT != null ? #numbers.formatDecimal(report.R37_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R37_T_FT" name="R37_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3948,7 +3923,7 @@ function closemodel() {
 											</td>
 											<td id="ROW37"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R37_T_HTM != null ? #numbers.formatDecimal(report.R37_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R37_T_HTM" name="R37_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3956,7 +3931,7 @@ function closemodel() {
 											</td>
 											<td id="ROW37"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R37_T_TOTAL != null ? #numbers.formatDecimal(report.R37_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R37_T_TOTAL" name="R37_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -3967,7 +3942,7 @@ function closemodel() {
 
 										<tr>
 											<td id="ROW38" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text"
+												<input class="display-input Show_inputnonEditable " type="text"
 													th:value="'3. Commercial Paper'" id="R38_PRODUCT" name="R38_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly />
@@ -3990,7 +3965,7 @@ function closemodel() {
 											</td>
 											<td id="ROW38"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R38_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R38_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R38_0_1Y_TOTAL" name="R38_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4014,7 +3989,7 @@ function closemodel() {
 											</td>
 											<td id="ROW38"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R38_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R38_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R38_1_5Y_TOTAL" name="R38_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4038,7 +4013,7 @@ function closemodel() {
 											</td>
 											<td id="ROW38"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R38_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R38_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R38_O5Y_TOTAL" name="R38_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4046,7 +4021,7 @@ function closemodel() {
 											</td>
 											<td id="ROW38"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R38_T_FT != null ? #numbers.formatDecimal(report.R38_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R38_T_FT" name="R38_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4054,7 +4029,7 @@ function closemodel() {
 											</td>
 											<td id="ROW38"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R38_T_HTM != null ? #numbers.formatDecimal(report.R38_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R38_T_HTM" name="R38_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4062,7 +4037,7 @@ function closemodel() {
 											</td>
 											<td id="ROW38"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R38_T_TOTAL != null ? #numbers.formatDecimal(report.R38_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R38_T_TOTAL" name="R38_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4071,7 +4046,7 @@ function closemodel() {
 										</tr>
 										<tr>
 											<td id="ROW39" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text"
+												<input class="display-input Show_inputnonEditable " type="text"
 													th:value="'4, Debentures'" id="R39_PRODUCT" name="R39_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly />
@@ -4094,7 +4069,7 @@ function closemodel() {
 											</td>
 											<td id="ROW39"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R39_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R39_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R39_0_1Y_TOTAL" name="R39_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4118,7 +4093,7 @@ function closemodel() {
 											</td>
 											<td id="ROW39"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R39_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R39_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R39_1_5Y_TOTAL" name="R39_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4142,7 +4117,7 @@ function closemodel() {
 											</td>
 											<td id="ROW39"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R39_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R39_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R39_O5Y_TOTAL" name="R39_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4150,7 +4125,7 @@ function closemodel() {
 											</td>
 											<td id="ROW39"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R39_T_FT != null ? #numbers.formatDecimal(report.R39_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R39_T_FT" name="R39_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4158,7 +4133,7 @@ function closemodel() {
 											</td>
 											<td id="ROW39"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R39_T_HTM != null ? #numbers.formatDecimal(report.R39_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R39_T_HTM" name="R39_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4166,7 +4141,7 @@ function closemodel() {
 											</td>
 											<td id="ROW39"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R39_T_TOTAL != null ? #numbers.formatDecimal(report.R39_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R39_T_TOTAL" name="R39_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4176,7 +4151,7 @@ function closemodel() {
 
 										<tr>
 											<td id="ROW40" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text"
+												<input class="display-input Show_inputnonEditable " type="text"
 													th:value="'5. Bankers Acceptances'" id="R40_PRODUCT"
 													name="R40_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
@@ -4200,7 +4175,7 @@ function closemodel() {
 											</td>
 											<td id="ROW40"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R40_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R40_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R40_0_1Y_TOTAL" name="R40_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4224,7 +4199,7 @@ function closemodel() {
 											</td>
 											<td id="ROW40"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R40_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R40_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R40_1_5Y_TOTAL" name="R40_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4248,7 +4223,7 @@ function closemodel() {
 											</td>
 											<td id="ROW40"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R40_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R40_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R40_O5Y_TOTAL" name="R40_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4256,7 +4231,7 @@ function closemodel() {
 											</td>
 											<td id="ROW40"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R40_T_FT != null ? #numbers.formatDecimal(report.R40_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R40_T_FT" name="R40_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4264,7 +4239,7 @@ function closemodel() {
 											</td>
 											<td id="ROW40"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R40_T_HTM != null ? #numbers.formatDecimal(report.R40_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R40_T_HTM" name="R40_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4272,7 +4247,7 @@ function closemodel() {
 											</td>
 											<td id="ROW40"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R40_T_TOTAL != null ? #numbers.formatDecimal(report.R40_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R40_T_TOTAL" name="R40_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4283,7 +4258,7 @@ function closemodel() {
 
 										<tr>
 											<td id="ROW41" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text"
+												<input class="display-input Show_inputnonEditable " type="text"
 													th:value="'6. Corporate Bonds'" id="R41_PRODUCT" name="R41_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly />
@@ -4306,7 +4281,7 @@ function closemodel() {
 											</td>
 											<td id="ROW41"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R41_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R41_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R41_0_1Y_TOTAL" name="R41_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4330,7 +4305,7 @@ function closemodel() {
 											</td>
 											<td id="ROW41"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R41_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R41_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R41_1_5Y_TOTAL" name="R41_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4354,7 +4329,7 @@ function closemodel() {
 											</td>
 											<td id="ROW41"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R41_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R41_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R41_O5Y_TOTAL" name="R41_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4362,7 +4337,7 @@ function closemodel() {
 											</td>
 											<td id="ROW41"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R41_T_FT != null ? #numbers.formatDecimal(report.R41_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R41_T_FT" name="R41_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4370,7 +4345,7 @@ function closemodel() {
 											</td>
 											<td id="ROW41"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R41_T_HTM != null ? #numbers.formatDecimal(report.R41_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R41_T_HTM" name="R41_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4378,7 +4353,7 @@ function closemodel() {
 											</td>
 											<td id="ROW41"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R41_T_TOTAL != null ? #numbers.formatDecimal(report.R41_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R41_T_TOTAL" name="R41_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4389,7 +4364,7 @@ function closemodel() {
 
 										<tr>
 											<td id="ROW42" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text"
+												<input class="display-input Show_inputnonEditable " type="text"
 													th:value="'7. Others'" id="R42_PRODUCT" name="R42_PRODUCT"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
 													readonly />
@@ -4412,7 +4387,7 @@ function closemodel() {
 											</td>
 											<td id="ROW42"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R42_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R42_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R42_0_1Y_TOTAL" name="R42_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4436,7 +4411,7 @@ function closemodel() {
 											</td>
 											<td id="ROW42"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R42_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R42_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R42_1_5Y_TOTAL" name="R42_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4460,7 +4435,7 @@ function closemodel() {
 											</td>
 											<td id="ROW42"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R42_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R42_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R42_O5Y_TOTAL" name="R42_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4468,7 +4443,7 @@ function closemodel() {
 											</td>
 											<td id="ROW42"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R42_T_FT != null ? #numbers.formatDecimal(report.R42_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R42_T_FT" name="R42_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4476,7 +4451,7 @@ function closemodel() {
 											</td>
 											<td id="ROW42"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R42_T_HTM != null ? #numbers.formatDecimal(report.R42_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R42_T_HTM" name="R42_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4484,7 +4459,7 @@ function closemodel() {
 											</td>
 											<td id="ROW42"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R42_T_TOTAL != null ? #numbers.formatDecimal(report.R42_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R42_T_TOTAL" name="R42_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4493,14 +4468,16 @@ function closemodel() {
 										</tr>
 										<tr>
 											<td id="ROW43" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text" th:value="'Total'"
+												<input class="display-input Show_inputnonEditable " type="text" th:value="'Total'"
 													id="R43_PRODUCT" name="R43_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+													style="background-color: #f7f8f7; width: 300px; height: 28px; 
+               border-color: transparent; text-align: left; padding-left: 20px; 
+               font-weight: bold; color: black;"
 													readonly />
 											</td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R43_0_1Y_FT != null ? #numbers.formatDecimal(report.R43_0_1Y_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R43_0_1Y_FT" name="R43_0_1Y_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4508,7 +4485,7 @@ function closemodel() {
 											</td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R43_0_1Y_HTM != null ? #numbers.formatDecimal(report.R43_0_1Y_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R43_0_1Y_HTM" name="R43_0_1Y_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4516,7 +4493,7 @@ function closemodel() {
 											</td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R43_0_1Y_TOTAL != null ? #numbers.formatDecimal(report.R43_0_1Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R43_0_1Y_TOTAL" name="R43_0_1Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4524,7 +4501,7 @@ function closemodel() {
 											</td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R43_1_5Y_FT != null ? #numbers.formatDecimal(report.R43_1_5Y_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R43_1_5Y_FT" name="R43_1_5Y_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4532,7 +4509,7 @@ function closemodel() {
 											</td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R43_1_5Y_HTM != null ? #numbers.formatDecimal(report.R43_1_5Y_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R43_1_5Y_HTM" name="R43_1_5Y_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4540,7 +4517,7 @@ function closemodel() {
 											</td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R43_1_5Y_TOTAL != null ? #numbers.formatDecimal(report.R43_1_5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R43_1_5Y_TOTAL" name="R43_1_5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4548,7 +4525,7 @@ function closemodel() {
 											</td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R43_O5Y_FT != null ? #numbers.formatDecimal(report.R43_O5Y_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R43_O5Y_FT" name="R43_O5Y_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4556,7 +4533,7 @@ function closemodel() {
 											</td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R43_O5Y_HTM!= null ? #numbers.formatDecimal(report.R43_O5Y_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R43_O5Y_HTM" name="R43_O5Y_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4564,7 +4541,7 @@ function closemodel() {
 											</td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R43_O5Y_TOTAL != null ? #numbers.formatDecimal(report.R43_O5Y_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R43_O5Y_TOTAL" name="R43_O5Y_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4572,7 +4549,7 @@ function closemodel() {
 											</td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R43_T_FT != null ? #numbers.formatDecimal(report.R43_T_FT, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R43_T_FT" name="R43_T_FT"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4580,7 +4557,7 @@ function closemodel() {
 											</td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R43_T_HTM != null ? #numbers.formatDecimal(report.R43_T_HTM, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R43_T_HTM" name="R43_T_HTM"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -4588,7 +4565,7 @@ function closemodel() {
 											</td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
-												<input class="display-input Show_input" type="text"
+												<input class="display-input Show_inputnonEditable" type="text"
 													th:value="${report.R43_T_TOTAL != null ? #numbers.formatDecimal(report.R43_T_TOTAL, 1, 'NONE', 0, 'POINT') : '0'}"
 													id="R43_T_TOTAL" name="R43_T_TOTAL"
 													style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
