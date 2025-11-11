@@ -289,14 +289,7 @@ label.error {
 .white-text span {
 	color: white !important;
 }
-.table-cell tbody td:hover {
-        background-color: #f0f0f0; /* Hover color for cell */
-        cursor: pointer;           /* Optional: pointer cursor */
-    }
-.table-bordered td, 
-.table-bordered th {
-     border: 1px solid #000 !important;
-}
+
 
 
 </style>
@@ -667,8 +660,92 @@ function showdetailsbyRowAndColumn(a) {
 </script>
 
 
+<script>
+	function openDetail(elem, mode) {
+		const acctNo = elem.getAttribute("data-acctNo");
+		 const asondate = elem.getAttribute("data-asondate");
+		location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+	}
+</script>
 
-  
+<style>
+		  .dataTables_scrollHeadInner,
+		  table.dataTable {
+		    width: 100% !important;
+		    margin: -2px auto !important;
+		  }
+
+		  /* ✅ Prevent wrapping in all table cells */
+		  #reportdetails th,
+		  #reportdetails td {
+		    white-space: nowrap;
+		  }
+		  
+		</style>
+		<style>
+			  .left-arrow-circle {
+			    background-color: white;
+			    color: #007bff;
+			    border-radius: 50%;
+			    padding: 8px;
+			    margin-right: 10px;
+			    cursor: pointer;
+			  }
+
+			  /* 🚌 Bus display style box */
+			  .boards {
+			    background-color: rgb(107, 122, 143);
+			    color: white;
+			    padding: 6px -1px;
+			    border-radius: 8px;
+			    overflow: hidden;
+			    white-space: nowrap;
+			    width: 450px; /* adjust width as needed */
+			    box-shadow: 0 0 10px rgb(107, 122, 143);
+			    position: relative;
+				transform: translateY(10px);
+			  }
+
+			  /* ✨ Scrolling animation */
+			  .scrolling-text {
+			    display: inline-block;
+			    font-family: "Courier New", monospace;
+			    font-weight: bold;
+			    letter-spacing: 1px;
+			    animation: scroll-left 10s linear infinite;
+			  }
+
+			  /* Animation keyframes */
+			  @keyframes scroll-left {
+			    0% {
+			      transform: translateX(100%);
+			    }
+			    100% {
+			      transform: translateX(-100%);
+			    }
+			  }
+			</style>
+	<script th:inline="javascript">
+			  $(document).ready(function () {
+			    $('#reportdetails').DataTable({
+			      scrollY: "550px",            // ✅ Adjust vertical scroll height
+			      scrollX: true,               // ✅ Horizontal scrolling
+			      scrollCollapse: true,
+			      autoWidth: false,
+			      paging: true,
+			      searching: true,
+			      lengthChange: false,
+			      ordering: true,
+			      pageLength: 100,
+			      fixedHeader: {
+			        header: true,
+			        footer: false
+			      },                           // ✅ Ensures header stays visible
+			      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			    });
+			  });
+			</script>
+
 </head>
 
  
@@ -692,6 +769,10 @@ function showdetailsbyRowAndColumn(a) {
         <h5 style="font-family: arial; font-size: 20px; padding-top:10px; font-weight: bold; color: white;">
             M-SP: SPECIFIC PROVISIONS -  LOANS AND ADVANCES 									
         </h5>
+		<!-- Moving bus-board text -->
+													  <div class="boards">
+													    <p class="scrolling-text">(25) MONTHLY SCHEDULE: M-SP: LOANS AND ADVANCES</p>
+													  </div>
         
     </div>
 
@@ -1050,91 +1131,70 @@ function showdetailsbyRowAndColumn(a) {
 					</div>
 				</div>
 
-				<div th:if="${displaymode == 'Details'}">
-					<div class="row">
-						<div class="col-sm-12">
-							<div class="table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6;">
-								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reports">
-									<thead class="thead-light">
-										<tr>
-											<th></th>
-											<th>CUST ID</th>
-											<th>ACCT NO</th>
-											<th>ACCT NAME</th>
-											<th style="text-align:right;">ACCT BALANCE</th>
-											<th>REPORT LABLE</th>
-											<th>REPORT ADDL CRITERIA 1</th>
-											<th>REPORT DATE</th>
-										</tr>
+				<!--  DETAIL -->
+												<div th:if="${displaymode == 'Details'}">
+													<div class="row">
+														<div class="col-sm-12">
+															<div class="table-container" 
+																style="border-right: 1px solid #dee2e6; ">
+																<table class="table table-striped table-bordered table-hover"
+																	id="reportdetails">
+																	<thead class="thead-light">
+																		
+																		<tr>
+																			<th> </th>
+																			<th>S No</th>
+																			<th>CUST ID</th>
+																			<th>ACCT NUMBER</th>
+																			<th>ACCT NAME</th>
+																			<th>ACCT BALANCE</th>
+																			<th>REPORT LABEL</th>
+																			<th>REPORT ADDL CRITERIA 1</th>
+																			<th>REPORT DATE</th>
+																		</tr>
 
-									</thead>
+																	</thead>
 
-									<tbody th:each="report: ${reportdetails}"
-										style="font-family: Arial;">
-										<tr>
-											<td><a data-toggle="tooltip" class="editrec"
-												title="Click to Edit this Record"> <i
-													class="fas fa-edit" onclick="editRecord(this)"></i>
-											</a></td>
-											<td th:text="${report.custId}"></td>
-											<td th:text="${report.acctNumber}"></td>
-											<td th:text="${report.acctName}"></td>
-											<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInPula, 1, 3, 'POINT')}"></td>
-											<td th:text="${report.reportLable}"></td>
-											<td th:text="${report.reportAddlCriteria1}"></td>
-											<td
-												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+																	<tbody style="font-family: Arial;">
+																		<tr th:each="report, srlno : ${reportdetails}">
+																			<td>
+																				<a data-toggle="tooltip" class="editrec"
+																					title="Click to Edit this Record">
+																					<i class="fas fa-edit" style="color: black; cursor:pointer;"
+																						th:attr="data-acctNo=${report.acctNumber},
+																						data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
+																						onclick="openDetail(this, 'edit')"></i>
 
-										</tr>
-									</tbody>
-								</table>
-								<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
-																									   
-																									    
-																									    
-																									<a th:if="${currentPage > 0}"
-																									 th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																									    asondate=${asondate},                             
-																									    fromdate=${fromdate},
-																									    todate=${todate},
-																									    currency=${currency},
-																									    dtltype=${dtltype},
-																									    type=${type},
-																									    version=${version},
-																									    page=${currentPage - 100},
-																									    size=100
-																									)}">
-																									    Previous
-																									</a>
-																			
-																									    
-																									    <span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
-																									
-																									    
-																									    <a th:if="${currentPage < (totalPages - 1) * 100}"
-																									    	
-																									    th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																									    asondate=${asondate},
-																									    fromdate=${fromdate},
-																									    todate=${todate},
-																									    currency=${currency},
-																									    dtltype=${dtltype},
-																									    type=${type},
-																									    version=${version},
-																									    page=${currentPage + 100},
-																									    size=100
-																									)}">	
-																									    Next
-																									    </a>
-																									</div>
-							</div>
+																				</a>
+																			</td>
+																			<td th:text="${srlno.index + 1}"></td>
+																			<td th:text="${report.custId != null ? report.custId : '-'}"></td>
+																			<td th:text="${report.acctNumber != null ? report.acctNumber : '-'}"></td>
+																			<td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
+																			<td align="right" th:text="${report.acctBalanceInPula != null 
+																																	? #numbers.formatDecimal(report.acctBalanceInPula, 1, 2) : '0.00'}"></td>
+																			<td th:text="${report.reportLable != null ? report.reportLable : '-'}">
+																			</td>
+																			<td
+																				th:text="${report.reportLable != null ? report.reportLable : '-'}">
+																			</td>
+																			<td th:text="${report.reportDate != null 
+																																	? #dates.format(report.reportDate, 'dd-MM-yyyy') : '-'}"></td>
+																		</tr>
+																	</tbody>
+																</table>
 
-						</div>
-					</div>
-				</div>
+															</div>
+
+															<!-- Submit Button -->
+															<div style="text-align: center; margin-top: 15px; background-color: white;">
+																<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+																	onclick="updateform();" style="display: none;">
+																	Submit
+																</button>
+															</div>
+														</div>
+													</div>
 
 			</div>
 

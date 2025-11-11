@@ -190,7 +190,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 				if (rowId != null && columnId != null) {
 					T1Dt1 = BRRS_M_SP_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
 				} else {
-					T1Dt1 = BRRS_M_SP_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
+					T1Dt1 = BRRS_M_SP_Detail_Repo.getdatabydateList(parsedDate);
 					totalPages = BRRS_M_SP_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
