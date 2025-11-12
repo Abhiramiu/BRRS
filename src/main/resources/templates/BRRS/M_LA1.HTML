@@ -860,20 +860,19 @@ function Maker_Checker_Function() {
 					    <i class="fa fa-arrow-left"></i>
 					  </div>
 
-
 					  <!-- Title -->
-					  <h5 style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
-					    BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT
-					  </h5>
+					  				  <h5 class="header-title">
+					  				  (25) MONTHLY SCHEDULE: M-LA1: LOANS AND ADVANCES
+					  				  </h5>
+
+					  				  <!-- 🚌 Bus display box -->
+					  				  <div class="boards">
+					  				    <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+					  				  </div>
+					  				</div>
+
 
 					 
-					  <!-- Moving bus-board text -->
-					  <div class="boards">
-					    <p class="scrolling-text">(25) MONTHLY SCHEDULE: M-LA1: LOANS AND ADVANCES</p>
-					  </div>
-
-					</div>
-					
 					
 
 
@@ -1932,7 +1931,8 @@ function Maker_Checker_Function() {
 											<th>S No</th>
 											<th>CUST ID</th>
 											<th>ACCT NUMBER</th>
-											<th>ACCT NAME</th>
+											<th>SCHM DESC</th>
+											<!--<th>ACCT NAME</th>-->
 											<th>ACCT BALANCE</th>
 											<th>APPROVED LIMIT</th>
 											<th>REPORT LABEL</th>
@@ -1959,11 +1959,12 @@ function Maker_Checker_Function() {
 											<td th:text="${srlno.index + 1}"></td>
 											<td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
 											<td th:text="${report.acct_number != null ? report.acct_number : '-'}"></td>
-											<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>
+											<!--<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>-->
+											<td th:text="${report.schm_desc!= null ? report.schm_desc : '-'}"></td>
 											<td align="right" th:text="${report.acct_balance_in_pula != null 
-																									? #numbers.formatDecimal(report.acct_balance_in_pula, 1, 2) : '0.00'}"></td>
+																									? #numbers.formatDecimal(report.acct_balance_in_pula,1,'COMMA',0,'POINT') : '0'}"></td>
 											<td align="right" th:text="${report.sanction_limit != null 
-																									? #numbers.formatDecimal(report.sanction_limit, 1, 2) : '0.00'}"></td>
+																									? #numbers.formatDecimal(report.sanction_limit,1,'COMMA',0,'POINT') : '0'}"></td>
 											<td th:text="${report.report_label != null ? report.report_label : '-'}">
 											</td>
 											<td
@@ -2017,10 +2018,14 @@ function Maker_Checker_Function() {
 
 				      <!-- Row 2 -->
 				      <div class="row formline" style="margin-top:10px;">
-				        <label class="col-sm-2">Account Name</label>
+						<label class="col-sm-2">Schm Desc</label>
+										        <div class="col-sm-3">
+										          <input type="text" th:field="*{schm_desc}" class="form-control form-control-sm" readonly />
+										        </div>
+				        <!--<label class="col-sm-2">Account Name</label>
 				        <div class="col-sm-3">
 				          <input type="text" th:field="*{acct_name}" class="form-control form-control-sm" readonly />
-				        </div>
+				        </div>-->
 						
 
 				        <div class="col-sm-1"></div>

@@ -38,6 +38,7 @@ public class M_LA1_Detail_Entity {
 	private String	segment;
 	private String	report_addl_criteria_2;
 	private String	report_addl_criteria_3;
+	private String	schm_desc;
 	public String getCust_id() {
 		return cust_id;
 	}
@@ -188,10 +189,17 @@ public class M_LA1_Detail_Entity {
 	public void setReport_addl_criteria_3(String report_addl_criteria_3) {
 		this.report_addl_criteria_3 = report_addl_criteria_3;
 	}
+	public String getSchm_desc() {
+		return schm_desc;
+	}
+	public void setSchm_desc(String schm_desc) {
+		this.schm_desc = schm_desc;
+	}
 	public M_LA1_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
 
   
   

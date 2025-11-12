@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,17 +53,15 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.BRRS_M_LA1_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA1_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA1_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LA1_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_PLL_Detail_Repo;
-import com.bornfire.brrs.entities.M_LA1_Summary_Entity;
-import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
-import com.bornfire.brrs.dto.ReportLineItemDTO;
+import com.bornfire.brrs.entities.M_LA1_Summary_Entity;
 
 @Component
 @Service
@@ -1955,7 +1952,12 @@ public class BRRS_M_LA1_ReportService {
 			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
 			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
 			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
+			
+			// Right-aligned header style for sanction limit
+						CellStyle rightAlignedHeaderStyle1 = workbook.createCellStyle();
+						rightAlignedHeaderStyle1.cloneStyleFrom(headerStyle);
+						rightAlignedHeaderStyle1.setAlignment(HorizontalAlignment.RIGHT);
+						
 			// Default data style (left aligned)
 			CellStyle dataStyle = workbook.createCellStyle();
 			dataStyle.setAlignment(HorizontalAlignment.LEFT);
@@ -1967,7 +1969,7 @@ public class BRRS_M_LA1_ReportService {
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
@@ -1976,14 +1978,14 @@ public class BRRS_M_LA1_ReportService {
 			// sanction style (right aligned with 3 decimals)
 			CellStyle sanctionStyle = workbook.createCellStyle();
 			sanctionStyle.setAlignment(HorizontalAlignment.RIGHT);
-			sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 			sanctionStyle.setBorderTop(border);
 			sanctionStyle.setBorderBottom(border);
 			sanctionStyle.setBorderLeft(border);
 			sanctionStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
+			String[] headers = { "CUST ID", "ACCT NO", "SCHM DESC", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
 					"REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
@@ -2008,14 +2010,14 @@ public class BRRS_M_LA1_ReportService {
 					XSSFRow row = sheet.createRow(rowIndex++);
 					row.createCell(0).setCellValue(item.getCust_id());
 					row.createCell(1).setCellValue(item.getAcct_number());
-					row.createCell(2).setCellValue(item.getAcct_name());
+					row.createCell(2).setCellValue(item.getSchm_desc());
 
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
 					if (item.getAcct_balance_in_pula() != null) {
 						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
 					} else {
-						balanceCell.setCellValue(0.000);
+						balanceCell.setCellValue(0);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
@@ -2024,7 +2026,7 @@ public class BRRS_M_LA1_ReportService {
 					if (item.getSanction_limit() != null) {
 						sanctionCell.setCellValue(item.getSanction_limit().doubleValue());
 					} else {
-						sanctionCell.setCellValue(0.000);
+						sanctionCell.setCellValue(0);
 					}
 					sanctionCell.setCellStyle(sanctionStyle);
 
@@ -3831,7 +3833,7 @@ public class BRRS_M_LA1_ReportService {
 	        sanctionStyle.setBorderRight(border);
 
 	        // Header row
-	        String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
+	        String[] headers = { "CUST ID", "ACCT NO", "SCHM DESC", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
 	                "REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
 
 	        XSSFRow headerRow = sheet.createRow(0);
@@ -3857,7 +3859,7 @@ public class BRRS_M_LA1_ReportService {
 	                // Text columns
 	                row.createCell(0).setCellValue(item.getCust_id());
 	                row.createCell(1).setCellValue(item.getAcct_number());
-	                row.createCell(2).setCellValue(item.getAcct_name());
+	                row.createCell(2).setCellValue(item.getSchm_desc());
 
 	                // ACCT BALANCE (right aligned, 3 decimal places)
 	                Cell balanceCell = row.createCell(3);

@@ -1912,7 +1912,7 @@ $(document).ready(function() {
 											<th>ACCT_NUMBER</th>
 											<th>ACCT_NAME</th>
 											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
-											<th>REPORT LABLE</th>
+											<th>REPORT LABEL</th>
 											<th>REPORT ADDL CRITERIA1</th>
 											<th>REPORT_DATE</th>
 										</tr>
@@ -1939,7 +1939,7 @@ $(document).ready(function() {
 											<td th:text="${report.acctName}"></td>
 											
 											<td style="text-align:right;"
-											th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3, 'POINT')}"></td>
+											th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 0, 'POINT')}"></td>
 											
 											<td th:text="${report.reportLable}"></td>
 											<td th:text="${report.reportAddlCriteria_1}"></td>
