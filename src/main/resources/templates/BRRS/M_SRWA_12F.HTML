@@ -287,6 +287,7 @@ PURPOSE		: BWRBRREPORT
 	</style>
 	<script th:inline="javascript">
 		$(document).ready(function () {
+			let isDetailsModal = false;
 			// hide loader on normal load
 			$('#loader').modal('hide');
 		});
@@ -339,6 +340,7 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+		    isDetailsModal = true; // mark that this modal is from Details
 			 showResultModal('BRRS',' Details page not available for Manual Report');
 		}
 
@@ -483,7 +485,8 @@ function showmodify(btn) {
     	"R37_CREDIT_RATING",
 	    "R37_RATING_AGENCY",
 	    "R37_EXPOSURE_AMT",
-	    "R37_RISK_WEIGHT"  
+	    "R37_RISK_WEIGHT",
+	    "R37_NAME_OF_CORPORATE"
       
     ];
 
@@ -696,18 +699,29 @@ function cancelModify() {
 
 	<script>
 	
-
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
 	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
+    $("#resultModal").modal("hide");
+	/*    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
+    setTimeout(function () {
+        location.reload();
+    }, 300);
+        }, 300);*/
+        $("#resultModal").modal("hide");
+        $('#loader').modal('hide');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+        // Only reload if not from Details modal
+        if (!isDetailsModal) {
+            setTimeout(function () {
+                location.reload();
+            }, 300);
+        } else {
+            // reset flag for next modal usage
+            isDetailsModal = false;
+        }
+}
 
 	function fileuploads(btn) {
 	    const asondate = btn.getAttribute("data-todate");
@@ -871,12 +885,12 @@ function cancelModify() {
 									<thead class="thead-light">
 		                                    <tr style="background-color: #b3b6b9;">
 										
-										<th rowspan="3" style="background-color: #D8D8D8;text-align: center; width:33%;padding-left: 20px;">Name of Corporate</th>
-										<th style="background-color: #D8D8D8;text-align: center;">Credit Rating</th>
-										<th style="background-color: #D8D8D8;text-align: center;"> Rating Agency</th>
-										<th style="background-color: #D8D8D8;text-align: center;"> Exposure Amount </th>
-										<th style="background-color: #D8D8D8;text-align: center;"> Risk-Weight </th>
-										<th style="background-color: #D8D8D8;text-align: center;"> Risk-Weighted Amount </th>
+										<th rowspan="3" style="background-color: #D8D8D8;text-align: left; width:30%;padding-left: 20px;">Name of Corporate</th>
+										<th style="background-color: #D8D8D8;text-align: left;">Credit Rating</th>
+										<th style="background-color: #D8D8D8;text-align: left;"> Rating Agency</th>
+										<th style="background-color: #D8D8D8;text-align: right;"> Exposure Amount </th>
+										<th style="background-color: #D8D8D8;text-align: right;"> Risk-Weight </th>
+										<th style="background-color: #D8D8D8;text-align: right;"> Risk-Weighted Amount </th>
 										
 
 									</tr>
@@ -900,7 +914,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R11_NAME_OF_CORPORATE, 'N/A')}"
                id="R11_NAME_OF_CORPORATE"
                name="R11_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -957,7 +971,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R12_NAME_OF_CORPORATE, 'N/A')}"
                id="R12_NAME_OF_CORPORATE"
                name="R12_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1014,7 +1028,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R13_NAME_OF_CORPORATE, 'N/A')}"
                id="R13_NAME_OF_CORPORATE"
                name="R13_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1071,7 +1085,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R14_NAME_OF_CORPORATE, 'N/A')}"
                id="R14_NAME_OF_CORPORATE"
                name="R14_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1128,7 +1142,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R15_NAME_OF_CORPORATE, 'N/A')}"
                id="R15_NAME_OF_CORPORATE"
                name="R15_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1185,7 +1199,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R16_NAME_OF_CORPORATE, 'N/A')}"
                id="R16_NAME_OF_CORPORATE"
                name="R16_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1242,7 +1256,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R17_NAME_OF_CORPORATE, 'N/A')}"
                id="R17_NAME_OF_CORPORATE"
                name="R17_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1299,7 +1313,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R18_NAME_OF_CORPORATE, 'N/A')}"
                id="R18_NAME_OF_CORPORATE"
                name="R18_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1356,7 +1370,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R19_NAME_OF_CORPORATE, 'N/A')}"
                id="R19_NAME_OF_CORPORATE"
                name="R19_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1413,7 +1427,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R20_NAME_OF_CORPORATE, 'N/A')}"
                id="R20_NAME_OF_CORPORATE"
                name="R20_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1470,7 +1484,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R21_NAME_OF_CORPORATE, 'N/A')}"
                id="R21_NAME_OF_CORPORATE"
                name="R21_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1527,7 +1541,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R22_NAME_OF_CORPORATE, 'N/A')}"
                id="R22_NAME_OF_CORPORATE"
                name="R22_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1584,7 +1598,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R23_NAME_OF_CORPORATE, 'N/A')}"
                id="R23_NAME_OF_CORPORATE"
                name="R23_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1641,7 +1655,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R24_NAME_OF_CORPORATE, 'N/A')}"
                id="R24_NAME_OF_CORPORATE"
                name="R24_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1698,7 +1712,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R25_NAME_OF_CORPORATE, 'N/A')}"
                id="R25_NAME_OF_CORPORATE"
                name="R25_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1755,7 +1769,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R26_NAME_OF_CORPORATE, 'N/A')}"
                id="R26_NAME_OF_CORPORATE"
                name="R26_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1812,7 +1826,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R27_NAME_OF_CORPORATE, 'N/A')}"
                id="R27_NAME_OF_CORPORATE"
                name="R27_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%;  height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1869,7 +1883,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R28_NAME_OF_CORPORATE, 'N/A')}"
                id="R28_NAME_OF_CORPORATE"
                name="R28_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1926,7 +1940,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R29_NAME_OF_CORPORATE, 'N/A')}"
                id="R29_NAME_OF_CORPORATE"
                name="R29_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -1983,7 +1997,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R30_NAME_OF_CORPORATE, 'N/A')}"
                id="R30_NAME_OF_CORPORATE"
                name="R30_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2040,7 +2054,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R31_NAME_OF_CORPORATE, 'N/A')}"
                id="R31_NAME_OF_CORPORATE"
                name="R31_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2097,7 +2111,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R32_NAME_OF_CORPORATE, 'N/A')}"
                id="R32_NAME_OF_CORPORATE"
                name="R32_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF; width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2154,7 +2168,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R33_NAME_OF_CORPORATE, 'N/A')}"
                id="R33_NAME_OF_CORPORATE"
                name="R33_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%;  height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2211,7 +2225,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R34_NAME_OF_CORPORATE, 'N/A')}"
                id="R34_NAME_OF_CORPORATE"
                name="R34_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2268,7 +2282,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R35_NAME_OF_CORPORATE, 'N/A')}"
                id="R35_NAME_OF_CORPORATE"
                name="R35_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2325,7 +2339,7 @@ function cancelModify() {
                th:value="${#strings.defaultString(report.R36_NAME_OF_CORPORATE, 'N/A')}"
                id="R36_NAME_OF_CORPORATE"
                name="R36_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF;width:90%; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2378,7 +2392,7 @@ function cancelModify() {
 
 <tr>
     <td id="ROW37" style="background-color:#FFFFFF;  font-weight: bold;"> 
-        <input class="display-input Show_input" type="text"
+        <input class="display-input Show_inputnonEditable" type="text"
                th:value="${#strings.defaultString(report.R37_NAME_OF_CORPORATE, 'Total')}"
                id="R37_NAME_OF_CORPORATE"
                name="R37_NAME_OF_CORPORATE"

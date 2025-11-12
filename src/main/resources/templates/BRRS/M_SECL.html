@@ -287,6 +287,7 @@ PURPOSE		: BWRBRREPORT
 	</style>
 	<script th:inline="javascript">
 		$(document).ready(function () {
+			let isDetailsModal = false;
 			// hide loader on normal load
 			$('#loader').modal('hide');
 		});
@@ -310,6 +311,7 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+		    isDetailsModal = true; // mark that this modal is from Details
 			 showResultModal('BRRS',' Details page not available for Manual Report');
 		}
 		
@@ -3576,14 +3578,26 @@ function cancelModify() {
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
 	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
+    $("#resultModal").modal("hide");
+	/*    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
+    setTimeout(function () {
+        location.reload();
+    }, 300);
+        }, 300);*/
+        $("#resultModal").modal("hide");
+        $('#loader').modal('hide');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+        // Only reload if not from Details modal
+        if (!isDetailsModal) {
+            setTimeout(function () {
+                location.reload();
+            }, 300);
+        } else {
+            // reset flag for next modal usage
+            isDetailsModal = false;
+        }
+}
 
 	function fileuploads(btn) {
 	    const asondate = btn.getAttribute("data-todate");
@@ -3726,7 +3740,7 @@ calculateAllR57Columns();
 	        contentType: false,
 	        dataType: 'text',
 	        success: function () {
-	            $("#resultModalLabel").text("Success");
+	            $("#resultModalLabel").text("BRRS");
 	            $("#resultModalBody").text("Updated successfully.");
 	            $("#resultModal").modal("show");
 	        },
@@ -3805,7 +3819,7 @@ calculateAllR57Columns();
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${dtltype},
-                    				 data-filename='M_SECL.xls',
+                    				 data-filename='M_SECL.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
@@ -3991,7 +4005,7 @@ calculateAllR57Columns();
 
 
 <tr>
-    <td id="ROW14" style="padding-left: 20px;">
+    <td id="ROW14" style="padding-left: 50px;">
    (i) Central Government
 </td>
 
@@ -4098,7 +4112,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW14" style="padding-left: 20px;">
+<td id="ROW14" style="padding-left: 50px;">
    (ii) Local Government
 </td>
                
@@ -4204,7 +4218,7 @@ calculateAllR57Columns();
 </tr>
 
 <tr>
-<td id="ROW15" style="padding-left: 20px;">
+<td id="ROW15" style="padding-left: 50px;">
       (iii)  Public Non-Financial Corporations
 </td>
     
@@ -4311,7 +4325,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW16" style="padding-left: 20px;">
+<td id="ROW16" style="padding-left: 50px;">
          (iv)  Other Non-Financial Corporations (Private business enterprises) (sum of lines (a) to (m)):
 </td>
     
@@ -4418,7 +4432,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW17" style="padding-left: 20px;">
+<td id="ROW17" style="padding-left: 100px;">
                            a) Agriculture, Forestry, Fishing
 </td>
     
@@ -4527,7 +4541,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW18" style="padding-left: 20px;">
+<td id="ROW18" style="padding-left: 100px;">
                            b) Mining and Quarying
 </td>
     
@@ -4634,7 +4648,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW19" style="padding-left: 20px;">
+<td id="ROW19" style="padding-left: 100px;">
                            c) Manufacturing
 </td>
     
@@ -4742,7 +4756,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW20" style="padding-left: 20px;">
+<td id="ROW20" style="padding-left: 100px;">
                            d) Construction
 </td>
     
@@ -4850,7 +4864,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW21" style="padding-left: 20px;">
+<td id="ROW21" style="padding-left: 100px;">
                            e) Commercial real estate
 </td>
     
@@ -4957,7 +4971,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW22" style="padding-left: 20px;">
+<td id="ROW22" style="padding-left: 100px;">
                           f) Electricity
 </td>
     
@@ -5064,7 +5078,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW23" style="padding-left: 20px;">
+<td id="ROW23" style="padding-left: 100px;">
                           g) Water
 </td>
     
@@ -5171,7 +5185,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW24" style="padding-left: 20px;">
+<td id="ROW24" style="padding-left: 100px;">
                            h) Telecommunication and post 
 </td>
     
@@ -5278,7 +5292,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW25" style="padding-left: 20px;">
+<td id="ROW25" style="padding-left: 100px;">
                           i) Tourism and hotels
 </td>
     
@@ -5385,7 +5399,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW26" style="padding-left: 20px;">
+<td id="ROW26" style="padding-left: 100px;">
                            j) Transport and storage
 </td>
     
@@ -5492,7 +5506,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW27" style="padding-left: 20px;">
+<td id="ROW27" style="padding-left: 100px;">
                            k) Trade, restaurants and bars
 </td>
     
@@ -5599,7 +5613,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW28" style="padding-left: 20px;">
+<td id="ROW28" style="padding-left: 100px;">
                            l) Business services
 </td>
     
@@ -5706,7 +5720,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW29" style="padding-left: 20px;">
+<td id="ROW29" style="padding-left: 100px;">
                           m) Other community, social and personal services
 </td>
     
@@ -5812,7 +5826,7 @@ calculateAllR57Columns();
 </tr>
 
 <tr>
-<td id="ROW30" style="padding-left: 20px;">
+<td id="ROW30" style="padding-left: 50px;">
                      (v)  Households 
 </td>
     
@@ -5919,7 +5933,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW31" style="padding-left: 20px;">
+<td id="ROW31" style="padding-left: 50px;">
                      (vi) Non-Residents (sum of lines (a) and (b)):
 </td>
     
@@ -6026,7 +6040,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW32" style="padding-left: 20px;">
+<td id="ROW32" style="padding-left: 100px;">
                          a) Other Non-Financial Corporations*
 </td>
     
@@ -6132,7 +6146,7 @@ calculateAllR57Columns();
 </tr>
 
 <tr>
-<td id="ROW33" style="padding-left: 20px;">
+<td id="ROW33" style="padding-left: 100px;">
                           b) Households
 </td>
     
@@ -6347,7 +6361,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW35" style="padding-left: 20px;">
+<td id="ROW35" style="padding-left: 50px;">
                    (i)    Central Bank
 </td>
     
@@ -6454,7 +6468,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW36" style="padding-left: 20px;">
+<td id="ROW36" style="padding-left: 50px;">
                      (ii)   Commercial Banks
 </td>
     
@@ -6561,7 +6575,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW37" style="padding-left: 20px;">
+<td id="ROW37" style="padding-left: 50px;">
                      (iii)  Other Depository Corporations (sum of lines (a) to (d)):
 </td>
     
@@ -6668,7 +6682,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW38" style="padding-left: 20px;">
+<td id="ROW38" style="padding-left: 100px;">
                           a) Botswana Savings Bank (BSB)
 </td>
     
@@ -6775,7 +6789,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW39" style="padding-left: 20px;">
+<td id="ROW39" style="padding-left: 100px;">
                           b) Botswana Building Society (BBS)
 </td>
     
@@ -6882,7 +6896,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW40" style="padding-left: 20px;">
+<td id="ROW40" style="padding-left: 100px;">
                           c) Domestic Money Market Unit Trust
 </td>
     
@@ -6989,7 +7003,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW41" style="padding-left: 20px;">
+<td id="ROW41" style="padding-left: 100px;">
                           d) Other (specify)*
 </td>
     
@@ -7096,7 +7110,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW42" style="padding-left: 20px;">
+<td id="ROW42" style="padding-left: 50px;">
                       (iv)  Other Financial Corporations (sum of lines (a) to (d)):
 </td>
     
@@ -7202,7 +7216,7 @@ calculateAllR57Columns();
 </tr>
 
 <tr>
-<td id="ROW43" style="padding-left: 20px;">
+<td id="ROW43" style="padding-left: 100px;">
                           a) Insurance Companies
 </td>
     
@@ -7309,7 +7323,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW44" style="padding-left: 20px;">
+<td id="ROW44" style="padding-left: 100px;">
                           b) Pension Funds
 </td>
     
@@ -7416,7 +7430,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW45" style="padding-left: 20px;">
+<td id="ROW45" style="padding-left: 100px;">
                           c) SACCOs
 </td>
     
@@ -7523,7 +7537,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW46" style="padding-left: 20px;">
+<td id="ROW46" style="padding-left: 100px;">
                           d) Other Financial Intermediaries (sum 1 to 3)
 </td>
     
@@ -7630,7 +7644,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW47" style="padding-left: 20px;">
+<td id="ROW47" style="padding-left: 150px;">
                                1. Finance companies
 </td>
     
@@ -7738,7 +7752,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW48" style="padding-left: 20px;">
+<td id="ROW48" style="padding-left: 150px;">
                                2. Medical Aid Schemes
 </td>
     
@@ -7845,7 +7859,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW49" style="padding-left: 20px;">
+<td id="ROW49" style="padding-left: 150px;">
                                3. Public sector financial intermediaries
 </td>
     
@@ -7952,7 +7966,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW50" style="padding-left: 20px;">
+<td id="ROW50" style="padding-left: 100px;">
                           e) Financial Auxiliaries (sum 1 to 5)
 </td>
     
@@ -8059,7 +8073,7 @@ calculateAllR57Columns();
 </tr>
 
 <tr>
-<td id="ROW51" style="padding-left: 20px;">
+<td id="ROW51" style="padding-left: 150px;">
                                1.Asset managers
 </td>
     
@@ -8166,7 +8180,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW52" style="padding-left: 20px;">
+<td id="ROW52" style="padding-left: 150px;">
                                2. Insurance brokers
 </td>
     
@@ -8273,7 +8287,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW53" style="padding-left: 20px;">
+<td id="ROW53" style="padding-left: 150px;">
                               3. fund administrators
 </td>
     
@@ -8380,7 +8394,7 @@ calculateAllR57Columns();
 
 
 <tr>
-<td id="ROW54" style="padding-left: 20px;">
+<td id="ROW54" style="padding-left: 150px;">
                                4. Bureau de change
 </td>
     
@@ -8487,7 +8501,7 @@ calculateAllR57Columns();
 </tr>
 
 <tr>
-<td id="ROW55" style="padding-left: 20px;">
+<td id="ROW55" style="padding-left: 150px;">
                                5. Other (specify)*
 </td>
     
@@ -8593,7 +8607,7 @@ calculateAllR57Columns();
 </tr>
 
 <tr>
-<td id="ROW56" style="padding-left: 20px;">
+<td id="ROW56" style="padding-left: 50px;">
                        (v)  Non-residents
 </td>
     

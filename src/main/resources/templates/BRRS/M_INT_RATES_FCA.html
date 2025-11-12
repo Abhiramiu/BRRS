@@ -287,6 +287,7 @@ PURPOSE		: BWRBRREPORT
 	</style>
 	<script th:inline="javascript">
 		$(document).ready(function () {
+			let isDetailsModal = false;
 			// hide loader on normal load
 			$('#loader').modal('hide');
 		});
@@ -310,6 +311,7 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+		    isDetailsModal = true; // mark that this modal is from Details
 			 showResultModal('BRRS',' Details page not available for Manual Report');
 		}
 
@@ -661,14 +663,27 @@ $(document).ready(function() {
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
 	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
+    $("#resultModal").modal("hide");
+	/*    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
+    setTimeout(function () {
+        location.reload();
+    }, 300);
+        }, 300);*/
+        $("#resultModal").modal("hide");
+        $('#loader').modal('hide');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+        // Only reload if not from Details modal
+        if (!isDetailsModal) {
+            setTimeout(function () {
+                location.reload();
+            }, 300);
+        } else {
+            // reset flag for next modal usage
+            isDetailsModal = false;
+        }
+}
+
 
 	function fileuploads(btn) {
 	    const asondate = btn.getAttribute("data-todate");
@@ -835,28 +850,29 @@ $(document).ready(function() {
 										
 										
         <th style="background-color: #D8D8D8;text-align: left;" rowspan="2">Currency</th>
-        <th style="background-color: #D8D8D8;text-align: center;" rowspan="2">Current</th>
-        <th style="background-color: #D8D8D8;text-align: center;" rowspan="2">Call</th>
-        <th style="background-color: #D8D8D8;text-align: center;" rowspan="2">Savings</th>
+        <th style="background-color: #D8D8D8;text-align: right;" rowspan="2">Current</th>
+        <th style="background-color: #D8D8D8;text-align: right;" rowspan="2">Call</th>
+        <th style="background-color: #D8D8D8;text-align: right;" rowspan="2">Savings</th>
 
         <th style="background-color: #D8D8D8;text-align: center;" colspan="2">Notice (Days)</th>
 
-        <th style="background-color: #D8D8D8;text-align: center;" rowspan="2">91 Day deposit</th>
+        <th style="background-color: #D8D8D8;text-align: right;" rowspan="2">91 Day deposit</th>
 
         <th style="background-color: #D8D8D8;text-align: center;" colspan="5">Fixed Deposits (Months)</th>
 
-        <th style="background-color: #D8D8D8;text-align: center;" rowspan="2">Total</th>
+        <th style="background-color: #D8D8D8;text-align: right;" rowspan="1"></th>
     </tr>
 
     <tr>
-        <th style="background-color: #D8D8D8;text-align: center;">0-31</th>
-        <th style="background-color: #D8D8D8;text-align: center;">32-88</th>
+        <th style="background-color: #D8D8D8;text-align: right;">0-31</th>
+        <th style="background-color: #D8D8D8;text-align: right;">32-88</th>
 
-        <th style="background-color: #D8D8D8;text-align: center;">1-6</th>
-        <th style="background-color: #D8D8D8;text-align: center;">7-12</th>
-        <th style="background-color: #D8D8D8;text-align: center;">13-18</th>
-        <th style="background-color: #D8D8D8;text-align: center;">19-24</th>
-        <th style="background-color: #D8D8D8;text-align: center;">Over 24</th>
+        <th style="background-color: #D8D8D8;text-align: right;">1-6</th>
+        <th style="background-color: #D8D8D8;text-align: right;">7-12</th>
+        <th style="background-color: #D8D8D8;text-align: right;">13-18</th>
+        <th style="background-color: #D8D8D8;text-align: right;">19-24</th>
+        <th style="background-color: #D8D8D8;text-align: right;">Over 24</th>
+        <th style="background-color: #D8D8D8; text-align: right; font-weight: bold;">Total</th>
     </tr>
 										
 								<!--	</tr>
