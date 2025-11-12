@@ -249,6 +249,16 @@ td {
 	.table-bordered th {
 	     border: 1px solid #000 !important;
 	}
+	
+	
+	/* Fix sticky header clipping issue */
+.sticky-header-table th {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa; /* or your preferred color */
+  z-index: 10; /* make sure header stays above borders */
+  border: 1px solid #000 !important;
+}
 </style>
 
 <style>

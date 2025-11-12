@@ -252,8 +252,8 @@ public class BRRS_Q_RLFA1_ReportService {
 					
 					// Column 4-D
 					Cell cellD = row.createCell(3);
-					if (record.getR11_carrying_amount() != null) {
-						cellD.setCellValue(record.getR11_carrying_amount().doubleValue());
+					if (record.getR11_no_of_accts() != null) {
+						cellD.setCellValue(record.getR11_no_of_accts().doubleValue());
 						cellD.setCellStyle(numberStyle);
 					} else {
 						cellD.setCellValue("");
@@ -286,8 +286,8 @@ public class BRRS_Q_RLFA1_ReportService {
 					
 					// Column 4-D
 				 cellD = row.createCell(3);
-					if (record.getR12_carrying_amount() != null) {
-						cellD.setCellValue(record.getR12_carrying_amount().doubleValue());
+					if (record.getR12_no_of_accts() != null) {
+						cellD.setCellValue(record.getR12_no_of_accts().doubleValue());
 						cellD.setCellStyle(numberStyle);
 					} else {
 						cellD.setCellValue("");
@@ -1833,15 +1833,13 @@ public class BRRS_Q_RLFA1_ReportService {
 					
 					// Column 4-D
 					Cell cellD = row.createCell(3);
-					if (record.getR11_carrying_amount() != null) {
-						cellD.setCellValue(record.getR11_carrying_amount().doubleValue());
+					if (record.getR11_no_of_accts() != null) {
+						cellD.setCellValue(record.getR11_no_of_accts().doubleValue());
 						cellD.setCellStyle(numberStyle);
 					} else {
 						cellD.setCellValue("");
 						cellD.setCellStyle(textStyle);
 					}
-					
-					
 					
 					// row12
 					row = sheet.getRow(11);
@@ -1869,8 +1867,8 @@ public class BRRS_Q_RLFA1_ReportService {
 					
 					// Column 4-D
 				 cellD = row.createCell(3);
-					if (record.getR12_carrying_amount() != null) {
-						cellD.setCellValue(record.getR12_carrying_amount().doubleValue());
+					if (record.getR12_no_of_accts() != null) {
+						cellD.setCellValue(record.getR12_no_of_accts().doubleValue());
 						cellD.setCellStyle(numberStyle);
 					} else {
 						cellD.setCellValue("");

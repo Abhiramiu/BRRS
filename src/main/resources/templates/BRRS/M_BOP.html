@@ -308,6 +308,119 @@ label.error {
 }
 
 
+.table-wrapper {
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 2px solid #000;
+  position: relative;
+}
+
+
+
+
+
+
+</style>
+
+
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 550px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+
+
+<style>
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
 </style>
 
 
@@ -1101,7 +1214,7 @@ window.fileuploads = function(btn) {
 								<table
 									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 									id="reports">
-									<thead class="thead-light">
+									<thead class="thead-light" style=" top: 0; position: sticky;    border: 1px solid #000 !important;  z-index: 1;">
 									
 									
 								 <tr style="background-color: #b3b6b9;">
@@ -2796,103 +2909,6 @@ window.fileuploads = function(btn) {
 
 
 
-<style>
-/* Your existing CSS - this is the correct approach */
-.scrollable-table-container {
-	/* This is the key: it creates the scroll context */
-	max-height: 550px;
-	/* Or a suitable height like 80vh for responsive design */
-	overflow-y: auto;
-	border: 1px solid #ccc;
-}
 
-/* Your existing sticky header CSS, targeting the tr elements within the thead */
-.scrollable-table-container thead tr:nth-child(1) {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9;
-	z-index: 5;
-}
-
-.scrollable-table-container thead tr:nth-child(2) {
-	position: sticky;
-	top: 36px; /* adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 4;
-}
-
-.scrollable-table-container thead tr:nth-child(3) {
-	position: sticky;
-	top: 72px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 3;
-}
-
-.scrollable-table-container thead tr:nth-child(4) {
-	position: sticky;
-	top: 100px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 2;
-}
-
-.scrollable-table-container thead tr:nth-child(5) {
-	position: sticky;
-	top: 135px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
-</style>
-
-
-<style>
-.inner {
-	max-height: 600px; /* Adjust height as needed */
-	overflow: auto;
-	border: 1px solid #dee2e6;
-}
-
-/* Sticky thead */
-#reports thead th {
-	position: sticky;
-	top: 0;
-	background-color: #f8f9fa; /* Match Bootstrap thead-light */
-	z-index: 2;
-}
-
-div.dataTables_wrapper div.dataTables_paginate {
-	text-align: right !important;
-	float: right !important;
-	width: auto;
-	margin-top: 10px;
-}
-
-/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-div.dataTables_wrapper div.dataTables_info {
-	float: left !important;
-	margin-top: 10px;
-}
-
-.pagination {
-	margin: 0;
-}
-
-.page-item.active .page-link {
-	background-color: #386276;
-	border-color: #386276;
-}
-
-.page-link {
-	color: #386276;
-}
-
-.page-link:hover {
-	color: #2a4a5c;
-}
-
-.form-select {
-	display: inline-block;
-	width: auto;
-}
-</style>
 
 </html>

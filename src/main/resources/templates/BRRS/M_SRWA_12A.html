@@ -305,9 +305,145 @@ label.error {
    background-color: rgb(107, 122, 143) !important;
     color: white !important;
 }
+
+/* Scroll wrapper */
+.table-wrapper {
+  max-height: 600px; /* adjust if needed */
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid #ccc; /* subtle outer border */
+}
+
+
+
+
+
+
+
 </style>
 
 
+
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 550px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+
+
+<style>
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+</style>
+
+<!-- <style>
+.scrollable-table-container {
+	height: 110vh; /* or any fixed height like 400px */
+	overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.scrollable-table-container thead th {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9; /* Header background */
+	z-index: 2; /* Ensure header stays above the content */
+}
+
+/* If you want a specific row (like 5th row) sticky */
+.scrollable-table-container tbody tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on header + previous rows height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style> -->
 
 
 <script>
@@ -787,6 +923,7 @@ function showmodify(btn) {
      "crm_sub_app_col_elig_euiq",
      "crm_sub_app_col_elig_uni_tru",
      "crm_com_app_col_elig_crm",
+     "crm_com_app_col_cea_elig_crm",
      "crm_com_app_col_elig_cea_vol_adj",
      "crm_com_app_col_elig_fin_hai"
  ];
@@ -1469,13 +1606,18 @@ $(document).ready(function () {
 						<div class="col-sm-12">
 						
 							<form action="#" method="POST" id="fileupload">
-							<div
+							<!-- <div
 								class="table-wrapper table-responsive scrollable-table-container "
 								style="border-right: 1px solid #dee2e6;">
 								<table
 									class="sticky-header-table table table-bordered table-cell table-sm table-condensed "
 									 id="reports"  style="width:321%; ">
-									<thead class="thead-light">
+									<thead class="thead-light"> -->
+									
+									<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; overflow-y: auto;">
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports" style="width:321%;">
+																		<thead class="thead-light" style=" top: 0; position: sticky; border:2px solid black; background-color: #b3b6b9; z-index: 1;">
 
 										<tr style="background-color: #b3b6b9">
 
@@ -1483,24 +1625,24 @@ $(document).ready(function () {
 												style="text-align: left; background-color: #D8D8D8; padding: 10px;">Line
 												No.</th>
 											<th rowspan="4"
-												style="text-align: center; background-color: #D8D8D8; padding: 10px;">Exposure
+												style="text-align: left; background-color: #D8D8D8; padding: 10px;">Exposure
 												Class</th>
 
 											<th rowspan="4"
-												style="text-align: center; background-color: #D8D8D8; padding: 10px;">Exposures
+												style="text-align: right; background-color: #D8D8D8; padding: 10px;">Exposures
 												before CRM</th>
 
 											<th rowspan="4"
-												style="text-align: center; background-color: #D8D8D8; padding: 10px;">Specific
+												style="text-align: right; background-color: #D8D8D8; padding: 10px;">Specific
 												Provisions for Past Due Exposures (P'000)</th>
 
 
 											<th rowspan="4"
-												style="text-align: center; background-color: #D8D8D8; padding: 10px;">Amount
+												style="text-align: right; background-color: #D8D8D8; padding: 10px;">Amount
 												Eligible for On-balance Sheet Netting</th>
 
 											<th rowspan="4"
-												style="text-align: center; background-color: #D8D8D8; padding: 10px;">Total
+												style="text-align: right; background-color: #D8D8D8; padding: 10px;">Total
 												Exposure after Netting and Specific Provisions</th>
 
 
@@ -1525,7 +1667,7 @@ $(document).ready(function () {
 
 
 											<th rowspan="3" colspan="1"
-												style="text-align: center; background-color: #D8D8D8; padding: 10px;">Exposures
+												style="text-align: right; background-color: #D8D8D8; padding: 10px;">Exposures
 												eligible for CRM under the Substitution Approach</th>
 
 											<th colspan="2"
@@ -1550,11 +1692,11 @@ $(document).ready(function () {
 										<tr style="background-color: #b3b6b9">
 
 											<th rowspan="2"
-												style="text-align: center; background-color: #D8D8D8; padding: 10px;">Guarantees
+												style="text-align: right; background-color: #D8D8D8; padding: 10px;">Guarantees
 												by Eligible Guarantors</th>
 
 											<th rowspan="2"
-												style="text-align: center; background-color: #D8D8D8; padding: 10px;">Credit
+												style="text-align: right; background-color: #D8D8D8; padding: 10px;">Credit
 												Derivatives</th>
 											<th colspan="5"
 												style="text-align: center; background-color: #D8D8D8; padding: 10px;">Eligible
@@ -1566,66 +1708,66 @@ $(document).ready(function () {
 
 										<tr style="background-color: #b3b6b9">
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Cash
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Cash
 												(including CoDs)</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Treasury
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Treasury
 												Bills (Government of Botswana / BoB)</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Debt
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Debt
 												Securities</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Equities
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Equities
 												(Main Index only)</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Unit
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Unit
 												Trust / Mutual Funds (Main Index Only)</th>
 
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Exposures
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Exposures
 												Covered by CRM</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Eligible
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Eligible
 												Exposures not Covered by CRM</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Risk-Weights
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Risk-Weights
 												of the CRM</th>
 
-											<th style="text-align: center;background-color: #D8D8D8; padding: 10px;">RWA
+											<th style="text-align: right;background-color: #D8D8D8; padding: 10px;">RWA
 												of Exposures Covered by CRM</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Risk-Weights
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Risk-Weights
 												of Origional Counterparties</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">RWA
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">RWA
 												of Exposures not Covered by CRM</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Exposures
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Exposures
 												eligible for CRM under the Comprehensive Approach</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Eligible
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Eligible
 												Exposures after Volatility Adjustment</th>
 
-											<th style="text-align: center;background-color: #D8D8D8; padding: 10px;">
+											<th style="text-align: right;background-color: #D8D8D8; padding: 10px;">
 												Eligible Financial Collateral after Haircut</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Exposure
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Exposure
 												Value after CRM</th>
 
 
 
 
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">RWA
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">RWA
 												of Eligible Exposures not Covered by CRM</th>
 
-											<th style="text-align: center;background-color: #D8D8D8; padding: 10px;">Unsecured
+											<th style="text-align: right;background-color: #D8D8D8; padding: 10px;">Unsecured
 												Exposure subject to Credit Risk</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">RWA
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">RWA
 												of unsecured expsure</th>
 
-											<th style="text-align: center;background-color: #D8D8D8; padding: 10px;">Total
+											<th style="text-align: right;background-color: #D8D8D8; padding: 10px;">Total
 												Risk Weighted Assets</th>
 
 											<td style="background-color: #b3b6b9; padding: 10px; width:50px; height:50px;"></td>
@@ -1638,63 +1780,69 @@ $(document).ready(function () {
 											<td style="background-color: #FFFFFF; padding: 10px;"></td>
 
 											<th
-												style="text-align: center; background-color: #FFFFFF; font-weight: bold;">Part
+												style="text-align: center; background-color: #FFFFFF; font-weight: bold; border: 1px solid #000 !important;">Part
 												A: Risk-Weighted Amounts (On-Balance Sheet Exposures</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(1)
+											<th style="text-align: center; background-color: #FFFFFF;border: 1px solid #000 !important;">(1)
 											</th>
 
-											<th style="text-align: center; background-color: #FFFFFF;">(2)
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(2)
 											</th>
 
-											<th style="text-align: center; background-color: #FFFFFF;">(3)
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(3)
 											</th>
 
-											<th style="text-align: center; background-color: #FFFFFF;">(4)=(1)-(2)-(3)
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(4)=(1)-(2)-(3)
 											</th>
 
 
-											<th style="text-align: center; background-color: #FFFFFF;">(5)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(6)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(7)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(8)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(9)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(10)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(11)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(12)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(13)=Sum
+											<th style="text-align: center; background-color: #FFFFFF;border: 1px solid #000 !important;">(5)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(6)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(7)</th>
+											<th style="text-align: center; background-color: #FFFFFF;border: 1px solid #000 !important;">(8)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(9)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(10)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(11)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(12)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(13)=Sum
 												(6) to (12)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(14)=(5)-(13)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(15)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(16)
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(14)=(5)-(13)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(15)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(16)
 												= (13) x (15)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(17)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(18)
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(17)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(18)
 												= (14) x (17)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(19)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(20)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(21)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(22)
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(19)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(20)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(21)</th>
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(22)
 												= (20)-(21)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(23)=
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(23)=
 												(22) x (17)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(24)=
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(24)=
 												(4)-(5)-(19)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(25)=
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(25)=
 												(24)x(17)</th>
-											<th style="text-align: center; background-color: #FFFFFF;">(26)=
+											<th style="text-align: center; background-color: #FFFFFF; border: 1px solid #000 !important;">(26)=
 												(16)+(18)+(23)+25</th>
-											<td style="background-color: #b3b6b9; width:250px; "></td>
+											<td style="background-color: #b3b6b9; width:250px; border: 1px solid #000 !important; "></td>
 
 										</tr>
 
 
-										<tr style="background-color: #D3D3D3">
+										
+									</thead>
 
-											<td style="text-align: right; background-color: #D3D3D3;">1</td>
+									<tbody th:each="report: ${reportsummary}"
+										style="font-family: Arial;">
 
-											<th
-												style="text-align: left; background-color: #D3D3D3; font-weight: bold;">Portfolio
-												I: Claims on Sovereign or Central banks</th>
+<tr style="background-color: #D3D3D3">
+
+											<td style="text-align: right; background-color: #FFFFFF;">1</td>
+
+											<td
+												style="text-align: left; background-color: #FFFFFF; font-weight: bold;">Portfolio
+												I: Claims on Sovereign or Central banks</td>
 											<td style="background-color: #D3D3D3;"></td>
 											<td style="background-color: #D3D3D3;"></td>
 											<td style="background-color: #D3D3D3;"></td>
@@ -1728,11 +1876,11 @@ $(document).ready(function () {
 
 										<tr style="background-color: #D3D3D3">
 
-											<td style="background-color: #D3D3D3"></td>
+											<td style="background-color: #FFFFFF"></td>
 
-											<th
-												style="text-align: center; background-color: #D3D3D3; font-weight: bold;">Performing
-												Loans:</th>
+											<td
+												style="text-align: center; background-color: #FFFFFF; font-weight: bold;">Performing
+												Loans:</td>
 
 											<td style="background-color:#D3D3D3;"></td>
 											<td style="background-color: #D3D3D3;"></td>
@@ -1763,12 +1911,6 @@ $(document).ready(function () {
 
 											<td style="background-color: #b3b6b9;"></td>
 										</tr>
-
-
-									</thead>
-
-									<tbody th:each="report: ${reportsummary}"
-										style="font-family: Arial;">
 
 
 					  
@@ -3374,7 +3516,7 @@ $(document).ready(function () {
 
     <td id="ROW26">
         <input class="display-input Show_input" type="text"
-            th:value="'Past due exposure where specific provision is less than 20 of the outstanding loan.'"
+            th:value="'Past due exposure where specific provision is less than 20% of the outstanding loan.'"
             id="r26_exposure_class" name="r26_exposure_class"
             style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
             readonly />
@@ -3583,7 +3725,7 @@ $(document).ready(function () {
 
     <td id="ROW27">
         <input class="display-input Show_input" type="text"
-            th:value="'Past due exposure where specific provision between 20 and 50 of outstanding amount of the loan.'"
+            th:value="'Past due exposure where specific provision between 20% and 50% of outstanding amount of the loan.'"
             id="r27_exposure_class" name="r27_exposure_class"
             style="background-color: #FFFFFF; width: 750px; height: 28px; border-color: transparent; text-align: left;"
             readonly />
@@ -3792,7 +3934,7 @@ $(document).ready(function () {
 
     <td id="ROW28">
         <input class="display-input Show_input" type="text"
-            th:value="'Past due exposure where specific provision is more than 50 of the outstanding loan.'"
+            th:value="'Past due exposure where specific provision is more than 50% of the outstanding loan.'"
             id="r28_exposure_class" name="r28_exposure_class"
             style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
             readonly />
@@ -4216,10 +4358,10 @@ $(document).ready(function () {
 
 										<tr style="background-color: #D3D3D3">
 
-    <td style="text-align: center; background-color: #D3D3D3;">12</td>
+    <td style="text-align: center; background-color: #FFFFFF;">12</td>
 
     <th
-        style="text-align: left; background-color: #D3D3D3; font-weight: bold;">
+        style="text-align: left; background-color: #FFFFFF; font-weight: bold;">
         Portfolio II: Claims on Public Sector Entities (PSEs) - one
         risk weight less favourable than sovereign</th>
     <td style="background-color: #D3D3D3;"></td>
@@ -4255,10 +4397,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="background-color: #D3D3D3;"></td>
+    <td style="background-color: #FFFFFF;"></td>
 
     <th
-        style="text-align: center; background-color: #D3D3D3; font-weight: bold;">Performing
+        style="text-align: center; background-color: #FFFFFF; font-weight: bold;">Performing
         Loans</th>
 
     <td style="background-color: #D3D3D3;"></td>
@@ -5777,7 +5919,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW39"  >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision is less than 20 of the loan. '"
+			 th:value="'Past due exposure where specific provision is less than 20% of the loan. '"
 			 id="r39_exposure_class" name="r39_exposure_class"
 			 style="background-color: #FFFFFF; width: 600px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -5988,7 +6130,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW40" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision betwee 20  and 50 of outstanding loanof the loan. '"
+			 th:value="'Past due exposure where specific provision betwee 20%  and 50% of outstanding loanof the loan. '"
 			 id="r40_exposure_class" name="r40_exposure_class"
 			 style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -6198,7 +6340,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW41" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposurer where specific provision is more than 50 of the outstanding loan.'"
+			 th:value="'Past due exposurer where specific provision is more than 50% of the outstanding loan.'"
 			 id="r41_exposure_class" name="r41_exposure_class"
 			 style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -7022,10 +7164,10 @@ $(document).ready(function () {
 	
 	<tr style="background-color: #D3D3D3">
 
-    <td style="text-align: center; background-color: #D3D3D3;">25</td>
+    <td style="text-align: center; background-color: #FFFFFF;">25</td>
 
     <th
-        style="text-align: left; background-color: #D3D3D3; font-weight: bold;">
+        style="text-align: left; background-color: #FFFFFF; font-weight: bold;">
        Portfolio IV:  Claims on Multilateral Development Banks MDBs)</th>
     <td style="background-color: #D3D3D3;"></td>
     <td style="background-color: #D3D3D3;"></td>
@@ -7060,10 +7202,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="background-color: #D3D3D3;"></td>
+    <td style="background-color: #FFFFFF;"></td>
 
     <th
-        style="text-align: center; background-color: #D3D3D3; font-weight: bold;">Performing
+        style="text-align: center; background-color: #FFFFFF; font-weight: bold;">Performing
         Loans</th>
 
     <td style="background-color: #D3D3D3;"></td>
@@ -8598,7 +8740,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW54" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision is less than20 of the loan.'"
+			 th:value="'Past due exposure where specific provision is less than20% of the loan.'"
 			 id="r54_exposure_class" name="r54_exposure_class"
 			 style="background-color: #FFFFFF; width: 600px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -8811,7 +8953,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW55" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision betwee 20  and 50 of ouutstanding loanof the loan.'"
+			 th:value="'Past due exposure where specific provision betwee 20%  and 50% of ouutstanding loanof the loan.'"
 			 id="r55_exposure_class" name="r55_exposure_class"
 			 style="background-color: #FFFFFF; width: 750px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -9023,7 +9165,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW56" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposurer where specific provision is more than 50 of the outstanding loan.'"
+			 th:value="'Past due exposurer where specific provision is more than 50% of the outstanding loan.'"
 			 id="r56_exposure_class" name="r56_exposure_class"
 			 style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -9458,10 +9600,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="text-align: center; background-color: #D3D3D3;">36</td>
+    <td style="text-align: center; background-color: #FFFFFF;">36</td>
 
     <th
-        style="text-align: left; background-color: #D3D3D3; font-weight: bold;">
+        style="text-align: left; background-color: #FFFFFF; font-weight: bold;">
       Portfolio V:  Claims on Banks  - one risk weight less favourable than sovereign</th>
       
     <td style="background-color: #D3D3D3;"></td>
@@ -9497,10 +9639,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="background-color: #D3D3D3;"></td>
+    <td style="background-color: #FFFFFF;"></td>
 
     <th
-        style="text-align: center; background-color: #D3D3D3; font-weight: bold;">Performing
+        style="text-align: center; background-color: #FFFFFF; font-weight: bold;">Performing
         Loans</th>
 
     <td style="background-color: #D3D3D3;"></td>
@@ -11029,7 +11171,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW67" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision is less than 20 of the loan.'"
+			 th:value="'Past due exposure where specific provision is less than 20% of the loan.'"
 			 id="r67_exposure_class" name="r67_exposure_class"
 			 style="background-color: #FFFFFF; width: 600px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -11238,7 +11380,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW68" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision betwee 20  and 50 of ouutstanding loanof the loan. '"
+			 th:value="'Past due exposure where specific provision betwee 20%  and 50% of ouutstanding loanof the loan. '"
 			 id="r68_exposure_class" name="r68_exposure_class"
 			 style="background-color: #FFFFFF; width: 710px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -11447,7 +11589,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW69" style="font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposurer where specific provision is more than 50 of the outstanding loan.'"
+			 th:value="'Past due exposurer where specific provision is more than 50% of the outstanding loan.'"
 			 id="r69_exposure_class" name="r69_exposure_class"
 			 style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -11852,10 +11994,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="text-align: center; background-color: #D3D3D3;">47</td>
+    <td style="text-align: center; background-color: #FFFFFF;">47</td>
 
     <th
-        style="text-align: left; background-color: #D3D3D3; font-weight: bold;">
+        style="text-align: left; background-color: #FFFFFF; font-weight: bold;">
       Portfolio VI:  Claims on Security Firms
 </th>
       
@@ -11892,10 +12034,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="background-color: #D3D3D3;"></td>
+    <td style="background-color: #FFFFFF;"></td>
 
     <th
-        style="text-align: center; background-color: #D3D3D3; font-weight: bold;">Performing
+        style="text-align: center; background-color: #FFFFFF; font-weight: bold;">Performing
         Loans</th>
 
     <td style="background-color: #D3D3D3;"></td>
@@ -13193,7 +13335,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW79" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision is less than 20 of the loan.'"
+			 th:value="'Past due exposure where specific provision is less than 20% of the loan.'"
 			 id="r79_exposure_class" name="r79_exposure_class"
 			 style="background-color: #FFFFFF; width: 600px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -13402,7 +13544,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW80" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision betwee 20  and 50 of outstanding loanof the loan. '"
+			 th:value="'Past due exposure where specific provision betwee 20%  and 50% of outstanding loanof the loan. '"
 			 id="r80_exposure_class" name="r80_exposure_class"
 			 style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -13611,7 +13753,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW81" style="font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposurer where specific provision is more than 50 of the outstanding loan.'"
+			 th:value="'Past due exposurer where specific provision is more than 50% of the outstanding loan.'"
 			 id="r81_exposure_class" name="r81_exposure_class"
 			 style="background-color: #FFFFFF; width: 650px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -14013,10 +14155,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="text-align: center; background-color: #D3D3D3;">57</td>
+    <td style="text-align: center; background-color: #FFFFFF;">57</td>
 
     <th
-        style="text-align: left; background-color: #D3D3D3; font-weight: bold;">
+        style="text-align: left; background-color: #FFFFFF; font-weight: bold;">
      Portfolio VII:  Claims on Corporates 
 </th>
       
@@ -14053,10 +14195,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="background-color: #D3D3D3;"></td>
+    <td style="background-color: #FFFFFFF;"></td>
 
     <th
-        style="text-align: center; background-color: #D3D3D3; font-weight: bold;">Performing
+        style="text-align: center; background-color: #FFFFFFF; font-weight: bold;">Performing
         Loans</th>
 
     <td style="background-color: #D3D3D3;"></td>
@@ -15148,7 +15290,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW90" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision is less than 20 of the loan.'"
+			 th:value="'Past due exposure where specific provision is less than 20% of the loan.'"
 			 id="r90_exposure_class" name="r90_exposure_class"
 			 style="background-color: #FFFFFF; width: 600px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -15357,7 +15499,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW91" style="font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision is equal to or greater than 20 but less than 50 of the loan.'"
+			 th:value="'Past due exposure where specific provision is equal to or greater than 20% but less than 50% of the loan.'"
 			 id="r91_exposure_class" name="r91_exposure_class"
 			 style="background-color: #FFFFFF; width: 600px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -15565,7 +15707,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW92" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision is equal to 50 or more of the loan.'"
+			 th:value="'Past due exposure where specific provision is equal to 50% or more of the loan.'"
 			 id="r92_exposure_class" name="r92_exposure_class"
 			 style="background-color: #FFFFFF; width: 600px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -15979,10 +16121,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="text-align: center; background-color: #D3D3D3;">66</td>
+    <td style="text-align: center; background-color: #FFFFFFF;">66</td>
 
     <th
-        style="text-align: left; background-color: #D3D3D3; font-weight: bold;">
+        style="text-align: left; background-color: #FFFFFFF; font-weight: bold;">
      Portfoli VIII:  Claims Included in the Retail Portfolios 
 </th>
       
@@ -16019,10 +16161,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="background-color: #D3D3D3;"></td>
+    <td style="background-color: #FFFFFFF;"></td>
 
     <th
-        style="text-align: center; background-color: #D3D3D3; font-weight: bold;">Performing
+        style="text-align: center; background-color: #FFFFFFF; font-weight: bold;">Performing
         Loans</th>
 
     <td style="background-color: #D3D3D3;"></td>
@@ -16696,7 +16838,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW99" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision is less than 20 of the loan.'"
+			 th:value="'Past due exposure where specific provision is less than 20% of the loan.'"
 			 id="r99_exposure_class" name="r99_exposure_class"
 			 style="background-color: #FFFFFF; width: 600px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -16915,7 +17057,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW100" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision betwee 20  and 50 of outstanding amount of the loan. '"
+			 th:value="'Past due exposure where specific provision betwee 20%  and 50% of outstanding amount of the loan. '"
 			 id="r100_exposure_class" name="r100_exposure_class"
 			 style="background-color: #FFFFFF; width: 720px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -17124,7 +17266,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW101" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposurer where specific provision is more than 50 of the outstanding loan.'"
+			 th:value="'Past due exposurer where specific provision is more than 50% of the outstanding loan.'"
 			 id="r101_exposure_class" name="r101_exposure_class"
 			 style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -17529,10 +17671,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="text-align: center; background-color: #D3D3D3;">73</td>
+    <td style="text-align: center; background-color: #FFFFFFF;">73</td>
 
     <th
-        style="text-align: left; background-color: #D3D3D3; font-weight: bold;">
+        style="text-align: left; background-color: #FFFFFFF; font-weight: bold;">
      Portfoli IX:  Claims Secured by Residential Mortgage Property 
 </th>
       
@@ -17569,10 +17711,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="background-color: #D3D3D3;"></td>
+    <td style="background-color: #FFFFFFF;"></td>
 
     <th
-        style="text-align: center; background-color: #D3D3D3; font-weight: bold;">Performing
+        style="text-align: center; background-color: #FFFFFFF; font-weight: bold;">Performing
         Loans</th>
 
     <td style="background-color: #D3D3D3;"></td>
@@ -18449,7 +18591,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW109" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'(a) Past due (qualifying mortgage loans ) for more than 90 days and specific provision is less than 20 of the loan.'"                                                               
+			 th:value="'(a) Past due (qualifying mortgage loans ) for more than 90 days and specific provision is less than 20% of the loan.'"                                                               
 			 id="r109_exposure_class" name="r109_exposure_class"
 			 style="background-color: #FFFFFF; width: 600px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -18658,7 +18800,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW110" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'(b) Past due (qualifying mortgage loans) for more than 90 days and specific provision is  more than 20 of the loan.'"
+			 th:value="'(b) Past due (qualifying mortgage loans) for more than 90 days and specific provision is  more than 20% of the loan.'"
 			 id="r110_exposure_class" name="r110_exposure_class"
 			 style="background-color: #FFFFFF; width: 900px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -18867,7 +19009,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW111" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'(i) Past due non-qualifying residential mortgages where specific provision is less than 20 of the loan.'"
+			 th:value="'(i) Past due non-qualifying residential mortgages where specific provision is less than 20% of the loan.'"
 			 id="r111_exposure_class" name="r111_exposure_class"
 			 style="background-color: #FFFFFF; width: 900px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -19076,7 +19218,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW112" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'(ii) Past due non-qualifying residentail mortgages where specific provision is equal to or greater than 20 but less than 50 of the loan.'"
+			 th:value="'(ii) Past due non-qualifying residentail mortgages where specific provision is equal to or greater than 20% but less than 50% of the loan.'"
 			 id="r112_exposure_class" name="r112_exposure_class"
 			 style="background-color: #FFFFFF; width: 1000px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -19285,7 +19427,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW113" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'(iii) Past due non-qualifying residentail mortgages where specific provision is equal to 50 or more of the loan.'"
+			 th:value="'(iii) Past due non-qualifying residentail mortgages where specific provision is equal to 50% or more of the loan.'"
 			 id="r113_exposure_class" name="r113_exposure_class"
 			 style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -19695,10 +19837,10 @@ $(document).ready(function () {
 	
 	<tr style="background-color: #D3D3D3">
 
-    <td style="text-align: center; background-color: #D3D3D3;">80</td>
+    <td style="text-align: center; background-color: #FFFFFFF;">80</td>
 
     <th
-        style="text-align: left; background-color: #D3D3D3; font-weight: bold;">
+        style="text-align: left; background-color: #FFFFFFF; font-weight: bold;">
      Portfolio X:  Claims Secured by Commercial Real Estate
 </th>
       
@@ -19735,10 +19877,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="background-color: #D3D3D3;"></td>
+    <td style="background-color: #FFFFFFF;"></td>
 
     <th
-        style="text-align: center; background-color: #D3D3D3; font-weight: bold;">Performing
+        style="text-align: center; background-color: #FFFFFFF; font-weight: bold;">Performing
         Loans</th>
 
     <td style="background-color: #D3D3D3;"></td>
@@ -20203,7 +20345,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW119" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision is less than 20 of the loan.'"
+			 th:value="'Past due exposure where specific provision is less than 20% of the loan.'"
 			 id="r119_exposure_class" name="r119_exposure_class"
 			 style="background-color: #FFFFFF; width: 650px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -20412,7 +20554,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW120" style=" font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision is equal to or greater than 20 but less than 50 of the loan.'"
+			 th:value="'Past due exposure where specific provision is equal to or greater than 20% but less than 50% of the loan.'"
 			 id="r120_exposure_class" name="r120_exposure_class"
 			 style="background-color: #FFFFFF; width: 750px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -20621,7 +20763,7 @@ $(document).ready(function () {
 		<!-- B -->
 		<td id="ROW121" style="font-weight: bold; text-align: left;" >
 			<input class="display-input Show_input" type="text"
-			 th:value="'Past due exposure where specific provision is equal to 50 or more of the loan.'"
+			 th:value="'Past due exposure where specific provision is equal to 50% or more of the loan.'"
 			 id="r121_exposure_class" name="r121_exposure_class"
 			 style="background-color: #FFFFFF; width: 600px; height: 28px; border-color: transparent; text-align: left;"
 			 readonly />
@@ -21029,10 +21171,10 @@ $(document).ready(function () {
 
 <tr style="background-color: #D3D3D3">
 
-    <td style="text-align: center; background-color: #D3D3D3;">86</td>
+    <td style="text-align: center; background-color: #FFFFFFF;">86</td>
 
     <th
-        style="text-align: left; background-color: #D3D3D3; font-weight: bold;">
+        style="text-align: left; background-color: #FFFFFFF; font-weight: bold;">
      Portfolio XI:  Other Assets
 </th>
       
@@ -23226,12 +23368,15 @@ $(document).ready(function () {
 						
 							
 
-								<table
-									class="sticky-header-table table table-bordered table-cell table-sm table-condensed "
+								<!-- <table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed  table-wrapper"
 									style="width: 200%;  " id="reports">
-									<thead class="thead-light">
+									<thead class="thead-light"> -->
 
 
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports"  style="width: 200%;">
+																		<thead class="thead-light" style=" top: 0; position: sticky; border:2px solid black; background-color: #b3b6b9; z-index: 1;">
 
 
 										<tr style="background-color: #b3b6b9;">
@@ -23294,11 +23439,11 @@ $(document).ready(function () {
 										<tr style="background-color: #b3b6b9">
 
 											<th rowspan="2"
-												style="text-align: center;background-color: #D8D8D8; padding: 10px;">Guarantees
+												style="text-align: right;background-color: #D8D8D8; padding: 10px;">Guarantees
 												by Eligible Guarantors</th>
 
 											<th rowspan="2"
-												style="text-align: center;background-color: #D8D8D8; padding: 10px;">Credit
+												style="text-align: right;background-color: #D8D8D8; padding: 10px;">Credit
 												Derivatives</th>
 
 											<th colspan="5"
@@ -23315,85 +23460,85 @@ $(document).ready(function () {
 											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">99</th>
 
 											<th
-												style="text-align: center; background-color: #D8D8D8; padding: 10px; font-weight: bold;">PART
+												style="text-align: left; background-color: #D8D8D8; padding: 10px; font-weight: bold;">PART
 												B : RISK WEIGHTED AMOUNTS (OFF BALANCESHEET EXPOSURES)</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Nominal
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Nominal
 												Principal Amount</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Credit
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Credit
 												Conversion Factor (CCF) (percent)</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Credit
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Credit
 												Equivalent Amount (CEA)</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">CEA
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">CEA
 												Eligible Counterparty for bilateral netting</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">CEA
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">CEA
 												after Netting</th>
 
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Cash
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Cash
 												(including CoDs)</th>
 
-											<th style="text-align: center;background-color: #D8D8D8; padding: 10px;">Treasury
+											<th style="text-align: right;background-color: #D8D8D8; padding: 10px;">Treasury
 												Bills (Government of Botswana / BoB)</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Debt
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Debt
 												Securities</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Equities
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Equities
 												(Main Index only)</th>
 
-											<th style="text-align: center;background-color: #D8D8D8; padding: 10px;">Unit
+											<th style="text-align: right;background-color: #D8D8D8; padding: 10px;">Unit
 												Trust / Mutual Funds (Main Index Only)</th>
 
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">CEA
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">CEA
 												Covered by CRM</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">CEA
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">CEA
 												not Covered by CRM</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Risk-Weights
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Risk-Weights
 												of the CRM</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">RWA
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">RWA
 												of CEA Covered by CRM</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Applicable
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Applicable
 												Risk-Weights of Origional Counterparties</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">RWA
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">RWA
 												of CEA not Covered by CRM</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">
 												CEA eligible for CRM under the Comprehensive Approach</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Eligible
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Eligible
 												CEA after Volatility Adjustment</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">
 												Eligible Financial Collateral after Haircut</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">CEA
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">CEA
 												Value after CRM</th>
 
 
 
 
 
-											<th style="text-align: center;background-color: #D8D8D8; padding: 10px;">RWA
+											<th style="text-align: right;background-color: #D8D8D8; padding: 10px;">RWA
 												of eligible CEA not Covered by CRM</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Unsecured
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Unsecured
 												CEA subject to Credit Risk</th>
 
-											<th style="text-align: center;background-color: #D8D8D8; padding: 10px;">RWA
+											<th style="text-align: right;background-color: #D8D8D8; padding: 10px;">RWA
 												of unsecured CEA</th>
 
-											<th style="text-align: center; background-color: #D8D8D8; padding: 10px;">Total
+											<th style="text-align: right; background-color: #D8D8D8; padding: 10px;">Total
 												Risk Weighted Assets</th>
 
 
@@ -23524,7 +23669,7 @@ $(document).ready(function () {
 			  <td id="ROW145" style="padding-left: 20px; font-weight: bold; text-align: right;" >
 			 
                 <input class="display-input Show_input " type="text"
-                 th:value="${report.r145_ccf != null ? #numbers.formatDecimal(report.r145_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+                 th:value="${report.r145_ccf != null ? #numbers.formatDecimal(report.r145_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
                  id="r145_ccf" name="r145_ccf"
                  style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
                   readonly />
@@ -27803,7 +27948,7 @@ $(document).ready(function () {
 		<!-- D -->
 		<td id="ROW163" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r163_ccf != null ? #numbers.formatDecimal(report.r163_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r163_ccf != null ? #numbers.formatDecimal(report.r163_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r163_ccf" name="r163_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -29609,7 +29754,7 @@ $(document).ready(function () {
 		<!-- D -->
 		<td id="ROW171" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r171_ccf != null ? #numbers.formatDecimal(report.r171_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r171_ccf != null ? #numbers.formatDecimal(report.r171_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r171_ccf" name="r171_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -31425,7 +31570,7 @@ $(document).ready(function () {
 		<!-- D -->
 		<td id="ROW179" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r179_ccf != null ? #numbers.formatDecimal(report.r179_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r179_ccf != null ? #numbers.formatDecimal(report.r179_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r179_ccf" name="r179_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -33226,7 +33371,7 @@ $(document).ready(function () {
 		<!-- D -->
 		<td id="ROW187" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r187_ccf != null ? #numbers.formatDecimal(report.r187_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r187_ccf != null ? #numbers.formatDecimal(report.r187_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r187_ccf" name="r187_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -35027,7 +35172,7 @@ $(document).ready(function () {
 		<!-- D -->
 		<td id="ROW195" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r195_ccf != null ? #numbers.formatDecimal(report.r195_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r195_ccf != null ? #numbers.formatDecimal(report.r195_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r195_ccf" name="r195_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -36832,7 +36977,7 @@ $(document).ready(function () {
 		<!-- D -->
 		<td id="ROW203" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r203_ccf != null ? #numbers.formatDecimal(report.r203_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r203_ccf != null ? #numbers.formatDecimal(report.r203_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r203_ccf" name="r203_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -38636,7 +38781,7 @@ $(document).ready(function () {
 		<!-- D -->
 		<td id="ROW211" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r211_ccf != null ? #numbers.formatDecimal(report.r211_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r211_ccf != null ? #numbers.formatDecimal(report.r211_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r211_ccf" name="r211_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -40450,7 +40595,7 @@ $(document).ready(function () {
 		<!-- D -->
 		<td id="ROW219" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r219_ccf != null ? #numbers.formatDecimal(report.r219_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r219_ccf != null ? #numbers.formatDecimal(report.r219_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r219_ccf" name="r219_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -42254,7 +42399,7 @@ $(document).ready(function () {
 		<!-- D -->
 		<td id="ROW227" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r227_ccf != null ? #numbers.formatDecimal(report.r227_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r227_ccf != null ? #numbers.formatDecimal(report.r227_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r227_ccf" name="r227_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -44059,7 +44204,7 @@ $(document).ready(function () {
 		<!-- D -->
 		<td id="ROW235" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r235_ccf != null ? #numbers.formatDecimal(report.r235_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r235_ccf != null ? #numbers.formatDecimal(report.r235_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r235_ccf" name="r235_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -45868,7 +46013,7 @@ $(document).ready(function () {
 		<!-- D -->
 		<td id="ROW243" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r243_ccf != null ? #numbers.formatDecimal(report.r243_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r243_ccf != null ? #numbers.formatDecimal(report.r243_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r243_ccf" name="r243_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -47672,7 +47817,7 @@ $(document).ready(function () {
 		</td>
 		
 		                            <td colspan="26"
-												style="text-align: right; background-color: #D3D3D3;"></td>	
+												style="text-align: right; background-color: #A9A9A9;"></td>	
 												
 												
 	<!-- AC FORMULA +'[M-SRWA 12d (Derivatives) ]#REF'!J45-->
@@ -47702,7 +47847,7 @@ $(document).ready(function () {
 							
 				
 				                      <td colspan="26"
-												style="text-align: right; background-color: #D3D3D3;"></td>						
+												style="text-align: right; background-color: #A9A9A9;"></td>						
 										
 										
 										
@@ -47740,7 +47885,7 @@ $(document).ready(function () {
 		<!-- D -->
 		<td id="ROW253" style="padding-left: 20px; font-weight: bold; text-align: right;">
 			<input class="display-input Show_input" type="text"
-			 th:value="${report.r253_ccf != null ? #numbers.formatDecimal(report.r253_ccf, 1, 'COMMA', 0, 'POINT') : '0'}"
+			 th:value="${report.r253_ccf != null ? #numbers.formatDecimal(report.r253_ccf, 1, 'COMMA', 0, 'POINT') : ''}"
 			 id="r253_ccf" name="r253_ccf"
 			 style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 			 readonly />
@@ -47940,7 +48085,7 @@ $(document).ready(function () {
 
  
                                             <td colspan="26"
-												style="text-align: right; background-color: #D3D3D3;"></td>
+												style="text-align: right; background-color: #A9A9A9;"></td>
 												
 									
 									
@@ -48181,125 +48326,6 @@ $(document).ready(function () {
 
 
 
-<style>
-/* Your existing CSS - this is the correct approach */
-.scrollable-table-container {
-	/* This is the key: it creates the scroll context */
-	max-height: 550px;
-	/* Or a suitable height like 80vh for responsive design */
-	overflow-y: auto;
-	border: 1px solid #ccc;
-}
 
-/* Your existing sticky header CSS, targeting the tr elements within the thead */
-.scrollable-table-container thead tr:nth-child(1) {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9;
-	z-index: 5;
-}
-
-.scrollable-table-container thead tr:nth-child(2) {
-	position: sticky;
-	top: 36px; /* adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 4;
-}
-
-.scrollable-table-container thead tr:nth-child(3) {
-	position: sticky;
-	top: 72px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 3;
-}
-
-.scrollable-table-container thead tr:nth-child(4) {
-	position: sticky;
-	top: 100px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 2;
-}
-
-.scrollable-table-container thead tr:nth-child(5) {
-	position: sticky;
-	top: 135px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
-</style>
-
-
-<style>
-.inner {
-	max-height: 600px; /* Adjust height as needed */
-	overflow: auto;
-	border: 1px solid #dee2e6;
-}
-
-/* Sticky thead */
-#reports thead th {
-	position: sticky;
-	top: 0;
-	background-color: #f8f9fa; /* Match Bootstrap thead-light */
-	z-index: 2;
-}
-
-div.dataTables_wrapper div.dataTables_paginate {
-	text-align: right !important;
-	float: right !important;
-	width: auto;
-	margin-top: 10px;
-}
-
-/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-div.dataTables_wrapper div.dataTables_info {
-	float: left !important;
-	margin-top: 10px;
-}
-
-.pagination {
-	margin: 0;
-}
-
-.page-item.active .page-link {
-	background-color: #386276;
-	border-color: #386276;
-}
-
-.page-link {
-	color: #386276;
-}
-
-.page-link:hover {
-	color: #2a4a5c;
-}
-
-.form-select {
-	display: inline-block;
-	width: auto;
-}
-</style>
-
-<style>
-.scrollable-table-container {
-	height: 110vh; /* or any fixed height like 400px */
-	overflow-y: auto; /* Enable vertical scrolling */
-}
-
-.scrollable-table-container thead th {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9; /* Header background */
-	z-index: 2; /* Ensure header stays above the content */
-}
-
-/* If you want a specific row (like 5th row) sticky */
-.scrollable-table-container tbody tr:nth-child(5) {
-	position: sticky;
-	top: 135px; /* Adjust based on header + previous rows height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
-</style>
 
 </html>
