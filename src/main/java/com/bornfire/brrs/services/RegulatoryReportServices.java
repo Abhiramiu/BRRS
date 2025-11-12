@@ -1371,15 +1371,6 @@ public class RegulatoryReportServices {
 		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
 		 */
 
-		case "M_SRWA_12G":
-			try {
-				archivalData = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-
 		case "M_SRWA_12F":
 			try {
 				archivalData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
@@ -1721,6 +1712,16 @@ public class RegulatoryReportServices {
 				archivalData.addAll(QSList);
 				System.out.println("Fetched M_SRWA_12H archival data: " + QSList.size());
 				break;
+				
+				
+			 case "M_SRWA_12G":
+	              List<Object[]> srwagList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GArchival();
+	              archivalData.addAll(srwagList);
+	              System.out.println("Fetched M_SRWA_12G archival data: " + srwagList.size());
+	              break;
+	          default:
+	              System.out.println("No archival logic defined for report: " + rptcode);
+	              break;
 		}
 		return archivalData;
 	}
@@ -1936,6 +1937,12 @@ public class RegulatoryReportServices {
 
 		return response;
 	}
+	
+	
+
+	
+	
+	
 
 //Resubmission Add Ur Case Here
 public List<Object[]> getResub(String rptcode) {
@@ -1962,7 +1969,18 @@ public List<Object[]> getResub(String rptcode) {
 					System.err.println("Error fetching resubmission data for M_SRWA_12H: " + e.getMessage());
 					e.printStackTrace();
 				}
-				break;	
+				break;
+				
+				 case "M_SRWA_12G":
+			            try {
+			                List<Object[]> resubList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GResub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for M_SRWA_12G: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_SRWA_12G: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			            break;
 
 
 

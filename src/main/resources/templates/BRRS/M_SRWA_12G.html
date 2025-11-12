@@ -288,6 +288,7 @@ PURPOSE		: M_SRWA_12G BRRSREPORT
 		
 	</style>
 	<script th:inline="javascript">
+	let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -348,6 +349,7 @@ PURPOSE		: M_SRWA_12G BRRSREPORT
 			// alert("Details page not available for Manual Report");
 		//}
 		function showdetails() {
+		    isDetailsModal = true; // mark that this modal is from Details
 			 showResultModal('BRRS',' Details page not available for Manual Report');
 		}
 
@@ -605,15 +607,30 @@ $(document).ready(function() {
 
 <script>
 function closemodel() {
-    $("#resultModal").modal("hide");
+/*    $("#resultModal").modal("hide");
     $('#loader').modal('hide');
     setTimeout(function () {
         location.reload();
-    }, 300);
+        }, 300);*/
+        $("#resultModal").modal("hide");
+        $('#loader').modal('hide');
+
+        // Only reload if not from Details modal
+        if (!isDetailsModal) {
+            setTimeout(function () {
+                location.reload();
+            }, 300);
+        } else {
+            // reset flag for next modal usage
+            isDetailsModal = false;
+        }
 }
 
 function fileuploads(btn) {
     var asondate = btn.getAttribute("data-todate");
+    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+    
+    
     $('#loader').modal('show');
 
     // Pre-calculations
@@ -638,11 +655,13 @@ function fileuploads(btn) {
     // ✅ One combined FormData for all entities
     const formData = new FormData();
     formData.append("asondate", asondate);
+    formData.append("type", type);
+    
 
     // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
-    const selectedType = $("#SRWA_12GType").val(); // Get from dropdown
-    formData.append("type", selectedType);
-    console.log("Selected type:", selectedType);
+    //const selectedType = $("#SRWA_12GType").val(); // Get from dropdown
+    //formData.append("type", selectedType);
+    //console.log("Selected type:", selectedType);
 
     // --- Entity fields (R10-R17) ---
     for (let i = 11; i <= 61; i++) {
@@ -653,12 +672,18 @@ function fileuploads(btn) {
                 formData.append(input.attr("name"), input.val());
             }
         });
-    }
-    console.log("✅ Entity executed successfully");
+    }console.log("✅ Entity executed successfully");
+    
+	//Select API endpoint dynamically
+	let apiUrl = './MSRWA12GupdateAll'; // normal update
+	if (type && type.toUpperCase() === 'RESUB') {
+		apiUrl = './UpdateM_SRWA_12G_ReSub'; // Resubmission endpoint
+	}
+    
 
     // ✅ Single AJAX call with type info
     $.ajax({
-        url: './MSRWA12GupdateAll',
+        url: apiUrl,
         type: 'POST',
         data: formData,
         processData: false,
@@ -669,8 +694,8 @@ function fileuploads(btn) {
             $("#resultModalBody").text("Updated successfully");
             $("#resultModal").modal("show");
         },
-        error: function (xhr) {
-            console.log("Error response:", xhr.responseText);
+        error: function (jqXHR) {
+            console.log("Error response:", jqXHR.responseText);
             $("#resultModalLabel").text("Error");
             $("#resultModalBody").text("Update failed. Check console for details.");
             $("#resultModal").modal("show");
@@ -719,13 +744,14 @@ function fileuploads(btn) {
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
 						
-<!-- Modify button -->
-<button type="button" class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-		th:if="${type != 'ARCHIVAL'}"
-       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-        id="addRecord">Modify</button>
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
+							th:if="${type == 'RESUB' or type=='RBS' and type != 'ARCHIVAL'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+							id="addRecord">
+							Modify
+						</button>
 
 <!-- Cancel button (hidden initially) -->
 <button type="button" class="custom-tab-btn"
@@ -796,7 +822,7 @@ function fileuploads(btn) {
 								
 									
 									
-<tbody id="entity" th:each="report: ${reportsummary1}" style="font-family: Arial;">
+<tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
 											<tr>
 												<td id="r11"><input class="display-input Show_input"
 													type="text"
@@ -2987,7 +3013,7 @@ function fileuploads(btn) {
             type="button"
             class="custom-tab-btn Show_input" 
             form="fileupload"
-            th:attr="data-todate=${asondate}" 
+            th:attr="data-todate=${asondate}, data-type=${type}"
             onclick="fileuploads(this);" 
             style="display: none;">
         Submit

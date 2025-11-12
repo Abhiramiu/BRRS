@@ -3,34 +3,48 @@ package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+
+
 @Entity
 @Table(name = "BRRS_M_SRWA_12G_ARCHIVALTABLE_SUMMARY")
+@IdClass(M_SRWA_12G_Archival_Summary_PK.class)
 
 public class M_SRWA_12G_Archival_Summary_Entity{	
 
 
 
-
+	@Id
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	
 	@Id
-	private Date report_date;
-	private String report_version;
-	private String report_frequency;
-	private String report_code;
-	private String report_desc;
-	private String entity_flg;
-	private String modify_flg;
-	private String del_flg;
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
+	
+    @Column(name = "REPORT_RESUBDATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date reportResubDate;	
+	
+	public String report_frequency;
+	public String report_code;
+	public String report_desc;
+	public String entity_flg;
+	public String modify_flg;
+	public String del_flg;
 
 	private String r11_security_firm;
 	private BigDecimal r11_credit_rating;
@@ -336,32 +350,53 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 	private BigDecimal r61_risk_weighted_amount;
 
 	
-	
-	
+
+
+
 	public Date getReport_date() {
-		return report_date;
+		return reportDate;
 	}
 
 
 
 
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+
+	public void setReport_date(Date reportDate) {
+		this.reportDate = reportDate;
 	}
+
 
 
 
 
 	public String getReport_version() {
-		return report_version;
+		return reportVersion;
 	}
 
 
 
 
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
+
+	public void setReport_version(String reportVersion) {
+		this.reportVersion = reportVersion;
 	}
+
+
+
+
+
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+
+
+
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+
 
 
 
@@ -373,9 +408,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setReport_frequency(String report_frequency) {
 		this.report_frequency = report_frequency;
 	}
+
 
 
 
@@ -387,9 +424,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setReport_code(String report_code) {
 		this.report_code = report_code;
 	}
+
 
 
 
@@ -401,9 +440,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setReport_desc(String report_desc) {
 		this.report_desc = report_desc;
 	}
+
 
 
 
@@ -415,9 +456,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setEntity_flg(String entity_flg) {
 		this.entity_flg = entity_flg;
 	}
+
 
 
 
@@ -429,9 +472,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setModify_flg(String modify_flg) {
 		this.modify_flg = modify_flg;
 	}
+
 
 
 
@@ -443,9 +488,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setDel_flg(String del_flg) {
 		this.del_flg = del_flg;
 	}
+
 
 
 
@@ -457,9 +504,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR11_security_firm(String r11_security_firm) {
 		this.r11_security_firm = r11_security_firm;
 	}
+
 
 
 
@@ -471,9 +520,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR11_credit_rating(BigDecimal r11_credit_rating) {
 		this.r11_credit_rating = r11_credit_rating;
 	}
+
 
 
 
@@ -485,9 +536,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR11_rating_agency(String r11_rating_agency) {
 		this.r11_rating_agency = r11_rating_agency;
 	}
+
 
 
 
@@ -499,9 +552,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR11_exposure_amount(BigDecimal r11_exposure_amount) {
 		this.r11_exposure_amount = r11_exposure_amount;
 	}
+
 
 
 
@@ -513,9 +568,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR11_risk_weight(BigDecimal r11_risk_weight) {
 		this.r11_risk_weight = r11_risk_weight;
 	}
+
 
 
 
@@ -527,9 +584,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR11_risk_weighted_amount(BigDecimal r11_risk_weighted_amount) {
 		this.r11_risk_weighted_amount = r11_risk_weighted_amount;
 	}
+
 
 
 
@@ -541,9 +600,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR12_security_firm(String r12_security_firm) {
 		this.r12_security_firm = r12_security_firm;
 	}
+
 
 
 
@@ -555,9 +616,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR12_credit_rating(BigDecimal r12_credit_rating) {
 		this.r12_credit_rating = r12_credit_rating;
 	}
+
 
 
 
@@ -569,9 +632,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR12_rating_agency(String r12_rating_agency) {
 		this.r12_rating_agency = r12_rating_agency;
 	}
+
 
 
 
@@ -583,9 +648,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR12_exposure_amount(BigDecimal r12_exposure_amount) {
 		this.r12_exposure_amount = r12_exposure_amount;
 	}
+
 
 
 
@@ -597,9 +664,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR12_risk_weight(BigDecimal r12_risk_weight) {
 		this.r12_risk_weight = r12_risk_weight;
 	}
+
 
 
 
@@ -611,9 +680,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR12_risk_weighted_amount(BigDecimal r12_risk_weighted_amount) {
 		this.r12_risk_weighted_amount = r12_risk_weighted_amount;
 	}
+
 
 
 
@@ -625,9 +696,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR13_security_firm(String r13_security_firm) {
 		this.r13_security_firm = r13_security_firm;
 	}
+
 
 
 
@@ -639,9 +712,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR13_credit_rating(BigDecimal r13_credit_rating) {
 		this.r13_credit_rating = r13_credit_rating;
 	}
+
 
 
 
@@ -653,9 +728,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR13_rating_agency(String r13_rating_agency) {
 		this.r13_rating_agency = r13_rating_agency;
 	}
+
 
 
 
@@ -667,9 +744,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR13_exposure_amount(BigDecimal r13_exposure_amount) {
 		this.r13_exposure_amount = r13_exposure_amount;
 	}
+
 
 
 
@@ -681,9 +760,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR13_risk_weight(BigDecimal r13_risk_weight) {
 		this.r13_risk_weight = r13_risk_weight;
 	}
+
 
 
 
@@ -695,9 +776,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR13_risk_weighted_amount(BigDecimal r13_risk_weighted_amount) {
 		this.r13_risk_weighted_amount = r13_risk_weighted_amount;
 	}
+
 
 
 
@@ -709,9 +792,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR14_security_firm(String r14_security_firm) {
 		this.r14_security_firm = r14_security_firm;
 	}
+
 
 
 
@@ -723,9 +808,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR14_credit_rating(BigDecimal r14_credit_rating) {
 		this.r14_credit_rating = r14_credit_rating;
 	}
+
 
 
 
@@ -737,9 +824,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR14_rating_agency(String r14_rating_agency) {
 		this.r14_rating_agency = r14_rating_agency;
 	}
+
 
 
 
@@ -751,9 +840,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR14_exposure_amount(BigDecimal r14_exposure_amount) {
 		this.r14_exposure_amount = r14_exposure_amount;
 	}
+
 
 
 
@@ -765,9 +856,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR14_risk_weight(BigDecimal r14_risk_weight) {
 		this.r14_risk_weight = r14_risk_weight;
 	}
+
 
 
 
@@ -779,9 +872,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR14_risk_weighted_amount(BigDecimal r14_risk_weighted_amount) {
 		this.r14_risk_weighted_amount = r14_risk_weighted_amount;
 	}
+
 
 
 
@@ -793,9 +888,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR15_security_firm(String r15_security_firm) {
 		this.r15_security_firm = r15_security_firm;
 	}
+
 
 
 
@@ -807,9 +904,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR15_credit_rating(BigDecimal r15_credit_rating) {
 		this.r15_credit_rating = r15_credit_rating;
 	}
+
 
 
 
@@ -821,9 +920,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR15_rating_agency(String r15_rating_agency) {
 		this.r15_rating_agency = r15_rating_agency;
 	}
+
 
 
 
@@ -835,9 +936,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR15_exposure_amount(BigDecimal r15_exposure_amount) {
 		this.r15_exposure_amount = r15_exposure_amount;
 	}
+
 
 
 
@@ -849,9 +952,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR15_risk_weight(BigDecimal r15_risk_weight) {
 		this.r15_risk_weight = r15_risk_weight;
 	}
+
 
 
 
@@ -863,9 +968,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR15_risk_weighted_amount(BigDecimal r15_risk_weighted_amount) {
 		this.r15_risk_weighted_amount = r15_risk_weighted_amount;
 	}
+
 
 
 
@@ -877,9 +984,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR16_security_firm(String r16_security_firm) {
 		this.r16_security_firm = r16_security_firm;
 	}
+
 
 
 
@@ -891,9 +1000,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR16_credit_rating(BigDecimal r16_credit_rating) {
 		this.r16_credit_rating = r16_credit_rating;
 	}
+
 
 
 
@@ -905,9 +1016,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR16_rating_agency(String r16_rating_agency) {
 		this.r16_rating_agency = r16_rating_agency;
 	}
+
 
 
 
@@ -919,9 +1032,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR16_exposure_amount(BigDecimal r16_exposure_amount) {
 		this.r16_exposure_amount = r16_exposure_amount;
 	}
+
 
 
 
@@ -933,9 +1048,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR16_risk_weight(BigDecimal r16_risk_weight) {
 		this.r16_risk_weight = r16_risk_weight;
 	}
+
 
 
 
@@ -947,9 +1064,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR16_risk_weighted_amount(BigDecimal r16_risk_weighted_amount) {
 		this.r16_risk_weighted_amount = r16_risk_weighted_amount;
 	}
+
 
 
 
@@ -961,9 +1080,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR17_security_firm(String r17_security_firm) {
 		this.r17_security_firm = r17_security_firm;
 	}
+
 
 
 
@@ -975,9 +1096,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR17_credit_rating(BigDecimal r17_credit_rating) {
 		this.r17_credit_rating = r17_credit_rating;
 	}
+
 
 
 
@@ -989,9 +1112,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR17_rating_agency(String r17_rating_agency) {
 		this.r17_rating_agency = r17_rating_agency;
 	}
+
 
 
 
@@ -1003,9 +1128,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR17_exposure_amount(BigDecimal r17_exposure_amount) {
 		this.r17_exposure_amount = r17_exposure_amount;
 	}
+
 
 
 
@@ -1017,9 +1144,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR17_risk_weight(BigDecimal r17_risk_weight) {
 		this.r17_risk_weight = r17_risk_weight;
 	}
+
 
 
 
@@ -1031,9 +1160,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR17_risk_weighted_amount(BigDecimal r17_risk_weighted_amount) {
 		this.r17_risk_weighted_amount = r17_risk_weighted_amount;
 	}
+
 
 
 
@@ -1045,9 +1176,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR18_security_firm(String r18_security_firm) {
 		this.r18_security_firm = r18_security_firm;
 	}
+
 
 
 
@@ -1059,9 +1192,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR18_credit_rating(BigDecimal r18_credit_rating) {
 		this.r18_credit_rating = r18_credit_rating;
 	}
+
 
 
 
@@ -1073,9 +1208,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR18_rating_agency(String r18_rating_agency) {
 		this.r18_rating_agency = r18_rating_agency;
 	}
+
 
 
 
@@ -1087,9 +1224,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR18_exposure_amount(BigDecimal r18_exposure_amount) {
 		this.r18_exposure_amount = r18_exposure_amount;
 	}
+
 
 
 
@@ -1101,9 +1240,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR18_risk_weight(BigDecimal r18_risk_weight) {
 		this.r18_risk_weight = r18_risk_weight;
 	}
+
 
 
 
@@ -1115,9 +1256,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR18_risk_weighted_amount(BigDecimal r18_risk_weighted_amount) {
 		this.r18_risk_weighted_amount = r18_risk_weighted_amount;
 	}
+
 
 
 
@@ -1129,9 +1272,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR19_security_firm(String r19_security_firm) {
 		this.r19_security_firm = r19_security_firm;
 	}
+
 
 
 
@@ -1143,9 +1288,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR19_credit_rating(BigDecimal r19_credit_rating) {
 		this.r19_credit_rating = r19_credit_rating;
 	}
+
 
 
 
@@ -1157,9 +1304,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR19_rating_agency(String r19_rating_agency) {
 		this.r19_rating_agency = r19_rating_agency;
 	}
+
 
 
 
@@ -1171,9 +1320,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR19_exposure_amount(BigDecimal r19_exposure_amount) {
 		this.r19_exposure_amount = r19_exposure_amount;
 	}
+
 
 
 
@@ -1185,9 +1336,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR19_risk_weight(BigDecimal r19_risk_weight) {
 		this.r19_risk_weight = r19_risk_weight;
 	}
+
 
 
 
@@ -1199,9 +1352,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR19_risk_weighted_amount(BigDecimal r19_risk_weighted_amount) {
 		this.r19_risk_weighted_amount = r19_risk_weighted_amount;
 	}
+
 
 
 
@@ -1213,9 +1368,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR20_security_firm(String r20_security_firm) {
 		this.r20_security_firm = r20_security_firm;
 	}
+
 
 
 
@@ -1227,9 +1384,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR20_credit_rating(BigDecimal r20_credit_rating) {
 		this.r20_credit_rating = r20_credit_rating;
 	}
+
 
 
 
@@ -1241,9 +1400,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR20_rating_agency(String r20_rating_agency) {
 		this.r20_rating_agency = r20_rating_agency;
 	}
+
 
 
 
@@ -1255,9 +1416,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR20_exposure_amount(BigDecimal r20_exposure_amount) {
 		this.r20_exposure_amount = r20_exposure_amount;
 	}
+
 
 
 
@@ -1269,9 +1432,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR20_risk_weight(BigDecimal r20_risk_weight) {
 		this.r20_risk_weight = r20_risk_weight;
 	}
+
 
 
 
@@ -1283,9 +1448,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR20_risk_weighted_amount(BigDecimal r20_risk_weighted_amount) {
 		this.r20_risk_weighted_amount = r20_risk_weighted_amount;
 	}
+
 
 
 
@@ -1297,9 +1464,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR21_security_firm(String r21_security_firm) {
 		this.r21_security_firm = r21_security_firm;
 	}
+
 
 
 
@@ -1311,9 +1480,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR21_credit_rating(BigDecimal r21_credit_rating) {
 		this.r21_credit_rating = r21_credit_rating;
 	}
+
 
 
 
@@ -1325,9 +1496,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR21_rating_agency(String r21_rating_agency) {
 		this.r21_rating_agency = r21_rating_agency;
 	}
+
 
 
 
@@ -1339,9 +1512,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR21_exposure_amount(BigDecimal r21_exposure_amount) {
 		this.r21_exposure_amount = r21_exposure_amount;
 	}
+
 
 
 
@@ -1353,9 +1528,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR21_risk_weight(BigDecimal r21_risk_weight) {
 		this.r21_risk_weight = r21_risk_weight;
 	}
+
 
 
 
@@ -1367,9 +1544,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR21_risk_weighted_amount(BigDecimal r21_risk_weighted_amount) {
 		this.r21_risk_weighted_amount = r21_risk_weighted_amount;
 	}
+
 
 
 
@@ -1381,9 +1560,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR22_security_firm(String r22_security_firm) {
 		this.r22_security_firm = r22_security_firm;
 	}
+
 
 
 
@@ -1395,9 +1576,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR22_credit_rating(BigDecimal r22_credit_rating) {
 		this.r22_credit_rating = r22_credit_rating;
 	}
+
 
 
 
@@ -1409,9 +1592,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR22_rating_agency(String r22_rating_agency) {
 		this.r22_rating_agency = r22_rating_agency;
 	}
+
 
 
 
@@ -1423,9 +1608,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR22_exposure_amount(BigDecimal r22_exposure_amount) {
 		this.r22_exposure_amount = r22_exposure_amount;
 	}
+
 
 
 
@@ -1437,9 +1624,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR22_risk_weight(BigDecimal r22_risk_weight) {
 		this.r22_risk_weight = r22_risk_weight;
 	}
+
 
 
 
@@ -1451,9 +1640,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR22_risk_weighted_amount(BigDecimal r22_risk_weighted_amount) {
 		this.r22_risk_weighted_amount = r22_risk_weighted_amount;
 	}
+
 
 
 
@@ -1465,9 +1656,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR23_security_firm(String r23_security_firm) {
 		this.r23_security_firm = r23_security_firm;
 	}
+
 
 
 
@@ -1479,9 +1672,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR23_credit_rating(BigDecimal r23_credit_rating) {
 		this.r23_credit_rating = r23_credit_rating;
 	}
+
 
 
 
@@ -1493,9 +1688,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR23_rating_agency(String r23_rating_agency) {
 		this.r23_rating_agency = r23_rating_agency;
 	}
+
 
 
 
@@ -1507,9 +1704,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR23_exposure_amount(BigDecimal r23_exposure_amount) {
 		this.r23_exposure_amount = r23_exposure_amount;
 	}
+
 
 
 
@@ -1521,9 +1720,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR23_risk_weight(BigDecimal r23_risk_weight) {
 		this.r23_risk_weight = r23_risk_weight;
 	}
+
 
 
 
@@ -1535,9 +1736,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR23_risk_weighted_amount(BigDecimal r23_risk_weighted_amount) {
 		this.r23_risk_weighted_amount = r23_risk_weighted_amount;
 	}
+
 
 
 
@@ -1549,9 +1752,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR24_security_firm(String r24_security_firm) {
 		this.r24_security_firm = r24_security_firm;
 	}
+
 
 
 
@@ -1563,9 +1768,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR24_credit_rating(BigDecimal r24_credit_rating) {
 		this.r24_credit_rating = r24_credit_rating;
 	}
+
 
 
 
@@ -1577,9 +1784,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR24_rating_agency(String r24_rating_agency) {
 		this.r24_rating_agency = r24_rating_agency;
 	}
+
 
 
 
@@ -1591,9 +1800,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR24_exposure_amount(BigDecimal r24_exposure_amount) {
 		this.r24_exposure_amount = r24_exposure_amount;
 	}
+
 
 
 
@@ -1605,9 +1816,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR24_risk_weight(BigDecimal r24_risk_weight) {
 		this.r24_risk_weight = r24_risk_weight;
 	}
+
 
 
 
@@ -1619,9 +1832,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR24_risk_weighted_amount(BigDecimal r24_risk_weighted_amount) {
 		this.r24_risk_weighted_amount = r24_risk_weighted_amount;
 	}
+
 
 
 
@@ -1633,9 +1848,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR25_security_firm(String r25_security_firm) {
 		this.r25_security_firm = r25_security_firm;
 	}
+
 
 
 
@@ -1647,9 +1864,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR25_credit_rating(BigDecimal r25_credit_rating) {
 		this.r25_credit_rating = r25_credit_rating;
 	}
+
 
 
 
@@ -1661,9 +1880,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR25_rating_agency(String r25_rating_agency) {
 		this.r25_rating_agency = r25_rating_agency;
 	}
+
 
 
 
@@ -1675,9 +1896,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR25_exposure_amount(BigDecimal r25_exposure_amount) {
 		this.r25_exposure_amount = r25_exposure_amount;
 	}
+
 
 
 
@@ -1689,9 +1912,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR25_risk_weight(BigDecimal r25_risk_weight) {
 		this.r25_risk_weight = r25_risk_weight;
 	}
+
 
 
 
@@ -1703,9 +1928,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR25_risk_weighted_amount(BigDecimal r25_risk_weighted_amount) {
 		this.r25_risk_weighted_amount = r25_risk_weighted_amount;
 	}
+
 
 
 
@@ -1717,9 +1944,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR26_security_firm(String r26_security_firm) {
 		this.r26_security_firm = r26_security_firm;
 	}
+
 
 
 
@@ -1731,9 +1960,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR26_credit_rating(BigDecimal r26_credit_rating) {
 		this.r26_credit_rating = r26_credit_rating;
 	}
+
 
 
 
@@ -1745,9 +1976,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR26_rating_agency(String r26_rating_agency) {
 		this.r26_rating_agency = r26_rating_agency;
 	}
+
 
 
 
@@ -1759,9 +1992,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR26_exposure_amount(BigDecimal r26_exposure_amount) {
 		this.r26_exposure_amount = r26_exposure_amount;
 	}
+
 
 
 
@@ -1773,9 +2008,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR26_risk_weight(BigDecimal r26_risk_weight) {
 		this.r26_risk_weight = r26_risk_weight;
 	}
+
 
 
 
@@ -1787,9 +2024,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR26_risk_weighted_amount(BigDecimal r26_risk_weighted_amount) {
 		this.r26_risk_weighted_amount = r26_risk_weighted_amount;
 	}
+
 
 
 
@@ -1801,9 +2040,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR27_security_firm(String r27_security_firm) {
 		this.r27_security_firm = r27_security_firm;
 	}
+
 
 
 
@@ -1815,9 +2056,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR27_credit_rating(BigDecimal r27_credit_rating) {
 		this.r27_credit_rating = r27_credit_rating;
 	}
+
 
 
 
@@ -1829,9 +2072,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR27_rating_agency(String r27_rating_agency) {
 		this.r27_rating_agency = r27_rating_agency;
 	}
+
 
 
 
@@ -1843,9 +2088,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR27_exposure_amount(BigDecimal r27_exposure_amount) {
 		this.r27_exposure_amount = r27_exposure_amount;
 	}
+
 
 
 
@@ -1857,9 +2104,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR27_risk_weight(BigDecimal r27_risk_weight) {
 		this.r27_risk_weight = r27_risk_weight;
 	}
+
 
 
 
@@ -1871,9 +2120,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR27_risk_weighted_amount(BigDecimal r27_risk_weighted_amount) {
 		this.r27_risk_weighted_amount = r27_risk_weighted_amount;
 	}
+
 
 
 
@@ -1885,9 +2136,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR28_security_firm(String r28_security_firm) {
 		this.r28_security_firm = r28_security_firm;
 	}
+
 
 
 
@@ -1899,9 +2152,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR28_credit_rating(BigDecimal r28_credit_rating) {
 		this.r28_credit_rating = r28_credit_rating;
 	}
+
 
 
 
@@ -1913,9 +2168,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR28_rating_agency(String r28_rating_agency) {
 		this.r28_rating_agency = r28_rating_agency;
 	}
+
 
 
 
@@ -1927,9 +2184,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR28_exposure_amount(BigDecimal r28_exposure_amount) {
 		this.r28_exposure_amount = r28_exposure_amount;
 	}
+
 
 
 
@@ -1941,9 +2200,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR28_risk_weight(BigDecimal r28_risk_weight) {
 		this.r28_risk_weight = r28_risk_weight;
 	}
+
 
 
 
@@ -1955,9 +2216,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR28_risk_weighted_amount(BigDecimal r28_risk_weighted_amount) {
 		this.r28_risk_weighted_amount = r28_risk_weighted_amount;
 	}
+
 
 
 
@@ -1969,9 +2232,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR29_security_firm(String r29_security_firm) {
 		this.r29_security_firm = r29_security_firm;
 	}
+
 
 
 
@@ -1983,9 +2248,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR29_credit_rating(BigDecimal r29_credit_rating) {
 		this.r29_credit_rating = r29_credit_rating;
 	}
+
 
 
 
@@ -1997,9 +2264,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR29_rating_agency(String r29_rating_agency) {
 		this.r29_rating_agency = r29_rating_agency;
 	}
+
 
 
 
@@ -2011,9 +2280,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR29_exposure_amount(BigDecimal r29_exposure_amount) {
 		this.r29_exposure_amount = r29_exposure_amount;
 	}
+
 
 
 
@@ -2025,9 +2296,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR29_risk_weight(BigDecimal r29_risk_weight) {
 		this.r29_risk_weight = r29_risk_weight;
 	}
+
 
 
 
@@ -2039,9 +2312,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR29_risk_weighted_amount(BigDecimal r29_risk_weighted_amount) {
 		this.r29_risk_weighted_amount = r29_risk_weighted_amount;
 	}
+
 
 
 
@@ -2053,9 +2328,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR30_security_firm(String r30_security_firm) {
 		this.r30_security_firm = r30_security_firm;
 	}
+
 
 
 
@@ -2067,9 +2344,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR30_credit_rating(BigDecimal r30_credit_rating) {
 		this.r30_credit_rating = r30_credit_rating;
 	}
+
 
 
 
@@ -2081,9 +2360,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR30_rating_agency(String r30_rating_agency) {
 		this.r30_rating_agency = r30_rating_agency;
 	}
+
 
 
 
@@ -2095,9 +2376,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR30_exposure_amount(BigDecimal r30_exposure_amount) {
 		this.r30_exposure_amount = r30_exposure_amount;
 	}
+
 
 
 
@@ -2109,9 +2392,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR30_risk_weight(BigDecimal r30_risk_weight) {
 		this.r30_risk_weight = r30_risk_weight;
 	}
+
 
 
 
@@ -2123,9 +2408,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR30_risk_weighted_amount(BigDecimal r30_risk_weighted_amount) {
 		this.r30_risk_weighted_amount = r30_risk_weighted_amount;
 	}
+
 
 
 
@@ -2137,9 +2424,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR31_security_firm(String r31_security_firm) {
 		this.r31_security_firm = r31_security_firm;
 	}
+
 
 
 
@@ -2151,9 +2440,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR31_credit_rating(BigDecimal r31_credit_rating) {
 		this.r31_credit_rating = r31_credit_rating;
 	}
+
 
 
 
@@ -2165,9 +2456,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR31_rating_agency(String r31_rating_agency) {
 		this.r31_rating_agency = r31_rating_agency;
 	}
+
 
 
 
@@ -2179,9 +2472,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR31_exposure_amount(BigDecimal r31_exposure_amount) {
 		this.r31_exposure_amount = r31_exposure_amount;
 	}
+
 
 
 
@@ -2193,9 +2488,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR31_risk_weight(BigDecimal r31_risk_weight) {
 		this.r31_risk_weight = r31_risk_weight;
 	}
+
 
 
 
@@ -2207,9 +2504,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR31_risk_weighted_amount(BigDecimal r31_risk_weighted_amount) {
 		this.r31_risk_weighted_amount = r31_risk_weighted_amount;
 	}
+
 
 
 
@@ -2221,9 +2520,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR32_security_firm(String r32_security_firm) {
 		this.r32_security_firm = r32_security_firm;
 	}
+
 
 
 
@@ -2235,9 +2536,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR32_credit_rating(BigDecimal r32_credit_rating) {
 		this.r32_credit_rating = r32_credit_rating;
 	}
+
 
 
 
@@ -2249,9 +2552,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR32_rating_agency(String r32_rating_agency) {
 		this.r32_rating_agency = r32_rating_agency;
 	}
+
 
 
 
@@ -2263,9 +2568,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR32_exposure_amount(BigDecimal r32_exposure_amount) {
 		this.r32_exposure_amount = r32_exposure_amount;
 	}
+
 
 
 
@@ -2277,9 +2584,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR32_risk_weight(BigDecimal r32_risk_weight) {
 		this.r32_risk_weight = r32_risk_weight;
 	}
+
 
 
 
@@ -2291,9 +2600,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR32_risk_weighted_amount(BigDecimal r32_risk_weighted_amount) {
 		this.r32_risk_weighted_amount = r32_risk_weighted_amount;
 	}
+
 
 
 
@@ -2305,9 +2616,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR33_security_firm(String r33_security_firm) {
 		this.r33_security_firm = r33_security_firm;
 	}
+
 
 
 
@@ -2319,9 +2632,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR33_credit_rating(BigDecimal r33_credit_rating) {
 		this.r33_credit_rating = r33_credit_rating;
 	}
+
 
 
 
@@ -2333,9 +2648,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR33_rating_agency(String r33_rating_agency) {
 		this.r33_rating_agency = r33_rating_agency;
 	}
+
 
 
 
@@ -2347,9 +2664,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR33_exposure_amount(BigDecimal r33_exposure_amount) {
 		this.r33_exposure_amount = r33_exposure_amount;
 	}
+
 
 
 
@@ -2361,9 +2680,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR33_risk_weight(BigDecimal r33_risk_weight) {
 		this.r33_risk_weight = r33_risk_weight;
 	}
+
 
 
 
@@ -2375,9 +2696,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR33_risk_weighted_amount(BigDecimal r33_risk_weighted_amount) {
 		this.r33_risk_weighted_amount = r33_risk_weighted_amount;
 	}
+
 
 
 
@@ -2389,9 +2712,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR34_security_firm(String r34_security_firm) {
 		this.r34_security_firm = r34_security_firm;
 	}
+
 
 
 
@@ -2403,9 +2728,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR34_credit_rating(BigDecimal r34_credit_rating) {
 		this.r34_credit_rating = r34_credit_rating;
 	}
+
 
 
 
@@ -2417,9 +2744,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR34_rating_agency(String r34_rating_agency) {
 		this.r34_rating_agency = r34_rating_agency;
 	}
+
 
 
 
@@ -2431,9 +2760,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR34_exposure_amount(BigDecimal r34_exposure_amount) {
 		this.r34_exposure_amount = r34_exposure_amount;
 	}
+
 
 
 
@@ -2445,9 +2776,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR34_risk_weight(BigDecimal r34_risk_weight) {
 		this.r34_risk_weight = r34_risk_weight;
 	}
+
 
 
 
@@ -2459,9 +2792,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR34_risk_weighted_amount(BigDecimal r34_risk_weighted_amount) {
 		this.r34_risk_weighted_amount = r34_risk_weighted_amount;
 	}
+
 
 
 
@@ -2473,9 +2808,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR35_security_firm(String r35_security_firm) {
 		this.r35_security_firm = r35_security_firm;
 	}
+
 
 
 
@@ -2487,9 +2824,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR35_credit_rating(BigDecimal r35_credit_rating) {
 		this.r35_credit_rating = r35_credit_rating;
 	}
+
 
 
 
@@ -2501,9 +2840,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR35_rating_agency(String r35_rating_agency) {
 		this.r35_rating_agency = r35_rating_agency;
 	}
+
 
 
 
@@ -2515,9 +2856,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR35_exposure_amount(BigDecimal r35_exposure_amount) {
 		this.r35_exposure_amount = r35_exposure_amount;
 	}
+
 
 
 
@@ -2529,9 +2872,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR35_risk_weight(BigDecimal r35_risk_weight) {
 		this.r35_risk_weight = r35_risk_weight;
 	}
+
 
 
 
@@ -2543,9 +2888,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR35_risk_weighted_amount(BigDecimal r35_risk_weighted_amount) {
 		this.r35_risk_weighted_amount = r35_risk_weighted_amount;
 	}
+
 
 
 
@@ -2557,9 +2904,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR36_security_firm(String r36_security_firm) {
 		this.r36_security_firm = r36_security_firm;
 	}
+
 
 
 
@@ -2571,9 +2920,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR36_credit_rating(BigDecimal r36_credit_rating) {
 		this.r36_credit_rating = r36_credit_rating;
 	}
+
 
 
 
@@ -2585,9 +2936,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR36_rating_agency(String r36_rating_agency) {
 		this.r36_rating_agency = r36_rating_agency;
 	}
+
 
 
 
@@ -2599,9 +2952,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR36_exposure_amount(BigDecimal r36_exposure_amount) {
 		this.r36_exposure_amount = r36_exposure_amount;
 	}
+
 
 
 
@@ -2613,9 +2968,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR36_risk_weight(BigDecimal r36_risk_weight) {
 		this.r36_risk_weight = r36_risk_weight;
 	}
+
 
 
 
@@ -2627,9 +2984,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR36_risk_weighted_amount(BigDecimal r36_risk_weighted_amount) {
 		this.r36_risk_weighted_amount = r36_risk_weighted_amount;
 	}
+
 
 
 
@@ -2641,9 +3000,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR37_security_firm(String r37_security_firm) {
 		this.r37_security_firm = r37_security_firm;
 	}
+
 
 
 
@@ -2655,9 +3016,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR37_credit_rating(BigDecimal r37_credit_rating) {
 		this.r37_credit_rating = r37_credit_rating;
 	}
+
 
 
 
@@ -2669,9 +3032,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR37_rating_agency(String r37_rating_agency) {
 		this.r37_rating_agency = r37_rating_agency;
 	}
+
 
 
 
@@ -2683,9 +3048,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR37_exposure_amount(BigDecimal r37_exposure_amount) {
 		this.r37_exposure_amount = r37_exposure_amount;
 	}
+
 
 
 
@@ -2697,9 +3064,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR37_risk_weight(BigDecimal r37_risk_weight) {
 		this.r37_risk_weight = r37_risk_weight;
 	}
+
 
 
 
@@ -2711,9 +3080,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR37_risk_weighted_amount(BigDecimal r37_risk_weighted_amount) {
 		this.r37_risk_weighted_amount = r37_risk_weighted_amount;
 	}
+
 
 
 
@@ -2725,9 +3096,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR38_security_firm(String r38_security_firm) {
 		this.r38_security_firm = r38_security_firm;
 	}
+
 
 
 
@@ -2739,9 +3112,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR38_credit_rating(BigDecimal r38_credit_rating) {
 		this.r38_credit_rating = r38_credit_rating;
 	}
+
 
 
 
@@ -2753,9 +3128,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR38_rating_agency(String r38_rating_agency) {
 		this.r38_rating_agency = r38_rating_agency;
 	}
+
 
 
 
@@ -2767,9 +3144,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR38_exposure_amount(BigDecimal r38_exposure_amount) {
 		this.r38_exposure_amount = r38_exposure_amount;
 	}
+
 
 
 
@@ -2781,9 +3160,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR38_risk_weight(BigDecimal r38_risk_weight) {
 		this.r38_risk_weight = r38_risk_weight;
 	}
+
 
 
 
@@ -2795,9 +3176,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR38_risk_weighted_amount(BigDecimal r38_risk_weighted_amount) {
 		this.r38_risk_weighted_amount = r38_risk_weighted_amount;
 	}
+
 
 
 
@@ -2809,9 +3192,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR39_security_firm(String r39_security_firm) {
 		this.r39_security_firm = r39_security_firm;
 	}
+
 
 
 
@@ -2823,9 +3208,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR39_credit_rating(BigDecimal r39_credit_rating) {
 		this.r39_credit_rating = r39_credit_rating;
 	}
+
 
 
 
@@ -2837,9 +3224,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR39_rating_agency(String r39_rating_agency) {
 		this.r39_rating_agency = r39_rating_agency;
 	}
+
 
 
 
@@ -2851,9 +3240,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR39_exposure_amount(BigDecimal r39_exposure_amount) {
 		this.r39_exposure_amount = r39_exposure_amount;
 	}
+
 
 
 
@@ -2865,9 +3256,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR39_risk_weight(BigDecimal r39_risk_weight) {
 		this.r39_risk_weight = r39_risk_weight;
 	}
+
 
 
 
@@ -2879,9 +3272,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR39_risk_weighted_amount(BigDecimal r39_risk_weighted_amount) {
 		this.r39_risk_weighted_amount = r39_risk_weighted_amount;
 	}
+
 
 
 
@@ -2893,9 +3288,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR40_security_firm(String r40_security_firm) {
 		this.r40_security_firm = r40_security_firm;
 	}
+
 
 
 
@@ -2907,9 +3304,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR40_credit_rating(BigDecimal r40_credit_rating) {
 		this.r40_credit_rating = r40_credit_rating;
 	}
+
 
 
 
@@ -2921,9 +3320,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR40_rating_agency(String r40_rating_agency) {
 		this.r40_rating_agency = r40_rating_agency;
 	}
+
 
 
 
@@ -2935,9 +3336,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR40_exposure_amount(BigDecimal r40_exposure_amount) {
 		this.r40_exposure_amount = r40_exposure_amount;
 	}
+
 
 
 
@@ -2949,9 +3352,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR40_risk_weight(BigDecimal r40_risk_weight) {
 		this.r40_risk_weight = r40_risk_weight;
 	}
+
 
 
 
@@ -2963,9 +3368,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR40_risk_weighted_amount(BigDecimal r40_risk_weighted_amount) {
 		this.r40_risk_weighted_amount = r40_risk_weighted_amount;
 	}
+
 
 
 
@@ -2977,9 +3384,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR41_security_firm(String r41_security_firm) {
 		this.r41_security_firm = r41_security_firm;
 	}
+
 
 
 
@@ -2991,9 +3400,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR41_credit_rating(BigDecimal r41_credit_rating) {
 		this.r41_credit_rating = r41_credit_rating;
 	}
+
 
 
 
@@ -3005,9 +3416,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR41_rating_agency(String r41_rating_agency) {
 		this.r41_rating_agency = r41_rating_agency;
 	}
+
 
 
 
@@ -3019,9 +3432,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR41_exposure_amount(BigDecimal r41_exposure_amount) {
 		this.r41_exposure_amount = r41_exposure_amount;
 	}
+
 
 
 
@@ -3033,9 +3448,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR41_risk_weight(BigDecimal r41_risk_weight) {
 		this.r41_risk_weight = r41_risk_weight;
 	}
+
 
 
 
@@ -3047,9 +3464,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR41_risk_weighted_amount(BigDecimal r41_risk_weighted_amount) {
 		this.r41_risk_weighted_amount = r41_risk_weighted_amount;
 	}
+
 
 
 
@@ -3061,9 +3480,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR42_security_firm(String r42_security_firm) {
 		this.r42_security_firm = r42_security_firm;
 	}
+
 
 
 
@@ -3075,9 +3496,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR42_credit_rating(BigDecimal r42_credit_rating) {
 		this.r42_credit_rating = r42_credit_rating;
 	}
+
 
 
 
@@ -3089,9 +3512,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR42_rating_agency(String r42_rating_agency) {
 		this.r42_rating_agency = r42_rating_agency;
 	}
+
 
 
 
@@ -3103,9 +3528,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR42_exposure_amount(BigDecimal r42_exposure_amount) {
 		this.r42_exposure_amount = r42_exposure_amount;
 	}
+
 
 
 
@@ -3117,9 +3544,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR42_risk_weight(BigDecimal r42_risk_weight) {
 		this.r42_risk_weight = r42_risk_weight;
 	}
+
 
 
 
@@ -3131,9 +3560,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR42_risk_weighted_amount(BigDecimal r42_risk_weighted_amount) {
 		this.r42_risk_weighted_amount = r42_risk_weighted_amount;
 	}
+
 
 
 
@@ -3145,9 +3576,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR43_security_firm(String r43_security_firm) {
 		this.r43_security_firm = r43_security_firm;
 	}
+
 
 
 
@@ -3159,9 +3592,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR43_credit_rating(BigDecimal r43_credit_rating) {
 		this.r43_credit_rating = r43_credit_rating;
 	}
+
 
 
 
@@ -3173,9 +3608,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR43_rating_agency(String r43_rating_agency) {
 		this.r43_rating_agency = r43_rating_agency;
 	}
+
 
 
 
@@ -3187,9 +3624,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR43_exposure_amount(BigDecimal r43_exposure_amount) {
 		this.r43_exposure_amount = r43_exposure_amount;
 	}
+
 
 
 
@@ -3201,9 +3640,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR43_risk_weight(BigDecimal r43_risk_weight) {
 		this.r43_risk_weight = r43_risk_weight;
 	}
+
 
 
 
@@ -3215,9 +3656,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR43_risk_weighted_amount(BigDecimal r43_risk_weighted_amount) {
 		this.r43_risk_weighted_amount = r43_risk_weighted_amount;
 	}
+
 
 
 
@@ -3229,9 +3672,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR44_security_firm(String r44_security_firm) {
 		this.r44_security_firm = r44_security_firm;
 	}
+
 
 
 
@@ -3243,9 +3688,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR44_credit_rating(BigDecimal r44_credit_rating) {
 		this.r44_credit_rating = r44_credit_rating;
 	}
+
 
 
 
@@ -3257,9 +3704,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR44_rating_agency(String r44_rating_agency) {
 		this.r44_rating_agency = r44_rating_agency;
 	}
+
 
 
 
@@ -3271,9 +3720,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR44_exposure_amount(BigDecimal r44_exposure_amount) {
 		this.r44_exposure_amount = r44_exposure_amount;
 	}
+
 
 
 
@@ -3285,9 +3736,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR44_risk_weight(BigDecimal r44_risk_weight) {
 		this.r44_risk_weight = r44_risk_weight;
 	}
+
 
 
 
@@ -3299,9 +3752,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR44_risk_weighted_amount(BigDecimal r44_risk_weighted_amount) {
 		this.r44_risk_weighted_amount = r44_risk_weighted_amount;
 	}
+
 
 
 
@@ -3313,9 +3768,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR45_security_firm(String r45_security_firm) {
 		this.r45_security_firm = r45_security_firm;
 	}
+
 
 
 
@@ -3327,9 +3784,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR45_credit_rating(BigDecimal r45_credit_rating) {
 		this.r45_credit_rating = r45_credit_rating;
 	}
+
 
 
 
@@ -3341,9 +3800,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR45_rating_agency(String r45_rating_agency) {
 		this.r45_rating_agency = r45_rating_agency;
 	}
+
 
 
 
@@ -3355,9 +3816,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR45_exposure_amount(BigDecimal r45_exposure_amount) {
 		this.r45_exposure_amount = r45_exposure_amount;
 	}
+
 
 
 
@@ -3369,9 +3832,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR45_risk_weight(BigDecimal r45_risk_weight) {
 		this.r45_risk_weight = r45_risk_weight;
 	}
+
 
 
 
@@ -3383,9 +3848,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR45_risk_weighted_amount(BigDecimal r45_risk_weighted_amount) {
 		this.r45_risk_weighted_amount = r45_risk_weighted_amount;
 	}
+
 
 
 
@@ -3397,9 +3864,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR46_security_firm(String r46_security_firm) {
 		this.r46_security_firm = r46_security_firm;
 	}
+
 
 
 
@@ -3411,9 +3880,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR46_credit_rating(BigDecimal r46_credit_rating) {
 		this.r46_credit_rating = r46_credit_rating;
 	}
+
 
 
 
@@ -3425,9 +3896,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR46_rating_agency(String r46_rating_agency) {
 		this.r46_rating_agency = r46_rating_agency;
 	}
+
 
 
 
@@ -3439,9 +3912,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR46_exposure_amount(BigDecimal r46_exposure_amount) {
 		this.r46_exposure_amount = r46_exposure_amount;
 	}
+
 
 
 
@@ -3453,9 +3928,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR46_risk_weight(BigDecimal r46_risk_weight) {
 		this.r46_risk_weight = r46_risk_weight;
 	}
+
 
 
 
@@ -3467,9 +3944,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR46_risk_weighted_amount(BigDecimal r46_risk_weighted_amount) {
 		this.r46_risk_weighted_amount = r46_risk_weighted_amount;
 	}
+
 
 
 
@@ -3481,9 +3960,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR47_security_firm(String r47_security_firm) {
 		this.r47_security_firm = r47_security_firm;
 	}
+
 
 
 
@@ -3495,9 +3976,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR47_credit_rating(BigDecimal r47_credit_rating) {
 		this.r47_credit_rating = r47_credit_rating;
 	}
+
 
 
 
@@ -3509,9 +3992,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR47_rating_agency(String r47_rating_agency) {
 		this.r47_rating_agency = r47_rating_agency;
 	}
+
 
 
 
@@ -3523,9 +4008,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR47_exposure_amount(BigDecimal r47_exposure_amount) {
 		this.r47_exposure_amount = r47_exposure_amount;
 	}
+
 
 
 
@@ -3537,9 +4024,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR47_risk_weight(BigDecimal r47_risk_weight) {
 		this.r47_risk_weight = r47_risk_weight;
 	}
+
 
 
 
@@ -3551,9 +4040,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR47_risk_weighted_amount(BigDecimal r47_risk_weighted_amount) {
 		this.r47_risk_weighted_amount = r47_risk_weighted_amount;
 	}
+
 
 
 
@@ -3565,9 +4056,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR48_security_firm(String r48_security_firm) {
 		this.r48_security_firm = r48_security_firm;
 	}
+
 
 
 
@@ -3579,9 +4072,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR48_credit_rating(BigDecimal r48_credit_rating) {
 		this.r48_credit_rating = r48_credit_rating;
 	}
+
 
 
 
@@ -3593,9 +4088,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR48_rating_agency(String r48_rating_agency) {
 		this.r48_rating_agency = r48_rating_agency;
 	}
+
 
 
 
@@ -3607,9 +4104,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR48_exposure_amount(BigDecimal r48_exposure_amount) {
 		this.r48_exposure_amount = r48_exposure_amount;
 	}
+
 
 
 
@@ -3621,9 +4120,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR48_risk_weight(BigDecimal r48_risk_weight) {
 		this.r48_risk_weight = r48_risk_weight;
 	}
+
 
 
 
@@ -3635,9 +4136,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR48_risk_weighted_amount(BigDecimal r48_risk_weighted_amount) {
 		this.r48_risk_weighted_amount = r48_risk_weighted_amount;
 	}
+
 
 
 
@@ -3649,9 +4152,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR49_security_firm(String r49_security_firm) {
 		this.r49_security_firm = r49_security_firm;
 	}
+
 
 
 
@@ -3663,9 +4168,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR49_credit_rating(BigDecimal r49_credit_rating) {
 		this.r49_credit_rating = r49_credit_rating;
 	}
+
 
 
 
@@ -3677,9 +4184,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR49_rating_agency(String r49_rating_agency) {
 		this.r49_rating_agency = r49_rating_agency;
 	}
+
 
 
 
@@ -3691,9 +4200,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR49_exposure_amount(BigDecimal r49_exposure_amount) {
 		this.r49_exposure_amount = r49_exposure_amount;
 	}
+
 
 
 
@@ -3705,9 +4216,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR49_risk_weight(BigDecimal r49_risk_weight) {
 		this.r49_risk_weight = r49_risk_weight;
 	}
+
 
 
 
@@ -3719,9 +4232,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR49_risk_weighted_amount(BigDecimal r49_risk_weighted_amount) {
 		this.r49_risk_weighted_amount = r49_risk_weighted_amount;
 	}
+
 
 
 
@@ -3733,9 +4248,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR50_security_firm(String r50_security_firm) {
 		this.r50_security_firm = r50_security_firm;
 	}
+
 
 
 
@@ -3747,9 +4264,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR50_credit_rating(BigDecimal r50_credit_rating) {
 		this.r50_credit_rating = r50_credit_rating;
 	}
+
 
 
 
@@ -3761,9 +4280,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR50_rating_agency(String r50_rating_agency) {
 		this.r50_rating_agency = r50_rating_agency;
 	}
+
 
 
 
@@ -3775,9 +4296,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR50_exposure_amount(BigDecimal r50_exposure_amount) {
 		this.r50_exposure_amount = r50_exposure_amount;
 	}
+
 
 
 
@@ -3789,9 +4312,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR50_risk_weight(BigDecimal r50_risk_weight) {
 		this.r50_risk_weight = r50_risk_weight;
 	}
+
 
 
 
@@ -3803,9 +4328,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR50_risk_weighted_amount(BigDecimal r50_risk_weighted_amount) {
 		this.r50_risk_weighted_amount = r50_risk_weighted_amount;
 	}
+
 
 
 
@@ -3817,9 +4344,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR51_security_firm(String r51_security_firm) {
 		this.r51_security_firm = r51_security_firm;
 	}
+
 
 
 
@@ -3831,9 +4360,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR51_credit_rating(BigDecimal r51_credit_rating) {
 		this.r51_credit_rating = r51_credit_rating;
 	}
+
 
 
 
@@ -3845,9 +4376,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR51_rating_agency(String r51_rating_agency) {
 		this.r51_rating_agency = r51_rating_agency;
 	}
+
 
 
 
@@ -3859,9 +4392,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR51_exposure_amount(BigDecimal r51_exposure_amount) {
 		this.r51_exposure_amount = r51_exposure_amount;
 	}
+
 
 
 
@@ -3873,9 +4408,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR51_risk_weight(BigDecimal r51_risk_weight) {
 		this.r51_risk_weight = r51_risk_weight;
 	}
+
 
 
 
@@ -3887,9 +4424,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR51_risk_weighted_amount(BigDecimal r51_risk_weighted_amount) {
 		this.r51_risk_weighted_amount = r51_risk_weighted_amount;
 	}
+
 
 
 
@@ -3901,9 +4440,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR52_security_firm(String r52_security_firm) {
 		this.r52_security_firm = r52_security_firm;
 	}
+
 
 
 
@@ -3915,9 +4456,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR52_credit_rating(BigDecimal r52_credit_rating) {
 		this.r52_credit_rating = r52_credit_rating;
 	}
+
 
 
 
@@ -3929,9 +4472,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR52_rating_agency(String r52_rating_agency) {
 		this.r52_rating_agency = r52_rating_agency;
 	}
+
 
 
 
@@ -3943,9 +4488,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR52_exposure_amount(BigDecimal r52_exposure_amount) {
 		this.r52_exposure_amount = r52_exposure_amount;
 	}
+
 
 
 
@@ -3957,9 +4504,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR52_risk_weight(BigDecimal r52_risk_weight) {
 		this.r52_risk_weight = r52_risk_weight;
 	}
+
 
 
 
@@ -3971,9 +4520,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR52_risk_weighted_amount(BigDecimal r52_risk_weighted_amount) {
 		this.r52_risk_weighted_amount = r52_risk_weighted_amount;
 	}
+
 
 
 
@@ -3985,9 +4536,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR53_security_firm(String r53_security_firm) {
 		this.r53_security_firm = r53_security_firm;
 	}
+
 
 
 
@@ -3999,9 +4552,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR53_credit_rating(BigDecimal r53_credit_rating) {
 		this.r53_credit_rating = r53_credit_rating;
 	}
+
 
 
 
@@ -4013,9 +4568,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR53_rating_agency(String r53_rating_agency) {
 		this.r53_rating_agency = r53_rating_agency;
 	}
+
 
 
 
@@ -4027,9 +4584,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR53_exposure_amount(BigDecimal r53_exposure_amount) {
 		this.r53_exposure_amount = r53_exposure_amount;
 	}
+
 
 
 
@@ -4041,9 +4600,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR53_risk_weight(BigDecimal r53_risk_weight) {
 		this.r53_risk_weight = r53_risk_weight;
 	}
+
 
 
 
@@ -4055,9 +4616,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR53_risk_weighted_amount(BigDecimal r53_risk_weighted_amount) {
 		this.r53_risk_weighted_amount = r53_risk_weighted_amount;
 	}
+
 
 
 
@@ -4069,9 +4632,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR54_security_firm(String r54_security_firm) {
 		this.r54_security_firm = r54_security_firm;
 	}
+
 
 
 
@@ -4083,9 +4648,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR54_credit_rating(BigDecimal r54_credit_rating) {
 		this.r54_credit_rating = r54_credit_rating;
 	}
+
 
 
 
@@ -4097,9 +4664,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR54_rating_agency(String r54_rating_agency) {
 		this.r54_rating_agency = r54_rating_agency;
 	}
+
 
 
 
@@ -4111,9 +4680,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR54_exposure_amount(BigDecimal r54_exposure_amount) {
 		this.r54_exposure_amount = r54_exposure_amount;
 	}
+
 
 
 
@@ -4125,9 +4696,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR54_risk_weight(BigDecimal r54_risk_weight) {
 		this.r54_risk_weight = r54_risk_weight;
 	}
+
 
 
 
@@ -4139,9 +4712,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR54_risk_weighted_amount(BigDecimal r54_risk_weighted_amount) {
 		this.r54_risk_weighted_amount = r54_risk_weighted_amount;
 	}
+
 
 
 
@@ -4153,9 +4728,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR55_security_firm(String r55_security_firm) {
 		this.r55_security_firm = r55_security_firm;
 	}
+
 
 
 
@@ -4167,9 +4744,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR55_credit_rating(BigDecimal r55_credit_rating) {
 		this.r55_credit_rating = r55_credit_rating;
 	}
+
 
 
 
@@ -4181,9 +4760,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR55_rating_agency(String r55_rating_agency) {
 		this.r55_rating_agency = r55_rating_agency;
 	}
+
 
 
 
@@ -4195,9 +4776,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR55_exposure_amount(BigDecimal r55_exposure_amount) {
 		this.r55_exposure_amount = r55_exposure_amount;
 	}
+
 
 
 
@@ -4209,9 +4792,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR55_risk_weight(BigDecimal r55_risk_weight) {
 		this.r55_risk_weight = r55_risk_weight;
 	}
+
 
 
 
@@ -4223,9 +4808,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR55_risk_weighted_amount(BigDecimal r55_risk_weighted_amount) {
 		this.r55_risk_weighted_amount = r55_risk_weighted_amount;
 	}
+
 
 
 
@@ -4237,9 +4824,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR56_security_firm(String r56_security_firm) {
 		this.r56_security_firm = r56_security_firm;
 	}
+
 
 
 
@@ -4251,9 +4840,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR56_credit_rating(BigDecimal r56_credit_rating) {
 		this.r56_credit_rating = r56_credit_rating;
 	}
+
 
 
 
@@ -4265,9 +4856,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR56_rating_agency(String r56_rating_agency) {
 		this.r56_rating_agency = r56_rating_agency;
 	}
+
 
 
 
@@ -4279,9 +4872,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR56_exposure_amount(BigDecimal r56_exposure_amount) {
 		this.r56_exposure_amount = r56_exposure_amount;
 	}
+
 
 
 
@@ -4293,9 +4888,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR56_risk_weight(BigDecimal r56_risk_weight) {
 		this.r56_risk_weight = r56_risk_weight;
 	}
+
 
 
 
@@ -4307,9 +4904,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR56_risk_weighted_amount(BigDecimal r56_risk_weighted_amount) {
 		this.r56_risk_weighted_amount = r56_risk_weighted_amount;
 	}
+
 
 
 
@@ -4321,9 +4920,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR57_security_firm(String r57_security_firm) {
 		this.r57_security_firm = r57_security_firm;
 	}
+
 
 
 
@@ -4335,9 +4936,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR57_credit_rating(BigDecimal r57_credit_rating) {
 		this.r57_credit_rating = r57_credit_rating;
 	}
+
 
 
 
@@ -4349,9 +4952,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR57_rating_agency(String r57_rating_agency) {
 		this.r57_rating_agency = r57_rating_agency;
 	}
+
 
 
 
@@ -4363,9 +4968,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR57_exposure_amount(BigDecimal r57_exposure_amount) {
 		this.r57_exposure_amount = r57_exposure_amount;
 	}
+
 
 
 
@@ -4377,9 +4984,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR57_risk_weight(BigDecimal r57_risk_weight) {
 		this.r57_risk_weight = r57_risk_weight;
 	}
+
 
 
 
@@ -4391,9 +5000,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR57_risk_weighted_amount(BigDecimal r57_risk_weighted_amount) {
 		this.r57_risk_weighted_amount = r57_risk_weighted_amount;
 	}
+
 
 
 
@@ -4405,9 +5016,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR58_security_firm(String r58_security_firm) {
 		this.r58_security_firm = r58_security_firm;
 	}
+
 
 
 
@@ -4419,9 +5032,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR58_credit_rating(BigDecimal r58_credit_rating) {
 		this.r58_credit_rating = r58_credit_rating;
 	}
+
 
 
 
@@ -4433,9 +5048,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR58_rating_agency(String r58_rating_agency) {
 		this.r58_rating_agency = r58_rating_agency;
 	}
+
 
 
 
@@ -4447,9 +5064,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR58_exposure_amount(BigDecimal r58_exposure_amount) {
 		this.r58_exposure_amount = r58_exposure_amount;
 	}
+
 
 
 
@@ -4461,9 +5080,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR58_risk_weight(BigDecimal r58_risk_weight) {
 		this.r58_risk_weight = r58_risk_weight;
 	}
+
 
 
 
@@ -4475,9 +5096,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR58_risk_weighted_amount(BigDecimal r58_risk_weighted_amount) {
 		this.r58_risk_weighted_amount = r58_risk_weighted_amount;
 	}
+
 
 
 
@@ -4489,9 +5112,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR59_security_firm(String r59_security_firm) {
 		this.r59_security_firm = r59_security_firm;
 	}
+
 
 
 
@@ -4503,9 +5128,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR59_credit_rating(BigDecimal r59_credit_rating) {
 		this.r59_credit_rating = r59_credit_rating;
 	}
+
 
 
 
@@ -4517,9 +5144,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR59_rating_agency(String r59_rating_agency) {
 		this.r59_rating_agency = r59_rating_agency;
 	}
+
 
 
 
@@ -4531,9 +5160,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR59_exposure_amount(BigDecimal r59_exposure_amount) {
 		this.r59_exposure_amount = r59_exposure_amount;
 	}
+
 
 
 
@@ -4545,9 +5176,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR59_risk_weight(BigDecimal r59_risk_weight) {
 		this.r59_risk_weight = r59_risk_weight;
 	}
+
 
 
 
@@ -4559,9 +5192,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR59_risk_weighted_amount(BigDecimal r59_risk_weighted_amount) {
 		this.r59_risk_weighted_amount = r59_risk_weighted_amount;
 	}
+
 
 
 
@@ -4573,9 +5208,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR60_security_firm(String r60_security_firm) {
 		this.r60_security_firm = r60_security_firm;
 	}
+
 
 
 
@@ -4587,9 +5224,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR60_credit_rating(BigDecimal r60_credit_rating) {
 		this.r60_credit_rating = r60_credit_rating;
 	}
+
 
 
 
@@ -4601,9 +5240,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR60_rating_agency(String r60_rating_agency) {
 		this.r60_rating_agency = r60_rating_agency;
 	}
+
 
 
 
@@ -4615,9 +5256,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR60_exposure_amount(BigDecimal r60_exposure_amount) {
 		this.r60_exposure_amount = r60_exposure_amount;
 	}
+
 
 
 
@@ -4629,9 +5272,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR60_risk_weight(BigDecimal r60_risk_weight) {
 		this.r60_risk_weight = r60_risk_weight;
 	}
+
 
 
 
@@ -4643,15 +5288,19 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR60_risk_weighted_amount(BigDecimal r60_risk_weighted_amount) {
 		this.r60_risk_weighted_amount = r60_risk_weighted_amount;
 	}
 
 
 
+
+
 	public BigDecimal getR61_exposure_amount() {
 		return r61_exposure_amount;
 	}
+
 
 
 
@@ -4671,9 +5320,11 @@ public class M_SRWA_12G_Archival_Summary_Entity{
 
 
 
+
 	public void setR61_risk_weighted_amount(BigDecimal r61_risk_weighted_amount) {
 		this.r61_risk_weighted_amount = r61_risk_weighted_amount;
 	}
+
 
 
 

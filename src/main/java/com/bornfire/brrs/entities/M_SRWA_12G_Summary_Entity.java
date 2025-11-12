@@ -4,8 +4,10 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -23,14 +25,22 @@ public class M_SRWA_12G_Summary_Entity{
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	private Date report_date;
-	private String report_version;
-	private String report_frequency;
-	private String report_code;
-	private String report_desc;
-	private String entity_flg;
-	private String modify_flg;
-	private String del_flg;
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
+	
+	//@Column(name = "REPORT_RESUBDATE")
+	//@Temporal(TemporalType.TIMESTAMP)
+	//private Date reportResubDate;
+	
+	public String report_frequency;
+	public String report_code;
+	public String report_desc;
+	public String entity_flg;
+	public String modify_flg;
+	public String del_flg;
 
 	private String r11_security_firm;
 	private BigDecimal r11_credit_rating;
@@ -337,30 +347,44 @@ public class M_SRWA_12G_Summary_Entity{
 
 	
 	
-	
+//	
+//	public Date getReportResubDate() {
+//		return reportResubDate;
+//	}
+//
+//
+//
+//
+//	public void setReportResubDate(Date reportResubDate) {
+//		this.reportResubDate = reportResubDate;
+//	}
+
+
+
+
 	public Date getReport_date() {
-		return report_date;
+		return reportDate;
 	}
 
 
 
 
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReport_date(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 
 
 
 
 	public String getReport_version() {
-		return report_version;
+		return reportVersion;
 	}
 
 
 
 
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
+	public void setReport_version(String reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 
 

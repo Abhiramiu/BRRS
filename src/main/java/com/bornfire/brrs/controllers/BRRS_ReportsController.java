@@ -1880,4 +1880,34 @@ public ResponseEntity<String> updateReportReSubAll(
     }
 }
 
+	@RequestMapping(value = "/UpdateM_SRWA_12G_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	 @ResponseBody
+	 public ResponseEntity<String> updateReportReSub(
+	         @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	         @ModelAttribute M_SRWA_12G_Summary_Entity request,
+	         HttpServletRequest req) {
+
+	     try {
+	         System.out.println("Came to Resub Controller");
+
+	         if (asondate != null) {
+	             // Set the asondate into the entity
+	             request.setReport_date(asondate);
+	             System.out.println("Set Report Date: " + asondate);
+	         } else {
+	             System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+	         }
+
+	         // Call service to create a new versioned row
+	         brrs_m_srwa_12g_reportservice.updateReportReSub(request);
+
+	         return ResponseEntity.ok("Resubmission Updated Successfully");
+
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                 .body("Resubmission Update Failed: " + e.getMessage());
+	     }
+	 }
+	
 }
