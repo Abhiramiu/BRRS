@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,6 +34,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -48,7 +50,9 @@ import com.bornfire.brrs.entities.BRRS_Q_STAFF_Archival_Summary_Repo3;
 import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_Q_STAFF_Summary_Repo3;
-
+import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_SRWA_12H_Summary_Entity;
+import com.bornfire.brrs.entities.Q_BRANCHNET_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.Q_STAFF_Archival_Summary_Entity3;
@@ -61,9 +65,9 @@ import java.lang.reflect.Method;
 
 @Component
 @Service
-public class BRRS_Q_STAFF_ReportService {
+public class BRRS_Q_STAFF_Report_Service {
 
-    private static final Logger logger = LoggerFactory.getLogger(BRRS_Q_STAFF_ReportService.class);
+    private static final Logger logger = LoggerFactory.getLogger(BRRS_Q_STAFF_Report_Service.class);
 
     @Autowired
     private Environment env;
@@ -93,69 +97,80 @@ public class BRRS_Q_STAFF_ReportService {
     private BRRS_Q_STAFF_Archival_Summary_Repo3 Q_STAFF_Archival_Summary_Repo3;
 
     private final SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+	public ModelAndView getQ_STAFFView(String reportId, String fromdate, String todate,
+			String currency, String dtltype, Pageable pageable,
+			String type, String version) {
 
-    // ⬇️ Remove static here
-    public ModelAndView getQ_STAFFView(String reportId, String fromdate, String todate, String currency,
-                                       String dtltype, Pageable pageable, String type, String version) {
-        ModelAndView mv = new ModelAndView();
-        Session hs = sessionFactory.getCurrentSession();
+		ModelAndView mv = new ModelAndView();
+		Session hs = sessionFactory.getCurrentSession();
 
-        int pageSize = pageable.getPageSize();
-        int currentPage = pageable.getPageNumber();
-        int startItem = currentPage * pageSize;
+		int pageSize = pageable.getPageSize();
+		int currentPage = pageable.getPageNumber();
+		int startItem = currentPage * pageSize;
 
-        if (type.equals("ARCHIVAL") && version != null) {
-            List<Q_STAFF_Archival_Summary_Entity1> T1Master = new ArrayList<>();
-            List<Q_STAFF_Archival_Summary_Entity2> T2Master = new ArrayList<>();
-            List<Q_STAFF_Archival_Summary_Entity3> T3Master = new ArrayList<>();
+		try {
+			Date d1 = dateformat.parse(todate);
 
-            try {
-                T1Master = Q_STAFF_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate), version);
-                T2Master = Q_STAFF_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
-                T3Master = Q_STAFF_Archival_Summary_Repo3.getdatabydateListarchival(dateformat.parse(todate), version);
-            } catch (ParseException e) {
-                logger.error("ParseException while parsing date", e);
-            }
-
-            mv.addObject("reportsummary", T1Master);
-            mv.addObject("reportsummary2", T2Master);
-            mv.addObject("reportsummary3", T3Master);
-        } else {
-            List<Q_STAFF_Summary_Entity1> T1Master = new ArrayList<>();
-            List<Q_STAFF_Summary_Entity2> T2Master = new ArrayList<>();
-            List<Q_STAFF_Summary_Entity3> T3Master = new ArrayList<>();
-
-            try {
-                Date d1 = dateformat.parse(todate);
-                T1Master = Q_STAFF_Summary_Repo1.getdatabydateList(d1);
-                T2Master = Q_STAFF_Summary_Repo2.getdatabydateList(d1);
-                T3Master = Q_STAFF_Summary_Repo3.getdatabydateList(d1);
-
-                logger.info("Size of T1Master is: {}", T1Master.size());
-            } catch (ParseException e) {
-                logger.error("ParseException while parsing date", e);
-            }
-
-            mv.addObject("reportsummary", T1Master);
+	 // ---------- CASE 1: ARCHIVAL ----------
+        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+            List<Q_STAFF_Archival_Summary_Entity1> T1Master = 
+                Q_STAFF_Archival_Summary_Repo1.getdatabydateListarchival(d1, version);
+				        List<Q_STAFF_Archival_Summary_Entity2> T2Master = 
+                Q_STAFF_Archival_Summary_Repo2.getdatabydateListarchival(d1, version);
+				        List<Q_STAFF_Archival_Summary_Entity3> T3Master = 
+                Q_STAFF_Archival_Summary_Repo3.getdatabydateListarchival(d1, version);
+            
+                  mv.addObject("reportsummary", T1Master);
             mv.addObject("reportsummary2", T2Master);
             mv.addObject("reportsummary3", T3Master);
         }
 
-        mv.setViewName("BRRS/Q_STAFF");
-        mv.addObject("displaymode", "summary");
-        logger.info("Returning view: {}", mv.getViewName());
-        return mv;
-    }
+        // ---------- CASE 2: RESUB ----------
+        else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+  List<Q_STAFF_Archival_Summary_Entity1> T1Master = 
+                Q_STAFF_Archival_Summary_Repo1.getdatabydateListarchival(d1, version);
+				        List<Q_STAFF_Archival_Summary_Entity2> T2Master = 
+                Q_STAFF_Archival_Summary_Repo2.getdatabydateListarchival(d1, version);
+				        List<Q_STAFF_Archival_Summary_Entity3> T3Master = 
+                Q_STAFF_Archival_Summary_Repo3.getdatabydateListarchival(d1, version);
+            
+                  mv.addObject("reportsummary", T1Master);
+            mv.addObject("reportsummary2", T2Master);
+            mv.addObject("reportsummary3", T3Master);
+        }
 
+        // ---------- CASE 3: NORMAL ----------
+        else {
+            List<Q_STAFF_Summary_Entity1> T1Master = 
+                Q_STAFF_Summary_Repo1.getdatabydateListWithVersion(todate);
+				  List<Q_STAFF_Summary_Entity2> T2Master = 
+                Q_STAFF_Summary_Repo2.getdatabydateListWithVersion(todate);
+				  List<Q_STAFF_Summary_Entity3> T3Master = 
+                Q_STAFF_Summary_Repo3.getdatabydateListWithVersion(todate);
+            System.out.println("T1Master Size "+T1Master.size());
+                 mv.addObject("reportsummary", T1Master);
+            mv.addObject("reportsummary2", T2Master);
+            mv.addObject("reportsummary3", T3Master);
+        }
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		mv.setViewName("BRRS/Q_STAFF");
+		mv.addObject("displaymode", "summary");
+		System.out.println("View set to: " + mv.getViewName());
+		return mv;
+	}
 
 	
 	public void updateReport(Q_STAFF_Summary_Entity1 updatedEntity) {
 	    System.out.println("Came to services 1");
-	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-	    Q_STAFF_Summary_Entity1 existing = Q_STAFF_Summary_Repo1.findById(updatedEntity.getREPORT_DATE())
+	    Q_STAFF_Summary_Entity1 existing = Q_STAFF_Summary_Repo1.findById(updatedEntity.getReportDate())
 	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 	    try {
 	        // 1️⃣ Loop from R11 to R15 and copy fields
@@ -192,104 +207,103 @@ public class BRRS_Q_STAFF_ReportService {
 	    Q_STAFF_Summary_Repo1.save(existing);
 	   
 	}
-	public void updateReport2(Q_STAFF_Summary_Entity2 updatedEntity) {
-	    System.out.println("Came to services 2");
-	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+public void updateReport2(Q_STAFF_Summary_Entity2 updatedEntity) {
+    System.out.println("Came to services 2");
+    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-	    Q_STAFF_Summary_Entity2 existing = Q_STAFF_Summary_Repo2.findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+    Q_STAFF_Summary_Entity2 existing = Q_STAFF_Summary_Repo2
+            .findById(updatedEntity.getReportDate())
+            .orElse(null);
 
-	    try {
-	        // 1️⃣ Loop from R11 to R50 and copy fields
-	        for (int i = 21; i <= 28; i++) {
-	            String prefix = "R" + i + "_";
+    if (existing == null) {
+        System.out.println("⚠️ No existing record found — creating new record for date: " 
+                           + updatedEntity.getReportDate());
+        Q_STAFF_Summary_Repo2.save(updatedEntity);
+        return;
+    }
 
-	            String[] fields = { "SENIOR_MANAGEMENT_COMPENSATION","LOCAL","EXPARIATES","TOTAL" };
+    try {
+        for (int i = 21; i <= 28; i++) {
+            String prefix = "R" + i + "_";
+            String[] fields = {"SENIOR_MANAGEMENT_COMPENSATION", "LOCAL", "EXPARIATES", "TOTAL"};
 
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
+            for (String field : fields) {
+                String getterName = "get" + prefix + field;
+                String setterName = "set" + prefix + field;
 
-	                try {
-	                    Method getter = Q_STAFF_Summary_Entity2.class.getMethod(getterName);
-	                    Method setter = Q_STAFF_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
+                try {
+                    Method getter = Q_STAFF_Summary_Entity2.class.getMethod(getterName);
+                    Method setter = Q_STAFF_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
+                    Object newValue = getter.invoke(updatedEntity);
+                    setter.invoke(existing, newValue);
+                } catch (NoSuchMethodException e) {
+                    // Skip missing fields safely
+                }
+            }
+        }
+    } catch (Exception e) {
+        throw new RuntimeException("Error while updating report fields", e);
+    }
 
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
+    Q_STAFF_Summary_Repo2.save(existing);
+}
 
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }  
 
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-	    
-	    // 3️⃣ Save updated entity
-	    Q_STAFF_Summary_Repo2.save(existing);
-	}
+  public void updateReport3(Q_STAFF_Summary_Entity3 updatedEntity) {
+    System.out.println("Came to services 3");
+    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-    public void updateReport3(Q_STAFF_Summary_Entity3 updatedEntity) {
-	    System.out.println("Came to services 2");
-	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+    Q_STAFF_Summary_Entity3 existing = Q_STAFF_Summary_Repo3
+            .findById(updatedEntity.getReportDate())
+            .orElse(null);
 
-	    Q_STAFF_Summary_Entity3 existing = Q_STAFF_Summary_Repo3.findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+    if (existing == null) {
+        System.out.println("⚠️ No existing record found — creating new record for date: " 
+                           + updatedEntity.getReportDate());
+        Q_STAFF_Summary_Repo3.save(updatedEntity);
+        return;
+    }
 
-	    try {
-	       
-	        for (int i = 33; i <= 38; i++) {
-	            String prefix = "R" + i + "_";
+    try {
+        for (int i = 33; i <= 38; i++) {
+            String prefix = "R" + i + "_";
+            String[] fields = {"STAFF_LOANS", "ORIGINAL_AMT", "BALANCE_OUTSTANDING", "NO_OF_ACS", "INTEREST_RATE"};
 
-	            String[] fields = { "STAFF_LOANS","ORIGINAL_AMT","BALANCE_OUTSTANDING","NO_OF_ACS","INTEREST_RATE" };
+            for (String field : fields) {
+                String getterName = "get" + prefix + field;
+                String setterName = "set" + prefix + field;
 
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
+                try {
+                    Method getter = Q_STAFF_Summary_Entity3.class.getMethod(getterName);
+                    Method setter = Q_STAFF_Summary_Entity3.class.getMethod(setterName, getter.getReturnType());
+                    Object newValue = getter.invoke(updatedEntity);
+                    setter.invoke(existing, newValue);
+                } catch (NoSuchMethodException e) {
+                    // Skip missing fields safely
+                }
+            }
+        }
+    } catch (Exception e) {
+        throw new RuntimeException("Error while updating report fields", e);
+    }
 
-	                try {
-	                    Method getter = Q_STAFF_Summary_Entity3.class.getMethod(getterName);
-	                    Method setter = Q_STAFF_Summary_Entity3.class.getMethod(setterName, getter.getReturnType());
+    Q_STAFF_Summary_Repo3.save(existing);
+}
 
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
-
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }
-
-	        
-
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-	    
-	    // 3️⃣ Save updated entity
-	    Q_STAFF_Summary_Repo3.save(existing);
-	}
-	
-	public List<Object> getQ_STAFFArchival() {
-		List<Object> Q_STAFFArchivallist = new ArrayList<>();
-		try {
-			Q_STAFFArchivallist = Q_STAFF_Archival_Summary_Repo1.getQ_STAFFarchival();
-			Q_STAFFArchivallist = Q_STAFF_Archival_Summary_Repo2.getQ_STAFFarchival();
-			Q_STAFFArchivallist = Q_STAFF_Archival_Summary_Repo3.getQ_STAFFarchival();
+	// public List<Object> getQ_STAFFArchival() {
+	// 	List<Object> Q_STAFFArchivallist = new ArrayList<>();
+	// 	try {
+	// 		Q_STAFFArchivallist = Q_STAFF_Archival_Summary_Repo1.getQ_STAFFarchival();
+	// 		Q_STAFFArchivallist = Q_STAFF_Archival_Summary_Repo2.getQ_STAFFarchival();
+	// 		Q_STAFFArchivallist = Q_STAFF_Archival_Summary_Repo3.getQ_STAFFarchival();
             
-			System.out.println("countser" + Q_STAFFArchivallist.size());
-		} catch (Exception e) {
-			System.err.println("Error fetching M_STAFF2 Archival data: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return Q_STAFFArchivallist;
-	}
+	// 		System.out.println("countser" + Q_STAFFArchivallist.size());
+	// 	} catch (Exception e) {
+	// 		System.err.println("Error fetching M_STAFF2 Archival data: " + e.getMessage());
+	// 		e.printStackTrace();
+	// 	}
+	// 	return Q_STAFFArchivallist;
+	// }
 	
 	   public byte[] BRRS_Q_STAFFExcel(String filename, String reportId, String fromdate, String todate, String currency,
                                     String dtltype, String type, String version) throws Exception {
@@ -308,7 +322,7 @@ public class BRRS_Q_STAFF_ReportService {
         List<Q_STAFF_Summary_Entity3> dataList2 = Q_STAFF_Summary_Repo3.getdatabydateList(dateformat.parse(todate));
 
         if (dataList.isEmpty()) {
-            logger.warn("Service: No data found for BRF2.4 report. Returning empty result.");
+            logger.warn("Service: No data found for brrs2.4 report. Returning empty result.");
             return new byte[0];
         }
 
@@ -1457,9 +1471,210 @@ if (record2.getR38_INTEREST_RATE() != null) {
 
 			return out.toByteArray();
 		}
-					
-					
+    }
 
-	}
+    //////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////	
+/// Report Date | Report Version | Domain
+/// RESUB VIEW
+// public List<Object[]> getQ_STAFFResub() {
+//     List<Object[]> resubList = new ArrayList<>();
+
+//     try {
+//         // ✅ Fetch latest archival records from all three entities
+//         List<Q_STAFF_Archival_Summary_Entity1> latestArchivalList1 =
+//                 Q_STAFF_Archival_Summary_Repo1.getdatabydateListWithVersion();
+//         List<Q_STAFF_Archival_Summary_Entity2> latestArchivalList2 =
+//                 Q_STAFF_Archival_Summary_Repo2.getdatabydateListWithVersion();
+//         List<Q_STAFF_Archival_Summary_Entity3> latestArchivalList3 =
+//                 Q_STAFF_Archival_Summary_Repo3.getdatabydateListWithVersion();
+
+//         // ✅ Combine all lists into one (if not empty)
+//         if (latestArchivalList1 != null && !latestArchivalList1.isEmpty()) {
+//             for (Q_STAFF_Archival_Summary_Entity1 entity : latestArchivalList1) {
+//                 resubList.add(new Object[]{
+//                         entity.getReportDate(),
+//                         entity.getReportVersion()
+//                 });
+//             }
+//         }
+
+//         if (latestArchivalList2 != null && !latestArchivalList2.isEmpty()) {
+//             for (Q_STAFF_Archival_Summary_Entity2 entity : latestArchivalList2) {
+//                 resubList.add(new Object[]{
+//                         entity.getReportDate(),
+//                         entity.getReportVersion()
+//                 });
+//             }
+//         }
+
+//         if (latestArchivalList3 != null && !latestArchivalList3.isEmpty()) {
+//             for (Q_STAFF_Archival_Summary_Entity3 entity : latestArchivalList3) {
+//                 resubList.add(new Object[]{
+//                         entity.getReportDate(),
+//                         entity.getReportVersion()
+//                 });
+//             }
+//         }
+
+//         System.out.println("✅ Latest Q_STAFF Resub records fetched successfully");
+
+//     } catch (Exception e) {
+//         System.err.println("❌ Error fetching Q_STAFF Resub data: " + e.getMessage());
+//         e.printStackTrace();
+//     }
+
+//     return resubList;
+// }
+
+public List<Object[]> getQ_STAFFResub() {
+    List<Object[]> resubList = new ArrayList<>();
+    try {
+        List<Q_STAFF_Archival_Summary_Entity1> latestArchivalList =
+                Q_STAFF_Archival_Summary_Repo1.getdatabydateListWithVersion();
+
+        if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+            for (Q_STAFF_Archival_Summary_Entity1 entity : latestArchivalList) {
+                resubList.add(new Object[] {
+                    entity.getReportDate(),
+                    entity.getReportVersion()
+                });
+            }
+            System.out.println("Fetched " + resubList.size() + " record(s)");
+        } else {
+            System.out.println("No archival data found.");
+        }
+
+    } catch (Exception e) {
+        System.err.println("Error fetching M_SRWA_12H Resub data: " + e.getMessage());
+        e.printStackTrace();
+    }
+    return resubList;
+}
+	//Archival View
+// 	public List<Object[]> getQ_STAFFArchival() {
+//     List<Object[]> archivalList = new ArrayList<>();
+
+//     try {
+//         // ✅ Fetch latest archival record from SUMMARY1
+//         List<Q_STAFF_Archival_Summary_Entity1> latestArchivalList =
+//                 Q_STAFF_Archival_Summary_Repo1.getdatabydateListWithVersion();
+
+//         if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+//             Q_STAFF_Archival_Summary_Entity1 entity = latestArchivalList.get(0);
+
+//             archivalList.add(new Object[]{
+//                     entity.getReportDate(),
+//                     entity.getReportVersion()
+//             });
+//         }
+//         System.out.println("Fetched total " + archivalList.size() + " record(s) for Q_STAFF Archival");
+
+//     } catch (Exception e) {
+//         System.err.println("Error fetching Q_STAFF Archival data: " + e.getMessage());
+//         e.printStackTrace();
+//     }
+
+//     return archivalList;
+// }
+public List<Object[]> getQ_STAFFArchival() {
+    List<Object[]> archivalList = new ArrayList<>();
+    try {
+        List<Q_STAFF_Archival_Summary_Entity1> latestArchivalList =
+                Q_STAFF_Archival_Summary_Repo1.getdatabydateListWithVersion();
+
+        if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+            for (Q_STAFF_Archival_Summary_Entity1 entity : latestArchivalList) {
+                archivalList.add(new Object[] {
+                    entity.getReportDate(),
+                    entity.getReportVersion()
+                });
+            }
+            System.out.println("Fetched " + archivalList.size() + " record(s)");
+        } else {
+            System.out.println("No archival data found.");
+        }
+
+    } catch (Exception e) {
+        System.err.println("Error fetching M_SRWA_12H Resub data: " + e.getMessage());
+        e.printStackTrace();
+    }
+    return archivalList;
+}
+
+
+	public void updateReportReSub(
+        Q_STAFF_Summary_Entity1 updatedEntity1,
+        Q_STAFF_Summary_Entity2 updatedEntity2,
+        Q_STAFF_Summary_Entity3 updatedEntity3) {
+
+    System.out.println("Came to Q_STAFF Resub Service");
+    System.out.println("Report Date: " + updatedEntity1.getReportDate());
+
+    Date reportDate = updatedEntity1.getReportDate();
+    int newVersion = 1;
+
+    try {
+        // 🔹 Fetch the latest archival version for this report date from Entity1
+        Optional<Q_STAFF_Archival_Summary_Entity1> latestArchivalOpt1 =
+                Q_STAFF_Archival_Summary_Repo1.getLatestArchivalVersionByDate(reportDate);
+
+        if (latestArchivalOpt1.isPresent()) {
+            Q_STAFF_Archival_Summary_Entity1 latestArchival = latestArchivalOpt1.get();
+            try {
+                newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid version format. Defaulting to version 1");
+                newVersion = 1;
+            }
+        } else {
+            System.out.println("No previous archival found for date: " + reportDate);
+        }
+
+        // 🔹 Prevent duplicate version number in Repo1
+        boolean exists = Q_STAFF_Archival_Summary_Repo1
+                .findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
+                .isPresent();
+
+        if (exists) {
+            throw new RuntimeException("⚠ Version " + newVersion + " already exists for report date " + reportDate);
+        }
+
+        // Copy data from summary to archival entities for all 3 entities
+        Q_STAFF_Archival_Summary_Entity1 archivalEntity1 = new Q_STAFF_Archival_Summary_Entity1();
+        Q_STAFF_Archival_Summary_Entity2 archivalEntity2 = new Q_STAFF_Archival_Summary_Entity2();
+        Q_STAFF_Archival_Summary_Entity3 archivalEntity3 = new Q_STAFF_Archival_Summary_Entity3();
+
+        org.springframework.beans.BeanUtils.copyProperties(updatedEntity1, archivalEntity1);
+        org.springframework.beans.BeanUtils.copyProperties(updatedEntity2, archivalEntity2);
+        org.springframework.beans.BeanUtils.copyProperties(updatedEntity3, archivalEntity3);
+
+        // Set common fields
+        Date now = new Date();
+        archivalEntity1.setReportDate(reportDate);
+        archivalEntity2.setReportDate(reportDate);
+        archivalEntity3.setReportDate(reportDate);
+
+        archivalEntity1.setReportVersion(String.valueOf(newVersion));
+        archivalEntity2.setReportVersion(String.valueOf(newVersion));
+        archivalEntity3.setReportVersion(String.valueOf(newVersion));
+
+        archivalEntity1.setReportResubDate(now);
+        archivalEntity2.setReportResubDate(now);
+        archivalEntity3.setReportResubDate(now);
+
+        System.out.println("Saving new archival version: " + newVersion);
+
+        // Save to all three archival repositories
+        Q_STAFF_Archival_Summary_Repo1.save(archivalEntity1);
+        Q_STAFF_Archival_Summary_Repo2.save(archivalEntity2);
+        Q_STAFF_Archival_Summary_Repo3.save(archivalEntity3);
+
+        System.out.println("Saved archival version successfully: " + newVersion);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException("Error while creating Q_STAFF archival resubmission record", e);
+    }
+}
 
 	}

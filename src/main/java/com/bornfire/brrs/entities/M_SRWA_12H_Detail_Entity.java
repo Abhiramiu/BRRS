@@ -263,10 +263,6 @@ public class M_SRWA_12H_Detail_Entity {
 
 	
 	
-
-	
-
-	
 	    
     
 

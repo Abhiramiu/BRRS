@@ -124,7 +124,7 @@ public class RegulatoryReportServices {
 	BRRS_M_LIQ_ReportService BRRS_M_LIQ_reportservice;
 
 	@Autowired
-	BRRS_Q_STAFF_ReportService BRRS_Q_STAFF_reportservice;
+	BRRS_Q_STAFF_Report_Service BRRS_Q_STAFF_report_service;
 
 	@Autowired
 	BRRS_Q_BRANCHNET_ReportService BRRS_Q_BRANCHNET_reportservice;
@@ -355,10 +355,10 @@ public class RegulatoryReportServices {
 					type, version);
 			break;
 
-		case "Q_STAFF":
-			repsummary = BRRS_Q_STAFF_reportservice.getQ_STAFFView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "Q_STAFF":
+				repsummary = BRRS_Q_STAFF_report_service.getQ_STAFFView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
 
 		case "Q_BRANCHNET":
 			repsummary = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate, currency,
@@ -517,10 +517,10 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 
-		case "M_SRWA_12H":
-			repdetail = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HcurrentDtl(reportId, fromdate, todate, currency,
-					dtltype, pageable, Filter, type, version);
-			break;
+		// case "M_SRWA_12H":
+		// 	repdetail = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HcurrentDtl(reportId, fromdate, todate, currency,
+		// 			dtltype, pageable, Filter, type, version);
+		// 	break;
 
 		case "M_MRC":
 			repdetail = BRRS_M_MRC_reportservice.getM_MRCcurrentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -942,15 +942,15 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "Q_STAFF":
-			try {
-				repfile = BRRS_Q_STAFF_reportservice.BRRS_Q_STAFFExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "Q_STAFF":
+				try {
+					repfile = BRRS_Q_STAFF_report_service.BRRS_Q_STAFFExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 		case "Q_BRANCHNET":
 			try {
@@ -1179,10 +1179,10 @@ public class RegulatoryReportServices {
 					version);
 		}
 
-		if ("M_SRWA_12HDetail".equals(filename)) {
-			return BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);
-		}
+		// if ("M_SRWA_12HDetail".equals(filename)) {
+		// 	return BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HDetailExcel(filename, fromdate, todate, currency,
+		// 			dtltype, type, version);
+		// }
 
 		if ("M_MRCDetail".equals(filename)) {
 			return BRRS_M_MRC_reportservice.BRRS_M_MRCDetailExcel(filename, fromdate, todate, currency, dtltype, type,
@@ -1389,14 +1389,14 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_SRWA_12H":
-			try {
-				archivalData = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		// case "M_SRWA_12H":
+		// 	try {
+		// 		archivalData = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
+		// 	} catch (Exception e) {
+		// 		// TODO Auto-generated catch block
+		// 		e.printStackTrace();
+		// 	}
+		// 	break;
 
 		case "M_PI":
 			try {
@@ -1564,13 +1564,13 @@ public class RegulatoryReportServices {
 			break;
 			
 
-		case "Q_STAFF":
-			try {
-				archivalData = BRRS_Q_STAFF_reportservice.getQ_STAFFArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		// case "Q_STAFF":
+		// 	try {
+		// 		archivalData = BRRS_Q_STAFF_reportservice.getQ_STAFFArchival();
+		// 	} catch (Exception e) {
+		// 		// TODO Auto-generated catch block
+		// 		e.printStackTrace();
+		// 	}
 
 		case "M_SRWA_12B":
 			try {
@@ -1709,7 +1709,18 @@ public class RegulatoryReportServices {
 			}
 			break;
 		
+	//New Archival 
+				case "M_SRWA_12H":
+				List<Object[]> srwaList = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
+				archivalData.addAll(srwaList);
+				System.out.println("Fetched M_SRWA_12H archival data: " + srwaList.size());
+				break;
 
+			case "Q_STAFF":
+				List<Object[]> QSList = BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
+				archivalData.addAll(QSList);
+				System.out.println("Fetched M_SRWA_12H archival data: " + QSList.size());
+				break;
 		}
 		return archivalData;
 	}
@@ -1735,9 +1746,9 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("M_ISDetail")) {
 			fileData = BRRS_M_IS_reportservice.BRRS_M_ISDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		} else if (filename.equals("M_SRWA_12HDetail")) {
-			fileData = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);
+		// } else if (filename.equals("M_SRWA_12HDetail")) {
+		// 	fileData = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HDetailExcel(filename, fromdate, todate, currency,
+		// 			dtltype, type, version);
 		} else if (filename.equals("M_MRCDetail")) {
 			fileData = BRRS_M_MRC_reportservice.BRRS_M_MRCDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
@@ -1925,5 +1936,42 @@ public class RegulatoryReportServices {
 
 		return response;
 	}
+
+//Resubmission Add Ur Case Here
+public List<Object[]> getResub(String rptcode) {
+		List<Object[]> resubmissionData = new ArrayList<>();
+
+		switch (rptcode) {
+			case "M_SRWA_12H":
+				try {
+					List<Object[]> resubList = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_SRWA_12H: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_SRWA_12H: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+
+				case "Q_STAFF":
+				try {
+					List<Object[]> resubList = BRRS_Q_STAFF_report_service.getQ_STAFFResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_SRWA_12H: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_SRWA_12H: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;	
+
+
+
+			default:
+				System.out.println("Unsupported report code: " + rptcode);
+		}
+
+		return resubmissionData;
+	}
+
 
 }

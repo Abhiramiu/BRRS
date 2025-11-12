@@ -1,8 +1,7 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 <!--
-CREATED BY	: GOPIKA
-
-PURPOSE		: BRRSREPORT
+CREATED BY	: GOPIKA B
+PURPOSE		: BWRBRREPORT
 -->
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
@@ -624,63 +623,82 @@ function closemodel() {
 }
 
 function fileuploads(btn) {
-    const asondate = btn.getAttribute("data-todate");
-    $('#loader').modal('show');
+			const asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 
-    // Recalculate all totals
-    calculateR15Totals();
-    calculateR28Totals();
-    calculateR38Totals();
+			$('#loader').modal('show');
 
-    // Remove commas from all text inputs before sending
-    $("#fileupload input[type='text']").each(function () {
-        this.value = this.value.replace(/,/g, '');
-    });
+			// Step 1: Calculate totals
+		      calculateR15Totals();
+        calculateR28Totals();
+        calculateR38Totals();
 
-    // Validate the form
-    if (!$("#fileupload").valid()) {
-        $('#loader').modal('hide');
-        return;
-    }
+			// Step 2: Remove commas
+			$("#fileupload input[type='text']").each(function () {
+				$(this).val($(this).val().replace(/,/g, ''));
+			});
 
-    // Utility function to build FormData for a row range
-    const buildFormData = (start, end, fields) => {
-        const fd = new FormData();
-        fd.append("asondate", asondate);
+			// Step 3: Validate form
+			if (!$("#fileupload").valid()) {
+				$('#loader').modal('hide');
+				return;
+			}
 
-        for (let i = start; i <= end; i++) {
-            fields.forEach(field => {
-                const input = $(`#R${i}_${field}`);
-                if (input.length) fd.append(input.attr("name"), input.val());
-            });
-        }
-        return fd;
-    };
+			// Step 4: Build FormData
+			const formData = new FormData();
+			formData.append("asondate", asondate);
+			formData.append("type", type);
 
-    // Build FormData objects
-    const formData1 = buildFormData(9, 15, ["STAFF_COMPLEMENT", "LOCAL", "EXPARIATES", "TOTAL"]); // Branches
-    const formData2 = buildFormData(21, 28, ["SENIOR_MANAGEMENT_COMPENSATION", "LOCAL", "EXPARIATES", "TOTAL"]); // ATMs
-    const formData3 = buildFormData(33, 38, ["STAFF_LOANS", "ORIGINAL_AMT", "BALANCE_OUTSTANDING", "NO_OF_ACS","INTEREST_RATE"]); // Loans
+			$('#fileupload').find(':input').each(function () {
+				const name = $(this).attr('name');
+				if (name) formData.append(name, $(this).val());
+			});
 
-    // Send AJAX requests in parallel
-    $.when(
-        $.ajax({ url: './QSTAFF1', type: 'POST', data: formData1, processData: false, contentType: false }),
-        $.ajax({ url: './QSTAFF2', type: 'POST', data: formData2, processData: false, contentType: false }),
-        $.ajax({ url: './QSTAFF3', type: 'POST', data: formData3, processData: false, contentType: false })
-    )
-    .done(() => {
-        $("#resultModalLabel").text("BRRS");
-        $("#resultModalBody").text("Updated successfully.");
-        $("#resultModal").modal("show");
-    })
-    .fail((jqXHR) => {
-        console.error("AJAX Error:", jqXHR.status, jqXHR.responseText);
-        $("#resultModalLabel").text("Error");
-        $("#resultModalBody").text("One or more updates failed. Please try again.");
-        $("#resultModal").modal("show");
-    })
-    .always(() => $('#loader').modal('hide'));
+// Step 5: Select API endpoint dynamically
+let apiUrl = './Q_STAFFupdateAll'; // normal update
+if (type && type.toUpperCase() === 'RESUB') {
+	apiUrl = './UpdateQ_STAFF_ReSub'; // Resubmission endpoint
 }
+
+// Step 6: AJAX call
+$.ajax({
+	url: apiUrl,
+	type: 'POST',
+	data: formData,
+	processData: false,
+	contentType: false,
+	dataType: 'text',
+	success: function (response) {
+		$("#resultModalLabel").text("BRRS");
+		$("#resultModalBody").text(response);
+		$("#resultModal").modal("show");
+
+		// ✅ Redirect after short delay (so user sees the success message)
+		if (response.includes("Resubmission Updated Successfully")) {
+			setTimeout(function() {
+				// Go back to the previous page user came from
+				if (document.referrer && document.referrer !== '') {
+					// Redirect to the page that opened this one
+					window.location.href = document.referrer;
+				} else {
+					// If no referrer, just go one step back in history
+					window.history.back();
+				}
+			}, 2000); // wait 2 seconds before redirect
+		}
+	},
+	error: function (jqXHR) {
+		$("#resultModalLabel").text("Error");
+		$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+		$("#resultModal").modal("show");
+	},
+	complete: function () {
+		$('#loader').modal('hide');
+	}
+});
+
+		}
+
 
 </script>
 </head>

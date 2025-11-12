@@ -45,4 +45,6 @@ public interface RRReportRepo extends JpaRepository<RRReport, Integer> {
 	@Modifying
 	@Query("update RRReport a set report_validity=?2, lchg_user_id=?3, lchg_time=sysdate where rptCode=?1 ")
 	public int updateValidity(String rptCode, String valid, String userid);
+
+
 }

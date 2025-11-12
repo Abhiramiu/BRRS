@@ -104,11 +104,9 @@ public class NavigationController {
 
 	@Autowired
 	BDGF_Services BDGF_Servicess;
-	
-	@Autowired
-    private CommonMappingService commonMappingService;
 
-		
+	@Autowired
+	private CommonMappingService commonMappingService;
 
 	@Autowired
 	BDGF_Rep bdgfRep;
@@ -120,18 +118,17 @@ public class NavigationController {
 	BLBF_Rep blbfRep;
 
 	@Autowired
-    private BrrsCommonMappingRepo commonMappingRepo;
-	
+	private BrrsCommonMappingRepo commonMappingRepo;
 
 	@Autowired
 	BFDB_Services BFDB_Servicess;
 
 	@Autowired
 	GeneralMasterRepo GeneralMasterRepos;
-	 @Autowired
-	 MCBL_Rep mcblRep;
-	 
-	 @Autowired
+	@Autowired
+	MCBL_Rep mcblRep;
+
+	@Autowired
 	ReportServices reportServices;
 
 	@Autowired
@@ -162,7 +159,7 @@ public class NavigationController {
 
 	@Autowired
 	BrrsCommonMappingRepo CommonMappingRepo;
-	
+
 	private String pagesize;
 
 	public String getPagesize() {
@@ -446,17 +443,16 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "QuarterlyArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String brrsQuarterlyArchival(Model md, HttpServletRequest req) {
-	    md.addAttribute("menu", "BRRS - BRRS QUARTERLY ARCHIVAL");
+		md.addAttribute("menu", "BRRS - BRRS QUARTERLY ARCHIVAL");
 
-	    System.out.println("Quarterly count: " + rrReportlist.getReportListbrrsQ().size());
-	    md.addAttribute("reportlist", rrReportlist.getReportListbrrsQ());
+		System.out.println("Quarterly count: " + rrReportlist.getReportListbrrsQ().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsQ());
 
-	    return "BRRS/BRRSArchival"; 
+		return "BRRS/BRRSArchival";
 	}
-
 
 	@RequestMapping(value = "Archival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String Archival(Model md, @RequestParam(value = "rptcode", required = false) String rptcode,
@@ -578,361 +574,91 @@ public class NavigationController {
 
 	@RequestMapping(value = "SourceDataMap", method = { RequestMethod.GET, RequestMethod.POST })
 	public String SourceDataMap(
-	        @RequestParam(required = false) String formmode,
-	        @RequestParam(required = false) String id,
-	        @RequestParam(required = false) String fileType,
-	        @RequestParam(required = false) String reportDate,
-	        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-	        @RequestParam(value = "size", required = false, defaultValue = "100") int size,
-	        Model md) {
+			@RequestParam(required = false) String formmode,
+			@RequestParam(required = false) String id,
+			@RequestParam(required = false) String fileType,
+			@RequestParam(required = false) String reportDate,
+			@RequestParam(value = "page", required = false, defaultValue = "0") int page,
+			@RequestParam(value = "size", required = false, defaultValue = "100") int size,
+			Model md) {
 
-	    md.addAttribute("menu", "General Master Table");
-	    md.addAttribute("menuname", "General Master Table");
-	    md.addAttribute("formmode", formmode != null ? formmode : "list");
+		md.addAttribute("menu", "General Master Table");
+		md.addAttribute("menuname", "General Master Table");
+		md.addAttribute("formmode", formmode != null ? formmode : "list");
 
-	    int offset = page * size;
-	    List<GeneralMasterEntity> list;
-	    int totalRecords = 0;
-        System.out.println("file type is : "+fileType);
-	    if (fileType == null || fileType.trim().isEmpty()) {
-	    	fileType="MCBL";
-	    }
+		int offset = page * size;
+		List<GeneralMasterEntity> list;
+		int totalRecords = 0;
+		System.out.println("file type is : " + fileType);
+		if (fileType == null || fileType.trim().isEmpty()) {
+			fileType = "MCBL";
+		}
 
-	    if (formmode == null || formmode.equals("list")) {
-
-	    	switch (fileType) {
-	        case "MCBL":
-	            list = (reportDate != null && !reportDate.isEmpty())
-	                    ? GeneralMasterRepos.findByMcblFlag(reportDate, offset, size)
-	                    : GeneralMasterRepos.findByMcblFlag(null, offset, size);
-	            totalRecords = GeneralMasterRepos.countByMcblFlag(reportDate);
-	            break;
-	        case "BLBF":
-	            list = (reportDate != null && !reportDate.isEmpty())
-	                    ? GeneralMasterRepos.findByBlbfFlag(reportDate, offset, size)
-	                    : GeneralMasterRepos.findByBlbfFlag(null, offset, size);
-	            totalRecords = GeneralMasterRepos.countByBlbfFlag(reportDate);
-	            break;
-	        case "BDGF":
-	            list = (reportDate != null && !reportDate.isEmpty())
-	                    ? GeneralMasterRepos.findByBdgfFlag(reportDate, offset, size)
-	                    : GeneralMasterRepos.findByBdgfFlag(null, offset, size);
-	            totalRecords = GeneralMasterRepos.countByBdgfFlag(reportDate);
-	            break;
-	        case "BFDB":
-	            list = (reportDate != null && !reportDate.isEmpty())
-	                    ? GeneralMasterRepos.findByBfdbFlag(reportDate, offset, size)
-	                    : GeneralMasterRepos.findByBfdbFlag(null, offset, size);
-	            totalRecords = GeneralMasterRepos.countByBfdbFlag(reportDate);
-	            break;
-	        default:
-	            list = new ArrayList<>();
-	            totalRecords = 0;
-	            break;
-	    }
-
-
-	        int totalPages = (int) Math.ceil((double) totalRecords / size);
-
-	        md.addAttribute("list", list);
-	        md.addAttribute("pagination", "YES");
-	        md.addAttribute("currentPage", page);
-	        md.addAttribute("totalPages", totalPages);
-	        md.addAttribute("fileType", fileType);
-	        md.addAttribute("reportDate", reportDate);
-
-	    } else if (formmode.equals("add")) {
-	        md.addAttribute("menuname", "MCBL Main - Add");
-	        md.addAttribute("formmode", "add");
-	        md.addAttribute("fileType", fileType);
-
-	    } else { // edit/view/delete
-	        GeneralMasterEntity entity = GeneralMasterRepos.findByIdNative(id);
-	        md.addAttribute("list", entity);
-	        md.addAttribute("formmode", formmode);
-	        md.addAttribute("fileType", fileType);
-	        md.addAttribute("menuname", "General Master Table - " + formmode.toUpperCase());
-	    }
-
-	    return "Source_Data_Mapping";
-	}
-
-
-    
-        @RequestMapping(value = "ReferCodeMast", method = { RequestMethod.GET, RequestMethod.POST })
-        public String ReferCodeMast(
-                @RequestParam(required = false) String formmode,
-                @RequestParam(required = false) String id,
-                @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-                @RequestParam(value = "size", required = false, defaultValue = "100") int size,
-                Model md) {
-
-                md.addAttribute("menu", "Reference Code Master");
-                md.addAttribute("menuname", "Referance Code Master");
-                md.addAttribute("formmode", "list");
-
-                int offset = page * size;
-                List<MCBL_Main_Entity> lists = MCBL_Main_Reps.getdatabydateList(offset, size);
-
-                // ✅ Declare totalRecords here
-                int totalRecords = MCBL_Main_Reps.countAll();
-                int totalPages = (int) Math.ceil((double) totalRecords / size);
-
-                List<String> RptCodes = BRRS_Report_Mast_Reps.getRptCode();
-                
-
-                md.addAttribute("RptCodes", RptCodes);
-               
-                
-                md.addAttribute("MCBL_List", lists);
-                md.addAttribute("pagination", "YES");
-                md.addAttribute("currentPage", page);
-                md.addAttribute("totalPages", totalPages);
-            
-            
-
-            return "Reference_Code_Master.html";
-        }
-
-
-        
-
-    	
-    	@RequestMapping(value = "MCBL", method = { RequestMethod.GET, RequestMethod.POST })
-    	public String MCBL(@RequestParam(required = false) String formmode,
-    			@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
-    			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
-    			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-    		md.addAttribute("activeMenu", "Reports");
-    		md.addAttribute("activePage", "CentralBank");
-    		 String USERID = (String) req.getSession().getAttribute("USERID");
-    	   md.addAttribute("USERID", USERID);
-    		logger.info("==> Entered MCBL controller || Formmode: {}", formmode);
-
-    		LocalDate today = LocalDate.now();
-    		Date defaultDate = java.sql.Date.valueOf(today);
-
-    		
-    		
-    		try {
-    			if (formmode == null || formmode.equals("add")) {
-    				//List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
-    				String currentDateString = null;
-    				if (date == null) {
-    					// If no date provided → use today's date
-    					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(defaultDate);
-    					//logger.info("Fetched {} records for default date: {}", customerList.size(), defaultDate);
-    					currentDateString = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    				} else {
-    					// Convert LocalDate param → SQL Date
-    					Date sqlDate = java.sql.Date.valueOf(date);
-    					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(sqlDate);
-    					//logger.info("Fetched {} records for provided date: {}", customerList.size(), sqlDate);
-
-    					currentDateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    				}
-    				md.addAttribute("currentdate", currentDateString);
-    				md.addAttribute("menu", "MCBL - List");
-    				//md.addAttribute("customersplratedetail", customerList);
-    				md.addAttribute("currentdate", currentDateString);
-    				md.addAttribute("formmode", "add");
-    			} else if (formmode.equals("list")) {
-    				List<Date> reportDates = mcblRep.findDistinctReportDates();
-    			    md.addAttribute("reportDates", reportDates);
-    				md.addAttribute("menu", "File Upload - List");
-    				md.addAttribute("formmode", "list");
-    			}  
-
-    		} catch (Exception e) {
-    			logger.error("Error in  MCBL controller: {}", e.getMessage(), e);
-    			md.addAttribute("errorMessage", "Error loading MCBL page. Please contact administrator.");
-    		}
-
-    		logger.info("<== Exiting MCBL controller");
-    		return "MCBL";
-    	}
-
-
-
-    	//Getting Details by report date for view and download for MCBL IN FILE UPLOAD
-    	@GetMapping("/fetchMCBLRecords")
-    	public String fetchMCBLRecords(@RequestParam String reportDate, Model md) {
-    	    System.out.println("Came to controller with report date: " + reportDate);
-
-    	    // Fetch records from repository
-    	    List<MCBL_Entity> lists = mcblRep.findRecordsByReportDate(reportDate);
-
-    	    // Add data to model
-    	    md.addAttribute("MCBL_List", lists);
-    	    md.addAttribute("selectedReportDate", reportDate);
-    	    
-    	    List<Date> reportDates = mcblRep.findDistinctReportDates();
-		    md.addAttribute("reportDates", reportDates);
-		    
-		    
-    	    md.addAttribute("formmode", "list");
-    	    // Return the same view (page name)
-    	    return "MCBL"; // change this to your actual HTML/Thymeleaf page name
-    	}
-
-
-    	@Autowired
-    	MCBL_Services MCBL_Servicess;
-    	
-    	
-   /* 	@PostMapping("addmcbl")
-    	@ResponseBody
-    	public String addmcbl(@ModelAttribute MultipartFile file,
-    	                                    Model md,String reportDate,
-    	                                    HttpServletRequest rq ) {
-    	    logger.info("==> Entered MCBL method");
-    	    String userid = (String) rq.getSession().getAttribute("USERID");
-    	    String username = (String) rq.getSession().getAttribute("USERNAME");
-    	    try {
-    	        String msg = MCBL_Servicess.addMCBL( file, userid, username,reportDate);
-    	        logger.info("MCBL result: {}", msg);
-    	        return msg;
-    	    } catch (Exception e) {
-    	        logger.error("Error occurred while Add MCBL: {}", e.getMessage(), e);
-    	        return "Error Occurred. Please contact Administrator.";
-    	    }
-    	}
-
-    	
-   /* 	//BDGF
-    	@RequestMapping(value = "BDGF", method = { RequestMethod.GET, RequestMethod.POST })
-    	public String BDGF(@RequestParam(required = false) String formmode,
-    			@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
-    			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
-    			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-    		md.addAttribute("activeMenu", "Reports");
-    		md.addAttribute("activePage", "CentralBank");
-    		 String USERID = (String) req.getSession().getAttribute("USERID");
-    	   md.addAttribute("USERID", USERID);
-    		logger.info("==> Entered BDGF controller || Formmode: {}", formmode);
-
-    		LocalDate today = LocalDate.now();
-    		Date defaultDate = java.sql.Date.valueOf(today);
-
-    		try {
-    			if (formmode == null || formmode.equals("list")) {
-    				//List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
-    				String currentDateString = null;
-    				if (date == null) {
-    					// If no date provided → use today's date
-    					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(defaultDate);
-    					//logger.info("Fetched {} records for default date: {}", customerList.size(), defaultDate);
-    					currentDateString = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    				} else {
-    					// Convert LocalDate param → SQL Date
-    					Date sqlDate = java.sql.Date.valueOf(date);
-    					//customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(sqlDate);
-    					//logger.info("Fetched {} records for provided date: {}", customerList.size(), sqlDate);
-
-    					currentDateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    				}
-    				md.addAttribute("currentdate", currentDateString);
-    				md.addAttribute("menu", "Blank Deposit General Format - List");
-    				//md.addAttribute("customersplratedetail", customerList);
-    				md.addAttribute("currentdate", currentDateString);
-    				md.addAttribute("formmode", "list");
-    			} else if (formmode.equals("add")) {
-    				md.addAttribute("menu", "Blank Deposit General Format - Add");
-    				md.addAttribute("formmode", "add");
-    			}  
-
-    		} catch (Exception e) {
-    			logger.error("Error in  BDGF controller: {}", e.getMessage(), e);
-    			md.addAttribute("errorMessage", "Error loading BDGF page. Please contact administrator.");
-    		}
-
-    		logger.info("<== Exiting BDGF controller");
-    		return "BDGF";
-    	}
-
-
-
-    	
-    /*	@PostMapping("addBDGF")
-    	@ResponseBody
-    	public String addBDGF(@ModelAttribute MultipartFile file, Model md, HttpServletRequest rq) {
-    	    logger.info("==> Entered BDGF method");
-
-    	    String userid = (String) rq.getSession().getAttribute("USERID");
-    	    String username = (String) rq.getSession().getAttribute("USERNAME");
-
-    	    try {
-    	        String msg = BDGF_Servicess.addBDGF(file, userid, username);
-    	        logger.info("BDGF result: {}", msg);
-    	        return msg;
-    	    } catch (Exception e) {
-    	        logger.error("Error occurred while Add BDGF: {}", e.getMessage(), e);
-    	        return "Error Occurred. Please contact Administrator.";
-    	    }
-    	}
-    	
-    	*/
-
-	//BFDB
-/*
-@RequestMapping(value = "BFDB", method = { RequestMethod.GET, RequestMethod.POST })
-public String BFDB(@RequestParam(required = false) String formmode,
-		@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
-		@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
-		@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-	md.addAttribute("activeMenu", "Reports");
-	md.addAttribute("activePage", "CentralBank");
-	 String USERID = (String) req.getSession().getAttribute("USERID");
-   md.addAttribute("USERID", USERID);
-	logger.info("==> Entered BFDB controller || Formmode: {}", formmode);
-
-	LocalDate today = LocalDate.now();
-
-	try {
 		if (formmode == null || formmode.equals("list")) {
-			md.addAttribute("menu", "MCBL Main");
-			md.addAttribute("menuname", "MCBL Main");
-			md.addAttribute("formmode", "list");
 
-			int offset = page * size;
-			List<MCBL_Main_Entity> lists = MCBL_Main_Reps.getdatabydateList(offset, size);
+			switch (fileType) {
+				case "MCBL":
+					list = (reportDate != null && !reportDate.isEmpty())
+							? GeneralMasterRepos.findByMcblFlag(reportDate, offset, size)
+							: GeneralMasterRepos.findByMcblFlag(null, offset, size);
+					totalRecords = GeneralMasterRepos.countByMcblFlag(reportDate);
+					break;
+				case "BLBF":
+					list = (reportDate != null && !reportDate.isEmpty())
+							? GeneralMasterRepos.findByBlbfFlag(reportDate, offset, size)
+							: GeneralMasterRepos.findByBlbfFlag(null, offset, size);
+					totalRecords = GeneralMasterRepos.countByBlbfFlag(reportDate);
+					break;
+				case "BDGF":
+					list = (reportDate != null && !reportDate.isEmpty())
+							? GeneralMasterRepos.findByBdgfFlag(reportDate, offset, size)
+							: GeneralMasterRepos.findByBdgfFlag(null, offset, size);
+					totalRecords = GeneralMasterRepos.countByBdgfFlag(reportDate);
+					break;
+				case "BFDB":
+					list = (reportDate != null && !reportDate.isEmpty())
+							? GeneralMasterRepos.findByBfdbFlag(reportDate, offset, size)
+							: GeneralMasterRepos.findByBfdbFlag(null, offset, size);
+					totalRecords = GeneralMasterRepos.countByBfdbFlag(reportDate);
+					break;
+				default:
+					list = new ArrayList<>();
+					totalRecords = 0;
+					break;
+			}
 
-			// ✅ Declare totalRecords here
-			int totalRecords = MCBL_Main_Reps.countAll();
 			int totalPages = (int) Math.ceil((double) totalRecords / size);
 
-			md.addAttribute("MCBL_List", lists);
+			md.addAttribute("list", list);
 			md.addAttribute("pagination", "YES");
 			md.addAttribute("currentPage", page);
 			md.addAttribute("totalPages", totalPages);
+			md.addAttribute("fileType", fileType);
+			md.addAttribute("reportDate", reportDate);
+
 		} else if (formmode.equals("add")) {
-			md.addAttribute("menuname", "MCBL Main- Add");
+			md.addAttribute("menuname", "MCBL Main - Add");
 			md.addAttribute("formmode", "add");
+			md.addAttribute("fileType", fileType);
 
-		} else if (formmode.equals("edit")) {
-			md.addAttribute("menuname", "MCBL Main- Edit");
-			md.addAttribute("formmode", "edit");
-			md.addAttribute("MCBL_List", MCBL_Main_Reps.findById(id).orElse(null));
-
-		} else if (formmode.equals("view")) {
-			md.addAttribute("menuname", "MCBL Main- Inquiry");
-			md.addAttribute("formmode", "view");
-			md.addAttribute("MCBL_List", MCBL_Main_Reps.findById(id).orElse(null));
-
-		} else if (formmode.equals("delete")) {
-			md.addAttribute("menuname", "MCBL Main- Delete");
-			md.addAttribute("formmode", "delete");
-			md.addAttribute("MCBL_List", MCBL_Main_Reps.findById(id).orElse(null));
+		} else { // edit/view/delete
+			GeneralMasterEntity entity = GeneralMasterRepos.findByIdNative(id);
+			md.addAttribute("list", entity);
+			md.addAttribute("formmode", formmode);
+			md.addAttribute("fileType", fileType);
+			md.addAttribute("menuname", "General Master Table - " + formmode.toUpperCase());
 		}
 
 		return "Source_Data_Mapping";
-	}*/
+	}
 
-	/*@RequestMapping(value = "ReferCodeMast", method = { RequestMethod.GET, RequestMethod.POST })
-	public String ReferCodeMast(@RequestParam(required = false) String formmode,
+	@RequestMapping(value = "ReferCodeMast", method = { RequestMethod.GET, RequestMethod.POST })
+	public String ReferCodeMast(
+			@RequestParam(required = false) String formmode,
 			@RequestParam(required = false) String id,
 			@RequestParam(value = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(value = "size", required = false, defaultValue = "100") int size, Model md) {
+			@RequestParam(value = "size", required = false, defaultValue = "100") int size,
+			Model md) {
 
 		md.addAttribute("menu", "Reference Code Master");
 		md.addAttribute("menuname", "Referance Code Master");
@@ -956,10 +682,10 @@ public String BFDB(@RequestParam(required = false) String formmode,
 
 		return "Reference_Code_Master.html";
 	}
-*/
-	/*@RequestMapping(value = "MCBL", method = { RequestMethod.GET, RequestMethod.POST })
-	public String MCBL(@RequestParam(required = false) String formmode, @RequestParam(required = false) String tranid,
-			@RequestParam(required = false) Optional<Integer> page,
+
+	@RequestMapping(value = "MCBL", method = { RequestMethod.GET, RequestMethod.POST })
+	public String MCBL(@RequestParam(required = false) String formmode,
+			@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
 			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
 			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 		md.addAttribute("activeMenu", "Reports");
@@ -1009,7 +735,304 @@ public String BFDB(@RequestParam(required = false) String formmode,
 
 		logger.info("<== Exiting MCBL controller");
 		return "MCBL";
-	}*/
+	}
+
+	// Getting Details by report date for view and download for MCBL IN FILE UPLOAD
+	@GetMapping("/fetchMCBLRecords")
+	public String fetchMCBLRecords(@RequestParam String reportDate, Model md) {
+		System.out.println("Came to controller with report date: " + reportDate);
+
+		// Fetch records from repository
+		List<MCBL_Entity> lists = mcblRep.findRecordsByReportDate(reportDate);
+
+		// Add data to model
+		md.addAttribute("MCBL_List", lists);
+		md.addAttribute("selectedReportDate", reportDate);
+
+		List<Date> reportDates = mcblRep.findDistinctReportDates();
+		md.addAttribute("reportDates", reportDates);
+
+		md.addAttribute("formmode", "list");
+		// Return the same view (page name)
+		return "MCBL"; // change this to your actual HTML/Thymeleaf page name
+	}
+
+	@Autowired
+	MCBL_Services MCBL_Servicess;
+
+	/*
+	 * @PostMapping("addmcbl")
+	 * 
+	 * @ResponseBody
+	 * public String addmcbl(@ModelAttribute MultipartFile file,
+	 * Model md,String reportDate,
+	 * HttpServletRequest rq ) {
+	 * logger.info("==> Entered MCBL method");
+	 * String userid = (String) rq.getSession().getAttribute("USERID");
+	 * String username = (String) rq.getSession().getAttribute("USERNAME");
+	 * try {
+	 * String msg = MCBL_Servicess.addMCBL( file, userid, username,reportDate);
+	 * logger.info("MCBL result: {}", msg);
+	 * return msg;
+	 * } catch (Exception e) {
+	 * logger.error("Error occurred while Add MCBL: {}", e.getMessage(), e);
+	 * return "Error Occurred. Please contact Administrator.";
+	 * }
+	 * }
+	 * 
+	 * 
+	 * /* //BDGF
+	 * 
+	 * @RequestMapping(value = "BDGF", method = { RequestMethod.GET,
+	 * RequestMethod.POST })
+	 * public String BDGF(@RequestParam(required = false) String formmode,
+	 * 
+	 * @RequestParam(required = false) String tranid, @RequestParam(required =
+	 * false) Optional<Integer> page,
+	 * 
+	 * @RequestParam(value = "size", required = false) Optional<Integer> size, Model
+	 * md, HttpServletRequest req,
+	 * 
+	 * @RequestParam(value = "date", required = false) @DateTimeFormat(iso =
+	 * DateTimeFormat.ISO.DATE) LocalDate date) {
+	 * md.addAttribute("activeMenu", "Reports");
+	 * md.addAttribute("activePage", "CentralBank");
+	 * String USERID = (String) req.getSession().getAttribute("USERID");
+	 * md.addAttribute("USERID", USERID);
+	 * logger.info("==> Entered BDGF controller || Formmode: {}", formmode);
+	 * 
+	 * LocalDate today = LocalDate.now();
+	 * Date defaultDate = java.sql.Date.valueOf(today);
+	 * 
+	 * try {
+	 * if (formmode == null || formmode.equals("list")) {
+	 * //List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
+	 * String currentDateString = null;
+	 * if (date == null) {
+	 * // If no date provided → use today's date
+	 * //customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(defaultDate);
+	 * //logger.info("Fetched {} records for default date: {}", customerList.size(),
+	 * defaultDate);
+	 * currentDateString = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	 * } else {
+	 * // Convert LocalDate param → SQL Date
+	 * Date sqlDate = java.sql.Date.valueOf(date);
+	 * //customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(sqlDate);
+	 * //logger.info("Fetched {} records for provided date: {}",
+	 * customerList.size(), sqlDate);
+	 * 
+	 * currentDateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	 * }
+	 * md.addAttribute("currentdate", currentDateString);
+	 * md.addAttribute("menu", "Blank Deposit General Format - List");
+	 * //md.addAttribute("customersplratedetail", customerList);
+	 * md.addAttribute("currentdate", currentDateString);
+	 * md.addAttribute("formmode", "list");
+	 * } else if (formmode.equals("add")) {
+	 * md.addAttribute("menu", "Blank Deposit General Format - Add");
+	 * md.addAttribute("formmode", "add");
+	 * }
+	 * 
+	 * } catch (Exception e) {
+	 * logger.error("Error in  BDGF controller: {}", e.getMessage(), e);
+	 * md.addAttribute("errorMessage",
+	 * "Error loading BDGF page. Please contact administrator.");
+	 * }
+	 * 
+	 * logger.info("<== Exiting BDGF controller");
+	 * return "BDGF";
+	 * }
+	 * 
+	 * 
+	 * 
+	 * 
+	 * /* @PostMapping("addBDGF")
+	 * 
+	 * @ResponseBody
+	 * public String addBDGF(@ModelAttribute MultipartFile file, Model md,
+	 * HttpServletRequest rq) {
+	 * logger.info("==> Entered BDGF method");
+	 * 
+	 * String userid = (String) rq.getSession().getAttribute("USERID");
+	 * String username = (String) rq.getSession().getAttribute("USERNAME");
+	 * 
+	 * try {
+	 * String msg = BDGF_Servicess.addBDGF(file, userid, username);
+	 * logger.info("BDGF result: {}", msg);
+	 * return msg;
+	 * } catch (Exception e) {
+	 * logger.error("Error occurred while Add BDGF: {}", e.getMessage(), e);
+	 * return "Error Occurred. Please contact Administrator.";
+	 * }
+	 * }
+	 * 
+	 */
+
+	// BFDB
+	/*
+	 * @RequestMapping(value = "BFDB", method = { RequestMethod.GET,
+	 * RequestMethod.POST })
+	 * public String BFDB(@RequestParam(required = false) String formmode,
+	 * 
+	 * @RequestParam(required = false) String tranid, @RequestParam(required =
+	 * false) Optional<Integer> page,
+	 * 
+	 * @RequestParam(value = "size", required = false) Optional<Integer> size, Model
+	 * md, HttpServletRequest req,
+	 * 
+	 * @RequestParam(value = "date", required = false) @DateTimeFormat(iso =
+	 * DateTimeFormat.ISO.DATE) LocalDate date) {
+	 * md.addAttribute("activeMenu", "Reports");
+	 * md.addAttribute("activePage", "CentralBank");
+	 * String USERID = (String) req.getSession().getAttribute("USERID");
+	 * md.addAttribute("USERID", USERID);
+	 * logger.info("==> Entered BFDB controller || Formmode: {}", formmode);
+	 * 
+	 * LocalDate today = LocalDate.now();
+	 * 
+	 * try {
+	 * if (formmode == null || formmode.equals("list")) {
+	 * md.addAttribute("menu", "MCBL Main");
+	 * md.addAttribute("menuname", "MCBL Main");
+	 * md.addAttribute("formmode", "list");
+	 * 
+	 * int offset = page * size;
+	 * List<MCBL_Main_Entity> lists = MCBL_Main_Reps.getdatabydateList(offset,
+	 * size);
+	 * 
+	 * // ✅ Declare totalRecords here
+	 * int totalRecords = MCBL_Main_Reps.countAll();
+	 * int totalPages = (int) Math.ceil((double) totalRecords / size);
+	 * 
+	 * md.addAttribute("MCBL_List", lists);
+	 * md.addAttribute("pagination", "YES");
+	 * md.addAttribute("currentPage", page);
+	 * md.addAttribute("totalPages", totalPages);
+	 * } else if (formmode.equals("add")) {
+	 * md.addAttribute("menuname", "MCBL Main- Add");
+	 * md.addAttribute("formmode", "add");
+	 * 
+	 * } else if (formmode.equals("edit")) {
+	 * md.addAttribute("menuname", "MCBL Main- Edit");
+	 * md.addAttribute("formmode", "edit");
+	 * md.addAttribute("MCBL_List", MCBL_Main_Reps.findById(id).orElse(null));
+	 * 
+	 * } else if (formmode.equals("view")) {
+	 * md.addAttribute("menuname", "MCBL Main- Inquiry");
+	 * md.addAttribute("formmode", "view");
+	 * md.addAttribute("MCBL_List", MCBL_Main_Reps.findById(id).orElse(null));
+	 * 
+	 * } else if (formmode.equals("delete")) {
+	 * md.addAttribute("menuname", "MCBL Main- Delete");
+	 * md.addAttribute("formmode", "delete");
+	 * md.addAttribute("MCBL_List", MCBL_Main_Reps.findById(id).orElse(null));
+	 * }
+	 * 
+	 * return "Source_Data_Mapping";
+	 * }
+	 */
+
+	/*
+	 * @RequestMapping(value = "ReferCodeMast", method = { RequestMethod.GET,
+	 * RequestMethod.POST })
+	 * public String ReferCodeMast(@RequestParam(required = false) String formmode,
+	 * 
+	 * @RequestParam(required = false) String id,
+	 * 
+	 * @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+	 * 
+	 * @RequestParam(value = "size", required = false, defaultValue = "100") int
+	 * size, Model md) {
+	 * 
+	 * md.addAttribute("menu", "Reference Code Master");
+	 * md.addAttribute("menuname", "Referance Code Master");
+	 * md.addAttribute("formmode", "list");
+	 * 
+	 * int offset = page * size;
+	 * List<MCBL_Main_Entity> lists = MCBL_Main_Reps.getdatabydateList(offset,
+	 * size);
+	 * 
+	 * // ✅ Declare totalRecords here
+	 * int totalRecords = MCBL_Main_Reps.countAll();
+	 * int totalPages = (int) Math.ceil((double) totalRecords / size);
+	 * 
+	 * List<String> RptCodes = BRRS_Report_Mast_Reps.getRptCode();
+	 * 
+	 * md.addAttribute("RptCodes", RptCodes);
+	 * 
+	 * md.addAttribute("MCBL_List", lists);
+	 * md.addAttribute("pagination", "YES");
+	 * md.addAttribute("currentPage", page);
+	 * md.addAttribute("totalPages", totalPages);
+	 * 
+	 * return "Reference_Code_Master.html";
+	 * }
+	 */
+	/*
+	 * @RequestMapping(value = "MCBL", method = { RequestMethod.GET,
+	 * RequestMethod.POST })
+	 * public String MCBL(@RequestParam(required = false) String
+	 * formmode, @RequestParam(required = false) String tranid,
+	 * 
+	 * @RequestParam(required = false) Optional<Integer> page,
+	 * 
+	 * @RequestParam(value = "size", required = false) Optional<Integer> size, Model
+	 * md, HttpServletRequest req,
+	 * 
+	 * @RequestParam(value = "date", required = false) @DateTimeFormat(iso =
+	 * DateTimeFormat.ISO.DATE) LocalDate date) {
+	 * md.addAttribute("activeMenu", "Reports");
+	 * md.addAttribute("activePage", "CentralBank");
+	 * String USERID = (String) req.getSession().getAttribute("USERID");
+	 * md.addAttribute("USERID", USERID);
+	 * logger.info("==> Entered MCBL controller || Formmode: {}", formmode);
+	 * 
+	 * LocalDate today = LocalDate.now();
+	 * Date defaultDate = java.sql.Date.valueOf(today);
+	 * 
+	 * try {
+	 * if (formmode == null || formmode.equals("add")) {
+	 * // List<INR_Reporting_Branch_Entity> customerList = new ArrayList<>();
+	 * String currentDateString = null;
+	 * if (date == null) {
+	 * // If no date provided → use today's date
+	 * // customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(defaultDate);
+	 * // logger.info("Fetched {} records for default date: {}",
+	 * customerList.size(),
+	 * // defaultDate);
+	 * currentDateString = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	 * } else {
+	 * // Convert LocalDate param → SQL Date
+	 * Date sqlDate = java.sql.Date.valueOf(date);
+	 * // customerList = INR_Reporting_Branch_Reps.Getcurrentdaydetail(sqlDate);
+	 * // logger.info("Fetched {} records for provided date: {}",
+	 * customerList.size(),
+	 * // sqlDate);
+	 * 
+	 * currentDateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	 * }
+	 * md.addAttribute("currentdate", currentDateString);
+	 * md.addAttribute("menu", "MCBL - List");
+	 * // md.addAttribute("customersplratedetail", customerList);
+	 * md.addAttribute("currentdate", currentDateString);
+	 * md.addAttribute("formmode", "add");
+	 * } else if (formmode.equals("list")) {
+	 * List<Date> reportDates = mcblRep.findDistinctReportDates();
+	 * md.addAttribute("reportDates", reportDates);
+	 * md.addAttribute("menu", "File Upload - List");
+	 * md.addAttribute("formmode", "list");
+	 * }
+	 * 
+	 * } catch (Exception e) {
+	 * logger.error("Error in  MCBL controller: {}", e.getMessage(), e);
+	 * md.addAttribute("errorMessage",
+	 * "Error loading MCBL page. Please contact administrator.");
+	 * }
+	 * 
+	 * logger.info("<== Exiting MCBL controller");
+	 * return "MCBL";
+	 * }
+	 */
 
 	@GetMapping("/getReportDatesByFileType")
 	@ResponseBody
@@ -1017,19 +1040,19 @@ public String BFDB(@RequestParam(required = false) String formmode,
 		List<Date> reportDates = new ArrayList<>();
 
 		switch (fileType) {
-		case "MCBL":
-			reportDates = mcblRep.findDistinctReportDates();
-			break;
-		case "DEPOSIT_GENERAL":
-			reportDates = bdgfRep.findDistinctReportDates();
-			break;
-		case "LOAN_BOOK":
-			reportDates = blbfRep.findDistinctReportDates();
-			break;
+			case "MCBL":
+				reportDates = mcblRep.findDistinctReportDates();
+				break;
+			case "DEPOSIT_GENERAL":
+				reportDates = bdgfRep.findDistinctReportDates();
+				break;
+			case "LOAN_BOOK":
+				reportDates = blbfRep.findDistinctReportDates();
+				break;
 
-		case "DEPOSIT_BOOK":
-			reportDates = bfdbRep.findDistinctReportDates();
-			break;
+			case "DEPOSIT_BOOK":
+				reportDates = bfdbRep.findDistinctReportDates();
+				break;
 		}
 
 		// Convert Date -> formatted String
@@ -1069,48 +1092,45 @@ public String BFDB(@RequestParam(required = false) String formmode,
 		md.addAttribute("formmode", "list");
 
 		switch (fileType) {
-		case "MCBL":
-			List<MCBL_Entity> mcblList = mcblRep.findRecordsByReportDate(reportDate);
-			md.addAttribute("MCBL_List", mcblList);
-			List<Date> mcblDates = mcblRep.findDistinctReportDates();
-			md.addAttribute("reportDates", mcblDates);
-			break;
+			case "MCBL":
+				List<MCBL_Entity> mcblList = mcblRep.findRecordsByReportDate(reportDate);
+				md.addAttribute("MCBL_List", mcblList);
+				List<Date> mcblDates = mcblRep.findDistinctReportDates();
+				md.addAttribute("reportDates", mcblDates);
+				break;
 
-		case "DEPOSIT_GENERAL":
-			List<BDGF_Entity> bdgfList = bdgfRep.findRecordsByReportDate(reportDate);
-			md.addAttribute("BDGF_List", bdgfList);
-			List<Date> bdgfDates = bdgfRep.findDistinctReportDates();
-			md.addAttribute("reportDates", bdgfDates);
-			break;
+			case "DEPOSIT_GENERAL":
+				List<BDGF_Entity> bdgfList = bdgfRep.findRecordsByReportDate(reportDate);
+				md.addAttribute("BDGF_List", bdgfList);
+				List<Date> bdgfDates = bdgfRep.findDistinctReportDates();
+				md.addAttribute("reportDates", bdgfDates);
+				break;
 
-		case "DEPOSIT_BOOK":
-			List<BFDB_Entity> bfdbList = bfdbRep.findRecordsByReportDate(reportDate);
-			md.addAttribute("BFDB_List", bfdbList);
-			List<Date> bfdbDates = bfdbRep.findDistinctReportDates();
-			md.addAttribute("reportDates", bfdbDates);
-			break;
+			case "DEPOSIT_BOOK":
+				List<BFDB_Entity> bfdbList = bfdbRep.findRecordsByReportDate(reportDate);
+				md.addAttribute("BFDB_List", bfdbList);
+				List<Date> bfdbDates = bfdbRep.findDistinctReportDates();
+				md.addAttribute("reportDates", bfdbDates);
+				break;
 
-		case "LOAN_BOOK":
-			List<BLBF_Entity> blbfList = blbfRep.findRecordsByReportDate(reportDate);
-			md.addAttribute("BLBF_List", blbfList);
-			List<Date> blbfDates = blbfRep.findDistinctReportDates();
-			md.addAttribute("reportDates", blbfDates);
-			break;
+			case "LOAN_BOOK":
+				List<BLBF_Entity> blbfList = blbfRep.findRecordsByReportDate(reportDate);
+				md.addAttribute("BLBF_List", blbfList);
+				List<Date> blbfDates = blbfRep.findDistinctReportDates();
+				md.addAttribute("reportDates", blbfDates);
+				break;
 		}
 
 		return "MCBL"; // all tables in one page
 	}
-	
-	
+
 	@GetMapping("/vieAddDel")
 	public String viewAddDel(Model model) {
 		System.out.println("came to controller");
-	    model.addAttribute("accountTrackList", accountTrackRepo.findAll());
-	    model.addAttribute("selectedFileType", "AD");
-	    return "MCBL";
+		model.addAttribute("accountTrackList", accountTrackRepo.findAll());
+		model.addAttribute("selectedFileType", "AD");
+		return "MCBL";
 	}
-
-
 
 	// =================== START REPORT ===================
 	@GetMapping("/startreport")
@@ -1184,51 +1204,53 @@ public String BFDB(@RequestParam(required = false) String formmode,
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).body(data);
 	}
 
-	/*@PostMapping("addmcbl")
-	@ResponseBody
-	public String addmcbl(@ModelAttribute MultipartFile file, Model md, String reportDate, HttpServletRequest rq) {
-		logger.info("==> Entered MCBL method");
-		String userid = (String) rq.getSession().getAttribute("USERID");
-		String username = (String) rq.getSession().getAttribute("USERNAME");
-		try {
-			String msg = MCBL_Servicess.addMCBL(file, userid, username, reportDate);
-			logger.info("MCBL result: {}", msg);
-			return msg;
-		} catch (Exception e) {
-			logger.error("Error occurred while Add MCBL: {}", e.getMessage(), e);
-			return "Error Occurred. Please contact Administrator.";
-		}
-	}
-*/
+	/*
+	 * @PostMapping("addmcbl")
+	 * 
+	 * @ResponseBody
+	 * public String addmcbl(@ModelAttribute MultipartFile file, Model md, String
+	 * reportDate, HttpServletRequest rq) {
+	 * logger.info("==> Entered MCBL method");
+	 * String userid = (String) rq.getSession().getAttribute("USERID");
+	 * String username = (String) rq.getSession().getAttribute("USERNAME");
+	 * try {
+	 * String msg = MCBL_Servicess.addMCBL(file, userid, username, reportDate);
+	 * logger.info("MCBL result: {}", msg);
+	 * return msg;
+	 * } catch (Exception e) {
+	 * logger.error("Error occurred while Add MCBL: {}", e.getMessage(), e);
+	 * return "Error Occurred. Please contact Administrator.";
+	 * }
+	 * }
+	 */
 	@PostMapping("/startMCBLUpload")
 	@ResponseBody
 	public String startMCBLUpload(
-	        @RequestParam("file") MultipartFile file,
-	        @RequestParam("reportDate") String reportDate,
-	        HttpServletRequest rq) {
-	    String userid = (String) rq.getSession().getAttribute("USERID");
-	    String username = (String) rq.getSession().getAttribute("USERNAME");
-	    String jobId = UUID.randomUUID().toString();
+			@RequestParam("file") MultipartFile file,
+			@RequestParam("reportDate") String reportDate,
+			HttpServletRequest rq) {
+		String userid = (String) rq.getSession().getAttribute("USERID");
+		String username = (String) rq.getSession().getAttribute("USERNAME");
+		String jobId = UUID.randomUUID().toString();
 
-	    try {
-	    	MCBL_Servicess.initializeJobStatus(jobId, file, userid, username, reportDate);
-	        return jobId;
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return "ERROR_STARTING_JOB";
-	    }
+		try {
+			MCBL_Servicess.initializeJobStatus(jobId, file, userid, username, reportDate);
+			return jobId;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "ERROR_STARTING_JOB";
+		}
 	}
-
 
 	@GetMapping("/checkMCBLUpload")
 	@ResponseBody
 	public ResponseEntity<String> checkMCBLUpload(@RequestParam String jobId) {
-	    String status = MCBL_Servicess.getJobStatus(jobId);
-	    if (status.startsWith("COMPLETED:") || status.startsWith("ERROR:"))
-	        return ResponseEntity.ok(status);
-	    if (status.equals("PROCESSING"))
-	        return ResponseEntity.ok("PROCESSING");
-	    return ResponseEntity.ok("NOT_FOUND");
+		String status = MCBL_Servicess.getJobStatus(jobId);
+		if (status.startsWith("COMPLETED:") || status.startsWith("ERROR:"))
+			return ResponseEntity.ok(status);
+		if (status.equals("PROCESSING"))
+			return ResponseEntity.ok("PROCESSING");
+		return ResponseEntity.ok("NOT_FOUND");
 	}
 
 	// BDGF
@@ -1284,29 +1306,30 @@ public String BFDB(@RequestParam(required = false) String formmode,
 		return "BDGF";
 	}
 
-	
 	@PostMapping("/startBDGFUpload")
 	@ResponseBody
 	public String startBDGFUpload(@RequestParam("file") MultipartFile file, HttpServletRequest rq) {
-	    String userid = (String) rq.getSession().getAttribute("USERID");
-	    String username = (String) rq.getSession().getAttribute("USERNAME");
-	    String jobId = UUID.randomUUID().toString();
+		String userid = (String) rq.getSession().getAttribute("USERID");
+		String username = (String) rq.getSession().getAttribute("USERNAME");
+		String jobId = UUID.randomUUID().toString();
 
-	    try {
-	    	BDGF_Servicess.initializeJobStatus(jobId, file, userid, username);
-	        return jobId;
-	    } catch (Exception e) {
-	        return "ERROR_STARTING_JOB";
-	    }
+		try {
+			BDGF_Servicess.initializeJobStatus(jobId, file, userid, username);
+			return jobId;
+		} catch (Exception e) {
+			return "ERROR_STARTING_JOB";
+		}
 	}
 
 	@GetMapping("/checkBDGFUpload")
 	@ResponseBody
 	public ResponseEntity<String> checkBDGFUpload(@RequestParam String jobId) {
-	    String status = BDGF_Servicess.getJobStatus(jobId);
-	    if (status.startsWith("COMPLETED:") || status.startsWith("ERROR:")) return ResponseEntity.ok(status);
-	    if (status.equals("PROCESSING")) return ResponseEntity.ok("PROCESSING");
-	    return ResponseEntity.ok("NOT_FOUND");
+		String status = BDGF_Servicess.getJobStatus(jobId);
+		if (status.startsWith("COMPLETED:") || status.startsWith("ERROR:"))
+			return ResponseEntity.ok(status);
+		if (status.equals("PROCESSING"))
+			return ResponseEntity.ok("PROCESSING");
+		return ResponseEntity.ok("NOT_FOUND");
 	}
 
 	// BFDB
@@ -1342,53 +1365,45 @@ public String BFDB(@RequestParam(required = false) String formmode,
 		return "BFDB";
 	}
 
-	
 	@PostMapping("/startBFDBUpload")
 	@ResponseBody
 	public String startBFDBUpload(@RequestParam("file") MultipartFile file, HttpServletRequest rq) {
-	    String userid = (String) rq.getSession().getAttribute("USERID");
-	    String username = (String) rq.getSession().getAttribute("USERNAME");
-	    String jobId = UUID.randomUUID().toString();
+		String userid = (String) rq.getSession().getAttribute("USERID");
+		String username = (String) rq.getSession().getAttribute("USERNAME");
+		String jobId = UUID.randomUUID().toString();
 
-	    try {
-	        BFDB_Servicess.initializeJobStatus(jobId, file, userid, username);
-	        logger.info("BFDB job {} initialized and started.", jobId);
-	        return jobId;
-	    } catch (Exception e) {
-	        logger.error("Error starting BFDB upload: {}", e.getMessage(), e);
-	        return "ERROR_STARTING_JOB";
-	    }
+		try {
+			BFDB_Servicess.initializeJobStatus(jobId, file, userid, username);
+			logger.info("BFDB job {} initialized and started.", jobId);
+			return jobId;
+		} catch (Exception e) {
+			logger.error("Error starting BFDB upload: {}", e.getMessage(), e);
+			return "ERROR_STARTING_JOB";
+		}
 	}
 
+	// ==========================================================
+	// NEW ENDPOINT TO CHECK UPLOAD STATUS
+	// ==========================================================
+	@GetMapping("/checkBFDBUpload")
+	public ResponseEntity<String> checkBFDBUpload(@RequestParam String jobId) {
 
-    // ==========================================================
-    // NEW ENDPOINT TO CHECK UPLOAD STATUS
-    // ==========================================================
-    @GetMapping("/checkBFDBUpload")
-    public ResponseEntity<String> checkBFDBUpload(@RequestParam String jobId) {
+		String status = BFDB_Servicess.getJobStatus(jobId);
+		System.out.println("checking controller");
+		// The service returns: "PROCESSING", "NOT_FOUND", "COMPLETED:..." or
+		// "ERROR:..."
+		if (status.startsWith("COMPLETED:") || status.startsWith("ERROR:")) {
+			// Send final status/result message
+			return ResponseEntity.ok(status);
+		}
+		if (status.equals("PROCESSING")) {
+			return ResponseEntity.ok("PROCESSING");
+		}
 
-        String status = BFDB_Servicess.getJobStatus(jobId);
-        System.out.println("checking controller");
-        // The service returns: "PROCESSING", "NOT_FOUND", "COMPLETED:..." or "ERROR:..."
-        if (status.startsWith("COMPLETED:") || status.startsWith("ERROR:")) {
-            // Send final status/result message
-            return ResponseEntity.ok(status); 
-        }
-        if (status.equals("PROCESSING")) {
-            return ResponseEntity.ok("PROCESSING");
-        }
-        
-        return ResponseEntity.ok("NOT_FOUND"); // Should rarely happen if the client polls correctly
-    }
-	
-	
-	
-	
-	
-	
-	
-	
-//BLBF
+		return ResponseEntity.ok("NOT_FOUND"); // Should rarely happen if the client polls correctly
+	}
+
+	// BLBF
 
 	@RequestMapping(value = "BLBF", method = { RequestMethod.GET, RequestMethod.POST })
 	public String BLBF(@RequestParam(required = false) String formmode, @RequestParam(required = false) String tranid,
@@ -1424,107 +1439,106 @@ public String BFDB(@RequestParam(required = false) String formmode,
 	@Autowired
 	BLBF_Services BLBF_Servicess;
 
-	/*@PostMapping("addBLBF")
-	@ResponseBody
-	public String addBLBF(@ModelAttribute MultipartFile file, Model md, HttpServletRequest rq) {
-		logger.info("==> Entered BLBF method");
-
-		String userid = (String) rq.getSession().getAttribute("USERID");
-		String username = (String) rq.getSession().getAttribute("USERNAME");
-
-		try {
-			String msg = BLBF_Servicess.addBLBF(file, userid, username);
-			logger.info("BLBF result: {}", msg);
-			return msg;
-		} catch (Exception e) {
-			logger.error("Error occurred while Add BLBF: {}", e.getMessage(), e);
-			return "Error Occurred. Please contact Administrator.";
-		}
-	}
-*/
+	/*
+	 * @PostMapping("addBLBF")
+	 * 
+	 * @ResponseBody
+	 * public String addBLBF(@ModelAttribute MultipartFile file, Model md,
+	 * HttpServletRequest rq) {
+	 * logger.info("==> Entered BLBF method");
+	 * 
+	 * String userid = (String) rq.getSession().getAttribute("USERID");
+	 * String username = (String) rq.getSession().getAttribute("USERNAME");
+	 * 
+	 * try {
+	 * String msg = BLBF_Servicess.addBLBF(file, userid, username);
+	 * logger.info("BLBF result: {}", msg);
+	 * return msg;
+	 * } catch (Exception e) {
+	 * logger.error("Error occurred while Add BLBF: {}", e.getMessage(), e);
+	 * return "Error Occurred. Please contact Administrator.";
+	 * }
+	 * }
+	 */
 	@PostMapping("/startBLBFUpload")
 	@ResponseBody
 	public String startBLBFUpload(@RequestParam("file") MultipartFile file, HttpServletRequest rq) {
-	    String userid = (String) rq.getSession().getAttribute("USERID");
-	    String username = (String) rq.getSession().getAttribute("USERNAME");
-	    String jobId = UUID.randomUUID().toString();
+		String userid = (String) rq.getSession().getAttribute("USERID");
+		String username = (String) rq.getSession().getAttribute("USERNAME");
+		String jobId = UUID.randomUUID().toString();
 
-	    try {
-	    	BLBF_Servicess.initializeJobStatus(jobId, file, userid, username);
-	        return jobId;
-	    } catch (Exception e) {
-	        return "ERROR_STARTING_JOB";
-	    }
+		try {
+			BLBF_Servicess.initializeJobStatus(jobId, file, userid, username);
+			return jobId;
+		} catch (Exception e) {
+			return "ERROR_STARTING_JOB";
+		}
 	}
 
 	@GetMapping("/checkBLBFUpload")
 	@ResponseBody
 	public ResponseEntity<String> checkBLBFUpload(@RequestParam String jobId) {
-	    String status = BLBF_Servicess.getJobStatus(jobId);
-	    if (status.startsWith("COMPLETED:") || status.startsWith("ERROR:")) return ResponseEntity.ok(status);
-	    if (status.equals("PROCESSING")) return ResponseEntity.ok("PROCESSING");
-	    return ResponseEntity.ok("NOT_FOUND");
+		String status = BLBF_Servicess.getJobStatus(jobId);
+		if (status.startsWith("COMPLETED:") || status.startsWith("ERROR:"))
+			return ResponseEntity.ok(status);
+		if (status.equals("PROCESSING"))
+			return ResponseEntity.ok("PROCESSING");
+		return ResponseEntity.ok("NOT_FOUND");
 	}
-	
-	
-	
+
 	private ResponseEntity<byte[]> createExcelTemplate(String sheetName, String fileName, List<String> headers)
-	        throws Exception {
-	    XSSFWorkbook workbook = new XSSFWorkbook();
-	    XSSFSheet sheet = workbook.createSheet(sheetName);
-	    
-	    // 🔹 Header style (bold, centered, grey background, LOCKED)
-	    CellStyle headerStyle = workbook.createCellStyle();
-	    Font headerFont = workbook.createFont();
-	    headerFont.setBold(true);
-	    headerStyle.setFont(headerFont);
-	    headerStyle.setAlignment(HorizontalAlignment.CENTER);
-	    headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-	    headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-	    headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-	    headerStyle.setLocked(true); // Lock header cells
-	    
-	    // 🔹 Create header row
-	    Row headerRow = sheet.createRow(0);
-	    for (int i = 0; i < headers.size(); i++) {
-	        Cell cell = headerRow.createCell(i);
-	        cell.setCellValue(headers.get(i));
-	        cell.setCellStyle(headerStyle);
-	        sheet.autoSizeColumn(i);
-	    }
-	    
-	    // 🔹 Freeze header row
-	    sheet.createFreezePane(0, 1);
-	    
-	    // 🔹 Protect sheet with password - this makes ALL cells locked by default
-	    sheet.protectSheet("123");
-	    
-	    // 🔹 UNLOCK all rows EXCEPT the header by setting the default cell style
-	    CellStyle unlockedStyle = workbook.createCellStyle();
-	    unlockedStyle.setLocked(false);
-	    
-	    // Apply unlocked style to ALL columns (Excel will use this for new rows too)
-	    for (int i = 0; i < headers.size(); i++) {
-	        sheet.setDefaultColumnStyle(i, unlockedStyle);
-	    }
-	    
-	    // 🔹 Write workbook to byte array
-	    ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    workbook.write(out);
-	    workbook.close();
-	    
-	    HttpHeaders headersResponse = new HttpHeaders();
-	    headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
-	    headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-	    
-	    return ResponseEntity.ok()
-	            .headers(headersResponse)
-	            .body(out.toByteArray());
+			throws Exception {
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet sheet = workbook.createSheet(sheetName);
+
+		// 🔹 Header style (bold, centered, grey background, LOCKED)
+		CellStyle headerStyle = workbook.createCellStyle();
+		Font headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerStyle.setFont(headerFont);
+		headerStyle.setAlignment(HorizontalAlignment.CENTER);
+		headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		headerStyle.setLocked(true); // Lock header cells
+
+		// 🔹 Create header row
+		Row headerRow = sheet.createRow(0);
+		for (int i = 0; i < headers.size(); i++) {
+			Cell cell = headerRow.createCell(i);
+			cell.setCellValue(headers.get(i));
+			cell.setCellStyle(headerStyle);
+			sheet.autoSizeColumn(i);
+		}
+
+		// 🔹 Freeze header row
+		sheet.createFreezePane(0, 1);
+
+		// 🔹 Protect sheet with password - this makes ALL cells locked by default
+		sheet.protectSheet("123");
+
+		// 🔹 UNLOCK all rows EXCEPT the header by setting the default cell style
+		CellStyle unlockedStyle = workbook.createCellStyle();
+		unlockedStyle.setLocked(false);
+
+		// Apply unlocked style to ALL columns (Excel will use this for new rows too)
+		for (int i = 0; i < headers.size(); i++) {
+			sheet.setDefaultColumnStyle(i, unlockedStyle);
+		}
+
+		// 🔹 Write workbook to byte array
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		workbook.write(out);
+		workbook.close();
+
+		HttpHeaders headersResponse = new HttpHeaders();
+		headersResponse.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+		headersResponse.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+		return ResponseEntity.ok()
+				.headers(headersResponse)
+				.body(out.toByteArray());
 	}
-
-
-
-
 
 	@GetMapping("/download-templateBDGF")
 	public ResponseEntity<byte[]> downloadTemplateBDGF() throws Exception {
@@ -1553,111 +1567,204 @@ public String BFDB(@RequestParam(required = false) String formmode,
 				"ACCT CLS FLG", "CLOSE DATE", "GENDER", "CLASSFICATION CODE", "CONSTITUTION CODE", "MATURITY DATE",
 				"GL SUB HEAD CODE", "GL SUB HEAD DESC", "TENOR(MONTH)", "EMI", "SEGMENT", "FACILITY", "PAST DUE",
 				"PAST DUE DAYS", "ASSET", "PROVISION", "UNSECURED", "INT BUCKET", "STAFF", "SMME", "LABOD", "NEW A/C",
-				"UNDRAWN", "SECTOR", "Period", "Effective Interest Rate", "STAGE", "ECL PROVISION", "REPORT DATE","MAT BUCKET");
+				"UNDRAWN", "SECTOR", "Period", "Effective Interest Rate", "STAGE", "ECL PROVISION", "REPORT DATE",
+				"MAT BUCKET");
 		return createExcelTemplate("LOAN BOOK", "LOAN BOOK.xlsx", headers);
 	}
-	
-	
-	
 
-	 
 	@RequestMapping(value = "getMappingData", method = { RequestMethod.GET, RequestMethod.POST })
 	public ResponseEntity<?> getMappingData(@RequestParam String selectedColumn) {
-	    System.out.println("📩 AJAX received column: " + selectedColumn);
+		System.out.println("📩 AJAX received column: " + selectedColumn);
 
-	    try {
-	        List<Object[]> data = commonMappingService.getMappingData(selectedColumn);
+		try {
+			List<Object[]> data = commonMappingService.getMappingData(selectedColumn);
 
-	        if (data.isEmpty()) {
-	            return ResponseEntity.ok(Collections.singletonList(
-	                new Object[]{"No instance found for selected column", "", "", "", "", ""}
-	            ));
-	        }
+			if (data.isEmpty()) {
+				return ResponseEntity.ok(Collections.singletonList(
+						new Object[] { "No instance found for selected column", "", "", "", "", "" }));
+			}
 
-	        return ResponseEntity.ok(data);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                             .body(Collections.emptyList());
-	    }
+			return ResponseEntity.ok(data);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Collections.emptyList());
+		}
 	}
 
-	
-	    
-	    
-    @RequestMapping(value = "CommonMapping", method = { RequestMethod.GET, RequestMethod.POST })
-    public String CommonMapping(
-            @RequestParam(required = false) String formmode,
-            @RequestParam(required = false) String userid,
-            @RequestParam(required = false) String selectedColumn,
-            @RequestParam(required = false) String ACCOUNT_NO,
-            @RequestParam(required = false) Optional<Integer> page,
-            @RequestParam(value = "size", required = false) Optional<Integer> size,
-            Model md,
-            HttpServletRequest req) {
+	@RequestMapping(value = "CommonMapping", method = { RequestMethod.GET, RequestMethod.POST })
+	public String CommonMapping(
+			@RequestParam(required = false) String formmode,
+			@RequestParam(required = false) String userid,
+			@RequestParam(required = false) String selectedColumn,
+			@RequestParam(required = false) String ACCOUNT_NO,
+			@RequestParam(required = false) Optional<Integer> page,
+			@RequestParam(value = "size", required = false) Optional<Integer> size,
+			Model md,
+			HttpServletRequest req) {
 
-        System.out.println("✅ Came to CommonMapping Controller");
+		System.out.println("✅ Came to CommonMapping Controller");
 
-        String roleId = (String) req.getSession().getAttribute("ROLEID");
+		String roleId = (String) req.getSession().getAttribute("ROLEID");
 
-        if (formmode == null || formmode.equals("list")) {
-        md.addAttribute("menu", "COMMON MAPPING");
-		md.addAttribute("menuname", "COMMON MAPPING");
-		md.addAttribute("formmode", "list");
-		md.addAttribute("CommonList", commonMappingRepo.getAllData());
-        }
-        else if (formmode.equals("add")) {
-        	md.addAttribute("formmode", formmode);
-        	
-        }
-        else if (formmode.equals("edit") || formmode.equals("delete")) {
-            System.out.println(formmode.substring(0, 1).toUpperCase() + formmode.substring(1) + " Account no is " + ACCOUNT_NO);
-            md.addAttribute("formmode", formmode);
+		if (formmode == null || formmode.equals("list")) {
+			md.addAttribute("menu", "COMMON MAPPING");
+			md.addAttribute("menuname", "COMMON MAPPING");
+			md.addAttribute("formmode", "list");
+			md.addAttribute("CommonList", commonMappingRepo.getAllData());
+		} else if (formmode.equals("add")) {
+			md.addAttribute("formmode", formmode);
 
-            BrrsCommonMappingEntity entity = commonMappingRepo.getdatabyAcctNo(ACCOUNT_NO);
+		} else if (formmode.equals("edit") || formmode.equals("delete")) {
+			System.out.println(
+					formmode.substring(0, 1).toUpperCase() + formmode.substring(1) + " Account no is " + ACCOUNT_NO);
+			md.addAttribute("formmode", formmode);
 
-            if (entity != null) {
-                md.addAttribute("IPSAccessRole", entity);
-            } else {
-                md.addAttribute("IPSAccessRole", new BrrsCommonMappingEntity());
-            }
-        }
+			BrrsCommonMappingEntity entity = commonMappingRepo.getdatabyAcctNo(ACCOUNT_NO);
 
+			if (entity != null) {
+				md.addAttribute("IPSAccessRole", entity);
+			} else {
+				md.addAttribute("IPSAccessRole", new BrrsCommonMappingEntity());
+			}
+		}
 
-        
-        
-        return "CommonMapping";
-    }
-    
-    @RequestMapping(value = "/updateCommonMapping", method = { RequestMethod.GET, RequestMethod.POST })
- 	@ResponseBody
-    public String updateMPLL(@ModelAttribute BrrsCommonMappingEntity CMData) {
-    	
+		return "CommonMapping";
+	}
 
-        boolean updated = commonMappingService.updateCM(CMData);
+	@RequestMapping(value = "/updateCommonMapping", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public String updateMPLL(@ModelAttribute BrrsCommonMappingEntity CMData) {
 
-        if (updated) {
-            return "Updated successfully!";
-        } else {
-            return "Record not found for update!";
-        }
-    }
+		boolean updated = commonMappingService.updateCM(CMData);
 
-    @RequestMapping(value = "/deleteCommonMapping", method = { RequestMethod.GET, RequestMethod.POST })
-    @ResponseBody
-    public String deleteCommonMapping(@ModelAttribute BrrsCommonMappingEntity CMData) {
-        try {
-            boolean deleted = commonMappingService.deleteCM(CMData);
+		if (updated) {
+			return "Updated successfully!";
+		} else {
+			return "Record not found for update!";
+		}
+	}
 
-            if (deleted) {
-                return "Deleted successfully!";
-            } else {
-                return "Record not found for deletion!";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error while deleting record: " + e.getMessage();
-        }
-    }
+	@RequestMapping(value = "/deleteCommonMapping", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public String deleteCommonMapping(@ModelAttribute BrrsCommonMappingEntity CMData) {
+		try {
+			boolean deleted = commonMappingService.deleteCM(CMData);
+
+			if (deleted) {
+				return "Deleted successfully!";
+			} else {
+				return "Record not found for deletion!";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error while deleting record: " + e.getMessage();
+		}
+	}
+
+	// @RequestMapping(value = "Monthly1-Resubmission", method = {
+	// RequestMethod.GET, RequestMethod.POST })
+	// public String brrsResubmission(Model md, HttpServletRequest req) {
+	// System.out.println("Testting");
+	// md.addAttribute("menu", "BRRS - BRRS RESUBMISSION");
+	// System.out.println("count" + rrReportlist.getReportListmonthly1().size());
+	// md.addAttribute("reportlist", rrReportlist.getReportListmonthly1());
+	// return "BRRS/BRRSResubmission";
+	// }
+
+	// @RequestMapping(value = "Resubmission", method = { RequestMethod.GET,
+	// RequestMethod.POST })
+	// public String Resubmission(
+	// Model md,
+	// @RequestParam(value = "rptcode", required = false) String rptcode,
+	// @RequestParam(value = "date", required = false) String date,
+	// @RequestParam(value = "version", required = false) String version,
+	// HttpServletRequest req) {
+	// System.out.println("rptcode: " + rptcode);
+	// System.out.println("date: " + date);
+	// System.out.println("version: " + version);
+	// RRReport data = rrReportlist.getReportbyrptcode(rptcode);
+	// md.addAttribute("reportlist1", data);
+	// md.addAttribute("menu", data.getRptDescription());
+	// md.addAttribute("domain", data.getDomainId());
+	// md.addAttribute("rptcode", data.getRptCode());
+	// List<Object[]> resubmissionData = regulatoryreportservices.getResub(rptcode);
+	// md.addAttribute("Resubmitdata", resubmissionData);
+	// md.addAttribute("reportlist", rrReportlist.getReportListmonthly1());
+	// return "BRRS/BRRSResubmissionform";
+	// }
+	@RequestMapping(value = "Monthly1-Resubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String brrsResubmission(Model md, HttpServletRequest req) {
+		// String roleId = (String) req.getSession().getAttribute("ROLEID");
+		// String domainid = (String) req.getSession().getAttribute("DOMAINID");
+		md.addAttribute("menu", "BRRS - BRRS RESUBMISSION");
+		System.out.println("count" + rrReportlist.getReportListbrrs().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrs());
+
+		return "BRRS/BRRSResubmission";
+
+	}
+
+	@RequestMapping(value = "QuarterlyResub", method = { RequestMethod.GET, RequestMethod.POST })
+	public String brrsQuarterlyResub(Model md, HttpServletRequest req) {
+		md.addAttribute("menu", "BRRS - BRRS QUARTERLY RESUBMISSION");
+
+		System.out.println("Quarterly count: " + rrReportlist.getReportListbrrsQ().size());
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrsQ());
+
+		return "BRRS/BRRSResubmission";
+	}
+
+	@RequestMapping(value = "Resubmission", method = { RequestMethod.GET, RequestMethod.POST })
+	public String Resubmission(Model md, @RequestParam(value = "rptcode", required = false) String rptcode,
+			HttpServletRequest req) {
+		// String roleId = (String) req.getSession().getAttribute("ROLEID");
+		// String domainid = (String) req.getSession().getAttribute("DOMAINID");
+		RRReport data = rrReportlist.getReportbyrptcode(rptcode);
+		md.addAttribute("reportlist", data);
+		md.addAttribute("menu", data.getRptDescription());
+		md.addAttribute("domain", data.getDomainId());
+		md.addAttribute("rptcode", data.getRptCode());
+		List<Object[]> resubmissionData = regulatoryreportservices.getResub(rptcode);
+		md.addAttribute("Resubmitdata", resubmissionData);
+		md.addAttribute("reportlist", rrReportlist.getReportListbrrs());
+
+		return "BRRS/BRRSResubmissionform";
+
+	}
+
+	// @RequestMapping(value = "Monthly1-Resubmission", method = {
+	// RequestMethod.GET,RequestMethod.POST })
+	// public String brrsResubmission(Model md, HttpServletRequest req)
+	// {
+	// System.out.println("Testting");
+	// md.addAttribute("menu", "BRRS - BRRS RESUBMISSION");
+	// System.out.println("count"+rrReportlist.getReportListmonthly1().size());
+	// md.addAttribute("reportlist", rrReportlist.getReportListmonthly1());
+	// return "BRRS/BRRSResubmission";
+	// }
+
+	// @RequestMapping(value = "Resubmission", method = { RequestMethod.GET,
+	// RequestMethod.POST })
+	// public String Resubmission(
+	// Model md,
+	// @RequestParam(value = "rptcode", required = false) String rptcode,
+	// @RequestParam(value = "date", required = false) String date,
+	// @RequestParam(value = "version", required = false) String version,
+	// HttpServletRequest req) {
+	// System.out.println("rptcode: " + rptcode);
+	// System.out.println("date: " + date);
+	// System.out.println("version: " + version);
+	// RRReport data = rrReportlist.getReportbyrptcode(rptcode);
+	// md.addAttribute("reportlist1", data);
+	// md.addAttribute("menu", data.getRptDescription());
+	// md.addAttribute("domain", data.getDomainId());
+	// md.addAttribute("rptcode", data.getRptCode());
+	// List<Object[]> resubmissionData = regulatoryreportservices.getResub(rptcode);
+	// md.addAttribute("Resubmitdata", resubmissionData);
+
+	// md.addAttribute("reportlist", rrReportlist.getReportListmonthly1());
+	// return "BRRS/BRRSResubmissionform";
+	// }
 
 }

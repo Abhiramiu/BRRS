@@ -8,9 +8,9 @@
 	<!-- CSS Dependencies -->
 	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
 	<link rel="stylesheet" th:href="@{/css/datatables.min.css}">
-	
-<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-	
+
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+
 	<!-- JS Dependencies -->
 	<script th:src="@{/js/datatables.min.js}"></script>
 	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
@@ -18,24 +18,20 @@
 
 	<style>
 		body {
-   font-family: Arial, sans-serif;
-    font-size: 16px;
-    font-weight: 400;
-}
-
-
-			</style>
+			font-family: Arial, sans-serif;
+			font-size: 16px;
+			font-weight: 400;
+		}
+	</style>
 
 
 
 	<style>
-		
-
 		nav {
 			background-color: #fafafa;
 		}
 
-			#logoutmenu {
+		#logoutmenu {
 			display: none;
 			position: absolute;
 			z-index: 1031;
@@ -174,7 +170,7 @@
 			margin-left: -215px;
 		}
 
-		
+
 
 		.nav-item {
 			position: relative;
@@ -188,114 +184,109 @@
 	</style>
 
 
-<style>
-		
+	<style>
+		.nav-links a {
+			color: #354a5f !important;
+			font-weight: bold;
 
+			/* color: black !important; */
+		}
 
-.nav-links a {
-	color: #354a5f !important;
-	font-weight: bold;
-	
-	/* color: black !important; */
-}
+		label {
+			color: #354a5f !important;
+			font-weight: bold;
+			border-color: black;
+			/* color: black !important; */
+		}
 
-label {
-	color: #354a5f !important;
-	font-weight: bold;
-	border-color:black;
-	/* color: black !important; */
-}
+		div span {
+			color: #354a5f !important;
+			font-weight: bold;
+			/* color: black !important; */
+		}
 
-div span {
-	color: #354a5f !important;
-	font-weight: bold;
-	/* color: black !important; */
-}
-
-h3 {
-	color: #354a5f !important;
-	font-weight: bold;
-	/* color: black !important; */
-}
-
-		
+		h3 {
+			color: #354a5f !important;
+			font-weight: bold;
+			/* color: black !important; */
+		}
 	</style>
-	
-<script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function () {
-    let menuTimeout;
 
-    // Function to show menu
-    function showMenu(menu) {
-        clearTimeout(menuTimeout);
+	<script type="text/javascript">
+		document.addEventListener("DOMContentLoaded", function () {
+			let menuTimeout;
 
-        // Hide all other submenus before showing the new one
-        document.querySelectorAll('.dropdown-submenu .dropdown-menu').forEach(m => {
-            if (m !== menu) {
-                m.style.display = "none";
-            }
-        });
+			// Function to show menu
+			function showMenu(menu) {
+				clearTimeout(menuTimeout);
 
-        menu.style.display = "block";
-    }
+				// Hide all other submenus before showing the new one
+				document.querySelectorAll('.dropdown-submenu .dropdown-menu').forEach(m => {
+					if (m !== menu) {
+						m.style.display = "none";
+					}
+				});
 
-    // Function to hide menu with delay
-    function hideMenu(menu) {
-        menuTimeout = setTimeout(() => {
-            menu.style.display = "none";
-        }, 200); // 200ms delay
-    }
+				menu.style.display = "block";
+			}
 
-    // Handle main dropdown menu hover 
-    const mainMenus = document.querySelectorAll('.nav-item.dropdown');
-    mainMenus.forEach(menu => {
-        menu.addEventListener("mouseenter", function () {
-            const dropdownMenu = this.querySelector(".dropdown-menu");
-            if (dropdownMenu) {
-                // Hide all other main dropdowns
-                document.querySelectorAll('.nav-item.dropdown .dropdown-menu').forEach(m => {
-                    if (m !== dropdownMenu) {
-                        m.style.display = "none";
-                    }
-                });
-                showMenu(dropdownMenu);
-            }
-        });
+			// Function to hide menu with delay
+			function hideMenu(menu) {
+				menuTimeout = setTimeout(() => {
+					menu.style.display = "none";
+				}, 200); // 200ms delay
+			}
 
-        menu.addEventListener("mouseleave", function () {
-            const dropdownMenu = this.querySelector(".dropdown-menu");
-            if (dropdownMenu) hideMenu(dropdownMenu);
-        });
-    });
+			// Handle main dropdown menu hover 
+			const mainMenus = document.querySelectorAll('.nav-item.dropdown');
+			mainMenus.forEach(menu => {
+				menu.addEventListener("mouseenter", function () {
+					const dropdownMenu = this.querySelector(".dropdown-menu");
+					if (dropdownMenu) {
+						// Hide all other main dropdowns
+						document.querySelectorAll('.nav-item.dropdown .dropdown-menu').forEach(m => {
+							if (m !== dropdownMenu) {
+								m.style.display = "none";
+							}
+						});
+						showMenu(dropdownMenu);
+					}
+				});
 
-    // Handle submenus inside dropdown 
-    const submenus = document.querySelectorAll('.dropdown-submenu');
-    submenus.forEach(submenu => {
-        submenu.addEventListener("mouseenter", function () {
-            const subMenuElement = this.querySelector(".dropdown-menu");
-            if (subMenuElement) showMenu(subMenuElement);
-        });
+				menu.addEventListener("mouseleave", function () {
+					const dropdownMenu = this.querySelector(".dropdown-menu");
+					if (dropdownMenu) hideMenu(dropdownMenu);
+				});
+			});
 
-        submenu.addEventListener("mouseleave", function () {
-            const subMenuElement = this.querySelector(".dropdown-menu");
-            if (subMenuElement) hideMenu(subMenuElement);
-        });
-    });
+			// Handle submenus inside dropdown 
+			const submenus = document.querySelectorAll('.dropdown-submenu');
+			submenus.forEach(submenu => {
+				submenu.addEventListener("mouseenter", function () {
+					const subMenuElement = this.querySelector(".dropdown-menu");
+					if (subMenuElement) showMenu(subMenuElement);
+				});
 
-    // Close all menus when clicking outside
-    document.addEventListener("click", function (e) {
-        if (!e.target.closest(".dropdown")) {
-            document.querySelectorAll('.dropdown-menu').forEach(menu => {
-                menu.style.display = "none";
-            });
-        }
-    });
-});
+				submenu.addEventListener("mouseleave", function () {
+					const subMenuElement = this.querySelector(".dropdown-menu");
+					if (subMenuElement) hideMenu(subMenuElement);
+				});
+			});
+
+			// Close all menus when clicking outside
+			document.addEventListener("click", function (e) {
+				if (!e.target.closest(".dropdown")) {
+					document.querySelectorAll('.dropdown-menu').forEach(menu => {
+						menu.style.display = "none";
+					});
+				}
+			});
+		});
 
 
 
-    </script>
-    
+	</script>
+
 
 
 
@@ -322,7 +313,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			line-height: 1.6;
 		}
 
-		
+
 
 		/* Main Navigation Links - Only Visual Effects */
 		.nav-link {
@@ -331,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			color: white;
 			font-weight: 600;
 			font-size: 14px;
-			 border: 2px solid #6B7A8F;
+			border: 2px solid #6B7A8F;
 			padding: 8px 20px;
 			border-radius: 20px;
 			text-decoration: none;
@@ -339,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			cursor: pointer;
 			position: relative;
 			overflow: hidden;
-			
+
 			/* NO transform changes to prevent position shifts */
 		}
 
@@ -358,13 +349,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		/* Hover Effects - Only Color and Shadow Changes */
 		.nav-link:hover {
-	background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
-	color: white !important;
-	
-	border-color: rgb(107, 122, 143);
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-	/* NO transform to prevent movement */
-}
+			background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
+			color: white !important;
+
+			border-color: rgb(107, 122, 143);
+			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+			/* NO transform to prevent movement */
+		}
 
 		.nav-link:hover::before {
 			left: 100%;
@@ -385,7 +376,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			color: #333;
 			font-weight: 600;
 			font-size: 14px;
-			 border: 2px solid #6B7A8F;
+			border: 2px solid #6B7A8F;
 			padding: 8px 20px;
 			border-radius: 20px;
 			text-decoration: none;
@@ -393,7 +384,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			cursor: pointer;
 			position: relative;
 			overflow: hidden;
-			
+
 		}
 
 		.dropdown-toggle::before {
@@ -434,11 +425,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		/* Active Dropdown Toggle */
 		.dropdown-toggle.active {
-	background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
-	color: white !important;
-		border-color: rgb(107, 122, 143);
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
+			background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
+			color: white !important;
+			border-color: rgb(107, 122, 143);
+			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+		}
 
 
 		/* Dropdown Menu - Keep Original Positioning */
@@ -499,20 +490,20 @@ document.addEventListener("DOMContentLoaded", function () {
 			display: none;
 		}
 
-		 .dropdown-menu .nav-link:hover {
+		.dropdown-menu .nav-link:hover {
 			background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
 			color: white;
 			border-color: rgb(107, 122, 143);
-			width:auto;
+			width: auto;
 			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-		} 
+		}
 
 		/* Active Dropdown Menu Item */
 		.dropdown-menu .nav-link.active {
 			background: linear-gradient(145deg, rgb(107, 122, 143), rgb(87, 102, 123));
-			width:auto;
+			width: auto;
 			color: white !important;
-		border-color: rgb(107, 122, 143);
+			border-color: rgb(107, 122, 143);
 			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 		}
 
@@ -520,41 +511,41 @@ document.addEventListener("DOMContentLoaded", function () {
 		.nav-link:focus,
 		.dropdown-toggle:focus {
 			outline: none;
-			
+
 		}
 
 		.custom-alert {
-				    position: fixed;
-				    top: 20px;
-				    right: 20px;
-				    min-width: 250px;
-				    max-width: 300px;
-				    padding: 10px 15px;
-				    border-radius: 8px;
-				    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-				    z-index: 9999;
-				    font-size: 14px;
-				    display: flex;
-				    align-items: center;
-				    justify-content: space-between;
-				}
-				
-				.custom-alert p {
-				    margin: 0;
-				    padding: 0;
-				}
-				
-				.custom-alert .close {
-				    background: none;
-				    border: none;
-				    font-size: 18px;
-				    line-height: 1;
-				    cursor: pointer;
-				    color: #000;
-				    padding-left: 10px;
-				}
-				
-				
+			position: fixed;
+			top: 20px;
+			right: 20px;
+			min-width: 250px;
+			max-width: 300px;
+			padding: 10px 15px;
+			border-radius: 8px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+			z-index: 9999;
+			font-size: 14px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.custom-alert p {
+			margin: 0;
+			padding: 0;
+		}
+
+		.custom-alert .close {
+			background: none;
+			border: none;
+			font-size: 18px;
+			line-height: 1;
+			cursor: pointer;
+			color: #000;
+			padding-left: 10px;
+		}
+
+
 		.nav-link.active,
 		.dropdown-toggle.active {
 			animation: subtlePulse 2s ease-in-out infinite;
@@ -580,675 +571,688 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	</style>
 
-	
+
 	<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const currentPath = window.location.pathname;
-    const urlParams = new URLSearchParams(window.location.search);
-    const formMode = urlParams.get('formmode');
-    const navLinks = document.querySelectorAll(".nav-link");
-	
-    function activateParentDropdowns(activeLink) {
-		
-        let parentMenu = activeLink.closest('.dropdown-menu');
-        while (parentMenu) {
-            const parentItem = parentMenu.closest('.dropdown-submenu, .nav-item.dropdown');
-            if (parentItem) {
-                const parentToggle = parentItem.querySelector('.dropdown-toggle, .nav-link');
-                if (parentToggle) {
-                    parentToggle.classList.add("active");
-                }
-            }
-            parentMenu = parentMenu.parentElement.closest('.dropdown-menu');
-        }
-    }
-
-    navLinks.forEach(link => {
-        const href = link.getAttribute("href");
-        if (!href || href === "#") return;
-		
-        const linkUrl = new URL(href, window.location.origin); // ✅ Resolve to full URL
-        const linkPath = linkUrl.pathname;
-        //const linkFormMode = linkUrl.searchParams.get('formmode') || link.getAttribute("data-formmode");
-       const linkFormMode = urlParams.get('formmode');
-
-        if (currentPath === linkPath) {
-        	
-            if (formMode || linkFormMode) {
-                if (formMode === linkFormMode) {
-                    link.classList.add("active");
-                    activateParentDropdowns(link);
-                }
-            } else {
-                link.classList.add("active");
-                activateParentDropdowns(link);
-            }
-        }
-    });
-});
-</script>
-	
-	
-<style>
-
-.navbar-container {
-  display: flex;
-  align-items: stretch;
-}
-
-.logo-container {
-  background-color:#488f9d;
-  padding: 10px;
-}
-
-.logo-img {
-  height: 100%;
-  width: 250px;
-  object-fit: cover;
-  max-height: 150px; /* Adjust based on your actual content height */
-}
-
-.right-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  
-}
-
-.top-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.company-title {
-  font-weight: bold;
-  color: #343a40;
-}
-
-.bottom-row {
-  border-top: 1px solid #ddd;
-  margin-top: 4px;
-}
-
-.nav-links {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-  display: flex;
-  align-items: center;
-}
-
-.nav-item {
-  position: relative;
-}
-
-.nav-link {
-  text-decoration: none;
-  color: #333;
-  font-weight: 5000;
-  padding: 6px 12px;
-}
-
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: white;
-  list-style: none;
-  padding: 10px 0;
-  margin: 0;
-  border: 1px solid #ccc;
-  z-index: 1000;
-}
-
- .nav-item:hover .dropdown-menu {
-  display: none;
-} 
-.logo-container {
-  overflow: hidden;
-  transform: skew(-30deg); /* Skew the container */
-}
-
-.logo-img {
-  transform: skew(20deg);   /* Re-skew the image to appear normal */
-  height:100px;            /* Adjust height as needed */
-  width: auto;
-  padding:10px
-}
-.navbar-container {
-  display: flex;
-  align-items: stretch;
-  width: 100%;
-}
-
-.logo-container {
-  background-color: rgb(255, 255, 255) ;
-  padding: 0; /* Remove extra space */
-  overflow: hidden;
-  transform: skew(-30deg);
-  margin-right: -30px; /* Pull right content to cover the skew gap */
-  z-index: 2;
-}
-
-.logo-img {
-  height: 50px;
-  width: auto;
-  padding: 5px;
-  padding-bottom:0;
-}
-
-/* Right side (full height, no space left) */
-.right-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  flex-grow: 1;
-  z-index: 1;
-}
-
-/* Skew only top row */
-.top-row {
-  transform: skew(-30deg);
-  padding: 10px;
-  position: relative;
-}
-
-/* Correct skew for content inside */
-.top-row > * {
-  transform: skew(30deg);
-}
-
-/* Bottom menu stays normal */
-.bottom-row {
-  border-top: 1px solid #ddd;
-  margin-top: 4px;
-}
-
-.company-title {
-  transform: skew(30deg) translateX(-50%) translateY(-50%) !important;
-}
-.nav-link{
-color:white;
-}
-
-
-
-
-/* Add spacing between dropdown items */
-.dropdown-menu li {
-    padding: -8px 12px; /* Adjust vertical and horizontal padding */
-    margin-bottom: 5px; /* Space between items */
-}
-
-/* Remove bottom margin for the last item to avoid extra space */
-.dropdown-menu li:last-child {
-    margin-bottom: 0;
-}
-
-/* Style for links inside dropdown */
-.dropdown-menu a {
-    display: block;
-    color: #354a5f !important;
-    padding: 8px 12px; /* Adjust spacing inside links */
-}
-
-
-.dropdown-submenu > a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 10px;
-    position: relative;
-}
-
-/* Black arrow with proper alignment */
-.dropdown-submenu > a::after {
-    content: ""; /* Thicker right arrow */
-    font-size: 16px; /* Bigger size */
-    color: #354a5f; /* Black color */
-    font-weight: bold;
-    position: absolute;
-    right: 10px;
-    top: 50%; 
-    transform: translateY(-50%) rotate(-90deg);
-}
-
-/* Position the second-level (submenu) */
-.dropdown-submenu {
-    position: relative;
-}
-
-.dropdown-submenu > .dropdown-menu {
-    display: none;
-    position: absolute;
-    left: 100%;
-    top: 0;
-    margin-top: -12px;
-    margin-left: 10px;
-}
-
-/* Show only the relevant submenu on hover */
-.dropdown-submenu:hover > .dropdown-menu {
-    display: block;
-}
-
-/* Ensure the top-level menu dropdowns show on hover */
-.dropdown:hover > .dropdown-menu {
-    display: block;
-}
-
-
-
-
-
-</style>
-
-<style type="text/css">
-
-
-
-.user-menu {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-  font-size: 30px;
-  font-weight: bold;
-  user-select: none;
-  z-index: 10000;
-}
-
-.three-dots {
-  padding: 0 10px;
-  color: #333;
-}
-
-.user-dropdown-menu {
-  position: absolute;
-  right: 100%;
-  margin-left:-170px;
-  transform: translateX(-10px); 
-  display: none;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 10px;
-  white-space: nowrap;
-  width: max-content; 
-  max-width: 300px; /* Prevent overly wide dropdowns */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 9999;
-}
-
-.user-menu:hover .user-dropdown-menu {
-  display: block;
-}
-
-.user-info {
-  font-size: 14px;
-  color: #333;
-}
-
-
-
-</style>
-<style>
-/* Position nested submenu */
-.dropdown-submenu {
-    position: relative;
-}
-
-.dropdown-submenu > .dropdown-menu {
-    top: 0;
-    left: 100%; /* Show to the right */
-    margin-top: -1px;
-}
-
-/* Show submenu on hover */
-.dropdown-submenu:hover > .dropdown-menu {
-    display: block;
-}
-</style>
-<script>
-function showUploadAlert(message, type = "success", showIcon = true) {
-    const alertDiv = document.getElementById("UploadAlert");
-    const alertMsg = alertDiv.querySelector("#alertMessage");
-
-    // Update message
-    alertMsg.innerHTML = showIcon
-        ? `<i class="fa fa-check-circle"></i> ${message}`
-        : message;
-
-    // Set alert color
-    alertDiv.classList.remove("alert-success", "alert-danger", "alert-warning");
-    if (type === "success") alertDiv.classList.add("alert-success");
-    else if (type === "error") alertDiv.classList.add("alert-danger");
-    else alertDiv.classList.add("alert-warning");
-
-    alertDiv.style.display = "block"; // Show alert
-}
-
-function UploadhideAlert() {
-    document.getElementById("UploadAlert").style.display = "none";
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-    const jobTypes = ["BFDB", "BDGF", "BLBF", "MCBL"];
-
-    jobTypes.forEach(type => {
-        const jobId = sessionStorage.getItem("current" + type + "JobId");
-        const doneKey = "completed" + type + "Job"; // ✅ flag for finished job
-
-        console.log("🟡 Checking sessionStorage for", type, ":", jobId);
-
-        // Skip if already completed
-        if (sessionStorage.getItem(doneKey)) {
-            console.log(`✅ ${type} already completed earlier, skipping check.`);
-            return;
-        }
-
-        if (jobId) {
-            console.log(`Resuming ${type} job polling:`, jobId);
-            checkUploadStatus(type, jobId);
-        } else {
-            console.log(`⚠️ No jobId found in sessionStorage for ${type}`);
-        }
-    });
-});
-
-function checkUploadStatus(type, jobId) {
-    if (!jobId) return;
-
-    const storageKey = "current" + type + "JobId";
-    const doneKey = "completed" + type + "Job"; // ✅ completion marker
-
-    $.ajax({
-        url: `check${type}Upload?jobId=` + encodeURIComponent(jobId),
-        type: "GET",
-        dataType: "text",
-        timeout: 5000,
-        success: function (status) {
-            if (status.startsWith("COMPLETED:")) {
-                const resultMsg = status.substring("COMPLETED:".length).trim();
-                const finalMsg = `${type} Upload ${resultMsg}`;
-                showUploadAlert(`✅ ${finalMsg}`, "success");
-                showResultModal('Success', finalMsg);
-
-                // ✅ Save flag to avoid showing again on refresh
-                sessionStorage.removeItem(storageKey);
-                sessionStorage.setItem(doneKey, "true");
-                return;
-            } 
-            else if (status === "PROCESSING") {
-                showUploadAlert(`${type} Upload is processing... (Job ID: ${jobId})`, "warning");
-                setTimeout(() => checkUploadStatus(type, jobId), 6000);
-            } 
-            else if (status.startsWith("ERROR:")) {
-                const errorMsg = status.substring("ERROR:".length).trim();
-                showUploadAlert(`${type} Upload failed ❌ ${errorMsg}`, "error");
-                showResultModal('Job Status', errorMsg);
-                sessionStorage.removeItem(storageKey);
-            } 
-            else if (status === "NOT_FOUND") {
-                console.log(`${type} job not found — maybe already cleared.`);
-            } 
-            else {
-                showUploadAlert(`Unexpected response: ${status}`, "warning");
-            }
-        },
-        error: function (jqXHR, textStatus) {
-            if (textStatus === "timeout" || jqXHR.status === 0) {
-                showUploadAlert(`${type} Upload is processing... (Temporary connection issue)`, "warning");
-                setTimeout(() => checkUploadStatus(type, jobId), 6000);
-            } else {
-                showUploadAlert(`${type} Upload check failed ❌ ${textStatus}`, "error");
-            }
-        }
-    });
-}
-
-</script>
-
-
-
-<script>
-window.onload = function () {
-    const jobId = sessionStorage.getItem("jobId");
-    if (jobId) {
-        startPolling(jobId);  // ✅ restart polling on every page load
-    }
-};
-
-
-
-function startPolling(jobId) {
-	const alertMsg = document.getElementById("alertMessage");
-    function checkReport() {
-        fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
-            .then(res => res.text())
-            .then(status => {
-                if (status === "READY") {
-                	 alertMsg.innerHTML ='Report is ready! Downloading...';
-                	 showAlert();
-                    const filename = sessionStorage.getItem("filename");
-                    downloadDetailfiles(jobId,filename)
-                    sessionStorage.removeItem("jobId");
-                    sessionStorage.removeItem("filename"); 
-                } else {
-                    
-                    alertMsg.innerHTML ='Download Is Processing…';
-                	showAlert();
-                    setTimeout(checkReport, 6000);  // ✅ keeps retrying on every page
-                }
-            })
-            .catch(err => {
-                console.error("Error checking report:", err);
-                alertMsg.innerHTML ='Error checking report:'+err;
-            	showAlert();
-                setTimeout(checkReport, 6000);
-            });
-    }
-
-    checkReport();
-}
-
-function downloadDetailfiles(jobId,filename) {
-	
-	//$('#loader').modal('show');
-	$.ajax({
-		url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
-			'&filename=' + filename,
-		type: 'GET',
-		xhrFields: {
-			responseType: 'blob'
-		},
-		success: function (data) {
-			$('#loader').modal('hide');
-
-			if (data && data.size > 100) {
-				const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-				const url = window.URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.style.display = 'none';
-				a.href = url;
-				a.download = filename;
-				document.body.appendChild(a);
-				a.click();
-				window.URL.revokeObjectURL(url);
-				document.body.removeChild(a);
-
-				showResultModal('Success', filename + ' downloaded successfully.');
-			} else {
-				showResultModal('Information', 'No data was available to create a download.');
+		document.addEventListener("DOMContentLoaded", function () {
+			const currentPath = window.location.pathname;
+			const urlParams = new URLSearchParams(window.location.search);
+			const formMode = urlParams.get('formmode');
+			const navLinks = document.querySelectorAll(".nav-link");
+
+			function activateParentDropdowns(activeLink) {
+
+				let parentMenu = activeLink.closest('.dropdown-menu');
+				while (parentMenu) {
+					const parentItem = parentMenu.closest('.dropdown-submenu, .nav-item.dropdown');
+					if (parentItem) {
+						const parentToggle = parentItem.querySelector('.dropdown-toggle, .nav-link');
+						if (parentToggle) {
+							parentToggle.classList.add("active");
+						}
+					}
+					parentMenu = parentMenu.parentElement.closest('.dropdown-menu');
+				}
 			}
-		},
-		error: function (jqXHR, textStatus, errorThrown) {
-			$('#loader').modal('hide');
-			console.error("Download failed:", textStatus, errorThrown);
-			showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+
+			navLinks.forEach(link => {
+				const href = link.getAttribute("href");
+				if (!href || href === "#") return;
+
+				const linkUrl = new URL(href, window.location.origin); // ✅ Resolve to full URL
+				const linkPath = linkUrl.pathname;
+				//const linkFormMode = linkUrl.searchParams.get('formmode') || link.getAttribute("data-formmode");
+				const linkFormMode = urlParams.get('formmode');
+
+				if (currentPath === linkPath) {
+
+					if (formMode || linkFormMode) {
+						if (formMode === linkFormMode) {
+							link.classList.add("active");
+							activateParentDropdowns(link);
+						}
+					} else {
+						link.classList.add("active");
+						activateParentDropdowns(link);
+					}
+				}
+			});
+		});
+	</script>
+
+
+	<style>
+		.navbar-container {
+			display: flex;
+			align-items: stretch;
 		}
-	});
-}	
 
-</script>
+		.logo-container {
+			background-color: #488f9d;
+			padding: 10px;
+		}
 
-<script>
+		.logo-img {
+			height: 100%;
+			width: 250px;
+			object-fit: cover;
+			max-height: 150px;
+			/* Adjust based on your actual content height */
+		}
 
-function showAlert() {
-    const alertDiv = document.getElementById("autoHideAlert");
-    alertDiv.style.display = "block";   // Show alert
-    setTimeout(() => {
-        hideAlert();                    // Auto-hide after 5 sec
-    }, 7000);
-}
+		.right-content {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
 
-function hideAlert() {
-    const alertDiv = document.getElementById("autoHideAlert");
-    alertDiv.style.display = "none";
-}
+		}
 
-</script>
+		.top-row {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
 
-<script>
-function showUploadAlert(message, type = "info", isStatic = false) {
-    const alertDiv = document.getElementById("UploadAlert");
-    const alertMsg = document.getElementById("alertMessage");
+		.company-title {
+			font-weight: bold;
+			color: #343a40;
+		}
 
-    if (!alertDiv || !alertMsg) return;
+		.bottom-row {
+			border-top: 1px solid #ddd;
+			margin-top: 4px;
+		}
 
-    // Set message text
-    alertMsg.innerHTML = message;
+		.nav-links {
+			list-style: none;
+			padding-left: 0;
+			margin: 0;
+			display: flex;
+			align-items: center;
+		}
 
-    // Reset and apply Bootstrap alert color classes
-    alertDiv.classList.remove("alert-danger", "alert-success", "alert-warning", "alert-info");
-    switch (type.toLowerCase()) {
-        case "success":
-            alertDiv.classList.add("alert-success");
-            break;
-        case "error":
-            alertDiv.classList.add("alert-danger");
-            break;
-        case "warning":
-            alertDiv.classList.add("alert-warning");
-            break;
-        default:
-            alertDiv.classList.add("alert-info");
-    }
+		.nav-item {
+			position: relative;
+		}
 
-    // Show the alert
-    alertDiv.style.display = "block";
+		.nav-link {
+			text-decoration: none;
+			color: #333;
+			font-weight: 5000;
+			padding: 6px 12px;
+		}
 
-    // Auto-hide only if not static
-    if (!isStatic) {
-        alertDiv.hideTimer = setTimeout(() => {
-            UploadhideAlert();
-        }, 7000);
-    }
-}
+		.dropdown-menu {
+			display: none;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			background: white;
+			list-style: none;
+			padding: 10px 0;
+			margin: 0;
+			border: 1px solid #ccc;
+			z-index: 1000;
+		}
 
-function UploadhideAlert() {
-    const alertDiv = document.getElementById("UploadAlert");
-    if (alertDiv) {
-        alertDiv.style.display = "none";
-        if (alertDiv.hideTimer) clearTimeout(alertDiv.hideTimer);
-    }
-}
-</script>
+		.nav-item:hover .dropdown-menu {
+			display: none;
+		}
+
+		.logo-container {
+			overflow: hidden;
+			transform: skew(-30deg);
+			/* Skew the container */
+		}
+
+		.logo-img {
+			transform: skew(20deg);
+			/* Re-skew the image to appear normal */
+			height: 100px;
+			/* Adjust height as needed */
+			width: auto;
+			padding: 10px
+		}
+
+		.navbar-container {
+			display: flex;
+			align-items: stretch;
+			width: 100%;
+		}
+
+		.logo-container {
+			background-color: rgb(255, 255, 255);
+			padding: 0;
+			/* Remove extra space */
+			overflow: hidden;
+			transform: skew(-30deg);
+			margin-right: -30px;
+			/* Pull right content to cover the skew gap */
+			z-index: 2;
+		}
+
+		.logo-img {
+			height: 50px;
+			width: auto;
+			padding: 5px;
+			padding-bottom: 0;
+		}
+
+		/* Right side (full height, no space left) */
+		.right-content {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+
+			flex-grow: 1;
+			z-index: 1;
+		}
+
+		/* Skew only top row */
+		.top-row {
+			transform: skew(-30deg);
+			padding: 10px;
+			position: relative;
+		}
+
+		/* Correct skew for content inside */
+		.top-row>* {
+			transform: skew(30deg);
+		}
+
+		/* Bottom menu stays normal */
+		.bottom-row {
+			border-top: 1px solid #ddd;
+			margin-top: 4px;
+		}
+
+		.company-title {
+			transform: skew(30deg) translateX(-50%) translateY(-50%) !important;
+		}
+
+		.nav-link {
+			color: white;
+		}
+
+
+
+
+		/* Add spacing between dropdown items */
+		.dropdown-menu li {
+			padding: -8px 12px;
+			/* Adjust vertical and horizontal padding */
+			margin-bottom: 5px;
+			/* Space between items */
+		}
+
+		/* Remove bottom margin for the last item to avoid extra space */
+		.dropdown-menu li:last-child {
+			margin-bottom: 0;
+		}
+
+		/* Style for links inside dropdown */
+		.dropdown-menu a {
+			display: block;
+			color: #354a5f !important;
+			padding: 8px 12px;
+			/* Adjust spacing inside links */
+		}
+
+
+		.dropdown-submenu>a {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			width: 100%;
+			padding: 10px;
+			position: relative;
+		}
+
+		/* Black arrow with proper alignment */
+		.dropdown-submenu>a::after {
+			content: "";
+			/* Thicker right arrow */
+			font-size: 16px;
+			/* Bigger size */
+			color: #354a5f;
+			/* Black color */
+			font-weight: bold;
+			position: absolute;
+			right: 10px;
+			top: 50%;
+			transform: translateY(-50%) rotate(-90deg);
+		}
+
+		/* Position the second-level (submenu) */
+		.dropdown-submenu {
+			position: relative;
+		}
+
+		.dropdown-submenu>.dropdown-menu {
+			display: none;
+			position: absolute;
+			left: 100%;
+			top: 0;
+			margin-top: -12px;
+			margin-left: 10px;
+		}
+
+		/* Show only the relevant submenu on hover */
+		.dropdown-submenu:hover>.dropdown-menu {
+			display: block;
+		}
+
+		/* Ensure the top-level menu dropdowns show on hover */
+		.dropdown:hover>.dropdown-menu {
+			display: block;
+		}
+	</style>
+
+	<style type="text/css">
+		.user-menu {
+			position: relative;
+			display: inline-block;
+			cursor: pointer;
+			font-size: 30px;
+			font-weight: bold;
+			user-select: none;
+			z-index: 10000;
+		}
+
+		.three-dots {
+			padding: 0 10px;
+			color: #333;
+		}
+
+		.user-dropdown-menu {
+			position: absolute;
+			right: 100%;
+			margin-left: -170px;
+			transform: translateX(-10px);
+			display: none;
+			background-color: white;
+			border: 1px solid #ccc;
+			border-radius: 6px;
+			padding: 10px;
+			white-space: nowrap;
+			width: max-content;
+			max-width: 300px;
+			/* Prevent overly wide dropdowns */
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			z-index: 9999;
+		}
+
+		.user-menu:hover .user-dropdown-menu {
+			display: block;
+		}
+
+		.user-info {
+			font-size: 14px;
+			color: #333;
+		}
+	</style>
+	<style>
+		/* Position nested submenu */
+		.dropdown-submenu {
+			position: relative;
+		}
+
+		.dropdown-submenu>.dropdown-menu {
+			top: 0;
+			left: 100%;
+			/* Show to the right */
+			margin-top: -1px;
+		}
+
+		/* Show submenu on hover */
+		.dropdown-submenu:hover>.dropdown-menu {
+			display: block;
+		}
+	</style>
+	<script>
+		function showUploadAlert(message, type = "success", showIcon = true) {
+			const alertDiv = document.getElementById("UploadAlert");
+			const alertMsg = alertDiv.querySelector("#alertMessage");
+
+			// Update message
+			alertMsg.innerHTML = showIcon
+				? `<i class="fa fa-check-circle"></i> ${message}`
+				: message;
+
+			// Set alert color
+			alertDiv.classList.remove("alert-success", "alert-danger", "alert-warning");
+			if (type === "success") alertDiv.classList.add("alert-success");
+			else if (type === "error") alertDiv.classList.add("alert-danger");
+			else alertDiv.classList.add("alert-warning");
+
+			alertDiv.style.display = "block"; // Show alert
+		}
+
+		function UploadhideAlert() {
+			document.getElementById("UploadAlert").style.display = "none";
+		}
+
+		document.addEventListener("DOMContentLoaded", function () {
+			const jobTypes = ["BFDB", "BDGF", "BLBF", "MCBL"];
+
+			jobTypes.forEach(type => {
+				const jobId = sessionStorage.getItem("current" + type + "JobId");
+				const doneKey = "completed" + type + "Job"; // ✅ flag for finished job
+
+				console.log("🟡 Checking sessionStorage for", type, ":", jobId);
+
+				// Skip if already completed
+				if (sessionStorage.getItem(doneKey)) {
+					console.log(`✅ ${type} already completed earlier, skipping check.`);
+					return;
+				}
+
+				if (jobId) {
+					console.log(`Resuming ${type} job polling:`, jobId);
+					checkUploadStatus(type, jobId);
+				} else {
+					console.log(`⚠️ No jobId found in sessionStorage for ${type}`);
+				}
+			});
+		});
+
+		function checkUploadStatus(type, jobId) {
+			if (!jobId) return;
+
+			const storageKey = "current" + type + "JobId";
+			const doneKey = "completed" + type + "Job"; // ✅ completion marker
+
+			$.ajax({
+				url: `check${type}Upload?jobId=` + encodeURIComponent(jobId),
+				type: "GET",
+				dataType: "text",
+				timeout: 5000,
+				success: function (status) {
+					if (status.startsWith("COMPLETED:")) {
+						const resultMsg = status.substring("COMPLETED:".length).trim();
+						const finalMsg = `${type} Upload ${resultMsg}`;
+						showUploadAlert(`✅ ${finalMsg}`, "success");
+						showResultModal('Success', finalMsg);
+
+						// ✅ Save flag to avoid showing again on refresh
+						sessionStorage.removeItem(storageKey);
+						sessionStorage.setItem(doneKey, "true");
+						return;
+					}
+					else if (status === "PROCESSING") {
+						showUploadAlert(`${type} Upload is processing... (Job ID: ${jobId})`, "warning");
+						setTimeout(() => checkUploadStatus(type, jobId), 6000);
+					}
+					else if (status.startsWith("ERROR:")) {
+						const errorMsg = status.substring("ERROR:".length).trim();
+						showUploadAlert(`${type} Upload failed ❌ ${errorMsg}`, "error");
+						showResultModal('Job Status', errorMsg);
+						sessionStorage.removeItem(storageKey);
+					}
+					else if (status === "NOT_FOUND") {
+						console.log(`${type} job not found — maybe already cleared.`);
+					}
+					else {
+						showUploadAlert(`Unexpected response: ${status}`, "warning");
+					}
+				},
+				error: function (jqXHR, textStatus) {
+					if (textStatus === "timeout" || jqXHR.status === 0) {
+						showUploadAlert(`${type} Upload is processing... (Temporary connection issue)`, "warning");
+						setTimeout(() => checkUploadStatus(type, jobId), 6000);
+					} else {
+						showUploadAlert(`${type} Upload check failed ❌ ${textStatus}`, "error");
+					}
+				}
+			});
+		}
+
+	</script>
+
+
+
+	<script>
+		window.onload = function () {
+			const jobId = sessionStorage.getItem("jobId");
+			if (jobId) {
+				startPolling(jobId);  // ✅ restart polling on every page load
+			}
+		};
+
+
+
+		function startPolling(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+			function checkReport() {
+				fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+					.then(res => res.text())
+					.then(status => {
+						if (status === "READY") {
+							alertMsg.innerHTML = 'Report is ready! Downloading...';
+							showAlert();
+							const filename = sessionStorage.getItem("filename");
+							downloadDetailfiles(jobId, filename)
+							sessionStorage.removeItem("jobId");
+							sessionStorage.removeItem("filename");
+						} else {
+
+							alertMsg.innerHTML = 'Download Is Processing…';
+							showAlert();
+							setTimeout(checkReport, 6000);  // ✅ keeps retrying on every page
+						}
+					})
+					.catch(err => {
+						console.error("Error checking report:", err);
+						alertMsg.innerHTML = 'Error checking report:' + err;
+						showAlert();
+						setTimeout(checkReport, 6000);
+					});
+			}
+
+			checkReport();
+		}
+
+		function downloadDetailfiles(jobId, filename) {
+
+			//$('#loader').modal('show');
+			$.ajax({
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('Success', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+	</script>
+
+	<script>
+
+		function showAlert() {
+			const alertDiv = document.getElementById("autoHideAlert");
+			alertDiv.style.display = "block";   // Show alert
+			setTimeout(() => {
+				hideAlert();                    // Auto-hide after 5 sec
+			}, 7000);
+		}
+
+		function hideAlert() {
+			const alertDiv = document.getElementById("autoHideAlert");
+			alertDiv.style.display = "none";
+		}
+
+	</script>
+
+	<script>
+		function showUploadAlert(message, type = "info", isStatic = false) {
+			const alertDiv = document.getElementById("UploadAlert");
+			const alertMsg = document.getElementById("alertMessage");
+
+			if (!alertDiv || !alertMsg) return;
+
+			// Set message text
+			alertMsg.innerHTML = message;
+
+			// Reset and apply Bootstrap alert color classes
+			alertDiv.classList.remove("alert-danger", "alert-success", "alert-warning", "alert-info");
+			switch (type.toLowerCase()) {
+				case "success":
+					alertDiv.classList.add("alert-success");
+					break;
+				case "error":
+					alertDiv.classList.add("alert-danger");
+					break;
+				case "warning":
+					alertDiv.classList.add("alert-warning");
+					break;
+				default:
+					alertDiv.classList.add("alert-info");
+			}
+
+			// Show the alert
+			alertDiv.style.display = "block";
+
+			// Auto-hide only if not static
+			if (!isStatic) {
+				alertDiv.hideTimer = setTimeout(() => {
+					UploadhideAlert();
+				}, 7000);
+			}
+		}
+
+		function UploadhideAlert() {
+			const alertDiv = document.getElementById("UploadAlert");
+			if (alertDiv) {
+				alertDiv.style.display = "none";
+				if (alertDiv.hideTimer) clearTimeout(alertDiv.hideTimer);
+			}
+		}
+	</script>
 
 </head>
 
 <body>
-  <nav class="navbar full-navbar">
-    <div class="navbar-container d-flex" style="width:100%">
-      
-      <!-- Logo -->
-      <div class="logo-container">
-		<img th:src="@{/images/botswana-logo.png}" alt="Bornfire" class="logo-img"
-				style="width: 200px; height: 60px;">
-      </div>
+	<nav class="navbar full-navbar">
+		<div class="navbar-container d-flex" style="width:100%">
 
-      <!-- Right content -->
-      <div class="right-content flex-grow-1">
-        <!-- Top row -->
+			<!-- Logo -->
+			<div class="logo-container">
+				<img th:src="@{/images/botswana-logo.png}" alt="Bornfire" class="logo-img"
+					style="width: 200px; height: 60px;">
+			</div>
 
-			<div class=" d-flex justify-content-end align-items-center px-2 py-1 position-relative"
-  				th:style="'background-image: url(' + @{/images/rtbg.jpg} + '); background-size: cover; background-position: center; min-height: 35px;'">
-	
-	<!-- Bottom row: Menu -->
-        <div class="px-5 py-1" style="height:40px">
-					<ul class="nav-links d-flex gap-4">
-						<li class="nav-item"><a class="nav-link"
-							th:href="@{/Dashboard}"
-							style=" text-align: center; color: black;">Home</a>
-						</li>
-						<li class="nav-item dropdown" style="text-align: center;" 
-						th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'admin')}">
-    
-    <a href="#" class="dropdown-toggle">Admin</a>
-    <ul class="dropdown-menu">
-        <li>
-            <a href="#" class="nav-link" id="UserProfile" onclick="contentLoad(this)">User Profile</a>
-        </li>
-        <li>
-            <a href="#" class="nav-link" id="AccessandRoles" onclick="contentLoad(this)">Access And Roles</a>
-        </li>
-		 <li>
-            <a href="#" class="nav-link" id="BranchMaster" onclick="contentLoad(this)">Bank and Branch Master</a>
-        </li>
-       
-        
-        <!-- New Submenu: Report Parameter -->
-        <li class="dropdown-submenu">
-            <a href="#" class="nav-link">Report Parameter</a>
-			<ul class="dropdown-menu">
-			
-				<li>
-					<a href="#" class="nav-link" id="ReportMaster" onclick="contentLoad(this)">Report Master</a>
-				</li>
-				<li>
-					<a href="#" class="nav-link" id="SourceDataMap" onclick="contentLoad(this)">Source Data</a>
-				</li>
-				<li>
-					<a href="#" class="nav-link" id="ReferCodeMast" onclick="contentLoad(this)">Reference Code Master</a>
-				</li>
-				 <li>
-        			    <a href="#" class="nav-link" id="CommonMapping" onclick="contentLoad(this)">GL Configuration</a>
-      			  </li>
-			</ul>
-        </li>
-    </ul>
-</li>
+			<!-- Right content -->
+			<div class="right-content flex-grow-1">
+				<!-- Top row -->
+
+				<div class=" d-flex justify-content-end align-items-center px-2 py-1 position-relative"
+					th:style="'background-image: url(' + @{/images/rtbg.jpg} + '); background-size: cover; background-position: center; min-height: 35px;'">
+
+					<!-- Bottom row: Menu -->
+					<div class="px-5 py-1" style="height:40px">
+						<ul class="nav-links d-flex gap-4">
+							<li class="nav-item"><a class="nav-link" th:href="@{/Dashboard}"
+									style=" text-align: center; color: black;">Home</a>
+							</li>
+							<li class="nav-item dropdown" style="text-align: center;"
+								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'admin')}">
+
+								<a href="#" class="dropdown-toggle">Admin</a>
+								<ul class="dropdown-menu">
+									<li>
+										<a href="#" class="nav-link" id="UserProfile" onclick="contentLoad(this)">User
+											Profile</a>
+									</li>
+									<li>
+										<a href="#" class="nav-link" id="AccessandRoles"
+											onclick="contentLoad(this)">Access And Roles</a>
+									</li>
+									<li>
+										<a href="#" class="nav-link" id="BranchMaster" onclick="contentLoad(this)">Bank
+											and Branch Master</a>
+									</li>
 
 
-<li class="nav-item dropdown" style="text-align: center;"
-    th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRRS_Reports')}">
+									<!-- New Submenu: Report Parameter -->
+									<li class="dropdown-submenu">
+										<a href="#" class="nav-link">Report Parameter</a>
+										<ul class="dropdown-menu">
 
-    <a href="#" class="dropdown-toggle">BRRS Reports</a>
-    <ul class="dropdown-menu">
+											<li>
+												<a href="#" class="nav-link" id="ReportMaster"
+													onclick="contentLoad(this)">Report Master</a>
+											</li>
+											<li>
+												<a href="#" class="nav-link" id="SourceDataMap"
+													onclick="contentLoad(this)">Source Data</a>
+											</li>
+											<li>
+												<a href="#" class="nav-link" id="ReferCodeMast"
+													onclick="contentLoad(this)">Reference Code Master</a>
+											</li>
+											<li>
+												<a href="#" class="nav-link" id="CommonMapping"
+													onclick="contentLoad(this)">GL Configuration</a>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
 
-        <!-- BRRS Reports Submenu -->
-        <li class="dropdown-submenu">
-            <a href="#" class="nav-link">Basel Returns</a>
-            <ul class="dropdown-menu">
-                <li>
-                    <a href="#" class="nav-link" id="BRRS" onclick="contentLoad(this)">Monthly Reports</a>
-                </li>
-                <li>
-                    <a href="#" class="nav-link" id="Quarterly" onclick="contentLoad(this)">Quarterly Reports</a>
-                </li>
-            </ul>
-        </li>
 
-    </ul>
-</li>
+							<li class="nav-item dropdown" style="text-align: center;"
+								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRRS_Reports')}">
+
+								<a href="#" class="dropdown-toggle">BRRS Reports</a>
+								<ul class="dropdown-menu">
+
+									<!-- BRRS Reports Submenu -->
+									<li class="dropdown-submenu">
+										<a href="#" class="nav-link">Basel Returns</a>
+										<ul class="dropdown-menu">
+											<li>
+												<a href="#" class="nav-link" id="BRRS"
+													onclick="contentLoad(this)">Monthly Reports</a>
+											</li>
+											<li>
+												<a href="#" class="nav-link" id="Quarterly"
+													onclick="contentLoad(this)">Quarterly Reports</a>
+											</li>
+										</ul>
+									</li>
+
+								</ul>
+							</li>
 
 
 
 
-<!---
+							<!---
 <li class="nav-item dropdown" style=" text-align: center;" 
 th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRRS_Reports')}">
  <a href="#" class="dropdown-toggle">Basel_Returns</a>
@@ -1256,46 +1260,81 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 	 <li><a href="#" class="nav-link" id="Quarterly" onclick="contentLoad(this)">Basel Quarterly Returns</a></li> </ul> </li>
 -->
 
-
-						
-						
-						<li class="nav-item dropdown" style=" text-align: center;"
-						th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'Archival')}">
-						
-							<a href="#" class="dropdown-toggle">Archival</a>
-								
+							<!-- <li class="nav-item dropdown" style=" text-align: center;">
+								<a href="#" class="dropdown-toggle">Resubmission</a>
 								<ul class="dropdown-menu">
-								
-									
-									<li><a href="#" class="nav-link" id="MonthlyArchival" onclick="contentLoad(this)">Monthly</a></li>
-									
-									<li><a href="#" class="nav-link" id="QuarterlyArchival" onclick="contentLoad(this)">Quarterly</a></li>
-									
+									<li>
+										<a href="#" class="nav-link" id="BRRS" onclick="contentLoad(this)">Monthly
+											Reports</a>
+									</li>
+									<li>
+										<a href="#" class="nav-link" id="Quarterly"
+											onclick="contentLoad(this)">Quarterly Reports</a>
+									</li>
 								</ul>
-								
-								
-						</li>
+							</li> -->
 
-						<li class="nav-item dropdown" style=" text-align: center;"
-						th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'AUDIT_US')}">
-						
-							<a href="#" class="dropdown-toggle">Audit</a>
-							<ul class="dropdown-menu">
-								
-								<li>
-								<a  href="#" class="nav-link" id="User_Audit"  onclick="contentLoad(this)">User Audit</a>
-								</li>
-								<li>
-								<a href="#" class="nav-link" id="Service_Audit" 
-										onclick="contentLoad(this)">Service Audit</a></li>
-							</ul>
-						</li>
-						
-						<li class="nav-item" style=" text-align: center;"
-						th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'AUDIT_US')}">
-						
-							<a href="#" class="dropdown-toggle" id="MCBL"  onclick="contentLoad(this)">File Upload</a>
-							<!-- <ul class="dropdown-menu">
+							<li class="nav-item dropdown" style=" text-align: center;"
+								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'Archival')}">
+
+								<a href="#" class="dropdown-toggle">Resubmission</a>
+
+								<ul class="dropdown-menu">
+
+
+									<li><a href="#" class="nav-link" id="Monthly1-Resubmission"
+											onclick="contentLoad(this)">Monthly</a></li>
+
+									<li><a href="#" class="nav-link" id="QuarterlyResub"
+											onclick="contentLoad(this)">Quarterly</a></li>
+
+								</ul>
+
+
+							</li>
+
+							<li class="nav-item dropdown" style=" text-align: center;"
+								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'Archival')}">
+
+								<a href="#" class="dropdown-toggle">Archival</a>
+
+								<ul class="dropdown-menu">
+
+
+									<li><a href="#" class="nav-link" id="MonthlyArchival"
+											onclick="contentLoad(this)">Monthly</a></li>
+
+									<li><a href="#" class="nav-link" id="QuarterlyArchival"
+											onclick="contentLoad(this)">Quarterly</a></li>
+
+								</ul>
+
+
+							</li>
+
+							<li class="nav-item dropdown" style=" text-align: center;"
+								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'AUDIT_US')}">
+
+								<a href="#" class="dropdown-toggle">Audit</a>
+								<ul class="dropdown-menu">
+
+									<li>
+										<a href="#" class="nav-link" id="User_Audit" onclick="contentLoad(this)">User
+											Audit</a>
+									</li>
+									<li>
+										<a href="#" class="nav-link" id="Service_Audit"
+											onclick="contentLoad(this)">Service Audit</a>
+									</li>
+								</ul>
+							</li>
+
+							<li class="nav-item" style=" text-align: center;"
+								th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'AUDIT_US')}">
+
+								<a href="#" class="dropdown-toggle" id="MCBL" onclick="contentLoad(this)">File
+									Upload</a>
+								<!-- <ul class="dropdown-menu">
 								
 								<li>
 								<a  href="#" class="nav-link" id="MCBL"  onclick="contentLoad(this)">File Upload</a>
@@ -1310,10 +1349,10 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 								<a  href="#" class="nav-link" id="BLBF"  onclick="contentLoad(this)">BLBF</a>
 								</li>
 							</ul> -->
-						</li>
-						
-						
-						<!-- <li class="nav-item dropdown" style=" text-align: center;">
+							</li>
+
+
+							<!-- <li class="nav-item dropdown" style=" text-align: center;">
 							<a href="#" class="dropdown-toggle">BRRS Reports</a>
 								<ul class="dropdown-menu">
 								
@@ -1336,176 +1375,175 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 								
 								
 						</li> -->
-						
-						
-					</ul>
-				</div>
-	
-   			<!-- Centered Title -->
-			  <!--<h3 class="company-title position-absolute translate-middle-x"
+
+
+						</ul>
+					</div>
+
+					<!-- Centered Title -->
+					<!--<h3 class="company-title position-absolute translate-middle-x"
 			    style="top: 50%; left: 40%; font-weight: bold; font-family: 'Arial', cursive; font-size: 1.3rem;">
 			    BCBUAE
 			  </h3> -->
-			
-			  <!-- User info -->
-			  <div class="user-section d-flex flex-column align-items-end ms-auto" style="width: fit-content;">
-			    <!-- <div class="company-small-title text-end" style="font-size: 0.75rem; font-weight: 600; color: #000; margin-right:40px;">
+
+					<!-- User info -->
+					<div class="user-section d-flex flex-column align-items-end ms-auto" style="width: fit-content;">
+						<!-- <div class="company-small-title text-end" style="font-size: 0.75rem; font-weight: 600; color: #000; margin-right:40px;">
 			      Bornfire Innovations Pvt Ltd
 			    </div> -->
-			    <div class="d-flex align-items-center gap-1" style="font-size: 0.75rem;">
-			      <div class="user-details text-end">
-			        <strong>&nbsp;</strong>  <img th:src="@{/images/Bornfire.png}" style="height:50px" alt="Bornfire">
-			      </div>
-			      <!-- <form th:action="@{/logout}" method="post" class="logout-btn m-0">
+						<div class="d-flex align-items-center gap-1" style="font-size: 0.75rem;">
+							<div class="user-details text-end">
+								<strong>&nbsp;</strong> <img th:src="@{/images/Bornfire.png}" style="height:50px"
+									alt="Bornfire">
+							</div>
+							<!-- <form th:action="@{/logout}" method="post" class="logout-btn m-0">
 			        <button class="custom-tab-btn btn-outline-danger py-0 px-2" type="submit" style="font-size: 0.75rem;">
 			          <i class="fas fa-sign-out-alt"></i> Logout
 			        </button>
 			      </form> -->
-			      
-			      <!-- Three-dot User Menu -->
-					<div class="dropdown user-menu ms-3">
-					  <div class="three-dots" id="userMenuToggle">⋮</div>
-					  <div class="dropdown-menu user-dropdown-menu">
-					    <div class="user-info px-3 py-2">
-					      <div><strong> <span th:text="${session.USERID}"></span></strong></div>
-					      <div><strong><span th:text="${session.USERNAME}"></span></strong></div>
-					    </div>
-					    <div class="dropdown-divider"></div>
-					    <form th:action="@{/logout}" method="post" class="text-center mb-2">
-					      <button class="custom-tab-btn btn-outline-danger py-0 px-2" type="submit"><i class="fas fa-sign-out-alt"></i>Logout</button>
-					    </form>
-					  </div>
-					</div>
-			
-			      
-			    </div>
-			  </div>
-</div>
+
+							<!-- Three-dot User Menu -->
+							<div class="dropdown user-menu ms-3">
+								<div class="three-dots" id="userMenuToggle">⋮</div>
+								<div class="dropdown-menu user-dropdown-menu">
+									<div class="user-info px-3 py-2">
+										<div><strong> <span th:text="${session.USERID}"></span></strong></div>
+										<div><strong><span th:text="${session.USERNAME}"></span></strong></div>
+									</div>
+									<div class="dropdown-divider"></div>
+									<form th:action="@{/logout}" method="post" class="text-center mb-2">
+										<button class="custom-tab-btn btn-outline-danger py-0 px-2" type="submit"><i
+												class="fas fa-sign-out-alt"></i>Logout</button>
+									</form>
+								</div>
+							</div>
 
 
-        
-      </div>
-    </div>
-  </nav>
-  
-  <div class="modal fade" id="loader" data-backdrop="static"
-			data-keyboard="false">
-			<div
-				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-				<div class="modal-content" style="background: transparent;">
-					<div class="modal-body" style="text-align: center">
-						<div>
-							<img th:src=@{/images/loader.gif} id="bfirelogo"
-								style="width: 153px; height: auto; margin-left: 18px; background-color: transparent;
-								border-color: transparent;"
-								alt="Bornfire">
 						</div>
+					</div>
+				</div>
+
+
+
+			</div>
+		</div>
+	</nav>
+
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo" style="width: 153px; height: auto; margin-left: 18px; background-color: transparent;
+								border-color: transparent;" alt="Bornfire">
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="alert alert-danger custom-alert" role="alert" id="autoHideAlert" style="display:none;">
-		    <button type="button" class="close" aria-label="Close" onclick="hideAlert()">
-		        <span aria-hidden="true">&times;</span>
-		    </button>
-		    <p id="alertMessage"><i  class="fa fa-check-circle"></i> Download request received</p>
-		</div>
-		
-<div class="alert alert-danger custom-alert" role="alert" id="UploadAlert" style="display:none;">
-    <button type="button" class="close" aria-label="Close" onclick="UploadhideAlert()">
-        <span aria-hidden="true">&times;</span>
-    </button>
-    <p id="alertMessage"><i class="fa fa-check-circle"></i> Processed Successfully</p>
-</div>
+	</div>
+	<div class="alert alert-danger custom-alert" role="alert" id="autoHideAlert" style="display:none;">
+		<button type="button" class="close" aria-label="Close" onclick="hideAlert()">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		<p id="alertMessage"><i class="fa fa-check-circle"></i> Download request received</p>
+	</div>
+
+	<div class="alert alert-danger custom-alert" role="alert" id="UploadAlert" style="display:none;">
+		<button type="button" class="close" aria-label="Close" onclick="UploadhideAlert()">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		<p id="alertMessage"><i class="fa fa-check-circle"></i> Processed Successfully</p>
+	</div>
 
 </body>
 
 <style>
-/* Ensure dropdown menu appears on top */
-.dropdown-menu {
-    z-index: 1050 !important; /* Bootstrap default for modals */
-    position: absolute !important;
-}
+	/* Ensure dropdown menu appears on top */
+	.dropdown-menu {
+		z-index: 1050 !important;
+		/* Bootstrap default for modals */
+		position: absolute !important;
+	}
 
-/* Make sure parent containers don't hide overflow */
-.navbar,
-.navbar-container,
-.right-content,
-.bottom-row {
-    position: relative;
-    overflow: visible !important;
-    z-index: auto;
-}
+	/* Make sure parent containers don't hide overflow */
+	.navbar,
+	.navbar-container,
+	.right-content,
+	.bottom-row {
+		position: relative;
+		overflow: visible !important;
+		z-index: auto;
+	}
 </style>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const toggle = document.getElementById('userMenuToggle');
-    const menu = document.querySelector('.user-dropdown-menu');
-    let autoCloseTimeout;
+	document.addEventListener('DOMContentLoaded', function () {
+		const toggle = document.getElementById('userMenuToggle');
+		const menu = document.querySelector('.user-dropdown-menu');
+		let autoCloseTimeout;
 
-    toggle.addEventListener('click', function (e) {
-      e.stopPropagation();
+		toggle.addEventListener('click', function (e) {
+			e.stopPropagation();
 
-      // Toggle menu visibility
-      if (menu.style.display === 'block') {
-        menu.style.display = 'none';
-        clearTimeout(autoCloseTimeout);
-      } else {
-        menu.style.display = 'block';
+			// Toggle menu visibility
+			if (menu.style.display === 'block') {
+				menu.style.display = 'none';
+				clearTimeout(autoCloseTimeout);
+			} else {
+				menu.style.display = 'block';
 
-       
-        autoCloseTimeout = setTimeout(() => {
-          menu.style.display = 'none';
-        }, 2000);
-      }
-    });
 
-    // Close on outside click
-    document.addEventListener('click', function () {
-      menu.style.display = 'none';
-      clearTimeout(autoCloseTimeout);
-    });
-  });
+				autoCloseTimeout = setTimeout(() => {
+					menu.style.display = 'none';
+				}, 2000);
+			}
+		});
+
+		// Close on outside click
+		document.addEventListener('click', function () {
+			menu.style.display = 'none';
+			clearTimeout(autoCloseTimeout);
+		});
+	});
 </script>
 <script>
-// Called when user clicks on a menu item
-function contentLoad(a) {
-    // Store ID of clicked element in localStorage
-    localStorage.setItem("activeMenuId", a.id);
+	// Called when user clicks on a menu item
+	function contentLoad(a) {
+		// Store ID of clicked element in localStorage
+		localStorage.setItem("activeMenuId", a.id);
 
-    // Show loader modal
-    $('#loader').modal('show');
+		// Show loader modal
+		$('#loader').modal('show');
 
-    // Delay navigation slightly so the loader is visible
-    setTimeout(function () {
-        location.href = "/BRRS/" + a.id;
-    }, 300); // You can increase this delay if needed
-}
+		// Delay navigation slightly so the loader is visible
+		setTimeout(function () {
+			location.href = "/BRRS/" + a.id;
+		}, 300); // You can increase this delay if needed
+	}
 
 </script>
 
 <script>
-// This runs on every page load
-document.addEventListener("DOMContentLoaded", function () {
-    const activeId = localStorage.getItem("activeMenuId");
+	// This runs on every page load
+	document.addEventListener("DOMContentLoaded", function () {
+		const activeId = localStorage.getItem("activeMenuId");
 
-    // Remove all existing active classes
-    document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
+		// Remove all existing active classes
+		document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
 
-    if (activeId) {
-        const activeLink = document.getElementById(activeId);
-        if (activeLink) {
-            activeLink.classList.add("active");
+		if (activeId) {
+			const activeLink = document.getElementById(activeId);
+			if (activeLink) {
+				activeLink.classList.add("active");
 
-            // Also highlight parent .dropdown-toggle
-            const dropdown = activeLink.closest(".nav-item.dropdown");
-            if (dropdown) {
-                const toggle = dropdown.querySelector(".dropdown-toggle");
-                if (toggle) toggle.classList.add("active");
-            }
-        }
-    }
-});
+				// Also highlight parent .dropdown-toggle
+				const dropdown = activeLink.closest(".nav-item.dropdown");
+				if (dropdown) {
+					const toggle = dropdown.querySelector(".dropdown-toggle");
+					if (toggle) toggle.classList.add("active");
+				}
+			}
+		}
+	});
 </script>
 
 
