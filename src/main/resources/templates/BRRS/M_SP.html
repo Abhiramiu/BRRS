@@ -670,47 +670,74 @@ function showdetailsbyRowAndColumn(a) {
 
 
 		<style>
-			  .left-arrow-circle {
-			    background-color: white;
-			    color: #007bff;
-			    border-radius: 50%;
-			    padding: 8px;
-			    margin-right: 10px;
-			    cursor: pointer;
-			  }
+			.header-bar {
+			  display: flex;
+			  align-items: center;
+			  flex-wrap: wrap; /* ✅ allows wrapping on smaller screens */
+			  gap: 10px; /* spacing between elements */
+			  cursor: pointer;
+			}
 
-			  /* 🚌 Bus display style box */
-			  .boards {
-			    background-color: rgb(107, 122, 143);
-			    color: white;
-			    padding: 6px -1px;
-			    border-radius: 8px;
-			    overflow: hidden;
-			    white-space: nowrap;
-			    width: 450px; /* adjust width as needed */
-			    box-shadow: 0 0 10px rgb(107, 122, 143);
-			    position: relative;
-				transform: translateY(10px);
-			  }
+			/* 🔘 Circular arrow */
+			.left-arrow-circle {
+			  width: 35px;
+			  height: 35px;
+			  border-radius: 50%;
+			  background-color: white;
+			  color: #1f3a93;
+			  display: flex;
+			  align-items: center;
+			  justify-content: center;
+			  margin-right: 10px;
+			}
 
-			  /* ✨ Scrolling animation */
-			  .scrolling-text {
-			    display: inline-block;
-			    font-family: "Courier New", monospace;
-			    font-weight: bold;
-			    letter-spacing: 1px;
-			    animation: scroll-left 10s linear infinite;
-			  }
+			.left-arrow-circle i {
+			  font-size: 18px;
+			}
 
-			  /* Animation keyframes */
-			  @keyframes scroll-left {
-			    0% {
-			      transform: translateX(100%);
-			    }
-			    100% {
-			      transform: translateX(-100%);
-			    }
+			/* 🏷️ Title */
+			.header-title {
+			  font-family: Arial, sans-serif;
+			  font-size: 20px;
+			  font-weight: bold;
+			  color: white;
+			  margin: 0;
+			  flex-shrink: 0;
+			}
+
+			/* 🚌 Bus display style box */
+			.boards {
+				transform: translateY(6px);
+			  background-color: rgb(107, 122, 143);
+			  color: white;
+			  padding: 5px 87px;
+			  border-radius: 8px;
+			  overflow: hidden;
+			  white-space: nowrap;
+			  flex: 1; /* ✅ makes it take available space dynamically */
+			  min-width: 200px;
+			  box-shadow: 0 0 10px rgb(107, 122, 143);
+			  position: relative;
+			}
+
+			/* ✨ Scrolling animation */
+			.scrolling-text {
+			  display: inline-block;
+			  font-family: "Courier New", monospace;
+			  font-weight: bold;
+			  letter-spacing: 1px;
+			  animation: scroll-left 10s linear infinite;
+			}
+
+			@keyframes scroll-left {
+			  0% {
+			    transform: translateX(100%);
 			  }
+			  100% {
+			    transform: translateX(-100%);
+			  }
+			}
+
 			</style>
 			
 			<style>
@@ -794,26 +821,27 @@ function showdetailsbyRowAndColumn(a) {
 
 			<div class="card"  >
 				<div class="card-header" style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
-    <div style="display: flex; align-items: center;" onclick="back();">
-        <!-- ⬅️ Left circular arrow -->
-        <div class="left-arrow-circle">
-    		<i class="fa fa-arrow-left"></i>
-		</div>
+					<div class="header-bar" onclick="back();">
+					  <!-- ⬅️ Left circular arrow -->
+					  <div class="left-arrow-circle">
+					    <i class="fa fa-arrow-left"></i>
+					  </div>
 
-        <!-- Title -->
-        <h5 style="font-family: arial; font-size: 20px; padding-top:10px; font-weight: bold; color: white;">
-            M-SP: SPECIFIC PROVISIONS -  LOANS AND ADVANCES 									
-        </h5>
-		<!-- Moving bus-board text -->
-													  <div class="boards">
-													    <p class="scrolling-text">(25) MONTHLY SCHEDULE: M-SP: LOANS AND ADVANCES</p>
-													  </div>
-        
-    </div>
+					  <!-- Title -->
+					  <h5 class="header-title">
+					    M-SP: SPECIFIC PROVISIONS - LOANS AND ADVANCES
+					  </h5>
+
+					  <!-- 🚌 Bus display box -->
+					  <div class="boards">
+					    <p class="scrolling-text">(25) MONTHLY SCHEDULE: M-SP: LOANS AND ADVANCES</p>
+					  </div>
+					</div>
+
 
     <div class="custom-tab-btn-group nav-buttons" style="display: flex; color: white; align-items: center;">
         <!-- 📅 Date -->
-        <span class="white-text" style="color:white !important; font-size: 16px; margin-right: 20px;">Report Date:
+        <span class="white-text" style="color:white !important; font-size: 17px; margin-right: 20px;">Report Date:
             <span th:text="${#strings.replace(asondate, '/', '-')}"></span>
         </span>
 
