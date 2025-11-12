@@ -1136,14 +1136,14 @@ $(document).ready(function() {
 							#reportdetails {
 								border-collapse: collapse;
 							}
+							
 						</style>
 				<script th:inline="javascript">
 				  $(document).ready(function () {
 				    var table = $('#reportdetails').DataTable({
 				      scrollY: "550px",
-				      scrollX: true,
-				      scrollCollapse: true,
-				      autoWidth: false,
+				      scrollCollapse : true,
+				      autoWidth: true,
 				      paging: true,
 				      searching: true,
 				      lengthChange: false,
