@@ -914,8 +914,8 @@ function cancelModify() {
 
 	// Calculate total for R14
 	function calculateR14Totals() {
-
 	    let total = 0;
+
 	        let C2 = parseFloat($("#R14_EQUITY").val().replace(/,/g, "")) || 0;
 	        let C3 = parseFloat($("#R14_BONDS").val().replace(/,/g, "")) || 0;
 	        let C4 = parseFloat($("#R14_BOBC").val().replace(/,/g, "")) || 0;
@@ -1884,6 +1884,7 @@ function cancelModify() {
 	    let totalC8 = 0;
 	    let totalC9 = 0;
 	    let totalC10 = 0;
+	    let totalC11 = 0;
 	    
 	    
 
@@ -1897,6 +1898,7 @@ function cancelModify() {
 	        let C8 = parseFloat($("#R" + i + "_CERT_OF_DEP").val().replace(/,/g, "")) || 0;
 	        let C9 = parseFloat($("#R" + i + "_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
 	        let C10 = parseFloat($("#R" + i + "_OTHER").val().replace(/,/g, "")) || 0;
+	        let C11 = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
 	             
 	        
 
@@ -1909,6 +1911,7 @@ function cancelModify() {
 	        totalC8 += C8;
 	        totalC9 += C9;
 	        totalC10 += C10;
+	        totalC11 += C11;
 	    }
 
 	    // Put the totals into R17
@@ -1921,6 +1924,7 @@ function cancelModify() {
 	    $("#R17_CERT_OF_DEP").val(totalC8.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R17_PLEDGED_ASSET").val(totalC9.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R17_OTHER").val(totalC10.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R17_TOTAL").val(totalC11.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    
 	    
 	}
@@ -1956,6 +1960,7 @@ function cancelModify() {
 	    let totalC8 = 0;
 	    let totalC9 = 0;
 	    let totalC10 = 0;
+	    let totalC11 = 0;
 	    
 	    
 
@@ -1969,6 +1974,7 @@ function cancelModify() {
 	        let C8 = parseFloat($("#R" + i + "_CERT_OF_DEP").val().replace(/,/g, "")) || 0;
 	        let C9 = parseFloat($("#R" + i + "_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
 	        let C10 = parseFloat($("#R" + i + "_OTHER").val().replace(/,/g, "")) || 0;
+	        let C11 = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
 	             
 	        
 
@@ -1981,6 +1987,8 @@ function cancelModify() {
 	        totalC8 += C8;
 	        totalC9 += C9;
 	        totalC10 += C10;
+	        totalC11 += C11;
+	        
 	    }
 
 	    // Put the totals into R32
@@ -1993,6 +2001,7 @@ function cancelModify() {
 	    $("#R32_CERT_OF_DEP").val(totalC8.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R32_PLEDGED_ASSET").val(totalC9.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R32_OTHER").val(totalC10.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R32_TOTAL").val(totalC11.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    
 	    
 	}
@@ -2028,6 +2037,7 @@ function cancelModify() {
 	    let totalC8 = 0;
 	    let totalC9 = 0;
 	    let totalC10 = 0;
+	    let totalC11 = 0;
 	    
 	    
 
@@ -2041,6 +2051,7 @@ function cancelModify() {
 	        let C8 = parseFloat($("#R" + i + "_CERT_OF_DEP").val().replace(/,/g, "")) || 0;
 	        let C9 = parseFloat($("#R" + i + "_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
 	        let C10 = parseFloat($("#R" + i + "_OTHER").val().replace(/,/g, "")) || 0;
+	        let C11 = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
 	             
 	        
 
@@ -2053,6 +2064,7 @@ function cancelModify() {
 	        totalC8 += C8;
 	        totalC9 += C9;
 	        totalC10 += C10;
+	        totalC11 += C11;
 	    }
 
 	    // Put the totals into R38
@@ -2065,7 +2077,7 @@ function cancelModify() {
 	    $("#R38_CERT_OF_DEP").val(totalC8.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R38_PLEDGED_ASSET").val(totalC9.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R38_OTHER").val(totalC10.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    
+	    $("#R38_TOTAL").val(totalC11.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    
 	}
 
@@ -2100,6 +2112,7 @@ function cancelModify() {
 	    let totalC8 = 0;
 	    let totalC9 = 0;
 	    let totalC10 = 0;
+	    let totalC11 = 0;
 	    
 	    
 
@@ -2113,7 +2126,7 @@ function cancelModify() {
 	        let C8 = parseFloat($("#R" + i + "_CERT_OF_DEP").val().replace(/,/g, "")) || 0;
 	        let C9 = parseFloat($("#R" + i + "_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
 	        let C10 = parseFloat($("#R" + i + "_OTHER").val().replace(/,/g, "")) || 0;
-	             
+	        let C11 = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;     
 	        
 
 	        totalC2 += C2;
@@ -2125,6 +2138,7 @@ function cancelModify() {
 	        totalC8 += C8;
 	        totalC9 += C9;
 	        totalC10 += C10;
+	        totalC11 += C11;
 	    }
 
 	    // Put the totals into R47
@@ -2137,6 +2151,7 @@ function cancelModify() {
 	    $("#R47_CERT_OF_DEP").val(totalC8.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R47_PLEDGED_ASSET").val(totalC9.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R47_OTHER").val(totalC10.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R47_TOTAL").val(totalC11.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    
 	    
 	}
@@ -2172,6 +2187,7 @@ function cancelModify() {
 	    let totalC8 = 0;
 	    let totalC9 = 0;
 	    let totalC10 = 0;
+	    let totalC11 = 0;
 	    
 	    
 
@@ -2185,7 +2201,7 @@ function cancelModify() {
 	        let C8 = parseFloat($("#R" + i + "_CERT_OF_DEP").val().replace(/,/g, "")) || 0;
 	        let C9 = parseFloat($("#R" + i + "_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
 	        let C10 = parseFloat($("#R" + i + "_OTHER").val().replace(/,/g, "")) || 0;
-	             
+	        let C11 = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;     
 	        
 
 	        totalC2 += C2;
@@ -2197,6 +2213,7 @@ function cancelModify() {
 	        totalC8 += C8;
 	        totalC9 += C9;
 	        totalC10 += C10;
+	        totalC11 += C11;
 	    }
 
 	    // Put the totals into R51
@@ -2209,7 +2226,7 @@ function cancelModify() {
 	    $("#R51_CERT_OF_DEP").val(totalC8.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R51_PLEDGED_ASSET").val(totalC9.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R51_OTHER").val(totalC10.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    
+	    $("#R51_TOTAL").val(totalC11.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    
 	}
 
@@ -2244,6 +2261,7 @@ function cancelModify() {
 	    let totalC8 = 0;
 	    let totalC9 = 0;
 	    let totalC10 = 0;
+	    let totalC11 = 0;
 	    
 	    
 
@@ -2258,7 +2276,7 @@ function cancelModify() {
 	        let C8 = parseFloat($("#R" + i + "_CERT_OF_DEP").val().replace(/,/g, "")) || 0;
 	        let C9 = parseFloat($("#R" + i + "_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
 	        let C10 = parseFloat($("#R" + i + "_OTHER").val().replace(/,/g, "")) || 0;
-	             
+	        let C11 = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;     
 	        
 
 	        totalC2 += C2;
@@ -2270,6 +2288,7 @@ function cancelModify() {
 	        totalC8 += C8;
 	        totalC9 += C9;
 	        totalC10 += C10;
+	        totalC11 += C11;
 	    }
 
 	    // Put the totals into R43
@@ -2282,6 +2301,7 @@ function cancelModify() {
 	    $("#R43_CERT_OF_DEP").val(totalC8.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R43_PLEDGED_ASSET").val(totalC9.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R43_OTHER").val(totalC10.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R43_TOTAL").val(totalC11.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    
 	    
 	}
@@ -2317,6 +2337,7 @@ function cancelModify() {
 	    let totalC8 = 0;
 	    let totalC9 = 0;
 	    let totalC10 = 0;
+	    let totalC11 = 0;
 	    
 	    
 
@@ -2335,7 +2356,7 @@ function cancelModify() {
 		        let C8 = parseFloat($("#R" + i + "_CERT_OF_DEP").val().replace(/,/g, "")) || 0;
 		        let C9 = parseFloat($("#R" + i + "_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
 		        let C10 = parseFloat($("#R" + i + "_OTHER").val().replace(/,/g, "")) || 0;
-		             
+		        let C11 = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;     
 		        
 		        totalC2 += C2;
 		        totalC3 += C3;
@@ -2346,6 +2367,7 @@ function cancelModify() {
 		        totalC8 += C8;
 		        totalC9 += C9;
 		        totalC10 += C10;
+				totalC11 += C11;
 		}
 
 	    // Put the totals into R35
@@ -2358,7 +2380,7 @@ function cancelModify() {
 	    $("#R35_CERT_OF_DEP").val(totalC8.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R35_PLEDGED_ASSET").val(totalC9.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R35_OTHER").val(totalC10.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    
+	    $("#R35_TOTAL").val(totalC11.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    
 	}
 
@@ -2382,7 +2404,9 @@ function cancelModify() {
 		}
 	});
 	
-	// Calculate total for R13
+
+	
+	// Calculate total for R13 (except the last TOTAL column)
 	function calculateR13Totals() {
 	    let totalC2 = 0;
 	    let totalC3 = 0;
@@ -2394,37 +2418,33 @@ function cancelModify() {
 	    let totalC9 = 0;
 	    let totalC10 = 0;
 	    
-	    
+	    // Create an array of the specific rows you need to process
+	    const rowsToProcess = [14, 15, 16, 17, 31, 32];
 
-	 // Create an array of the specific rows you need to process
-		const rowsToProcess = [14, 15, 16, 17, 31, 32];
+	    // Loop through each row number in the array
+	    for (const i of rowsToProcess) {
+	        let C2 = parseFloat($("#R" + i + "_EQUITY").val().replace(/,/g, "")) || 0;
+	        let C3 = parseFloat($("#R" + i + "_BONDS").val().replace(/,/g, "")) || 0;
+	        let C4 = parseFloat($("#R" + i + "_BOBC").val().replace(/,/g, "")) || 0;
+	        let C5 = parseFloat($("#R" + i + "_TRES_BILLS").val().replace(/,/g, "")) || 0;
+	        let C6 = parseFloat($("#R" + i + "_REPURCHASE_AGREE").val().replace(/,/g, "")) || 0;
+	        let C7 = parseFloat($("#R" + i + "_COM_PAPER").val().replace(/,/g, "")) || 0;
+	        let C8 = parseFloat($("#R" + i + "_CERT_OF_DEP").val().replace(/,/g, "")) || 0;
+	        let C9 = parseFloat($("#R" + i + "_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
+	        let C10 = parseFloat($("#R" + i + "_OTHER").val().replace(/,/g, "")) || 0;
 
-		// Loop through each row number in the array
-		for (const i of rowsToProcess) {
-		        // This is the "same content" from your original loop
-		        let C2 = parseFloat($("#R" + i + "_EQUITY").val().replace(/,/g, "")) || 0;
-		        let C3 = parseFloat($("#R" + i + "_BONDS").val().replace(/,/g, "")) || 0;
-		        let C4 = parseFloat($("#R" + i + "_BOBC").val().replace(/,/g, "")) || 0;
-		        let C5 = parseFloat($("#R" + i + "_TRES_BILLS").val().replace(/,/g, "")) || 0;
-		        let C6 = parseFloat($("#R" + i + "_REPURCHASE_AGREE").val().replace(/,/g, "")) || 0;
-		        let C7 = parseFloat($("#R" + i + "_COM_PAPER").val().replace(/,/g, "")) || 0;
-		        let C8 = parseFloat($("#R" + i + "_CERT_OF_DEP").val().replace(/,/g, "")) || 0;
-		        let C9 = parseFloat($("#R" + i + "_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
-		        let C10 = parseFloat($("#R" + i + "_OTHER").val().replace(/,/g, "")) || 0;
-		             
-		        
-		        totalC2 += C2;
-		        totalC3 += C3;
-		        totalC4 += C4;
-		        totalC5 += C5;
-		        totalC6 += C6;
-		        totalC7 += C7;
-		        totalC8 += C8;
-		        totalC9 += C9;
-		        totalC10 += C10;
-		}
+	        totalC2 += C2;
+	        totalC3 += C3;
+	        totalC4 += C4;
+	        totalC5 += C5;
+	        totalC6 += C6;
+	        totalC7 += C7;
+	        totalC8 += C8;
+	        totalC9 += C9;
+	        totalC10 += C10;
+	    }
 
-	    // Put the totals into R13
+	    // Put the totals into R13 (except TOTAL)
 	    $("#R13_EQUITY").val(totalC2.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R13_BONDS").val(totalC3.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R13_BOBC").val(totalC4.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
@@ -2434,29 +2454,42 @@ function cancelModify() {
 	    $("#R13_CERT_OF_DEP").val(totalC8.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R13_PLEDGED_ASSET").val(totalC9.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R13_OTHER").val(totalC10.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    
-	    
+	}
+
+
+	// ✅ Separate calculation for R13_TOTAL only
+	function calculateR13Last() {
+	    let totalC11 = 0;
+	    const rowsToProcess = [14, 15, 16, 17, 31, 32];
+
+	    for (const i of rowsToProcess) {
+	        let C11 = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
+	        totalC11 += C11;
+	    }
+
+	    $("#R13_TOTAL").val(totalC11.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	}
 
 
 	$(document).ready(function() {
 	    // Calculate once on load
 	    calculateR13Totals();
+	    //calculateR13Last();
 
-	 // Recalculate whenever R14–R34 values change
-		for (let i = 14; i <= 34; i++) {
-			if ([17, 32].includes(i)) continue;
+	    // Recalculate whenever R14–R34 values change
+	    for (let i = 14; i <= 34; i++) {
+	        if ([17, 32].includes(i)) continue;
 
-			// Attach the listener to all 9 columns for the current row
-			$("#R" + i + "_EQUITY, #R" + i + "_BONDS, #R" + i + "_BOBC, #R" + i + "_TRES_BILLS, #R"
-					+ i + "_REPURCHASE_AGREE, #R" + i + "_COM_PAPER, #R" + i + "_CERT_OF_DEP, #R"
-					+ i + "_PLEDGED_ASSET, #R" + i + "_OTHER").on("input", function() {
-				
-				calculateR13Totals();
-			
-			});
-		}
+	        $("#R" + i + "_EQUITY, #R" + i + "_BONDS, #R" + i + "_BOBC, #R" + i + "_TRES_BILLS, #R"
+	            + i + "_REPURCHASE_AGREE, #R" + i + "_COM_PAPER, #R" + i + "_CERT_OF_DEP, #R"
+	            + i + "_PLEDGED_ASSET, #R" + i + "_OTHER, #R" + i + "_TOTAL").on("input", function() {
+
+	            //calculateR13Totals();
+	            calculateR13Last();
+	        });
+	    }
 	});
+
 
 	// Calculate total for R58
 	function calculateR58Totals() {
@@ -2469,6 +2502,7 @@ function cancelModify() {
 	    let totalC8 = 0;
 	    let totalC9 = 0;
 	    let totalC10 = 0;
+	    let totalC11 = 0;
 	    
 	    
 
@@ -2487,7 +2521,7 @@ function cancelModify() {
 		        let C8 = parseFloat($("#R" + i + "_CERT_OF_DEP").val().replace(/,/g, "")) || 0;
 		        let C9 = parseFloat($("#R" + i + "_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
 		        let C10 = parseFloat($("#R" + i + "_OTHER").val().replace(/,/g, "")) || 0;
-		             
+		        let C11 = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;     
 		        
 		        totalC2 += C2;
 		        totalC3 += C3;
@@ -2498,6 +2532,7 @@ function cancelModify() {
 		        totalC8 += C8;
 		        totalC9 += C9;
 		        totalC10 += C10;
+				totalC11 += C11;
 		}
 
 	    // Put the totals into R58
@@ -2510,7 +2545,7 @@ function cancelModify() {
 	    $("#R58_CERT_OF_DEP").val(totalC8.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R58_PLEDGED_ASSET").val(totalC9.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    $("#R58_OTHER").val(totalC10.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    
+	    $("#R58_TOTAL").val(totalC11.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    
 	}
 
@@ -2608,6 +2643,7 @@ calculateR43Totals();
 calculateR35Totals();
 calculateR13Totals();
 calculateR58Totals();
+calculateR13Last();
     
     console.log("✅ Calculations executed successfully");
 
@@ -2805,17 +2841,17 @@ calculateR58Totals();
                         >Type of Instrument (at fair values) </th>
                       </tr>
                       <tr>
-                        <th >SECTOR</th>
-                        <th >Equity</th>
-                        <th >Bonds</th>
-                        <th >BOBCs</th>
-                        <th >Treasury Bills</th>
-                        <th >Repurchase Agreements </th>
-                        <th >Commercial Paper</th>
-                        <th >Certificates of Deposits</th>
-                        <th >Pledged Assets</th>
-                        <th >Other Specify</th>
-                        <th >Total</th>
+                        <th style="text-align: left;">SECTOR</th>
+                        <th style="text-align: right;">Equity</th>
+                        <th style="text-align: right;">Bonds</th>
+                        <th style="text-align: right;">BOBCs</th>
+                        <th style="text-align: right;">Treasury Bills</th>
+                        <th style="text-align: right;">Repurchase Agreements </th>
+                        <th style="text-align: right;">Commercial Paper</th>
+                        <th style="text-align: right;">Certificates of Deposits</th>
+                        <th style="text-align: right;">Pledged Assets</th>
+                        <th style="text-align: right;">Other Specify</th>
+                        <th style="text-align: right;">Total</th>
                       </tr>
                     </thead>
 
@@ -2827,11 +2863,11 @@ calculateR58Totals();
 
                       <tr>
                         <td
-                          style="padding-left: 20px"
+                          style="padding-left: 0px"
                           th:text="${report.R13_PRODUCT}"
                         ></td>
 
-                        <td id="R13" style="text-align:right;">
+                        <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R13_EQUITY != null ? #numbers.formatDecimal(report.R13_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -2839,7 +2875,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R13" style="text-align:right;">
+                        <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R13_BONDS != null ? #numbers.formatDecimal(report.R13_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -2847,7 +2883,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R13" style="text-align:right;">
+                        <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R13_BOBC != null ? #numbers.formatDecimal(report.R13_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -2855,7 +2891,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R13" style="text-align:right;">
+                        <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R13_TRES_BILLS != null ? #numbers.formatDecimal(report.R13_TRES_BILLS, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -2863,7 +2899,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R13" style="text-align:right;">
+                        <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R13_REPURCHASE_AGREE != null ? #numbers.formatDecimal(report.R13_REPURCHASE_AGREE, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -2871,7 +2907,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R13" style="text-align:right;">
+                        <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R13_COM_PAPER != null ? #numbers.formatDecimal(report.R13_COM_PAPER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -2879,7 +2915,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R13" style="text-align:right;">
+                        <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R13_CERT_OF_DEP != null ? #numbers.formatDecimal(report.R13_CERT_OF_DEP, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -2887,7 +2923,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R13" style="text-align:right;">
+                        <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R13_PLEDGED_ASSET != null ? #numbers.formatDecimal(report.R13_PLEDGED_ASSET, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -2895,7 +2931,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R13" style="text-align:right;">
+                        <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R13_OTHER != null ? #numbers.formatDecimal(report.R13_OTHER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -2903,7 +2939,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R13" style="text-align:right;">
+                        <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -2916,7 +2952,7 @@ calculateR58Totals();
 <!-- R14 -->
                                             <tr>
                         <td
-                          style="padding-left: 20px"
+                          style="padding-left: 25px"
                           th:text="${report.R14_PRODUCT}"
                         ></td>
 
@@ -2992,7 +3028,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R14" style="text-align:right;">
+                        <td id="R14" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3005,7 +3041,7 @@ calculateR58Totals();
 <!-- R15 -->
                <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 25px"
                   th:text="${report.R15_PRODUCT}"
                 ></td>
 
@@ -3081,7 +3117,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R15_TOTAL != null ? #numbers.formatDecimal(report.R15_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3095,7 +3131,7 @@ calculateR58Totals();
 <!-- R16 -->
                    <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 25px"
                   th:text="${report.R16_PRODUCT}"
                 ></td>
 
@@ -3171,7 +3207,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R16_TOTAL != null ? #numbers.formatDecimal(report.R16_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3184,11 +3220,11 @@ calculateR58Totals();
 <!-- R17 -->
                       <tr>
                         <td
-                          style="padding-left: 20px"
+                          style="padding-left: 25px"
                           th:text="${report.R17_PRODUCT}"
                         ></td>
 
-                        <td id="R17" style="text-align:right;">
+                        <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R17_EQUITY != null ? #numbers.formatDecimal(report.R17_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3196,7 +3232,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R17" style="text-align:right;">
+                        <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R17_BONDS != null ? #numbers.formatDecimal(report.R17_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3204,7 +3240,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R17" style="text-align:right;">
+                        <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R17_BOBC != null ? #numbers.formatDecimal(report.R17_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3212,7 +3248,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R17" style="text-align:right;">
+                        <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R17_TRES_BILLS != null ? #numbers.formatDecimal(report.R17_TRES_BILLS, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3220,7 +3256,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R17" style="text-align:right;">
+                        <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R17_REPURCHASE_AGREE != null ? #numbers.formatDecimal(report.R17_REPURCHASE_AGREE, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3228,7 +3264,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R17" style="text-align:right;">
+                        <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R17_COM_PAPER != null ? #numbers.formatDecimal(report.R17_COM_PAPER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3236,7 +3272,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R17" style="text-align:right;">
+                        <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R17_CERT_OF_DEP != null ? #numbers.formatDecimal(report.R17_CERT_OF_DEP, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3244,7 +3280,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R17" style="text-align:right;">
+                        <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R17_PLEDGED_ASSET != null ? #numbers.formatDecimal(report.R17_PLEDGED_ASSET, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3252,7 +3288,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R17" style="text-align:right;">
+                        <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R17_OTHER != null ? #numbers.formatDecimal(report.R17_OTHER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3260,7 +3296,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R17" style="text-align:right;">
+                        <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R17_TOTAL != null ? #numbers.formatDecimal(report.R17_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3272,7 +3308,7 @@ calculateR58Totals();
 <!-- R18 -->
                  <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R18_PRODUCT}"
                 ></td>
 
@@ -3348,7 +3384,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R18_TOTAL != null ? #numbers.formatDecimal(report.R18_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3360,7 +3396,7 @@ calculateR58Totals();
 <!-- R19 -->
              <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R19_PRODUCT}"
                 ></td>
 
@@ -3436,7 +3472,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R19_TOTAL != null ? #numbers.formatDecimal(report.R19_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3449,7 +3485,7 @@ calculateR58Totals();
 <!-- Repeat for R20 to R25 -->
                   <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R20_PRODUCT}"
                 ></td>
 
@@ -3525,7 +3561,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R20_TOTAL != null ? #numbers.formatDecimal(report.R20_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3538,7 +3574,7 @@ calculateR58Totals();
 <!-- R21 -->
                 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R21_PRODUCT}"
                 ></td>
 
@@ -3614,7 +3650,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R21_TOTAL != null ? #numbers.formatDecimal(report.R21_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3627,7 +3663,7 @@ calculateR58Totals();
 <!-- R22 -->
               <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R22_PRODUCT}"
                 ></td>
 
@@ -3703,7 +3739,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R22_TOTAL != null ? #numbers.formatDecimal(report.R22_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3716,7 +3752,7 @@ calculateR58Totals();
 <!-- R23 -->
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R23_PRODUCT}"
                 ></td>
 
@@ -3792,7 +3828,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R23_TOTAL != null ? #numbers.formatDecimal(report.R23_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3807,7 +3843,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R24_PRODUCT}"
                 ></td>
 
@@ -3883,7 +3919,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R24_TOTAL != null ? #numbers.formatDecimal(report.R24_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3894,7 +3930,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R25_PRODUCT}"
                 ></td>
 
@@ -3970,7 +4006,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R25_TOTAL != null ? #numbers.formatDecimal(report.R25_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -3981,7 +4017,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R26_PRODUCT}"
                 ></td>
 
@@ -4057,7 +4093,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R26_TOTAL != null ? #numbers.formatDecimal(report.R26_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4068,7 +4104,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R27_PRODUCT}"
                 ></td>
 
@@ -4144,7 +4180,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R27_TOTAL != null ? #numbers.formatDecimal(report.R27_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4155,7 +4191,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R28_PRODUCT}"
                 ></td>
 
@@ -4231,7 +4267,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R28_TOTAL != null ? #numbers.formatDecimal(report.R28_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4242,7 +4278,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R29_PRODUCT}"
                 ></td>
 
@@ -4318,7 +4354,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R29_TOTAL != null ? #numbers.formatDecimal(report.R29_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4329,7 +4365,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R30_PRODUCT}"
                 ></td>
 
@@ -4405,7 +4441,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R30_TOTAL != null ? #numbers.formatDecimal(report.R30_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4417,7 +4453,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 25px"
                   th:text="${report.R31_PRODUCT}"
                 ></td>
 
@@ -4493,7 +4529,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R31_TOTAL != null ? #numbers.formatDecimal(report.R31_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4504,11 +4540,11 @@ calculateR58Totals();
 
                       <tr>
                         <td
-                          style="padding-left: 20px"
+                          style="padding-left: 25px"
                           th:text="${report.R32_PRODUCT}"
                         ></td>
 
-                        <td id="R32" style="text-align:right;">
+                        <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R32_EQUITY != null ? #numbers.formatDecimal(report.R32_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4516,7 +4552,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R32" style="text-align:right;">
+                        <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R32_BONDS != null ? #numbers.formatDecimal(report.R32_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4524,7 +4560,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R32" style="text-align:right;">
+                        <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R32_BOBC != null ? #numbers.formatDecimal(report.R32_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4532,7 +4568,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R32" style="text-align:right;">
+                        <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R32_TRES_BILLS != null ? #numbers.formatDecimal(report.R32_TRES_BILLS, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4540,7 +4576,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R32" style="text-align:right;">
+                        <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R32_REPURCHASE_AGREE != null ? #numbers.formatDecimal(report.R32_REPURCHASE_AGREE, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4548,7 +4584,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R32" style="text-align:right;">
+                        <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R32_COM_PAPER != null ? #numbers.formatDecimal(report.R32_COM_PAPER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4556,7 +4592,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R32" style="text-align:right;">
+                        <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R32_CERT_OF_DEP != null ? #numbers.formatDecimal(report.R32_CERT_OF_DEP, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4564,7 +4600,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R32" style="text-align:right;">
+                        <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R32_PLEDGED_ASSET != null ? #numbers.formatDecimal(report.R32_PLEDGED_ASSET, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4572,7 +4608,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R32" style="text-align:right;">
+                        <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R32_OTHER != null ? #numbers.formatDecimal(report.R32_OTHER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4580,7 +4616,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R32" style="text-align:right;">
+                        <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R32_TOTAL != null ? #numbers.formatDecimal(report.R32_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4591,7 +4627,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R33_PRODUCT}"
                 ></td>
 
@@ -4667,7 +4703,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R33_TOTAL != null ? #numbers.formatDecimal(report.R33_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4678,7 +4714,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R34_PRODUCT}"
                 ></td>
 
@@ -4754,7 +4790,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R34_TOTAL != null ? #numbers.formatDecimal(report.R34_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4765,11 +4801,11 @@ calculateR58Totals();
 
                       <tr>
                         <td
-                          style="padding-left: 20px"
+                          style="padding-left: 0px"
                           th:text="${report.R35_PRODUCT}"
                         ></td>
 
-                        <td id="R35" style="text-align:right;">
+                        <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R35_EQUITY != null ? #numbers.formatDecimal(report.R35_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4777,7 +4813,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R35" style="text-align:right;">
+                        <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R35_BONDS != null ? #numbers.formatDecimal(report.R35_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4785,7 +4821,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R35" style="text-align:right;">
+                        <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R35_BOBC != null ? #numbers.formatDecimal(report.R35_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4793,7 +4829,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R35" style="text-align:right;">
+                        <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R35_TRES_BILLS != null ? #numbers.formatDecimal(report.R35_TRES_BILLS, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4801,7 +4837,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R35" style="text-align:right;">
+                        <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R35_REPURCHASE_AGREE != null ? #numbers.formatDecimal(report.R35_REPURCHASE_AGREE, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4809,7 +4845,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R35" style="text-align:right;">
+                        <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R35_COM_PAPER != null ? #numbers.formatDecimal(report.R35_COM_PAPER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4817,7 +4853,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R35" style="text-align:right;">
+                        <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R35_CERT_OF_DEP != null ? #numbers.formatDecimal(report.R35_CERT_OF_DEP, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4825,7 +4861,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R35" style="text-align:right;">
+                        <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R35_PLEDGED_ASSET != null ? #numbers.formatDecimal(report.R35_PLEDGED_ASSET, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4833,7 +4869,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R35" style="text-align:right;">
+                        <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R35_OTHER != null ? #numbers.formatDecimal(report.R35_OTHER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4841,7 +4877,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R35" style="text-align:right;">
+                        <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R35_TOTAL != null ? #numbers.formatDecimal(report.R35_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4852,7 +4888,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 25px"
                   th:text="${report.R36_PRODUCT}"
                 ></td>
 
@@ -4928,7 +4964,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R36_TOTAL != null ? #numbers.formatDecimal(report.R36_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -4939,7 +4975,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 25px"
                   th:text="${report.R37_PRODUCT}"
                 ></td>
 
@@ -5015,7 +5051,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R37_TOTAL != null ? #numbers.formatDecimal(report.R37_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5026,11 +5062,11 @@ calculateR58Totals();
 
                       <tr>
                         <td
-                          style="padding-left: 20px"
+                          style="padding-left: 25px"
                           th:text="${report.R38_PRODUCT}"
                         ></td>
 
-                        <td id="R38" style="text-align:right;">
+                        <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R38_EQUITY != null ? #numbers.formatDecimal(report.R38_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5038,7 +5074,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R38" style="text-align:right;">
+                        <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R38_BONDS != null ? #numbers.formatDecimal(report.R38_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5046,7 +5082,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R38" style="text-align:right;">
+                        <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R38_BOBC != null ? #numbers.formatDecimal(report.R38_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5054,7 +5090,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R38" style="text-align:right;">
+                        <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R38_TRES_BILLS != null ? #numbers.formatDecimal(report.R38_TRES_BILLS, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5062,7 +5098,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R38" style="text-align:right;">
+                        <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R38_REPURCHASE_AGREE != null ? #numbers.formatDecimal(report.R38_REPURCHASE_AGREE, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5070,7 +5106,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R38" style="text-align:right;">
+                        <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R38_COM_PAPER != null ? #numbers.formatDecimal(report.R38_COM_PAPER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5078,7 +5114,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R38" style="text-align:right;">
+                        <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R38_CERT_OF_DEP != null ? #numbers.formatDecimal(report.R38_CERT_OF_DEP, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5086,7 +5122,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R38" style="text-align:right;">
+                        <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R38_PLEDGED_ASSET != null ? #numbers.formatDecimal(report.R38_PLEDGED_ASSET, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5094,7 +5130,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R38" style="text-align:right;">
+                        <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R38_OTHER != null ? #numbers.formatDecimal(report.R38_OTHER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5102,7 +5138,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R38" style="text-align:right;">
+                        <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R38_TOTAL != null ? #numbers.formatDecimal(report.R38_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5113,7 +5149,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R39_PRODUCT}"
                 ></td>
 
@@ -5189,7 +5225,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R39_TOTAL != null ? #numbers.formatDecimal(report.R39_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5200,7 +5236,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R40_PRODUCT}"
                 ></td>
 
@@ -5276,7 +5312,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R40_TOTAL != null ? #numbers.formatDecimal(report.R40_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5288,7 +5324,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R41_PRODUCT}"
                 ></td>
 
@@ -5364,7 +5400,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R41_TOTAL != null ? #numbers.formatDecimal(report.R41_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5375,7 +5411,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R42_PRODUCT}"
                 ></td>
 
@@ -5451,7 +5487,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R42_TOTAL != null ? #numbers.formatDecimal(report.R42_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5462,11 +5498,11 @@ calculateR58Totals();
 
                       <tr>
                         <td
-                          style="padding-left: 20px"
+                          style="padding-left: 25px"
                           th:text="${report.R43_PRODUCT}"
                         ></td>
 
-                        <td id="R43" style="text-align:right;">
+                        <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R43_EQUITY != null ? #numbers.formatDecimal(report.R43_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5474,7 +5510,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R43" style="text-align:right;">
+                        <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R43_BONDS != null ? #numbers.formatDecimal(report.R43_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5482,7 +5518,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R43" style="text-align:right;">
+                        <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R43_BOBC != null ? #numbers.formatDecimal(report.R43_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5490,7 +5526,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R43" style="text-align:right;">
+                        <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R43_TRES_BILLS != null ? #numbers.formatDecimal(report.R43_TRES_BILLS, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5498,7 +5534,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R43" style="text-align:right;">
+                        <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R43_REPURCHASE_AGREE != null ? #numbers.formatDecimal(report.R43_REPURCHASE_AGREE, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5506,7 +5542,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R43" style="text-align:right;">
+                        <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R43_COM_PAPER != null ? #numbers.formatDecimal(report.R43_COM_PAPER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5514,7 +5550,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R43" style="text-align:right;">
+                        <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R43_CERT_OF_DEP != null ? #numbers.formatDecimal(report.R43_CERT_OF_DEP, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5522,7 +5558,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R43" style="text-align:right;">
+                        <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R43_PLEDGED_ASSET != null ? #numbers.formatDecimal(report.R43_PLEDGED_ASSET, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5530,7 +5566,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R43" style="text-align:right;">
+                        <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R43_OTHER != null ? #numbers.formatDecimal(report.R43_OTHER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5538,7 +5574,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R43" style="text-align:right;">
+                        <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R43_TOTAL != null ? #numbers.formatDecimal(report.R43_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5549,7 +5585,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R44_PRODUCT}"
                 ></td>
 
@@ -5625,7 +5661,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R44_TOTAL != null ? #numbers.formatDecimal(report.R44_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5636,7 +5672,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R45_PRODUCT}"
                 ></td>
 
@@ -5712,7 +5748,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R45_TOTAL != null ? #numbers.formatDecimal(report.R45_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5723,7 +5759,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 50px"
                   th:text="${report.R46_PRODUCT}"
                 ></td>
 
@@ -5799,7 +5835,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R46_TOTAL != null ? #numbers.formatDecimal(report.R46_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5810,11 +5846,11 @@ calculateR58Totals();
 
                       <tr>
                         <td
-                          style="padding-left: 20px"
+                          style="padding-left: 50px"
                           th:text="${report.R47_PRODUCT}"
                         ></td>
 
-                        <td id="R47" style="text-align:right;">
+                        <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R47_EQUITY != null ? #numbers.formatDecimal(report.R47_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5822,7 +5858,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R47" style="text-align:right;">
+                        <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R47_BONDS != null ? #numbers.formatDecimal(report.R47_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5830,7 +5866,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R47" style="text-align:right;">
+                        <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R47_BOBC != null ? #numbers.formatDecimal(report.R47_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5838,7 +5874,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R47" style="text-align:right;">
+                        <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R47_TRES_BILLS != null ? #numbers.formatDecimal(report.R47_TRES_BILLS, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5846,7 +5882,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R47" style="text-align:right;">
+                        <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R47_REPURCHASE_AGREE != null ? #numbers.formatDecimal(report.R47_REPURCHASE_AGREE, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5854,7 +5890,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R47" style="text-align:right;">
+                        <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R47_COM_PAPER != null ? #numbers.formatDecimal(report.R47_COM_PAPER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5862,7 +5898,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R47" style="text-align:right;">
+                        <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R47_CERT_OF_DEP != null ? #numbers.formatDecimal(report.R47_CERT_OF_DEP, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5870,7 +5906,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R47" style="text-align:right;">
+                        <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R47_PLEDGED_ASSET != null ? #numbers.formatDecimal(report.R47_PLEDGED_ASSET, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5878,7 +5914,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R47" style="text-align:right;">
+                        <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R47_OTHER != null ? #numbers.formatDecimal(report.R47_OTHER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5886,7 +5922,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R47" style="text-align:right;">
+                        <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R47_TOTAL != null ? #numbers.formatDecimal(report.R47_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5897,7 +5933,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 70px"
                   th:text="${report.R48_PRODUCT}"
                 ></td>
 
@@ -5973,7 +6009,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R48_TOTAL != null ? #numbers.formatDecimal(report.R48_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -5984,7 +6020,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 70px"
                   th:text="${report.R49_PRODUCT}"
                 ></td>
 
@@ -6060,7 +6096,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R49_TOTAL != null ? #numbers.formatDecimal(report.R49_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6071,7 +6107,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 70px"
                   th:text="${report.R50_PRODUCT}"
                 ></td>
 
@@ -6147,7 +6183,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R50_TOTAL != null ? #numbers.formatDecimal(report.R50_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6159,11 +6195,11 @@ calculateR58Totals();
 
                       <tr>
                         <td
-                          style="padding-left: 20px"
+                          style="padding-left: 50px"
                           th:text="${report.R51_PRODUCT}"
                         ></td>
 
-                        <td id="R51" style="text-align:right;">
+                        <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R51_EQUITY != null ? #numbers.formatDecimal(report.R51_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6171,7 +6207,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R51" style="text-align:right;">
+                        <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R51_BONDS != null ? #numbers.formatDecimal(report.R51_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6179,7 +6215,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R51" style="text-align:right;">
+                        <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R51_BOBC != null ? #numbers.formatDecimal(report.R51_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6187,7 +6223,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R51" style="text-align:right;">
+                        <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R51_TRES_BILLS != null ? #numbers.formatDecimal(report.R51_TRES_BILLS, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6195,7 +6231,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R51" style="text-align:right;">
+                        <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R51_REPURCHASE_AGREE != null ? #numbers.formatDecimal(report.R51_REPURCHASE_AGREE, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6203,7 +6239,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R51" style="text-align:right;">
+                        <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R51_COM_PAPER != null ? #numbers.formatDecimal(report.R51_COM_PAPER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6211,7 +6247,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R51" style="text-align:right;">
+                        <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R51_CERT_OF_DEP != null ? #numbers.formatDecimal(report.R51_CERT_OF_DEP, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6219,7 +6255,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R51" style="text-align:right;">
+                        <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R51_PLEDGED_ASSET != null ? #numbers.formatDecimal(report.R51_PLEDGED_ASSET, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6227,7 +6263,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R51" style="text-align:right;">
+                        <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R51_OTHER != null ? #numbers.formatDecimal(report.R51_OTHER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6235,7 +6271,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R51" style="text-align:right;">
+                        <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R51_TOTAL != null ? #numbers.formatDecimal(report.R51_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6246,7 +6282,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 70px"
                   th:text="${report.R52_PRODUCT}"
                 ></td>
 
@@ -6322,7 +6358,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R52_TOTAL != null ? #numbers.formatDecimal(report.R52_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6333,7 +6369,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 70px"
                   th:text="${report.R53_PRODUCT}"
                 ></td>
 
@@ -6409,7 +6445,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R53_TOTAL != null ? #numbers.formatDecimal(report.R53_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6420,7 +6456,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 70px"
                   th:text="${report.R54_PRODUCT}"
                 ></td>
 
@@ -6496,7 +6532,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R54_TOTAL != null ? #numbers.formatDecimal(report.R54_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6507,7 +6543,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 70px"
                   th:text="${report.R55_PRODUCT}"
                 ></td>
 
@@ -6583,7 +6619,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R55_TOTAL != null ? #numbers.formatDecimal(report.R55_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6594,7 +6630,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 70px"
                   th:text="${report.R56_PRODUCT}"
                 ></td>
 
@@ -6670,7 +6706,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R56_TOTAL != null ? #numbers.formatDecimal(report.R56_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6681,7 +6717,7 @@ calculateR58Totals();
 
 <tr>
                 <td
-                  style="padding-left: 20px"
+                  style="padding-left: 25px"
                   th:text="${report.R57_PRODUCT}"
                 ></td>
 
@@ -6757,7 +6793,7 @@ calculateR58Totals();
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                <td style="text-align:right;">
+                <td style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R57_TOTAL != null ? #numbers.formatDecimal(report.R57_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6768,11 +6804,11 @@ calculateR58Totals();
 
                       <tr>
                         <td
-                          style="padding-left: 20px"
+                          style="padding-left: 25px"
                           th:text="${report.R58_PRODUCT}"
                         ></td>
 
-                        <td id="R58" style="text-align:right;">
+                        <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R58_EQUITY != null ? #numbers.formatDecimal(report.R58_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6780,7 +6816,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R58" style="text-align:right;">
+                        <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R58_BONDS != null ? #numbers.formatDecimal(report.R58_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6788,7 +6824,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R58" style="text-align:right;">
+                        <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R58_BOBC != null ? #numbers.formatDecimal(report.R58_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6796,7 +6832,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R58" style="text-align:right;">
+                        <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R58_TRES_BILLS != null ? #numbers.formatDecimal(report.R58_TRES_BILLS, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6804,7 +6840,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R58" style="text-align:right;">
+                        <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R58_REPURCHASE_AGREE != null ? #numbers.formatDecimal(report.R58_REPURCHASE_AGREE, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6812,7 +6848,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R58" style="text-align:right;">
+                        <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R58_COM_PAPER != null ? #numbers.formatDecimal(report.R58_COM_PAPER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6820,7 +6856,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R58" style="text-align:right;">
+                        <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R58_CERT_OF_DEP != null ? #numbers.formatDecimal(report.R58_CERT_OF_DEP, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6828,7 +6864,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R58" style="text-align:right;">
+                        <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R58_PLEDGED_ASSET != null ? #numbers.formatDecimal(report.R58_PLEDGED_ASSET, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6836,7 +6872,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R58" style="text-align:right;">
+                        <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R58_OTHER != null ? #numbers.formatDecimal(report.R58_OTHER, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6844,7 +6880,7 @@ calculateR58Totals();
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 
-                        <td id="R58" style="text-align:right;">
+                        <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R58_TOTAL != null ? #numbers.formatDecimal(report.R58_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -6854,7 +6890,7 @@ calculateR58Totals();
                       </tr>
 
 <tr>
-  <td style="padding-left: 20px" th:text="${report.R59_PRODUCT}"></td>
+  <td style="padding-left: 0px" th:text="${report.R59_PRODUCT}"></td>
   <td style="text-align: right" th:attr="RowId='R59', ColumnId='C2'"  th:text="${report.R59_EQUITY}"></td>
   <td style="text-align: right" th:attr="RowId='R59', ColumnId='C3'"  th:text="${report.R59_BONDS}"></td>
   <td style="text-align: right" th:attr="RowId='R59', ColumnId='C4'"  th:text="${report.R59_BOBC}"></td>
@@ -6864,7 +6900,7 @@ calculateR58Totals();
   <td style="text-align: right" th:attr="RowId='R59', ColumnId='C8'"  th:text="${report.R59_CERT_OF_DEP}"></td>
   <td style="text-align: right" th:attr="RowId='R59', ColumnId='C9'"  th:text="${report.R59_PLEDGED_ASSET}"></td>
   <td style="text-align: right" th:attr="RowId='R59', ColumnId='C10'"  th:text="${report.R59_OTHER}"></td>
-                          <td id="R59" style="text-align:right;">
+                          <td id="R59" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R59_TOTAL != null ? #numbers.formatDecimal(report.R59_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
