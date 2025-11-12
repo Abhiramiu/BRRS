@@ -63,7 +63,7 @@ public class M_CA2_Detail_Entity {
     private BigDecimal acctBalanceInPula;
     
     @Column(name = "REPORT_DATE")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date reportDate;
 
     @Column(name = "REPORT_NAME", length = 100)
