@@ -3740,10 +3740,15 @@ calculateAllR57Columns();
 	        contentType: false,
 	        dataType: 'text',
 	        success: function () {
-	            $("#resultModalLabel").text("BRRS");
-	            $("#resultModalBody").text("Updated successfully.");
-	            $("#resultModal").modal("show");
-	        },
+			    $("#resultModalLabel").text("BRRS");
+			    $("#resultModalBody").text("Updated Successfully.");
+			    $("#resultModal").modal("show");
+
+			    //  Wait for user to close the modal manually
+			    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+			        location.reload(); // reload ONLY when modal is closed
+			    });
+			},
 	        error: function (jqXHR) {
 	            console.error("Error response:", jqXHR.responseText);
 	            $("#resultModalLabel").text("Error");
