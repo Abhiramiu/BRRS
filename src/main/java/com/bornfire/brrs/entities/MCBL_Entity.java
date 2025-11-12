@@ -44,14 +44,23 @@ public class MCBL_Entity {
     private String entry_flg;
     private String modify_flg;
     private String delete_flg;
+    private String cust_flg;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name="REPORT_DATE")
     private Date report_date;
 
+    
+    
 
-    public Date getReport_date() {
+    public String getCust_flg() {
+		return cust_flg;
+	}
+	public void setCust_flg(String cust_flg) {
+		this.cust_flg = cust_flg;
+	}
+	public Date getReport_date() {
 		return report_date;
 	}
 	public void setReport_date(Date report_date) {
