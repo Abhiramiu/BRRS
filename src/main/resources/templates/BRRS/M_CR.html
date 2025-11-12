@@ -286,6 +286,7 @@ PURPOSE		: BWRBRREPORT
 		}
 	</style>
 	<script th:inline="javascript">
+	let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -310,6 +311,7 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+			isDetailsModal = true;
 			showResultModal('BRRS',' Details page not available for Manual Report');
 		}
 
@@ -656,13 +658,26 @@ function calculateR10Totals() {
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
 	function closemodel() {
-	    $("#resultModal").modal("hide");
+	    /* $("#resultModal").modal("hide");
 	    $('#loader').modal('hide');
 
 	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
 	    setTimeout(function () {
 	        location.reload();
-	    }, 300);
+	    }, 300); */
+	    
+	    $("#resultModal").modal("hide");
+        $('#loader').modal('hide');
+
+        // Only reload if not from Details modal
+        if (!isDetailsModal) {
+            setTimeout(function () {
+                location.reload();
+            }, 300);
+        } else {
+            // reset flag for next modal usage
+            isDetailsModal = false;
+        }
 	}
 
 
@@ -829,7 +844,7 @@ function calculateR10Totals() {
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${dtltype},
-                    				 data-filename='M_CR.xls',
+                    				 data-filename='M_CR.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
@@ -1855,6 +1870,11 @@ div.dataTables_wrapper div.dataTables_info {
 #submitButton {
 	background-color: #ffffff !important;
 	color: black !important;
+}
+
+#submitButton:hover {
+  background-color: rgb(107, 122, 143) !important;
+  color: white !important;
 }
 </style>
 
