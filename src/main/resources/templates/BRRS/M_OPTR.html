@@ -563,7 +563,7 @@ function cancelModify() {
 	        total += C4 + C5 + C6 + C7;
 
 	    // Put the totals into R10
-	    $("#R10_TOTAL").text(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R10_TOTAL").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	}
 	
 	$(document).ready(function() {
@@ -589,7 +589,7 @@ function cancelModify() {
 	        total += C4 + C5 + C6 + C7;
 
 	    // Put the totals into R11
-	    $("#R11_TOTAL").text(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R11_TOTAL").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	}
 	
 	$(document).ready(function() {
@@ -617,7 +617,7 @@ function cancelModify() {
 	        total += C4 + C5 + C6 + C7;
 
 	    // Put the totals into R13
-	    $("#R13_TOTAL").text(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R13_TOTAL").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	}
 	
 	$(document).ready(function() {
@@ -644,7 +644,7 @@ function cancelModify() {
 	        total += C4 + C5 + C6 + C7;
 
 	    // Put the totals into R14
-	    $("#R14_TOTAL").text(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R14_TOTAL").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	}
 	
 	$(document).ready(function() {
@@ -691,10 +691,10 @@ function cancelModify() {
 		}
 
 	    // Put the totals into R12
-	    $("#R12_INTEREST_RATES").text(totalC2.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    $("#R12_EQUITIES").text(totalC3.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    $("#R12_FOREIGN_EXC_GOLD").text(totalC4.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    $("#R12_COMMODITIES").text(totalC5.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R12_INTEREST_RATES").val(totalC2.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R12_EQUITIES").val(totalC3.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R12_FOREIGN_EXC_GOLD").val(totalC4.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R12_COMMODITIES").val(totalC5.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	   // $("#R12_TOTOAL").val(totalC6.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	   
 	    
@@ -735,8 +735,8 @@ function cancelModify() {
 		//for (const i of rowsToProcess) {
 		        // This is the "same content" from your original loop
 		        
-		        let c5 = parseFloat($("#R13_TOTAL").text().replace(/,/g, "")) || 0;
-		        let c6 = parseFloat($("#R14_TOTAL").text().replace(/,/g, "")) || 0;
+		        let c5 = parseFloat($("#R13_TOTAL").val().replace(/,/g, "")) || 0;
+		        let c6 = parseFloat($("#R14_TOTAL").val().replace(/,/g, "")) || 0;
 		        
 		             
 		        
@@ -751,7 +751,7 @@ function cancelModify() {
 	    //$("#R12_EQUITIES").val(totalC3.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    //$("#R12_FOREIGN_EXC_GOLD").val(totalC4.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	    //$("#R12_COMMODITIES").val(totalC5.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	    $("#R12_TOTAL").text(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	    $("#R12_TOTAL").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	   
 	    
 	    
@@ -1182,15 +1182,16 @@ function fileuploads(btn) {
 		readonly /></td>		
         
        
-<td id="R10_TOTAL" th:text="${#numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td>
-        <!-- <td id="R10" style="text-align:right;">
+
+        <!-- <td id="R10_TOTAL" th:text="${#numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+        <td id="R10" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R10_TOTAL != null ? #numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R10_TOTAL" name="R10_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
                       		
                     </tr>
                                           <tr>
@@ -1226,15 +1227,16 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>		
         
-        <td id="R11_TOTAL" th:text="${#numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td>
-        <!-- <td id="R11" style="text-align:right;">
+        
+        <!-- <td id="R11_TOTAL" th:text="${#numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+        <td id="R11" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R11_TOTAL" name="R11_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
                       		
                     </tr>
                     
@@ -1243,58 +1245,63 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
                       		<td></td>
                       		<td colspan=2 >Capital requirement</td>
                       		
-                      		<td id="R12_INTEREST_RATES" th:text="${#numbers.formatDecimal(report.R12_INTEREST_RATES, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td>
-                      		        <!-- <td id="R12" style="text-align:right;">
+                      		
+                      		        <!-- <td id="R12_INTEREST_RATES" th:text="${#numbers.formatDecimal(report.R12_INTEREST_RATES, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+                      		        <td id="R12" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R12_INTEREST_RATES != null ? #numbers.formatDecimal(report.R12_INTEREST_RATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R12_INTEREST_RATES" name="R12_INTEREST_RATES"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
 
 
-<td id="R12_EQUITIES" th:text="${#numbers.formatDecimal(report.R12_EQUITIES, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td>
-        <!-- <td id="R12" style="text-align:right;">
+
+        <!-- <td id="R12_EQUITIES" th:text="${#numbers.formatDecimal(report.R12_EQUITIES, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+        <td id="R12" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R12_EQUITIES != null ? #numbers.formatDecimal(report.R12_EQUITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R12_EQUITIES" name="R12_EQUITIES"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
                     
-                    <td id="R12_FOREIGN_EXC_GOLD" th:text="${#numbers.formatDecimal(report.R12_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td>
-		        <!-- <td id="R12" style="text-align:right;">
+                    
+		        <!-- <td id="R12_FOREIGN_EXC_GOLD" th:text="${#numbers.formatDecimal(report.R12_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+		        <td id="R12" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R12_FOREIGN_EXC_GOLD != null ? #numbers.formatDecimal(report.R12_FOREIGN_EXC_GOLD, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R12_FOREIGN_EXC_GOLD" name="R12_FOREIGN_EXC_GOLD"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
 		
-		<td id="R12_COMMODITIES" th:text="${#numbers.formatDecimal(report.R12_COMMODITIES, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td>
-	        <!-- <td id="R12" style="text-align:right;">
+		
+	        <!-- <td id="R12_COMMODITIES" th:text="${#numbers.formatDecimal(report.R12_COMMODITIES, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+	        <td id="R12" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R12_COMMODITIES != null ? #numbers.formatDecimal(report.R12_COMMODITIES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R12_COMMODITIES" name="R12_COMMODITIES"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
 	
 		
-        <td id="R12_TOTAL" th:text="${#numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td>
+        
 
-<!--       <td id="R12" style="text-align:right;">
+<!-- <td id="R12_TOTAL" th:text="${#numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+<td id="R12" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R12_TOTAL != null ? #numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R12_TOTAL" name="R12_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->  
+	readonly /></td>  
                       		
                     </tr>
 
@@ -1332,15 +1339,16 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>		
         
-        <td id="R13_TOTAL" th:text="${#numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td>
-        <!-- <td id="R13" style="text-align:right;">
+        
+        <!-- <td id="R13_TOTAL" th:text="${#numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+        <td id="R13" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R13_TOTAL" name="R13_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
                       		
                     </tr>
                     
@@ -1378,15 +1386,16 @@ style="text-align: right; width:248px; background-color: rgb(107, 122, 143); col
 		style="background-color: #FFFFFF; width: 220px; height: 28px; border-color: transparent; text-align: right;"
 		readonly /></td>		
         
-        <td id="R14_TOTAL" th:text="${#numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td>
-        <!-- <td id="R14" style="text-align:right;">
+      
+        <!--   <td id="R14_TOTAL" th:text="${#numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:248px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+        <td id="R14" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R14_TOTAL" name="R14_TOTAL"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
                       		
                     </tr>
                     <tr class="no-border" style="height:28px;">

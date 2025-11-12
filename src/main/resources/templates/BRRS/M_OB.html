@@ -584,7 +584,7 @@ function cancelModify() {
 	    }
 
 	    // Update R15 with total
-	    $("#R15_OTHER_BORROW").text(
+	    $("#R15_OTHER_BORROW").val(
 	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
@@ -620,7 +620,7 @@ function cancelModify() {
 	        total += value;
 	    }
 
-	    $("#R29_OTHER_BORROW").text(
+	    $("#R29_OTHER_BORROW").val(
 	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
@@ -656,7 +656,7 @@ function cancelModify() {
 	        total += value;
 	    }
 
-	    $("#R38_OTHER_BORROW").text(
+	    $("#R38_OTHER_BORROW").val(
 	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
@@ -692,7 +692,7 @@ function cancelModify() {
 	    }
 
 	    // Update R44 with the formatted total
-	    $("#R44_OTHER_BORROW").text(
+	    $("#R44_OTHER_BORROW").val(
 	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
@@ -728,7 +728,7 @@ function cancelModify() {
 	    }
 
 	    // Update R52 (formatted with commas)
-	    $("#R52_OTHER_BORROW").text(
+	    $("#R52_OTHER_BORROW").val(
 	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
@@ -764,7 +764,7 @@ function cancelModify() {
 	    }
 
 	    // Update R58 (formatted with commas)
-	    $("#R58_OTHER_BORROW").text(
+	    $("#R58_OTHER_BORROW").val(
 	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
@@ -804,7 +804,7 @@ function cancelModify() {
 	    });
 
 	    // Update R11 with total (formatted with commas)
-	    $("#R11_OTHER_BORROW").text(
+	    $("#R11_OTHER_BORROW").val(
 	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
@@ -851,7 +851,7 @@ function cancelModify() {
 	    });
 
 	    // Update R49 with total (formatted with commas)
-	    $("#R49_OTHER_BORROW").text(
+	    $("#R49_OTHER_BORROW").val(
 	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
@@ -898,7 +898,7 @@ function cancelModify() {
 	    });
 
 	    // Update R41 with total (formatted with commas)
-	    $("#R41_OTHER_BORROW").text(
+	    $("#R41_OTHER_BORROW").val(
 	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
@@ -940,7 +940,7 @@ function cancelModify() {
 	    });
 
 	    // Update R64 with total (formatted with commas)
-	    $("#R64_OTHER_BORROW").text(
+	    $("#R64_OTHER_BORROW").val(
 	        total.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	    );
 	}
@@ -1328,16 +1328,16 @@ function fileuploads(btn) {
 <tr>
 <td style="font-weight:bold;">1.  Non-financial institutional units (sum of lines (i) to (vii)):</td>
 
-<td id="R11_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R11_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
 
-<!-- <td id="R11" style="text-align:right; width: 248px;height: 28px;">
+<td id="R11" style="background-color: rgb(107, 122, 143); text-align:right; width: 248px;height: 28px;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R11_OTHER_BORROW != null ? #numbers.formatDecimal(report.R11_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R11_OTHER_BORROW" name="R11_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; padding:0; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
+<!-- <td id="R11_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R11_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td> -->
 </tr>
 
 <tr>
@@ -1375,15 +1375,16 @@ style="text-align: right; width:250px; background-color: rgb(107, 122, 143); col
 
 <tr>
 <td style="padding-left:15px;">(iv)  Other Non-Financial Corporations (Private business enterprises) (sum of lines (a) to (m)):</td>
-<td id="R15_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R15_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
-<!-- <td id="R15" style="text-align:right;">
+
+<!-- <td id="R15_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R15_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+<td id="R15" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R15_OTHER_BORROW != null ? #numbers.formatDecimal(report.R15_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R15_OTHER_BORROW" name="R15_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
 </tr>
 
 <tr>
@@ -1531,15 +1532,16 @@ style="text-align: right; width:250px; background-color: rgb(107, 122, 143); col
 
 <tr>
 <td style="padding-left:15px;">(v)  Households (sum of lines (a) to (g)):</td>
-<td id="R29_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R29_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
-<!-- <td id="R29" style="text-align:right;">
+
+<!-- <td id="R29_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R29_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+<td id="R29" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R29_OTHER_BORROW != null ? #numbers.formatDecimal(report.R29_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R29_OTHER_BORROW" name="R29_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
 </tr>
 
 <tr>
@@ -1632,15 +1634,16 @@ style="text-align: right; width:250px; background-color: rgb(107, 122, 143); col
 
 <tr>
 <td style="padding-left:15px;">(vii) Non-Residents** (sum of lines (a) and (b)):</td>
-<td id="R38_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R38_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
-<!-- <td id="R38" style="text-align:right;">
+
+<!-- <td id="R38_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R38_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+<td id="R38" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R38_OTHER_BORROW != null ? #numbers.formatDecimal(report.R38_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R38_OTHER_BORROW" name="R38_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
 </tr>
 
 <tr>
@@ -1667,15 +1670,16 @@ style="text-align: right; width:250px; background-color: rgb(107, 122, 143); col
 
 <tr>
 <td style="font-weight:bold;">2.  Financial institutional units (sum of lines (i) to (v)):</td>
-<td id="R41_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R41_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
-<!-- <td id="R41" style="text-align:right;">
+
+<!-- <td id="R41_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R41_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+<td id="R41" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R41_OTHER_BORROW != null ? #numbers.formatDecimal(report.R41_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R41_OTHER_BORROW" name="R41_OTHER_BORROW"
-	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	style=" background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
+	readonly /></td>
 </tr>
 
 <tr>
@@ -1702,15 +1706,16 @@ style="text-align: right; width:250px; background-color: rgb(107, 122, 143); col
 
 <tr>
 <td style="padding-left:15px;">(iii)  Other Depository Corporations (sum of lines (a) to (d)):</td>
-<td id="R44_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R44_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
-<!-- <td id="R44" style="text-align:right;">
+
+<!-- <td id="R44_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R44_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+ <td id="R44" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R44_OTHER_BORROW != null ? #numbers.formatDecimal(report.R44_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R44_OTHER_BORROW" name="R44_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
 </tr>
 
 <tr>
@@ -1759,15 +1764,16 @@ style="text-align: right; width:250px; background-color: rgb(107, 122, 143); col
 
 <tr>
 <td style="padding-left:15px;">(iv)  Other Financial Corporations (sum of lines (a) to (d)):</td>
-<td id="R49_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R49_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
-<!-- <td id="R49" style="text-align:right;">
+
+<!-- <td id="R49_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R49_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+<td id="R49" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R49_OTHER_BORROW != null ? #numbers.formatDecimal(report.R49_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R49_OTHER_BORROW" name="R49_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
 </tr>
 
 <tr>
@@ -1794,16 +1800,17 @@ style="text-align: right; width:250px; background-color: rgb(107, 122, 143); col
 
 <tr>
 <td style="padding-left:35px;">c) Other Financial Intermediaries (sum 1 to 5)</td>
-<td id="R52_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R52_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
 
-<!-- <td id="R52" style="text-align:right;">
+<!-- <td id="R52_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R52_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
+ -->
+<td id="R52" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R52_OTHER_BORROW != null ? #numbers.formatDecimal(report.R52_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R52_OTHER_BORROW" name="R52_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
 </tr>
 
 <tr>
@@ -1863,15 +1870,16 @@ style="text-align: right; width:250px; background-color: rgb(107, 122, 143); col
 
 <tr>
 <td style="padding-left:35px;">d) Financial Auxiliaries (sum 1 to 4)</td>
-<td id="R58_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R58_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
-<!-- <td id="R58" style="text-align:right;">
+
+<!-- <td id="R58_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R58_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+<td id="R58" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R58_OTHER_BORROW != null ? #numbers.formatDecimal(report.R58_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R58_OTHER_BORROW" name="R58_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
 </tr>
 
 <tr>
@@ -1931,15 +1939,16 @@ style="text-align: right; width:250px; background-color: rgb(107, 122, 143); col
   
 <tr>
 <td style="font-weight:bold;">TOTAL (Sum of lines 1 and 2)</td>
-<td id="R64_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R64_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
-style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td>
-<!-- <td id="R64" style="text-align:right;">
+
+<!-- <td id="R64_OTHER_BORROW" th:text="${#numbers.formatDecimal(report.R64_OTHER_BORROW, 1, 'COMMA', 0, 'POINT')}" 
+style="text-align: right; width:250px; background-color: rgb(107, 122, 143); color: white;"></td> -->
+<td id="R64" style="background-color: rgb(107, 122, 143);text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R64_OTHER_BORROW != null ? #numbers.formatDecimal(report.R64_OTHER_BORROW, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R64_OTHER_BORROW" name="R64_OTHER_BORROW"
 	style="background-color: rgb(107, 122, 143); color: white; width: 248px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td> -->
+	readonly /></td>
 </tr>
 
 
