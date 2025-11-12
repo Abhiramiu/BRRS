@@ -729,22 +729,22 @@ function cancelModify() {
 	    
 
 	 // Create an array of the specific rows you need to process
-		const rowsToProcess = [13, 14];
+		//const rowsToProcess = [13, 14];
 
 		// Loop through each row number in the array
-		for (const i of rowsToProcess) {
+		//for (const i of rowsToProcess) {
 		        // This is the "same content" from your original loop
 		        
-		        let c5 = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
-		      //  let C6 = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
+		        let c5 = parseFloat($("#R13_TOTAL").text().replace(/,/g, "")) || 0;
+		        let c6 = parseFloat($("#R14_TOTAL").text().replace(/,/g, "")) || 0;
 		        
 		             
 		        
 		        
-		        total += c5;
+		        total = c5 + c6;
 		      //  totalC6 += C6;
 		        
-		}
+		//}
 
 	    // Put the totals into R12
 	   // $("#R12_INTEREST_RATES").val(totalC2.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
