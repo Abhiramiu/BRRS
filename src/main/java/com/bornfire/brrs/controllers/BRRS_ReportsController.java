@@ -179,6 +179,8 @@ import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
 import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SECA_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
+import com.bornfire.brrs.services.BRRS_M_GP_ReportService;
+import com.bornfire.brrs.entities.M_GP_Summary_Entity;
 
 @Controller
 @ConfigurationProperties("default")
@@ -1909,5 +1911,30 @@ public ResponseEntity<String> updateReportReSubAll(
 	                 .body("Resubmission Update Failed: " + e.getMessage());
 	     }
 	 }
-	
+
+	@Autowired
+	BRRS_M_GP_ReportService BRRS_M_GP_ReportService;
+
+	@RequestMapping(value = "/M_GPupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport1(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_GP_Summary_Entity request
+
+	) {
+
+		try {
+			System.out.println("came to single controller");
+			request.setREPORT_DATE(asondate);
+
+			BRRS_M_GP_ReportService.updateReport(request);
+
+			return ResponseEntity.ok("Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+
 }

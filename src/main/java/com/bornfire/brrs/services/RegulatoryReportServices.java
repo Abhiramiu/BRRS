@@ -187,7 +187,8 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_SECA_ReportService BRRS_M_SECA_ReportService;
 	
-	
+	@Autowired
+	BRRS_M_GP_ReportService BRRS_M_GP_ReportService;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -466,6 +467,10 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_SECA_ReportService.getM_SECAview(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
 			break;
 			
+		
+		case "M_GP":
+			repsummary = BRRS_M_GP_ReportService.getM_GPView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
+			break;
 
 		}
 
@@ -1133,7 +1138,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
+		case "M_GP":
+			try {
+				
+				repfile = BRRS_M_GP_ReportService.getM_GPExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 			
 		}
 		return repfile;
@@ -1699,6 +1713,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
 		
 	//New Archival 
 				case "M_SRWA_12H":
@@ -1713,6 +1728,7 @@ public class RegulatoryReportServices {
 				System.out.println("Fetched M_SRWA_12H archival data: " + QSList.size());
 				break;
 				
+
 				
 			 case "M_SRWA_12G":
 	              List<Object[]> srwagList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GArchival();
@@ -1722,6 +1738,17 @@ public class RegulatoryReportServices {
 	          default:
 	              System.out.println("No archival logic defined for report: " + rptcode);
 	              break;
+
+
+			case "M_GP":
+				try {
+					archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
 		}
 		return archivalData;
 	}

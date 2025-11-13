@@ -1,0 +1,4388 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: SANTHIYA S 
+
+PURPOSE		: BRFREPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+
+
+<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+
+
+
+
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
+
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
+
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+.table td {
+	background-color: #FFFFFF;
+}
+
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
+
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
+
+#BRFvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
+
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
+
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	
+}
+</style>
+
+
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
+
+.error {
+	color: red;
+	padding-top: 15px;
+}
+
+.form-control:focus {
+	border-color: #007bff;
+}
+
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
+	) ~ .form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~ .form-legend {
+	color: #0056b3; /* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus ) ~ .form-legend {
+	color: #aaa; /* Normal label color */
+}
+</style>
+
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+
+.table-cell tbody td:hover {
+        background-color: #f0f0f0; /* Hover color for cell */
+        cursor: pointer;           /* Optional: pointer cursor */
+    }
+	
+	.table-bordered td, 
+	.table-bordered th {
+	     border: 1px solid #000 !important;
+	}
+	
+</style>
+
+</style>
+
+
+<script th:inline="javascript">
+
+$(document).ready(function() {
+    Maker_Checker_Function(); 
+});
+
+// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+function Maker_Checker_Function() {
+    $.ajax({
+        url: "/BRRS/getUserRole",    
+        type: "GET",
+        success: function(roleId) {
+            // console.log("User Role ID:", roleId);
+           
+            if (roleId === "ADM-C" || roleId === "USR-C" ) {
+                const modifyBtn = document.getElementById("addRecord");
+                if (modifyBtn) modifyBtn.style.display = "none";
+            }
+
+			if (roleId === "ADM-M" || roleId === "USR-M") {
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
+
+        },
+        error: function(err) {
+            console.error("Error fetching role:", err);
+        }
+    });
+}
+
+
+
+$(document).ready(function() {
+    // hide loader on normal load
+    $('#loader').modal('hide');
+});
+
+$(window).on('pageshow', function() {
+    // hide loader on back/forward nav
+    $('#loader').modal('hide');
+});
+
+$(window).on('beforeunload', function() {
+    // hide loader on leaving page
+    $('#loader').modal('hide');
+});
+
+	
+
+	function home() {
+        $("#loader").modal("toggle");
+		location.href = 'Dashboard'
+	}
+
+	function back() {
+        $("#loader").modal("toggle");
+
+		window.history.back();
+	}
+	
+
+		function showdetails() {
+					 showResultModal('BRRS',' Details page not available for Manual Report');
+				}
+	function showsummary() {
+		var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
+							loader.show();
+							var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
+								location.href = Callurl;
+	}
+    </script>
+
+<script>
+
+function activateTab(tabName) {
+    // Remove 'active' from all buttons
+    document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Add 'active' to selected button
+    if (tabName === 'summary') {
+        document.getElementById('custom-tab-btnSummary').classList.add('active');
+    } else if (tabName === 'Details') {
+        document.getElementById('custom-tab-btnDetails').classList.add('active');
+    }
+}
+
+window.onload = function() {
+    /* setTimeout(function() {
+        var selectedTab = document.getElementById("selectedTab").value;
+        alert(selectedTab);
+        activateTab(selectedTab);
+    }, 10000); */ // 10,000 milliseconds = 10 seconds
+    
+	var selectedTab = document.getElementById("selectedTab").value;
+    activateTab(selectedTab);
+};
+
+function downloadfile(button) {
+    var reportid = button.getAttribute('data-reportid');
+    var asondate = button.getAttribute('data-asondate');
+    var fromdate = button.getAttribute('data-fromdate');
+    var todate = button.getAttribute('data-todate');
+    var currency = button.getAttribute('data-currency');
+    var subreportid = button.getAttribute('data-subreportid');
+    var secid = button.getAttribute('data-secid');
+    var dtltype = button.getAttribute('data-dtltype');
+    var filename = button.getAttribute('data-filename') || "Your_Filename.xls";
+    var type = button.getAttribute('data-type');
+    var version = button.getAttribute('data-version');
+
+    // ✅ Show loader modal
+    var loader = new bootstrap.Modal(document.getElementById('loader'), {
+        backdrop: 'static',
+        keyboard: false
+    });
+    loader.show();
+
+    $.ajax({
+        url: './downloadExcel?reportid=' + reportid +
+             '&fromdate=' + fromdate +
+             '&asondate=' + asondate +
+             '&todate=' + todate +
+             '&currency=' + currency +
+             '&subreportid=' + subreportid +
+             '&secid=' + secid +
+             '&filename=' + filename +
+             '&type=' + type +
+             '&version=' + version,
+        type: 'GET',
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (data) {
+            $('#loader').modal('hide');
+
+            if (data && data.size > 100) {
+                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                // ✅ BRRS style popup
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(filename + " downloaded successfully.");
+                $("#resultModal").modal("show");
+            } else {
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text("No data was available to create a download.");
+                $("#resultModal").modal("show");
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            $('#loader').modal('hide');
+            console.error("Download failed:", textStatus, errorThrown);
+            $("#resultModalLabel").text("BRRS");
+            $("#resultModalBody").text("An error occurred while downloading the file. Please try again.");
+            $("#resultModal").modal("show");
+        }
+    });
+}
+function editRecord(){
+	showResultModal('Alert', 'Development in progress');
+	
+}
+function closemodel(){
+	$('#alert').modal('hide');
+	$('#resultModal').modal('hide');
+	
+}
+
+function showResultModal(title, message) {
+	// Set the text for the modal elements
+	$('#resultModalLabel').text(title);
+	$('#resultModalBody').text(message);
+
+	// Show the modal
+	$('#resultModal').modal('show');
+}
+
+</script>
+
+<script>
+
+	function startReport(button){
+		
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+			
+			if(sessionfilename==filename){
+				alertMsg.innerHTML ='Download request already Processing...';
+	       	 	showAlert();
+				return;
+			}
+			
+			alertMsg.innerHTML ='Download request Processing...';
+	   	 	showAlert();
+
+			const baseUrl = '/BRRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+		    fetch(downloadUrl)  // ✅ no invalid characters now
+		        .then(res => res.text())
+		        .then(jobId => {
+
+		        	alertMsg.innerHTML ='Download request received...'+jobId;
+		       	 	showAlert();
+		            sessionStorage.setItem("jobId", jobId);
+		            sessionStorage.setItem("filename", filename);
+		            checkReport(jobId);
+		        });
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+		    fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+		        .then(res => res.text())
+		        .then(status => {
+		            if (status === "READY") {
+		            	alertMsg.innerHTML ='Report is ready! Downloading…';
+		           	 	showAlert();
+		                const filename = sessionStorage.getItem("filename");
+		                downloadDetailfile(jobId,filename)
+		                sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");                
+		                
+		            } else if(status ==="PROCESSING") {
+		                alertMsg.innerHTML ='Download Is Processing…';
+		            	showAlert();
+		                setTimeout(() => checkReport(jobId), 5000);
+		            }
+		            else if(status ==="ERROR") {
+		                alertMsg.innerHTML ='No data was available to create a download.';
+		            	showAlert();
+		            	sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");  
+		            }
+		        });
+		}
+
+
+
+		function downloadDetailfile(jobId,filename) {
+			
+			//$('#loader').modal('show');
+			
+			$.ajax({
+				url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('Success', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+
+</script>
+
+
+<script th:inline="javascript">
+function showdetailsbyRowAndColumn(a) { 
+    var rowId = a.getAttribute('Row_Id');
+    var columnId = a.getAttribute('Column_Id');
+    var cellValue = a.textContent || a.innerText;
+
+    if (cellValue !== '0') {
+        // Set dynamic message in modal (instead of confirm)
+        document.getElementById("cellresultModalLabel").innerText = 
+            "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+        // Show custom Bootstrap modal
+        $('#cellresultModal').modal('show');
+
+        // Handle Yes button
+        document.querySelector('.yes-btn').onclick = function() {
+            $('#cellresultModal').modal('hide');
+
+            // Show loader
+            const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            $('#loader').modal('show');
+
+            // Build dynamic URL
+            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+            location.href = Callurl;
+        };
+    } else {
+        // Use your custom alert modal instead of window.alert
+        showResultModal("Alert", "No Records available for this selected cell.");
+    }
+}
+</script><script>
+// ✅ Make inputs editable except readonlyIds
+function showmodify(btn) {
+    var readonlyIds = [
+
+	"R11_PRODUCT","R11_STAGE1_PROVISIONS","R11_QUALIFY_STAGE2_PROVISIONS","R11_TOTAL_GENERAL_PROVISIONS",
+	    "R15_PRODUCT","R15_STAGE1_PROVISIONS","R15_QUALIFY_STAGE2_PROVISIONS","R15_TOTAL_GENERAL_PROVISIONS",
+		"R29_PRODUCT","R29_STAGE1_PROVISIONS","R29_QUALIFY_STAGE2_PROVISIONS","R29_TOTAL_GENERAL_PROVISIONS",
+		"R38_PRODUCT","R38_STAGE1_PROVISIONS","R38_QUALIFY_STAGE2_PROVISIONS","R38_TOTAL_GENERAL_PROVISIONS",
+		"R38_PRODUCT","R38_STAGE1_PROVISIONS","R38_QUALIFY_STAGE2_PROVISIONS","R38_TOTAL_GENERAL_PROVISIONS",
+		"R41_PRODUCT","R41_STAGE1_PROVISIONS","R41_QUALIFY_STAGE2_PROVISIONS","R41_TOTAL_GENERAL_PROVISIONS",
+		"R44_PRODUCT","R44_STAGE1_PROVISIONS","R44_QUALIFY_STAGE2_PROVISIONS","R44_TOTAL_GENERAL_PROVISIONS",
+		"R49_PRODUCT","R49_STAGE1_PROVISIONS","R49_QUALIFY_STAGE2_PROVISIONS","R49_TOTAL_GENERAL_PROVISIONS",
+		"R53_PRODUCT","R53_STAGE1_PROVISIONS","R53_QUALIFY_STAGE2_PROVISIONS","R53_TOTAL_GENERAL_PROVISIONS",
+		"R57_PRODUCT","R57_STAGE1_PROVISIONS","R57_QUALIFY_STAGE2_PROVISIONS","R57_TOTAL_GENERAL_PROVISIONS",
+		"R64_PRODUCT","R64_STAGE1_PROVISIONS","R64_QUALIFY_STAGE2_PROVISIONS","R64_TOTAL_GENERAL_PROVISIONS"
+    ];
+
+    $(".show_input").each(function () {
+        if (!readonlyIds.includes(this.id)) {
+            $(this).removeAttr("readonly").removeAttr("disabled")
+                   .css({"background-color": "#d3d3d3"});
+        }
+    });
+
+    $("#submitButton").show();
+    $("#cancelRecord").show();
+    $(btn).hide();
+}
+
+// ✅ Cancel modify and reload
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        location.reload();
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+        $("#cancelRecord").hide();
+        $("#addRecord").show();
+    }
+}
+</script>
+<script>
+function formatNumber(num) {
+    if (isNaN(num)) return "";
+    return num.toLocaleString('en-IN');
+}
+function parseNumber(val) {
+    return parseFloat(val.replace(/,/g, "")) || 0;
+}
+
+//  R11 = R12 + R13 + R14 + R15 + R29 + R38
+function calculation_R11() {
+    const rowsToSum = [12, 13, 14, 15, 29, 38];
+    let stage1 = 0, stage2 = 0, total = 0;
+
+    rowsToSum.forEach(i => {
+        stage1 += parseNumber($("#R" + i + "_STAGE1_PROVISIONS").val());
+        stage2 += parseNumber($("#R" + i + "_QUALIFY_STAGE2_PROVISIONS").val());
+        total += parseNumber($("#R" + i + "_TOTAL_GENERAL_PROVISIONS").val());
+    });
+
+    $("#R11_STAGE1_PROVISIONS").val(formatNumber(stage1));
+    $("#R11_QUALIFY_STAGE2_PROVISIONS").val(formatNumber(stage2));
+    $("#R11_TOTAL_GENERAL_PROVISIONS").val(formatNumber(total));
+	calculation_R64();
+}
+
+// R15 = sum of R16–R28
+function calculation_R15() {
+    let stage1 = 0, stage2 = 0, total = 0;
+
+    for (let i = 16; i <= 28; i++) {
+        stage1 += parseNumber($("#R" + i + "_STAGE1_PROVISIONS").val());
+        stage2 += parseNumber($("#R" + i + "_QUALIFY_STAGE2_PROVISIONS").val());
+        total += parseNumber($("#R" + i + "_TOTAL_GENERAL_PROVISIONS").val());
+    }
+
+    $("#R15_STAGE1_PROVISIONS").val(formatNumber(stage1));
+    $("#R15_QUALIFY_STAGE2_PROVISIONS").val(formatNumber(stage2));
+    $("#R15_TOTAL_GENERAL_PROVISIONS").val(formatNumber(total));
+
+    // update R11 after R15 changes
+    calculation_R11();
+	calculation_R64();
+}
+// R29 = sum of R30–R37
+function calculation_R29() {
+    let stage1 = 0, stage2 = 0, total = 0;
+
+    for (let i = 30; i <= 37; i++) {
+        stage1 += parseNumber($("#R" + i + "_STAGE1_PROVISIONS").val());
+        stage2 += parseNumber($("#R" + i + "_QUALIFY_STAGE2_PROVISIONS").val());
+        total += parseNumber($("#R" + i + "_TOTAL_GENERAL_PROVISIONS").val());
+    }
+
+    $("#R29_STAGE1_PROVISIONS").val(formatNumber(stage1));
+    $("#R29_QUALIFY_STAGE2_PROVISIONS").val(formatNumber(stage2));
+    $("#R29_TOTAL_GENERAL_PROVISIONS").val(formatNumber(total));
+
+    // update R11 after R15 changes
+    calculation_R11();
+	calculation_R64();
+}
+
+//  R38 = R39 + R40
+function calculation_R38() {
+    const rowsToSum = [39,40];
+    let stage1 = 0, stage2 = 0, total = 0;
+
+    rowsToSum.forEach(i => {
+        stage1 += parseNumber($("#R" + i + "_STAGE1_PROVISIONS").val());
+        stage2 += parseNumber($("#R" + i + "_QUALIFY_STAGE2_PROVISIONS").val());
+        total += parseNumber($("#R" + i + "_TOTAL_GENERAL_PROVISIONS").val());
+    });
+
+    $("#R38_STAGE1_PROVISIONS").val(formatNumber(stage1));
+    $("#R38_QUALIFY_STAGE2_PROVISIONS").val(formatNumber(stage2));
+    $("#R38_TOTAL_GENERAL_PROVISIONS").val(formatNumber(total));
+	calculation_R11();
+	calculation_R64();
+}
+
+//  R41 = R42 + R43 + R44 + R49 + R63
+function calculation_R41() {
+    const rowsToSum = [42, 43, 44, 49, 63];
+    let stage1 = 0, stage2 = 0, total = 0;
+
+    rowsToSum.forEach(i => {
+        stage1 += parseNumber($("#R" + i + "_STAGE1_PROVISIONS").val());
+        stage2 += parseNumber($("#R" + i + "_QUALIFY_STAGE2_PROVISIONS").val());
+        total += parseNumber($("#R" + i + "_TOTAL_GENERAL_PROVISIONS").val());
+    });
+
+    $("#R41_STAGE1_PROVISIONS").val(formatNumber(stage1));
+    $("#R41_QUALIFY_STAGE2_PROVISIONS").val(formatNumber(stage2));
+    $("#R41_TOTAL_GENERAL_PROVISIONS").val(formatNumber(total));
+	calculation_R64();
+}
+
+//  R44 = R45 + R48
+function calculation_R44() {
+    let stage1 = 0, stage2 = 0, total = 0;
+
+    for (let i = 45; i <= 48; i++) {
+        stage1 += parseNumber($("#R" + i + "_STAGE1_PROVISIONS").val());
+        stage2 += parseNumber($("#R" + i + "_QUALIFY_STAGE2_PROVISIONS").val());
+        total += parseNumber($("#R" + i + "_TOTAL_GENERAL_PROVISIONS").val());
+    }
+
+    $("#R44_STAGE1_PROVISIONS").val(formatNumber(stage1));
+    $("#R44_QUALIFY_STAGE2_PROVISIONS").val(formatNumber(stage2));
+    $("#R44_TOTAL_GENERAL_PROVISIONS").val(formatNumber(total));
+
+    // update R11 after R15 changes
+    calculation_R41();
+	calculation_R64();
+}
+//49=B50+B51+B52+B53+B57
+function calculation_R49() {
+    const rowsToSum = [50, 51, 52, 53, 57];
+    let stage1 = 0, stage2 = 0, total = 0;
+
+    rowsToSum.forEach(i => {
+        stage1 += parseNumber($("#R" + i + "_STAGE1_PROVISIONS").val());
+        stage2 += parseNumber($("#R" + i + "_QUALIFY_STAGE2_PROVISIONS").val());
+        total += parseNumber($("#R" + i + "_TOTAL_GENERAL_PROVISIONS").val());
+    });
+
+    $("#R49_STAGE1_PROVISIONS").val(formatNumber(stage1));
+    $("#R49_QUALIFY_STAGE2_PROVISIONS").val(formatNumber(stage2));
+    $("#R49_TOTAL_GENERAL_PROVISIONS").val(formatNumber(total));
+	calculation_R64();
+}
+
+//  R53 = R54 to R56
+function calculation_R53() {
+    const rowsToSum = [54,55,56];
+    let stage1 = 0, stage2 = 0, total = 0;
+
+    rowsToSum.forEach(i => {
+        stage1 += parseNumber($("#R" + i + "_STAGE1_PROVISIONS").val());
+        stage2 += parseNumber($("#R" + i + "_QUALIFY_STAGE2_PROVISIONS").val());
+        total += parseNumber($("#R" + i + "_TOTAL_GENERAL_PROVISIONS").val());
+    });
+
+    $("#R53_STAGE1_PROVISIONS").val(formatNumber(stage1));
+    $("#R53_QUALIFY_STAGE2_PROVISIONS").val(formatNumber(stage2));
+    $("#R53_TOTAL_GENERAL_PROVISIONS").val(formatNumber(total));
+	calculation_R49();
+	calculation_R64();
+}
+
+//  R57 = R58 + R62
+function calculation_R57() {
+    let stage1 = 0, stage2 = 0, total = 0;
+
+    for (let i = 58; i <= 62; i++) {
+        stage1 += parseNumber($("#R" + i + "_STAGE1_PROVISIONS").val());
+        stage2 += parseNumber($("#R" + i + "_QUALIFY_STAGE2_PROVISIONS").val());
+        total += parseNumber($("#R" + i + "_TOTAL_GENERAL_PROVISIONS").val());
+    }
+
+    $("#R57_STAGE1_PROVISIONS").val(formatNumber(stage1));
+    $("#R57_QUALIFY_STAGE2_PROVISIONS").val(formatNumber(stage2));
+    $("#R57_TOTAL_GENERAL_PROVISIONS").val(formatNumber(total));
+
+    // update R11 after R15 changes
+    calculation_R49();
+	calculation_R64();
+}
+
+//  R64 = 11 + 41
+function calculation_R64() {
+    const rowsToSum = [11,41];
+    let stage1 = 0, stage2 = 0, total = 0;
+
+    rowsToSum.forEach(i => {
+        stage1 += parseNumber($("#R" + i + "_STAGE1_PROVISIONS").val());
+        stage2 += parseNumber($("#R" + i + "_QUALIFY_STAGE2_PROVISIONS").val());
+        total += parseNumber($("#R" + i + "_TOTAL_GENERAL_PROVISIONS").val());
+    });
+
+    $("#R64_STAGE1_PROVISIONS").val(formatNumber(stage1));
+    $("#R64_QUALIFY_STAGE2_PROVISIONS").val(formatNumber(stage2));
+    $("#R64_TOTAL_GENERAL_PROVISIONS").val(formatNumber(total));
+
+}
+//total trigger
+function calculateAllTotals() {
+    calculation_R15();
+    calculation_R11();
+	calculation_R29();
+	calculation_R38();
+	calculation_R41();
+	calculation_R44();
+	calculation_R49();
+	calculation_R53();
+	calculation_R57();
+	calculation_R64();
+}
+
+$(document).ready(function() {
+    calculateAllTotals();
+
+    //  Watch for R12, R13, R14, R15, R29, R38 changes - update R11
+    [12, 13, 14, 15, 29, 38].forEach(i => {
+        $("#R" + i + "_STAGE1_PROVISIONS, #R" + i + "_QUALIFY_STAGE2_PROVISIONS, #R" + i + "_TOTAL_GENERAL_PROVISIONS")
+            .on("input", calculation_R11)
+            .on("blur", function() {
+                $(this).val(formatNumber(parseNumber($(this).val())));
+            });
+    });
+
+    //  Watch for R16–R28 changes - update R15 (and R11 through R15)
+    for (let i = 16; i <= 28; i++) {
+        $("#R" + i + "_STAGE1_PROVISIONS, #R" + i + "_QUALIFY_STAGE2_PROVISIONS, #R" + i + "_TOTAL_GENERAL_PROVISIONS")
+            .on("input", calculation_R15)
+            .on("blur", function() {
+                $(this).val(formatNumber(parseNumber($(this).val())));
+            });
+    }
+	//  Watch for R30–R37 changes - update R15 (and R11 through R15)
+	   for (let i = 30; i <= 37; i++) {
+	       $("#R" + i + "_STAGE1_PROVISIONS, #R" + i + "_QUALIFY_STAGE2_PROVISIONS, #R" + i + "_TOTAL_GENERAL_PROVISIONS")
+	           .on("input", calculation_R29)
+	           .on("blur", function() {
+	               $(this).val(formatNumber(parseNumber($(this).val())));
+	           });
+	   }
+	   
+	   
+	   [39, 40].forEach(i => {
+	          $("#R" + i + "_STAGE1_PROVISIONS, #R" + i + "_QUALIFY_STAGE2_PROVISIONS, #R" + i + "_TOTAL_GENERAL_PROVISIONS")
+	              .on("input", calculation_R38)
+	              .on("blur", function() {
+	                  $(this).val(formatNumber(parseNumber($(this).val())));
+	              });
+	      });
+		  
+
+		  //  Watch for 42, 43, 44, 49, 63 changes - update R41
+		  [42, 43, 44, 49, 63].forEach(i => {
+		      $("#R" + i + "_STAGE1_PROVISIONS, #R" + i + "_QUALIFY_STAGE2_PROVISIONS, #R" + i + "_TOTAL_GENERAL_PROVISIONS")
+		          .on("input", calculation_R41)
+		          .on("blur", function() {
+		              $(this).val(formatNumber(parseNumber($(this).val())));
+		          });
+		  });	  
+	  //  Watch for R45–R48 changes - update R15 (and R11 through R15)
+	  	   for (let i = 45; i <= 48; i++) {
+	  	       $("#R" + i + "_STAGE1_PROVISIONS, #R" + i + "_QUALIFY_STAGE2_PROVISIONS, #R" + i + "_TOTAL_GENERAL_PROVISIONS")
+	  	           .on("input", calculation_R44)
+	  	           .on("blur", function() {
+	  	               $(this).val(formatNumber(parseNumber($(this).val())));
+	  	           });
+	  	   }
+	   //  Watch for 50+51+52+53+57changes - update 49
+	   	  [50, 51, 52, 53, 57].forEach(i => {
+	   	      $("#R" + i + "_STAGE1_PROVISIONS, #R" + i + "_QUALIFY_STAGE2_PROVISIONS, #R" + i + "_TOTAL_GENERAL_PROVISIONS")
+	   	          .on("input", calculation_R49)
+	   	          .on("blur", function() {
+	   	              $(this).val(formatNumber(parseNumber($(this).val())));
+	   	          });
+	   	  });	 	
+		  [54,55,56].forEach(i => {
+		            $("#R" + i + "_STAGE1_PROVISIONS, #R" + i + "_QUALIFY_STAGE2_PROVISIONS, #R" + i + "_TOTAL_GENERAL_PROVISIONS")
+		                .on("input", calculation_R53)
+		                .on("blur", function() {
+		                    $(this).val(formatNumber(parseNumber($(this).val())));
+		                });
+		        });
+		
+		   for (let i = 58; i <= 62; i++) {
+		       $("#R" + i + "_STAGE1_PROVISIONS, #R" + i + "_QUALIFY_STAGE2_PROVISIONS, #R" + i + "_TOTAL_GENERAL_PROVISIONS")
+		           .on("input", calculation_R57)
+		           .on("blur", function() {
+		               $(this).val(formatNumber(parseNumber($(this).val())));
+		           });
+		   }
+		   [11, 41].forEach(i => {
+		             $("#R" + i + "_STAGE1_PROVISIONS, #R" + i + "_QUALIFY_STAGE2_PROVISIONS, #R" + i + "_TOTAL_GENERAL_PROVISIONS")
+		                 .on("input", calculation_R64)
+		                 .on("blur", function() {
+		                     $(this).val(formatNumber(parseNumber($(this).val())));
+		                 });
+		         });
+		   	  
+    $("#submitButton, #cancelRecord").hide();
+});
+</script>
+
+
+
+
+<script>
+	function fileuploads(btn){
+	    const asondate = btn.getAttribute("data-todate");
+	    const type = btn.getAttribute("data-type");
+
+	    // Recalculate totals
+	    calculateAllTotals()
+
+	    $('#loader').modal('show');
+
+	    if (!$("#fileupload").valid()) {
+	        $('#loader').modal('hide');
+	        return;
+	    }
+
+	    const formData = new FormData();
+	    formData.append("asondate", asondate);
+	    formData.append("type", type);
+
+	    // ✅ Send raw numeric values
+	    $('#fileupload').find(':input').each(function () {
+	        const name = $(this).attr('name');
+	        if (!name) return;
+
+	        let value = $(this).val().trim();
+
+	        // Remove commas, percentage signs, etc.
+	        value = value.replace(/,/g, '').replace('%','');
+
+	        formData.append(name, value);
+	    });
+
+	    $.ajax({
+	        url: './M_GPupdateAll',
+	        type: 'POST',
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        dataType: 'text',
+	        success: function () {
+	            $("#resultModalLabel").text("BRRS");
+	            $("#resultModalBody").text("Updated Successfully.");
+	            $("#resultModal").modal("show");
+
+				//  Wait for user to close the modal manually
+							    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+							        location.reload(); // reload ONLY when modal is closed
+							    });
+	        },
+	        error: function (jqXHR) {
+	            console.error("Error response:", jqXHR.responseText);
+	            $("#resultModalLabel").text("Error");
+	            $("#resultModalBody").text("Update failed. Check console for details.");
+	            $("#resultModal").modal("show");
+	        },
+	        complete: function () {
+	            $('#loader').modal('hide');
+	        }
+	    });
+	}
+
+	
+</script>
+
+</script>
+
+
+
+
+<title>BRRS</title>
+<body>
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+						(31 (a) MONTHLY SCHEDULE: M-GP: GENERAL PROVISIONS  - LOANS AND ADVANCES 
+						</h5>
+					</div>
+
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+						</span>
+
+						<!-- Buttons -->
+        <input type="hidden" id="selectedTab" th:value="${displaymode}">
+        <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();" th:if="${displaymode == 'Details'}">Summary</button>
+        <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();" th:if="${displaymode == 'summary'}">Details</button>
+		<!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
+						        onclick="showmodify(this);"
+						        title="Click to EDIT Records"
+								th:if="${type != 'ARCHIVAL'}"
+								       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+						        id="addRecord">Modify</button>
+
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn"
+						        title="Cancel editing"
+						        id="cancelRecord"
+						        onclick="cancelModify();"
+						        style="display: none;">Cancel</button>
+		
+		  <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+            th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='M-GP.xlsx',
+                     data-type=${type},
+                     data-version=${version}"
+                     
+            onclick="downloadfile(this);">
+            <i class="fa fa-download"></i>
+        </button>
+        <button
+		  type="button"
+		  class="custom-tab-btn"
+		  id="custom-tab-btnAdd"
+		  th:if="${displaymode == 'Details'}"
+		  onclick="startReport(this);"
+		  th:attr="
+		    data-fromdate=${fromdate},
+		    data-todate=${todate},
+		    data-filename='M_CA_7Details'
+		  ">
+		  <i class="fa fa-download"></i>
+		</button>
+					</div>
+				</div>
+			
+			<div th:if="${displaymode == 'summary'}">
+			<div class="row" >
+				<div class="col-sm-12">
+				<form action="#" method="POST" id="fileupload">
+					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
+						<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports">
+							<thead>
+								<tr	style="background-color:#D8D8D8; text-align:left; font-weight:bold;">
+								    <th style="width:40%; text-align:left;">&nbsp;</th>
+								    <th colspan="3">GENERAL PROVISIONS</th>
+								    
+								  </tr>
+							  <tr style="background-color:#D8D8D8; text-align:center; font-weight:bold;">
+							    <th style="width:40%; text-align:right;">&nbsp;</th>
+							    <th style="text-align: left;">STAGE 1 PROVISIONS</th>
+							    <th style="text-align: left;">QUALIFYING STAGE 2 PROVISIONS</th>
+							    <th style="text-align: left;">TOTAL GENERAL PROVISIONS</th>
+							  </tr>
+							</thead>
+
+              <tbody th:each="report : ${reportsummary}" style="font-family: Arial;">
+                  <!-- Section 1 Values -->
+				  <!-- Section 1 -->
+				    <tr>
+
+						<td id="ROW11"
+						    style="
+							white-space: normal;
+							  word-wrap: break-word;
+							  max-width: 220px;
+							  line-height: 1.2;
+							  text-align: left;
+							  vertical-align: middle;
+							  font-weight: bold;
+						    "
+						    th:title="${report.R11_PRODUCT}"
+						    th:text="${report.R11_PRODUCT}">
+						</td>
+						<td style="text-align: center; 
+						         vertical-align: middle; 
+						         background-color:rgb(107, 122, 143);
+						         font-weight: normal;">
+						    <input class="display-input show_input"
+						           type="text"
+						           th:value="${report.R11_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R11_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+						           id="R11_STAGE1_PROVISIONS"
+						           name="R11_STAGE1_PROVISIONS"
+						           style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+						           readonly />
+						  </td>
+						  <td style="text-align: center; 
+  						         vertical-align: middle; 
+  						         background-color:rgb(107, 122, 143);
+  						         font-weight: normal;">
+  						    <input class="display-input show_input"
+  						           type="text"
+  						           th:value="${report.R11_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R11_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+  						           id="R11_QUALIFY_STAGE2_PROVISIONS"
+  						           name="R11_QUALIFY_STAGE2_PROVISIONS"
+  						           style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+  						           readonly />
+  						  </td>
+						  <td style="text-align: center; 
+						           vertical-align: middle; 
+						           background-color:rgb(107, 122, 143);
+						           font-weight: normal;">
+						      <input class="display-input show_input"
+						             type="text"
+						             th:value="${report.R11_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R11_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+						             id="R11_TOTAL_GENERAL_PROVISIONS"
+						             name="R11_TOTAL_GENERAL_PROVISIONS"
+						             style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+						             readonly />
+						    </td>
+
+						 
+				    </tr>
+					<tr>
+
+										<td id="ROW12"
+										    style="
+											white-space: normal;
+											  word-wrap: break-word;
+											  max-width: 220px;
+											  line-height: 1.2;
+											  text-align: left;
+											  vertical-align: middle;
+											  font-weight: normal;
+										    "
+										    th:title="${report.R12_PRODUCT}"
+										    th:text="${report.R12_PRODUCT}">
+										</td>
+										<td style="text-align: center; 
+										         vertical-align: middle; 
+										         background-color:rgb(255, 255, 255);
+										         font-weight: normal;">
+										    <input class="display-input show_input"
+										           type="text"
+										           th:value="${report.R12_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R12_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+										           id="R12_STAGE1_PROVISIONS"
+										           name="R12_STAGE1_PROVISIONS"
+										           style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+										           readonly />
+										  </td>
+										  <td style="text-align: center; 
+					 						         vertical-align: middle; 
+					 						         background-color:rgb(255, 255, 255);
+					 						         font-weight: normal;">
+					 						    <input class="display-input show_input"
+					 						           type="text"
+					 						           th:value="${report.R12_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R12_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+					 						           id="R12_QUALIFY_STAGE2_PROVISIONS"
+					 						           name="R12_QUALIFY_STAGE2_PROVISIONS"
+					 						           style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+					 						           readonly />
+					 						  </td>
+										  <td style="text-align: center; 
+										           vertical-align: middle; 
+										           background-color:rgb(255, 255, 255);
+										           font-weight: normal;">
+										      <input class="display-input show_input"
+										             type="text"
+										             th:value="${report.R12_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R12_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+										             id="R12_TOTAL_GENERAL_PROVISIONS"
+										             name="R12_TOTAL_GENERAL_PROVISIONS"
+										             style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+										             readonly />
+										    </td>
+
+										 
+								    </tr>
+									<tr>
+
+										<td id="ROW13"
+										    style="
+											white-space: normal;
+											  word-wrap: break-word;
+											  max-width: 220px;
+											  line-height: 1.2;
+											  text-align: left;
+											  vertical-align: middle;
+											  font-weight: normal;
+										    "
+										    th:title="${report.R13_PRODUCT}"
+										    th:text="${report.R13_PRODUCT}">
+										</td>
+										<td style="text-align: center; 
+										         vertical-align: middle; 
+										         background-color:rgb(255, 255, 255);
+										         font-weight: normal;">
+										    <input class="display-input show_input"
+										           type="text"
+										           th:value="${report.R13_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R13_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+										           id="R13_STAGE1_PROVISIONS"
+										           name="R13_STAGE1_PROVISIONS"
+										           style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+										           readonly />
+										  </td>
+										  <td style="text-align: center; 
+					 						         vertical-align: middle; 
+					 						         background-color:rgb(255, 255, 255);
+					 						         font-weight: normal;">
+					 						    <input class="display-input show_input"
+					 						           type="text"
+					 						           th:value="${report.R13_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R13_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+					 						           id="R13_QUALIFY_STAGE2_PROVISIONS"
+					 						           name="R13_QUALIFY_STAGE2_PROVISIONS"
+					 						           style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+					 						           readonly />
+					 						  </td>
+										  <td style="text-align: center; 
+										           vertical-align: middle; 
+										           background-color:rgb(255, 255, 255);
+										           font-weight: normal;">
+										      <input class="display-input show_input"
+										             type="text"
+										             th:value="${report.R13_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R13_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+										             id="R13_TOTAL_GENERAL_PROVISIONS"
+										             name="R13_TOTAL_GENERAL_PROVISIONS"
+										             style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+										             readonly />
+										    </td>
+
+										 
+								    </tr>
+									<tr>
+
+											<td id="ROW14"
+												style="
+												white-space: normal;
+												  word-wrap: break-word;
+												  max-width: 220px;
+												  line-height: 1.2;
+												  text-align: left;
+												  vertical-align: middle;
+												  font-weight: normal;
+												"
+												th:title="${report.R14_PRODUCT}"
+												th:text="${report.R14_PRODUCT}">
+											</td>
+											<td style="text-align: center; 
+													 vertical-align: middle; 
+													 background-color:rgb(255, 255, 255);
+													 font-weight: normal;">
+												<input class="display-input show_input"
+													   type="text"
+													   th:value="${report.R14_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R14_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+													   id="R14_STAGE1_PROVISIONS"
+													   name="R14_STAGE1_PROVISIONS"
+													   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+													   readonly />
+											  </td>
+											  <td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(255, 255, 255);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R14_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R14_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R14_QUALIFY_STAGE2_PROVISIONS"
+														   name="R14_QUALIFY_STAGE2_PROVISIONS"
+														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+											  <td style="text-align: center; 
+													   vertical-align: middle; 
+													   background-color:rgb(255, 255, 255);
+													   font-weight: normal;">
+												  <input class="display-input show_input"
+														 type="text"
+														 th:value="${report.R14_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R14_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														 id="R14_TOTAL_GENERAL_PROVISIONS"
+														 name="R14_TOTAL_GENERAL_PROVISIONS"
+														 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														 readonly />
+												</td>
+
+											 
+										</tr>
+										<tr>
+
+												<td id="ROW15"
+													style="
+													white-space: normal;
+													  word-wrap: break-word;
+													  max-width: 220px;
+													  line-height: 1.2;
+													  text-align: left;
+													  vertical-align: middle;
+													  font-weight: bold;
+													"
+													th:title="${report.R15_PRODUCT}"
+													th:text="${report.R15_PRODUCT}">
+												</td>
+												<td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(107, 122, 143);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R15_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R15_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R15_STAGE1_PROVISIONS"
+														   name="R15_STAGE1_PROVISIONS"
+														   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+												  <td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(107, 122, 143);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R15_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R15_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R15_QUALIFY_STAGE2_PROVISIONS"
+														   name="R15_QUALIFY_STAGE2_PROVISIONS"
+														   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+												  <td style="text-align: center; 
+														   vertical-align: middle; 
+														   background-color:rgb(107, 122, 143);
+														   font-weight: normal;">
+													  <input class="display-input show_input"
+															 type="text"
+															 th:value="${report.R15_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R15_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															 id="R15_TOTAL_GENERAL_PROVISIONS"
+															 name="R15_TOTAL_GENERAL_PROVISIONS"
+															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 readonly />
+													</td>
+
+												 
+											</tr>
+											<tr>
+
+												<td id="ROW16"
+													style="
+													white-space: normal;
+													  word-wrap: break-word;
+													  max-width: 220px;
+													  line-height: 1.2;
+													  text-align: left;
+													  vertical-align: middle;
+													  font-weight: normal;
+													"
+													th:title="${report.R16_PRODUCT}"
+													th:text="${report.R16_PRODUCT}">
+												</td>
+												<td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(255, 255, 255);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R16_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R16_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R16_STAGE1_PROVISIONS"
+														   name="R16_STAGE1_PROVISIONS"
+														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+												  <td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R16_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R16_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R16_QUALIFY_STAGE2_PROVISIONS"
+															   name="R16_QUALIFY_STAGE2_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+												  <td style="text-align: center; 
+														   vertical-align: middle; 
+														   background-color:rgb(255, 255, 255);
+														   font-weight: normal;">
+													  <input class="display-input show_input"
+															 type="text"
+															 th:value="${report.R16_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R16_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															 id="R16_TOTAL_GENERAL_PROVISIONS"
+															 name="R16_TOTAL_GENERAL_PROVISIONS"
+															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 readonly />
+													</td>
+
+												 
+											</tr>
+										<tr>
+
+											<td id="ROW17"
+												style="
+												white-space: normal;
+												  word-wrap: break-word;
+												  max-width: 220px;
+												  line-height: 1.2;
+												  text-align: left;
+												  vertical-align: middle;
+												  font-weight: normal;
+												"
+												th:title="${report.R17_PRODUCT}"
+												th:text="${report.R17_PRODUCT}">
+											</td>
+											<td style="text-align: center; 
+													 vertical-align: middle; 
+													 background-color:rgb(255, 255, 255);
+													 font-weight: normal;">
+												<input class="display-input show_input"
+													   type="text"
+													   th:value="${report.R17_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R17_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+													   id="R17_STAGE1_PROVISIONS"
+													   name="R17_STAGE1_PROVISIONS"
+													   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+													   readonly />
+											  </td>
+											  <td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(255, 255, 255);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R17_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R17_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R17_QUALIFY_STAGE2_PROVISIONS"
+														   name="R17_QUALIFY_STAGE2_PROVISIONS"
+														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+											  <td style="text-align: center; 
+													   vertical-align: middle; 
+													   background-color:rgb(255, 255, 255);
+													   font-weight: normal;">
+												  <input class="display-input show_input"
+														 type="text"
+														 th:value="${report.R17_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R17_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														 id="R17_TOTAL_GENERAL_PROVISIONS"
+														 name="R17_TOTAL_GENERAL_PROVISIONS"
+														 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														 readonly />
+												</td>
+
+											 
+										</tr>
+										<tr>
+
+												<td id="ROW18"
+													style="
+													white-space: normal;
+													  word-wrap: break-word;
+													  max-width: 220px;
+													  line-height: 1.2;
+													  text-align: left;
+													  vertical-align: middle;
+													  font-weight: normal;
+													"
+													th:title="${report.R18_PRODUCT}"
+													th:text="${report.R18_PRODUCT}">
+												</td>
+												<td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(255, 255, 255);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R18_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R18_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R18_STAGE1_PROVISIONS"
+														   name="R18_STAGE1_PROVISIONS"
+														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+												  <td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R18_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R18_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R18_QUALIFY_STAGE2_PROVISIONS"
+															   name="R18_QUALIFY_STAGE2_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+												  <td style="text-align: center; 
+														   vertical-align: middle; 
+														   background-color:rgb(255, 255, 255);
+														   font-weight: normal;">
+													  <input class="display-input show_input"
+															 type="text"
+															 th:value="${report.R18_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R18_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															 id="R18_TOTAL_GENERAL_PROVISIONS"
+															 name="R18_TOTAL_GENERAL_PROVISIONS"
+															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 readonly />
+													</td>
+
+												 
+											</tr>		
+											<tr>
+
+												<td id="ROW19"
+													style="
+													white-space: normal;
+													  word-wrap: break-word;
+													  max-width: 220px;
+													  line-height: 1.2;
+													  text-align: left;
+													  vertical-align: middle;
+													  font-weight: normal;
+													"
+													th:title="${report.R19_PRODUCT}"
+													th:text="${report.R19_PRODUCT}">
+												</td>
+												<td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(255, 255, 255);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R19_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R19_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R19_STAGE1_PROVISIONS"
+														   name="R19_STAGE1_PROVISIONS"
+														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+												  <td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R19_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R19_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R19_QUALIFY_STAGE2_PROVISIONS"
+															   name="R19_QUALIFY_STAGE2_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+												  <td style="text-align: center; 
+														   vertical-align: middle; 
+														   background-color:rgb(255, 255, 255);
+														   font-weight: normal;">
+													  <input class="display-input show_input"
+															 type="text"
+															 th:value="${report.R19_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R19_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															 id="R19_TOTAL_GENERAL_PROVISIONS"
+															 name="R19_TOTAL_GENERAL_PROVISIONS"
+															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 readonly />
+													</td>
+
+												 
+											</tr>				
+												<tr>
+
+												<td id="ROW20"
+													style="
+													white-space: normal;
+													  word-wrap: break-word;
+													  max-width: 220px;
+													  line-height: 1.2;
+													  text-align: left;
+													  vertical-align: middle;
+													  font-weight: normal;
+													"
+													th:title="${report.R20_PRODUCT}"
+													th:text="${report.R20_PRODUCT}">
+												</td>
+												<td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(255, 255, 255);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R20_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R20_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R20_STAGE1_PROVISIONS"
+														   name="R20_STAGE1_PROVISIONS"
+														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+												  <td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R20_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R20_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R20_QUALIFY_STAGE2_PROVISIONS"
+															   name="R20_QUALIFY_STAGE2_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+												  <td style="text-align: center; 
+														   vertical-align: middle; 
+														   background-color:rgb(255, 255, 255);
+														   font-weight: normal;">
+													  <input class="display-input show_input"
+															 type="text"
+															 th:value="${report.R20_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R20_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															 id="R20_TOTAL_GENERAL_PROVISIONS"
+															 name="R20_TOTAL_GENERAL_PROVISIONS"
+															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 readonly />
+													</td>
+
+												 
+											</tr>
+											<tr>
+
+												<td id="ROW21"
+													style="
+													white-space: normal;
+													  word-wrap: break-word;
+													  max-width: 220px;
+													  line-height: 1.2;
+													  text-align: left;
+													  vertical-align: middle;
+													  font-weight: normal;
+													"
+													th:title="${report.R21_PRODUCT}"
+													th:text="${report.R21_PRODUCT}">
+												</td>
+												<td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(255, 255, 255);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R21_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R21_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R21_STAGE1_PROVISIONS"
+														   name="R21_STAGE1_PROVISIONS"
+														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+												  <td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R21_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R21_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R21_QUALIFY_STAGE2_PROVISIONS"
+															   name="R21_QUALIFY_STAGE2_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+												  <td style="text-align: center; 
+														   vertical-align: middle; 
+														   background-color:rgb(255, 255, 255);
+														   font-weight: normal;">
+													  <input class="display-input show_input"
+															 type="text"
+															 th:value="${report.R21_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R21_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															 id="R21_TOTAL_GENERAL_PROVISIONS"
+															 name="R21_TOTAL_GENERAL_PROVISIONS"
+															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 readonly />
+													</td>
+
+												 
+											</tr>
+											<tr>
+
+													<td id="ROW22"
+														style="
+														white-space: normal;
+														  word-wrap: break-word;
+														  max-width: 220px;
+														  line-height: 1.2;
+														  text-align: left;
+														  vertical-align: middle;
+														  font-weight: normal;
+														"
+														th:title="${report.R22_PRODUCT}"
+														th:text="${report.R22_PRODUCT}">
+													</td>
+													<td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R22_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R22_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R22_STAGE1_PROVISIONS"
+															   name="R22_STAGE1_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+													  <td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(255, 255, 255);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R22_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R22_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R22_QUALIFY_STAGE2_PROVISIONS"
+																   name="R22_QUALIFY_STAGE2_PROVISIONS"
+																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+													  <td style="text-align: center; 
+															   vertical-align: middle; 
+															   background-color:rgb(255, 255, 255);
+															   font-weight: normal;">
+														  <input class="display-input show_input"
+																 type="text"
+																 th:value="${report.R22_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R22_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																 id="R22_TOTAL_GENERAL_PROVISIONS"
+																 name="R22_TOTAL_GENERAL_PROVISIONS"
+																 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 readonly />
+														</td>
+
+													 
+												</tr>		
+												<tr>
+
+											<td id="ROW23"
+												style="
+												white-space: normal;
+												  word-wrap: break-word;
+												  max-width: 220px;
+												  line-height: 1.2;
+												  text-align: left;
+												  vertical-align: middle;
+												  font-weight: normal;
+												"
+												th:title="${report.R23_PRODUCT}"
+												th:text="${report.R23_PRODUCT}">
+											</td>
+											<td style="text-align: center; 
+													 vertical-align: middle; 
+													 background-color:rgb(255, 255, 255);
+													 font-weight: normal;">
+												<input class="display-input show_input"
+													   type="text"
+													   th:value="${report.R23_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R23_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+													   id="R23_STAGE1_PROVISIONS"
+													   name="R23_STAGE1_PROVISIONS"
+													   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+													   readonly />
+											  </td>
+											  <td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(255, 255, 255);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R23_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R23_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R23_QUALIFY_STAGE2_PROVISIONS"
+														   name="R23_QUALIFY_STAGE2_PROVISIONS"
+														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+											  <td style="text-align: center; 
+													   vertical-align: middle; 
+													   background-color:rgb(255, 255, 255);
+													   font-weight: normal;">
+												  <input class="display-input show_input"
+														 type="text"
+														 th:value="${report.R23_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R23_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														 id="R23_TOTAL_GENERAL_PROVISIONS"
+														 name="R23_TOTAL_GENERAL_PROVISIONS"
+														 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														 readonly />
+												</td>
+
+											 
+										</tr>
+										<tr>
+
+											<td id="ROW24"
+												style="
+												white-space: normal;
+												  word-wrap: break-word;
+												  max-width: 220px;
+												  line-height: 1.2;
+												  text-align: left;
+												  vertical-align: middle;
+												  font-weight: normal;
+												"
+												th:title="${report.R24_PRODUCT}"
+												th:text="${report.R24_PRODUCT}">
+											</td>
+											<td style="text-align: center; 
+													 vertical-align: middle; 
+													 background-color:rgb(255, 255, 255);
+													 font-weight: normal;">
+												<input class="display-input show_input"
+													   type="text"
+													   th:value="${report.R24_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R24_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+													   id="R24_STAGE1_PROVISIONS"
+													   name="R24_STAGE1_PROVISIONS"
+													   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+													   readonly />
+											  </td>
+											  <td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(255, 255, 255);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R24_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R24_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R24_QUALIFY_STAGE2_PROVISIONS"
+														   name="R24_QUALIFY_STAGE2_PROVISIONS"
+														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+											  <td style="text-align: center; 
+													   vertical-align: middle; 
+													   background-color:rgb(255, 255, 255);
+													   font-weight: normal;">
+												  <input class="display-input show_input"
+														 type="text"
+														 th:value="${report.R24_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R24_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														 id="R24_TOTAL_GENERAL_PROVISIONS"
+														 name="R24_TOTAL_GENERAL_PROVISIONS"
+														 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														 readonly />
+												</td>
+
+											 
+										</tr>
+										<tr>
+
+												<td id="ROW25"
+													style="
+													white-space: normal;
+													  word-wrap: break-word;
+													  max-width: 220px;
+													  line-height: 1.2;
+													  text-align: left;
+													  vertical-align: middle;
+													  font-weight: normal;
+													"
+													th:title="${report.R25_PRODUCT}"
+													th:text="${report.R25_PRODUCT}">
+												</td>
+												<td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(255, 255, 255);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R25_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R25_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R25_STAGE1_PROVISIONS"
+														   name="R25_STAGE1_PROVISIONS"
+														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+												  <td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R25_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R25_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R25_QUALIFY_STAGE2_PROVISIONS"
+															   name="R25_QUALIFY_STAGE2_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+												  <td style="text-align: center; 
+														   vertical-align: middle; 
+														   background-color:rgb(255, 255, 255);
+														   font-weight: normal;">
+													  <input class="display-input show_input"
+															 type="text"
+															 th:value="${report.R25_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R25_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															 id="R25_TOTAL_GENERAL_PROVISIONS"
+															 name="R25_TOTAL_GENERAL_PROVISIONS"
+															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 readonly />
+													</td>
+
+												 
+											</tr>		
+											<tr>
+
+												<td id="ROW26"
+													style="
+													white-space: normal;
+													  word-wrap: break-word;
+													  max-width: 220px;
+													  line-height: 1.2;
+													  text-align: left;
+													  vertical-align: middle;
+													  font-weight: normal;
+													"
+													th:title="${report.R26_PRODUCT}"
+													th:text="${report.R26_PRODUCT}">
+												</td>
+												<td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(255, 255, 255);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R26_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R26_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R26_STAGE1_PROVISIONS"
+														   name="R26_STAGE1_PROVISIONS"
+														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+												  <td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R26_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R26_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R26_QUALIFY_STAGE2_PROVISIONS"
+															   name="R26_QUALIFY_STAGE2_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+												  <td style="text-align: center; 
+														   vertical-align: middle; 
+														   background-color:rgb(255, 255, 255);
+														   font-weight: normal;">
+													  <input class="display-input show_input"
+															 type="text"
+															 th:value="${report.R26_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R26_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															 id="R26_TOTAL_GENERAL_PROVISIONS"
+															 name="R26_TOTAL_GENERAL_PROVISIONS"
+															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 readonly />
+													</td>
+
+												 
+											</tr>
+											<tr>
+
+												<td id="ROW27"
+													style="
+													white-space: normal;
+													  word-wrap: break-word;
+													  max-width: 220px;
+													  line-height: 1.2;
+													  text-align: left;
+													  vertical-align: middle;
+													  font-weight: normal;
+													"
+													th:title="${report.R27_PRODUCT}"
+													th:text="${report.R27_PRODUCT}">
+												</td>
+												<td style="text-align: center; 
+														 vertical-align: middle; 
+														 background-color:rgb(255, 255, 255);
+														 font-weight: normal;">
+													<input class="display-input show_input"
+														   type="text"
+														   th:value="${report.R27_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R27_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+														   id="R27_STAGE1_PROVISIONS"
+														   name="R27_STAGE1_PROVISIONS"
+														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   readonly />
+												  </td>
+												  <td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R27_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R27_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R27_QUALIFY_STAGE2_PROVISIONS"
+															   name="R27_QUALIFY_STAGE2_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+												  <td style="text-align: center; 
+														   vertical-align: middle; 
+														   background-color:rgb(255, 255, 255);
+														   font-weight: normal;">
+													  <input class="display-input show_input"
+															 type="text"
+															 th:value="${report.R27_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R27_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															 id="R27_TOTAL_GENERAL_PROVISIONS"
+															 name="R27_TOTAL_GENERAL_PROVISIONS"
+															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 readonly />
+													</td>
+
+												 
+											</tr>
+											<tr>
+
+													<td id="ROW28"
+														style="
+														white-space: normal;
+														  word-wrap: break-word;
+														  max-width: 220px;
+														  line-height: 1.2;
+														  text-align: left;
+														  vertical-align: middle;
+														  font-weight: normal;
+														"
+														th:title="${report.R28_PRODUCT}"
+														th:text="${report.R28_PRODUCT}">
+													</td>
+													<td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R28_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R28_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R28_STAGE1_PROVISIONS"
+															   name="R28_STAGE1_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+													  <td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(255, 255, 255);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R28_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R28_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R28_QUALIFY_STAGE2_PROVISIONS"
+																   name="R28_QUALIFY_STAGE2_PROVISIONS"
+																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+													  <td style="text-align: center; 
+															   vertical-align: middle; 
+															   background-color:rgb(255, 255, 255);
+															   font-weight: normal;">
+														  <input class="display-input show_input"
+																 type="text"
+																 th:value="${report.R28_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R28_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																 id="R28_TOTAL_GENERAL_PROVISIONS"
+																 name="R28_TOTAL_GENERAL_PROVISIONS"
+																 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 readonly />
+														</td>
+
+													 
+												</tr>		
+													<tr>
+
+														<td id="ROW29"
+															style="
+															white-space: normal;
+															  word-wrap: break-word;
+															  max-width: 374px;
+															  line-height: 1.2;
+															  text-align: left;
+															  vertical-align: middle;
+															  font-weight: bold;
+															"
+															th:title="${report.R29_PRODUCT}"
+															th:text="${report.R29_PRODUCT}">
+														</td>
+														<td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(107, 122, 143);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R29_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R29_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R29_STAGE1_PROVISIONS"
+																   name="R29_STAGE1_PROVISIONS"
+																   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+														  <td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(107, 122, 143);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R29_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R29_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R29_QUALIFY_STAGE2_PROVISIONS"
+																   name="R29_QUALIFY_STAGE2_PROVISIONS"
+																   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+														  <td style="text-align: center; 
+																   vertical-align: middle; 
+																   background-color:rgb(107, 122, 143);
+																   font-weight: normal;">
+															  <input class="display-input show_input"
+																	 type="text"
+																	 th:value="${report.R29_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R29_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	 id="R29_TOTAL_GENERAL_PROVISIONS"
+																	 name="R29_TOTAL_GENERAL_PROVISIONS"
+																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 readonly />
+															</td>
+
+														 
+													</tr>
+													<tr>
+
+														<td id="ROW30"
+															style="
+															white-space: normal;
+															  word-wrap: break-word;
+															  max-width: 374px;
+															  line-height: 1.2;
+															  text-align: left;
+															  vertical-align: middle;
+															  font-weight: normal;
+															"
+															th:title="${report.R30_PRODUCT}"
+															th:text="${report.R30_PRODUCT}">
+														</td>
+														<td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(255, 255, 255);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R30_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R30_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R30_STAGE1_PROVISIONS"
+																   name="R30_STAGE1_PROVISIONS"
+																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+														  <td style="text-align: center; 
+																	 vertical-align: middle; 
+																	 background-color:rgb(255, 255, 255);
+																	 font-weight: normal;">
+																<input class="display-input show_input"
+																	   type="text"
+																	   th:value="${report.R30_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R30_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	   id="R30_QUALIFY_STAGE2_PROVISIONS"
+																	   name="R30_QUALIFY_STAGE2_PROVISIONS"
+																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   readonly />
+															  </td>
+														  <td style="text-align: center; 
+																   vertical-align: middle; 
+																   background-color:rgb(255, 255, 255);
+																   font-weight: normal;">
+															  <input class="display-input show_input"
+																	 type="text"
+																	 th:value="${report.R30_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R30_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	 id="R30_TOTAL_GENERAL_PROVISIONS"
+																	 name="R30_TOTAL_GENERAL_PROVISIONS"
+																	 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 readonly />
+															</td>
+
+														 
+													</tr>
+												<tr>
+
+													<td id="ROW31"
+														style="
+														white-space: normal;
+														  word-wrap: break-word;
+														  max-width: 374px;
+														  line-height: 1.2;
+														  text-align: left;
+														  vertical-align: middle;
+														  font-weight: normal;
+														"
+														th:title="${report.R31_PRODUCT}"
+														th:text="${report.R31_PRODUCT}">
+													</td>
+													<td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R31_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R31_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R31_STAGE1_PROVISIONS"
+															   name="R31_STAGE1_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+													  <td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(255, 255, 255);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R31_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R31_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R31_QUALIFY_STAGE2_PROVISIONS"
+																   name="R31_QUALIFY_STAGE2_PROVISIONS"
+																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+													  <td style="text-align: center; 
+															   vertical-align: middle; 
+															   background-color:rgb(255, 255, 255);
+															   font-weight: normal;">
+														  <input class="display-input show_input"
+																 type="text"
+																 th:value="${report.R31_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R31_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																 id="R31_TOTAL_GENERAL_PROVISIONS"
+																 name="R31_TOTAL_GENERAL_PROVISIONS"
+																 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 readonly />
+														</td>
+
+													 
+												</tr>
+												<tr>
+
+														<td id="ROW32"
+															style="
+															white-space: normal;
+															  word-wrap: break-word;
+															  max-width: 374px;
+															  line-height: 1.2;
+															  text-align: left;
+															  vertical-align: middle;
+															  font-weight: normal;
+															"
+															th:title="${report.R32_PRODUCT}"
+															th:text="${report.R32_PRODUCT}">
+														</td>
+														<td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(255, 255, 255);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R32_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R32_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R32_STAGE1_PROVISIONS"
+																   name="R32_STAGE1_PROVISIONS"
+																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+														  <td style="text-align: center; 
+																	 vertical-align: middle; 
+																	 background-color:rgb(255, 255, 255);
+																	 font-weight: normal;">
+																<input class="display-input show_input"
+																	   type="text"
+																	   th:value="${report.R32_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R32_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	   id="R32_QUALIFY_STAGE2_PROVISIONS"
+																	   name="R32_QUALIFY_STAGE2_PROVISIONS"
+																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   readonly />
+															  </td>
+														  <td style="text-align: center; 
+																   vertical-align: middle; 
+																   background-color:rgb(255, 255, 255);
+																   font-weight: normal;">
+															  <input class="display-input show_input"
+																	 type="text"
+																	 th:value="${report.R32_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R32_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	 id="R32_TOTAL_GENERAL_PROVISIONS"
+																	 name="R32_TOTAL_GENERAL_PROVISIONS"
+																	 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 readonly />
+															</td>
+
+														 
+													</tr>		
+													<tr>
+
+														<td id="ROW33"
+															style="
+															white-space: normal;
+															  word-wrap: break-word;
+															  max-width: 374px;
+															  line-height: 1.2;
+															  text-align: left;
+															  vertical-align: middle;
+															  font-weight: normal;
+															"
+															th:title="${report.R33_PRODUCT}"
+															th:text="${report.R33_PRODUCT}">
+														</td>
+														<td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(255, 255, 255);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R33_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R33_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R33_STAGE1_PROVISIONS"
+																   name="R33_STAGE1_PROVISIONS"
+																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+														  <td style="text-align: center; 
+																	 vertical-align: middle; 
+																	 background-color:rgb(255, 255, 255);
+																	 font-weight: normal;">
+																<input class="display-input show_input"
+																	   type="text"
+																	   th:value="${report.R33_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R33_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	   id="R33_QUALIFY_STAGE2_PROVISIONS"
+																	   name="R33_QUALIFY_STAGE2_PROVISIONS"
+																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   readonly />
+															  </td>
+														  <td style="text-align: center; 
+																   vertical-align: middle; 
+																   background-color:rgb(255, 255, 255);
+																   font-weight: normal;">
+															  <input class="display-input show_input"
+																	 type="text"
+																	 th:value="${report.R33_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R33_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	 id="R33_TOTAL_GENERAL_PROVISIONS"
+																	 name="R33_TOTAL_GENERAL_PROVISIONS"
+																	 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 readonly />
+															</td>
+
+														 
+													</tr>				
+														<tr>
+
+														<td id="ROW34"
+															style="
+															white-space: normal;
+															  word-wrap: break-word;
+															  max-width: 374px;
+															  line-height: 1.2;
+															  text-align: left;
+															  vertical-align: middle;
+															  font-weight: normal;
+															"
+															th:title="${report.R34_PRODUCT}"
+															th:text="${report.R34_PRODUCT}">
+														</td>
+														<td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(255, 255, 255);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R34_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R34_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R34_STAGE1_PROVISIONS"
+																   name="R34_STAGE1_PROVISIONS"
+																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+														  <td style="text-align: center; 
+																	 vertical-align: middle; 
+																	 background-color:rgb(255, 255, 255);
+																	 font-weight: normal;">
+																<input class="display-input show_input"
+																	   type="text"
+																	   th:value="${report.R34_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R34_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	   id="R34_QUALIFY_STAGE2_PROVISIONS"
+																	   name="R34_QUALIFY_STAGE2_PROVISIONS"
+																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   readonly />
+															  </td>
+														  <td style="text-align: center; 
+																   vertical-align: middle; 
+																   background-color:rgb(255, 255, 255);
+																   font-weight: normal;">
+															  <input class="display-input show_input"
+																	 type="text"
+																	 th:value="${report.R34_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R34_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	 id="R34_TOTAL_GENERAL_PROVISIONS"
+																	 name="R34_TOTAL_GENERAL_PROVISIONS"
+																	 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 readonly />
+															</td>
+
+														 
+													</tr>
+													<tr>
+
+														<td id="ROW35"
+															style="
+															white-space: normal;
+															  word-wrap: break-word;
+															  max-width: 374px;
+															  line-height: 1.2;
+															  text-align: left;
+															  vertical-align: middle;
+															  font-weight: normal;
+															"
+															th:title="${report.R35_PRODUCT}"
+															th:text="${report.R35_PRODUCT}">
+														</td>
+														<td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(255, 255, 255);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R35_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R35_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R35_STAGE1_PROVISIONS"
+																   name="R35_STAGE1_PROVISIONS"
+																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+														  <td style="text-align: center; 
+																	 vertical-align: middle; 
+																	 background-color:rgb(255, 255, 255);
+																	 font-weight: normal;">
+																<input class="display-input show_input"
+																	   type="text"
+																	   th:value="${report.R35_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R35_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	   id="R35_QUALIFY_STAGE2_PROVISIONS"
+																	   name="R35_QUALIFY_STAGE2_PROVISIONS"
+																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   readonly />
+															  </td>
+														  <td style="text-align: center; 
+																   vertical-align: middle; 
+																   background-color:rgb(255, 255, 255);
+																   font-weight: normal;">
+															  <input class="display-input show_input"
+																	 type="text"
+																	 th:value="${report.R35_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R35_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	 id="R35_TOTAL_GENERAL_PROVISIONS"
+																	 name="R35_TOTAL_GENERAL_PROVISIONS"
+																	 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 readonly />
+															</td>
+
+														 
+													</tr>
+													<tr>
+
+															<td id="ROW36"
+																style="
+																white-space: normal;
+																  word-wrap: break-word;
+																  max-width: 374px;
+																  line-height: 1.2;
+																  text-align: left;
+																  vertical-align: middle;
+																  font-weight: normal;
+																"
+																th:title="${report.R36_PRODUCT}"
+																th:text="${report.R36_PRODUCT}">
+															</td>
+															<td style="text-align: center; 
+																	 vertical-align: middle; 
+																	 background-color:rgb(255, 255, 255);
+																	 font-weight: normal;">
+																<input class="display-input show_input"
+																	   type="text"
+																	   th:value="${report.R36_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R36_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	   id="R36_STAGE1_PROVISIONS"
+																	   name="R36_STAGE1_PROVISIONS"
+																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   readonly />
+															  </td>
+															  <td style="text-align: center; 
+																		 vertical-align: middle; 
+																		 background-color:rgb(255, 255, 255);
+																		 font-weight: normal;">
+																	<input class="display-input show_input"
+																		   type="text"
+																		   th:value="${report.R36_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R36_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		   id="R36_QUALIFY_STAGE2_PROVISIONS"
+																		   name="R36_QUALIFY_STAGE2_PROVISIONS"
+																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   readonly />
+																  </td>
+															  <td style="text-align: center; 
+																	   vertical-align: middle; 
+																	   background-color:rgb(255, 255, 255);
+																	   font-weight: normal;">
+																  <input class="display-input show_input"
+																		 type="text"
+																		 th:value="${report.R36_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R36_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		 id="R36_TOTAL_GENERAL_PROVISIONS"
+																		 name="R36_TOTAL_GENERAL_PROVISIONS"
+																		 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		 readonly />
+																</td>
+
+															 
+														</tr>		
+														<tr>
+
+													<td id="ROW37"
+														style="
+														white-space: normal;
+														  word-wrap: break-word;
+														  max-width: 374px;
+														  line-height: 1.2;
+														  text-align: left;
+														  vertical-align: middle;
+														  font-weight: normal;
+														"
+														th:title="${report.R37_PRODUCT}"
+														th:text="${report.R37_PRODUCT}">
+													</td>
+													<td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R37_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R37_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R37_STAGE1_PROVISIONS"
+															   name="R37_STAGE1_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+													  <td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(255, 255, 255);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R37_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R37_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R37_QUALIFY_STAGE2_PROVISIONS"
+																   name="R37_QUALIFY_STAGE2_PROVISIONS"
+																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+													  <td style="text-align: center; 
+															   vertical-align: middle; 
+															   background-color:rgb(255, 255, 255);
+															   font-weight: normal;">
+														  <input class="display-input show_input"
+																 type="text"
+																 th:value="${report.R37_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R37_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																 id="R37_TOTAL_GENERAL_PROVISIONS"
+																 name="R37_TOTAL_GENERAL_PROVISIONS"
+																 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 readonly />
+														</td>
+
+													 
+												</tr>		
+													<tr>
+
+														<td id="ROW38"
+															style="
+															white-space: normal;
+															  word-wrap: break-word;
+															  max-width: 374px;
+															  line-height: 1.2;
+															  text-align: left;
+															  vertical-align: middle;
+															  font-weight: bold;
+															"
+															th:title="${report.R38_PRODUCT}"
+															th:text="${report.R38_PRODUCT}">
+														</td>
+														<td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(107, 122, 143);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R38_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R38_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R38_STAGE1_PROVISIONS"
+																   name="R38_STAGE1_PROVISIONS"
+																   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+														  <td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(107, 122, 143);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R38_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R38_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R38_QUALIFY_STAGE2_PROVISIONS"
+																   name="R38_QUALIFY_STAGE2_PROVISIONS"
+																   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+														  <td style="text-align: center; 
+																   vertical-align: middle; 
+																   background-color:rgb(107, 122, 143);
+																   font-weight: normal;">
+															  <input class="display-input show_input"
+																	 type="text"
+																	 th:value="${report.R38_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R38_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	 id="R38_TOTAL_GENERAL_PROVISIONS"
+																	 name="R38_TOTAL_GENERAL_PROVISIONS"
+																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 readonly />
+															</td>
+
+														 
+													</tr>
+													<tr>
+
+														<td id="ROW39"
+															style="
+															white-space: normal;
+															  word-wrap: break-word;
+															  max-width: 374px;
+															  line-height: 1.2;
+															  text-align: left;
+															  vertical-align: middle;
+															  font-weight: normal;
+															"
+															th:title="${report.R39_PRODUCT}"
+															th:text="${report.R39_PRODUCT}">
+														</td>
+														<td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(255, 255, 255);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R39_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R39_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R39_STAGE1_PROVISIONS"
+																   name="R39_STAGE1_PROVISIONS"
+																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+														  <td style="text-align: center; 
+																	 vertical-align: middle; 
+																	 background-color:rgb(255, 255, 255);
+																	 font-weight: normal;">
+																<input class="display-input show_input"
+																	   type="text"
+																	   th:value="${report.R39_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R39_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	   id="R39_QUALIFY_STAGE2_PROVISIONS"
+																	   name="R39_QUALIFY_STAGE2_PROVISIONS"
+																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   readonly />
+															  </td>
+														  <td style="text-align: center; 
+																   vertical-align: middle; 
+																   background-color:rgb(255, 255, 255);
+																   font-weight: normal;">
+															  <input class="display-input show_input"
+																	 type="text"
+																	 th:value="${report.R39_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R39_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	 id="R39_TOTAL_GENERAL_PROVISIONS"
+																	 name="R39_TOTAL_GENERAL_PROVISIONS"
+																	 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 readonly />
+															</td>
+
+														 
+													</tr>
+												<tr>
+
+													<td id="ROW40"
+														style="
+														white-space: normal;
+														  word-wrap: break-word;
+														  max-width: 374px;
+														  line-height: 1.2;
+														  text-align: left;
+														  vertical-align: middle;
+														  font-weight: normal;
+														"
+														th:title="${report.R40_PRODUCT}"
+														th:text="${report.R40_PRODUCT}">
+													</td>
+													<td style="text-align: center; 
+															 vertical-align: middle; 
+															 background-color:rgb(255, 255, 255);
+															 font-weight: normal;">
+														<input class="display-input show_input"
+															   type="text"
+															   th:value="${report.R40_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R40_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+															   id="R40_STAGE1_PROVISIONS"
+															   name="R40_STAGE1_PROVISIONS"
+															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   readonly />
+													  </td>
+													  <td style="text-align: center; 
+																 vertical-align: middle; 
+																 background-color:rgb(255, 255, 255);
+																 font-weight: normal;">
+															<input class="display-input show_input"
+																   type="text"
+																   th:value="${report.R40_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R40_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																   id="R40_QUALIFY_STAGE2_PROVISIONS"
+																   name="R40_QUALIFY_STAGE2_PROVISIONS"
+																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   readonly />
+														  </td>
+													  <td style="text-align: center; 
+															   vertical-align: middle; 
+															   background-color:rgb(255, 255, 255);
+															   font-weight: normal;">
+														  <input class="display-input show_input"
+																 type="text"
+																 th:value="${report.R40_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R40_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																 id="R40_TOTAL_GENERAL_PROVISIONS"
+																 name="R40_TOTAL_GENERAL_PROVISIONS"
+																 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 readonly />
+														</td>
+
+													 
+												</tr>
+												<tr>
+
+															<td id="ROW41"
+																style="
+																white-space: normal;
+																  word-wrap: break-word;
+																  max-width: 374px;
+																  line-height: 1.2;
+																  text-align: left;
+																  vertical-align: middle;
+																  font-weight: bold;
+																"
+																th:title="${report.R41_PRODUCT}"
+																th:text="${report.R41_PRODUCT}">
+															</td>
+															<td style="text-align: center; 
+																	 vertical-align: middle; 
+																	 background-color:rgb(107, 122, 143);
+																	 font-weight: normal;">
+																<input class="display-input show_input"
+																	   type="text"
+																	   th:value="${report.R41_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R41_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	   id="R41_STAGE1_PROVISIONS"
+																	   name="R41_STAGE1_PROVISIONS"
+																	   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   readonly />
+															  </td>
+															  <td style="text-align: center; 
+																	 vertical-align: middle; 
+																	 background-color:rgb(107, 122, 143);
+																	 font-weight: normal;">
+																<input class="display-input show_input"
+																	   type="text"
+																	   th:value="${report.R41_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R41_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	   id="R41_QUALIFY_STAGE2_PROVISIONS"
+																	   name="R41_QUALIFY_STAGE2_PROVISIONS"
+																	   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   readonly />
+															  </td>
+															  <td style="text-align: center; 
+																	   vertical-align: middle; 
+																	   background-color:rgb(107, 122, 143);
+																	   font-weight: normal;">
+																  <input class="display-input show_input"
+																		 type="text"
+																		 th:value="${report.R41_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R41_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		 id="R41_TOTAL_GENERAL_PROVISIONS"
+																		 name="R41_TOTAL_GENERAL_PROVISIONS"
+																		 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		 readonly />
+																</td>
+
+															 
+														</tr>	
+
+															<tr>
+
+																<td id="ROW42"
+																	style="
+																	white-space: normal;
+																	  word-wrap: break-word;
+																	  max-width: 374px;
+																	  line-height: 1.2;
+																	  text-align: left;
+																	  vertical-align: middle;
+																	  font-weight: normal;
+																	"
+																	th:title="${report.R42_PRODUCT}"
+																	th:text="${report.R42_PRODUCT}">
+																</td>
+																<td style="text-align: center; 
+																		 vertical-align: middle; 
+																		 background-color:rgb(255, 255, 255);
+																		 font-weight: normal;">
+																	<input class="display-input show_input"
+																		   type="text"
+																		   th:value="${report.R42_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R42_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		   id="R42_STAGE1_PROVISIONS"
+																		   name="R42_STAGE1_PROVISIONS"
+																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   readonly />
+																  </td>
+																  <td style="text-align: center; 
+																		 vertical-align: middle; 
+																		 background-color:rgb(255, 255, 255);
+																		 font-weight: normal;">
+																	<input class="display-input show_input"
+																		   type="text"
+																		   th:value="${report.R42_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R42_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		   id="R42_QUALIFY_STAGE2_PROVISIONS"
+																		   name="R42_QUALIFY_STAGE2_PROVISIONS"
+																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   readonly />
+																  </td>
+																  <td style="text-align: center; 
+																		   vertical-align: middle; 
+																		   background-color:rgb(255, 255, 255);
+																		   font-weight: normal;">
+																	  <input class="display-input show_input"
+																			 type="text"
+																			 th:value="${report.R42_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R42_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			 id="R42_TOTAL_GENERAL_PROVISIONS"
+																			 name="R42_TOTAL_GENERAL_PROVISIONS"
+																			 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 readonly />
+																	</td>
+
+																 
+															</tr>
+															<tr>
+
+																<td id="ROW43"
+																	style="
+																	white-space: normal;
+																	  word-wrap: break-word;
+																	  max-width: 374px;
+																	  line-height: 1.2;
+																	  text-align: left;
+																	  vertical-align: middle;
+																	  font-weight: normal;
+																	"
+																	th:title="${report.R43_PRODUCT}"
+																	th:text="${report.R43_PRODUCT}">
+																</td>
+																<td style="text-align: center; 
+																		 vertical-align: middle; 
+																		 background-color:rgb(255, 255, 255);
+																		 font-weight: normal;">
+																	<input class="display-input show_input"
+																		   type="text"
+																		   th:value="${report.R43_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R43_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		   id="R43_STAGE1_PROVISIONS"
+																		   name="R43_STAGE1_PROVISIONS"
+																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   readonly />
+																  </td>
+																  <td style="text-align: center; 
+																			 vertical-align: middle; 
+																			 background-color:rgb(255, 255, 255);
+																			 font-weight: normal;">
+																		<input class="display-input show_input"
+																			   type="text"
+																			   th:value="${report.R43_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R43_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			   id="R43_QUALIFY_STAGE2_PROVISIONS"
+																			   name="R43_QUALIFY_STAGE2_PROVISIONS"
+																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   readonly />
+																	  </td>
+																  <td style="text-align: center; 
+																		   vertical-align: middle; 
+																		   background-color:rgb(255, 255, 255);
+																		   font-weight: normal;">
+																	  <input class="display-input show_input"
+																			 type="text"
+																			 th:value="${report.R43_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R43_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			 id="R43_TOTAL_GENERAL_PROVISIONS"
+																			 name="R43_TOTAL_GENERAL_PROVISIONS"
+																			 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 readonly />
+																	</td>
+
+																 
+															</tr>
+														<tr>
+
+															<td id="ROW44"
+																style="
+																white-space: normal;
+																  word-wrap: break-word;
+																  max-width: 374px;
+																  line-height: 1.2;
+																  text-align: left;
+																  vertical-align: middle;
+																  font-weight: normal;
+																"
+																th:title="${report.R44_PRODUCT}"
+																th:text="${report.R44_PRODUCT}">
+															</td>
+															<td style="text-align: center; 
+																	 vertical-align: middle; 
+																	 background-color:rgb(107, 122, 143);
+																	 font-weight: normal;">
+																<input class="display-input show_input"
+																	   type="text"
+																	   th:value="${report.R44_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R44_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	   id="R44_STAGE1_PROVISIONS"
+																	   name="R44_STAGE1_PROVISIONS"
+																	   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   readonly />
+															  </td>
+															  <td style="text-align: center; 
+																		 vertical-align: middle; 
+																		 background-color:rgb(107, 122, 143);
+																		 font-weight: normal;">
+																	<input class="display-input show_input"
+																		   type="text"
+																		   th:value="${report.R44_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R44_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		   id="R44_QUALIFY_STAGE2_PROVISIONS"
+																		   name="R44_QUALIFY_STAGE2_PROVISIONS"
+																		   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   readonly />
+																  </td>
+															  <td style="text-align: center; 
+																	   vertical-align: middle; 
+																	   background-color:rgb(107, 122, 143);
+																	   font-weight: normal;">
+																  <input class="display-input show_input"
+																		 type="text"
+																		 th:value="${report.R44_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R44_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		 id="R44_TOTAL_GENERAL_PROVISIONS"
+																		 name="R44_TOTAL_GENERAL_PROVISIONS"
+																		 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		 readonly />
+																</td>
+
+															 
+														</tr>																																			
+
+															<tr>
+
+																<td id="ROW45"
+																	style="
+																	white-space: normal;
+																	  word-wrap: break-word;
+																	  max-width: 374px;
+																	  line-height: 1.2;
+																	  text-align: left;
+																	  vertical-align: middle;
+																	  font-weight: bold;
+																	"
+																	th:title="${report.R45_PRODUCT}"
+																	th:text="${report.R45_PRODUCT}">
+																</td>
+																<td style="text-align: center; 
+																		 vertical-align: middle; 
+																		 background-color:rgb(255, 255, 255);
+																		 font-weight: normal;">
+																	<input class="display-input show_input"
+																		   type="text"
+																		   th:value="${report.R45_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R45_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		   id="R45_STAGE1_PROVISIONS"
+																		   name="R45_STAGE1_PROVISIONS"
+																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   readonly />
+																  </td>
+																  <td style="text-align: center; 
+																		 vertical-align: middle; 
+																		 background-color:rgb(255, 255, 255);
+																		 font-weight: normal;">
+																	<input class="display-input show_input"
+																		   type="text"
+																		   th:value="${report.R45_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R45_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		   id="R45_QUALIFY_STAGE2_PROVISIONS"
+																		   name="R45_QUALIFY_STAGE2_PROVISIONS"
+																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   readonly />
+																  </td>
+																  <td style="text-align: center; 
+																		   vertical-align: middle; 
+																		   background-color:rgb(255, 255, 255);
+																		   font-weight: normal;">
+																	  <input class="display-input show_input"
+																			 type="text"
+																			 th:value="${report.R45_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R45_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			 id="R45_TOTAL_GENERAL_PROVISIONS"
+																			 name="R45_TOTAL_GENERAL_PROVISIONS"
+																			 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 readonly />
+																	</td>
+
+																 
+															</tr>
+															<tr>
+
+																<td id="ROW46"
+																	style="
+																	white-space: normal;
+																	  word-wrap: break-word;
+																	  max-width: 374px;
+																	  line-height: 1.2;
+																	  text-align: left;
+																	  vertical-align: middle;
+																	  font-weight: normal;
+																	"
+																	th:title="${report.R46_PRODUCT}"
+																	th:text="${report.R46_PRODUCT}">
+																</td>
+																<td style="text-align: center; 
+																		 vertical-align: middle; 
+																		 background-color:rgb(255, 255, 255);
+																		 font-weight: normal;">
+																	<input class="display-input show_input"
+																		   type="text"
+																		   th:value="${report.R46_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R46_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		   id="R46_STAGE1_PROVISIONS"
+																		   name="R46_STAGE1_PROVISIONS"
+																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   readonly />
+																  </td>
+																  <td style="text-align: center; 
+																			 vertical-align: middle; 
+																			 background-color:rgb(255, 255, 255);
+																			 font-weight: normal;">
+																		<input class="display-input show_input"
+																			   type="text"
+																			   th:value="${report.R46_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R46_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			   id="R46_QUALIFY_STAGE2_PROVISIONS"
+																			   name="R46_QUALIFY_STAGE2_PROVISIONS"
+																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   readonly />
+																	  </td>
+																  <td style="text-align: center; 
+																		   vertical-align: middle; 
+																		   background-color:rgb(255, 255, 255);
+																		   font-weight: normal;">
+																	  <input class="display-input show_input"
+																			 type="text"
+																			 th:value="${report.R46_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R46_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			 id="R46_TOTAL_GENERAL_PROVISIONS"
+																			 name="R46_TOTAL_GENERAL_PROVISIONS"
+																			 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 readonly />
+																	</td>
+
+																 
+															</tr>
+														<tr>
+
+															<td id="ROW47"
+																style="
+																white-space: normal;
+																  word-wrap: break-word;
+																  max-width: 374px;
+																  line-height: 1.2;
+																  text-align: left;
+																  vertical-align: middle;
+																  font-weight: normal;
+																"
+																th:title="${report.R47_PRODUCT}"
+																th:text="${report.R47_PRODUCT}">
+															</td>
+															<td style="text-align: center; 
+																	 vertical-align: middle; 
+																	 background-color:rgb(255, 255, 255);
+																	 font-weight: normal;">
+																<input class="display-input show_input"
+																	   type="text"
+																	   th:value="${report.R47_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R47_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																	   id="R47_STAGE1_PROVISIONS"
+																	   name="R47_STAGE1_PROVISIONS"
+																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   readonly />
+															  </td>
+															  <td style="text-align: center; 
+																		 vertical-align: middle; 
+																		 background-color:rgb(255, 255, 255);
+																		 font-weight: normal;">
+																	<input class="display-input show_input"
+																		   type="text"
+																		   th:value="${report.R47_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R47_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		   id="R47_QUALIFY_STAGE2_PROVISIONS"
+																		   name="R47_QUALIFY_STAGE2_PROVISIONS"
+																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   readonly />
+																  </td>
+															  <td style="text-align: center; 
+																	   vertical-align: middle; 
+																	   background-color:rgb(255, 255, 255);
+																	   font-weight: normal;">
+																  <input class="display-input show_input"
+																		 type="text"
+																		 th:value="${report.R47_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R47_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		 id="R47_TOTAL_GENERAL_PROVISIONS"
+																		 name="R47_TOTAL_GENERAL_PROVISIONS"
+																		 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		 readonly />
+																</td>
+
+															 
+														</tr>																																			
+
+														<tr>
+
+																<td id="ROW48"
+																	style="
+																	white-space: normal;
+																	  word-wrap: break-word;
+																	  max-width: 374px;
+																	  line-height: 1.2;
+																	  text-align: left;
+																	  vertical-align: middle;
+																	  font-weight: normal;
+																	"
+																	th:title="${report.R48_PRODUCT}"
+																	th:text="${report.R48_PRODUCT}">
+																</td>
+																<td style="text-align: center; 
+																		 vertical-align: middle; 
+																		 background-color:rgb(255, 255, 255);
+																		 font-weight: normal;">
+																	<input class="display-input show_input"
+																		   type="text"
+																		   th:value="${report.R48_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R48_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		   id="R48_STAGE1_PROVISIONS"
+																		   name="R48_STAGE1_PROVISIONS"
+																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   readonly />
+																  </td>
+																  <td style="text-align: center; 
+																			 vertical-align: middle; 
+																			 background-color:rgb(255, 255, 255);
+																			 font-weight: normal;">
+																		<input class="display-input show_input"
+																			   type="text"
+																			   th:value="${report.R48_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R48_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			   id="R48_QUALIFY_STAGE2_PROVISIONS"
+																			   name="R48_QUALIFY_STAGE2_PROVISIONS"
+																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   readonly />
+																	  </td>
+																  <td style="text-align: center; 
+																		   vertical-align: middle; 
+																		   background-color:rgb(255, 255, 255);
+																		   font-weight: normal;">
+																	  <input class="display-input show_input"
+																			 type="text"
+																			 th:value="${report.R48_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R48_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			 id="R48_TOTAL_GENERAL_PROVISIONS"
+																			 name="R48_TOTAL_GENERAL_PROVISIONS"
+																			 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 readonly />
+																	</td>
+
+																 
+															</tr>			
+
+																<tr>
+
+																	<td id="ROW49"
+																		style="
+																		white-space: normal;
+																		  word-wrap: break-word;
+																		  max-width: 374px;
+																		  line-height: 1.2;
+																		  text-align: left;
+																		  vertical-align: middle;
+																		  font-weight: bold;
+																		"
+																		th:title="${report.R49_PRODUCT}"
+																		th:text="${report.R49_PRODUCT}">
+																	</td>
+																	<td style="text-align: center; 
+																			 vertical-align: middle; 
+																			 background-color:rgb(107, 122, 143);
+																			 font-weight: normal;">
+																		<input class="display-input show_input"
+																			   type="text"
+																			   th:value="${report.R49_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R49_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			   id="R49_STAGE1_PROVISIONS"
+																			   name="R49_STAGE1_PROVISIONS"
+																			   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   readonly />
+																	  </td>
+																	  <td style="text-align: center; 
+																			 vertical-align: middle; 
+																			 background-color:rgb(107, 122, 143);
+																			 font-weight: normal;">
+																		<input class="display-input show_input"
+																			   type="text"
+																			   th:value="${report.R49_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R49_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			   id="R49_QUALIFY_STAGE2_PROVISIONS"
+																			   name="R49_QUALIFY_STAGE2_PROVISIONS"
+																			   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   readonly />
+																	  </td>
+																	  <td style="text-align: center; 
+																			   vertical-align: middle; 
+																			   background-color:rgb(107, 122, 143);
+																			   font-weight: normal;">
+																		  <input class="display-input show_input"
+																				 type="text"
+																				 th:value="${report.R49_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R49_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																				 id="R49_TOTAL_GENERAL_PROVISIONS"
+																				 name="R49_TOTAL_GENERAL_PROVISIONS"
+																				 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				 readonly />
+																		</td>
+
+																	 
+																</tr>
+																<tr>
+
+																	<td id="ROW50"
+																		style="
+																		white-space: normal;
+																		  word-wrap: break-word;
+																		  max-width: 374px;
+																		  line-height: 1.2;
+																		  text-align: left;
+																		  vertical-align: middle;
+																		  font-weight: normal;
+																		"
+																		th:title="${report.R50_PRODUCT}"
+																		th:text="${report.R50_PRODUCT}">
+																	</td>
+																	<td style="text-align: center; 
+																			 vertical-align: middle; 
+																			 background-color:rgb(255, 255, 255);
+																			 font-weight: normal;">
+																		<input class="display-input show_input"
+																			   type="text"
+																			   th:value="${report.R50_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R50_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			   id="R50_STAGE1_PROVISIONS"
+																			   name="R50_STAGE1_PROVISIONS"
+																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   readonly />
+																	  </td>
+																	  <td style="text-align: center; 
+																				 vertical-align: middle; 
+																				 background-color:rgb(255, 255, 255);
+																				 font-weight: normal;">
+																			<input class="display-input show_input"
+																				   type="text"
+																				   th:value="${report.R50_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R50_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																				   id="R50_QUALIFY_STAGE2_PROVISIONS"
+																				   name="R50_QUALIFY_STAGE2_PROVISIONS"
+																				   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				   readonly />
+																		  </td>
+																	  <td style="text-align: center; 
+																			   vertical-align: middle; 
+																			   background-color:rgb(255, 255, 255);
+																			   font-weight: normal;">
+																		  <input class="display-input show_input"
+																				 type="text"
+																				 th:value="${report.R50_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R50_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																				 id="R50_TOTAL_GENERAL_PROVISIONS"
+																				 name="R50_TOTAL_GENERAL_PROVISIONS"
+																				 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				 readonly />
+																		</td>
+
+																	 
+																</tr>
+															<tr>
+
+																<td id="ROW51"
+																	style="
+																	white-space: normal;
+																	  word-wrap: break-word;
+																	  max-width: 374px;
+																	  line-height: 1.2;
+																	  text-align: left;
+																	  vertical-align: middle;
+																	  font-weight: normal;
+																	"
+																	th:title="${report.R51_PRODUCT}"
+																	th:text="${report.R51_PRODUCT}">
+																</td>
+																<td style="text-align: center; 
+																		 vertical-align: middle; 
+																		 background-color:rgb(255, 255, 255);
+																		 font-weight: normal;">
+																	<input class="display-input show_input"
+																		   type="text"
+																		   th:value="${report.R51_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R51_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																		   id="R51_STAGE1_PROVISIONS"
+																		   name="R51_STAGE1_PROVISIONS"
+																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   readonly />
+																  </td>
+																  <td style="text-align: center; 
+																			 vertical-align: middle; 
+																			 background-color:rgb(255, 255, 255);
+																			 font-weight: normal;">
+																		<input class="display-input show_input"
+																			   type="text"
+																			   th:value="${report.R51_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R51_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			   id="R51_QUALIFY_STAGE2_PROVISIONS"
+																			   name="R51_QUALIFY_STAGE2_PROVISIONS"
+																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   readonly />
+																	  </td>
+																  <td style="text-align: center; 
+																		   vertical-align: middle; 
+																		   background-color:rgb(255, 255, 255);
+																		   font-weight: normal;">
+																	  <input class="display-input show_input"
+																			 type="text"
+																			 th:value="${report.R51_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R51_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			 id="R51_TOTAL_GENERAL_PROVISIONS"
+																			 name="R51_TOTAL_GENERAL_PROVISIONS"
+																			 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 readonly />
+																	</td>
+
+																 
+															</tr>																																			
+
+															<tr>
+
+																	<td id="ROW52"
+																		style="
+																		white-space: normal;
+																		  word-wrap: break-word;
+																		  max-width: 374px;
+																		  line-height: 1.2;
+																		  text-align: left;
+																		  vertical-align: middle;
+																		  font-weight: normal;
+																		"
+																		th:title="${report.R52_PRODUCT}"
+																		th:text="${report.R52_PRODUCT}">
+																	</td>
+																	<td style="text-align: center; 
+																			 vertical-align: middle; 
+																			 background-color:rgb(255, 255, 255);
+																			 font-weight: normal;">
+																		<input class="display-input show_input"
+																			   type="text"
+																			   th:value="${report.R52_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R52_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			   id="R52_STAGE1_PROVISIONS"
+																			   name="R52_STAGE1_PROVISIONS"
+																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   readonly />
+																	  </td>
+																	  <td style="text-align: center; 
+																				 vertical-align: middle; 
+																				 background-color:rgb(255, 255, 255);
+																				 font-weight: normal;">
+																			<input class="display-input show_input"
+																				   type="text"
+																				   th:value="${report.R52_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R52_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																				   id="R52_QUALIFY_STAGE2_PROVISIONS"
+																				   name="R52_QUALIFY_STAGE2_PROVISIONS"
+																				   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				   readonly />
+																		  </td>
+																	  <td style="text-align: center; 
+																			   vertical-align: middle; 
+																			   background-color:rgb(255, 255, 255);
+																			   font-weight: normal;">
+																		  <input class="display-input show_input"
+																				 type="text"
+																				 th:value="${report.R52_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R52_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																				 id="R52_TOTAL_GENERAL_PROVISIONS"
+																				 name="R52_TOTAL_GENERAL_PROVISIONS"
+																				 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				 readonly />
+																		</td>
+
+																	 
+																</tr>				
+
+																	
+																				<tr>
+
+																					<td id="ROW53"
+																						style="
+																						white-space: normal;
+																						  word-wrap: break-word;
+																						  max-width: 374px;
+																						  line-height: 1.2;
+																						  text-align: left;
+																						  vertical-align: middle;
+																						  font-weight: bold;
+																						"
+																						th:title="${report.R53_PRODUCT}"
+																						th:text="${report.R53_PRODUCT}">
+																					</td>
+																					<td style="text-align: center; 
+																							 vertical-align: middle; 
+																							 background-color:rgb(107, 122, 143);
+																							 font-weight: normal;">
+																						<input class="display-input show_input"
+																							   type="text"
+																							   th:value="${report.R53_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R53_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																							   id="R53_STAGE1_PROVISIONS"
+																							   name="R53_STAGE1_PROVISIONS"
+																							   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							   readonly />
+																					  </td>
+																					  <td style="text-align: center; 
+																							 vertical-align: middle; 
+																							 background-color:rgb(107, 122, 143);
+																							 font-weight: normal;">
+																						<input class="display-input show_input"
+																							   type="text"
+																							   th:value="${report.R53_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R53_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																							   id="R53_QUALIFY_STAGE2_PROVISIONS"
+																							   name="R53_QUALIFY_STAGE2_PROVISIONS"
+																							   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							   readonly />
+																					  </td>
+																					  <td style="text-align: center; 
+																							   vertical-align: middle; 
+																							   background-color:rgb(107, 122, 143);
+																							   font-weight: normal;">
+																						  <input class="display-input show_input"
+																								 type="text"
+																								 th:value="${report.R53_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R53_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																								 id="R53_TOTAL_GENERAL_PROVISIONS"
+																								 name="R53_TOTAL_GENERAL_PROVISIONS"
+																								 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																								 readonly />
+																						</td>
+
+																					 
+																				</tr>
+																	<tr>
+
+																		<td id="ROW54"
+																			style="
+																			white-space: normal;
+																			  word-wrap: break-word;
+																			  max-width: 374px;
+																			  line-height: 1.2;
+																			  text-align: left;
+																			  vertical-align: middle;
+																			  font-weight: normal;
+																			"
+																			th:title="${report.R54_PRODUCT}"
+																			th:text="${report.R54_PRODUCT}">
+																		</td>
+																		<td style="text-align: center; 
+																				 vertical-align: middle; 
+																				 background-color:rgb(255, 255, 255);
+																				 font-weight: normal;">
+																			<input class="display-input show_input"
+																				   type="text"
+																				   th:value="${report.R54_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R54_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																				   id="R54_STAGE1_PROVISIONS"
+																				   name="R54_STAGE1_PROVISIONS"
+																				   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				   readonly />
+																		  </td>
+																		  <td style="text-align: center; 
+																					 vertical-align: middle; 
+																					 background-color:rgb(255, 255, 255);
+																					 font-weight: normal;">
+																				<input class="display-input show_input"
+																					   type="text"
+																					   th:value="${report.R54_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R54_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																					   id="R54_QUALIFY_STAGE2_PROVISIONS"
+																					   name="R54_QUALIFY_STAGE2_PROVISIONS"
+																					   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					   readonly />
+																			  </td>
+																		  <td style="text-align: center; 
+																				   vertical-align: middle; 
+																				   background-color:rgb(255, 255, 255);
+																				   font-weight: normal;">
+																			  <input class="display-input show_input"
+																					 type="text"
+																					 th:value="${report.R54_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R54_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																					 id="R54_TOTAL_GENERAL_PROVISIONS"
+																					 name="R54_TOTAL_GENERAL_PROVISIONS"
+																					 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					 readonly />
+																			</td>
+
+																		 
+																	</tr>
+																<tr>
+
+																	<td id="ROW55"
+																		style="
+																		white-space: normal;
+																		  word-wrap: break-word;
+																		  max-width: 374px;
+																		  line-height: 1.2;
+																		  text-align: left;
+																		  vertical-align: middle;
+																		  font-weight: normal;
+																		"
+																		th:title="${report.R55_PRODUCT}"
+																		th:text="${report.R55_PRODUCT}">
+																	</td>
+																	<td style="text-align: center; 
+																			 vertical-align: middle; 
+																			 background-color:rgb(255, 255, 255);
+																			 font-weight: normal;">
+																		<input class="display-input show_input"
+																			   type="text"
+																			   th:value="${report.R55_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R55_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																			   id="R55_STAGE1_PROVISIONS"
+																			   name="R55_STAGE1_PROVISIONS"
+																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   readonly />
+																	  </td>
+																	  <td style="text-align: center; 
+																				 vertical-align: middle; 
+																				 background-color:rgb(255, 255, 255);
+																				 font-weight: normal;">
+																			<input class="display-input show_input"
+																				   type="text"
+																				   th:value="${report.R55_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R55_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																				   id="R55_QUALIFY_STAGE2_PROVISIONS"
+																				   name="R55_QUALIFY_STAGE2_PROVISIONS"
+																				   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				   readonly />
+																		  </td>
+																	  <td style="text-align: center; 
+																			   vertical-align: middle; 
+																			   background-color:rgb(255, 255, 255);
+																			   font-weight: normal;">
+																		  <input class="display-input show_input"
+																				 type="text"
+																				 th:value="${report.R55_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R55_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																				 id="R55_TOTAL_GENERAL_PROVISIONS"
+																				 name="R55_TOTAL_GENERAL_PROVISIONS"
+																				 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				 readonly />
+																		</td>
+
+																	 
+																</tr>																																			
+
+																<tr>
+
+																		<td id="ROW56"
+																			style="
+																			white-space: normal;
+																			  word-wrap: break-word;
+																			  max-width: 374px;
+																			  line-height: 1.2;
+																			  text-align: left;
+																			  vertical-align: middle;
+																			  font-weight: normal;
+																			"
+																			th:title="${report.R56_PRODUCT}"
+																			th:text="${report.R56_PRODUCT}">
+																		</td>
+																		<td style="text-align: center; 
+																				 vertical-align: middle; 
+																				 background-color:rgb(255, 255, 255);
+																				 font-weight: normal;">
+																			<input class="display-input show_input"
+																				   type="text"
+																				   th:value="${report.R56_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R56_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																				   id="R56_STAGE1_PROVISIONS"
+																				   name="R56_STAGE1_PROVISIONS"
+																				   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				   readonly />
+																		  </td>
+																		  <td style="text-align: center; 
+																					 vertical-align: middle; 
+																					 background-color:rgb(255, 255, 255);
+																					 font-weight: normal;">
+																				<input class="display-input show_input"
+																					   type="text"
+																					   th:value="${report.R56_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R56_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																					   id="R56_QUALIFY_STAGE2_PROVISIONS"
+																					   name="R56_QUALIFY_STAGE2_PROVISIONS"
+																					   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					   readonly />
+																			  </td>
+																		  <td style="text-align: center; 
+																				   vertical-align: middle; 
+																				   background-color:rgb(255, 255, 255);
+																				   font-weight: normal;">
+																			  <input class="display-input show_input"
+																					 type="text"
+																					 th:value="${report.R56_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R56_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																					 id="R56_TOTAL_GENERAL_PROVISIONS"
+																					 name="R56_TOTAL_GENERAL_PROVISIONS"
+																					 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					 readonly />
+																			</td>
+
+																		 
+																	</tr>	
+
+																		
+																					<tr>
+
+																						<td id="ROW57"
+																							style="
+																							white-space: normal;
+																							  word-wrap: break-word;
+																							  max-width: 374px;
+																							  line-height: 1.2;
+																							  text-align: left;
+																							  vertical-align: middle;
+																							  font-weight: bold;
+																							"
+																							th:title="${report.R57_PRODUCT}"
+																							th:text="${report.R57_PRODUCT}">
+																						</td>
+																						<td style="text-align: center; 
+																								 vertical-align: middle; 
+																								 background-color:rgb(107, 122, 143);
+																								 font-weight: normal;">
+																							<input class="display-input show_input"
+																								   type="text"
+																								   th:value="${report.R57_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R57_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																								   id="R57_STAGE1_PROVISIONS"
+																								   name="R57_STAGE1_PROVISIONS"
+																								   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																								   readonly />
+																						  </td>
+																						  <td style="text-align: center; 
+																								 vertical-align: middle; 
+																								 background-color:rgb(107, 122, 143);
+																								 font-weight: normal;">
+																							<input class="display-input show_input"
+																								   type="text"
+																								   th:value="${report.R57_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R57_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																								   id="R57_QUALIFY_STAGE2_PROVISIONS"
+																								   name="R57_QUALIFY_STAGE2_PROVISIONS"
+																								   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																								   readonly />
+																						  </td>
+																						  <td style="text-align: center; 
+																								   vertical-align: middle; 
+																								   background-color:rgb(107, 122, 143);
+																								   font-weight: normal;">
+																							  <input class="display-input show_input"
+																									 type="text"
+																									 th:value="${report.R57_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R57_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																									 id="R57_TOTAL_GENERAL_PROVISIONS"
+																									 name="R57_TOTAL_GENERAL_PROVISIONS"
+																									 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																									 readonly />
+																							</td>
+
+																						 
+																					</tr>
+																		<tr>
+
+																			<td id="ROW58"
+																				style="
+																				white-space: normal;
+																				  word-wrap: break-word;
+																				  max-width: 374px;
+																				  line-height: 1.2;
+																				  text-align: left;
+																				  vertical-align: middle;
+																				  font-weight: normal;
+																				"
+																				th:title="${report.R58_PRODUCT}"
+																				th:text="${report.R58_PRODUCT}">
+																			</td>
+																			<td style="text-align: center; 
+																					 vertical-align: middle; 
+																					 background-color:rgb(259, 259, 259);
+																					 font-weight: normal;">
+																				<input class="display-input show_input"
+																					   type="text"
+																					   th:value="${report.R58_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R58_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																					   id="R58_STAGE1_PROVISIONS"
+																					   name="R58_STAGE1_PROVISIONS"
+																					   style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					   readonly />
+																			  </td>
+																			  <td style="text-align: center; 
+																						 vertical-align: middle; 
+																						 background-color:rgb(259, 259, 259);
+																						 font-weight: normal;">
+																					<input class="display-input show_input"
+																						   type="text"
+																						   th:value="${report.R58_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R58_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																						   id="R58_QUALIFY_STAGE2_PROVISIONS"
+																						   name="R58_QUALIFY_STAGE2_PROVISIONS"
+																						   style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						   readonly />
+																				  </td>
+																			  <td style="text-align: center; 
+																					   vertical-align: middle; 
+																					   background-color:rgb(259, 259, 259);
+																					   font-weight: normal;">
+																				  <input class="display-input show_input"
+																						 type="text"
+																						 th:value="${report.R58_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R58_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																						 id="R58_TOTAL_GENERAL_PROVISIONS"
+																						 name="R58_TOTAL_GENERAL_PROVISIONS"
+																						 style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						 readonly />
+																				</td>
+
+																			 
+																		</tr>
+																	<tr>
+
+																		<td id="ROW59"
+																			style="
+																			white-space: normal;
+																			  word-wrap: break-word;
+																			  max-width: 374px;
+																			  line-height: 1.2;
+																			  text-align: left;
+																			  vertical-align: middle;
+																			  font-weight: normal;
+																			"
+																			th:title="${report.R59_PRODUCT}"
+																			th:text="${report.R59_PRODUCT}">
+																		</td>
+																		<td style="text-align: center; 
+																				 vertical-align: middle; 
+																				 background-color:rgb(259, 259, 259);
+																				 font-weight: normal;">
+																			<input class="display-input show_input"
+																				   type="text"
+																				   th:value="${report.R59_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R59_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																				   id="R59_STAGE1_PROVISIONS"
+																				   name="R59_STAGE1_PROVISIONS"
+																				   style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				   readonly />
+																		  </td>
+																		  <td style="text-align: center; 
+																					 vertical-align: middle; 
+																					 background-color:rgb(259, 259, 259);
+																					 font-weight: normal;">
+																				<input class="display-input show_input"
+																					   type="text"
+																					   th:value="${report.R59_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R59_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																					   id="R59_QUALIFY_STAGE2_PROVISIONS"
+																					   name="R59_QUALIFY_STAGE2_PROVISIONS"
+																					   style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					   readonly />
+																			  </td>
+																		  <td style="text-align: center; 
+																				   vertical-align: middle; 
+																				   background-color:rgb(259, 259, 259);
+																				   font-weight: normal;">
+																			  <input class="display-input show_input"
+																					 type="text"
+																					 th:value="${report.R59_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R59_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																					 id="R59_TOTAL_GENERAL_PROVISIONS"
+																					 name="R59_TOTAL_GENERAL_PROVISIONS"
+																					 style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					 readonly />
+																			</td>
+
+																		 
+																	</tr>																																			
+
+																	<tr>
+
+																			<td id="ROW60"
+																				style="
+																				white-space: normal;
+																				  word-wrap: break-word;
+																				  max-width: 374px;
+																				  line-height: 1.2;
+																				  text-align: left;
+																				  vertical-align: middle;
+																				  font-weight: normal;
+																				"
+																				th:title="${report.R60_PRODUCT}"
+																				th:text="${report.R60_PRODUCT}">
+																			</td>
+																			<td style="text-align: center; 
+																					 vertical-align: middle; 
+																					 background-color:rgb(259, 259, 259);
+																					 font-weight: normal;">
+																				<input class="display-input show_input"
+																					   type="text"
+																					   th:value="${report.R60_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R60_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																					   id="R60_STAGE1_PROVISIONS"
+																					   name="R60_STAGE1_PROVISIONS"
+																					   style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					   readonly />
+																			  </td>
+																			  <td style="text-align: center; 
+																						 vertical-align: middle; 
+																						 background-color:rgb(259, 259, 259);
+																						 font-weight: normal;">
+																					<input class="display-input show_input"
+																						   type="text"
+																						   th:value="${report.R60_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R60_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																						   id="R60_QUALIFY_STAGE2_PROVISIONS"
+																						   name="R60_QUALIFY_STAGE2_PROVISIONS"
+																						   style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						   readonly />
+																				  </td>
+																			  <td style="text-align: center; 
+																					   vertical-align: middle; 
+																					   background-color:rgb(259, 259, 259);
+																					   font-weight: normal;">
+																				  <input class="display-input show_input"
+																						 type="text"
+																						 th:value="${report.R60_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R60_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																						 id="R60_TOTAL_GENERAL_PROVISIONS"
+																						 name="R60_TOTAL_GENERAL_PROVISIONS"
+																						 style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						 readonly />
+																				</td>
+
+																			 
+																		</tr>	
+																			<tr>
+
+																				<td id="ROW61"
+																					style="
+																					white-space: normal;
+																					  word-wrap: break-word;
+																					  max-width: 374px;
+																					  line-height: 1.2;
+																					  text-align: left;
+																					  vertical-align: middle;
+																					  font-weight: normal;
+																					"
+																					th:title="${report.R61_PRODUCT}"
+																					th:text="${report.R61_PRODUCT}">
+																				</td>
+																				<td style="text-align: center; 
+																						 vertical-align: middle; 
+																						 background-color:rgb(262, 262, 262);
+																						 font-weight: normal;">
+																					<input class="display-input show_input"
+																						   type="text"
+																						   th:value="${report.R61_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R61_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																						   id="R61_STAGE1_PROVISIONS"
+																						   name="R61_STAGE1_PROVISIONS"
+																						   style="background-color:rgb(262, 262, 262);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						   readonly />
+																				  </td>
+																				  <td style="text-align: center; 
+																							 vertical-align: middle; 
+																							 background-color:rgb(262, 262, 262);
+																							 font-weight: normal;">
+																						<input class="display-input show_input"
+																							   type="text"
+																							   th:value="${report.R61_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R61_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																							   id="R61_QUALIFY_STAGE2_PROVISIONS"
+																							   name="R61_QUALIFY_STAGE2_PROVISIONS"
+																							   style="background-color:rgb(262, 262, 262);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							   readonly />
+																					  </td>
+																				  <td style="text-align: center; 
+																						   vertical-align: middle; 
+																						   background-color:rgb(262, 262, 262);
+																						   font-weight: normal;">
+																					  <input class="display-input show_input"
+																							 type="text"
+																							 th:value="${report.R61_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R61_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																							 id="R61_TOTAL_GENERAL_PROVISIONS"
+																							 name="R61_TOTAL_GENERAL_PROVISIONS"
+																							 style="background-color:rgb(262, 262, 262);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							 readonly />
+																					</td>
+
+																				 
+																			</tr>
+																		<tr>
+
+																			<td id="ROW62"
+																				style="
+																				white-space: normal;
+																				  word-wrap: break-word;
+																				  max-width: 374px;
+																				  line-height: 1.2;
+																				  text-align: left;
+																				  vertical-align: middle;
+																				  font-weight: normal;
+																				"
+																				th:title="${report.R62_PRODUCT}"
+																				th:text="${report.R62_PRODUCT}">
+																			</td>
+																			<td style="text-align: center; 
+																					 vertical-align: middle; 
+																					 background-color:rgb(262, 262, 262);
+																					 font-weight: normal;">
+																				<input class="display-input show_input"
+																					   type="text"
+																					   th:value="${report.R62_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R62_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																					   id="R62_STAGE1_PROVISIONS"
+																					   name="R62_STAGE1_PROVISIONS"
+																					   style="background-color:rgb(262, 262, 262);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					   readonly />
+																			  </td>
+																			  <td style="text-align: center; 
+																						 vertical-align: middle; 
+																						 background-color:rgb(262, 262, 262);
+																						 font-weight: normal;">
+																					<input class="display-input show_input"
+																						   type="text"
+																						   th:value="${report.R62_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R62_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																						   id="R62_QUALIFY_STAGE2_PROVISIONS"
+																						   name="R62_QUALIFY_STAGE2_PROVISIONS"
+																						   style="background-color:rgb(262, 262, 262);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						   readonly />
+																				  </td>
+																			  <td style="text-align: center; 
+																					   vertical-align: middle; 
+																					   background-color:rgb(262, 262, 262);
+																					   font-weight: normal;">
+																				  <input class="display-input show_input"
+																						 type="text"
+																						 th:value="${report.R62_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R62_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																						 id="R62_TOTAL_GENERAL_PROVISIONS"
+																						 name="R62_TOTAL_GENERAL_PROVISIONS"
+																						 style="background-color:rgb(262, 262, 262);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						 readonly />
+																				</td>
+
+																			 
+																		</tr>																																			
+
+																		<tr>
+
+																				<td id="ROW63"
+																					style="
+																					white-space: normal;
+																					  word-wrap: break-word;
+																					  max-width: 374px;
+																					  line-height: 1.2;
+																					  text-align: left;
+																					  vertical-align: middle;
+																					  font-weight: normal;
+																					"
+																					th:title="${report.R63_PRODUCT}"
+																					th:text="${report.R63_PRODUCT}">
+																				</td>
+																				<td style="text-align: center; 
+																						 vertical-align: middle; 
+																						 background-color:rgb(255, 255, 255);
+																						 font-weight: normal;">
+																					<input class="display-input show_input"
+																						   type="text"
+																						   th:value="${report.R63_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R63_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																						   id="R63_STAGE1_PROVISIONS"
+																						   name="R63_STAGE1_PROVISIONS"
+																						   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						   readonly />
+																				  </td>
+																				  <td style="text-align: center; 
+																							 vertical-align: middle; 
+																							 background-color:rgb(255, 255, 255);
+																							 font-weight: normal;">
+																						<input class="display-input show_input"
+																							   type="text"
+																							   th:value="${report.R63_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R63_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																							   id="R63_QUALIFY_STAGE2_PROVISIONS"
+																							   name="R63_QUALIFY_STAGE2_PROVISIONS"
+																							   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							   readonly />
+																					  </td>
+																				  <td style="text-align: center; 
+																						   vertical-align: middle; 
+																						   background-color:rgb(255, 255, 255);
+																						   font-weight: normal;">
+																					  <input class="display-input show_input"
+																							 type="text"
+																							 th:value="${report.R63_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R63_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																							 id="R63_TOTAL_GENERAL_PROVISIONS"
+																							 name="R63_TOTAL_GENERAL_PROVISIONS"
+																							 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							 readonly />
+																					</td>
+
+																				 
+																			</tr>		
+
+																			<tr>
+
+																					<td id="ROW64"
+																						style="
+																						white-space: normal;
+																						  word-wrap: break-word;
+																						  max-width: 374px;
+																						  line-height: 1.2;
+																						  text-align: left;
+																						  vertical-align: middle;
+																						  font-weight: normal;
+																						"
+																						th:title="${report.R64_PRODUCT}"
+																						th:text="${report.R64_PRODUCT}">
+																					</td>
+																					<td style="text-align: center; 
+																							 vertical-align: middle; 
+																							 background-color:rgb(107, 122, 143);
+																							 font-weight: normal;">
+																						<input class="display-input show_input"
+																							   type="text"
+																							   th:value="${report.R64_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R64_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																							   id="R64_STAGE1_PROVISIONS"
+																							   name="R64_STAGE1_PROVISIONS"
+																							   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							   readonly />
+																					  </td>
+																					  <td style="text-align: center; 
+																								 vertical-align: middle; 
+																								 background-color:rgb(107, 122, 143);
+																								 font-weight: normal;">
+																							<input class="display-input show_input"
+																								   type="text"
+																								   th:value="${report.R64_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R64_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																								   id="R64_QUALIFY_STAGE2_PROVISIONS"
+																								   name="R64_QUALIFY_STAGE2_PROVISIONS"
+																								   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																								   readonly />
+																						  </td>
+																					  <td style="text-align: center; 
+																							   vertical-align: middle; 
+																							   background-color:rgb(107, 122, 143);
+																							   font-weight: normal;">
+																						  <input class="display-input show_input"
+																								 type="text"
+																								 th:value="${report.R64_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R64_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
+																								 id="R64_TOTAL_GENERAL_PROVISIONS"
+																								 name="R64_TOTAL_GENERAL_PROVISIONS"
+																								 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																								 readonly />
+																						</td>
+
+																					 
+																				</tr>																																																																													
+              </tbody>
+						</table>
+						</div>
+<div style="text-align: center; margin-top: 10px;">
+												
+    <button id="submitButton" 
+            type="button"
+            class="custom-tab-btn Show_input" 
+            form="fileupload"
+            th:attr="data-todate=${asondate},data-type=${type}" 
+            onclick="fileuploads(this);" 
+            style="display: none;">
+        Submit
+    </button>
+							</div>
+	</form>
+
+
+						</div>
+					</div>
+				</div>
+
+				<div th:if="${displaymode == 'Details'}">
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="table-responsive scrollable-table-container"
+												style="border-right: 1px solid #dee2e6;">
+												<table
+													class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+													id="reportSs">
+													<thead class="thead-light">
+														<tr>
+															<th></th>
+															<th>CUST ID</th>
+															<th>ACCT NO</th>
+															<th>ACCT NAME</th>
+															<th>ACCT BALANCE</th>
+															<th>ROWID</th>
+															<th>COLUMNID</th>
+															<th>REPORT_DATE</th>
+														</tr>
+
+													</thead>
+
+													<tbody 
+														style="font-family: Arial;">
+														<tr th:each="report: ${reportdetails}">
+															<td><a data-toggle="tooltip" class="editrec"
+																title="Click to Edit this Record"> <i
+																	class="fas fa-edit" onclick="editRecord(this)"></i>
+															</a></td>
+															<td th:text="${report.cust_id}"></td>
+															<td th:text="${report.acct_number}"></td>
+															<td th:text="${report.acct_name}"></td>
+															<td th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 2)}" style="text-align: right;"></td>
+															<td th:text="${report.row_id}"></td>
+															<td th:text="${report.column_id}"></td>
+															<td th:text="${#dates.format(report.report_date, 'dd-MM-yyyy')}"></td>
+
+														</tr>
+													</tbody>
+												</table>
+												
+												<div style="margin-top:20px; text-align:center;" th:if="${pagination=='YES'}">
+																																					   
+																																					    
+																																					    
+																<a th:if="${currentPage > 0}"
+																 th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																    asondate=${asondate},                             
+																    fromdate=${fromdate},
+																    todate=${todate},
+																    currency=${currency},
+																    dtltype=${dtltype},
+																    type=${type},
+																    version=${version},
+																    page=${currentPage - 100},
+																    size=100
+																)}">
+																    Previous
+																</a>
+										
+																    
+																    <span>Page [[${currentPage / 100 + 1}]] of [[${totalPages}]]</span>
+																
+																    
+																	<a th:if="${currentPage < (totalPages - 1) * 100}"
+																																																    	
+																																																    th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																																																    asondate=${asondate},
+																																																    fromdate=${fromdate},
+																																																    todate=${todate},
+																																																    currency=${currency},
+																																																    dtltype=${dtltype},
+																																																    type=${type},
+																																																    version=${version},
+																																																    page=${currentPage + 100},
+																																																    size=100
+																																																)}">	
+																																																    Next
+																																																    </a>
+																																																</div>
+											</div>
+
+
+										</div>
+									</div>
+								</div>
+
+			</div>
+
+
+
+		</div>
+
+
+
+	</div>
+
+
+
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Custom Cellresult Modal -->
+			<div class="modal fade" id="cellresultModal">
+			  <div class="modal-dialog modal-dialog-centered">
+			    <div class="modal-content">
+			      
+			      <!-- Custom header -->
+			      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+			        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+			          Do you want to open the report?
+			        </div>
+			      </div>
+
+			      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+			        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+			          Cancel
+			        </button>
+			        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+			          Yes
+			        </button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
+
+</body>
+																			
+<!-- <script>
+															  $(document).ready(function () {
+															    $('#BRFvalidation').DataTable({
+															      "paging": true,
+															      "info": false,       // turn off "Showing x of y"
+															      "searching": false,  // turn off search
+															      "ordering": false,   // turn off ordering
+															      "lengthChange": false // hide "Show x entries"
+															    });
+															  });
+															</script> -->
+
+
+
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 580px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+
+
+<style>
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+</style>
+
+</html>
