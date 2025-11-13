@@ -873,6 +873,17 @@ function showmodify(btn) {
         }
     });
 }
+    for (let i = 14; i <= 57; i++) {
+        if ([36].includes(i)) continue;
+
+        let fields = ["BONDS", "BOBC"];
+        fields.forEach(field => {
+            let selector = `#R${i}_${field}`;
+            if ($(selector).length) {
+                $(selector).css({ "background-color": "#d3d3d3" });
+            }
+        });
+    }
 
 
     // Show buttons
@@ -2863,7 +2874,7 @@ calculateR13Last();
 
                       <tr>
                         <td
-                          style="padding-left: 0px"
+                          style="padding-left: 0px; font-weight:bold;"
                           th:text="${report.R13_PRODUCT}"
                         ></td>
 
@@ -4801,7 +4812,7 @@ calculateR13Last();
 
                       <tr>
                         <td
-                          style="padding-left: 0px"
+                          style="padding-left: 0px; font-weight:bold;"
                           th:text="${report.R35_PRODUCT}"
                         ></td>
 
@@ -6804,7 +6815,7 @@ calculateR13Last();
 
                       <tr>
                         <td
-                          style="padding-left: 25px"
+                          style="padding-left: 0px; font-weight:bold;"
                           th:text="${report.R58_PRODUCT}"
                         ></td>
 

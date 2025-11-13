@@ -988,6 +988,8 @@ function closemodel() {
 
 function fileuploads(btn) {
     var asondate = btn.getAttribute("data-todate");
+    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+    
     $('#loader').modal('show');
 
     // Pre-calculations
@@ -1020,11 +1022,12 @@ function fileuploads(btn) {
     // ✅ One combined FormData for all entities
     const formData = new FormData();
     formData.append("asondate", asondate);
+    formData.append("type", type);
 
     // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
-    const selectedType = $("#OBType").val(); // Get from dropdown
-    formData.append("type", selectedType);
-    console.log("Selected type:", selectedType);
+    //const selectedType = $("#OBType").val(); // Get from dropdown
+    //formData.append("type", selectedType);
+    //console.log("Selected type:", selectedType);
 
     // --- Entity fields (R10-R17) ---
     for (let i = 11; i <= 64; i++) {
@@ -1036,10 +1039,16 @@ function fileuploads(btn) {
         });
     }
     console.log("✅ Entity executed successfully");
+    
+	//Select API endpoint dynamically
+	let apiUrl = './MOBupdateAll'; // normal update
+	if (type && type.toUpperCase() === 'RESUB') {
+		apiUrl = './UpdateM_OB_ReSub'; // Resubmission endpoint
+	}
 
     // ✅ Single AJAX call with type info
     $.ajax({
-        url: './MOBupdateAll',
+        url: apiUrl,
         type: 'POST',
         data: formData,
         processData: false,
@@ -1050,8 +1059,8 @@ function fileuploads(btn) {
             $("#resultModalBody").text("Updated successfully");
             $("#resultModal").modal("show");
         },
-        error: function (xhr) {
-            console.log("Error response:", xhr.responseText);
+        error: function (jqXHR) {
+            console.log("Error response:", jqXHR.responseText);
             $("#resultModalLabel").text("Error");
             $("#resultModalBody").text("Update failed. Check console for details.");
             $("#resultModal").modal("show");
@@ -1240,13 +1249,14 @@ function fileuploads(btn) {
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
 						
-<!-- Modify button -->
-<button type="button" class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-		th:if="${type != 'ARCHIVAL'}"
-       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-        id="addRecord">Modify</button>
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
+							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+							id="addRecord">
+							Modify
+						</button>
 
 <!-- Cancel button (hidden initially) -->
 <button type="button" class="custom-tab-btn"
@@ -1959,11 +1969,11 @@ style="text-align: right; width:250px; background-color: rgb(107, 122, 143); col
                   </div>
 							<div style="text-align: center; margin-top: 10px;">
 								
-    <button id="submitButton" 
+   <button id="submitButton" 
             type="button"
             class="custom-tab-btn Show_input" 
             form="fileupload"
-            th:attr="data-todate=${asondate}" 
+            th:attr="data-todate=${asondate}, data-type=${type}"
             onclick="fileuploads(this);" 
             style="display: none;">
         Submit

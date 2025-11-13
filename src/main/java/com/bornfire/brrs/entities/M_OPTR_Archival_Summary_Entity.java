@@ -1,10 +1,14 @@
+
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -13,7 +17,31 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_OPTR_ARCHIVALTABLE_SUMMARY")
+@IdClass(M_OPTR_Archival_Summary_PK.class)
+
 public class M_OPTR_Archival_Summary_Entity {
+
+	
+	@Id
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Column(name = "REPORT_DATE")
+    private Date reportDate;
+	
+	@Id
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
+	
+    @Column(name = "REPORT_RESUBDATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date reportResubDate;
+    
+    public String REPORT_FREQUENCY;
+    public String REPORT_CODE;
+    public String REPORT_DESC;
+    public String ENTITY_FLG;
+    public String MODIFY_FLG;
+    public String DEL_FLG;
 
 
 
@@ -48,32 +76,173 @@ private BigDecimal R14_COMMODITIES;
 private BigDecimal R14_TOTAL;
 
 
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    @Id
-    private Date report_date;
-    private String REPORT_VERSION;
-    private String REPORT_CODE;
-    private String REPORT_DESC;
-    private String ENTITY_FLG;
-    private String MODIFY_FLG;
-    private String DEL_FLG;
+
+
+
+
+	public Date getReportDate() {
+	return reportDate;
+}
 
 
 
 
 
 
+public void setReportDate(Date reportDate) {
+	this.reportDate = reportDate;
+}
 
 
 
 
 
 
+public String getReportVersion() {
+	return reportVersion;
+}
 
 
 
-    public BigDecimal getR10_INTEREST_RATES() {
+
+
+
+public void setReportVersion(String reportVersion) {
+	this.reportVersion = reportVersion;
+}
+
+
+
+
+
+
+public Date getReportResubDate() {
+	return reportResubDate;
+}
+
+
+
+
+
+
+public void setReportResubDate(Date reportResubDate) {
+	this.reportResubDate = reportResubDate;
+}
+
+
+
+
+
+
+public String getREPORT_FREQUENCY() {
+	return REPORT_FREQUENCY;
+}
+
+
+
+
+
+
+public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+	REPORT_FREQUENCY = rEPORT_FREQUENCY;
+}
+
+
+
+
+
+
+public String getREPORT_CODE() {
+	return REPORT_CODE;
+}
+
+
+
+
+
+
+public void setREPORT_CODE(String rEPORT_CODE) {
+	REPORT_CODE = rEPORT_CODE;
+}
+
+
+
+
+
+
+public String getREPORT_DESC() {
+	return REPORT_DESC;
+}
+
+
+
+
+
+
+public void setREPORT_DESC(String rEPORT_DESC) {
+	REPORT_DESC = rEPORT_DESC;
+}
+
+
+
+
+
+
+public String getENTITY_FLG() {
+	return ENTITY_FLG;
+}
+
+
+
+
+
+
+public void setENTITY_FLG(String eNTITY_FLG) {
+	ENTITY_FLG = eNTITY_FLG;
+}
+
+
+
+
+
+
+public String getMODIFY_FLG() {
+	return MODIFY_FLG;
+}
+
+
+
+
+
+
+public void setMODIFY_FLG(String mODIFY_FLG) {
+	MODIFY_FLG = mODIFY_FLG;
+}
+
+
+
+
+
+
+public String getDEL_FLG() {
+	return DEL_FLG;
+}
+
+
+
+
+
+
+public void setDEL_FLG(String dEL_FLG) {
+	DEL_FLG = dEL_FLG;
+}
+
+
+
+
+
+
+public BigDecimal getR10_INTEREST_RATES() {
 	return R10_INTEREST_RATES;
 }
 
@@ -518,129 +687,7 @@ public void setR14_TOTAL(BigDecimal r14_TOTAL) {
 	R14_TOTAL = r14_TOTAL;
 }
 
-    
 
-
-	public Date getReport_date() {
-		return report_date;
-	}
-
-
-
-
-
-
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
-	}
-
-
-
-
-
-
-	public String getREPORT_VERSION() {
-		return REPORT_VERSION;
-	}
-
-
-
-
-
-
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
-		REPORT_VERSION = rEPORT_VERSION;
-	}
-
-
-
-
-
-
-	public String getREPORT_CODE() {
-		return REPORT_CODE;
-	}
-
-
-
-
-
-
-	public void setREPORT_CODE(String rEPORT_CODE) {
-		REPORT_CODE = rEPORT_CODE;
-	}
-
-
-
-
-
-
-	public String getREPORT_DESC() {
-		return REPORT_DESC;
-	}
-
-
-
-
-
-
-	public void setREPORT_DESC(String rEPORT_DESC) {
-		REPORT_DESC = rEPORT_DESC;
-	}
-
-
-
-
-
-
-	public String getENTITY_FLG() {
-		return ENTITY_FLG;
-	}
-
-
-
-
-
-
-	public void setENTITY_FLG(String eNTITY_FLG) {
-		ENTITY_FLG = eNTITY_FLG;
-	}
-
-
-
-
-
-
-	public String getMODIFY_FLG() {
-		return MODIFY_FLG;
-	}
-
-
-
-
-
-
-	public void setMODIFY_FLG(String mODIFY_FLG) {
-		MODIFY_FLG = mODIFY_FLG;
-	}
-
-
-
-
-
-
-	public String getDEL_FLG() {
-		return DEL_FLG;
-	}
-
-
-
-
-
-
-	public void setDEL_FLG(String dEL_FLG) {
-		DEL_FLG = dEL_FLG;
-	}
 
 
 

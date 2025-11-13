@@ -1,10 +1,13 @@
+
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -16,6 +19,24 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class M_OB_Summary_Entity {
 
 
+
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
+	
+	public String report_frequency;
+	public String report_code;
+	public String report_desc;
+	public String entity_flg;
+	public String modify_flg;
+	public String del_flg;
+
+    
 	private BigDecimal R11_OTHER_BORROW;
 	private BigDecimal R12_OTHER_BORROW;
 	private BigDecimal R13_OTHER_BORROW;
@@ -72,25 +93,175 @@ public class M_OB_Summary_Entity {
 	private BigDecimal R64_OTHER_BORROW;
 
 
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    @Id
-    private Date report_date;
-    private String REPORT_VERSION;
-    private String REPORT_CODE;
-    private String REPORT_DESC;
-    private String ENTITY_FLG;
-    private String MODIFY_FLG;
-    private String DEL_FLG;
-
-
     
+
+
+
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+
+
+
+
+
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+
+
+
+
+
+
+	public String getReportVersion() {
+		return reportVersion;
+	}
+
+
+
+
+
+
+
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+
+
+
+
+
+
+
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+
+
+
+
+
+
+
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+
+
+
+
+
+
+
+	public String getReport_code() {
+		return report_code;
+	}
+
+
+
+
+
+
+
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+
+
+
+
+
+
+
+	public String getReport_desc() {
+		return report_desc;
+	}
+
+
+
+
+
+
+
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+
+
+
+
+
+
+
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+
+
+
+
+
+
+
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+
+
+
+
+
+
+
+	public String getModify_flg() {
+		return modify_flg;
+	}
+
+
+
+
+
+
+
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+
+
+
+
+
+
+
+	public String getDel_flg() {
+		return del_flg;
+	}
+
+
+
+
+
+
+
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+
+
+
+
 
 
 
 	public BigDecimal getR11_OTHER_BORROW() {
 		return R11_OTHER_BORROW;
 	}
+
 
 
 
@@ -106,9 +277,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR12_OTHER_BORROW() {
 		return R12_OTHER_BORROW;
 	}
+
 
 
 
@@ -124,9 +297,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR13_OTHER_BORROW() {
 		return R13_OTHER_BORROW;
 	}
+
 
 
 
@@ -142,9 +317,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR14_OTHER_BORROW() {
 		return R14_OTHER_BORROW;
 	}
+
 
 
 
@@ -160,9 +337,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR15_OTHER_BORROW() {
 		return R15_OTHER_BORROW;
 	}
+
 
 
 
@@ -178,9 +357,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR16_OTHER_BORROW() {
 		return R16_OTHER_BORROW;
 	}
+
 
 
 
@@ -196,9 +377,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR17_OTHER_BORROW() {
 		return R17_OTHER_BORROW;
 	}
+
 
 
 
@@ -214,9 +397,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR18_OTHER_BORROW() {
 		return R18_OTHER_BORROW;
 	}
+
 
 
 
@@ -232,9 +417,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR19_OTHER_BORROW() {
 		return R19_OTHER_BORROW;
 	}
+
 
 
 
@@ -250,9 +437,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR20_OTHER_BORROW() {
 		return R20_OTHER_BORROW;
 	}
+
 
 
 
@@ -268,9 +457,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR21_OTHER_BORROW() {
 		return R21_OTHER_BORROW;
 	}
+
 
 
 
@@ -286,9 +477,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR22_OTHER_BORROW() {
 		return R22_OTHER_BORROW;
 	}
+
 
 
 
@@ -304,9 +497,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR23_OTHER_BORROW() {
 		return R23_OTHER_BORROW;
 	}
+
 
 
 
@@ -322,9 +517,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR24_OTHER_BORROW() {
 		return R24_OTHER_BORROW;
 	}
+
 
 
 
@@ -340,9 +537,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR25_OTHER_BORROW() {
 		return R25_OTHER_BORROW;
 	}
+
 
 
 
@@ -358,9 +557,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR26_OTHER_BORROW() {
 		return R26_OTHER_BORROW;
 	}
+
 
 
 
@@ -376,9 +577,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR27_OTHER_BORROW() {
 		return R27_OTHER_BORROW;
 	}
+
 
 
 
@@ -394,9 +597,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR28_OTHER_BORROW() {
 		return R28_OTHER_BORROW;
 	}
+
 
 
 
@@ -412,9 +617,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR29_OTHER_BORROW() {
 		return R29_OTHER_BORROW;
 	}
+
 
 
 
@@ -430,9 +637,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR30_OTHER_BORROW() {
 		return R30_OTHER_BORROW;
 	}
+
 
 
 
@@ -448,9 +657,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR31_OTHER_BORROW() {
 		return R31_OTHER_BORROW;
 	}
+
 
 
 
@@ -466,9 +677,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR32_OTHER_BORROW() {
 		return R32_OTHER_BORROW;
 	}
+
 
 
 
@@ -484,9 +697,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR33_OTHER_BORROW() {
 		return R33_OTHER_BORROW;
 	}
+
 
 
 
@@ -502,9 +717,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR34_OTHER_BORROW() {
 		return R34_OTHER_BORROW;
 	}
+
 
 
 
@@ -520,9 +737,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR35_OTHER_BORROW() {
 		return R35_OTHER_BORROW;
 	}
+
 
 
 
@@ -538,9 +757,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR36_OTHER_BORROW() {
 		return R36_OTHER_BORROW;
 	}
+
 
 
 
@@ -556,9 +777,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR37_OTHER_BORROW() {
 		return R37_OTHER_BORROW;
 	}
+
 
 
 
@@ -574,9 +797,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR38_OTHER_BORROW() {
 		return R38_OTHER_BORROW;
 	}
+
 
 
 
@@ -592,9 +817,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR39_OTHER_BORROW() {
 		return R39_OTHER_BORROW;
 	}
+
 
 
 
@@ -610,9 +837,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR40_OTHER_BORROW() {
 		return R40_OTHER_BORROW;
 	}
+
 
 
 
@@ -628,9 +857,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR41_OTHER_BORROW() {
 		return R41_OTHER_BORROW;
 	}
+
 
 
 
@@ -646,9 +877,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR42_OTHER_BORROW() {
 		return R42_OTHER_BORROW;
 	}
+
 
 
 
@@ -664,9 +897,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR43_OTHER_BORROW() {
 		return R43_OTHER_BORROW;
 	}
+
 
 
 
@@ -682,9 +917,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR44_OTHER_BORROW() {
 		return R44_OTHER_BORROW;
 	}
+
 
 
 
@@ -700,9 +937,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR45_OTHER_BORROW() {
 		return R45_OTHER_BORROW;
 	}
+
 
 
 
@@ -718,9 +957,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR46_OTHER_BORROW() {
 		return R46_OTHER_BORROW;
 	}
+
 
 
 
@@ -736,9 +977,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR47_OTHER_BORROW() {
 		return R47_OTHER_BORROW;
 	}
+
 
 
 
@@ -754,9 +997,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR48_OTHER_BORROW() {
 		return R48_OTHER_BORROW;
 	}
+
 
 
 
@@ -772,9 +1017,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR49_OTHER_BORROW() {
 		return R49_OTHER_BORROW;
 	}
+
 
 
 
@@ -790,9 +1037,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR50_OTHER_BORROW() {
 		return R50_OTHER_BORROW;
 	}
+
 
 
 
@@ -808,9 +1057,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR51_OTHER_BORROW() {
 		return R51_OTHER_BORROW;
 	}
+
 
 
 
@@ -826,9 +1077,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR52_OTHER_BORROW() {
 		return R52_OTHER_BORROW;
 	}
+
 
 
 
@@ -844,9 +1097,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR53_OTHER_BORROW() {
 		return R53_OTHER_BORROW;
 	}
+
 
 
 
@@ -862,9 +1117,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR54_OTHER_BORROW() {
 		return R54_OTHER_BORROW;
 	}
+
 
 
 
@@ -880,9 +1137,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR55_OTHER_BORROW() {
 		return R55_OTHER_BORROW;
 	}
+
 
 
 
@@ -898,9 +1157,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR56_OTHER_BORROW() {
 		return R56_OTHER_BORROW;
 	}
+
 
 
 
@@ -916,9 +1177,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR57_OTHER_BORROW() {
 		return R57_OTHER_BORROW;
 	}
+
 
 
 
@@ -934,9 +1197,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR58_OTHER_BORROW() {
 		return R58_OTHER_BORROW;
 	}
+
 
 
 
@@ -952,9 +1217,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR59_OTHER_BORROW() {
 		return R59_OTHER_BORROW;
 	}
+
 
 
 
@@ -970,9 +1237,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR60_OTHER_BORROW() {
 		return R60_OTHER_BORROW;
 	}
+
 
 
 
@@ -988,9 +1257,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR61_OTHER_BORROW() {
 		return R61_OTHER_BORROW;
 	}
+
 
 
 
@@ -1006,9 +1277,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR62_OTHER_BORROW() {
 		return R62_OTHER_BORROW;
 	}
+
 
 
 
@@ -1024,9 +1297,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR63_OTHER_BORROW() {
 		return R63_OTHER_BORROW;
 	}
+
 
 
 
@@ -1042,9 +1317,11 @@ public class M_OB_Summary_Entity {
 
 
 
+
 	public BigDecimal getR64_OTHER_BORROW() {
 		return R64_OTHER_BORROW;
 	}
+
 
 
 
@@ -1058,128 +1335,6 @@ public class M_OB_Summary_Entity {
 
 
 
-
-
-	public Date getReport_date() {
-		return report_date;
-	}
-
-
-
-
-
-
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
-	}
-
-
-
-
-
-
-	public String getREPORT_VERSION() {
-		return REPORT_VERSION;
-	}
-
-
-
-
-
-
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
-		REPORT_VERSION = rEPORT_VERSION;
-	}
-
-
-
-
-
-
-	public String getREPORT_CODE() {
-		return REPORT_CODE;
-	}
-
-
-
-
-
-
-	public void setREPORT_CODE(String rEPORT_CODE) {
-		REPORT_CODE = rEPORT_CODE;
-	}
-
-
-
-
-
-
-	public String getREPORT_DESC() {
-		return REPORT_DESC;
-	}
-
-
-
-
-
-
-	public void setREPORT_DESC(String rEPORT_DESC) {
-		REPORT_DESC = rEPORT_DESC;
-	}
-
-
-
-
-
-
-	public String getENTITY_FLG() {
-		return ENTITY_FLG;
-	}
-
-
-
-
-
-
-	public void setENTITY_FLG(String eNTITY_FLG) {
-		ENTITY_FLG = eNTITY_FLG;
-	}
-
-
-
-
-
-
-	public String getMODIFY_FLG() {
-		return MODIFY_FLG;
-	}
-
-
-
-
-
-
-	public void setMODIFY_FLG(String mODIFY_FLG) {
-		MODIFY_FLG = mODIFY_FLG;
-	}
-
-
-
-
-
-
-	public String getDEL_FLG() {
-		return DEL_FLG;
-	}
-
-
-
-
-
-
-	public void setDEL_FLG(String dEL_FLG) {
-		DEL_FLG = dEL_FLG;
-	}
 
 
 

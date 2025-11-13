@@ -747,7 +747,7 @@ function fileuploads(btn) {
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:if="${type == 'RESUB' or type=='RBS' and type != 'ARCHIVAL'}"
+							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
 							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
 							id="addRecord">
 							Modify
