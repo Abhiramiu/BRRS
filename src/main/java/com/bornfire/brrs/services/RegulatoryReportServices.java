@@ -1671,6 +1671,13 @@ public class RegulatoryReportServices {
 //			}
 //			break;
 			
+		 case "M_OPTR":
+             List<Object[]> optrList = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
+             archivalData.addAll(optrList);
+             System.out.println("Fetched M_OPTR archival data: " + optrList.size());
+             break;
+             
+			
 		case "Q_SMME_DEP":
 			try {
 				archivalData = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival();
@@ -2130,7 +2137,18 @@ public List<Object[]> getResub(String rptcode) {
 			                System.err.println("Error fetching resubmission data for M_OB: " + e.getMessage());
 			                e.printStackTrace();
 			            }
-			            break;     
+			            break;   
+			            
+				 case "M_OPTR":
+			            try {
+			                List<Object[]> resubList = BRRS_M_OPTR_ReportService.getM_OPTRResub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for M_OPTR: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_OPTR: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			            break; 
 
 
 
