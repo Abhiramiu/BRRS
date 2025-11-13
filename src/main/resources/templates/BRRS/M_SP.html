@@ -529,7 +529,7 @@ function showResultModal(title, message) {
 			alertMsg.innerHTML ='Download request Processing...';
 	   	 	showAlert();
 
-			const baseUrl = '/BCDRS/Reports/startreport';
+			const baseUrl = '/BRRS/Reports/startreport';
 			const downloadUrl = baseUrl +
 				'?filename=' + encodeURIComponent(filename) +
 				'&fromdate=' + encodeURIComponent(fromdate) +
@@ -552,7 +552,7 @@ function showResultModal(title, message) {
 
 		function checkReport(jobId) {
 			const alertMsg = document.getElementById("alertMessage");
-		    fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+		    fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
 		        .then(res => res.text())
 		        .then(status => {
 		            if (status === "READY") {
@@ -584,7 +584,7 @@ function showResultModal(title, message) {
 			//$('#loader').modal('show');
 			
 			$.ajax({
-				url: '/BCDRS/Reports/downloaddetailExcel?jobId='+ jobId +
+				url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
 					'&filename=' + filename,
 				type: 'GET',
 				xhrFields: {
@@ -630,7 +630,7 @@ function showdetailsbyRowAndColumn(a) {
     if (cellValue !== '0') {
         // Set dynamic message in modal (instead of confirm)
         document.getElementById("cellresultModalLabel").innerText = 
-            "Do you want to open details for ReportLable: " + reportLable + " and ReportAddlCriteria_1: " + reportAddlCriteria1 + "?";
+            "Do you want to open details for Row: " + reportLable + " and Column: " + reportAddlCriteria1 + "?";
 
         // Show custom Bootstrap modal
         $('#cellresultModal').modal('show');
@@ -659,7 +659,12 @@ function showdetailsbyRowAndColumn(a) {
 }
 </script>
 
-
+</script>
+		<script th:inline="javascript">
+		    /*<![CDATA[*/
+		    const reportId = /*[[${reportid}]]*/ null;
+		    /*]]>*/
+		</script>
 <script>
 	function openDetail(elem, mode) {
 		const acctNo = elem.getAttribute("data-acctNo");
@@ -768,6 +773,8 @@ function showdetailsbyRowAndColumn(a) {
 					table.dataTable td.dt-type-date {
 					    text-align: left !important;
 					}
+					
+			
 
 
 
@@ -808,6 +815,60 @@ function showdetailsbyRowAndColumn(a) {
 			  });
 			</script>
 
+			
+			<script>
+						function submitUpdate() {
+						    const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+
+						    // ✅ Store the previous page URL
+						    const previousUrl = document.referrer; // same as going back once in history
+
+						    // Show loader while processing
+						    $('#loader').modal('show');
+
+						    $.ajax({
+						        url: `/BRRS/Reports/${reportId}/update`,
+						        type: 'POST',
+						        data: formData,
+						        success: function (response) {
+						            $('#loader').modal('hide');
+
+						            // Show message via modal
+						            if (response && response.toLowerCase().includes('success')) {
+						                showResultModal('Success', response);
+						            } else {
+						                showResultModal('Information', response || 'No data updated.');
+						            }
+
+						            // ✅ Redirect back to the previous page after short delay
+						            setTimeout(() => {
+						                if (previousUrl) {
+						                    window.location.href = previousUrl;
+						                } else {
+						                    // fallback: just go back if referrer not found
+						                    window.history.back();
+						                }
+						            }, 1500);
+						        },
+						        error: function (xhr, status, error) {
+						            $('#loader').modal('hide');
+						            console.error("Update error:", error);
+
+						            showResultModal('Error', 'Failed to update record. Please try again.');
+
+						            // ✅ On error also return to previous page after delay
+						            setTimeout(() => {
+						                if (previousUrl) {
+						                    window.location.href = previousUrl;
+						                } else {
+						                    window.history.back();
+						                }
+						            }, 1500);
+						        }
+						    });
+						}
+
+					</script>
 </head>
 
  
@@ -1211,6 +1272,7 @@ function showdetailsbyRowAndColumn(a) {
 																			<th>ACCT NUMBER</th>
 																			<th>ACCT NAME</th>
 																			<th>ACCT BALANCE</th>
+																			<th>PROVISION</th>
 																			<th>REPORT LABEL</th>
 																			<th>REPORT ADDL CRITERIA 1</th>
 																			<th>REPORT DATE</th>
@@ -1236,6 +1298,8 @@ function showdetailsbyRowAndColumn(a) {
 																			<td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
 																			<td align="right" th:text="${report.acctBalanceInPula != null 
 																																	? #numbers.formatDecimal(report.acctBalanceInPula, 1, 2) : '0.00'}"></td>
+																			<td align="right" th:text="${report.provision != null 
+																									? #numbers.formatDecimal(report.provision, 1, 2) : '0.00'}"></td>
 																			<td th:text="${report.reportLable != null ? report.reportLable : '-'}">
 																			</td>
 																			<td
@@ -1261,7 +1325,83 @@ function showdetailsbyRowAndColumn(a) {
 
 			</div>
 
+			<!-- M_CA2 Detail Form Screen -->
+			<div th:if="${formmode == 'edit'}" class="card">
+			  <div class="card-body">
+			    <form th:object="${Data}" method="post" id="DetailForm">
 
+			      <!-- Row 1 -->
+			      <div class="row formline mt-3">
+			        <label class="col-sm-2 col-form-label">Customer ID</label>
+			        <div class="col-sm-3">
+			          <input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+			        </div>
+
+			        <div class="col-sm-1"></div>
+
+			        <label class="col-sm-2 col-form-label">Account Number</label>
+			        <div class="col-sm-3">
+			          <input type="text" th:field="*{acctNumber}" class="form-control form-control-sm" readonly />
+			        </div>
+			      </div>
+
+			      <!-- Row 2 -->
+			      <div class="row formline mt-3">
+			        <label class="col-sm-2 col-form-label">Account Name</label>
+			        <div class="col-sm-3">
+			          <input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
+			        </div>
+
+			        <div class="col-sm-1"></div>
+
+			        <label class="col-sm-2 col-form-label">Acct Balance</label>
+			        <div class="col-sm-3">
+			          <input type="number" step="0.01" th:field="*{acctBalanceInPula}" 
+			                 class="form-control form-control-sm" style="text-align:right;" />
+			        </div>
+			      </div>
+
+			      <!-- Row 3 -->
+			      <div class="row formline mt-3">
+			        <label class="col-sm-2 col-form-label">Report Label</label>
+			        <div class="col-sm-3">
+			          <input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
+			        </div>
+
+			        <div class="col-sm-1"></div>
+
+			        <label class="col-sm-2 col-form-label">Report Addl Criteria 1</label>
+			        <div class="col-sm-3">
+			          <input type="text" th:field="*{reportAddlCriteria1}" class="form-control form-control-sm" readonly />
+			        </div>
+			      </div>
+
+			      <!-- Row 4 (Report Date + Provision on same row) -->
+			      <div class="row formline mt-3">
+			        <label class="col-sm-2 col-form-label">Report Date</label>
+			        <div class="col-sm-3">
+			          <input type="date" name="reportDate" class="form-control form-control-sm"
+			                 th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" />
+			        </div>
+
+			        <div class="col-sm-1"></div>
+
+			        <label class="col-sm-2 col-form-label">Provision</label>
+			        <div class="col-sm-3">
+			          <input type="number" step="0.01" th:field="*{provision}" 
+			                 class="form-control form-control-sm" style="text-align:right;" />
+			        </div>
+			      </div>
+
+			      <!-- Update Button -->
+			      <div class="text-center mt-4">
+			        <button type="button" class="custom-tab-btn" 
+			                th:if="${formmode == 'edit'}" onclick="submitUpdate()">Update</button>
+			      </div>
+
+			    </form>
+			  </div>
+			</div>
 
 		</div>
 

@@ -1832,7 +1832,11 @@ public class RegulatoryReportServices {
 		}else if (filename.equals("M_CA2Detail")) {
 			fileData = BRRS_M_CA2_reportservice.getM_CA2DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
+		} else if (filename.equals("M_SPDetail")) {
+			fileData = BRRS_M_SP_reportservice.getM_SPDetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
 		} 
+
 
 		else if ("M_SRWA_12A".equals(filename)) {
 
@@ -1913,6 +1917,11 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_M_CA2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+			
+			  case "M_SP":
+					modelAndView = BRRS_M_SP_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 			 
 
 			default:
@@ -1954,6 +1963,11 @@ public class RegulatoryReportServices {
 			  case "M_CA2":
 					response = BRRS_M_CA2_reportservice.updateDetailEdit(request);
 					break;
+					
+			  case "M_SP":
+					response = BRRS_M_SP_reportservice.updateDetailEdit(request);
+					break;
+
 
 			 
 

@@ -7,6 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,6 +18,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -43,8 +47,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.bornfire.brrs.entities.M_SP_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_SP_Archival_Detail_Repo;
@@ -56,6 +65,7 @@ import com.bornfire.brrs.entities.M_SP_Summary_Entity;
 import com.bornfire.brrs.entities.M_SFINP2_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_SFINP2_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_SP_Summary_Repo;
+import com.bornfire.brrs.entities.M_CA2_Detail_Entity;
 
 @Component
 @Service
@@ -2955,6 +2965,135 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	        return new byte[0];
 	    }
 	}
+
+
+@Autowired
+private JdbcTemplate jdbcTemplate;
+
+public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+    ModelAndView mv = new ModelAndView("BRRS/M_SP"); // ✅ match the report name
+    System.out.println("Hello");
+    if (acctNo != null) {
+    	M_SP_Detail_Entity la1Entity = BRRS_M_SP_Detail_Repo.findByAcctnumber(acctNo);
+        if (la1Entity != null && la1Entity.getReportDate() != null) {
+            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
+            mv.addObject("asondate", formattedDate);
+        }
+        mv.addObject("Data", la1Entity);
+    }
+
+    mv.addObject("displaymode", "edit");
+    mv.addObject("formmode", formMode != null ? formMode : "edit");
+    return mv;
+}
+
+
+
+
+
+public ModelAndView updateDetailEdit(String acctNo, String formMode) {
+    ModelAndView mv = new ModelAndView("BRRS/M_SP"); // ✅ match the report name
+
+    if (acctNo != null) {
+        M_SP_Detail_Entity la1Entity = BRRS_M_SP_Detail_Repo.findByAcctnumber(acctNo);
+        if (la1Entity != null && la1Entity.getReportDate() != null) {
+            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
+            mv.addObject("asondate", formattedDate);
+            System.out.println(formattedDate);
+        }
+        mv.addObject("Data", la1Entity);
+    }
+
+    mv.addObject("displaymode", "edit");
+    mv.addObject("formmode", formMode != null ? formMode : "edit");
+    return mv;
+}
+
+@Transactional
+public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+    try {
+        String acctNo = request.getParameter("acctNumber");
+        String provisionStr = request.getParameter("acctBalanceInPula");
+        String acctName = request.getParameter("acctName");
+        String provision = request.getParameter("provision");
+        String reportDateStr = request.getParameter("reportDate");
+
+        logger.info("Received update for ACCT_NO: {}", acctNo);
+
+        M_SP_Detail_Entity existing = BRRS_M_SP_Detail_Repo.findByAcctnumber(acctNo);
+        if (existing == null) {
+            logger.warn("No record found for ACCT_NO: {}", acctNo);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+        }
+
+        boolean isChanged = false;
+
+        if (acctName != null && !acctName.isEmpty()) {
+            if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+                existing.setAcctName(acctName);
+                isChanged = true;
+                logger.info("Account name updated to {}", acctName);
+            }
+        }
+
+        if (provisionStr != null && !provisionStr.isEmpty()) {
+            BigDecimal newProvision = new BigDecimal(provisionStr);
+            if (existing.getAcctBalanceInPula() == null ||
+                existing.getAcctBalanceInPula().compareTo(newProvision) != 0) {
+                existing.setAcctBalanceInPula(newProvision);
+                isChanged = true;
+                logger.info("Balance updated to {}", newProvision);
+            }
+        }
+        
+        if (provision != null && !provision.isEmpty()) {
+            BigDecimal newProvision = new BigDecimal(provision);
+            if (existing.getProvision() == null ||
+                existing.getProvision().compareTo(newProvision) != 0) {
+                existing.setProvision(newProvision);
+                isChanged = true;
+                logger.info("Balance updated to {}", newProvision);
+            }
+        }
+        
+        
+
+        if (isChanged) {
+        	BRRS_M_SP_Detail_Repo.save(existing);
+            logger.info("Record updated successfully for account {}", acctNo);
+
+            // Format date for procedure
+            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+            // Run summary procedure after commit
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void afterCommit() {
+                    try {
+                        logger.info("Transaction committed — calling BRRS_M_SP_SUMMARY_PROCEDURE({})",
+                                formattedDate);
+                        jdbcTemplate.update("BEGIN BRRS_M_SP_SUMMARY_PROCEDURE(?); END;", formattedDate);
+                        logger.info("Procedure executed successfully after commit.");
+                    } catch (Exception e) {
+                        logger.error("Error executing procedure after commit", e);
+                    }
+                }
+            });
+
+            return ResponseEntity.ok("Record updated successfully!");
+        } else {
+            logger.info("No changes detected for ACCT_NO: {}", acctNo);
+            return ResponseEntity.ok("No changes were made.");
+        }
+
+    } catch (Exception e) {
+        logger.error("Error updating M_SP record", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error updating record: " + e.getMessage());
+    }
+}
+
 
 }
 
