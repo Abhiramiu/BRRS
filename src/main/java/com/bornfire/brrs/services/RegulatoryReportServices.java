@@ -247,7 +247,7 @@ public class RegulatoryReportServices {
 			break;
 
 		case "M_SRWA_12F":
-			repsummary = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FView(reportId, fromdate, todate, currency, dtltype,
+			repsummary = BRRS_M_SRWA_12F_reportservice.getM_SRWA12FView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 
@@ -1378,14 +1378,7 @@ public class RegulatoryReportServices {
 		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
 		 */
 
-		case "M_SRWA_12F":
-			try {
-				archivalData = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		// case "M_SRWA_12H":
 		// 	try {
@@ -1700,10 +1693,11 @@ public class RegulatoryReportServices {
 		
 	//New Archival 
 				case "M_SRWA_12H":
-				List<Object[]> srwaList = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
-				archivalData.addAll(srwaList);
-				System.out.println("Fetched M_SRWA_12H archival data: " + srwaList.size());
+				List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
+				archivalData.addAll(srwaList1);
+				System.out.println("Fetched M_SRWA_12H archival data: " + srwaList1.size());
 				break;
+				
 
 			case "Q_STAFF":
 				List<Object[]> QSList = BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
@@ -1742,12 +1736,15 @@ public class RegulatoryReportServices {
 	              List<Object[]> srwagList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GArchival();
 	              archivalData.addAll(srwagList);
 	              System.out.println("Fetched M_SRWA_12G archival data: " + srwagList.size());
-	              break;
-	          default:
 	              System.out.println("No archival logic defined for report: " + rptcode);
 	              break;
-
-
+	              
+			 case "M_SRWA_12F":
+		            List<Object[]> srwafList = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
+		            archivalData.addAll(srwafList);
+		            System.out.println("Fetched M_SRWA_12F archival data: " + srwafList.size());
+		            break;
+		       
 			case "M_GP":
 				try {
 					archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
@@ -1756,6 +1753,10 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			 default:
+		            System.out.println("No archival logic defined for report: " + rptcode);
+		            break;
 
 		}
 		return archivalData;
@@ -2005,6 +2006,17 @@ public List<Object[]> getResub(String rptcode) {
 					System.out.println("Resubmission data fetched for M_SRWA_12H: " + resubList.size());
 				} catch (Exception e) {
 					System.err.println("Error fetching resubmission data for M_SRWA_12H: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+				
+			case "M_SRWA_12F":
+				try {
+					List<Object[]> resubList = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_SRWA_12F: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_SRWA_12F: " + e.getMessage());
 					e.printStackTrace();
 				}
 				break;

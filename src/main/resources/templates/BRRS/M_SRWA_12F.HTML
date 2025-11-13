@@ -723,10 +723,13 @@ function cancelModify() {
         }
 }
 
-	function fileuploads(btn) {
-	    const asondate = btn.getAttribute("data-todate");
-	    $('#loader').modal('show');
-
+function fileuploads(btn) {
+    var asondate = btn.getAttribute("data-todate");
+    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+    
+    
+    $('#loader').modal('show');
+    
 	    // ✅ Step 1: Calculate TOTALs
 	    calculateAll_RISK_WEIGHTED_AMT();
 	    calculateR37_EXPOSURE_AMT();
@@ -734,45 +737,68 @@ function cancelModify() {
 	    
 	    
 	    
-
-	    // ✅ Step 2: Remove commas from inputs
+	 // Remove commas from numeric inputs
 	    $("#fileupload input[type='text']").each(function () {
-	        $(this).val($(this).val().replace(/,/g, ''));
+	        var val = $(this).val();
+	        if (val && val.includes(",")) {
+	            $(this).val(val.replace(/,/g, ''));
+	        }
 	    });
 
-	    // ✅ Step 3: Validate form
 	    if (!$("#fileupload").valid()) {
 	        $('#loader').modal('hide');
 	        return;
 	    }
 
-	    // ✅ Step 4: Build one FormData object for all entities
+	    // ✅ One combined FormData for all entities
 	    const formData = new FormData();
 	    formData.append("asondate", asondate);
+	    formData.append("type", type);
+	    
 
-	    // Append all inputs
-	    $('#fileupload').find(':input').each(function () {
-	        const name = $(this).attr('name');
-	        if (name) {
-	            formData.append(name, $(this).val());
-	        }
-	    });
+	    // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
+	    //const selectedType = $("#SRWA_12GType").val(); // Get from dropdown
+	    //formData.append("type", selectedType);
+	    //console.log("Selected type:", selectedType);
 
-	    // ✅ Step 5: Send single Ajax request
+	    // --- Entity fields (R10-R17) ---
+	    for (let i = 11; i <= 37; i++) {
+	        ["NAME_OF_CORPORATE", "CREDIT_RATING", "RATING_AGENCY", "EXPOSURE_AMT",
+				"RISK_WEIGHT", "RISK_WEIGHTED_AMT"].forEach(field => {
+	            const input = $("#R" + i + "_" + field);
+	            if (input.length) {
+	                formData.append(input.attr("name"), input.val());
+	            }
+	        });
+	    }console.log("✅ Entity executed successfully");
+	    
+		//Select API endpoint dynamically
+		let apiUrl = './SRWA12FupdateAll'; // normal update
+		if (type && type.toUpperCase() === 'RESUB') {
+			apiUrl = './UpdateM_SRWA_12F_ReSub'; // Resubmission endpoint
+		}
+	    
+
+	    // ✅ Single AJAX call with type info
 	    $.ajax({
-	        url: './SRWA12FupdateAll',
+	        url: apiUrl,
 	        type: 'POST',
 	        data: formData,
 	        processData: false,
 	        contentType: false,
 	        dataType: 'text',
 	        success: function () {
-	            $("#resultModalLabel").text("BRRS");
-	            $("#resultModalBody").text("Updated successfully");
-	            $("#resultModal").modal("show");
-	        },
+			    $("#resultModalLabel").text("BRRS");
+			    $("#resultModalBody").text("Updated Successfully.");
+			    $("#resultModal").modal("show");
+
+			    //  Wait for user to close the modal manually
+			    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+			        location.reload(); // reload ONLY when modal is closed
+			    });
+			},
 	        error: function (jqXHR) {
-	            console.error("Error response:", jqXHR.responseText);
+	            console.log("Error response:", jqXHR.responseText);
 	            $("#resultModalLabel").text("Error");
 	            $("#resultModalBody").text("Update failed. Check console for details.");
 	            $("#resultModal").modal("show");
@@ -781,8 +807,9 @@ function cancelModify() {
 	            $('#loader').modal('hide');
 	        }
 	    });
-	}
 
+	    console.log("✅ AJAX executed successfully");
+	}
 
 
 
@@ -821,25 +848,20 @@ function cancelModify() {
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
-						
-<!-- Modify button -->
-<!-- Modify button -->
-<button type="button" class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-		th:if="${type != 'ARCHIVAL'}"
-       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-        id="addRecord">Modify</button>
-        
-        
-<!-- Cancel button (hidden initially) -->
-<button type="button" class="custom-tab-btn"
-        title="Cancel editing"
-        id="cancelRecord"
-        onclick="cancelModify();"
-        style="display: none;">Cancel</button>
+				
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
+							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+							id="addRecord">
+							Modify
+						</button>
 
 
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
@@ -847,13 +869,12 @@ function cancelModify() {
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${dtltype},
-                    				 data-filename='M_SRWA12F.xls',
+                    				 data-filename='M_SRWA_12F.xls',
 					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
+					    			 data-version=${version}"
+									  onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
-						
-						
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
@@ -861,7 +882,7 @@ function cancelModify() {
 								    data-todate=${todate},
 									data-currency=${currency},  
 												data-dtltype=${dtltype}, 
-								    data-filename='M_SRWA12FDetail',
+								    data-filename='M_SRWA_12FDetail',
 									data-type=${type},
 												data-version=${version}
 								  ">
@@ -2450,30 +2471,27 @@ function cancelModify() {
 </tbody>	
 										
 </table>
-								
-
-
-</div>
+		</div>
 							<div style="text-align: center; margin-top: 10px;">
 								
     <button id="submitButton" 
             type="button"
             class="custom-tab-btn Show_input" 
             form="fileupload"
-            th:attr="data-todate=${asondate}" 
+            th:attr="data-todate=${asondate}, data-type=${type}"
             onclick="fileuploads(this);" 
             style="display: none;">
         Submit
     </button>
 </div>
 							</form>
+							</div>
 						</div>
 					</div>
 				</div>
 				
 			</div>
 		</div>
-	</div>
 	
 	
 	<!-- Custom Cellresult Modal -->
@@ -2622,10 +2640,11 @@ function cancelModify() {
 	#reports thead th {
 		position: sticky;
 		top: 0;
-		background-color: #f8f9fa;
+		background-color: #D8D8D8; /* light gray header */
 		/* Match Bootstrap thead-light */
 		z-index: 2;
 	}
+
 
 	div.dataTables_wrapper div.dataTables_paginate {
 		text-align: right !important;
@@ -2661,8 +2680,14 @@ function cancelModify() {
 		display: inline-block;
 		width: auto;
 	}
+	.scrollable-table-container thead tr:nth-child(1),
+.scrollable-table-container thead tr:nth-child(2),
+.scrollable-table-container thead tr:nth-child(3),
+.scrollable-table-container thead tr:nth-child(4),
+.scrollable-table-container thead tr:nth-child(5) {
+    background-color: #D8D8D8; /* set header color */
+}
+	
 </style>
 
 </html>
-
-
