@@ -764,6 +764,9 @@ function showdetailsbyRowAndColumn(a) {
     	        });
     	    });
 
+    	    // ✅ Remove r25_net and r25_cp from readonly list (make editable)
+    	    readonlyIds = readonlyIds.filter(id => id !== "r25_net" && id !== "r25_cp");
+
     	    // 🔸 Make all .Show_input editable except those in readonlyIds
     	    $(".Show_input").each(function () {
     	        if (!readonlyIds.includes(this.id)) {
