@@ -290,7 +290,6 @@ PURPOSE		: BWRBRREPORT
 			background-color: rgb(107, 122, 143);
 		}
 	</style>
-	
 	<script th:inline="javascript">
 		$(document).ready(function () {
 			// hide loader on normal load
@@ -794,24 +793,36 @@ PURPOSE		: BWRBRREPORT
 							<form action="#" method="POST" id="fileupload">
 								<div class="table-wrapper table-responsive scrollable-table-container"
 									style="border-right: 1px solid #dee2e6; ">
-									<!-- ✅ Table 1 -->
-<table class="sticky-header-table table table-bordered table-hover table-sm table-condensed" style="width: 300px;">
-    <thead class="thead-light">
-        <tr>
-            <th rowspan="3">(5A) INCOME ON INVESTMENTS AND SECURITIES</th>
-            <th class="bg-gray">Fair Value (Profit and Loss)</th>
-            <th class="bg-gray">Held to Maturity</th>
-            <th class="bg-gray">Available for Sale</th>
-            <th class="bg-gray">Total</th>
-        </tr>
-    </thead>
-    <tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-        	<tr>
+									<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"style="width: 114%;"
+										id="reports">
+										<thead class="thead-light">
+											<tr style="background-color: #b3b6b9 ">
+
+												<th rowspan="3" style="text-align: left; padding-left: 20px;">
+													(5A)
+													INCOME ON INVESTMENTS AND SECURITIES </th>
+												<th
+													style="text-align: center; vertical-align:center;background-color: #D8D8D8; ">
+													Fair Value (Profit and Loss)</th>
+												<th
+													style="text-align: center; vertical-align:center;background-color: #D8D8D8; ">
+													Held to Maturity </th>
+												<th
+													style="text-align: center; vertical-align:center;background-color: #D8D8D8; ">
+													Available for Sale</th>
+												<th
+													style="text-align: center; vertical-align:center;background-color: #D8D8D8;">
+													Total </th>
+											</tr>
+										</thead>
+										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+											<tr>
 												<td id="R0W10" style="font-weight: bold;"><input
 														class="display-input Show_input " type="text"
 														th:value="'1. Bank of Botswana Certificates'" id="R10_PRODUCT"
 														name="R10_PRODUCT"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+														style="background-color: #FFFFFF; height: 28px;width: 500px; border-color: transparent; text-align: left; padding-left: 20px;"
 														readonly /></td>
 
 												<td id="R0W10" style=" font-weight: bold;padding-left: 20px;">
@@ -819,7 +830,7 @@ PURPOSE		: BWRBRREPORT
 														th:value="${report.R10_FAIR_VALUE_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R10_FAIR_VALUE_PROFIT_AND_LOSS, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R10_FAIR_VALUE_PROFIT_AND_LOSS"
 														name="R10_FAIR_VALUE_PROFIT_AND_LOSS"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right; "
+														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
 
@@ -827,7 +838,7 @@ PURPOSE		: BWRBRREPORT
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_HELD_TO_MATURITY != null ? #numbers.formatDecimal(report.R10_HELD_TO_MATURITY, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R10_HELD_TO_MATURITY" name="R10_HELD_TO_MATURITY"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
@@ -835,7 +846,7 @@ PURPOSE		: BWRBRREPORT
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R10_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R10_AVAILABLE_FOR_SALE" name="R10_AVAILABLE_FOR_SALE"
-														style="background-color: #FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF;  height: 28px;width: 300px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
@@ -843,7 +854,7 @@ PURPOSE		: BWRBRREPORT
 													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R10_TOTAL }" id="R10_TOTAL" name="R10_TOTAL"
-														style="background-color: #FFFFFF;height: 28px;border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF;height: 28px;width: 300px;border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
 														readonly />
 												</td>
 											</tr>
@@ -1095,24 +1106,41 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 											</td>
 											</tr>
-    </tbody>
-</table>
 
-<!-- ✅ Table 2 -->
-<table class="sticky-header-table table table-bordered table-hover table-sm table-condensed">
-    <thead class="thead-light">
-        <tr>
-            <th rowspan="3">(5B) TYPES OF INVESTMENT SECURITIES AND OTHER INVESTMENTS</th>
-            <th class="bg-gray">Held for trading</th>
-            <th class="bg-gray">Amortised cost</th>
-            <th class="bg-gray">Available for sale</th>
-            <th class="bg-gray">Fair value through profit &amp; loss</th>
-            <th class="bg-gray">Qualifying for hedge accounting</th>
-            <th class="bg-gray">Total</th>
-        </tr>
-    </thead>
-    <tbody th:each="report: ${reportsummary1}" style="font-family: Arial;">
-        <tr>
+										</tbody>
+									</table>
+									<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"style="width: 100%;"
+										id="reports">
+										<thead class="thead-light">
+											<tr style="background-color: #b3b6b9">
+
+												<th rowspan="3" style="text-align: left;padding-left: 20px;">
+													(5B)
+													TYPES OF INVESTMENT SECURITIES AND OTHER INVESTMENTS </th>
+												<th
+													style="text-align: center; vertical-align:center;background-color: #D8D8D8;">
+													Held for trading </th>
+												<th
+													style="text-align: center; vertical-align:center;background-color: #D8D8D8;">
+													Amortised cost </th>
+												<th
+													style="text-align: center; vertical-align:center;background-color: #D8D8D8;">
+													Available for sale </th>
+												<th
+													style="text-align: center; vertical-align:center;background-color: #D8D8D8;">
+													Fair value through profit & loss
+												</th>
+												<th
+													style="text-align: center; vertical-align:center;background-color: #D8D8D8;">
+													Qualifying for hedge accounting
+												</th>
+												<th
+													style="text-align: center; WIDTH:180PX ;vertical-align:center;background-color: #D8D8D8;">
+													Total </th>
+											</tr>
+										<tbody th:each="report: ${reportsummary1}" style="font-family: Arial;">
+											<tr>
 												<td id="R0W21" style="font-weight: bold;"><input
 														class="display-input Show_input " type="text"
 														th:value="'TOTAL INCOME ON INVESTMENT AND SECURITIES (SUM OF LINES (1) TO (6):'" id="R21_PRODUCT"
@@ -1168,8 +1196,8 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 											</td>
 											</tr>
-    </tbody>
-</table>
+										</tbody>
+									</table>
 
 								</div>
 								<div style="text-align: center; margin-top: 10px;">
