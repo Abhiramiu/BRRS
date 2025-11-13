@@ -2008,8 +2008,15 @@ data-version=${version}"
 											<td th:text="${report.custId}"></td>
 											<td th:text="${report.acctNumber}"></td>
 											<td th:text="${report.acctName}"></td>
+<<<<<<< Updated upstream
 											<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInPula, 1, 0, 'POINT')}"></td>
 											<td th:text="${report.reportLable}"></td>
+=======
+											<!--<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInPula, 1, 3, 'POINT')}"></td>
+											-->
+											<td style="text-align:right" th:text="${report.acctBalanceInPula != null 
+													? #numbers.formatDecimal(report.acctBalanceInPula,1,'COMMA',0,'POINT') : '0'}"></td><td th:text="${report.reportLable}"></td>
+>>>>>>> Stashed changes
 											<td th:text="${report.reportAddlCriteria1}"></td>
 											<td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
 										</tr>

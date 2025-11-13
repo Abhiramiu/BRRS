@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,6 +14,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -36,8 +40,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Archival_Detail_Repo;
@@ -46,6 +55,7 @@ import com.bornfire.brrs.entities.BRRS_M_LIQ_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Summary_Repo;
+import com.bornfire.brrs.entities.M_CA2_Detail_Entity;
 import com.bornfire.brrs.entities.M_LIQ_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LIQ_Archival_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_LIQ_Archival_Summary_Entity;
@@ -709,13 +719,13 @@ public class BRRS_M_LIQ_ReportService {
 				for (M_LIQ_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
+					row.createCell(0).setCellValue(item.getCust_id());
+					row.createCell(1).setCellValue(item.getAcct_number());
+					row.createCell(2).setCellValue(item.getAcct_name());
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					if (item.getAcct_balance_in_pula() != null) {
+						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
@@ -723,11 +733,11 @@ public class BRRS_M_LIQ_ReportService {
 
 					
 
-					row.createCell(4).setCellValue(item.getReportLable());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
+					row.createCell(4).setCellValue(item.getReport_label());
+					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
 					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+							.setCellValue(item.getReport_date() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
 
 					// Apply data style for all other cells
@@ -1224,25 +1234,25 @@ public class BRRS_M_LIQ_ReportService {
 				for (M_LIQ_Archival_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					 row.createCell(2).setCellValue(item.getAcctName()); 
+					row.createCell(0).setCellValue(item.getCust_id());
+					row.createCell(1).setCellValue(item.getAcct_number());
+					 row.createCell(2).setCellValue(item.getAcct_name()); 
 
 // ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					if (item.getAcct_balance_in_pula() != null) {
+						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
 					
-					row.createCell(4).setCellValue(item.getReportLable());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
+					row.createCell(4).setCellValue(item.getReport_label());
+					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
 					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+							.setCellValue(item.getReport_date() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
 									: "");
 
 // Apply data style for all other cells
@@ -1312,33 +1322,122 @@ public class BRRS_M_LIQ_ReportService {
 		m_liq_Manual_Summary_Repo.save(existing);
 	}
 
-	
-	public boolean updateProvision(M_LIQ_Detail_Entity liqData) {
-try {
-		System.out.println("Came to LIQ Service");
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
-		// ✅ Must match your entity field name exactly
-		M_LIQ_Detail_Entity existing = brrs_m_liq_detail_Repo.findByAcctnumber(liqData.getAcctNumber());
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_LIQ"); // ✅ match the report name
+	    System.out.println("Hello");
+	    if (acctNo != null) {
+	    	M_LIQ_Detail_Entity liqEntity = brrs_m_liq_detail_Repo.findByAcctnumber(acctNo);
+	        if (liqEntity != null && liqEntity.getReport_date() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(liqEntity.getReport_date());
+	            mv.addObject("asondate", formattedDate);
+	        }
+	        mv.addObject("Data", liqEntity);
+	    }
 
-		if (existing != null) {
-
-			//existing.setAcct_name(liqData.getAcctName());
-
-			existing.setAcctBalanceInpula(liqData.getAcctBalanceInpula());
-			
-
-			brrs_m_liq_detail_Repo.save(existing);
-
-			System.out.println("Updated successfully for ACCT_NO: " + liqData.getAcctNumber());
-			return true;
-		} else {
-			System.out.println("Record not found for Account No: " + liqData.getAcctNumber());
-			return false;
-		}
-
-	} catch (Exception e) {
-		e.printStackTrace();
-		return false;
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
 	}
-}
+
+
+
+
+
+	public ModelAndView updateDetailEdit(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_LIQ"); // ✅ match the report name
+
+	    if (acctNo != null) {
+	    	M_LIQ_Detail_Entity liqEntity = brrs_m_liq_detail_Repo.findByAcctnumber(acctNo);
+	        if (liqEntity != null && liqEntity.getReport_date() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(liqEntity.getReport_date());
+	            mv.addObject("asondate", formattedDate);
+	            System.out.println(formattedDate);
+	        }
+	        mv.addObject("Data", liqEntity);
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+	    try {
+	        String acctNo = request.getParameter("acct_number");
+	        String provisionStr = request.getParameter("acct_balance_in_pula");
+	        String acctName = request.getParameter("acct_name");
+	        String reportDateStr = request.getParameter("report_date");
+
+	        logger.info("Received update for ACCT_NO: {}", acctNo);
+
+	        M_LIQ_Detail_Entity existing = brrs_m_liq_detail_Repo.findByAcctnumber(acctNo);
+	        if (existing == null) {
+	            logger.warn("No record found for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+	        }
+
+	        boolean isChanged = false;
+
+	        if (acctName != null && !acctName.isEmpty()) {
+	            if (existing.getAcct_name() == null || !existing.getAcct_name().equals(acctName)) {
+	                existing.setAcct_name(acctName);
+	               
+	                isChanged = true;
+	                logger.info("Account name updated to {}", acctName);
+	            }
+	        }
+
+	        if (provisionStr != null && !provisionStr.isEmpty()) {
+	            BigDecimal newProvision = new BigDecimal(provisionStr);
+	            if (existing.getAcct_balance_in_pula() == null ||
+	                existing.getAcct_balance_in_pula().compareTo(newProvision) != 0) {
+	            	 existing.setAcct_balance_in_pula(newProvision);
+	                isChanged = true;
+	                logger.info("Balance updated to {}", newProvision);
+	            }
+	        }
+	        
+	        
+
+	        if (isChanged) {
+	        	brrs_m_liq_detail_Repo.save(existing);
+	            logger.info("Record updated successfully for account {}", acctNo);
+
+	            // Format date for procedure
+	            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+	                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+	            // Run summary procedure after commit
+	            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+	                @Override
+	                public void afterCommit() {
+	                    try {
+	                        logger.info("Transaction committed — calling BRRS_M_LIQ_SUMMARY_PROCEDURE({})",
+	                                formattedDate);
+	                        jdbcTemplate.update("BEGIN BRRS_M_LIQ_SUMMARY_PROCEDURE(?); END;", formattedDate);
+	                        logger.info("Procedure executed successfully after commit.");
+	                    } catch (Exception e) {
+	                        logger.error("Error executing procedure after commit", e);
+	                    }
+	                }
+	            });
+
+	            return ResponseEntity.ok("Record updated successfully!");
+	        } else {
+	            logger.info("No changes detected for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.ok("No changes were made.");
+	        }
+
+	    } catch (Exception e) {
+	        logger.error("Error updating M_LIQ record", e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error updating record: " + e.getMessage());
+	    }
+	}
+
+	
 }

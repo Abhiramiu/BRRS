@@ -905,9 +905,7 @@ $(document).ready(function() {
 	    $('#loader').modal('hide');
 
 	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
+	    
 	}
 
 	
@@ -1171,7 +1169,12 @@ $(document).ready(function() {
 				    }, 500);
 				  });
 				</script>
-
+				
+				<script th:inline="javascript">
+					    /*<![CDATA[*/
+					    const reportId = /*[[${reportid}]]*/ null;
+					    /*]]>*/
+					</script>
 
 </head>
 
@@ -1918,15 +1921,15 @@ $(document).ready(function() {
 										</tr>
 
 									</thead>
-									
+
 									<tbody style="font-family: Arial;">
 									<tr th:each="report, srlno : ${reportdetails}">
 																				<td>
 																					<a data-toggle="tooltip" class="editrec"
 																						title="Click to Edit this Record">
 																						<i class="fas fa-edit" style="color: black; cursor:pointer;"
-																							th:attr="data-acctNo=${report.acctNumber},
-																							data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
+																							th:attr="data-acctNo=${report.acct_number},
+																							data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')}"
 																							onclick="openDetail(this, 'edit')"></i>
 
 																					</a>
@@ -1934,17 +1937,17 @@ $(document).ready(function() {
 
 
 											<td th:text="${srlno.index + 1}"></td>
-											<td th:text="${report.custId}"></td>
-											<td th:text="${report.acctNumber}"></td>
-											<td th:text="${report.acctName}"></td>
+											<td th:text="${report.cust_id}"></td>
+											<td th:text="${report.acct_number}"></td>
+											<td th:text="${report.acct_name}"></td>
 											
 											<td style="text-align:right;"
-											th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 0, 'POINT')}"></td>
+											th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 0, 'POINT')}"></td>
 											
-											<td th:text="${report.reportLable}"></td>
-											<td th:text="${report.reportAddlCriteria_1}"></td>
+											<td th:text="${report.report_label}"></td>
+											<td th:text="${report.report_addl_criteria_1}"></td>
 											<td
-												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+												th:text="${#dates.format(report.report_date, 'dd-MM-yyyy')}"></td>
 										</tr>
 																	</tbody>
 																	</table>
@@ -1971,7 +1974,7 @@ $(document).ready(function() {
 													      <div class="row formline" style="margin-top:10px;">
 													        <label class="col-sm-2">Customer ID</label>
 													        <div class="col-sm-3">
-													          <input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+													          <input type="text" th:field="*{cust_id}" class="form-control form-control-sm" readonly />
 													        </div>
 															
 
@@ -1979,7 +1982,7 @@ $(document).ready(function() {
 
 													        <label class="col-sm-2">Account Number</label>
 													        <div class="col-sm-3">
-													          <input type="text" th:field="*{acctNumber}" class="form-control form-control-sm" readonly />
+													          <input type="text" th:field="*{acct_number}" class="form-control form-control-sm" readonly />
 													        </div>
 													      </div>
 
@@ -1987,7 +1990,7 @@ $(document).ready(function() {
 													      <div class="row formline" style="margin-top:10px;">
 													        <label class="col-sm-2">Account Name</label>
 													        <div class="col-sm-3">
-													          <input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
+													          <input type="text" th:field="*{acct_name}" class="form-control form-control-sm" readonly />
 													        </div>
 															
 
@@ -1995,7 +1998,7 @@ $(document).ready(function() {
 
 													        <label class="col-sm-2">Acct Balance</label>
 													        <div class="col-sm-3">
-													          <input type="number" step="0.01" th:field="*{acctBalanceInpula}" class="form-control form-control-sm" style="text-align:right;" />
+													          <input type="number" step="0.01" th:field="*{acct_balance_in_pula}" class="form-control form-control-sm" style="text-align:right;" />
 													        </div>
 													      </div>
 
@@ -2003,19 +2006,26 @@ $(document).ready(function() {
 													      <div class="row formline" style="margin-top:10px;">
 													        <label class="col-sm-2">Report Label</label>
 													        <div class="col-sm-3">
-													          <input type="text" th:field="*{reportLable}" class="form-control form-control-sm"  readonly />
+													          <input type="text" th:field="*{report_label}" class="form-control form-control-sm"  readonly />
 													        </div>
 															
 															<div class="col-sm-1"></div>
 															<label class="col-sm-2">Report Addl Criteria 1</label>
 															<div class="col-sm-3">
-															 <input type="text" th:field="*{reportAddlCriteria_1}" class="form-control form-control-sm" readonly />
+															 <input type="text" th:field="*{report_addl_criteria_1}" class="form-control form-control-sm" readonly />
 															</div>
 
 													      </div>
 
-													     
-													   
+														  <!-- Row 4-->
+														     
+														  <div class="row formline" style="margin-top:10px;">
+														  							<label class="col-sm-2">Report Date</label>
+														  							<div class="col-sm-3">
+														  								<input type="date" name="report_date" class="form-control form-control-sm"
+														  									th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" />
+														  							</div>
+														  						</div>
 													      <!-- Update Button -->
 													      <div style="text-align:center; margin-top:20px;">
 													        <button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}" onclick="submitUpdate()">Update</button>
