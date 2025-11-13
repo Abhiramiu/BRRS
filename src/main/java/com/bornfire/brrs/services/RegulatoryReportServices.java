@@ -1581,14 +1581,14 @@ public class RegulatoryReportServices {
 
 			break;
 
-		case "Q_BRANCHNET":
-			try {
-				archivalData = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		// case "Q_BRANCHNET":
+		// 	try {
+		// 		archivalData = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
+		// 	} catch (Exception e) {
+		// 		// TODO Auto-generated catch block
+		// 		e.printStackTrace();
+		// 	}
+		// 	break;
 
 		case "Q_SMME":
 			try {
@@ -1709,6 +1709,12 @@ public class RegulatoryReportServices {
 				List<Object[]> QSList = BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
 				archivalData.addAll(QSList);
 				System.out.println("Fetched M_SRWA_12H archival data: " + QSList.size());
+				break;
+
+					case "Q_BRANCHNET":
+				List<Object[]> QBList = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
+				archivalData.addAll(QBList);
+				System.out.println("Fetched M_SRWA_12H archival data: " + QBList.size());
 				break;
 				
 			case "M_CA4":
@@ -1996,6 +2002,17 @@ public List<Object[]> getResub(String rptcode) {
 					System.out.println("Resubmission data fetched for M_SRWA_12H: " + resubList.size());
 				} catch (Exception e) {
 					System.err.println("Error fetching resubmission data for M_SRWA_12H: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+
+				case "Q_BRANCHNET":
+				try {
+					List<Object[]> resubList = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for Q_BRANCHNET: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for Q_BRANCHNET: " + e.getMessage());
 					e.printStackTrace();
 				}
 				break;

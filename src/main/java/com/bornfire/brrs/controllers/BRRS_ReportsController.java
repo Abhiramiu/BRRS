@@ -968,116 +968,7 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@Autowired
-	private BRRS_Q_BRANCHNET_ReportService Q_BRANCHNETservice;
-
-	@RequestMapping(value = "/QBRANCHNET1", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> QBranchnetUpdate1(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute Q_BRANCHNET_Summary_Entity1 request, HttpServletRequest req) {
-		try {
-			System.out.println("came to First controller");
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-			// ✅ set the asondate into entity
-			request.setREPORT_DATE(asondate);
-			Q_BRANCHNETservice.QBranchnetUpdate1(request);
-			return ResponseEntity.ok("Updated Successfully");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
-
-	// @RequestMapping(value = "/UpdateQ_BRANCHNET_ReSub", method = {
-	// RequestMethod.GET, RequestMethod.POST })
-	// @ResponseBody
-	// public ResponseEntity<String> updateQBranchnet(
-	// @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
-	// asondate,
-	// @ModelAttribute Q_BRANCHNET_Summary_Entity1 request,
-	// HttpServletRequest req) {
-
-	// try {
-	// System.out.println("Came to Resub Controller");
-
-	// if (asondate != null) {
-	// // Set the asondate into the entity
-	// request.setReportDate(asondate);
-	// System.out.println("Set Report Date: " + asondate);
-	// } else {
-	// System.out.println("Asondate parameter is null; using entity value: " +
-	// request.getReportDate());
-	// }
-
-	// // Call service to create a new versioned row
-	// Q_BRANCHNETservice.updateQBranchnet(request);
-
-	// return ResponseEntity.ok("Resubmission Updated Successfully");
-
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	// .body("Resubmission Update Failed: " + e.getMessage());
-	// }
-	// }
-	@RequestMapping(value = "/QBRANCHNET2", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> QBranchnetUpdate2(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute Q_BRANCHNET_Summary_Entity2 request, HttpServletRequest req) {
-		try {
-			System.out.println("came to Second controller");
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-			// ✅ set the asondate into entity
-			request.setREPORT_DATE(asondate);
-			Q_BRANCHNETservice.QBranchnetUpdate2(request);
-			return ResponseEntity.ok("Updated Successfully");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
-
-	@RequestMapping(value = "/QBRANCHNET3", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> QBranchnetUpdate3(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute Q_BRANCHNET_Summary_Entity3 request, HttpServletRequest req) {
-		try {
-			System.out.println("came to Third controller");
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-			// ✅ set the asondate into entity
-			request.setREPORT_DATE(asondate);
-			Q_BRANCHNETservice.QBranchnetUpdate3(request);
-			return ResponseEntity.ok("Updated Successfully");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
-
-	@RequestMapping(value = "/QBRANCHNET4", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> QBranchnetUpdate4(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute Q_BRANCHNET_Summary_Entity4 request, HttpServletRequest req) {
-		try {
-			System.out.println("came to Fourth controller");
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-			// ✅ set the asondate into entity
-			request.setREPORT_DATE(asondate);
-			Q_BRANCHNETservice.QBranchnetUpdate4(request);
-			return ResponseEntity.ok("Updated Successfully");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
+	
 
 	@Autowired
 	private BRRS_M_SEC_ReportService SECreportService;
@@ -1935,7 +1826,72 @@ public class BRRS_ReportsController {
 					.body("Q_STAFF Resubmission Update Failed: " + e.getMessage());
 		}
 	}
+@Autowired
+	BRRS_Q_BRANCHNET_ReportService QBRANCHNET_service;
 
+	@RequestMapping(value = "/Q_BRANCHNETupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute Q_BRANCHNET_Summary_Entity1 request1,
+			@ModelAttribute Q_BRANCHNET_Summary_Entity2 request2,
+			@ModelAttribute Q_BRANCHNET_Summary_Entity3 request3,
+			@ModelAttribute Q_BRANCHNET_Summary_Entity4 request4) {
+		try {
+			System.out.println("Came to single controller");
+
+			// set date into all 3 entities
+			request1.setReportDate(asondate);
+			request2.setReportDate(asondate);
+			request3.setReportDate(asondate);
+			request4.setReportDate(asondate);
+
+			// call services
+			QBRANCHNET_service.QBranchnetUpdate1(request1);
+			QBRANCHNET_service.QBranchnetUpdate2(request2);
+			QBRANCHNET_service.QBranchnetUpdate3(request3);
+			QBRANCHNET_service.QBranchnetUpdate4(request4);
+
+			return ResponseEntity.ok("Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "/UpdateQ_BRANCHNETReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute Q_BRANCHNET_Summary_Entity1 request1,
+			@ModelAttribute Q_BRANCHNET_Summary_Entity2 request2,
+			@ModelAttribute Q_BRANCHNET_Summary_Entity3 request3,
+			@ModelAttribute Q_BRANCHNET_Summary_Entity4 request4,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to Q_BRANCHNET Resub Controller");
+
+			if (asondate != null) {
+				request1.setReportDate(asondate);
+				request2.setReportDate(asondate);
+				request3.setReportDate(asondate);
+				request4.setReportDate(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			}
+
+			// Call service
+			QBRANCHNET_service.updateReportReSub(request1, request2, request3, request4);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Q_BRANCHNET Resubmission Update Failed: " + e.getMessage());
+		}
+	}
 	@RequestMapping(value = "/UpdateM_SRWA_12G_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(

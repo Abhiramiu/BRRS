@@ -407,11 +407,11 @@ PURPOSE		: BWRBRREPORT
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
+		// function closemodel() {
+		// 	$('#alert').modal('hide');
+		// 	$('#resultModal').modal('hide');
 
-		}
+		// }
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -616,10 +616,20 @@ $(document).ready(function() {
 
 
 <script>
-function closemodel() {
+   function closemodel() {
     $("#resultModal").modal("hide");
     $('#loader').modal('hide');
-    setTimeout(() => location.reload(), 300);
+
+    // Check if the success message is showing
+    const message = $("#resultModalBody").text();
+
+    if (message.includes("Resubmission Updated Successfully")) {
+        // ✅ Go back to the previous page
+        window.history.back();
+    } else {
+        // For other messages, just reload the same page
+        setTimeout(() => location.reload(), 300);
+    }
 }
 
 function fileuploads(btn) {
