@@ -1970,16 +1970,16 @@ public class RegulatoryReportServices {
 					response = BRRS_M_CA2_reportservice.updateDetailEdit(request);
 					break;
 					
-<<<<<<< Updated upstream
+
 			  case "M_SP":
 					response = BRRS_M_SP_reportservice.updateDetailEdit(request);
 					break;
 
-=======
+
 			  case "M_LIQ":
 					response = BRRS_M_LIQ_reportservice.updateDetailEdit(request);
 					break;
->>>>>>> Stashed changes
+
 
 			 
 
@@ -2091,7 +2091,7 @@ public List<Object[]> getResub(String rptcode) {
 			            break;
 
 			            
-<<<<<<< Updated upstream
+
 				  case "M_EPR":
 			            try {
 			                List<Object[]> resubList = brrs_m_epr_reportservice.getM_EPRResub();
@@ -2102,8 +2102,7 @@ public List<Object[]> getResub(String rptcode) {
 			                e.printStackTrace();
 			            }
 			            break;
-=======
->>>>>>> Stashed changes
+
 
 
 
