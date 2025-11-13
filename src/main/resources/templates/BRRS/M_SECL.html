@@ -765,7 +765,8 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_EQUITY").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R16_EQUITY").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R16_EQUITY").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+	 // Output → 790,128
 	}
 	$(document).ready(function() {
 	    calculateR16EQUITY();
@@ -782,7 +783,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_BONDS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R16_BONDS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R16_BONDS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR16BONDS();
@@ -799,7 +800,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_BOBCS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R16_BOBCS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R16_BOBCS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR16BOBCS();
@@ -816,7 +817,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_TREASURY_BILLS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R16_TREASURY_BILLS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R16_TREASURY_BILLS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR16TreasuryBills();
@@ -833,7 +834,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_REPURCHASE_AGREEMENTS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R16_REPURCHASE_AGREEMENTS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R16_REPURCHASE_AGREEMENTS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR16RepurchaseAgreements();
@@ -850,7 +851,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_COMMERCIAL_PAPER").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R16_COMMERCIAL_PAPER").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R16_COMMERCIAL_PAPER").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR16CommercialPaper();
@@ -867,7 +868,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_CERTIFICATES_OF_DEPOSITS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R16_CERTIFICATES_OF_DEPOSITS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R16_CERTIFICATES_OF_DEPOSITS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR16CertificatesOfDeposits();
@@ -884,7 +885,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_PLEDGED_ASSETS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R16_PLEDGED_ASSETS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R16_PLEDGED_ASSETS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR16PledgedAssets();
@@ -901,7 +902,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_OTHER_SPECIFY").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R16_OTHER_SPECIFY").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R16_OTHER_SPECIFY").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR16OtherSpecify();
@@ -919,7 +920,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_EQUITY").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R31_EQUITY").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R31_EQUITY").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR31EQUITY();
@@ -936,7 +937,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_BONDS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R31_BONDS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R31_BONDS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR31BONDS();
@@ -953,7 +954,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_BOBCS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R31_BOBCS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R31_BOBCS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR31BOBCS();
@@ -970,7 +971,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_TREASURY_BILLS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R31_TREASURY_BILLS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R31_TREASURY_BILLS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR31TreasuryBills();
@@ -987,7 +988,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_REPURCHASE_AGREEMENTS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R31_REPURCHASE_AGREEMENTS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R31_REPURCHASE_AGREEMENTS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR31RepurchaseAgreements();
@@ -1004,7 +1005,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_COMMERCIAL_PAPER").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R31_COMMERCIAL_PAPER").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R31_COMMERCIAL_PAPER").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR31CommercialPaper();
@@ -1021,7 +1022,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_CERTIFICATES_OF_DEPOSITS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R31_CERTIFICATES_OF_DEPOSITS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R31_CERTIFICATES_OF_DEPOSITS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR31CertificatesOfDeposits();
@@ -1038,7 +1039,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_PLEDGED_ASSETS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R31_PLEDGED_ASSETS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R31_PLEDGED_ASSETS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR31PledgedAssets();
@@ -1055,7 +1056,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_OTHER_SPECIFY").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R31_OTHER_SPECIFY").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R31_OTHER_SPECIFY").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR31OtherSpecify();
@@ -1077,7 +1078,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_EQUITY").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R37_EQUITY").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R37_EQUITY").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR37EQUITY();
@@ -1094,7 +1095,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_BONDS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R37_BONDS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R37_BONDS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR37BONDS();
@@ -1111,7 +1112,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_BOBCS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R37_BOBCS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R37_BOBCS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR37BOBCS();
@@ -1128,7 +1129,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_TREASURY_BILLS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R37_TREASURY_BILLS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R37_TREASURY_BILLS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR37TreasuryBills();
@@ -1145,7 +1146,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_REPURCHASE_AGREEMENTS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R37_REPURCHASE_AGREEMENTS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R37_REPURCHASE_AGREEMENTS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR37RepurchaseAgreements();
@@ -1162,7 +1163,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_COMMERCIAL_PAPER").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R37_COMMERCIAL_PAPER").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R37_COMMERCIAL_PAPER").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR37CommercialPaper();
@@ -1179,7 +1180,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_CERTIFICATES_OF_DEPOSITS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R37_CERTIFICATES_OF_DEPOSITS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R37_CERTIFICATES_OF_DEPOSITS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR37CertificatesOfDeposits();
@@ -1196,7 +1197,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_PLEDGED_ASSETS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R37_PLEDGED_ASSETS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R37_PLEDGED_ASSETS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR37PledgedAssets();
@@ -1213,7 +1214,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_OTHER_SPECIFY").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R37_OTHER_SPECIFY").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R37_OTHER_SPECIFY").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR37OtherSpecify();
@@ -1234,7 +1235,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_EQUITY").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R46_EQUITY").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R46_EQUITY").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR46EQUITY();
@@ -1251,7 +1252,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_BONDS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R46_BONDS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R46_BONDS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR46BONDS();
@@ -1268,7 +1269,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_BOBCS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R46_BOBCS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R46_BOBCS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR46BOBCS();
@@ -1285,7 +1286,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_TREASURY_BILLS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R46_TREASURY_BILLS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R46_TREASURY_BILLS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR46TreasuryBills();
@@ -1302,7 +1303,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_REPURCHASE_AGREEMENTS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R46_REPURCHASE_AGREEMENTS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R46_REPURCHASE_AGREEMENTS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR46RepurchaseAgreements();
@@ -1319,7 +1320,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_COMMERCIAL_PAPER").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R46_COMMERCIAL_PAPER").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R46_COMMERCIAL_PAPER").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR46CommercialPaper();
@@ -1336,7 +1337,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_CERTIFICATES_OF_DEPOSITS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R46_CERTIFICATES_OF_DEPOSITS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R46_CERTIFICATES_OF_DEPOSITS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR46CertificatesOfDeposits();
@@ -1353,7 +1354,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_PLEDGED_ASSETS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R46_PLEDGED_ASSETS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R46_PLEDGED_ASSETS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR46PledgedAssets();
@@ -1370,7 +1371,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_OTHER_SPECIFY").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R46_OTHER_SPECIFY").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R46_OTHER_SPECIFY").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR46OtherSpecify();
@@ -1392,7 +1393,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_EQUITY").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R50_EQUITY").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R50_EQUITY").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR50EQUITY();
@@ -1409,7 +1410,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_BONDS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R50_BONDS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R50_BONDS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR50BONDS();
@@ -1426,7 +1427,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_BOBCS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R50_BOBCS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R50_BOBCS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR50BOBCS();
@@ -1443,7 +1444,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_TREASURY_BILLS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R50_TREASURY_BILLS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R50_TREASURY_BILLS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR50TreasuryBills();
@@ -1460,7 +1461,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_REPURCHASE_AGREEMENTS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R50_REPURCHASE_AGREEMENTS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R50_REPURCHASE_AGREEMENTS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR50RepurchaseAgreements();
@@ -1477,7 +1478,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_COMMERCIAL_PAPER").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R50_COMMERCIAL_PAPER").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R50_COMMERCIAL_PAPER").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR50CommercialPaper();
@@ -1494,7 +1495,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_CERTIFICATES_OF_DEPOSITS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R50_CERTIFICATES_OF_DEPOSITS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R50_CERTIFICATES_OF_DEPOSITS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR50CertificatesOfDeposits();
@@ -1511,7 +1512,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_PLEDGED_ASSETS").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R50_PLEDGED_ASSETS").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R50_PLEDGED_ASSETS").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR50PledgedAssets();
@@ -1528,7 +1529,7 @@ function cancelModify() {
 	        let val = parseFloat($("#R" + i + "_OTHER_SPECIFY").val().replace(/,/g, "")) || 0;
 	        TOTAL += val;
 	    }
-	    $("#R50_OTHER_SPECIFY").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
+	    $("#R50_OTHER_SPECIFY").val(TOTAL.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 	}
 	$(document).ready(function() {
 	    calculateR50OtherSpecify();
@@ -1556,7 +1557,7 @@ function cancelModify() {
 	    });
 
 	    $("#" + columnId).val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -1632,7 +1633,7 @@ function cancelModify() {
 	                getVal("R56_EQUITY");
 
 	    $("#R34_EQUITY").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -1662,7 +1663,7 @@ function cancelModify() {
 	                getVal("R56_BONDS");
 
 	    $("#R34_BONDS").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -1692,7 +1693,7 @@ function cancelModify() {
 	                getVal("R56_BOBCS");
 
 	    $("#R34_BOBCS").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -1722,7 +1723,7 @@ function cancelModify() {
 	                getVal("R56_TREASURY_BILLS");
 
 	    $("#R34_TREASURY_BILLS").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -1752,7 +1753,7 @@ function cancelModify() {
 	                getVal("R56_REPURCHASE_AGREEMENTS");
 
 	    $("#R34_REPURCHASE_AGREEMENTS").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -1782,7 +1783,7 @@ function cancelModify() {
 	                getVal("R56_COMMERCIAL_PAPER");
 
 	    $("#R34_COMMERCIAL_PAPER").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -1812,7 +1813,7 @@ function cancelModify() {
 	                getVal("R56_CERTIFICATES_OF_DEPOSITS");
 
 	    $("#R34_CERTIFICATES_OF_DEPOSITS").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -1842,7 +1843,7 @@ function cancelModify() {
 	                getVal("R56_PLEDGED_ASSETS");
 
 	    $("#R34_PLEDGED_ASSETS").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -1872,7 +1873,7 @@ function cancelModify() {
 	                getVal("R56_OTHER_SPECIFY");
 
 	    $("#R34_OTHER_SPECIFY").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -1900,7 +1901,7 @@ function cancelModify() {
 	    });
 
 	    $("#" + columnId).val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -1991,7 +1992,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R12_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2025,7 +2026,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R13_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2059,7 +2060,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R14_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2093,7 +2094,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R15_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2127,7 +2128,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R16_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2161,7 +2162,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R17_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2195,7 +2196,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R18_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2229,7 +2230,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R19_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2263,7 +2264,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R20_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2297,7 +2298,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R21_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2331,7 +2332,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R22_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2365,7 +2366,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R23_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2399,7 +2400,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R24_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2433,7 +2434,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R25_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2467,7 +2468,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R26_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2501,7 +2502,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R27_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2535,7 +2536,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R28_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2569,7 +2570,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R29_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2603,7 +2604,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R30_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2637,7 +2638,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R31_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2671,7 +2672,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R32_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2705,7 +2706,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R33_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2739,7 +2740,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R34_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2773,7 +2774,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R35_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2807,7 +2808,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R36_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2841,7 +2842,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R37_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2875,7 +2876,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R38_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2909,7 +2910,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R39_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2943,7 +2944,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R40_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -2977,7 +2978,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R41_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3011,7 +3012,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R42_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3045,7 +3046,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R43_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3079,7 +3080,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R44_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3113,7 +3114,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R45_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3147,7 +3148,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R46_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3181,7 +3182,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R47_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3215,7 +3216,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R48_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3249,7 +3250,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R49_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3283,7 +3284,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R50_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3317,7 +3318,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R51_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3351,7 +3352,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R52_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3385,7 +3386,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R53_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3419,7 +3420,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R54_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3453,7 +3454,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R55_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3487,7 +3488,7 @@ function cancelModify() {
 	    let TOTAL = EQUITY + BONDS + BOBCS + tBills + repo + cPaper + cDeposits + pledged + other;
 
 	    $("#R56_TOTAL").val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
@@ -3514,7 +3515,7 @@ function cancelModify() {
 	    });
 
 	    $("#" + columnId).val(
-	        TOTAL.toLocaleString("en-IN", { maximumFractionDigits: 0  })
+	        TOTAL.toLocaleString("en-US", { maximumFractionDigits: 0  })
 	    );
 	}
 
