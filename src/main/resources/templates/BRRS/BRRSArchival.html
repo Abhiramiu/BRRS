@@ -442,12 +442,24 @@ function getVali(a) {
     });
   });
 </script> -->
-<script>
+<!-- <script>
   $(document).ready(function () {
     $('#BRRSvalidation').DataTable({
       "paging": true,
       "info": false,       // turn off "Showing x of y"
       "searching": false,  // turn off search
+      "ordering": false,   // turn off ordering
+      "lengthChange": false // hide "Show x entries"
+    });
+  });
+</script> -->
+<script>
+  $(document).ready(function () {
+    $('#BRRSvalidation').DataTable({
+    "pageLength": 10,
+      "paging": true,
+      "info": false,       // turn off "Showing x of y"
+      "searching": true,  // turn on search
       "ordering": false,   // turn off ordering
       "lengthChange": false // hide "Show x entries"
     });
