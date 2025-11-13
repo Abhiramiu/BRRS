@@ -1725,6 +1725,7 @@ public class NavigationController {
 		md.addAttribute("menu", data.getRptDescription());
 		md.addAttribute("domain", data.getDomainId());
 		md.addAttribute("rptcode", data.getRptCode());
+		md.addAttribute("reportResubDate",data.getReportResubDate());
 		List<Object[]> resubmissionData = regulatoryreportservices.getResub(rptcode);
 		md.addAttribute("Resubmitdata", resubmissionData);
 		md.addAttribute("reportlist", rrReportlist.getReportListbrrs());

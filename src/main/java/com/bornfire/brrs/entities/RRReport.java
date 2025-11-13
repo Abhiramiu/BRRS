@@ -8,108 +8,111 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_RR_RPT_MAST")
 public class RRReport {
 
-    @Id
-    @Column(name = "SRL_NO")
-    private int srlNo;
+	@Id
+	@Column(name = "SRL_NO")
+	private int srlNo;
 
-    @Column(name = "RPT_START_DATE")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date rptStartDate;
+	@Column(name = "RPT_START_DATE")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date rptStartDate;
 
-    @Column(name = "RPT_CODE")
-    private String rptCode;
+	@Column(name = "RPT_CODE")
+	private String rptCode;
 
-    @Column(name = "RPT_DESCRIPTION")
-    private String rptDescription;
+	@Column(name = "RPT_DESCRIPTION")
+	private String rptDescription;
 
-    @Column(name = "RPT_TYPE")
-    private String rptType;
+	@Column(name = "RPT_TYPE")
+	private String rptType;
 
-    @Column(name = "DET_FLG")
-    private String detFlg;
+	@Column(name = "DET_FLG")
+	private String detFlg;
 
-    @Column(name = "RPT_STATUS")
-    private String rptStatus;
+	@Column(name = "RPT_STATUS")
+	private String rptStatus;
 
-    @Column(name = "START_DATE")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date startDate;
+	@Column(name = "START_DATE")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date startDate;
 
-    @Column(name = "END_DATE")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date endDate;
+	@Column(name = "END_DATE")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date endDate;
 
-    @Column(name = "REMARKS_1")
-    private String remarks1;
+	@Column(name = "REMARKS_1")
+	private String remarks1;
 
-    @Column(name = "REMARKS_2")
-    private String remarks2;
+	@Column(name = "REMARKS_2")
+	private String remarks2;
 
-    @Column(name = "REMARKS_3")
-    private String remarks3;
+	@Column(name = "REMARKS_3")
+	private String remarks3;
 
-    @Column(name = "REMARKS_4")
-    private String remarks4;
+	@Column(name = "REMARKS_4")
+	private String remarks4;
 
-    @Column(name = "REMARKS_5")
-    private String remarks5;
+	@Column(name = "REMARKS_5")
+	private String remarks5;
 
-    @Column(name = "DEL_FLG")
-    private String delFlg;
+	@Column(name = "DEL_FLG")
+	private String delFlg;
 
-    @Column(name = "ENTITY_FLG")
-    private String entityFlg;
+	@Column(name = "ENTITY_FLG")
+	private String entityFlg;
 
-    @Column(name = "MODIFY_FLG")
-    private String modifyFlg;
+	@Column(name = "MODIFY_FLG")
+	private String modifyFlg;
 
-    @Column(name = "ENTRY_USER")
-    private String entryUser;
+	@Column(name = "ENTRY_USER")
+	private String entryUser;
 
-    @Column(name = "MODIFY_USER")
-    private String modifyUser;
+	@Column(name = "MODIFY_USER")
+	private String modifyUser;
 
-    @Column(name = "VERIFY_USER")
-    private String verifyUser;
+	@Column(name = "VERIFY_USER")
+	private String verifyUser;
 
-    @Column(name = "ENTRY_DATE")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date entryDate;
+	@Column(name = "ENTRY_DATE")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date entryDate;
 
-    @Column(name = "MODIFY_DATE")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date modifyDate;
+	@Column(name = "MODIFY_DATE")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date modifyDate;
 
-    @Column(name = "VERIFY_DATE")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date verifyDate;
+	@Column(name = "VERIFY_DATE")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date verifyDate;
 
-    @Column(name = "TAXONOMY_VERSION")
-    private String taxonomyVersion;
+	@Column(name = "TAXONOMY_VERSION")
+	private String taxonomyVersion;
 
-    @Column(name = "TAXONOMY_DATE")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date taxonomyDate;
+	@Column(name = "TAXONOMY_DATE")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date taxonomyDate;
 
-    @Column(name = "DOMAIN")
-    private String domain;
-    
-    
-    @Column(name = "REPORT_VALIDITY")
-    private String report_validity;
-    
-    @Column(name = "REPORT_FREQUENCY")
-    private String report_frequency;
-    
-    @Column(name = "LCHG_USER_ID")
-    private String LCHG_USER_ID;
-    
-    @Column(name = "LCHG_TIME")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date LCHG_TIME;
-    
-    @Column(name = "DOMAIN_ID")
-    private String domainId;
+	@Column(name = "DOMAIN")
+	private String domain;
+
+	@Column(name = "REPORT_RESUBDATE")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date reportResubDate;
+
+	@Column(name = "REPORT_VALIDITY")
+	private String report_validity;
+
+	@Column(name = "REPORT_FREQUENCY")
+	private String report_frequency;
+
+	@Column(name = "LCHG_USER_ID")
+	private String LCHG_USER_ID;
+
+	@Column(name = "LCHG_TIME")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date LCHG_TIME;
+
+	@Column(name = "DOMAIN_ID")
+	private String domainId;
 
 	public int getSrlNo() {
 		return srlNo;
@@ -327,7 +330,6 @@ public class RRReport {
 		this.domainId = domainId;
 	}
 
-	
 	public String getReport_validity() {
 		return report_validity;
 	}
@@ -343,8 +345,6 @@ public class RRReport {
 	public void setReport_frequency(String report_frequency) {
 		this.report_frequency = report_frequency;
 	}
-	
-	
 
 	public String getLCHG_USER_ID() {
 		return LCHG_USER_ID;
@@ -354,9 +354,6 @@ public class RRReport {
 		this.LCHG_USER_ID = lCHG_USER_ID;
 	}
 
-	
-	
-
 	public Date getLCHG_TIME() {
 		return LCHG_TIME;
 	}
@@ -364,15 +361,21 @@ public class RRReport {
 	public void setLCHG_TIME(Date lCHG_TIME) {
 		this.LCHG_TIME = lCHG_TIME;
 	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
 
-	
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+
 
 	public RRReport(int srlNo, Date rptStartDate, String rptCode, String rptDescription, String rptType, String detFlg,
 			String rptStatus, Date startDate, Date endDate, String remarks1, String remarks2, String remarks3,
 			String remarks4, String remarks5, String delFlg, String entityFlg, String modifyFlg, String entryUser,
 			String modifyUser, String verifyUser, Date entryDate, Date modifyDate, Date verifyDate,
 			String taxonomyVersion, Date taxonomyDate, String domain, String report_validity, String report_frequency,
-			String lCHG_USER_ID, Date lCHG_TIME, String domainId) {
+			String lCHG_USER_ID, Date lCHG_TIME, String domainId, Date reportResubDate) {
 		super();
 		this.srlNo = srlNo;
 		this.rptStartDate = rptStartDate;
@@ -405,6 +408,7 @@ public class RRReport {
 		this.LCHG_USER_ID = lCHG_USER_ID;
 		this.LCHG_TIME = lCHG_TIME;
 		this.domainId = domainId;
+		this.reportResubDate = reportResubDate;
 	}
 
 	public RRReport() {
@@ -412,5 +416,6 @@ public class RRReport {
 		// TODO Auto-generated constructor stub
 	}
 
-    
+
+
 }

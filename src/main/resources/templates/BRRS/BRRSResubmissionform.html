@@ -399,6 +399,7 @@ function getVali(a) {
 								<tr>									
 										<th>Report Date</th>
 										<th>Report Version</th>
+                    <th>Report Resubdate</th>
 										<th>Domain</th>
 									</tr>
 							</thead>
@@ -409,6 +410,7 @@ function getVali(a) {
 								 data-version=${ReData[1]}"
 								style="color: #08a6f1;" th:text="${#dates.format(ReData[0],'dd/MM/yyyy')}" onclick="getReport(this);"></td>
 								<td th:text="${ReData[1]}"></td>
+               <td th:text="${#dates.format(reportResubDate, 'dd/MM/yyyy')}"></td>
 								<td th:text="${domain}"></td>
 								
 							</tr >
