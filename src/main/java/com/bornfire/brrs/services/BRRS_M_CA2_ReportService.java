@@ -690,7 +690,7 @@ dataStyle.setBorderRight(border);
 // ACCT BALANCE style (right aligned with 3 decimals)
 CellStyle balanceStyle = workbook.createCellStyle();
 balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 balanceStyle.setBorderTop(border);
 balanceStyle.setBorderBottom(border);
 balanceStyle.setBorderLeft(border);
@@ -733,7 +733,7 @@ Cell balanceCell = row.createCell(3);
 if (item.getAcctBalanceInPula() != null) {
 balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 } else {
-balanceCell.setCellValue(0.000);
+balanceCell.setCellValue(0);
 }
 balanceCell.setCellStyle(balanceStyle);
 
@@ -1280,7 +1280,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	        // ACCT BALANCE style (right aligned with 3 decimals)
 	        CellStyle balanceStyle = workbook.createCellStyle();
 	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 	        balanceStyle.setBorderTop(border);
 	        balanceStyle.setBorderBottom(border);
 	        balanceStyle.setBorderLeft(border);
@@ -1324,7 +1324,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	     if (item.getAcctBalanceInPula() != null) {
 	     balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 	     } else {
-	     balanceCell.setCellValue(0.000);
+	     balanceCell.setCellValue(0);
 	     }
 	     balanceCell.setCellStyle(balanceStyle);
 

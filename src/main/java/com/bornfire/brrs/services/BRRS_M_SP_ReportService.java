@@ -1516,7 +1516,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 	        // ACCT BALANCE style (right aligned with 3 decimals)
 	        CellStyle balanceStyle = workbook.createCellStyle();
 	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 	        balanceStyle.setBorderTop(border);
 	        balanceStyle.setBorderBottom(border);
 	        balanceStyle.setBorderLeft(border);
@@ -1524,7 +1524,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 
 	        // Header row
 	        String[] headers = {
-	            "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID", "REPORT_DATE"
+	            "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE","PROVISION", "ROWID", "COLUMNID", "REPORT_DATE"
 	        };
 
 	        XSSFRow headerRow = sheet.createRow(0);
@@ -1532,7 +1532,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 	            Cell cell = headerRow.createCell(i);
 	            cell.setCellValue(headers[i]);
 
-	            if (i == 3) { // ACCT BALANCE
+	            if (i == 3|| i == 4) { // ACCT BALANCE
 	                cell.setCellStyle(rightAlignedHeaderStyle);
 	            } else {
 	                cell.setCellStyle(headerStyle);
@@ -1559,20 +1559,29 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 	                if (item.getAcctBalanceInPula() != null) {
 	                    balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 	                } else {
-	                    balanceCell.setCellValue(0.000);
+	                    balanceCell.setCellValue(0);
 	                }
 	                balanceCell.setCellStyle(balanceStyle);
+	                
+	             // ACCT BALANCE (right aligned, 3 decimal places)
+	                Cell balanceCell1 = row.createCell(4);
+	                if (item.getProvision() != null) {
+	                    balanceCell1.setCellValue(item.getProvision().doubleValue());
+	                } else {
+	                    balanceCell1.setCellValue(0);
+	                }
+	                balanceCell1.setCellStyle(balanceStyle);
 
-	                row.createCell(4).setCellValue(item.getReportLable());
-	                row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-	                row.createCell(6).setCellValue(
+	                row.createCell(5).setCellValue(item.getReportLable());
+	                row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+	                row.createCell(7).setCellValue(
 	                    item.getReportDate() != null ?
 	                    new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
 	                );
 
 	                // Apply data style for all other cells
 	                for (int j = 0; j < 7; j++) {
-	                    if (j != 3) {
+	                    if (j != 3 && j != 4) {
 	                        row.getCell(j).setCellStyle(dataStyle);
 	                    }
 	                }
@@ -2886,7 +2895,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	        // ACCT BALANCE style (right aligned with 3 decimals)
 	        CellStyle balanceStyle = workbook.createCellStyle();
 	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
 	        balanceStyle.setBorderTop(border);
 	        balanceStyle.setBorderBottom(border);
 	        balanceStyle.setBorderLeft(border);
@@ -2930,7 +2939,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	                if (item.getAcctBalanceInPula() != null) {
 	                    balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 	                } else {
-	                    balanceCell.setCellValue(0.000);
+	                    balanceCell.setCellValue(0);
 	                }
 	                balanceCell.setCellStyle(balanceStyle);
 

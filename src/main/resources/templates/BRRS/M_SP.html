@@ -774,6 +774,30 @@ function showdetailsbyRowAndColumn(a) {
 					    text-align: left !important;
 					}
 					
+					/* Right-align header (6th column = ACCT BALANCE) */
+														table.dataTable th.dt-type-numeric:nth-child(6) {
+														  text-align: right !important;
+														}
+														
+														/* Right-align header (6th column = PROVISION) */
+																												table.dataTable th.dt-type-numeric:nth-child(7) {
+																												  text-align: right !important;
+																												}
+														
+														/* Right-align data (6th column = ACCT BALANCE) */
+																								#reportdetails td:nth-child(6),
+																								.dataTables_scrollHeadInner table th:nth-child(6) {
+																								 text-align: right !important;
+																								 padding-right: 10px !important;
+																									}
+																									
+																									/* Right-align data (6th column = PROVISION) */
+																																																	#reportdetails td:nth-child(7),
+																																																	.dataTables_scrollHeadInner table th:nth-child(7) {
+																																																	 text-align: right !important;
+																																																	 padding-right: 10px !important;
+																																																		}
+					
 			
 
 
@@ -947,7 +971,7 @@ function showdetailsbyRowAndColumn(a) {
 						<!-- <h5 style = "font-weight:bold;color:black;">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT<br>(1) MONTHLY SCHEDULE M-SP: STATEMENT OF FINANCIAL POSITION AS AT<br>(P'000)<br> </h5> -->
 							<div
 								class="table-wrapper table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6;max-height:560px; overflow-y: auto;">
+								style="border-right: 1px solid #dee2e6;max-height:720px; overflow-y: auto;">
 								<table
 									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 									id="reports">
@@ -1297,9 +1321,9 @@ function showdetailsbyRowAndColumn(a) {
 																			<td th:text="${report.acctNumber != null ? report.acctNumber : '-'}"></td>
 																			<td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
 																			<td align="right" th:text="${report.acctBalanceInPula != null 
-																																	? #numbers.formatDecimal(report.acctBalanceInPula, 1, 2) : '0.00'}"></td>
+																																	? #numbers.formatDecimal(report.acctBalanceInPula, 1, 0) : '0'}"></td>
 																			<td align="right" th:text="${report.provision != null 
-																									? #numbers.formatDecimal(report.provision, 1, 2) : '0.00'}"></td>
+																									? #numbers.formatDecimal(report.provision, 1, 0) : '0'}"></td>
 																			<td th:text="${report.reportLable != null ? report.reportLable : '-'}">
 																			</td>
 																			<td
