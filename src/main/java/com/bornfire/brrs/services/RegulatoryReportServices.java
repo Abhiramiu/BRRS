@@ -1551,14 +1551,11 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
-		case "M_INT_RATES_FCA":
-			try {
-				archivalData = brrs_m_int_rates_fca_reportservice.getM_INTRATESFCAArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		 case "M_INT_RATES_FCA":
+             List<Object[]> intratesfcaList = brrs_m_int_rates_fca_reportservice.getM_INT_RATES_FCAArchival();
+             archivalData.addAll(intratesfcaList);
+             System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcaList.size());
+             break;
 			
 
 		// case "Q_STAFF":
@@ -2177,6 +2174,17 @@ public List<Object[]> getResub(String rptcode) {
 			                System.out.println("Resubmission data fetched for M_OPTR: " + resubList.size());
 			            } catch (Exception e) {
 			                System.err.println("Error fetching resubmission data for M_OPTR: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			            break; 
+			            
+				 case "M_INT_RATES_FCA":
+			            try {
+			                List<Object[]> resubList = brrs_m_int_rates_fca_reportservice.getM_INT_RATES_FCAResub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_INT_RATES_FCA: " + e.getMessage());
 			                e.printStackTrace();
 			            }
 			            break; 

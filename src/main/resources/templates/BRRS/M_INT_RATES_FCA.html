@@ -922,6 +922,8 @@ function closemodel() {
 
 	function fileuploads(btn) {
 	    const asondate = btn.getAttribute("data-todate");
+	    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+	    
 	    $('#loader').modal('show');
 
 	    // ✅ Step 1: Calculate TOTALs
@@ -949,6 +951,7 @@ function closemodel() {
 	    // ✅ Step 4: Build one FormData object for all entities
 	    const formData = new FormData();
 	    formData.append("asondate", asondate);
+	    formData.append("type", type);
 
 	    // Append all inputs
 	    $('#fileupload').find(':input').each(function () {
@@ -960,21 +963,27 @@ function closemodel() {
 	    
 
 
-	    // ✅ Step 5: Send single Ajax request
+		//Select API endpoint dynamically
+		let apiUrl = './INTRATESFCAupdateAll'; // normal update
+		if (type && type.toUpperCase() === 'RESUB') {
+			apiUrl = './UpdateM_INT_RATES_FCA_ReSub'; // Resubmission endpoint
+		}
+
+	    // ✅ Single AJAX call with type info
 	    $.ajax({
-	        url: './INTRATESFCAupdateAll',
+	        url: apiUrl,
 	        type: 'POST',
 	        data: formData,
 	        processData: false,
 	        contentType: false,
 	        dataType: 'text',
-	        success: function () {
+	        success: function (response) {
 	            $("#resultModalLabel").text("BRRS");
-	            $("#resultModalBody").text("Updated successfully");
+	            $("#resultModalBody").text(response);
 	            $("#resultModal").modal("show");
 	        },
 	        error: function (jqXHR) {
-	            console.error("Error response:", jqXHR.responseText);
+	            console.log("Error response:", jqXHR.responseText);
 	            $("#resultModalLabel").text("Error");
 	            $("#resultModalBody").text("Update failed. Check console for details.");
 	            $("#resultModal").modal("show");
@@ -1024,14 +1033,14 @@ function closemodel() {
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
 						
-<!-- Modify button -->
-<!-- Modify button -->
-<button type="button" class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-		th:if="${type != 'ARCHIVAL'}"
-       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-        id="addRecord">Modify</button>
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
+							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+							id="addRecord">
+							Modify
+						</button>
         
         
 <!-- Cancel button (hidden initially) -->
@@ -1609,15 +1618,16 @@ function closemodel() {
 </div>
 							<div style="text-align: center; margin-top: 10px;">
 								
-    <button id="submitButton" 
+   <button id="submitButton" 
             type="button"
             class="custom-tab-btn Show_input" 
-            form="fileupload"
-            th:attr="data-todate=${asondate}" 
+            form="fileupload" 
+            th:attr="data-todate=${asondate}, data-type=${type}"
             onclick="fileuploads(this);" 
             style="display: none;">
         Submit
     </button>
+    
 </div>
 							</form>
 						</div>
