@@ -189,6 +189,8 @@ public class RegulatoryReportServices {
 	
 	@Autowired
 	BRRS_M_GP_ReportService BRRS_M_GP_ReportService;
+	@Autowired	
+	BRRS_M_TBS_ReportService BRRS_M_TBS_ReportService;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -472,6 +474,10 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_GP_ReportService.getM_GPView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
 			break;
 
+	
+		case "M_TBS":
+			repsummary = BRRS_M_TBS_ReportService.getM_TBSView(reportId, fromdate, todate, currency, dtltype, pageable, type, version);
+			break;
 		}
 
 		return repsummary;
@@ -1775,11 +1781,21 @@ public class RegulatoryReportServices {
 				break;
 				
 				
+
 				
 	         default:
 	              System.out.println("No archival logic defined for report: " + rptcode);
 	              break;
 
+
+			case "M_TBS":
+				try {
+					archivalData = BRRS_M_TBS_ReportService.getM_TBSArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 		}
 		return archivalData;
