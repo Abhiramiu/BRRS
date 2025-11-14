@@ -1414,13 +1414,11 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+
 		case "M_FXR":
-			try {
-				archivalData = BRRS_M_FXR_reportservice.getM_FXRArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> fxrList = BRRS_M_FXR_reportservice.getM_FXRArchival();
+			archivalData.addAll(fxrList);
+			System.out.println("Fetched M_SRWA_12H archival data: " + fxrList.size());
 			break;
 
 		case "M_UNCONS_INVEST":
@@ -2219,7 +2217,18 @@ public List<Object[]> getResub(String rptcode) {
 			                e.printStackTrace();
 			            }
 			            break; 
-
+			            	
+			            
+					case "M_FXR":
+						try {
+							List<Object[]> resubList = BRRS_M_FXR_reportservice.getM_FXRResub();
+							resubmissionData.addAll(resubList);
+							System.out.println("Resubmission data fetched for M_SRWA_12H: " + resubList.size());
+						} catch (Exception e) {
+							System.err.println("Error fetching resubmission data for M_SRWA_12H: " + e.getMessage());
+							e.printStackTrace();
+						}
+						break;
 
 
 				 case "M_CA7":

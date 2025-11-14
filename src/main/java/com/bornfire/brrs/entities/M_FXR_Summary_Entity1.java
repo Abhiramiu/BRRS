@@ -1,16 +1,15 @@
-
 package com.bornfire.brrs.entities;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
 import org.springframework.format.annotation.DateTimeFormat;
+
 
 @Entity
 @Table(name = "BRRS_M_FXR_SUMMARYTABLE1")
@@ -87,8 +86,11 @@ public class M_FXR_Summary_Entity1{
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	private Date report_date;
-	private String report_version;
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
+	
 	private String report_frequency;
 	private String report_code;
 	private String report_desc;
@@ -97,18 +99,6 @@ public class M_FXR_Summary_Entity1{
 	private String del_flg;
 
 	
-//	
-//	public String getR11_currency() {
-//		return r11_currency;
-//	}
-//
-//
-//
-//	public void setR11_currency(String r11_currency) {
-//		this.r11_currency = r11_currency;
-//	}
-//
-
 
 	public BigDecimal getR11_net_spot_position() {
 		return r11_net_spot_position;
@@ -215,18 +205,6 @@ public class M_FXR_Summary_Entity1{
 	public void setR11_net_short_position(BigDecimal r11_net_short_position) {
 		this.r11_net_short_position = r11_net_short_position;
 	}
-
-
-
-//	public String getR12_currency() {
-//		return r12_currency;
-//	}
-//
-//
-//
-//	public void setR12_currency(String r12_currency) {
-//		this.r12_currency = r12_currency;
-//	}
 
 
 
@@ -338,18 +316,6 @@ public class M_FXR_Summary_Entity1{
 
 
 
-//	public String getR13_currency() {
-//		return r13_currency;
-//	}
-//
-//
-//
-//	public void setR13_currency(String r13_currency) {
-//		this.r13_currency = r13_currency;
-//	}
-//
-
-
 	public BigDecimal getR13_net_spot_position() {
 		return r13_net_spot_position;
 	}
@@ -456,18 +422,6 @@ public class M_FXR_Summary_Entity1{
 		this.r13_net_short_position = r13_net_short_position;
 	}
 
-
-//
-//	public String getR14_currency() {
-//		return r14_currency;
-//	}
-//
-//
-//
-//	public void setR14_currency(String r14_currency) {
-//		this.r14_currency = r14_currency;
-//	}
-//
 
 
 	public BigDecimal getR14_net_spot_position() {
@@ -577,18 +531,6 @@ public class M_FXR_Summary_Entity1{
 	}
 
 
-//
-//	public String getR15_currency() {
-//		return r15_currency;
-//	}
-//
-//
-//
-//	public void setR15_currency(String r15_currency) {
-//		this.r15_currency = r15_currency;
-//	}
-//
-
 
 	public BigDecimal getR15_net_spot_position() {
 		return r15_net_spot_position;
@@ -695,18 +637,6 @@ public class M_FXR_Summary_Entity1{
 	public void setR15_net_short_position(BigDecimal r15_net_short_position) {
 		this.r15_net_short_position = r15_net_short_position;
 	}
-
-//
-//
-//	public String getR16_currency() {
-//		return r16_currency;
-//	}
-//
-//
-//
-//	public void setR16_currency(String r16_currency) {
-//		this.r16_currency = r16_currency;
-//	}
 
 
 
@@ -854,26 +784,26 @@ public class M_FXR_Summary_Entity1{
 
 
 
-	public Date getReport_date() {
-		return report_date;
+	public Date getReportDate() {
+		return reportDate;
 	}
 
 
 
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 
 
 
-	public String getReport_version() {
-		return report_version;
+	public String getReportVersion() {
+		return reportVersion;
 	}
 
 
 
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 
 

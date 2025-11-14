@@ -997,7 +997,10 @@ function closemodel() {
 
 function fileuploads(btn) {
     var asondate = btn.getAttribute("data-todate");
+    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+    
     $('#loader').modal('show');
+    
 
     // Pre-calculations
     calculateR17Totals();
@@ -1027,11 +1030,12 @@ function fileuploads(btn) {
     // ✅ One combined FormData for all entities
     const formData = new FormData();
     formData.append("asondate", asondate);
+    formData.append("type", type);
 
     // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
-    const selectedType = $("#fxrType").val(); // Get from dropdown
-    formData.append("type", selectedType);
-    console.log("Selected type:", selectedType);
+    //const selectedType = $("#fxrType").val(); // Get from dropdown
+    //formData.append("type", selectedType);
+    //console.log("Selected type:", selectedType);
 
     // --- Entity 1 fields (R10-R17) ---
     for (let i = 10; i <= 17; i++) {
@@ -1074,28 +1078,47 @@ function fileuploads(btn) {
     });
     console.log("✅ Entity 3 executed successfully");
 
-    // ✅ Single AJAX call with type info
+ // Step 5: Select API endpoint dynamically
+    let apiUrl = './FXRupdateAll'; // normal update
+    if (type && type.toUpperCase() === 'RESUB') {
+    	apiUrl = './UpdateM_FXR_ReSub'; // Resubmission endpoint
+    }
+
+    // Step 6: AJAX call
     $.ajax({
-        url: './FXRupdateAll',
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        dataType: 'text',
-        success: function (response) {
-            $("#resultModalLabel").text("BRRS");
-            $("#resultModalBody").text("Updated successfully");
-            $("#resultModal").modal("show");
-        },
-        error: function (xhr) {
-            console.log("Error response:", xhr.responseText);
-            $("#resultModalLabel").text("Error");
-            $("#resultModalBody").text("Update failed. Check console for details.");
-            $("#resultModal").modal("show");
-        },
-        complete: function () {
-            $('#loader').modal('hide');
-        }
+    	url: apiUrl,
+    	type: 'POST',
+    	data: formData,
+    	processData: false,
+    	contentType: false,
+    	dataType: 'text',
+    	success: function (response) {
+    		$("#resultModalLabel").text("BRRS");
+    		$("#resultModalBody").text(response);
+    		$("#resultModal").modal("show");
+
+    		// ✅ Redirect after short delay (so user sees the success message)
+    		if (response.includes("Resubmission Updated Successfully")) {
+    			setTimeout(function() {
+    				// Go back to the previous page user came from
+    				if (document.referrer && document.referrer !== '') {
+    					// Redirect to the page that opened this one
+    					window.location.href = document.referrer;
+    				} else {
+    					// If no referrer, just go one step back in history
+    					window.history.back();
+    				}
+    			}, 2000); // wait 2 seconds before redirect
+    		}
+    	},
+    	error: function (jqXHR) {
+    		$("#resultModalLabel").text("Error");
+    		$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+    		$("#resultModal").modal("show");
+    	},
+    	complete: function () {
+    		$('#loader').modal('hide');
+    	}
     });
 
     console.log("✅ AJAX executed successfully");
@@ -1140,9 +1163,8 @@ function fileuploads(btn) {
 <!-- Modify button -->
 <button type="button" class="custom-tab-btn"
         onclick="showmodify(this);"
-        title="Click to EDIT Records"
-		th:if="${type != 'ARCHIVAL'}"
-       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+        title="Click to EDIT Records"th:if="${type != 'ARCHIVAL'}" 
+        th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
         id="addRecord">Modify</button>
 
 <!-- Cancel button (hidden initially) -->
@@ -2087,7 +2109,7 @@ function fileuploads(btn) {
             type="button"
             class="custom-tab-btn Show_input" 
             form="fileupload"
-            th:attr="data-todate=${asondate}" 
+            th:attr="data-todate=${asondate}, data-type=${type}" 
             onclick="fileuploads(this);" 
             style="display: none;">
         Submit
