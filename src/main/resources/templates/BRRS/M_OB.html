@@ -1056,7 +1056,7 @@ function fileuploads(btn) {
         dataType: 'text',
         success: function (response) {
             $("#resultModalLabel").text("BRRS");
-            $("#resultModalBody").text("Updated successfully");
+            $("#resultModalBody").text(response);
             $("#resultModal").modal("show");
         },
         error: function (jqXHR) {

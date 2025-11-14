@@ -12,7 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 @Entity
-@Table(name = "BRRS_M_INT_FCA_RATES_SUMMARYTABLE")
+@Table(name = "BRRS_M_INT_RATES_FCA_SUMMARYTABLE")
 public class M_INT_RATES_FCA_Summary_Entity {
 	
 	private String R10_CURRENCY;

@@ -186,7 +186,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 				        "FD_7_12_MONTHS",
 				        "FD_13_18_MONTHS",
 				        "FD_19_24_MONTHS",
-				        "FD_OVER_24_MONTHS"};
+				        "FD_OVER_24_MONTHS",
+				        "TOTAL"};
 
 				for (String field : fields) {
 					String getterName = "get" + prefix + field;

@@ -1090,6 +1090,14 @@
 		}
 
 	</script>
+	
+	
+	<script type="text/javascript">
+	// this script is used for the download list next to file uploads
+	function downloadFile() {
+    alert("Download function not implemented yet.");
+	}
+	</script>
 
 	<script>
 
@@ -1349,6 +1357,15 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 								<a  href="#" class="nav-link" id="BLBF"  onclick="contentLoad(this)">BLBF</a>
 								</li>
 							</ul> -->
+							</li>
+							
+							<!--  this list is for download option -->
+							<li class="nav-item" style=" text-align: center;"	
+								th:if="${true}">
+<!-- th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRRS_Reports')}"> -->
+								<a href="#" class="dropdown-toggle" id="downloadbtn" onclick="downloadFile()">Download</a>
+
+
 							</li>
 
 

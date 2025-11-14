@@ -285,41 +285,77 @@ PURPOSE		: BWRBRREPORT
 			border: 1px solid #000 !important;
 		}
 	</style>
-	<script th:inline="javascript">
-		$(document).ready(function () {
-			let isDetailsModal = false;
-			// hide loader on normal load
-			$('#loader').modal('hide');
-		});
-		$(window).on('pageshow', function () {
-			// hide loader on back/forward nav
-			$('#loader').modal('hide');
-		});
-		$(window).on('beforeunload', function () {
-			// hide loader on leaving page
-			$('#loader').modal('hide');
-		});
+    <script th:inline="javascript">
+	let isDetailsModal = false;
+      $(document).ready(function() {
+          // hide loader on normal load
+          $('#loader').modal('hide');
+      });
 
-		function home() {
-			$("#loader").modal("toggle");
-			location.href = 'Dashboard'
-		}
-		function back() {
-			$("#loader").modal("toggle");
-			window.history.back();
-		}
+      $(window).on('pageshow', function() {
+          // hide loader on back/forward nav
+          $('#loader').modal('hide');
+      });
 
-		//to fetch summary from the database - called from the summary button
-		function showdetails() {
+      $(window).on('beforeunload', function() {
+          // hide loader on leaving page
+          $('#loader').modal('hide');
+      });
+
+
+
+      	function home() {
+              $("#loader").modal("toggle");
+      		location.href = 'Dashboard'
+      	}
+
+      	function back() {
+              $("#loader").modal("toggle");
+
+      		window.history.back();
+      	}
+
+      	//to fetch summary from the database - called from the summary button
+      	//function showdetails() {
+
+      		//		var Callurl;
+      			//	$('#loader').modal('show');
+      				//Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+      					//location.href = Callurl;
+      				//c/onsole.log(Callurl);
+      				/*  $.ajax({
+      					 type: 'get',
+      					 url: Callurl,
+      					 beforeSend: function () {
+      						 $('#loader').modal('show'); // 🔄 Show loader
+      					 },
+      					 success: function (data) {
+      						 $('.content').html(data);
+      						 //$("#detailsbtn").addClass("active");
+      						 //tablepagination();
+      					 },
+      					 complete: function () {
+      						 $('#loader').modal('hide');
+      					 },
+      					 error: function () {
+      							  $('#loader').modal('hide');
+      						 alert("Something went wrongss. Please try again.");
+
+      					 }
+      				 }); */
+      			//}
+
+      	function showdetails() {
 		    isDetailsModal = true; // mark that this modal is from Details
-			 showResultModal('BRRS',' Details page not available for Manual Report');
+			 showResultModal('BRRS',' Details page not available for Manual Report');
 		}
+      	function showsummary() {
+      		$('#loader').modal('show');
+      		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+      		location.href = Callurl;
 
-		function showsummary() {
-			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
-			location.href = Callurl;
-		}
+      	}
+    </script>
 
 
 	</script>
@@ -471,29 +507,6 @@ function cancelModify() {
         
         $(".Show_input").attr("readonly", true).attr("disabled", true);
 
-        for (let i = 11; i <= 37; i++) {
-            $("#R" + i + "_EQUITY").hide();
-            $("#R" + i + "_BONDS").hide();
-            $("#R" + i + "_BOBCS").hide();
-            $("#R" + i + "_TREASURY_BILLS").hide();
-            $("#R" + i + "_REPURCHASE_AGREEMENTS").hide();
-            $("#R" + i + "_COMMERCIAL_PAPER").hide();
-            $("#R" + i + "_CERTIFICATES_OF_DEPOSITS").hide();
-            $("#R" + i + "_PLEDGED_ASSETS").hide();
-            $("#R" + i + "_OTHER_SPECIFY").hide();
-            
-
-            $("#R" + i + "_EQUITY").show();
-            $("#R" + i + "_BONDS").show();
-            $("#R" + i + "_BOBCS").show();
-            $("#R" + i + "_TREASURY_BILLS").show();
-            $("#R" + i + "_REPURCHASE_AGREEMENTS").show();
-            $("#R" + i + "_COMMERCIAL_PAPER").show();
-            $("#R" + i + "_CERTIFICATES_OF_DEPOSITS").show();
-            $("#R" + i + "_PLEDGED_ASSETS").show();
-            $("#R" + i + "_OTHER_SPECIFY").show();
-        }
-
         $("#submitButton, #btnBack_edit").hide();
         $("#btnBack").show();
 
@@ -514,139 +527,364 @@ function cancelModify() {
 	
 	<SCRIPT>
 	
-	// Calculate TOTAL for a single row
-	function calculateTOTAL(row) {
-    let TOTAL = 0;
-    const fields = [
-        "CURRENT",
-        "CALL",
-        "SAVINGS",
-        "NOTICE_0_31_DAYS",
-        "NOTICE_32_88_DAYS",
-        "91_DEPOSIT_DAY",
-        "FD_1_6_MONTHS",
-        "FD_7_12_MONTHS",
-        "FD_13_18_MONTHS",
-        "FD_19_24_MONTHS",
-        "FD_OVER_24_MONTHS"
-    ];
+	function calculateR10_TOTAL() {
 
-    fields.forEach(function(field) {
-        let val = parseFloat($("#R" + row + "_" + field).val().replace(/,/g, "")) || 0;
-        TOTAL += val;
-    });
+	    const fields = [
+	        "CURRENT",
+	        "CALL",
+	        "SAVINGS",
+	        "NOTICE_0_31_DAYS",
+	        "NOTICE_32_88_DAYS",
+	        "91_DEPOSIT_DAY",
+	        "FD_1_6_MONTHS",
+	        "FD_7_12_MONTHS",
+	        "FD_13_18_MONTHS",
+	        "FD_19_24_MONTHS",
+	        "FD_OVER_24_MONTHS"
+	    ];
 
-    $("#R" + row + "_TOTAL").val(TOTAL.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
-}
+	    // sum all fields for row 10 (R15-style structure)
+	    let sum = 0;
 
-$(document).ready(function () {
-    const rows = [10, 11, 12, 13, 14];
-    const fields = [
-        "CURRENT",
-        "CALL",
-        "SAVINGS",
-        "NOTICE_0_31_DAYS",
-        "NOTICE_32_88_DAYS",
-        "91_DEPOSIT_DAY",
-        "FD_1_6_MONTHS",
-        "FD_7_12_MONTHS",
-        "FD_13_18_MONTHS",
-        "FD_19_24_MONTHS",
-        "FD_OVER_24_MONTHS"
-    ];
+	    fields.forEach(field => {
+	        let val = parseFloat($("#R10_" + field).val().replace(/,/g, "")) || 0;
+	        sum += val;
+	    });
 
-    // total initial calculation
-    rows.forEach(function(row) { calculateTOTAL(row); });
-
-    // bind input changes
-    rows.forEach(function(row) {
-        fields.forEach(function(field) {
-            $("#R" + row + "_" + field).on("input", function() {
-                calculateTOTAL(row);
-            });
-        });
-    });
-});
+	    // assign total
+	    $("#R10_TOTAL").val(sum.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+	}
 
 
-function calculateR15_TOTAL() {
+	$(document).ready(function () {
 
-    const fields = [
-        "CURRENT",
-        "CALL",
-        "SAVINGS",
-        "NOTICE_0_31_DAYS",
-        "NOTICE_32_88_DAYS",
-        "91_DEPOSIT_DAY",
-        "FD_1_6_MONTHS",
-        "FD_7_12_MONTHS",
-        "FD_13_18_MONTHS",
-        "FD_19_24_MONTHS",
-        "FD_OVER_24_MONTHS"
-    ];
+	    const fields = [
+	        "CURRENT",
+	        "CALL",
+	        "SAVINGS",
+	        "NOTICE_0_31_DAYS",
+	        "NOTICE_32_88_DAYS",
+	        "91_DEPOSIT_DAY",
+	        "FD_1_6_MONTHS",
+	        "FD_7_12_MONTHS",
+	        "FD_13_18_MONTHS",
+	        "FD_19_24_MONTHS",
+	        "FD_OVER_24_MONTHS"
+	    ];
 
-    let rows = [10, 11, 12, 13, 14];
+	    // initial calculation
+	    calculateR10_TOTAL();
 
-    // each column of R15 = sum of row 10 to 14
-    for (let f = 0; f < fields.length; f++) {
-        let field = fields[f];
-        let sum = 0;
+	    // auto-update on input
+	    fields.forEach(field => {
+	        $("#R10_" + field).on("input", calculateR10_TOTAL);
+	    });
 
-        for (let r = 0; r < rows.length; r++) {
-            let row = rows[r];
-            let val = parseFloat($("#R" + row + "_" + field).val().replace(/,/g, "")) || 0;
-            sum += val;
-        }
-
-        $("#R15_" + field).val(sum.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
-    }
-
-    // finally TOTAL column for R15
-    let grandTotal = 0;
-    for (let f = 0; f < fields.length; f++) {
-        let field = fields[f];
-        let val = parseFloat($("#R15_" + field).val().replace(/,/g, "")) || 0;
-        grandTotal += val;
-    }
-
-    $("#R15_TOTAL").val(grandTotal.toLocaleString('en-IN', { maximumFractionDigits: 0 }));
-}
+	});
 
 
-$(document).ready(function() {
+	function calculateR11_TOTAL() {
 
-    const fields = [
-        "CURRENT",
-        "CALL",
-        "SAVINGS",
-        "NOTICE_0_31_DAYS",
-        "NOTICE_32_88_DAYS",
-        "91_DEPOSIT_DAY",
-        "FD_1_6_MONTHS",
-        "FD_7_12_MONTHS",
-        "FD_13_18_MONTHS",
-        "FD_19_24_MONTHS",
-        "FD_OVER_24_MONTHS"
-    ];
+	    const fields = [
+	        "CURRENT",
+	        "CALL",
+	        "SAVINGS",
+	        "NOTICE_0_31_DAYS",
+	        "NOTICE_32_88_DAYS",
+	        "91_DEPOSIT_DAY",
+	        "FD_1_6_MONTHS",
+	        "FD_7_12_MONTHS",
+	        "FD_13_18_MONTHS",
+	        "FD_19_24_MONTHS",
+	        "FD_OVER_24_MONTHS"
+	    ];
 
-    let rows = [10, 11, 12, 13, 14];
+	    // sum all fields for row 11 (R15-style structure)
+	    let sum = 0;
 
-    // Initialise /
-    calculateR15_TOTAL();
+	    fields.forEach(field => {
+	        let val = parseFloat($("#R11_" + field).val().replace(/,/g, "")) || 0;
+	        sum += val;
+	    });
 
-    // onchange events
-    for (let r = 0; r < rows.length; r++) {
-        let row = rows[r];
-        for (let f = 0; f < fields.length; f++) {
-            let field = fields[f];
-            $("#R" + row + "_" + field).on("input", function () {
-                calculateR15_TOTAL();
-            });
-        }
-    }
+	    // assign total
+	    $("#R11_TOTAL").val(sum.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+	}
 
-});
 
+	$(document).ready(function () {
+
+	    const fields = [
+	        "CURRENT",
+	        "CALL",
+	        "SAVINGS",
+	        "NOTICE_0_31_DAYS",
+	        "NOTICE_32_88_DAYS",
+	        "91_DEPOSIT_DAY",
+	        "FD_1_6_MONTHS",
+	        "FD_7_12_MONTHS",
+	        "FD_13_18_MONTHS",
+	        "FD_19_24_MONTHS",
+	        "FD_OVER_24_MONTHS"
+	    ];
+
+	    // initial calculation
+	    calculateR11_TOTAL();
+
+	    // auto-update on input
+	    fields.forEach(field => {
+	        $("#R11_" + field).on("input", calculateR11_TOTAL);
+	    });
+
+	});
+
+
+	function calculateR12_TOTAL() {
+
+	    const fields = [
+	        "CURRENT",
+	        "CALL",
+	        "SAVINGS",
+	        "NOTICE_0_31_DAYS",
+	        "NOTICE_32_88_DAYS",
+	        "91_DEPOSIT_DAY",
+	        "FD_1_6_MONTHS",
+	        "FD_7_12_MONTHS",
+	        "FD_13_18_MONTHS",
+	        "FD_19_24_MONTHS",
+	        "FD_OVER_24_MONTHS"
+	    ];
+
+	    // sum all fields for row 12 (same pattern as R15 style)
+	    let sum = 0;
+
+	    fields.forEach(field => {
+	        let val = parseFloat($("#R12_" + field).val().replace(/,/g, "")) || 0;
+	        sum += val;
+	    });
+
+	    // assign total
+	    $("#R12_TOTAL").val(sum.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+	}
+
+
+	$(document).ready(function () {
+
+	    const fields = [
+	        "CURRENT",
+	        "CALL",
+	        "SAVINGS",
+	        "NOTICE_0_31_DAYS",
+	        "NOTICE_32_88_DAYS",
+	        "91_DEPOSIT_DAY",
+	        "FD_1_6_MONTHS",
+	        "FD_7_12_MONTHS",
+	        "FD_13_18_MONTHS",
+	        "FD_19_24_MONTHS",
+	        "FD_OVER_24_MONTHS"
+	    ];
+
+	    // initial load
+	    calculateR12_TOTAL();
+
+	    // auto-update on input
+	    fields.forEach(field => {
+	        $("#R12_" + field).on("input", calculateR12_TOTAL);
+	    });
+
+	});
+
+
+	function calculateR13_TOTAL() {
+
+	    const fields = [
+	        "CURRENT",
+	        "CALL",
+	        "SAVINGS",
+	        "NOTICE_0_31_DAYS",
+	        "NOTICE_32_88_DAYS",
+	        "91_DEPOSIT_DAY",
+	        "FD_1_6_MONTHS",
+	        "FD_7_12_MONTHS",
+	        "FD_13_18_MONTHS",
+	        "FD_19_24_MONTHS",
+	        "FD_OVER_24_MONTHS"
+	    ];
+
+	    // sum all fields for row 13 (same pattern as R15 style)
+	    let sum = 0;
+
+	    fields.forEach(field => {
+	        let val = parseFloat($("#R13_" + field).val().replace(/,/g, "")) || 0;
+	        sum += val;
+	    });
+
+	    // assign total
+	    $("#R13_TOTAL").val(sum.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+	}
+
+
+	$(document).ready(function () {
+
+	    const fields = [
+	        "CURRENT",
+	        "CALL",
+	        "SAVINGS",
+	        "NOTICE_0_31_DAYS",
+	        "NOTICE_32_88_DAYS",
+	        "91_DEPOSIT_DAY",
+	        "FD_1_6_MONTHS",
+	        "FD_7_12_MONTHS",
+	        "FD_13_18_MONTHS",
+	        "FD_19_24_MONTHS",
+	        "FD_OVER_24_MONTHS"
+	    ];
+
+	    // initial load
+	    calculateR13_TOTAL();
+
+	    // auto-update on input
+	    fields.forEach(field => {
+	        $("#R13_" + field).on("input", calculateR13_TOTAL);
+	    });
+
+	});
+
+
+	function calculateR14_TOTAL() {
+
+	    const fields = [
+	        "CURRENT",
+	        "CALL",
+	        "SAVINGS",
+	        "NOTICE_0_31_DAYS",
+	        "NOTICE_32_88_DAYS",
+	        "91_DEPOSIT_DAY",
+	        "FD_1_6_MONTHS",
+	        "FD_7_12_MONTHS",
+	        "FD_13_18_MONTHS",
+	        "FD_19_24_MONTHS",
+	        "FD_OVER_24_MONTHS"
+	    ];
+
+	    // sum all fields for row 14 (same pattern as R15)
+	    let sum = 0;
+
+	    fields.forEach(field => {
+	        let val = parseFloat($("#R14_" + field).val().replace(/,/g, "")) || 0;
+	        sum += val;
+	    });
+
+	    // assign total
+	    $("#R14_TOTAL").val(sum.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+	}
+
+
+	$(document).ready(function () {
+
+	    const fields = [
+	        "CURRENT",
+	        "CALL",
+	        "SAVINGS",
+	        "NOTICE_0_31_DAYS",
+	        "NOTICE_32_88_DAYS",
+	        "91_DEPOSIT_DAY",
+	        "FD_1_6_MONTHS",
+	        "FD_7_12_MONTHS",
+	        "FD_13_18_MONTHS",
+	        "FD_19_24_MONTHS",
+	        "FD_OVER_24_MONTHS"
+	    ];
+
+	    // initial load
+	    calculateR14_TOTAL();
+
+	    // auto-update on input
+	    fields.forEach(field => {
+	        $("#R14_" + field).on("input", calculateR14_TOTAL);
+	    });
+
+	});
+
+
+
+	function calculateR15_TOTAL() {
+
+	    const fields = [
+	        "CURRENT",
+	        "CALL",
+	        "SAVINGS",
+	        "NOTICE_0_31_DAYS",
+	        "NOTICE_32_88_DAYS",
+	        "91_DEPOSIT_DAY",
+	        "FD_1_6_MONTHS",
+	        "FD_7_12_MONTHS",
+	        "FD_13_18_MONTHS",
+	        "FD_19_24_MONTHS",
+	        "FD_OVER_24_MONTHS"
+	    ];
+
+	    let rows = [10, 11, 12, 13, 14];
+
+	    // each column of R15 = sum of row 10 to 14
+	    for (let f = 0; f < fields.length; f++) {
+	        let field = fields[f];
+	        let sum = 0;
+
+	        for (let r = 0; r < rows.length; r++) {
+	            let row = rows[r];
+	            let val = parseFloat($("#R" + row + "_" + field).val().replace(/,/g, "")) || 0;
+	            sum += val;
+	        }
+
+	        $("#R15_" + field).val(sum.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+	    }
+
+	    // finally TOTAL column for R15
+	    let grandTotal = 0;
+	    for (let f = 0; f < fields.length; f++) {
+	        let field = fields[f];
+	        let val = parseFloat($("#R15_" + field).val().replace(/,/g, "")) || 0;
+	        grandTotal += val;
+	    }
+
+	    $("#R15_TOTAL").val(grandTotal.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+	}
+
+
+	$(document).ready(function() {
+
+	    const fields = [
+	        "CURRENT",
+	        "CALL",
+	        "SAVINGS",
+	        "NOTICE_0_31_DAYS",
+	        "NOTICE_32_88_DAYS",
+	        "91_DEPOSIT_DAY",
+	        "FD_1_6_MONTHS",
+	        "FD_7_12_MONTHS",
+	        "FD_13_18_MONTHS",
+	        "FD_19_24_MONTHS",
+	        "FD_OVER_24_MONTHS"
+	    ];
+
+	    let rows = [10, 11, 12, 13, 14];
+
+	    // Initialise /
+	    calculateR15_TOTAL();
+
+	    // onchange events
+	    for (let r = 0; r < rows.length; r++) {
+	        let row = rows[r];
+	        for (let f = 0; f < fields.length; f++) {
+	            let field = fields[f];
+	            $("#R" + row + "_" + field).on("input", function () {
+	                calculateR15_TOTAL();
+	            });
+	        }
+	    }
+
+	});
 	
 	
 	
@@ -662,13 +900,11 @@ $(document).ready(function() {
 
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
-    $("#resultModal").modal("hide");
+function closemodel() {
 	/*    $("#resultModal").modal("hide");
     $('#loader').modal('hide');
     setTimeout(function () {
         location.reload();
-    }, 300);
         }, 300);*/
         $("#resultModal").modal("hide");
         $('#loader').modal('hide');
@@ -684,13 +920,17 @@ $(document).ready(function() {
         }
 }
 
-
 	function fileuploads(btn) {
 	    const asondate = btn.getAttribute("data-todate");
 	    $('#loader').modal('show');
 
 	    // ✅ Step 1: Calculate TOTALs
-	    calculateTOTAL(row);
+	       calculateR10_TOTAL();
+    calculateR11_TOTAL();
+    calculateR12_TOTAL();
+    calculateR13_TOTAL();
+    calculateR14_TOTAL();
+    
 	    calculateR15_TOTAL();
 	    
 	    
