@@ -855,73 +855,77 @@ $(document).ready(function() {
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.
 // Make the function global so onclick="fileuploads(this)" can see it
-window.fileuploads = function(btn) {
-    // Get the report date from the button's data attribute
-    const asondate = btn.getAttribute("data-todate");
+ window.fileuploads = function (btn) {
+	    const asondate = btn.getAttribute("data-todate");
 
-    // Show loading spinner
-    $('#loader').modal('show');
+	    $('#loader').modal('show');
+	    if (typeof calculateTotals === "function") calculateTotals();
 
-    // Ensure totals are calculated before submission
-    if (typeof calculateTotals === "function") calculateTotals();
+	    $("#fileupload input[type='text']").each(function () {
+	        const val = $(this).val();
+	        if (val && val.includes(",")) {
+	            $(this).val(val.replace(/,/g, ''));
+	        }
+	    });
 
-    // Remove commas from all text inputs inside #fileupload
-    $("#fileupload input[type='text']").each(function () {
-        const val = $(this).val();
-        if (val && val.includes(",")) {
-            $(this).val(val.replace(/,/g, ''));
-        }
-    });
+	    if (!$("#fileupload").valid()) {
+	        $('#loader').modal('hide');
+	        return;
+	    }
 
-    // Validate form
-    if (!$("#fileupload").valid()) {
-        $('#loader').modal('hide');
-        return;
-    }
+	    const formData1 = new FormData();
+	    formData1.append("asondate", asondate);
 
-    // Prepare FormData
-    const formData1 = new FormData();
-    formData1.append("asondate", asondate);
+	    for (let i = 11; i <= 23; i++) {
+	        [
+	            "market", "gpfsr_nom_amt", "gpfsr_pos_att8_per_spe_ris", "gpfsr_chrg",
+	            "gpfsr_nom_amt1", "gpfsr_pos_att4_per_spe_ris", "gpfsr_chrg1",
+	            "gpfsr_nom_amt2", "gpfsr_pos_att2_per_spe_ris", "gpfsr_chrg2",
+	            "tot_spe_ris_chrg", "net_pos_gen_mar_ris", "gen_mar_ris_chrg_8per",
+	            "2per_gen_mar_ris_chrg_div_port", "tot_gen_mar_risk_chrg", "tot_mar_ris_chrg"
+	        ].forEach(field => {
+	            const input = $("#r" + i + "_" + field);
+	            if (input.length) {
+	                formData1.append(input.attr("name"), input.val());
+	            }
+	        });
+	    }
 
-    // Append row fields to FormData
-    for (let i = 11; i <= 23; i++) {
-        ["market","gpfsr_nom_amt","gpfsr_pos_att8_per_spe_ris","gpfsr_chrg","gpfsr_nom_amt1","gpfsr_pos_att4_per_spe_ris","gpfsr_chrg1", 
-        	"gpfsr_nom_amt2","gpfsr_pos_att2_per_spe_ris","gpfsr_chrg2","tot_spe_ris_chrg","net_pos_gen_mar_ris","gen_mar_ris_chrg_8per","2per_gen_mar_ris_chrg_div_port",
-        	"tot_gen_mar_risk_chrg","tot_mar_ris_chrg"
-        	
-        	]
-        .forEach(field => {
-            const input = $("#r" + i + "_" + field);
-            if (input.length) {
-                formData1.append(input.attr("name"), input.val());
-            }
-        });
-    }
+	    // ✅ Retrieve type from URL
+	    const urlParams = new URLSearchParams(window.location.search);
+	    const type = urlParams.get("type");
 
-    // Send AJAX request
-    $.ajax({
-        url: './M_EPRupdate',
-        type: 'POST',
-        data: formData1,
-        processData: false,
-        contentType: false,
-        dataType: 'text'
-    })
-    .done(function() {
-        $("#resultModalLabel").text("BRRS");
-        $("#resultModalBody").text("Updated successfully.");
-        $("#resultModal").modal("show");
-    })
-    .fail(function(jqXHR) {
-        console.error("Error response:", jqXHR.responseText);
-        $("#resultModalLabel").text("Error");
-        $("#resultModalBody").text("One or more updates failed. Check console for details.");
-        $("#resultModal").modal("show");
-    })
-    .always(function() {
-        $('#loader').modal('hide');
-    });
-};
+	    // ✅ Choose endpoint based on type
+	    let apiUrl = './M_EPRupdate';
+	    if (type && type.toUpperCase() === 'RESUB') {
+	        apiUrl = './UpdateM_EPR_ReSub';
+	    }
+
+	    // ✅ Fixed formData variable name (was "formData" before)
+	    $.ajax({
+	        url: apiUrl,
+	        type: 'POST',
+	        data: formData1,
+	        processData: false,
+	        contentType: false,
+	        dataType: 'text',
+	        success: function (response) {
+	            $("#resultModalLabel").text("BRRS");
+	            $("#resultModalBody").text(response);
+	            $("#resultModal").modal("show");
+	        },
+	        error: function (jqXHR) {
+	            $("#resultModalLabel").text("Error");
+	            $("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+	            $("#resultModal").modal("show");
+	        },
+	        complete: function () {
+	            $('#loader').modal('hide');
+	        }
+	    });
+	};
+
+ 
 
 
 

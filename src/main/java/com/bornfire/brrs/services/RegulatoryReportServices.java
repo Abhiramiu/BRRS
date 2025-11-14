@@ -1608,14 +1608,11 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_EPR":
-			try {
-				archivalData = brrs_m_epr_reportservice.getM_EPRArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		/*
+		 * case "M_EPR": try { archivalData =
+		 * brrs_m_epr_reportservice.getM_EPRArchival(); } catch (Exception e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } break;
+		 */
 
 		case "M_SRWA_12A":
 			try {
@@ -1728,7 +1725,11 @@ public class RegulatoryReportServices {
 				break;
 				
 			
-			
+			 case "M_EPR":
+		          List<Object[]> eprList = brrs_m_epr_reportservice.getM_EPRArchival();
+		          archivalData.addAll(eprList);
+		          System.out.println("Fetched M_EPR archival data: " + eprList.size());
+		          break;
 
 				
 			 case "M_SRWA_12G":
@@ -2035,6 +2036,17 @@ public List<Object[]> getResub(String rptcode) {
 			            }
 			            break;
 
+			            
+				  case "M_EPR":
+			            try {
+			                List<Object[]> resubList = brrs_m_epr_reportservice.getM_EPRResub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for M_EPR: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_EPR: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			            break;
 
 
 

@@ -12,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -76,71 +78,99 @@ public class BRRS_M_EPR_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_EPRView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
-
-		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
-		
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
-		
-		System.out.println("testing");
-		System.out.println(version);
-
-		if (type.equals("ARCHIVAL") & version != null) {
-			System.out.println(type);
-			List<M_EPR_Archival_Summary_Entity> T1Master = new ArrayList<M_EPR_Archival_Summary_Entity>();
-			System.out.println(version);
-			try {
-				Date d1 = dateformat.parse(todate);
-
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-
-				T1Master = m_epr_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
-
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-
-			mv.addObject("reportsummary", T1Master);
-		} else {
-		List<M_EPR_Summary_Entity> T1Master = new ArrayList<M_EPR_Summary_Entity>();
-		try {
-			Date d1 = dateformat.parse(todate);
-			// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
-			// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-			// ", BRF1_REPORT_ENTITY.class)
-			// .setParameter(1, df.parse(todate)).getResultList();
-			
-			
-			T1Master = brrs_m_epr_summary_repo.getdatabydateList(dateformat.parse(todate));
-			mv.addObject("report_date", dateformat.format(d1));
-
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		mv.addObject("reportsummary", T1Master);
-		}
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
-		mv.setViewName("BRRS/M_EPR");
-
-		
-		// mv.addObject("reportmaster", T1Master);
-		mv.addObject("displaymode", "summary");
-		// mv.addObject("reportsflag", "reportsflag");
-		// mv.addObject("menu", reportId);
-		System.out.println("scv" + mv.getViewName());
-
-		return mv;
-
-	}
-
+	/*
+	 * public ModelAndView getM_EPRView(String reportId, String fromdate, String
+	 * todate, String currency, String dtltype, Pageable pageable, String type,
+	 * String version) {
+	 * 
+	 * ModelAndView mv = new ModelAndView(); Session hs =
+	 * sessionFactory.getCurrentSession();
+	 * 
+	 * int pageSize = pageable.getPageSize(); int currentPage =
+	 * pageable.getPageNumber(); int startItem = currentPage * pageSize;
+	 * 
+	 * System.out.println("testing"); System.out.println(version);
+	 * 
+	 * if (type.equals("ARCHIVAL") & version != null) { System.out.println(type);
+	 * List<M_EPR_Archival_Summary_Entity> T1Master = new
+	 * ArrayList<M_EPR_Archival_Summary_Entity>(); System.out.println(version); try
+	 * { Date d1 = dateformat.parse(todate);
+	 * 
+	 * 
+	 * 
+	 * T1Master =
+	 * m_epr_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate
+	 * ), version);
+	 * 
+	 * } catch (ParseException e) { e.printStackTrace(); }
+	 * 
+	 * mv.addObject("reportsummary", T1Master); } else { List<M_EPR_Summary_Entity>
+	 * T1Master = new ArrayList<M_EPR_Summary_Entity>(); try { Date d1 =
+	 * dateformat.parse(todate);
+	 * 
+	 * 
+	 * 
+	 * T1Master =
+	 * brrs_m_epr_summary_repo.getdatabydateList(dateformat.parse(todate));
+	 * mv.addObject("report_date", dateformat.format(d1));
+	 * 
+	 * } catch (ParseException e) { e.printStackTrace(); }
+	 * mv.addObject("reportsummary", T1Master); }
+	 * 
+	 * 
+	 * mv.setViewName("BRRS/M_EPR");
+	 * 
+	 * 
+	 * 
+	 * mv.addObject("displaymode", "summary");
+	 * 
+	 * System.out.println("scv" + mv.getViewName());
+	 * 
+	 * return mv;
+	 * 
+	 * }
+	 */
+	
+	
+	 public ModelAndView getM_EPRView(String reportId, String fromdate, String
+			  todate, String currency, String dtltype, Pageable pageable, String type,
+			  String version) {
+			  
+			  ModelAndView mv = new ModelAndView(); Session hs =
+			  sessionFactory.getCurrentSession();
+			  
+			  int pageSize = pageable.getPageSize(); int currentPage =
+			  pageable.getPageNumber(); int startItem = currentPage * pageSize;
+			  
+			  try { Date d1 = dateformat.parse(todate);
+			  
+			  // ---------- CASE 1: ARCHIVAL ---------- 
+			  if
+			  ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			  List<M_EPR_Archival_Summary_Entity> T1Master =
+			  m_epr_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
+			  
+			  mv.addObject("reportsummary", T1Master); }
+			  
+			  // ---------- CASE 2: RESUB ---------- 
+			  else if
+			  ("RESUB".equalsIgnoreCase(type) && version != null) {
+			  List<M_EPR_Archival_Summary_Entity> T1Master =
+			  m_epr_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
+			  
+			  mv.addObject("reportsummary", T1Master); }
+			  
+			  // ---------- CASE 3: NORMAL ---------- 
+			  else { List<M_EPR_Summary_Entity>
+			  T1Master =
+			  brrs_m_epr_summary_repo.getdatabydateListWithVersion(todate);
+			  System.out.println("T1Master Size "+T1Master.size());
+			  mv.addObject("reportsummary", T1Master); }
+			  
+			  } catch (ParseException e) { e.printStackTrace(); }
+			  
+			  mv.setViewName("BRRS/M_EPR"); mv.addObject("displaymode", "summary");
+			  System.out.println("View set to: " + mv.getViewName()); return mv; }
 	
 
 	public byte[] getM_EPRExcel(String filename, String reportId, String fromdate, String todate, String currency,
@@ -153,6 +183,27 @@ public class BRRS_M_EPR_ReportService {
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelM_EPRARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+		}
+
+		
+		else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		    logger.info("Service: Generating RESUB report for version {}", version);
+
+		    try {
+		        // ✅ Use pattern matching "31-Jul-2025"
+		        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+		        Date report_date = sdf.parse(fromdate);  // or use asondate if that's your date source
+
+		        List<M_EPR_Archival_Summary_Entity> T1Master =
+		                m_epr_Archival_Summary_Repo.getdatabydateListarchival(report_date, version);
+
+		        // ✅ Generate Excel
+		        return BRRS_M_EPRResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+
+		    } catch (ParseException e) {
+		        logger.error("Invalid report date format: {}", fromdate, e);
+		        throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
+		    }
 		}
 
 		// Fetch data
@@ -1530,21 +1581,49 @@ public class BRRS_M_EPR_ReportService {
 	 * return new byte[0]; } }
 	 */
 
-	public List<Object> getM_EPRArchival() {
-		List<Object> M_EPRArchivallist = new ArrayList<>();
-		try {
-			M_EPRArchivallist = m_epr_Archival_Summary_Repo.getM_EPRarchival();
-			System.out.println("countser" + M_EPRArchivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_EPR Archival data: " + e.getMessage());
-			e.printStackTrace();
+	/*
+	 * public List<Object> getM_EPRArchival() { List<Object> M_EPRArchivallist = new
+	 * ArrayList<>(); try { M_EPRArchivallist =
+	 * m_epr_Archival_Summary_Repo.getM_EPRarchival(); System.out.println("countser"
+	 * + M_EPRArchivallist.size()); } catch (Exception e) { // Log the exception
+	 * System.err.println("Error fetching M_EPR Archival data: " + e.getMessage());
+	 * e.printStackTrace();
+	 * 
+	 * // Optionally, you can rethrow it or return empty list // throw new
+	 * RuntimeException("Failed to fetch data", e); } return M_EPRArchivallist; }
+	 */
+	
+	//Archival View
+		public List<Object[]> getM_EPRArchival() {
+			List<Object[]> archivalList = new ArrayList<>();
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
+			try {
+				List<M_EPR_Archival_Summary_Entity> repoData = m_epr_Archival_Summary_Repo
+						.getdatabydateListWithVersionAll();
+
+				if (repoData != null && !repoData.isEmpty()) {
+					for (M_EPR_Archival_Summary_Entity entity : repoData) {
+						Object[] row = new Object[] {
+								entity.getReport_date(), 
+								entity.getReport_version() 
+						};
+						archivalList.add(row);
+					}
+
+					System.out.println("Fetched " + archivalList.size() + " archival records");
+					M_EPR_Archival_Summary_Entity first = repoData.get(0);
+					System.out.println("Latest archival version: " + first.getReport_version());
+				} else {
+					System.out.println("No archival data found.");
+				}
+
+			} catch (Exception e) {
+				System.err.println("Error fetching M_EPR Archival data: " + e.getMessage());
+				e.printStackTrace();
+			}
+
+			return archivalList;
 		}
-		return M_EPRArchivallist;
-	}	
 	
 	
 	public byte[] getExcelM_EPRARCHIVAL(String filename, String reportId, String fromdate, String todate,
@@ -2988,7 +3067,1388 @@ public class BRRS_M_EPR_ReportService {
 	
 	
 	
+	public List<Object[]> getM_EPRResub() {
+	    List<Object[]> resubList = new ArrayList<>();
+	    try {
+	        List<M_EPR_Archival_Summary_Entity> latestArchivalList = 
+	        		m_epr_Archival_Summary_Repo.getdatabydateListWithVersionAll();
+
+	        if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+	            for (M_EPR_Archival_Summary_Entity entity : latestArchivalList) {
+	                Object[] row = new Object[] {
+	                    entity.getReport_date(),
+	                    entity.getReport_version()
+	                };
+	                resubList.add(row);
+	            }
+	            System.out.println("Fetched " + resubList.size() + " record(s)");
+	        } else {
+	            System.out.println("No archival data found.");
+	        }
+	    } catch (Exception e) {
+	        System.err.println("Error fetching M_EPR Resub data: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    return resubList;
+	}
 	
+	
+	
+	
+	
+	public void updateReportResub(M_EPR_Summary_Entity updatedEntity) {
+	    System.out.println("Came to Resub Service");
+	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+
+	    // Use entity field directly (same name as in entity)
+	    Date report_date = updatedEntity.getReport_date();
+	    int newVersion = 1;
+
+	    try {
+	        // ✅ use the same variable name as in repo method
+	        Optional<M_EPR_Archival_Summary_Entity> latestArchivalOpt =
+	                m_epr_Archival_Summary_Repo.getLatestArchivalVersionByDate(report_date);
+
+	        // Determine next version
+	        if (latestArchivalOpt.isPresent()) {
+	            M_EPR_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
+	            try {
+	                newVersion = Integer.parseInt(latestArchival.getReport_version()) + 1;
+	            } catch (NumberFormatException e) {
+	                System.err.println("Invalid version format. Defaulting to version 1");
+	                newVersion = 1;
+	            }
+	        } else {
+	            System.out.println("No previous archival found for date: " + report_date);
+	        }
+
+	        // Prevent duplicate version
+	        boolean exists = m_epr_Archival_Summary_Repo
+	                .findByReport_dateAndReport_version(report_date, String.valueOf(newVersion))
+	                .isPresent();
+
+	        if (exists) {
+	            throw new RuntimeException("Version " + newVersion + " already exists for report date " + report_date);
+	        }
+
+	        // Copy summary entity to archival entity
+	        M_EPR_Archival_Summary_Entity archivalEntity = new M_EPR_Archival_Summary_Entity();
+	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity, archivalEntity);
+
+	        archivalEntity.setReport_date(report_date);
+	        archivalEntity.setReport_version(String.valueOf(newVersion));
+	        archivalEntity.setReportResubDate(new Date());
+
+	        System.out.println("Saving new archival version: " + newVersion);
+	        m_epr_Archival_Summary_Repo.save(archivalEntity);
+
+	        System.out.println("Saved archival version successfully: " + newVersion);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException("Error while creating archival resubmission record", e);
+	    }
+	}
+
+
+	
+	/// Downloaded for Archival & Resub
+		public byte[] BRRS_M_EPRResubExcel(String filename, String reportId, String fromdate,
+	        String todate, String currency, String dtltype,
+	        String type, String version) throws Exception {
+
+	    logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
+
+	    if (type.equals("RESUB") & version != null) {
+	       
+	    }
+
+	    List<M_EPR_Archival_Summary_Entity> dataList =
+	    		m_epr_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+
+	    if (dataList.isEmpty()) {
+	        logger.warn("Service: No data found for M_EPR report. Returning empty result.");
+	        return new byte[0];
+	    }
+
+			String templateDir = env.getProperty("output.exportpathtemp");
+			String templateFileName = filename;
+			System.out.println(filename);
+			Path templatePath = Paths.get(templateDir, templateFileName);
+			System.out.println(templatePath);
+
+			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+			if (!Files.exists(templatePath)) {
+				// This specific exception will be caught by the controller.
+				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+			}
+			if (!Files.isReadable(templatePath)) {
+				// A specific exception for permission errors.
+				throw new SecurityException(
+						"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+			}
+
+			// This try-with-resources block is perfect. It guarantees all resources are
+			// closed automatically.
+			try (InputStream templateInputStream = Files.newInputStream(templatePath);
+					Workbook workbook = WorkbookFactory.create(templateInputStream);
+					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+				Sheet sheet = workbook.getSheetAt(0);
+
+				// --- Style Definitions ---
+				CreationHelper createHelper = workbook.getCreationHelper();
+
+				CellStyle dateStyle = workbook.createCellStyle();
+				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+				dateStyle.setBorderBottom(BorderStyle.THIN);
+				dateStyle.setBorderTop(BorderStyle.THIN);
+				dateStyle.setBorderLeft(BorderStyle.THIN);
+				dateStyle.setBorderRight(BorderStyle.THIN);
+
+				CellStyle textStyle = workbook.createCellStyle();
+				textStyle.setBorderBottom(BorderStyle.THIN);
+				textStyle.setBorderTop(BorderStyle.THIN);
+				textStyle.setBorderLeft(BorderStyle.THIN);
+				textStyle.setBorderRight(BorderStyle.THIN);
+
+				// Create the font
+				Font font = workbook.createFont();
+				font.setFontHeightInPoints((short) 8); // size 8
+				font.setFontName("Arial");
+
+				CellStyle numberStyle = workbook.createCellStyle();
+				// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+				numberStyle.setBorderBottom(BorderStyle.THIN);
+				numberStyle.setBorderTop(BorderStyle.THIN);
+				numberStyle.setBorderLeft(BorderStyle.THIN);
+				numberStyle.setBorderRight(BorderStyle.THIN);
+				numberStyle.setFont(font);
+				// --- End of Style Definitions ---
+
+				int startRow = 10;
+
+				if (!dataList.isEmpty()) {
+					for (int i = 0; i < dataList.size(); i++) {
+
+						M_EPR_Archival_Summary_Entity  record = dataList.get(i);
+						System.out.println("rownumber=" + startRow + i);
+						System.out.println("rownumber=" + startRow + i);
+						Row row = sheet.getRow(startRow + i);
+						if (row == null) {
+							row = sheet.createRow(startRow + i);
+						}
+
+						// row11
+						// Column B
+						Cell cellB = row.createCell(1);
+						if (record.getR11_market() != null) {
+							cellB.setCellValue(record.getR11_market().doubleValue());
+							cellB.setCellStyle(numberStyle);
+						} else {
+							cellB.setCellValue("");
+							cellB.setCellStyle(textStyle);
+						}
+
+						// row11
+						// Column C
+						Cell cellC = row.createCell(2);
+						if (record.getR11_gpfsr_nom_amt() != null) {
+							cellC.setCellValue(record.getR11_gpfsr_nom_amt().doubleValue());
+							cellC.setCellStyle(numberStyle);
+						} else {
+							cellC.setCellValue("");
+							cellC.setCellStyle(textStyle);
+						}
+
+						// row11
+						// Column D
+						Cell cellD = row.createCell(3);
+						if (record.getR11_gpfsr_pos_att8_per_spe_ris() != null) {
+							cellD.setCellValue(record.getR11_gpfsr_pos_att8_per_spe_ris().doubleValue());
+							cellD.setCellStyle(numberStyle);
+						} else {
+							cellD.setCellValue("");
+							cellD.setCellStyle(textStyle);
+						}
+
+						// row11
+						// Column F
+						Cell cellF = row.createCell(5);
+						if (record.getR11_gpfsr_nom_amt1() != null) {
+							cellF.setCellValue(record.getR11_gpfsr_nom_amt1().doubleValue());
+							cellF.setCellStyle(numberStyle);
+						} else {
+							cellF.setCellValue("");
+							cellF.setCellStyle(textStyle);
+						}
+
+						// row11
+						// Column G
+						Cell cellG = row.createCell(6);
+						if (record.getR11_gpfsr_pos_att4_per_spe_ris() != null) {
+							cellG.setCellValue(record.getR11_gpfsr_pos_att4_per_spe_ris().doubleValue());
+							cellG.setCellStyle(numberStyle);
+						} else {
+							cellG.setCellValue("");
+							cellG.setCellStyle(textStyle);
+						}
+
+						// row11
+						// Column I
+						Cell cellI = row.createCell(8);
+						if (record.getR11_gpfsr_nom_amt2() != null) {
+							cellI.setCellValue(record.getR11_gpfsr_nom_amt2().doubleValue());
+							cellI.setCellStyle(numberStyle);
+						} else {
+							cellI.setCellValue("");
+							cellI.setCellStyle(textStyle);
+						}
+
+						// row11
+						// Column J
+						Cell cellJ = row.createCell(9);
+						if (record.getR11_gpfsr_pos_att2_per_spe_ris() != null) {
+							cellJ.setCellValue(record.getR11_gpfsr_pos_att2_per_spe_ris().doubleValue());
+							cellJ.setCellStyle(numberStyle);
+						} else {
+							cellJ.setCellValue("");
+							cellJ.setCellStyle(textStyle);
+						}
+
+						// row11
+						// Column M
+						Cell cellM = row.createCell(12);
+						if (record.getR11_net_pos_gen_mar_ris() != null) {
+							cellM.setCellValue(record.getR11_net_pos_gen_mar_ris().doubleValue());
+							cellM.setCellStyle(numberStyle);
+						} else {
+							cellM.setCellValue("");
+							cellM.setCellStyle(textStyle);
+						}
+						
+						// row12
+						row = sheet.getRow(11);
+						
+						// row12
+						// Column B  ->Market
+						 cellB = row.createCell(1);
+						if (record.getR12_market() != null) {
+							cellB.setCellValue(record.getR12_market().doubleValue());
+							cellB.setCellStyle(numberStyle);
+						} else {
+							cellB.setCellValue("");
+							cellB.setCellStyle(textStyle);
+						}
+						
+						
+						// row12
+						// Column C -->Nominal Amount
+						 cellC = row.createCell(2);
+						if (record.getR12_gpfsr_nom_amt() != null) {
+							cellC.setCellValue(record.getR12_gpfsr_nom_amt().doubleValue());
+							cellC.setCellStyle(numberStyle);
+						} else {
+							cellC.setCellValue("");
+							cellC.setCellStyle(textStyle);
+						}
+
+						// row12
+						// Column D -->Positions Attracting 8 Percent Specific Risk
+						 cellD = row.createCell(3);
+						if (record.getR12_gpfsr_pos_att8_per_spe_ris() != null) {
+							cellD.setCellValue(record.getR12_gpfsr_pos_att8_per_spe_ris().doubleValue());
+							cellD.setCellStyle(numberStyle);
+						} else {
+							cellD.setCellValue("");
+							cellD.setCellStyle(textStyle);
+						}
+
+						// row12
+						// Column F -->Nominal Amount
+						 cellF = row.createCell(5);
+						if (record.getR12_gpfsr_nom_amt1() != null) {
+							cellF.setCellValue(record.getR12_gpfsr_nom_amt1().doubleValue());
+							cellF.setCellStyle(numberStyle);
+						} else {
+							cellF.setCellValue("");
+							cellF.setCellStyle(textStyle);
+						}
+
+						// row12
+						// Column G -->Positions Attracting 4 Percent Specific Risk
+						 cellG = row.createCell(6);
+						if (record.getR12_gpfsr_pos_att4_per_spe_ris() != null) {
+							cellG.setCellValue(record.getR12_gpfsr_pos_att4_per_spe_ris().doubleValue());
+							cellG.setCellStyle(numberStyle);
+						} else {
+							cellG.setCellValue("");
+							cellG.setCellStyle(textStyle);
+						}
+
+						// row12
+						// Column I -->Nominal Amount
+						 cellI = row.createCell(8);
+						if (record.getR12_gpfsr_nom_amt2() != null) {
+							cellI.setCellValue(record.getR12_gpfsr_nom_amt2().doubleValue());
+							cellI.setCellStyle(numberStyle);
+						} else {
+							cellI.setCellValue("");
+							cellI.setCellStyle(textStyle);
+						}
+
+						// row12
+						// Column J -->Positions Attracting 2 Percent Specific Risk
+					       cellJ = row.createCell(9);
+						if (record.getR12_gpfsr_pos_att2_per_spe_ris() != null) {
+							cellJ.setCellValue(record.getR12_gpfsr_pos_att2_per_spe_ris().doubleValue());
+							cellJ.setCellStyle(numberStyle);
+						} else {
+							cellJ.setCellValue("");
+							cellJ.setCellStyle(textStyle);
+						}
+
+						// row12
+						// Column M -->Net Positions for General Market Risk
+						 cellM = row.createCell(12);
+						if (record.getR12_net_pos_gen_mar_ris() != null) {
+							cellM.setCellValue(record.getR12_net_pos_gen_mar_ris().doubleValue());
+							cellM.setCellStyle(numberStyle);
+						} else {
+							cellM.setCellValue("");
+							cellM.setCellStyle(textStyle);
+						}
+						
+						
+						// ---- row13 ----
+						row = sheet.getRow(12);
+
+						// row13
+						// Column B -->Market
+						cellB = row.createCell(1);
+						if (record.getR13_market() != null) {
+						    cellB.setCellValue(record.getR13_market().doubleValue());
+						    cellB.setCellStyle(numberStyle);
+						} else {
+						    cellB.setCellValue("");
+						    cellB.setCellStyle(textStyle);
+						}
+
+						// row13
+						// Column C -->Nominal Amount
+						cellC = row.createCell(2);
+						if (record.getR13_gpfsr_nom_amt() != null) {
+						    cellC.setCellValue(record.getR13_gpfsr_nom_amt().doubleValue());
+						    cellC.setCellStyle(numberStyle);
+						} else {
+						    cellC.setCellValue("");
+						    cellC.setCellStyle(textStyle);
+						}
+
+						// row13
+						// Column D -->Positions Attracting 8 Percent Specific Risk
+						cellD = row.createCell(3);
+						if (record.getR13_gpfsr_pos_att8_per_spe_ris() != null) {
+						    cellD.setCellValue(record.getR13_gpfsr_pos_att8_per_spe_ris().doubleValue());
+						    cellD.setCellStyle(numberStyle);
+						} else {
+						    cellD.setCellValue("");
+						    cellD.setCellStyle(textStyle);
+						}
+
+						// row13
+						// Column F -->Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR13_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR13_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// row13
+						// Column G -->Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR13_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR13_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// row13
+						// Column I -->Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR13_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR13_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// row13
+						// Column J -->Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR13_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR13_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// row13
+						// Column M -->Net Positions for General Market Risk
+						cellM = row.createCell(12);
+						if (record.getR13_net_pos_gen_mar_ris() != null) {
+						    cellM.setCellValue(record.getR13_net_pos_gen_mar_ris().doubleValue());
+						    cellM.setCellStyle(numberStyle);
+						} else {
+						    cellM.setCellValue("");
+						    cellM.setCellStyle(textStyle);
+						}
+
+						// ---- row14 ----
+						row = sheet.getRow(13);
+
+						// row14
+						// Column B -->Market
+						cellB = row.createCell(1);
+						if (record.getR14_market() != null) {
+						    cellB.setCellValue(record.getR14_market().doubleValue());
+						    cellB.setCellStyle(numberStyle);
+						} else {
+						    cellB.setCellValue("");
+						    cellB.setCellStyle(textStyle);
+						}
+
+						// row14
+						// Column C -->Nominal Amount
+						cellC = row.createCell(2);
+						if (record.getR14_gpfsr_nom_amt() != null) {
+						    cellC.setCellValue(record.getR14_gpfsr_nom_amt().doubleValue());
+						    cellC.setCellStyle(numberStyle);
+						} else {
+						    cellC.setCellValue("");
+						    cellC.setCellStyle(textStyle);
+						}
+
+						// row14
+						// Column D -->Positions Attracting 8 Percent Specific Risk
+						cellD = row.createCell(3);
+						if (record.getR14_gpfsr_pos_att8_per_spe_ris() != null) {
+						    cellD.setCellValue(record.getR14_gpfsr_pos_att8_per_spe_ris().doubleValue());
+						    cellD.setCellStyle(numberStyle);
+						} else {
+						    cellD.setCellValue("");
+						    cellD.setCellStyle(textStyle);
+						}
+
+						// row14
+						// Column F -->Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR14_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR14_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// row14
+						// Column G -->Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR14_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR14_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// row14
+						// Column I -->Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR14_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR14_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// row14
+						// Column J -->Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR14_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR14_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// row14
+						// Column M -->Net Positions for General Market Risk
+						cellM = row.createCell(12);
+						if (record.getR14_net_pos_gen_mar_ris() != null) {
+						    cellM.setCellValue(record.getR14_net_pos_gen_mar_ris().doubleValue());
+						    cellM.setCellStyle(numberStyle);
+						} else {
+						    cellM.setCellValue("");
+						    cellM.setCellStyle(textStyle);
+						}
+
+						// ---- row15 ----
+						row = sheet.getRow(14);
+
+						// row15
+						// Column B -->Market
+						cellB = row.createCell(1);
+						if (record.getR15_market() != null) {
+						    cellB.setCellValue(record.getR15_market().doubleValue());
+						    cellB.setCellStyle(numberStyle);
+						} else {
+						    cellB.setCellValue("");
+						    cellB.setCellStyle(textStyle);
+						}
+
+						// row15
+						// Column C -->Nominal Amount
+						cellC = row.createCell(2);
+						if (record.getR15_gpfsr_nom_amt() != null) {
+						    cellC.setCellValue(record.getR15_gpfsr_nom_amt().doubleValue());
+						    cellC.setCellStyle(numberStyle);
+						} else {
+						    cellC.setCellValue("");
+						    cellC.setCellStyle(textStyle);
+						}
+
+						// row15
+						// Column D -->Positions Attracting 8 Percent Specific Risk
+						cellD = row.createCell(3);
+						if (record.getR15_gpfsr_pos_att8_per_spe_ris() != null) {
+						    cellD.setCellValue(record.getR15_gpfsr_pos_att8_per_spe_ris().doubleValue());
+						    cellD.setCellStyle(numberStyle);
+						} else {
+						    cellD.setCellValue("");
+						    cellD.setCellStyle(textStyle);
+						}
+
+						// row15
+						// Column F -->Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR15_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR15_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// row15
+						// Column G -->Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR15_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR15_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// row15
+						// Column I -->Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR15_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR15_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// row15
+						// Column J -->Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR15_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR15_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// row15
+						// Column M -->Net Positions for General Market Risk
+						cellM = row.createCell(12);
+						if (record.getR15_net_pos_gen_mar_ris() != null) {
+						    cellM.setCellValue(record.getR15_net_pos_gen_mar_ris().doubleValue());
+						    cellM.setCellStyle(numberStyle);
+						} else {
+						    cellM.setCellValue("");
+						    cellM.setCellStyle(textStyle);
+						}
+
+						// ---- row16 ----
+						row = sheet.getRow(15);
+
+						// row16
+						// Column B -->Market
+						cellB = row.createCell(1);
+						if (record.getR16_market() != null) {
+						    cellB.setCellValue(record.getR16_market().doubleValue());
+						    cellB.setCellStyle(numberStyle);
+						} else {
+						    cellB.setCellValue("");
+						    cellB.setCellStyle(textStyle);
+						}
+
+						// row16
+						// Column C -->Nominal Amount
+						cellC = row.createCell(2);
+						if (record.getR16_gpfsr_nom_amt() != null) {
+						    cellC.setCellValue(record.getR16_gpfsr_nom_amt().doubleValue());
+						    cellC.setCellStyle(numberStyle);
+						} else {
+						    cellC.setCellValue("");
+						    cellC.setCellStyle(textStyle);
+						}
+
+						// row16
+						// Column D -->Positions Attracting 8 Percent Specific Risk
+						cellD = row.createCell(3);
+						if (record.getR16_gpfsr_pos_att8_per_spe_ris() != null) {
+						    cellD.setCellValue(record.getR16_gpfsr_pos_att8_per_spe_ris().doubleValue());
+						    cellD.setCellStyle(numberStyle);
+						} else {
+						    cellD.setCellValue("");
+						    cellD.setCellStyle(textStyle);
+						}
+
+						// row16
+						// Column F -->Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR16_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR16_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// row16
+						// Column G -->Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR16_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR16_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// row16
+						// Column I -->Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR16_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR16_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// row16
+						// Column J -->Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR16_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR16_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// row16
+						// Column M -->Net Positions for General Market Risk
+						cellM = row.createCell(12);
+						if (record.getR16_net_pos_gen_mar_ris() != null) {
+						    cellM.setCellValue(record.getR16_net_pos_gen_mar_ris().doubleValue());
+						    cellM.setCellStyle(numberStyle);
+						} else {
+						    cellM.setCellValue("");
+						    cellM.setCellStyle(textStyle);
+						}
+
+						// ---- row17 ----
+						row = sheet.getRow(16);
+
+						// row17
+						// Column B -->Market
+						cellB = row.createCell(1);
+						if (record.getR17_market() != null) {
+						    cellB.setCellValue(record.getR17_market().doubleValue());
+						    cellB.setCellStyle(numberStyle);
+						} else {
+						    cellB.setCellValue("");
+						    cellB.setCellStyle(textStyle);
+						}
+
+						// row17
+						// Column C -->Nominal Amount
+						cellC = row.createCell(2);
+						if (record.getR17_gpfsr_nom_amt() != null) {
+						    cellC.setCellValue(record.getR17_gpfsr_nom_amt().doubleValue());
+						    cellC.setCellStyle(numberStyle);
+						} else {
+						    cellC.setCellValue("");
+						    cellC.setCellStyle(textStyle);
+						}
+
+						// row17
+						// Column D -->Positions Attracting 8 Percent Specific Risk
+						cellD = row.createCell(3);
+						if (record.getR17_gpfsr_pos_att8_per_spe_ris() != null) {
+						    cellD.setCellValue(record.getR17_gpfsr_pos_att8_per_spe_ris().doubleValue());
+						    cellD.setCellStyle(numberStyle);
+						} else {
+						    cellD.setCellValue("");
+						    cellD.setCellStyle(textStyle);
+						}
+
+						// row17
+						// Column F -->Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR17_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR17_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// row17
+						// Column G -->Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR17_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR17_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// row17
+						// Column I -->Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR17_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR17_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// row17
+						// Column J -->Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR17_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR17_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// row17
+						// Column M -->Net Positions for General Market Risk
+						cellM = row.createCell(12);
+						if (record.getR17_net_pos_gen_mar_ris() != null) {
+						    cellM.setCellValue(record.getR17_net_pos_gen_mar_ris().doubleValue());
+						    cellM.setCellStyle(numberStyle);
+						} else {
+						    cellM.setCellValue("");
+						    cellM.setCellStyle(textStyle);
+						}
+
+						// ---- row18 ----
+						row = sheet.getRow(17);
+
+						// row18
+						// Column B -->Market
+						cellB = row.createCell(1);
+						if (record.getR18_market() != null) {
+						    cellB.setCellValue(record.getR18_market().doubleValue());
+						    cellB.setCellStyle(numberStyle);
+						} else {
+						    cellB.setCellValue("");
+						    cellB.setCellStyle(textStyle);
+						}
+
+						// row18
+						// Column C -->Nominal Amount
+						cellC = row.createCell(2);
+						if (record.getR18_gpfsr_nom_amt() != null) {
+						    cellC.setCellValue(record.getR18_gpfsr_nom_amt().doubleValue());
+						    cellC.setCellStyle(numberStyle);
+						} else {
+						    cellC.setCellValue("");
+						    cellC.setCellStyle(textStyle);
+						}
+
+						// row18
+						// Column D -->Positions Attracting 8 Percent Specific Risk
+						cellD = row.createCell(3);
+						if (record.getR18_gpfsr_pos_att8_per_spe_ris() != null) {
+						    cellD.setCellValue(record.getR18_gpfsr_pos_att8_per_spe_ris().doubleValue());
+						    cellD.setCellStyle(numberStyle);
+						} else {
+						    cellD.setCellValue("");
+						    cellD.setCellStyle(textStyle);
+						}
+
+						// row18
+						// Column F -->Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR18_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR18_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// row18
+						// Column G -->Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR18_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR18_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// row18
+						// Column I -->Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR18_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR18_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// row18
+						// Column J -->Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR18_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR18_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// row18
+						// Column M -->Net Positions for General Market Risk
+						cellM = row.createCell(12);
+						if (record.getR18_net_pos_gen_mar_ris() != null) {
+						    cellM.setCellValue(record.getR18_net_pos_gen_mar_ris().doubleValue());
+						    cellM.setCellStyle(numberStyle);
+						} else {
+						    cellM.setCellValue("");
+						    cellM.setCellStyle(textStyle);
+						}
+
+						// ---- row19 ----
+						row = sheet.getRow(18);
+
+						// row19
+						// Column B -->Market
+						cellB = row.createCell(1);
+						if (record.getR19_market() != null) {
+						    cellB.setCellValue(record.getR19_market().doubleValue());
+						    cellB.setCellStyle(numberStyle);
+						} else {
+						    cellB.setCellValue("");
+						    cellB.setCellStyle(textStyle);
+						}
+
+						// row19
+						// Column C -->Nominal Amount
+						cellC = row.createCell(2);
+						if (record.getR19_gpfsr_nom_amt() != null) {
+						    cellC.setCellValue(record.getR19_gpfsr_nom_amt().doubleValue());
+						    cellC.setCellStyle(numberStyle);
+						} else {
+						    cellC.setCellValue("");
+						    cellC.setCellStyle(textStyle);
+						}
+
+						// row19
+						// Column D -->Positions Attracting 8 Percent Specific Risk
+						cellD = row.createCell(3);
+						if (record.getR19_gpfsr_pos_att8_per_spe_ris() != null) {
+						    cellD.setCellValue(record.getR19_gpfsr_pos_att8_per_spe_ris().doubleValue());
+						    cellD.setCellStyle(numberStyle);
+						} else {
+						    cellD.setCellValue("");
+						    cellD.setCellStyle(textStyle);
+						}
+
+						// row19
+						// Column F -->Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR19_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR19_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// row19
+						// Column G -->Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR19_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR19_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// row19
+						// Column I -->Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR19_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR19_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// row19
+						// Column J -->Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR19_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR19_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// row19
+						// Column M -->Net Positions for General Market Risk
+						cellM = row.createCell(12);
+						if (record.getR19_net_pos_gen_mar_ris() != null) {
+						    cellM.setCellValue(record.getR19_net_pos_gen_mar_ris().doubleValue());
+						    cellM.setCellStyle(numberStyle);
+						} else {
+						    cellM.setCellValue("");
+						    cellM.setCellStyle(textStyle);
+						}
+
+						// ---- row20 ----
+						row = sheet.getRow(19);
+
+						// row20
+						// Column B -->Market
+						cellB = row.createCell(1);
+						if (record.getR20_market() != null) {
+						    cellB.setCellValue(record.getR20_market().doubleValue());
+						    cellB.setCellStyle(numberStyle);
+						} else {
+						    cellB.setCellValue("");
+						    cellB.setCellStyle(textStyle);
+						}
+
+						// row20
+						// Column C -->Nominal Amount
+						cellC = row.createCell(2);
+						if (record.getR20_gpfsr_nom_amt() != null) {
+						    cellC.setCellValue(record.getR20_gpfsr_nom_amt().doubleValue());
+						    cellC.setCellStyle(numberStyle);
+						} else {
+						    cellC.setCellValue("");
+						    cellC.setCellStyle(textStyle);
+						}
+
+						// row20
+						// Column D -->Positions Attracting 8 Percent Specific Risk
+						cellD = row.createCell(3);
+						if (record.getR20_gpfsr_pos_att8_per_spe_ris() != null) {
+						    cellD.setCellValue(record.getR20_gpfsr_pos_att8_per_spe_ris().doubleValue());
+						    cellD.setCellStyle(numberStyle);
+						} else {
+						    cellD.setCellValue("");
+						    cellD.setCellStyle(textStyle);
+						}
+
+						// row20
+						// Column F -->Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR20_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR20_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// row20
+						// Column G -->Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR20_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR20_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// row20
+						// Column I -->Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR20_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR20_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// row20
+						// Column J -->Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR20_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR20_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// row20
+						// Column M -->Net Positions for General Market Risk
+						cellM = row.createCell(12);
+						if (record.getR20_net_pos_gen_mar_ris() != null) {
+						    cellM.setCellValue(record.getR20_net_pos_gen_mar_ris().doubleValue());
+						    cellM.setCellStyle(numberStyle);
+						} else {
+						    cellM.setCellValue("");
+						    cellM.setCellStyle(textStyle);
+						}
+
+						// ---- row21 ----
+						row = sheet.getRow(20);
+
+						// row21
+						// Column B -->Market
+						cellB = row.createCell(1);
+						if (record.getR21_market() != null) {
+						    cellB.setCellValue(record.getR21_market().doubleValue());
+						    cellB.setCellStyle(numberStyle);
+						} else {
+						    cellB.setCellValue("");
+						    cellB.setCellStyle(textStyle);
+						}
+
+						// row21
+						// Column C -->Nominal Amount
+						cellC = row.createCell(2);
+						if (record.getR21_gpfsr_nom_amt() != null) {
+						    cellC.setCellValue(record.getR21_gpfsr_nom_amt().doubleValue());
+						    cellC.setCellStyle(numberStyle);
+						} else {
+						    cellC.setCellValue("");
+						    cellC.setCellStyle(textStyle);
+						}
+
+						// row21
+						// Column D -->Positions Attracting 8 Percent Specific Risk
+						cellD = row.createCell(3);
+						if (record.getR21_gpfsr_pos_att8_per_spe_ris() != null) {
+						    cellD.setCellValue(record.getR21_gpfsr_pos_att8_per_spe_ris().doubleValue());
+						    cellD.setCellStyle(numberStyle);
+						} else {
+						    cellD.setCellValue("");
+						    cellD.setCellStyle(textStyle);
+						}
+
+						// row21
+						// Column F -->Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR21_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR21_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// row21
+						// Column G -->Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR21_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR21_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// row21
+						// Column I -->Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR21_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR21_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// row21
+						// Column J -->Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR21_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR21_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// row21
+						// Column M -->Net Positions for General Market Risk
+						cellM = row.createCell(12);
+						if (record.getR21_net_pos_gen_mar_ris() != null) {
+						    cellM.setCellValue(record.getR21_net_pos_gen_mar_ris().doubleValue());
+						    cellM.setCellStyle(numberStyle);
+						} else {
+						    cellM.setCellValue("");
+						    cellM.setCellStyle(textStyle);
+						}
+
+						// ---- row22 ----
+						row = sheet.getRow(21);
+
+						// row22
+						// Column B -->Market
+						cellB = row.createCell(1);
+						if (record.getR22_market() != null) {
+						    cellB.setCellValue(record.getR22_market().doubleValue());
+						    cellB.setCellStyle(numberStyle);
+						} else {
+						    cellB.setCellValue("");
+						    cellB.setCellStyle(textStyle);
+						}
+
+						// row22
+						// Column C -->Nominal Amount
+						cellC = row.createCell(2);
+						if (record.getR22_gpfsr_nom_amt() != null) {
+						    cellC.setCellValue(record.getR22_gpfsr_nom_amt().doubleValue());
+						    cellC.setCellStyle(numberStyle);
+						} else {
+						    cellC.setCellValue("");
+						    cellC.setCellStyle(textStyle);
+						}
+
+						// row22
+						// Column D -->Positions Attracting 8 Percent Specific Risk
+						cellD = row.createCell(3);
+						if (record.getR22_gpfsr_pos_att8_per_spe_ris() != null) {
+						    cellD.setCellValue(record.getR22_gpfsr_pos_att8_per_spe_ris().doubleValue());
+						    cellD.setCellStyle(numberStyle);
+						} else {
+						    cellD.setCellValue("");
+						    cellD.setCellStyle(textStyle);
+						}
+
+						// row22
+						// Column F -->Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR22_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR22_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// row22
+						// Column G -->Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR22_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR22_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+
+						// row22
+						// Column I -->Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR22_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR22_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// row22
+						// Column J -->Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR22_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR22_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+
+						// row22
+						// Column M -->Net Positions for General Market Risk
+						cellM = row.createCell(12);
+						if (record.getR22_net_pos_gen_mar_ris() != null) {
+						    cellM.setCellValue(record.getR22_net_pos_gen_mar_ris().doubleValue());
+						    cellM.setCellStyle(numberStyle);
+						} else {
+						    cellM.setCellValue("");
+						    cellM.setCellStyle(textStyle);
+						}
+
+						// ---- row23 ----
+						row = sheet.getRow(22);
+
+						
+						// row23
+						// Column C -->Nominal Amount
+						cellC = row.createCell(2);
+						if (record.getR23_gpfsr_nom_amt() != null) {
+						    cellC.setCellValue(record.getR23_gpfsr_nom_amt().doubleValue());
+						    cellC.setCellStyle(numberStyle);
+						} else {
+						    cellC.setCellValue("");
+						    cellC.setCellStyle(textStyle);
+						}
+
+						// row23
+						// Column D -->Positions Attracting 8 Percent Specific Risk
+						cellD = row.createCell(3);
+						if (record.getR23_gpfsr_pos_att8_per_spe_ris() != null) {
+						    cellD.setCellValue(record.getR23_gpfsr_pos_att8_per_spe_ris().doubleValue());
+						    cellD.setCellStyle(numberStyle);
+						} else {
+						    cellD.setCellValue("");
+						    cellD.setCellStyle(textStyle);
+						}
+						
+						// row23
+						// Column E -->Charge
+					Cell cellE = row.createCell(4);
+						if (record.getR23_gpfsr_chrg() != null) {
+						    cellE.setCellValue(record.getR23_gpfsr_chrg().doubleValue());
+						    cellE.setCellStyle(numberStyle);
+						} else {
+						    cellE.setCellValue("");
+						    cellE.setCellStyle(textStyle);
+						}
+
+						// row23
+						// Column F -->Nominal Amount
+						cellF = row.createCell(5);
+						if (record.getR23_gpfsr_nom_amt1() != null) {
+						    cellF.setCellValue(record.getR23_gpfsr_nom_amt1().doubleValue());
+						    cellF.setCellStyle(numberStyle);
+						} else {
+						    cellF.setCellValue("");
+						    cellF.setCellStyle(textStyle);
+						}
+
+						// row23
+						// Column G -->Positions Attracting 4 Percent Specific Risk
+						cellG = row.createCell(6);
+						if (record.getR23_gpfsr_pos_att4_per_spe_ris() != null) {
+						    cellG.setCellValue(record.getR23_gpfsr_pos_att4_per_spe_ris().doubleValue());
+						    cellG.setCellStyle(numberStyle);
+						} else {
+						    cellG.setCellValue("");
+						    cellG.setCellStyle(textStyle);
+						}
+						
+						// row23
+						// Column H -->Charge
+					Cell cellH = row.createCell(7);
+						if (record.getR23_gpfsr_chrg1() != null) {
+						    cellH.setCellValue(record.getR23_gpfsr_chrg1().doubleValue());
+						    cellH.setCellStyle(numberStyle);
+						} else {
+						    cellH.setCellValue("");
+						    cellH.setCellStyle(textStyle);
+						}
+
+						// row23
+						// Column I -->Nominal Amount
+						cellI = row.createCell(8);
+						if (record.getR23_gpfsr_nom_amt2() != null) {
+						    cellI.setCellValue(record.getR23_gpfsr_nom_amt2().doubleValue());
+						    cellI.setCellStyle(numberStyle);
+						} else {
+						    cellI.setCellValue("");
+						    cellI.setCellStyle(textStyle);
+						}
+
+						// row23
+						// Column J -->Positions Attracting 2 Percent Specific Risk
+						cellJ = row.createCell(9);
+						if (record.getR23_gpfsr_pos_att2_per_spe_ris() != null) {
+						    cellJ.setCellValue(record.getR23_gpfsr_pos_att2_per_spe_ris().doubleValue());
+						    cellJ.setCellStyle(numberStyle);
+						} else {
+						    cellJ.setCellValue("");
+						    cellJ.setCellStyle(textStyle);
+						}
+						
+						// row23
+						// Column K -->Charge
+					Cell cellK = row.createCell(10);
+						if (record.getR23_gpfsr_chrg2() != null) {
+						    cellK.setCellValue(record.getR23_gpfsr_chrg2().doubleValue());
+						    cellK.setCellStyle(numberStyle);
+						} else {
+						    cellK.setCellValue("");
+						    cellK.setCellStyle(textStyle);
+						}
+
+					}
+					workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				} else {
+
+				}
+
+				// Write the final workbook content to the in-memory stream.
+				workbook.write(out);
+
+				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+				return out.toByteArray();
+			}
+
+		}
 	
 	
 	
