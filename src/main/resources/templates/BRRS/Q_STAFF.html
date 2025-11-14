@@ -292,6 +292,7 @@ PURPOSE		: BWRBRREPORT
 		
 	</style>
 	<script th:inline="javascript">
+		let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -315,9 +316,10 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		//to fetch summary from the database - called from the summary button
-		function showdetails() {
-			 showResultModal('BRRS',' Details page not available for Manual Report');
-		}
+function showdetails() {
+    isDetailsModal = true; // mark that this modal is from Details
+    showResultModal('BRRS', 'Details page not available for Manual Report');
+}
 
 		function showsummary() {
 			$('#loader').modal('show');
@@ -612,46 +614,35 @@ $(document).ready(function() {
 
 
 <script>
-//    function closemodel() {
-//     $("#resultModal").modal("hide");
-//     $('#loader').modal('hide');
+   function closemodel() {
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
 
-//     // Check if the success message is showing
-//     const message = $("#resultModalBody").text();
+    // Check if the success message is showing
+    const message = $("#resultModalBody").text();
 
-//     if (message.includes("Resubmission Updated Successfully")) {
-//         // ✅ Go back to the previous page
-//         window.history.back();
-//     } else {
-//         // For other messages, just reload the same page
-//         setTimeout(() => location.reload(), 300);
-//     }
-// }
-
+    if (message.includes("Resubmission Updated Successfully")) {
+        // ✅ Go back to the previous page
+        window.history.back();
+    } else {
+        // For other messages, just reload the same page
+        setTimeout(() => location.reload(), 300);
+    }
+}
 function closemodel() {
     $("#resultModal").modal("hide");
     $('#loader').modal('hide');
 
-    const message = $("#resultModalBody").text();
-
-    // 1️⃣ Success message → go back
-    if (message.includes("Resubmission Updated Successfully")) {
-        window.history.back();
-        return;
+    // Only reload if not from Details modal
+    if (!isDetailsModal) {
+        setTimeout(function () {
+            location.reload();
+        }, 300);
+    } else {
+        // reset flag for next modal usage
+        isDetailsModal = false;
     }
-
-    // 2️⃣ If modal is opened from Details → DO NOT RELOAD
-    if (isDetailsModal === true) {
-        isDetailsModal = false;  // reset for next time
-        return;                  // STOP here → no reload
-    }
-
-    // 3️⃣ Default → reload page
-    setTimeout(() => location.reload(), 300);
 }
-
-
-
 function fileuploads(btn) {
 			const asondate = btn.getAttribute("data-todate");
 			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
