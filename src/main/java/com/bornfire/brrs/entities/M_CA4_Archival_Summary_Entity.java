@@ -4,8 +4,10 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -13,11 +15,13 @@ import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 @Entity
 @Table(name = "BRRS_M_CA4_ARCHIVALTABLE_SUMMARY")
+@IdClass(M_CA4_Archival_Summary_PK.class)
 
 
 public class M_CA4_Archival_Summary_Entity {
@@ -343,17 +347,21 @@ public class M_CA4_Archival_Summary_Entity {
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
+	
 		
 	private Date	report_date;
+	@Id
 	private String	report_version;
+	
+	@Column(name = "REPORT_RESUBDATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date reportResubDate;
 	private String	report_frequency;
 	private String	report_code;
 	private String	report_desc;
 	private String	entity_flg;
 	private String	modify_flg;
-	private String	del_flg;
-	
-	
+	private String	 del_flg;
 	public String getR10_item() {
 		return r10_item;
 	}
@@ -2046,6 +2054,12 @@ public class M_CA4_Archival_Summary_Entity {
 	public void setReport_version(String report_version) {
 		this.report_version = report_version;
 	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
 	public String getReport_frequency() {
 		return report_frequency;
 	}
@@ -2086,6 +2100,7 @@ public class M_CA4_Archival_Summary_Entity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
 	
 	
 	

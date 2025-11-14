@@ -1101,139 +1101,93 @@ function cancelModify() {
 
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.
-	function fileuploads(btn) {
-	    // Get the report date from the button's data attribute.
-	    var asondate = btn.getAttribute("data-todate");
+	window.fileuploads = function (btn) {
+    try {
+        // ✅ Get the report date from the button's data attribute
+        const asondate = btn.getAttribute("data-todate");
 
-	    // Show the loading spinner modal to provide visual feedback to the user.
-	    $('#loader').modal('show');
+        // ✅ Show loading spinner
+        $('#loader').modal('show');
 
-	    // 1. Pre-submission steps:
-	    // Ensure all total fields are correctly calculated before we proceed.
-	    calculateR10Totals(); 
-		calculateR14Totals();
-		calculateR28Totals();
-		calculateR37Totals();
-		calculateR40Totals();
-		calculateR43Totals();
-		calculateR48Totals(); 
-		calculateR52Totals(); 
-		calculateR56Totals(); 
-		calculateR63Totals();
+        // ✅ Run all calculation functions before submission
+        if (typeof calculateR10Totals === "function") calculateR10Totals();
+        if (typeof calculateR14Totals === "function") calculateR14Totals();
+        if (typeof calculateR28Totals === "function") calculateR28Totals();
+        if (typeof calculateR37Totals === "function") calculateR37Totals();
+        if (typeof calculateR40Totals === "function") calculateR40Totals();
+        if (typeof calculateR43Totals === "function") calculateR43Totals();
+        if (typeof calculateR48Totals === "function") calculateR48Totals();
+        if (typeof calculateR52Totals === "function") calculateR52Totals();
+        if (typeof calculateR56Totals === "function") calculateR56Totals();
+        if (typeof calculateR63Totals === "function") calculateR63Totals();
+        if (typeof calculateTotals === "function") calculateTotals();
 
-	    // Remove commas from all number input fields. This is a crucial step
-	    // as commas can cause issues when the data is sent to the backend.
-	    $("#fileupload input[type='text']").each(function () {
-	        var val = $(this).val();
-	        if (val && val.includes(",")) {
-	            $(this).val(val.replace(/,/g, ''));
-	        }
-	    });
+        // ✅ Remove commas from all text inputs inside #fileupload
+        $("#fileupload input[type='text']").each(function () {
+            const val = $(this).val();
+            if (val && val.includes(",")) {
+                $(this).val(val.replace(/,/g, ''));
+            }
+        });
 
-	    // Check if the form is valid. If not, hide the loader and stop the function.
-	    if (!$("#fileupload").valid()) {
-	        $('#loader').modal('hide');
-	        return;
-	    }
+        // ✅ Validate form
+        if (!$("#fileupload").valid()) {
+            $('#loader').modal('hide');
+            return;
+        }
 
-	    // 2. Prepare for splitting the submission:
-	    // Get all form fields once to avoid repeated DOM lookups, which improves performance.
-	    const $form = $('#fileupload');
-	    const $inputs = $form.find(':input');
+        // ✅ Retrieve type from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
+        const type = urlType || "";
 
-	    // This helper function isolates form fields for a specific "entity" or section.
-	    // It takes a range of row numbers (e.g., 11 to 50) and a total field prefix.
-	    const getEntityFields = (start, end, totalPrefix) => {
-	        // Use jQuery's filter method to select only the fields we need.
-	        return $inputs.filter(function () {
-	        	
-	            const name = $(this).attr('name');
-	            if (!name) return false;
+        // ✅ Build FormData
+        const formData = new FormData();
+        formData.append("asondate", asondate);
+        formData.append("type", type);
 
-	            // Check for fields based on their row number (e.g., R11_, R12_, etc.)
-	            const rowNumberMatch = name.match(/R(\d+)_/);
-	            if (rowNumberMatch) {
-	                const rowNumber = parseInt(rowNumberMatch[1], 10);
-	                return rowNumber >= start && rowNumber <= end;
-	            }
+        // ✅ Append all input fields to FormData
+        $('#fileupload').find(':input').each(function () {
+            const name = $(this).attr('name');
+            if (name) {
+                formData.append(name, $(this).val());
+            }
+        });
 
-	            // Also, check for the specific total fields for this entity.
-	            return name.startsWith(totalPrefix);
-	        });
-	    };
-	    
-	    
-	 // 3. Create FormData objects for each entity:
-	    // Create a new FormData object for the first entity and append its fields.
+        // ✅ Choose endpoint based on type
+        let apiUrl = './Q_RLFA2update';
+        if (urlType && urlType.toUpperCase() === 'RESUB') {
+            apiUrl = './UpdateQ_RLFA2_ReSub';
+        }
 
-	    const formData1 = new FormData();
-	    formData1.append("asondate", asondate);
+        // ✅ Send AJAX request
+        $.ajax({
+            url: apiUrl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'text',
+            success: function (response) {
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(response);
+                $("#resultModal").modal("show");
+            },
+            error: function (jqXHR) {
+                $("#resultModalLabel").text("Error");
+                $("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+                $("#resultModal").modal("show");
+            },
+            complete: function () {
+                $('#loader').modal('hide');
+            }
+        });
 
-	    for (let i = 10; i <= 63; i++) {
-	        ["sche_fore_ass", "orig_amt", "fore_amt", "no_of_acc"].forEach(field => {
-	            const input = $("#r" + i + "_" + field); // selects #r10_orig_amt, etc.
-	            if (input.length) {
-	                formData1.append(input.attr("name"), input.val());
-	            }
-	        });
-	    }
-
-
-
-
-	    /* // Repeat the process for the second, third, and fourth entities.
-	    const formData2 = new FormData();
-	    formData2.append("asondate", asondate);
-	    getEntityFields(56, 95, "R96_TOT").each(function () {
-	        formData2.append($(this).attr('name'), $(this).val());
-	    });
-	    
-	    const formData3 = new FormData();
-	    formData3.append("asondate", asondate);
-	    getEntityFields(101, 141, "R142_TOT").each(function () {
-	        formData3.append($(this).attr('name'), $(this).val());
-	    });
-
-	    const formData4 = new FormData();
-	    formData4.append("asondate", asondate);
-	    getEntityFields(147, 193, "R194_TOT").each(function () {
-	        formData4.append($(this).attr('name'), $(this).val());
-	    }); */
- 
-	    // 4. Send the data:
-	    // Create an array of jQuery AJAX promises. Each promise represents a single HTTP request.
-	    const deferreds = [
-	        $.ajax({ url: './Q_RLFA2update', type: 'POST', data: formData1, processData: false, contentType: false, dataType: 'text' })
-	       /*  $.ajax({ url: './AIDPupdate2', type: 'POST', data: formData2, processData: false, contentType: false, dataType: 'text' }),
-	        $.ajax({ url: './AIDPupdate3', type: 'POST', data: formData3, processData: false, contentType: false, dataType: 'text' }),
-	        $.ajax({ url: './AIDPupdate4', type: 'POST', data: formData4, processData: false, contentType: false, dataType: 'text' }) */
-	    ];
-
-	    // 5. Handle the result:
-	    // Use $.when() to handle the outcome of all four requests simultaneously.
-	    // It will trigger the .done() callback only if ALL requests are successful.
-	    $.when(...deferreds)
-	        .done(function() {
-	            // This code runs if all four updates succeed.
-	            $("#resultModalLabel").text("BRRS");
-	            $("#resultModalBody").text(" Updated Successfully.");
-	            $("#resultModal").modal("show");
-	        })
-	        .fail(function(jqXHR) {
-	            // This code runs if even one of the updates fails.
-	            console.log("Error response:", jqXHR.responseText);
-	            $("#resultModalLabel").text("Error");
-	            $("#resultModalBody").text("One or more updates failed. Check console for details.");
-	            $("#resultModal").modal("show");
-	        })
-	        .always(function() {
-	             // This code always runs, regardless of success or failure.
-	             // It's a good place to hide the loader.
-	             $('#loader').modal('hide');
-	        });
-	}
-
-
+    } catch (error) {
+        $('#loader').modal('hide');
+        console.error("Error during file upload:", error);
+    }
+};
 
 
 	</script>

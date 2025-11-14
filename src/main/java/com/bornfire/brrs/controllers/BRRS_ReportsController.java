@@ -36,24 +36,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.M_CR_Summary_Entity;
-
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity4;
-import com.bornfire.brrs.entities.BRRS_M_LA1_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_LA3_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_LA4_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_LIQ_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity4;
 import com.bornfire.brrs.entities.M_BOP_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_M_LA4_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_LIQ_Detail_Repo;
 import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_M_PLL_Detail_Repo;
 import com.bornfire.brrs.entities.M_CA3_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
@@ -62,16 +57,16 @@ import com.bornfire.brrs.entities.M_CA6_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA6_Summary_Entity2;
 import com.bornfire.brrs.entities.M_CA7_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA7_Summary_Entity;
+import com.bornfire.brrs.entities.M_CR_Summary_Entity;
 import com.bornfire.brrs.entities.M_EPR_Summary_Entity;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity1;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity2;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity3;
+import com.bornfire.brrs.entities.M_GP_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_Summary_Entity;
-import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
-import com.bornfire.brrs.entities.M_LA3_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LA4_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA4_Summary_Entity2;
@@ -93,6 +88,7 @@ import com.bornfire.brrs.entities.M_RPD_Summary_Entity6;
 import com.bornfire.brrs.entities.M_RPD_Summary_Entity7;
 import com.bornfire.brrs.entities.M_RPD_Summary_Entity8;
 import com.bornfire.brrs.entities.M_RPD_Summary_Entity9;
+import com.bornfire.brrs.entities.M_SECA_Summary_Entity;
 import com.bornfire.brrs.entities.M_SECL_Summary_Entity;
 import com.bornfire.brrs.entities.M_SFINP1_Summary_Manual_Entity;
 import com.bornfire.brrs.entities.M_SIR_Archival_Summary_Entity;
@@ -128,12 +124,12 @@ import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity2;
 import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity3;
 import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity4;
 import com.bornfire.brrs.entities.Q_RLFA1_Summary_Entity;
+import com.bornfire.brrs.entities.Q_RLFA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Q_RLFA2_Summary_Entity;
 import com.bornfire.brrs.entities.Q_SMME_DEP_Summary_Entity;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity1;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity2;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity3;
-import com.bornfire.brrs.entities.M_SECA_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_BOP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA2_ReportService;
@@ -145,6 +141,7 @@ import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
+import com.bornfire.brrs.services.BRRS_M_GP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA1_ReportService;
@@ -157,6 +154,7 @@ import com.bornfire.brrs.services.BRRS_M_OB_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OPTR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_PLL_ReportService;
 import com.bornfire.brrs.services.BRRS_M_RPD_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SECA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SECL_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SEC_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
@@ -173,11 +171,7 @@ import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
-import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SECA_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
-import com.bornfire.brrs.services.BRRS_M_GP_ReportService;
-import com.bornfire.brrs.entities.M_GP_Summary_Entity;
 
 @Controller
 @ConfigurationProperties("default")
@@ -725,6 +719,38 @@ public class BRRS_ReportsController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	
+	
+	@RequestMapping(value = "/UpdateM_CA4_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_CA4_Summary_Entity request,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+				// Set the asondate into the entity
+				request.setReport_date(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+			}
+
+			// Call service to create a new versioned row
+			brrs_m_ca4_reportservice.updateReportResub(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
 		}
 	}
 
@@ -1456,6 +1482,37 @@ public class BRRS_ReportsController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	
+	@RequestMapping(value = "/UpdateQ_RLFA2_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute Q_RLFA2_Summary_Entity request,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+				// Set the asondate into the entity
+				request.setReport_date(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+			}
+
+			// Call service to create a new versioned row
+			q_rlfa2_reportService.updateReportResub(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
 		}
 	}
 

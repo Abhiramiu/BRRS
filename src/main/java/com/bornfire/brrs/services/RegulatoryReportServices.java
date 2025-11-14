@@ -1307,14 +1307,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_CA4":
-			try {
-				archivalData = BRRS_M_CA4_reportservice.getM_CA4Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		case "M_CA5":
 			try {
@@ -1660,14 +1653,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "Q_RLFA2":
-			try {
-				archivalData = brrs_q_rlfa2_reportservice.getQ_RLFA2Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		
 
 		case "M_RPD":
 			try {
@@ -1728,6 +1714,21 @@ public class RegulatoryReportServices {
 				System.out.println("Fetched M_SRWA_12H archival data: " + QSList.size());
 				break;
 				
+			case "M_CA4":
+				List<Object[]> ca4List = BRRS_M_CA4_reportservice.getM_CA4Archival();
+				archivalData.addAll(ca4List);
+				System.out.println("Fetched M_CA4 archival data: " + ca4List.size());
+				break;
+				
+				
+			case "Q_RLFA2":
+				List<Object[]> rlfa2List = brrs_q_rlfa2_reportservice.getQ_RLFA2Archival();
+				archivalData.addAll(rlfa2List);
+				System.out.println("Fetched M_CA4 archival data: " + rlfa2List.size());
+				break;
+				
+			
+			
 
 				
 			 case "M_SRWA_12G":
@@ -2007,7 +2008,33 @@ public List<Object[]> getResub(String rptcode) {
 			                System.err.println("Error fetching resubmission data for M_SRWA_12G: " + e.getMessage());
 			                e.printStackTrace();
 			            }
+			         
+			            
 			            break;
+			            
+				 case "M_CA4":
+			            try {
+			                List<Object[]> resubList = BRRS_M_CA4_reportservice.getM_CA4Resub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for M_CA4: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_CA4: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			            break;
+			            
+			            
+				 case "Q_RLFA2":
+			            try {
+			                List<Object[]> resubList = brrs_q_rlfa2_reportservice.getQ_RLFA2Resub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for M_CA4: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_CA4: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			            break;
+
 
 
 
@@ -2017,6 +2044,8 @@ public List<Object[]> getResub(String rptcode) {
 
 		return resubmissionData;
 	}
+
+
 
 
 }
