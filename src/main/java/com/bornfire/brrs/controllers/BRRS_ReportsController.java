@@ -1009,42 +1009,7 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@Autowired
-	private BRRS_M_LARADV_ReportService LARADVreportService;
-
-	@RequestMapping(value = "/LARADVupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateLA4(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute M_LARADV_Summary_Entity1 request1,
-			@ModelAttribute M_LARADV_Summary_Entity2 request2,
-			@ModelAttribute M_LARADV_Summary_Entity3 request3,
-			@ModelAttribute M_LARADV_Summary_Entity4 request4,
-			@ModelAttribute M_LARADV_Summary_Entity5 request5) {
-		try {
-
-			// set date into all 4 entities
-			request1.setReport_date(asondate);
-			request2.setReport_date(asondate);
-			request3.setReport_date(asondate);
-			request4.setReport_date(asondate);
-			request5.setReport_date(asondate);
-
-			// call services
-			LARADVreportService.updateReport(request1);
-			LARADVreportService.updateReport2(request2);
-			LARADVreportService.updateReport3(request3);
-			LARADVreportService.updateReport4(request4);
-			LARADVreportService.updateReport5(request5);
-
-			return ResponseEntity.ok("Updated Successfully");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Update Failed: " + e.getMessage());
-		}
-	}
+	
 
 	@Autowired
 	private BRRS_M_INT_RATES_FCA_ReportService INTRATESFCAreportService;
@@ -1946,29 +1911,7 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@Autowired
-	BRRS_M_GP_ReportService BRRS_M_GP_ReportService;
-
-	@RequestMapping(value = "/M_GPupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReport1(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_GP_Summary_Entity request
-
-	) {
-
-		try {
-			System.out.println("came to single controller");
-			request.setREPORT_DATE(asondate);
-
-			BRRS_M_GP_ReportService.updateReport(request);
-
-			return ResponseEntity.ok("Updated Successfully");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
+	
 	
 	@Autowired
 	BRRS_M_OB_ReportService BRRS_M_OB_reportservice;
@@ -2137,4 +2080,131 @@ public class BRRS_ReportsController {
 					.body("Resubmission Update Failed: " + e.getMessage());
 		}
 	}
+
+
+
+		@Autowired
+	BRRS_M_GP_ReportService BRRS_M_GP_ReportService;
+
+	@RequestMapping(value = "/M_GPupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport1(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_GP_Summary_Entity request
+
+	) {
+
+		try {
+			System.out.println("came to single controller");
+			request.setReportDate(asondate);
+
+			BRRS_M_GP_ReportService.updateReport(request);
+
+			return ResponseEntity.ok("Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+		@RequestMapping(value = "/UpdateM_GP_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_GP_Summary_Entity request,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+				// Set the asondate into the entity
+				request.setReportDate(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+			}
+
+			// Call service to create a new versioned row
+			BRRS_M_GP_ReportService.updateReportReSub(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
+	}
+
+	@Autowired
+	private BRRS_M_LARADV_ReportService LARADVreportService;
+
+	@RequestMapping(value = "/LARADVupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateLA4(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute M_LARADV_Summary_Entity1 request1,
+			@ModelAttribute M_LARADV_Summary_Entity2 request2,
+			@ModelAttribute M_LARADV_Summary_Entity3 request3,
+			@ModelAttribute M_LARADV_Summary_Entity4 request4,
+			@ModelAttribute M_LARADV_Summary_Entity5 request5) {
+		try {
+
+			// set date into all 4 entities
+			request1.setReportDate(asondate);
+			request2.setReportDate(asondate);
+			request3.setReportDate(asondate);
+			request4.setReportDate(asondate);
+			request5.setReportDate(asondate);
+
+			// call services
+			LARADVreportService.updateReport(request1);
+			LARADVreportService.updateReport2(request2);
+			LARADVreportService.updateReport3(request3);
+			LARADVreportService.updateReport4(request4);
+			LARADVreportService.updateReport5(request5);
+
+			return ResponseEntity.ok("Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Update Failed: " + e.getMessage());
+		}
+	}
+	@RequestMapping(value = "/UpdateLARADV_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_LARADV_Summary_Entity1 request1,
+			@ModelAttribute M_LARADV_Summary_Entity2 request2,
+			@ModelAttribute M_LARADV_Summary_Entity3 request3,
+			@ModelAttribute M_LARADV_Summary_Entity4 request4,
+			@ModelAttribute M_LARADV_Summary_Entity5 request5,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to Q_BRANCHNET Resub Controller");
+
+			if (asondate != null) {
+				request1.setReportDate(asondate);
+				request2.setReportDate(asondate);
+				request3.setReportDate(asondate);
+				request4.setReportDate(asondate);
+				request5.setReportDate(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			}
+
+			// Call service
+			LARADVreportService.updateReportReSub(request1, request2, request3, request4,request5);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Q_BRANCHNET Resubmission Update Failed: " + e.getMessage());
+		}
+	}
+
 }

@@ -3,8 +3,10 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -12,6 +14,7 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_LARADV_ARCHIVALTABLE_SUMMARY2")
+@IdClass(M_LARADV_Archival_Summary2_PK.class)
 public class M_LARADV_Archival_Summary_Entity2 {
 	
 	// Fields for R71
@@ -1275,11 +1278,19 @@ public class M_LARADV_Archival_Summary_Entity2 {
     private BigDecimal R140_LIMIT_PCT_UNIMPAIRED_CAP;
 	
 	
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Id
-	private Date report_date;
-	private String report_version;
+
+    @Id
+    @Temporal(TemporalType.DATE)
+    @Column(name = "REPORT_DATE")
+    private Date reportDate;
+
+    @Id
+    @Column(name = "REPORT_VERSION")
+    private String reportVersion;
+
+    @Column(name = "REPORT_RESUBDATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date reportResubDate;
 	private String report_frequency;
 	private String report_code;
 	private String report_desc;
@@ -7166,17 +7177,23 @@ public class M_LARADV_Archival_Summary_Entity2 {
 	public void setR140_LIMIT_PCT_UNIMPAIRED_CAP(BigDecimal r140_LIMIT_PCT_UNIMPAIRED_CAP) {
 		R140_LIMIT_PCT_UNIMPAIRED_CAP = r140_LIMIT_PCT_UNIMPAIRED_CAP;
 	}
-	public Date getReport_date() {
-		return report_date;
+	public Date getReportDate() {
+		return reportDate;
 	}
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
-	public String getReport_version() {
-		return report_version;
+	public String getReportVersion() {
+		return reportVersion;
 	}
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 	public String getReport_frequency() {
 		return report_frequency;

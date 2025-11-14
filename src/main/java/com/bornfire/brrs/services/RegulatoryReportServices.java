@@ -1534,14 +1534,14 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
-		case "M_LARADV":
-			try {
-				archivalData = brrs_m_laradv_reportservice.getM_LARADVArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		// case "M_LARADV":
+		// 	try {
+		// 		archivalData = brrs_m_laradv_reportservice.getM_LARADVArchival();
+		// 	} catch (Exception e) {
+		// 		// TODO Auto-generated catch block
+		// 		e.printStackTrace();
+		// 	}
+		// 	break;
 			
 		 case "M_INT_RATES_FCA":
              List<Object[]> intratesfcaList = brrs_m_int_rates_fca_reportservice.getM_INT_RATES_FCAArchival();
@@ -1707,7 +1707,16 @@ public class RegulatoryReportServices {
 				archivalData.addAll(srwaList1);
 				System.out.println("Fetched M_SRWA_12H archival data: " + srwaList1.size());
 				break;
-				
+					case "M_LARADV":
+				List<Object[]> LAList = brrs_m_laradv_reportservice.getM_LARADVArchival();
+				archivalData.addAll(LAList);
+				System.out.println("Fetched M_LARADV archival data: " + LAList.size());
+				break;
+				case "M_GP":
+				List<Object[]> GPList = BRRS_M_GP_ReportService.getM_GPArchival();
+				archivalData.addAll(GPList);
+				System.out.println("Fetched M_SRWA_12H archival data: " + GPList.size());
+				break;
 
 			case "Q_STAFF":
 				List<Object[]> QSList = BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
@@ -1772,14 +1781,14 @@ public class RegulatoryReportServices {
 
 
 
-			case "M_GP":
-				try {
-					archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+			// case "M_GP":
+			// 	try {
+			// 		archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
+			// 	} catch (Exception e) {
+			// 		// TODO Auto-generated catch block
+			// 		e.printStackTrace();
+			// 	}
+			// 	break;
 				
 				
 
@@ -2103,6 +2112,29 @@ public List<Object[]> getResub(String rptcode) {
 					e.printStackTrace();
 				}
 				break;
+				case "M_GP":
+				try {
+					List<Object[]> resubList = BRRS_M_GP_ReportService.getM_GPResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_GP: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_GP: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_LARADV":
+			try {
+			List<Object[]> resubList = brrs_m_laradv_reportservice.getM_LARADVResub();
+			resubmissionData.addAll(resubList);
+			System.out.println("Resubmission data fetched for M_LARADV: " +
+			resubList.size());
+			} catch (Exception e) {
+			System.err.println("Error fetching resubmission data for M_LARADV: " +
+			e.getMessage());
+			e.printStackTrace();
+			}
+			break;
 				 case "M_SRWA_12G":
 			            try {
 			                List<Object[]> resubList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GResub();

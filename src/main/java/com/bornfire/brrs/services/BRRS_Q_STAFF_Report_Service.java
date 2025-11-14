@@ -1514,34 +1514,7 @@ public class BRRS_Q_STAFF_Report_Service {
         }
         return resubList;
     }
-    // Archival View
-    // public List<Object[]> getQ_STAFFArchival() {
-    // List<Object[]> archivalList = new ArrayList<>();
 
-    // try {
-    // // ✅ Fetch latest archival record from SUMMARY1
-    // List<Q_STAFF_Archival_Summary_Entity1> latestArchivalList =
-    // Q_STAFF_Archival_Summary_Repo1.getdatabydateListWithVersion();
-
-    // if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-    // Q_STAFF_Archival_Summary_Entity1 entity = latestArchivalList.get(0);
-
-    // archivalList.add(new Object[]{
-    // entity.getReportDate(),
-    // entity.getReportVersion()
-    // });
-    // }
-    // System.out.println("Fetched total " + archivalList.size() + " record(s) for
-    // Q_STAFF Archival");
-
-    // } catch (Exception e) {
-    // System.err.println("Error fetching Q_STAFF Archival data: " +
-    // e.getMessage());
-    // e.printStackTrace();
-    // }
-
-    // return archivalList;
-    // }
     public List<Object[]> getQ_STAFFArchival() {
         List<Object[]> archivalList = new ArrayList<>();
         try {

@@ -12,8 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-
+import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -66,6 +65,22 @@ import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity3;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity4;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity5;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity3;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity4;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity3;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity4;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity3;
+import com.bornfire.brrs.entities.M_LARADV_Archival_Summary_Entity4;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity3;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity4;
 
 
 
@@ -121,84 +136,107 @@ public class BRRS_M_LARADV_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_LARADVView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, String version) {
-		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
+	 public ModelAndView getM_LARADVView(
+            String reportId, String fromdate, String todate,
+            String currency, String dtltype, Pageable pageable,
+            String type, String version) {
 
-		if (type.equals("ARCHIVAL") & version != null) {
-			List<M_LARADV_Archival_Summary_Entity1> T1Master = new ArrayList<M_LARADV_Archival_Summary_Entity1>();
-			List<M_LARADV_Archival_Summary_Entity2> T1Master1 = new ArrayList<M_LARADV_Archival_Summary_Entity2>();
-			List<M_LARADV_Archival_Summary_Entity3> T1Master2 = new ArrayList<M_LARADV_Archival_Summary_Entity3>();
-			List<M_LARADV_Archival_Summary_Entity4> T1Master3 = new ArrayList<M_LARADV_Archival_Summary_Entity4>();
-			List<M_LARADV_Archival_Summary_Entity5> T1Master4 = new ArrayList<M_LARADV_Archival_Summary_Entity5>();
-			try {
-				Date d1 = dateformat.parse(todate);
+        ModelAndView mv = new ModelAndView();
+        Session hs = sessionFactory.getCurrentSession();
 
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = M_LARADV_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate), version);
-				T1Master1 = M_LARADV_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
-				T1Master2 = M_LARADV_Archival_Summary_Repo3.getdatabydateListarchival(dateformat.parse(todate), version);
-				T1Master3 = M_LARADV_Archival_Summary_Repo4.getdatabydateListarchival(dateformat.parse(todate), version);
-				T1Master4 = M_LARADV_Archival_Summary_Repo5.getdatabydateListarchival(dateformat.parse(todate), version);
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+        try {
+            Date d1 = dateformat.parse(todate);
 
-			mv.addObject("reportsummary", T1Master);
-			mv.addObject("reportsummary1", T1Master1);
-			mv.addObject("reportsummary2", T1Master2);
-			mv.addObject("reportsummary3", T1Master3);
-			mv.addObject("reportsummary4", T1Master4);
-		} else {
-			List<M_LARADV_Summary_Entity1> T1Master = new ArrayList<M_LARADV_Summary_Entity1>();
-			List<M_LARADV_Summary_Entity2> T1Master1 = new ArrayList<M_LARADV_Summary_Entity2>();
-			List<M_LARADV_Summary_Entity3> T1Master2 = new ArrayList<M_LARADV_Summary_Entity3>();
-			List<M_LARADV_Summary_Entity4> T1Master3 = new ArrayList<M_LARADV_Summary_Entity4>();
-			List<M_LARADV_Summary_Entity5> T1Master4 = new ArrayList<M_LARADV_Summary_Entity5>();
-			try {
-				Date d1 = dateformat.parse(todate);
+            // ---------- CASE 1: ARCHIVAL ----------
+            if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master =  M_LARADV_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
-				T1Master1 = M_LARADV_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
-				T1Master2 = M_LARADV_Summary_Repo3.getdatabydateList(dateformat.parse(todate));
-				T1Master3 = M_LARADV_Summary_Repo4.getdatabydateList(dateformat.parse(todate));
-				T1Master4 = M_LARADV_Summary_Repo5.getdatabydateList(dateformat.parse(todate));
+                List<M_LARADV_Archival_Summary_Entity1> T1Master = M_LARADV_Archival_Summary_Repo1
+                        .getdatabydateListarchival(d1, version);
+                List<M_LARADV_Archival_Summary_Entity2> T2Master = M_LARADV_Archival_Summary_Repo2
+                        .getdatabydateListarchival(d1, version);
+                List<M_LARADV_Archival_Summary_Entity3> T3Master = M_LARADV_Archival_Summary_Repo3
+                        .getdatabydateListarchival(d1, version);
+                List<M_LARADV_Archival_Summary_Entity4> T4Master = M_LARADV_Archival_Summary_Repo4
+                        .getdatabydateListarchival(d1, version);
+			             List<M_LARADV_Archival_Summary_Entity5> T5Master = M_LARADV_Archival_Summary_Repo5
+                        .getdatabydateListarchival(d1, version);
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			mv.addObject("reportsummary", T1Master);
-			mv.addObject("reportsummary1", T1Master1);
-			mv.addObject("reportsummary2", T1Master2);
-			mv.addObject("reportsummary3", T1Master3);
-			mv.addObject("reportsummary4", T1Master4);
-			
-		}
+                mv.addObject("reportsummary", T1Master);
+                mv.addObject("reportsummary1", T2Master);
+                mv.addObject("reportsummary2", T3Master);
+                mv.addObject("reportsummary3", T4Master);
+				mv.addObject("reportsummary4", T4Master);
+            }
 
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-		mv.setViewName("BRRS/M_LARADV");
-		mv.addObject("displaymode", "summary");
-		System.out.println("scv" + mv.getViewName());
-		return mv;
-	}
+            // ---------- CASE 2: RESUB ----------
+            else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+                List<M_LARADV_Archival_Summary_Entity1> T1Master = M_LARADV_Archival_Summary_Repo1
+                        .getdatabydateListarchival(d1, version);
+                List<M_LARADV_Archival_Summary_Entity2> T2Master = M_LARADV_Archival_Summary_Repo2
+                        .getdatabydateListarchival(d1, version);
+                List<M_LARADV_Archival_Summary_Entity3> T3Master = M_LARADV_Archival_Summary_Repo3
+                        .getdatabydateListarchival(d1, version);
+                List<M_LARADV_Archival_Summary_Entity4> T4Master = M_LARADV_Archival_Summary_Repo4
+                        .getdatabydateListarchival(d1, version);
+						 List<M_LARADV_Archival_Summary_Entity5> T5Master = M_LARADV_Archival_Summary_Repo5
+                        .getdatabydateListarchival(d1, version);
+
+                mv.addObject("reportsummary", T1Master);
+                mv.addObject("reportsummary1", T2Master);
+                mv.addObject("reportsummary2", T3Master);
+                mv.addObject("reportsummary3", T4Master);
+				mv.addObject("reportsummary4", T5Master);
+            }
+
+            // ---------- CASE 3: NORMAL ----------
+            else {
+
+                List<M_LARADV_Summary_Entity1> T1Master = M_LARADV_Summary_Repo1.getdatabydateList(d1);
+                List<M_LARADV_Summary_Entity2> T2Master = M_LARADV_Summary_Repo2.getdatabydateList(d1);
+                List<M_LARADV_Summary_Entity3> T3Master = M_LARADV_Summary_Repo3.getdatabydateList(d1);
+                List<M_LARADV_Summary_Entity4> T4Master = M_LARADV_Summary_Repo4.getdatabydateList(d1);
+				List<M_LARADV_Summary_Entity5> T5Master = M_LARADV_Summary_Repo5.getdatabydateList(d1);
+
+                System.out.println("T1Master Size: " + T1Master.size());
+                System.out.println("T2Master Size: " + T2Master.size());
+                System.out.println("T3Master Size: " + T3Master.size());
+                System.out.println("T4Master Size: " + T4Master.size());
+				System.out.println("T5Master Size: " + T5Master.size());
+
+                mv.addObject("reportsummary", T1Master);
+                mv.addObject("reportsummary1", T2Master);
+                mv.addObject("reportsummary2", T3Master);
+                mv.addObject("reportsummary3", T4Master);
+				mv.addObject("reportsummary3", T4Master);
+            }
+
+            mv.setViewName("BRRS/M_LARADV");
+            mv.addObject("displaymode", "summary");
+            System.out.println("✅ View set: " + mv.getViewName());
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            mv.addObject("error", "Invalid date format for: " + todate);
+        } catch (Exception e) {
+            e.printStackTrace();
+            mv.addObject("error", "An error occurred while fetching M_LARADV data.");
+        }
+
+        return mv;
+    }
 	
 	public void updateReport(M_LARADV_Summary_Entity1 updatedEntity) {
 	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-	    M_LARADV_Summary_Entity1 existing = M_LARADV_Summary_Repo1.findById(updatedEntity.getReport_date())
+	    M_LARADV_Summary_Entity1 existing = M_LARADV_Summary_Repo1.findById(updatedEntity.getReportDate())
 	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 	    try {
 	        // 1️⃣ Loop through R14 to R100
@@ -354,11 +392,11 @@ public class BRRS_M_LARADV_ReportService {
 	
 	public void updateReport2(M_LARADV_Summary_Entity2 updatedEntity) {
 	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-	    M_LARADV_Summary_Entity2 existing = M_LARADV_Summary_Repo2.findById(updatedEntity.getReport_date())
+	    M_LARADV_Summary_Entity2 existing = M_LARADV_Summary_Repo2.findById(updatedEntity.getReportDate())
 	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 	    try {
 	        // 1️⃣ Loop through R14 to R100
@@ -523,11 +561,11 @@ public class BRRS_M_LARADV_ReportService {
 	
 	public void updateReport3(M_LARADV_Summary_Entity3 updatedEntity) {
 	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-	    M_LARADV_Summary_Entity3 existing = M_LARADV_Summary_Repo3.findById(updatedEntity.getReport_date())
+	    M_LARADV_Summary_Entity3 existing = M_LARADV_Summary_Repo3.findById(updatedEntity.getReportDate())
 	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 	    try {
 	        // 1️⃣ Loop through R14 to R100
@@ -693,11 +731,11 @@ public class BRRS_M_LARADV_ReportService {
 	
 	public void updateReport4(M_LARADV_Summary_Entity4 updatedEntity) {
 	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-	    M_LARADV_Summary_Entity4 existing = M_LARADV_Summary_Repo4.findById(updatedEntity.getReport_date())
+	    M_LARADV_Summary_Entity4 existing = M_LARADV_Summary_Repo4.findById(updatedEntity.getReportDate())
 	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 	    try {
 	        // 1️⃣ Loop through R14 to R100
@@ -863,11 +901,11 @@ public class BRRS_M_LARADV_ReportService {
 	
 	public void updateReport5(M_LARADV_Summary_Entity5 updatedEntity) {
 	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-	    M_LARADV_Summary_Entity5 existing = M_LARADV_Summary_Repo5.findById(updatedEntity.getReport_date())
+	    M_LARADV_Summary_Entity5 existing = M_LARADV_Summary_Repo5.findById(updatedEntity.getReportDate())
 	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 	    try {
 	        // 1️⃣ Loop through R14 to R100
@@ -34987,33 +35025,33 @@ public class BRRS_M_LARADV_ReportService {
 					}
                 }
 				
-				public List<Object> getM_LARADVArchival() {
-					List<Object> M_LARADVArchivallist = new ArrayList<>();
-					List<Object> M_LARADVArchivallist1 = new ArrayList<>();
-					List<Object> M_LARADVArchivallist2 = new ArrayList<>();
-					List<Object> M_LARADVArchivallist3 = new ArrayList<>();
-					List<Object> M_LARADVArchivallist4 = new ArrayList<>();
-					try {
-						M_LARADVArchivallist = M_LARADV_Archival_Summary_Repo1.getM_LARADVarchival();
-						M_LARADVArchivallist1 = M_LARADV_Archival_Summary_Repo2.getM_LARADVarchival();
-						M_LARADVArchivallist2 = M_LARADV_Archival_Summary_Repo3.getM_LARADVarchival();
-						M_LARADVArchivallist3 = M_LARADV_Archival_Summary_Repo4.getM_LARADVarchival();
-						M_LARADVArchivallist4 = M_LARADV_Archival_Summary_Repo5.getM_LARADVarchival();
-						System.out.println("countser" + M_LARADVArchivallist.size());
-						System.out.println("countser" + M_LARADVArchivallist1.size());
-						System.out.println("countser" + M_LARADVArchivallist2.size());
-						System.out.println("countser" + M_LARADVArchivallist3.size());
-						System.out.println("countser" + M_LARADVArchivallist4.size());
-					} catch (Exception e) {
-						// Log the exception
-						System.err.println("Error fetching M_CA5 Archival data: " + e.getMessage());
-						e.printStackTrace();
+				// public List<Object> getM_LARADVArchival() {
+				// 	List<Object> M_LARADVArchivallist = new ArrayList<>();
+				// 	List<Object> M_LARADVArchivallist1 = new ArrayList<>();
+				// 	List<Object> M_LARADVArchivallist2 = new ArrayList<>();
+				// 	List<Object> M_LARADVArchivallist3 = new ArrayList<>();
+				// 	List<Object> M_LARADVArchivallist4 = new ArrayList<>();
+				// 	try {
+				// 		M_LARADVArchivallist = M_LARADV_Archival_Summary_Repo1.getM_LARADVarchival();
+				// 		M_LARADVArchivallist1 = M_LARADV_Archival_Summary_Repo2.getM_LARADVarchival();
+				// 		M_LARADVArchivallist2 = M_LARADV_Archival_Summary_Repo3.getM_LARADVarchival();
+				// 		M_LARADVArchivallist3 = M_LARADV_Archival_Summary_Repo4.getM_LARADVarchival();
+				// 		M_LARADVArchivallist4 = M_LARADV_Archival_Summary_Repo5.getM_LARADVarchival();
+				// 		System.out.println("countser" + M_LARADVArchivallist.size());
+				// 		System.out.println("countser" + M_LARADVArchivallist1.size());
+				// 		System.out.println("countser" + M_LARADVArchivallist2.size());
+				// 		System.out.println("countser" + M_LARADVArchivallist3.size());
+				// 		System.out.println("countser" + M_LARADVArchivallist4.size());
+				// 	} catch (Exception e) {
+				// 		// Log the exception
+				// 		System.err.println("Error fetching M_CA5 Archival data: " + e.getMessage());
+				// 		e.printStackTrace();
 
-						// Optionally, you can rethrow it or return empty list
-						// throw new RuntimeException("Failed to fetch data", e);
-					}
-					return M_LARADVArchivallist;
-				}
+				// 		// Optionally, you can rethrow it or return empty list
+				// 		// throw new RuntimeException("Failed to fetch data", e);
+				// 	}
+				// 	return M_LARADVArchivallist;
+				// }
 
 				public byte[] getExcelM_LARADVARCHIVAL(
 				        String filename,
@@ -69011,7 +69049,150 @@ public class BRRS_M_LARADV_ReportService {
 								}
 			                }
 							
+
+							////////////////////////////////////////// RESUBMISSION///////////////////////////////////////////////////////////////////
+    /// Report Date | Report Version | Domain
+    /// RESUB VIEW
+
+    public List<Object[]> getM_LARADVResub() {
+        List<Object[]> resubList = new ArrayList<>();
+        try {
+            List<M_LARADV_Archival_Summary_Entity1> latestArchivalList =M_LARADV_Archival_Summary_Repo1
+                    .getdatabydateListWithVersion();
+
+            if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+                for (M_LARADV_Archival_Summary_Entity1 entity : latestArchivalList) {
+                    resubList.add(new Object[] {
+                            entity.getReportDate(),
+                            entity.getReportVersion()
+                    });
+                }
+                System.out.println("Fetched " + resubList.size() + " record(s)");
+            } else {
+                System.out.println("No archival data found.");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error fetchingM_LARADV Resub data: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return resubList;
+    }
+
+    public List<Object[]> getM_LARADVArchival() {
+        List<Object[]> archivalList = new ArrayList<>();
+        try {
+            List<M_LARADV_Archival_Summary_Entity1> latestArchivalList =M_LARADV_Archival_Summary_Repo1
+                    .getdatabydateListWithVersion();
+
+            if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+                for (M_LARADV_Archival_Summary_Entity1 entity : latestArchivalList) {
+                    archivalList.add(new Object[] {
+                            entity.getReportDate(),
+                            entity.getReportVersion()
+                    });
+                }
+                System.out.println("Fetched " + archivalList.size() + " record(s)");
+            } else {
+                System.out.println("No archival data found.");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error fetchingM_LARADV Resub data: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return archivalList;
+    }
+
+    public void updateReportReSub(
+           M_LARADV_Summary_Entity1 updatedEntity1,
+           M_LARADV_Summary_Entity2 updatedEntity2,
+           M_LARADV_Summary_Entity3 updatedEntity3,
+           M_LARADV_Summary_Entity4 updatedEntity4,
+		   M_LARADV_Summary_Entity5 updatedEntity5) {
+
+        System.out.println("Came toM_LARADV Resub Service");
+        System.out.println("Report Date: " + updatedEntity1.getReportDate());
+
+        Date reportDate = updatedEntity1.getReportDate();
+        int newVersion = 1;
+
+        try {
+            // 🔹 Fetch the latest archival version for this report date from Entity1
+            Optional<M_LARADV_Archival_Summary_Entity1> latestArchivalOpt1 =M_LARADV_Archival_Summary_Repo1
+                    .getLatestArchivalVersionByDate(reportDate);
+
+            if (latestArchivalOpt1.isPresent()) {
+               M_LARADV_Archival_Summary_Entity1 latestArchival = latestArchivalOpt1.get();
+                try {
+                    newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid version format. Defaulting to version 1");
+                    newVersion = 1;
+                }
+            } else {
+                System.out.println("No previous archival found for date: " + reportDate);
+            }
+
+            // 🔹 Prevent duplicate version number in Repo1
+            boolean exists =M_LARADV_Archival_Summary_Repo1
+                    .findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
+                    .isPresent();
+
+            if (exists) {
+                throw new RuntimeException("⚠ Version " + newVersion + " already exists for report date " + reportDate);
+            }
+
+            // Copy data from summary to archival entities for all 3 entities
+           M_LARADV_Archival_Summary_Entity1 archivalEntity1 = new M_LARADV_Archival_Summary_Entity1();
+           M_LARADV_Archival_Summary_Entity2 archivalEntity2 = new M_LARADV_Archival_Summary_Entity2();
+           M_LARADV_Archival_Summary_Entity3 archivalEntity3 = new M_LARADV_Archival_Summary_Entity3();
+           M_LARADV_Archival_Summary_Entity4 archivalEntity4 = new M_LARADV_Archival_Summary_Entity4();
+           M_LARADV_Archival_Summary_Entity5 archivalEntity5 = new M_LARADV_Archival_Summary_Entity5();
+            org.springframework.beans.BeanUtils.copyProperties(updatedEntity1, archivalEntity1);
+            org.springframework.beans.BeanUtils.copyProperties(updatedEntity2, archivalEntity2);
+            org.springframework.beans.BeanUtils.copyProperties(updatedEntity3, archivalEntity3);
+            org.springframework.beans.BeanUtils.copyProperties(updatedEntity4, archivalEntity4);
+			org.springframework.beans.BeanUtils.copyProperties(updatedEntity5, archivalEntity5);
+
+            // Set common fields
+            Date now = new Date();
+            archivalEntity1.setReportDate(reportDate);
+            archivalEntity2.setReportDate(reportDate);
+            archivalEntity3.setReportDate(reportDate);
+            archivalEntity4.setReportDate(reportDate);
+			archivalEntity4.setReportDate(reportDate);
+
+            archivalEntity1.setReportVersion(String.valueOf(newVersion));
+            archivalEntity2.setReportVersion(String.valueOf(newVersion));
+            archivalEntity3.setReportVersion(String.valueOf(newVersion));
+            archivalEntity4.setReportVersion(String.valueOf(newVersion));
+			archivalEntity5.setReportVersion(String.valueOf(newVersion));
+
+            archivalEntity1.setReportResubDate(now);
+            archivalEntity2.setReportResubDate(now);
+            archivalEntity3.setReportResubDate(now);
+            archivalEntity4.setReportResubDate(now);
+			 archivalEntity5.setReportResubDate(now);
+
+            System.out.println("Saving new archival version: " + newVersion);
+
+            // Save to all three archival repositories
+           M_LARADV_Archival_Summary_Repo1.save(archivalEntity1);
+           M_LARADV_Archival_Summary_Repo2.save(archivalEntity2);
+           M_LARADV_Archival_Summary_Repo3.save(archivalEntity3);
+           M_LARADV_Archival_Summary_Repo4.save(archivalEntity4);
+		    M_LARADV_Archival_Summary_Repo5.save(archivalEntity5);
+
+            System.out.println("Saved archival version successfully: " + newVersion);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while creatingM_LARADV archival resubmission record", e);
+        }
+    }
 							
+
 							
 						}
 

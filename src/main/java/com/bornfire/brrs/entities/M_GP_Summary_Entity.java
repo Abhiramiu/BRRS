@@ -3,6 +3,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -284,12 +285,14 @@ public class M_GP_Summary_Entity {
 	private BigDecimal R64_QUALIFY_STAGE2_PROVISIONS;
 	private BigDecimal R64_TOTAL_GENERAL_PROVISIONS;
 
-
-    @Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	public Date REPORT_DATE;
-    public String REPORT_VERSION;
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
+
     public String REPORT_FREQUENCY;
     public String REPORT_CODE;
     public String REPORT_DESC;
@@ -1592,17 +1595,18 @@ public class M_GP_Summary_Entity {
 	public void setR64_TOTAL_GENERAL_PROVISIONS(BigDecimal r64_TOTAL_GENERAL_PROVISIONS) {
 		R64_TOTAL_GENERAL_PROVISIONS = r64_TOTAL_GENERAL_PROVISIONS;
 	}
-	public Date getREPORT_DATE() {
-		return REPORT_DATE;
+
+	public Date getReportDate() {
+		return reportDate;
 	}
-	public void setREPORT_DATE(Date rEPORT_DATE) {
-		REPORT_DATE = rEPORT_DATE;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
-	public String getREPORT_VERSION() {
-		return REPORT_VERSION;
+	public String getReportVersion() {
+		return reportVersion;
 	}
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
-		REPORT_VERSION = rEPORT_VERSION;
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 	public String getREPORT_FREQUENCY() {
 		return REPORT_FREQUENCY;
