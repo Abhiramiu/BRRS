@@ -65,6 +65,8 @@ import com.bornfire.brrs.entities.M_FXR_Summary_Entity3;
 import com.bornfire.brrs.entities.M_GP_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_Summary_Entity;
+import com.bornfire.brrs.entities.M_IS_Summary_Entity1;
+import com.bornfire.brrs.entities.M_IS_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
@@ -145,6 +147,7 @@ import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService;
+import com.bornfire.brrs.services.BRRS_M_IS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
@@ -1730,8 +1733,7 @@ public class BRRS_ReportsController {
 					.body("Resubmission Update Failed: " + e.getMessage());
 		}
 	}
-
-	@Autowired
+@Autowired
 	BRRS_Q_STAFF_Report_Service QSTAFF_service;
 
 	@RequestMapping(value = "/Q_STAFFupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
@@ -1754,7 +1756,7 @@ public class BRRS_ReportsController {
 			QSTAFF_service.updateReport2(request2);
 			QSTAFF_service.updateReport3(request3);
 
-			return ResponseEntity.ok("All Reports Updated Successfully");
+			return ResponseEntity.ok(" Updated Successfully");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -1857,6 +1859,63 @@ public class BRRS_ReportsController {
 					.body("Q_BRANCHNET Resubmission Update Failed: " + e.getMessage());
 		}
 	}
+	@Autowired
+	BRRS_M_IS_ReportService M_IS_Service;
+
+	@RequestMapping(value = "/M_ISupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute M_IS_Summary_Entity1 request1,
+			@ModelAttribute M_IS_Summary_Entity2 request2) {
+		try {
+			System.out.println("Came to single controller");
+
+			// set date into all 3 entities
+			request1.setReportDate(asondate);
+			request2.setReportDate(asondate);
+
+			// call services
+			M_IS_Service.MISUpdate1(request1);
+			M_IS_Service.MISUpdate2(request2);
+
+			return ResponseEntity.ok("Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	@RequestMapping(value = "/UpdateM_ISReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_IS_Summary_Entity1 request1,
+			@ModelAttribute M_IS_Summary_Entity2 request2,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to M_IS Resub Controller");
+
+			if (asondate != null) {
+				request1.setReportDate(asondate);
+				request2.setReportDate(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			}
+
+			// Call service
+			M_IS_Service.updateReportReSub(request1, request2);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("M_IS Resubmission Update Failed: " + e.getMessage());
+		}
+	}
+
 	@RequestMapping(value = "/UpdateM_SRWA_12G_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(

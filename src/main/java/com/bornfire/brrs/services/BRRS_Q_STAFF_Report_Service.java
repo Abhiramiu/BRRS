@@ -1488,55 +1488,7 @@ public class BRRS_Q_STAFF_Report_Service {
     ////////////////////////////////////////// RESUBMISSION///////////////////////////////////////////////////////////////////
     /// Report Date | Report Version | Domain
     /// RESUB VIEW
-    // public List<Object[]> getQ_STAFFResub() {
-    // List<Object[]> resubList = new ArrayList<>();
 
-    // try {
-    // // ✅ Fetch latest archival records from all three entities
-    // List<Q_STAFF_Archival_Summary_Entity1> latestArchivalList1 =
-    // Q_STAFF_Archival_Summary_Repo1.getdatabydateListWithVersion();
-    // List<Q_STAFF_Archival_Summary_Entity2> latestArchivalList2 =
-    // Q_STAFF_Archival_Summary_Repo2.getdatabydateListWithVersion();
-    // List<Q_STAFF_Archival_Summary_Entity3> latestArchivalList3 =
-    // Q_STAFF_Archival_Summary_Repo3.getdatabydateListWithVersion();
-
-    // // ✅ Combine all lists into one (if not empty)
-    // if (latestArchivalList1 != null && !latestArchivalList1.isEmpty()) {
-    // for (Q_STAFF_Archival_Summary_Entity1 entity : latestArchivalList1) {
-    // resubList.add(new Object[]{
-    // entity.getReportDate(),
-    // entity.getReportVersion()
-    // });
-    // }
-    // }
-
-    // if (latestArchivalList2 != null && !latestArchivalList2.isEmpty()) {
-    // for (Q_STAFF_Archival_Summary_Entity2 entity : latestArchivalList2) {
-    // resubList.add(new Object[]{
-    // entity.getReportDate(),
-    // entity.getReportVersion()
-    // });
-    // }
-    // }
-
-    // if (latestArchivalList3 != null && !latestArchivalList3.isEmpty()) {
-    // for (Q_STAFF_Archival_Summary_Entity3 entity : latestArchivalList3) {
-    // resubList.add(new Object[]{
-    // entity.getReportDate(),
-    // entity.getReportVersion()
-    // });
-    // }
-    // }
-
-    // System.out.println("✅ Latest Q_STAFF Resub records fetched successfully");
-
-    // } catch (Exception e) {
-    // System.err.println("❌ Error fetching Q_STAFF Resub data: " + e.getMessage());
-    // e.printStackTrace();
-    // }
-
-    // return resubList;
-    // }
 
     public List<Object[]> getQ_STAFFResub() {
         List<Object[]> resubList = new ArrayList<>();

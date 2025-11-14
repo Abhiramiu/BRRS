@@ -549,22 +549,27 @@ PURPOSE		: BWRBRREPORT
 
 
 	<script>
-	   function closemodel() {
+function closemodel() {
     $("#resultModal").modal("hide");
     $('#loader').modal('hide');
 
-    // Check if the success message is showing
     const message = $("#resultModalBody").text();
 
+    // 1️⃣ Success message → go back
     if (message.includes("Resubmission Updated Successfully")) {
-        // ✅ Go back to the previous page
         window.history.back();
-    } else {
-        // For other messages, just reload the same page
-        setTimeout(() => location.reload(), 300);
+        return;
     }
-}
 
+    // 2️⃣ If modal is opened from Details → DO NOT RELOAD
+    if (isDetailsModal === true) {
+        isDetailsModal = false;  // reset for next time
+        return;                  // STOP here → no reload
+    }
+
+    // 3️⃣ Default → reload page
+    setTimeout(() => location.reload(), 300);
+}
 		function fileuploads(btn) {
 			const asondate = btn.getAttribute("data-todate");
 			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL

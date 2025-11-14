@@ -407,11 +407,7 @@ PURPOSE		: BWRBRREPORT
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		// function closemodel() {
-		// 	$('#alert').modal('hide');
-		// 	$('#resultModal').modal('hide');
 
-		// }
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -616,21 +612,45 @@ $(document).ready(function() {
 
 
 <script>
-   function closemodel() {
+//    function closemodel() {
+//     $("#resultModal").modal("hide");
+//     $('#loader').modal('hide');
+
+//     // Check if the success message is showing
+//     const message = $("#resultModalBody").text();
+
+//     if (message.includes("Resubmission Updated Successfully")) {
+//         // ✅ Go back to the previous page
+//         window.history.back();
+//     } else {
+//         // For other messages, just reload the same page
+//         setTimeout(() => location.reload(), 300);
+//     }
+// }
+
+function closemodel() {
     $("#resultModal").modal("hide");
     $('#loader').modal('hide');
 
-    // Check if the success message is showing
     const message = $("#resultModalBody").text();
 
+    // 1️⃣ Success message → go back
     if (message.includes("Resubmission Updated Successfully")) {
-        // ✅ Go back to the previous page
         window.history.back();
-    } else {
-        // For other messages, just reload the same page
-        setTimeout(() => location.reload(), 300);
+        return;
     }
+
+    // 2️⃣ If modal is opened from Details → DO NOT RELOAD
+    if (isDetailsModal === true) {
+        isDetailsModal = false;  // reset for next time
+        return;                  // STOP here → no reload
+    }
+
+    // 3️⃣ Default → reload page
+    setTimeout(() => location.reload(), 300);
 }
+
+
 
 function fileuploads(btn) {
 			const asondate = btn.getAttribute("data-todate");
@@ -818,7 +838,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'1.   Senior Management*'"
 										id="R9_STAFF_COMPLEMENT" name="R9_STAFF_COMPLEMENT"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW9" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -826,7 +846,7 @@ $.ajax({
                                         th:value="${report.R9_LOCAL != null ? #numbers.formatDecimal(report.R9_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R9_LOCAL"
                                         name="R9_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right; "
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right; "
                                         readonly /></td>
 	                                    <td id="ROW9" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -834,7 +854,7 @@ $.ajax({
 	                                    th:value="${report.R9_EXPARIATES != null ? #numbers.formatDecimal(report.R9_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R9_EXPARIATES"
 	                                    name="R9_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW9" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);" >
@@ -843,7 +863,7 @@ $.ajax({
 	                                    th:value="${report.R9_TOTAL }"
 	                                    id="R9_TOTAL"
 	                                    name="R9_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 
@@ -852,7 +872,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'2.   Managers'"
 										id="R10_STAFF_COMPLEMENT" name="R10_STAFF_COMPLEMENT"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW10" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -860,7 +880,7 @@ $.ajax({
                                         th:value="${report.R10_LOCAL != null ? #numbers.formatDecimal(report.R10_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R10_LOCAL"
                                         name="R10_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
 	                                    <td id="ROW10" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -868,7 +888,7 @@ $.ajax({
 	                                    th:value="${report.R10_EXPARIATES != null ? #numbers.formatDecimal(report.R10_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R10_EXPARIATES"
 	                                    name="R10_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW10" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -877,7 +897,7 @@ $.ajax({
 	                                    th:value="${report.R10_TOTAL }"
 	                                    id="R10_TOTAL"
 	                                    name="R10_TOTAL" 
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white; "readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white; "readonly />
 	                                    </td>
                                         </tr>
 										<tr>
@@ -885,7 +905,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'3.   Assistant Managers'"
 										id="R11_STAFF_COMPLEMENT" name="R11_STAFF_COMPLEMENT"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW11" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -893,7 +913,7 @@ $.ajax({
                                         th:value="${report.R11_LOCAL != null ? #numbers.formatDecimal(report.R11_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R11_LOCAL"
                                         name="R11_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
 	                                    <td id="ROW11" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -901,7 +921,7 @@ $.ajax({
 	                                    th:value="${report.R11_EXPARIATES != null ? #numbers.formatDecimal(report.R11_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R11_EXPARIATES"
 	                                    name="R11_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW11" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -910,7 +930,7 @@ $.ajax({
 	                                    th:value="${report.R11_TOTAL }"
 	                                    id="R11_TOTAL"
 	                                    name="R11_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -918,7 +938,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'4.   Supervisory'"
 										id="R12_STAFF_COMPLEMENT" name="R12_STAFF_COMPLEMENT"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW12" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -926,7 +946,7 @@ $.ajax({
                                         th:value="${report.R12_LOCAL != null ? #numbers.formatDecimal(report.R12_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R12_LOCAL"
                                         name="R12_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
 	                                    <td id="ROW12" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -934,7 +954,7 @@ $.ajax({
 	                                    th:value="${report.R12_EXPARIATES != null ? #numbers.formatDecimal(report.R12_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R12_EXPARIATES"
 	                                    name="R12_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW12" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -943,7 +963,7 @@ $.ajax({
 	                                    th:value="${report.R12_TOTAL }"
 	                                    id="R12_TOTAL"
 	                                    name="R12_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -951,7 +971,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'5.   Clerical'"
 										id="R13_STAFF_COMPLEMENT" name="R13_STAFF_COMPLEMENT"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW13" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -959,7 +979,7 @@ $.ajax({
                                         th:value="${report.R13_LOCAL != null ? #numbers.formatDecimal(report.R13_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R13_LOCAL"
                                         name="R13_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
 	                                    <td id="ROW13" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -967,7 +987,7 @@ $.ajax({
 	                                    th:value="${report.R13_EXPARIATES != null ? #numbers.formatDecimal(report.R13_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R13_EXPARIATES"
 	                                    name="R13_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW13" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -976,7 +996,7 @@ $.ajax({
 	                                    th:value="${report.R13_TOTAL }"
 	                                    id="R13_TOTAL"
 	                                    name="R13_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -984,7 +1004,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'6.   Non-clerical'"
 										id="R14_STAFF_COMPLEMENT" name="R14_STAFF_COMPLEMENT"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW14" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -992,7 +1012,7 @@ $.ajax({
                                         th:value="${report.R14_LOCAL != null ? #numbers.formatDecimal(report.R14_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R14_LOCAL"
                                         name="R14_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
 	                                    <td id="ROW14" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1000,7 +1020,7 @@ $.ajax({
 	                                    th:value="${report.R14_EXPARIATES != null ? #numbers.formatDecimal(report.R14_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R14_EXPARIATES"
 	                                    name="R14_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW14" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -1009,7 +1029,7 @@ $.ajax({
 	                                    th:value="${report.R14_TOTAL }"
 	                                    id="R14_TOTAL"
 	                                    name="R14_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -1017,7 +1037,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'7.   Total'"
 										id="R15_STAFF_COMPLEMENT" name="R15_STAFF_COMPLEMENT"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW15" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
@@ -1025,7 +1045,7 @@ $.ajax({
                                         th:value="${report.R15_LOCAL }"
                                         id="R15_LOCAL"
                                         name="R15_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
                                         readonly /></td>
 	                                    <td id="ROW15" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
@@ -1033,7 +1053,7 @@ $.ajax({
 	                                    th:value="${report.R15_EXPARIATES }"
 	                                    id="R15_EXPARIATES"
 	                                    name="R15_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW15" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -1042,7 +1062,7 @@ $.ajax({
 	                                    th:value="${report.R15_TOTAL }"
 	                                    id="R15_TOTAL"
 	                                    name="R15_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 	
@@ -1070,7 +1090,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'Salaries and Allowances'"
 										id="R21_SENIOR_MANAGEMENT_COMPENSATION" name="R21_SENIOR_MANAGEMENT_COMPENSATION"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW21" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1078,7 +1098,7 @@ $.ajax({
                                         th:value="${report.R21_LOCAL != null ? #numbers.formatDecimal(report.R21_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R21_LOCAL"
                                         name="R21_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
 	                                    <td id="ROW21" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1086,7 +1106,7 @@ $.ajax({
 	                                    th:value="${report.R21_EXPARIATES != null ? #numbers.formatDecimal(report.R21_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R21_EXPARIATES"
 	                                    name="R21_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW21" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -1095,7 +1115,7 @@ $.ajax({
 	                                    th:value="${report.R21_TOTAL }"
 	                                    id="R21_TOTAL"
 	                                    name="R21_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -1103,7 +1123,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'Bonuses'"
 										id="R22_SENIOR_MANAGEMENT_COMPENSATION" name="R22_SENIOR_MANAGEMENT_COMPENSATION"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW22" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1111,7 +1131,7 @@ $.ajax({
                                         th:value="${report.R22_LOCAL != null ? #numbers.formatDecimal(report.R22_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R22_LOCAL"
                                         name="R22_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
 	                                    <td id="ROW22" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1119,7 +1139,7 @@ $.ajax({
 	                                    th:value="${report.R22_EXPARIATES != null ? #numbers.formatDecimal(report.R22_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R22_EXPARIATES"
 	                                    name="R22_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW22" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -1128,7 +1148,7 @@ $.ajax({
 	                                    th:value="${report.R22_TOTAL }"
 	                                    id="R22_TOTAL"
 	                                    name="R22_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -1136,7 +1156,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'Short-term employee benefits'"
 										id="R23_SENIOR_MANAGEMENT_COMPENSATION" name="R23_SENIOR_MANAGEMENT_COMPENSATION"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left; "
 										readonly /></td>
 	                                    <td id="ROW23" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1144,7 +1164,7 @@ $.ajax({
                                         th:value="${report.R23_LOCAL != null ? #numbers.formatDecimal(report.R23_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R23_LOCAL"
                                         name="R23_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
 	                                    <td id="ROW23" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1152,7 +1172,7 @@ $.ajax({
 	                                    th:value="${report.R23_EXPARIATES != null ? #numbers.formatDecimal(report.R23_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R23_EXPARIATES"
 	                                    name="R23_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW23" style="font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -1161,7 +1181,7 @@ $.ajax({
 	                                    th:value="${report.R23_TOTAL }"
 	                                    id="R23_TOTAL"
 	                                    name="R23_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -1169,7 +1189,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'Post-Employment Benefits'"
 										id="R24_SENIOR_MANAGEMENT_COMPENSATION" name="R24_SENIOR_MANAGEMENT_COMPENSATION"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW24" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1177,7 +1197,7 @@ $.ajax({
                                         th:value="${report.R24_LOCAL != null ? #numbers.formatDecimal(report.R24_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R24_LOCAL"
                                         name="R24_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
 	                                    <td id="ROW24" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1185,7 +1205,7 @@ $.ajax({
 	                                    th:value="${report.R24_EXPARIATES != null ? #numbers.formatDecimal(report.R24_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R24_EXPARIATES"
 	                                    name="R24_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW24" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -1194,7 +1214,7 @@ $.ajax({
 	                                    th:value="${report.R24_TOTAL }"
 	                                    id="R24_TOTAL"
 	                                    name="R24_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -1202,7 +1222,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'Other long-term benefits'"
 										id="R25_SENIOR_MANAGEMENT_COMPENSATION" name="R25_SENIOR_MANAGEMENT_COMPENSATION"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW25" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1210,7 +1230,7 @@ $.ajax({
                                         th:value="${report.R25_LOCAL != null ? #numbers.formatDecimal(report.R25_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R25_LOCAL"
                                         name="R25_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
 	                                    <td id="ROW25" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1218,7 +1238,7 @@ $.ajax({
 	                                    th:value="${report.R25_EXPARIATES != null ? #numbers.formatDecimal(report.R25_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R25_EXPARIATES"
 	                                    name="R25_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW25" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -1227,7 +1247,7 @@ $.ajax({
 	                                    th:value="${report.R25_TOTAL }"
 	                                    id="R25_TOTAL"
 	                                    name="R25_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										                                        <tr>
@@ -1235,7 +1255,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'Termination Benefits'"
 										id="R26_SENIOR_MANAGEMENT_COMPENSATION" name="R26_SENIOR_MANAGEMENT_COMPENSATION"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW26" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1243,7 +1263,7 @@ $.ajax({
                                         th:value="${report.R26_LOCAL != null ? #numbers.formatDecimal(report.R26_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R26_LOCAL"
                                         name="R26_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
 	                                    <td id="ROW26" style="font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1251,7 +1271,7 @@ $.ajax({
 	                                    th:value="${report.R26_EXPARIATES != null ? #numbers.formatDecimal(report.R26_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R26_EXPARIATES"
 	                                    name="R26_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW26" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -1260,7 +1280,7 @@ $.ajax({
 	                                    th:value="${report.R26_TOTAL }"
 	                                    id="R26_TOTAL"
 	                                    name="R26_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										<tr>
@@ -1268,7 +1288,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'Share Based Payments'"
 										id="R27_SENIOR_MANAGEMENT_COMPENSATION" name="R27_SENIOR_MANAGEMENT_COMPENSATION"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW27" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1276,7 +1296,7 @@ $.ajax({
                                         th:value="${report.R27_LOCAL != null ? #numbers.formatDecimal(report.R27_LOCAL, 0, 'COMMA', 0, 'POINT') : '0'}"
                                         id="R27_LOCAL"
                                         name="R27_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
                                         readonly /></td>
 	                                    <td id="ROW27" style=" font-weight: bold;padding-left: 20px;">
 	                                    <input class="display-input Show_input"
@@ -1284,7 +1304,7 @@ $.ajax({
 	                                    th:value="${report.R27_EXPARIATES != null ? #numbers.formatDecimal(report.R27_EXPARIATES, 1, 'COMMA', 0, 'POINT') : '0'}"
 	                                    id="R27_EXPARIATES"
 	                                    name="R27_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW27" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -1293,7 +1313,7 @@ $.ajax({
 	                                    th:value="${report.R27_TOTAL }"
 	                                    id="R27_TOTAL"
 	                                    name="R27_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 										<tr>
@@ -1301,7 +1321,7 @@ $.ajax({
 										class="display-input Show_input " type="text"
 										th:value="'Total'"
 										id="R28_SENIOR_MANAGEMENT_COMPENSATION" name="R28_SENIOR_MANAGEMENT_COMPENSATION"
-										style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+										style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 										readonly /></td>
 	                                    <td id="ROW28" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
@@ -1309,7 +1329,7 @@ $.ajax({
                                         th:value="${report.R28_LOCAL }"
                                         id="R28_LOCAL"
                                         name="R28_LOCAL"
-                                        style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
+                                        style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"
                                         readonly /></td>
 	                                    <td id="ROW28" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
 	                                    <input class="display-input Show_input"
@@ -1317,7 +1337,7 @@ $.ajax({
 	                                    th:value="${report.R28_EXPARIATES }"
 	                                    id="R28_EXPARIATES"
 	                                    name="R28_EXPARIATES"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         
 										 <td id="ROW28" style=" font-weight: bold;padding-left: 20px;background-color: rgb(107, 122, 143);">
@@ -1326,7 +1346,7 @@ $.ajax({
 	                                    th:value="${report.R28_TOTAL }"
 	                                    id="R28_TOTAL"
 	                                    name="R28_TOTAL"
-	                                    style="background-color: #FFFFFF; width: 330px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
+	                                    style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;background-color: rgb(107, 122, 143);color: white;"readonly />
 	                                    </td>
                                         </tr>
 
@@ -1335,7 +1355,7 @@ $.ajax({
 								<table 
 	class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
 	id="reports"
-	style="width: 800px; table-layout: fixed; border-collapse: collapse;">
+	style="width: 790px; table-layout: fixed; border-collapse: collapse;">
 
 	<thead class="thead-light">
 		<tr style="background-color: #D8D8D8;">
@@ -1355,7 +1375,7 @@ $.ajax({
 				<input class="display-input Show_input" type="text"
 					th:value="'Mortgage'"
 					id="R33_STAFF_LOANS" name="R33_STAFF_LOANS"
-					style="background-color: #FFFFFF; width: 100%; height: 33px; border: none; text-align: left; padding-left: 20px;"
+					style="background-color: #FFFFFF; width: 100%; height: 33px; border: none; text-align: left;"
 					readonly />
 			</td>
 			<td id="ROW33" style="font-weight: bold;padding-left: 20px;">
@@ -1394,7 +1414,7 @@ $.ajax({
 				<input class="display-input Show_input" type="text"
 					th:value="'Car'"
 					id="R34_STAFF_LOANS" name="R34_STAFF_LOANS"
-					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: left; padding-left: 20px;"
+					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: left;"
 					readonly />
 			</td>
 			<td id="ROW34" style="font-weight: bold;padding-left: 20px;">
@@ -1433,7 +1453,7 @@ $.ajax({
 				<input class="display-input Show_input" type="text"
 					th:value="'Education'"
 					id="R35_STAFF_LOANS" name="R35_STAFF_LOANS"
-					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: left; padding-left: 20px;"
+					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: left;"
 					readonly />
 			</td>
 			<td id="ROW35" style="font-weight: bold;padding-left: 20px;">
@@ -1472,7 +1492,7 @@ $.ajax({
 				<input class="display-input Show_input" type="text"
 					th:value="'Furniture'"
 					id="R36_STAFF_LOANS" name="R36_STAFF_LOANS"
-					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: left; padding-left: 20px;"
+					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: left;"
 					readonly />
 			</td>
 			<td id="ROW36" style="font-weight: bold;padding-left: 20px;">
@@ -1511,7 +1531,7 @@ $.ajax({
 				<input class="display-input Show_input" type="text"
 					th:value="'Others'"
 					id="R37_STAFF_LOANS" name="R37_STAFF_LOANS"
-					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: left; padding-left: 20px;"
+					style="background-color: #FFFFFF; width: 100%; height: 34px; border: none; text-align: left;"
 					readonly />
 			</td>
 			<td id="ROW37" style="font-weight: bold;padding-left: 20px;">
@@ -1549,7 +1569,7 @@ $.ajax({
 				<input class="display-input Show_input" type="text"
 					th:value="'Total'"
 					id="R38_STAFF_LOANS" name="R38_STAFF_LOANS"
-					style="background-color: #FFFFFF; width: 100%; height: 35px; border: none; text-align: left; padding-left: 20px;"
+					style="background-color: #FFFFFF; width: 100%; height: 35px; border: none; text-align: left;"
 					readonly />
 			</td>
 			<td id="ROW38" style="font-weight: bold;padding-left: 20px; background-color: rgb(107,122,143);">

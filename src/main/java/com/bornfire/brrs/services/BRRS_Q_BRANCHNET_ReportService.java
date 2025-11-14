@@ -3050,7 +3050,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
             }
 
         } catch (Exception e) {
-            System.err.println("Error fetching M_SRWA_12H Resub data: " + e.getMessage());
+            System.err.println("Error fetching Q_BRANCHNET Resub data: " + e.getMessage());
             e.printStackTrace();
         }
         return resubList;
@@ -3075,7 +3075,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
             }
 
         } catch (Exception e) {
-            System.err.println("Error fetching M_SRWA_12H Resub data: " + e.getMessage());
+            System.err.println("Error fetching Q_BRANCHNET Resub data: " + e.getMessage());
             e.printStackTrace();
         }
         return archivalList;

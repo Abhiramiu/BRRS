@@ -1295,14 +1295,14 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_IS":
-			try {
-				archivalData = BRRS_M_IS_reportservice.getM_ISArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		// case "M_IS":
+		// 	try {
+		// 		archivalData = BRRS_M_IS_reportservice.getM_ISArchival();
+		// 	} catch (Exception e) {
+		// 		// TODO Auto-generated catch block
+		// 		e.printStackTrace();
+		// 	}
+		// 	break;
 
 		case "M_CA2":
 			try {
@@ -1725,12 +1725,18 @@ public class RegulatoryReportServices {
 				archivalData.addAll(QSList);
 				System.out.println("Fetched M_SRWA_12H archival data: " + QSList.size());
 				break;
+								case "M_IS":
+				List<Object[]> MISList = BRRS_M_IS_reportservice.getM_ISArchival();
+				archivalData.addAll(MISList);
+				System.out.println("Fetched M_IS archival data: " + MISList.size());
+				break;
 
 					case "Q_BRANCHNET":
 				List<Object[]> QBList = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
 				archivalData.addAll(QBList);
 				System.out.println("Fetched M_SRWA_12H archival data: " + QBList.size());
 				break;
+				
 				
 			case "M_CA4":
 				List<Object[]> ca4List = BRRS_M_CA4_reportservice.getM_CA4Archival();
@@ -2092,7 +2098,16 @@ public List<Object[]> getResub(String rptcode) {
 					e.printStackTrace();
 				}
 				break;
-				
+							case "M_IS":
+				try {
+					List<Object[]> resubList = BRRS_M_IS_reportservice.getM_ISResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_IS: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_IS: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
 				 case "M_SRWA_12G":
 			            try {
 			                List<Object[]> resubList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GResub();
