@@ -1333,14 +1333,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_CA7":
-			try {
-				archivalData = BRRS_M_CA7_reportservice.getM_CA7Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
 			
 		case "M_CR":
 			try {
@@ -1768,8 +1760,14 @@ public class RegulatoryReportServices {
 		            archivalData.addAll(srwafList);
 		            System.out.println("Fetched M_SRWA_12F archival data: " + srwafList.size());
 		            break;
-		       
-
+		            
+		            
+			 case "M_CA7":
+		            List<Object[]> CA7List = BRRS_M_CA7_reportservice.getM_CA7Archival();
+		            archivalData.addAll(CA7List);
+		            System.out.println("Fetched M_SRWA_12F archival data: " + CA7List.size());
+		            break;
+		
 
 
 
@@ -1799,7 +1797,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-
+		
 		}
 		return archivalData;
 	}
@@ -2177,6 +2175,7 @@ public List<Object[]> getResub(String rptcode) {
 			                e.printStackTrace();
 			            }
 			            break; 
+
 			            
 				 case "M_INT_RATES_FCA":
 			            try {
@@ -2189,6 +2188,20 @@ public List<Object[]> getResub(String rptcode) {
 			            }
 			            break; 
 
+
+
+				 case "M_CA7":
+			            try {
+			                List<Object[]> resubList = BRRS_M_CA7_reportservice.getM_CA7Resub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for CA7: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_CA7: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			         
+			            
+			            break;
 
 
 

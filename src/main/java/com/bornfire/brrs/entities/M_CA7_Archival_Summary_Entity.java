@@ -3,8 +3,10 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -12,6 +14,8 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_CA7_ARCHIVALTABLE_SUMMARY")
+
+@IdClass(M_CA7_Archival_Summary_PK.class)
 public class M_CA7_Archival_Summary_Entity {
 	
 	    private BigDecimal r12_pre_ifrs_pro;   
@@ -35,11 +39,20 @@ public class M_CA7_Archival_Summary_Entity {
 	    private BigDecimal r22_cap_year4;
 	    private BigDecimal r22_amt_add_year4;
 
-	    @Temporal(TemporalType.DATE)
-		@DateTimeFormat(pattern = "dd/MM/yyyy")
 		@Id
-	    private Date report_date;
-	    private String report_version;
+		@Temporal(TemporalType.DATE)
+		@DateTimeFormat(pattern = "dd/MM/yyyy")
+		@Column(name = "REPORT_DATE")
+		private Date reportDate;
+		
+		@Id
+		@Column(name = "REPORT_VERSION")
+		private String reportVersion;
+		
+	    @Column(name = "REPORT_RESUBDATE")
+	    @Temporal(TemporalType.TIMESTAMP)
+	    private Date reportResubDate;	
+		
 	    private String report_frequency;
 	    private String report_code;
 	    private String report_desc;
@@ -137,17 +150,23 @@ public class M_CA7_Archival_Summary_Entity {
 		public void setR22_amt_add_year4(BigDecimal r22_amt_add_year4) {
 			this.r22_amt_add_year4 = r22_amt_add_year4;
 		}
-		public Date getReport_date() {
-			return report_date;
+		public Date getReportDate() {
+			return reportDate;
 		}
-		public void setReport_date(Date report_date) {
-			this.report_date = report_date;
+		public void setReportDate(Date reportDate) {
+			this.reportDate = reportDate;
 		}
-		public String getReport_version() {
-			return report_version;
+		public String getReportVersion() {
+			return reportVersion;
 		}
-		public void setReport_version(String report_version) {
-			this.report_version = report_version;
+		public void setReportVersion(String reportVersion) {
+			this.reportVersion = reportVersion;
+		}
+		public Date getReportResubDate() {
+			return reportResubDate;
+		}
+		public void setReportResubDate(Date reportResubDate) {
+			this.reportResubDate = reportResubDate;
 		}
 		public String getReport_frequency() {
 			return report_frequency;
@@ -183,37 +202,6 @@ public class M_CA7_Archival_Summary_Entity {
 			return del_flg;
 		}
 		public void setDel_flg(String del_flg) {
-			this.del_flg = del_flg;
-		}
-		public M_CA7_Archival_Summary_Entity(BigDecimal r12_pre_ifrs_pro, BigDecimal r12_post_ifrs9_pro,
-				BigDecimal r12_trans_amt, String r19_product, BigDecimal r19_cap_year1, BigDecimal r19_amt_add_year1,
-				String r20_product, BigDecimal r20_cap_year2, BigDecimal r20_amt_add_year2, String r21_product,
-				BigDecimal r21_cap_year3, BigDecimal r21_amt_add_year3, String r22_product, BigDecimal r22_cap_year4,
-				BigDecimal r22_amt_add_year4, Date report_date, String report_version, String report_frequency,
-				String report_code, String report_desc, String entity_flg, String modify_flg, String del_flg) {
-			super();
-			this.r12_pre_ifrs_pro = r12_pre_ifrs_pro;
-			this.r12_post_ifrs9_pro = r12_post_ifrs9_pro;
-			this.r12_trans_amt = r12_trans_amt;
-			this.r19_product = r19_product;
-			this.r19_cap_year1 = r19_cap_year1;
-			this.r19_amt_add_year1 = r19_amt_add_year1;
-			this.r20_product = r20_product;
-			this.r20_cap_year2 = r20_cap_year2;
-			this.r20_amt_add_year2 = r20_amt_add_year2;
-			this.r21_product = r21_product;
-			this.r21_cap_year3 = r21_cap_year3;
-			this.r21_amt_add_year3 = r21_amt_add_year3;
-			this.r22_product = r22_product;
-			this.r22_cap_year4 = r22_cap_year4;
-			this.r22_amt_add_year4 = r22_amt_add_year4;
-			this.report_date = report_date;
-			this.report_version = report_version;
-			this.report_frequency = report_frequency;
-			this.report_code = report_code;
-			this.report_desc = report_desc;
-			this.entity_flg = entity_flg;
-			this.modify_flg = modify_flg;
 			this.del_flg = del_flg;
 		}
 		public M_CA7_Archival_Summary_Entity() {

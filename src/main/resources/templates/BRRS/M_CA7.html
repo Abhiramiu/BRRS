@@ -761,9 +761,35 @@ $(document).ready(function() {
 
 	        formData.append(name, value);
 	    });
+		const r12Fields = ["pre_ifrs_pro", "post_ifrs9_pro", "trans_amt"];
 
+		    r12Fields.forEach(field => {
+		        const id = "#r12_" + field;
+		        const input = $(id);
+		        if (input.length) {
+		            formData.append(input.attr("name"), input.val());
+		            console.log(" R12 field appended:", input.attr("name"), "=", input.val());
+		        }
+		    });
+			for (let i = 19; i <= 22; i++) {
+			        const suffix = "amt_add_year" + (i - 18); 
+			        const id = "#r" + i + "_" + suffix;
+
+			        const input = $(id);
+			        if (input.length) {
+			            formData.append(input.attr("name"), input.val());
+			            console.log("✔ R" + i + " field appended:", input.attr("name"), "=", input.val());
+			        }
+			    }
+
+				
+				let apiUrl = './MCA7updateAll';
+				if (type && type.toUpperCase() === 'RESUB') {
+					apiUrl = './UpdateM_CA7_ReSub'; 
+				}
+				  
 	    $.ajax({
-	        url: './MCA7updateAll',
+	        url: apiUrl,
 	        type: 'POST',
 	        data: formData,
 	        processData: false,
@@ -834,12 +860,14 @@ $(document).ready(function() {
         <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();" th:if="${displaymode == 'Details'}">Summary</button>
         <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();" th:if="${displaymode == 'summary'}">Details</button>
 		<!-- Modify button -->
-						<button type="button" class="custom-tab-btn"
-						        onclick="showmodify(this);"
-						        title="Click to EDIT Records"
-								th:if="${type != 'ARCHIVAL'}"
-								       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-						        id="addRecord">Modify</button>
+		<!-- Modify button -->
+								<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+									title="Click to EDIT Records"
+									th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
+									th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+									id="addRecord">
+									Modify
+								</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"
