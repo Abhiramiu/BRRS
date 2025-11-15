@@ -570,8 +570,8 @@ public class BRRS_ReportsController {
 			System.out.println("Came to single controller");
 			System.out.println(type);
 			// set date into all 4 entities
-			request1.setREPORT_DATE(asondate);
-			request2.setREPORT_DATE(asondate);
+			request1.setReportDate(asondate);
+			request2.setReportDate(asondate);
 
 			BRRS_M_CA6_ReportService.updateReport(request1);
 			BRRS_M_CA6_ReportService.updateReport1(request2);
@@ -2236,6 +2236,35 @@ public ResponseEntity<String> updateReportReSubAll(
 		e.printStackTrace();
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body("M_FXR Resubmission Update Failed: " + e.getMessage());
+	}
+}
+
+@RequestMapping(value = "/UpdateM_CA6_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateReportReSub(
+		@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		@ModelAttribute M_CA6_Summary_Entity1 request1,
+		@ModelAttribute M_CA6_Summary_Entity2 request2,
+		HttpServletRequest req) {
+
+	try {
+		System.out.println("Came to M_CA6 Resub Controller");
+
+		if (asondate != null) {
+			request1.setReportDate(asondate);
+			request2.setReportDate(asondate);
+			System.out.println("Set Report Date: " + asondate);
+		}
+
+		// Call service
+		BRRS_M_CA6_ReportService.updateReportReSub(request1, request2);
+
+		return ResponseEntity.ok("Resubmission Updated Successfully");
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body("M_CA6 Resubmission Update Failed: " + e.getMessage());
 	}
 }
 

@@ -67,18 +67,20 @@ public class M_CA6_Summary_Entity1 {
     private BigDecimal R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
     private BigDecimal R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
     
-    @Temporal(TemporalType.DATE)
+
+	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	public Date REPORT_DATE;
-    public String REPORT_VERSION;
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
     public String REPORT_FREQUENCY;
     public String REPORT_CODE;
     public String REPORT_DESC;
     public String ENTITY_FLG;
     public String MODIFY_FLG;
     public String DEL_FLG;
-    
 	public Date getR12_CALENDAR_YEAR() {
 		return R12_CALENDAR_YEAR;
 	}
@@ -329,17 +331,17 @@ public class M_CA6_Summary_Entity1 {
 	public void setR24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(BigDecimal r24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
 		R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
 	}
-	public Date getREPORT_DATE() {
-		return REPORT_DATE;
+	public Date getReportDate() {
+		return reportDate;
 	}
-	public void setREPORT_DATE(Date rEPORT_DATE) {
-		REPORT_DATE = rEPORT_DATE;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
-	public String getREPORT_VERSION() {
-		return REPORT_VERSION;
+	public String getReportVersion() {
+		return reportVersion;
 	}
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
-		REPORT_VERSION = rEPORT_VERSION;
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 	public String getREPORT_FREQUENCY() {
 		return REPORT_FREQUENCY;
@@ -381,9 +383,6 @@ public class M_CA6_Summary_Entity1 {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-    
-	
-    
     
 
 }

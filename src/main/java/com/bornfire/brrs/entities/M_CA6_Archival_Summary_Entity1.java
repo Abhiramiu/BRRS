@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -15,6 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_CA6_ARCHIVALTABLE_SUMMARY1")
 
+@IdClass(M_CA6_Archival_Summary1_PK.class)
 public class M_CA6_Archival_Summary_Entity1 {
 	
 	private Date R12_CALENDAR_YEAR;
@@ -67,11 +69,16 @@ public class M_CA6_Archival_Summary_Entity1 {
     private BigDecimal R24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
     private BigDecimal R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
     
-    @Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-	public Date REPORT_DATE;
-    public String REPORT_VERSION;
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
+	  @Column(name = "REPORT_RESUBDATE")
+	    @Temporal(TemporalType.TIMESTAMP)
+	    private Date reportResubDate;	
     public String REPORT_FREQUENCY;
     public String REPORT_CODE;
     public String REPORT_DESC;
@@ -328,17 +335,23 @@ public class M_CA6_Archival_Summary_Entity1 {
 	public void setR24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT(BigDecimal r24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT) {
 		R24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT = r24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT;
 	}
-	public Date getREPORT_DATE() {
-		return REPORT_DATE;
+	public Date getReportDate() {
+		return reportDate;
 	}
-	public void setREPORT_DATE(Date rEPORT_DATE) {
-		REPORT_DATE = rEPORT_DATE;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
-	public String getREPORT_VERSION() {
-		return REPORT_VERSION;
+	public String getReportVersion() {
+		return reportVersion;
 	}
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
-		REPORT_VERSION = rEPORT_VERSION;
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
 	}
 	public String getREPORT_FREQUENCY() {
 		return REPORT_FREQUENCY;
@@ -380,6 +393,4 @@ public class M_CA6_Archival_Summary_Entity1 {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-    
-    
 }

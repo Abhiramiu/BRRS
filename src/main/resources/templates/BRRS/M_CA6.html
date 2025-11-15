@@ -662,9 +662,13 @@ $(document).ready(function() {
 	        let val = convertDateToISO($(this).val());
 	        if (name && val.trim()) formData.append(name, val);
 	    });
-
+		// Step 5: Select API endpoint dynamically
+		let apiUrl = './M_CA6updateAll'; // normal update
+		if (type && type.toUpperCase() === 'RESUB') {
+			apiUrl = './UpdateM_CA6_ReSub'; // Resubmission endpoint
+		}
 	    $.ajax({
-	        url: './MCA6updateAll',
+	        url: apiUrl,
 	        type: 'POST',
 	        data: formData,
 	        processData: false,

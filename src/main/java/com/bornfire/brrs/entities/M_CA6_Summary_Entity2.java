@@ -190,10 +190,12 @@ public class M_CA6_Summary_Entity2 {
     private BigDecimal R47_AMOUNT;
     
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Id
-    private Date REPORT_DATE;
-    public String REPORT_VERSION;
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
     public String REPORT_FREQUENCY;
     public String REPORT_CODE;
     public String REPORT_DESC;
@@ -632,17 +634,17 @@ public class M_CA6_Summary_Entity2 {
 	public void setR47_AMOUNT(BigDecimal r47_AMOUNT) {
 		R47_AMOUNT = r47_AMOUNT;
 	}
-	public Date getREPORT_DATE() {
-		return REPORT_DATE;
+	public Date getReportDate() {
+		return reportDate;
 	}
-	public void setREPORT_DATE(Date rEPORT_DATE) {
-		REPORT_DATE = rEPORT_DATE;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
-	public String getREPORT_VERSION() {
-		return REPORT_VERSION;
+	public String getReportVersion() {
+		return reportVersion;
 	}
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
-		REPORT_VERSION = rEPORT_VERSION;
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 	public String getREPORT_FREQUENCY() {
 		return REPORT_FREQUENCY;
@@ -684,6 +686,5 @@ public class M_CA6_Summary_Entity2 {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-    
     
 }
