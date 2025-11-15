@@ -388,7 +388,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 			var Callurl;
 			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype})}]]*/
+			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
 				location.href = Callurl;
 			console.log(Callurl);
 
@@ -396,7 +396,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
 				location.href = Callurl;
 
 		}
@@ -440,6 +440,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 			var secid = button.getAttribute('data-secid');
 			var dtltype = button.getAttribute('data-dtltype');
 			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
 
 			$('#loader').modal('show');
 
@@ -451,7 +453,9 @@ PURPOSE		: BRRS_M_PLLREPORT
 					'&currency=' + currency +
 					'&subreportid=' + subreportid +
 					'&secid=' + secid +
-					'&filename=' + filename,
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
 				type: 'GET',
 				xhrFields: {
 					responseType: 'blob'
@@ -552,7 +556,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 				.then(res => res.text())
 				.then(status => {
 					if (status === "READY") {
-						alertMsg.innerHTML = 'Report is ready! Downloading…';
+						alertMsg.innerHTML = 'Report is ready! Downloaded';
 						showAlert();
 						const filename = sessionStorage.getItem("filename");
 						downloadDetailfile(jobId, filename)
@@ -818,6 +822,14 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 	<script>
 	    function openMPLLDetail(elem, mode) {
+			
+			var type = elem.getAttribute('data-type');   
+
+			        if (type === "ARCHIVAL") {
+			            showResultModal('BRRS',"ARCHIVED Data cannot be modified");
+			            return;
+			        }			
+			
 	        const acctNo = elem.getAttribute("data-acctNo");
 	        const asondate = elem.getAttribute("data-asondate");
 	        
@@ -948,7 +960,9 @@ PURPOSE		: BRRS_M_PLLREPORT
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 		    data-fromdate=${fromdate},
 		    data-todate=${todate},
-		    data-filename='M_PLLDetail'
+		    data-filename='M_PLLDetail',
+			data-type=${type},
+			data-version=${version}
 		  ">
 							<i class="fa fa-download"></i>
 						</button>
@@ -1444,7 +1458,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 										<td>
 											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
 												<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber}, 
-											                    data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
+											                    data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
 													onclick="openMPLLDetail(this, 'edit')">
 												</i>
 											</a>
@@ -1456,7 +1470,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 										<td th:text="${report.custId}"></td>
 										<td style="text-align:left;" th:text="${report.acctNumber}"></td>
 										<td th:text="${report.acctName}"></td>
-										<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.provision, 1, 0, 'POINT')}"></td>
+										<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.provision,1,'COMMA',0,'POINT')}"></td>
 										<td style="text-align:left;" th:text="${report.rowId}"></td>
 										<td th:text="${report.columnId}"></td>
 										<td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
@@ -1532,7 +1546,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 						<div class="row formline" style="margin-top:10px;">
 							<label class="col-sm-2">Report Date</label>
 							<div class="col-sm-3">
-								<input type="date" name="reportDate" class="form-control form-control-sm"
+								<input type="date" name="reportDate" class="form-control form-control-sm"readonly
 									th:value="${#dates.format(mpllData.reportDate, 'yyyy-MM-dd')}" />
 							</div>
 						</div>
