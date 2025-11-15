@@ -106,8 +106,8 @@ public class M_INT_RATES_Summary_Entity {
 	private BigDecimal R23_VOLUME;
 
 	private String R24_LENDING;
-	private BigDecimal R24_NOMINAL_INTEREST_RATE;   // text output: "min - max"
-	private BigDecimal R24_AVG_EFFECTIVE_RATE;  // numeric only
+	private String R24_NOMINAL_INTEREST_RATE;   // text output: "min - max"
+	private String R24_AVG_EFFECTIVE_RATE;  // numeric only
 	private BigDecimal R24_VOLUME;              // numeric only
 
 
@@ -566,16 +566,16 @@ public class M_INT_RATES_Summary_Entity {
 	public void setR24_LENDING(String r24_LENDING) {
 		R24_LENDING = r24_LENDING;
 	}
-	public BigDecimal getR24_NOMINAL_INTEREST_RATE() {
+	public String getR24_NOMINAL_INTEREST_RATE() {
 		return R24_NOMINAL_INTEREST_RATE;
 	}
-	public void setR24_NOMINAL_INTEREST_RATE(BigDecimal r24_NOMINAL_INTEREST_RATE) {
+	public void setR24_NOMINAL_INTEREST_RATE(String r24_NOMINAL_INTEREST_RATE) {
 		R24_NOMINAL_INTEREST_RATE = r24_NOMINAL_INTEREST_RATE;
 	}
-	public BigDecimal getR24_AVG_EFFECTIVE_RATE() {
+	public String getR24_AVG_EFFECTIVE_RATE() {
 		return R24_AVG_EFFECTIVE_RATE;
 	}
-	public void setR24_AVG_EFFECTIVE_RATE(BigDecimal r24_AVG_EFFECTIVE_RATE) {
+	public void setR24_AVG_EFFECTIVE_RATE(String r24_AVG_EFFECTIVE_RATE) {
 		R24_AVG_EFFECTIVE_RATE = r24_AVG_EFFECTIVE_RATE;
 	}
 	public BigDecimal getR24_VOLUME() {
@@ -1020,6 +1020,8 @@ public class M_INT_RATES_Summary_Entity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
 	
 	
 	

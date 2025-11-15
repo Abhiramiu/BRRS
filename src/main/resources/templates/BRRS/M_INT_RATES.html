@@ -724,10 +724,10 @@ function fileuploads(btn) {
 	        processData: false,
 	        contentType: false,
 	        dataType: 'text',
-	        success: function () {
-			    $("#resultModalLabel").text("BRRS");
-			    $("#resultModalBody").text("Updated Successfully.");
-			    $("#resultModal").modal("show");
+	        success: function (response) {
+	            $("#resultModalLabel").text("BRRS");
+	            $("#resultModalBody").text(response);
+	            $("#resultModal").modal("show");
 
 			    //  Wait for user to close the modal manually
 			    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
@@ -807,7 +807,7 @@ function fileuploads(btn) {
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${dtltype},
-                    				 data-filename='M_SECL.xlsx',
+                    				 data-filename='M_INTRATES.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}"
 									  onclick="downloadfile(this);">
@@ -820,7 +820,7 @@ function fileuploads(btn) {
 								    data-todate=${todate},
 									data-currency=${currency},  
 												data-dtltype=${dtltype}, 
-								    data-filename='M_SRWA_12FDetail',
+								    data-filename='M_INTRATESDetail',
 									data-type=${type},
 												data-version=${version}
 								  ">

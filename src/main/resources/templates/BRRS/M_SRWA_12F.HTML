@@ -787,10 +787,10 @@ function fileuploads(btn) {
 	        processData: false,
 	        contentType: false,
 	        dataType: 'text',
-	        success: function () {
-			    $("#resultModalLabel").text("BRRS");
-			    $("#resultModalBody").text("Updated Successfully.");
-			    $("#resultModal").modal("show");
+	        success: function (response) {
+	            $("#resultModalLabel").text("BRRS");
+	            $("#resultModalBody").text(response);
+	            $("#resultModal").modal("show");
 
 			    //  Wait for user to close the modal manually
 			    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {

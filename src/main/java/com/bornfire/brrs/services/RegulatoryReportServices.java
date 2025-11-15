@@ -1336,14 +1336,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_SECL":
-			try {
-				archivalData = brrs_m_secl_reportservice.getM_SECLArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
 
 
 		case "M_SP":
@@ -1735,6 +1727,12 @@ public class RegulatoryReportServices {
 		            archivalData.addAll(srwafList);
 		            System.out.println("Fetched M_SRWA_12F archival data: " + srwafList.size());
 		            break;
+		            
+			 case "M_SECL":
+		            List<Object[]> seclList = brrs_m_secl_reportservice.getM_SECLArchival();
+		            archivalData.addAll(seclList);
+		            System.out.println("Fetched M_SECL archival data: " + seclList.size());
+		            break;
 
 		            
 			 case "M_CA7":
@@ -2097,6 +2095,17 @@ public List<Object[]> getResub(String rptcode) {
 					System.out.println("Resubmission data fetched for M_SRWA_12F: " + resubList.size());
 				} catch (Exception e) {
 					System.err.println("Error fetching resubmission data for M_SRWA_12F: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+				
+			case "M_SECL":
+				try {
+					List<Object[]> resubList = brrs_m_secl_reportservice.getM_SECLResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_SECL: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_SECL: " + e.getMessage());
 					e.printStackTrace();
 				}
 				break;

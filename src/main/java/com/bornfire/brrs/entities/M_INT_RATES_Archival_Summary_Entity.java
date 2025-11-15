@@ -15,7 +15,7 @@ import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
-@Table(name = "BRRS_M_SRWA_12F_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_INT_RATES_ARCHIVALTABLE_SUMMARY")
 @IdClass(M_INT_RATES_Archival_Summary_PK.class)
 
 public class M_INT_RATES_Archival_Summary_Entity{	
