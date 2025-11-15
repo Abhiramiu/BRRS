@@ -648,6 +648,7 @@ try {
 logger.info("Generating Excel for M_CA2 Details...");
 System.out.println("came to Detail download service");
 
+
 if (type.equals("ARCHIVAL") & version != null) {
 byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
 version);
@@ -918,6 +919,7 @@ public List<Object> getM_CA2Archival() {
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
+
 		List<M_CA2_Archival_Summary_Entity> dataList = BRRS_M_CA2_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 		List<M_CA2_Manual_Archival_Summary_Entity> dataList1 = BRRS_M_CA2_Manual_Archival_Summary_Repo
@@ -1308,11 +1310,11 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 
 	     // Get data
 	     Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-	     List<M_CA2_Detail_Entity> reportData = BRRS_M_CA2_Detail_Repo.getdatabydateList(parsedToDate);
+	     List<M_CA2_Archival_Detail_Entity> reportData = BRRS_M_CA2_Archival_Detail_Repo.getdatabydateList(parsedToDate,version);
 
 	     if (reportData != null && !reportData.isEmpty()) {
 	     int rowIndex = 1;
-	     for (M_CA2_Detail_Entity item : reportData) {
+	     for (M_CA2_Archival_Detail_Entity item : reportData) {
 	     XSSFRow row = sheet.createRow(rowIndex++);
 
 	     row.createCell(0).setCellValue(item.getCustId());

@@ -1401,6 +1401,13 @@ function cancelModify() {
 
 		<script>
 			function openDetail(elem, mode) {
+				
+				var type = elem.getAttribute('data-type');   
+
+							        if (type === "ARCHIVAL") {
+							            showResultModal('BRRS',"Archived Data cannot be modified");
+							            return;
+							        }	
 				const acctNo = elem.getAttribute("data-acctNo");
 				 const asondate = elem.getAttribute("data-asondate");
 				location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
@@ -2008,7 +2015,7 @@ data-version=${version}"
 																								title="Click to Edit this Record">
 																								<i class="fas fa-edit" style="color: black; cursor:pointer;"
 																									th:attr="data-acctNo=${report.acctNumber},
-																									data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
+																									data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
 																									onclick="openDetail(this, 'edit')"></i>
 
 																							</a>
