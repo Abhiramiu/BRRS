@@ -3670,7 +3670,7 @@ public class BRRS_Q_RLFA2_ReportService {
 				}
 
 			} catch (Exception e) {
-				System.err.println("Error fetching m_ca4 Archival data: " + e.getMessage());
+				System.err.println("Error fetching Q_RLFA2 Archival data: " + e.getMessage());
 				e.printStackTrace();
 			}
 

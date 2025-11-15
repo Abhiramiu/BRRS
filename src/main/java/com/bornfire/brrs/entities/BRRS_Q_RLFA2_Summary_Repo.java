@@ -34,7 +34,7 @@ public interface BRRS_Q_RLFA2_Summary_Repo extends JpaRepository<Q_RLFA2_Summary
 	    Optional<Q_RLFA2_Summary_Entity> findByReport_dateAndReport_version(Date report_date, String report_version);
 
 
-	            @Query(value = "SELECT *  FROM BRRS_Q_RLFA2_SUMMARYTABLE WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+	            @Query(value = "SELECT *  FROM BRRS_Q_RLFA2_SUMMARYTABLE WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
 	        List<Q_RLFA2_Summary_Entity> getdatabydateListWithVersion();
 
 }

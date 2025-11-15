@@ -1602,14 +1602,11 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_SRWA_12C":
-			try {
-				archivalData = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		/*
+		 * case "M_SRWA_12C": try { archivalData =
+		 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
+		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
+		 */
 
 //		case "M_OB":
 //			try {
@@ -1628,14 +1625,11 @@ public class RegulatoryReportServices {
              break;
 
 
-		case "Q_RLFA1":
-			try {
-				archivalData = brrs_q_rlfa1_reportservice.getQ_RLFA1Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			/*
+			 * case "Q_RLFA1": try { archivalData =
+			 * brrs_q_rlfa1_reportservice.getQ_RLFA1Archival(); } catch (Exception e) { //
+			 * TODO Auto-generated catch block e.printStackTrace(); } break;
+			 */
 
 		
 
@@ -1664,23 +1658,15 @@ public class RegulatoryReportServices {
              break;
              
 			
-		case "Q_SMME_DEP":
-			try {
-				archivalData = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_BOP":
-			try {
-				archivalData = BRRS_M_BOP_ReportService.getM_BOPArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			/*
+			 * case "Q_SMME_DEP": try { archivalData =
+			 * BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival(); } catch (Exception e)
+			 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
+			 * 
+			 * case "M_BOP": try { archivalData =
+			 * BRRS_M_BOP_ReportService.getM_BOPArchival(); } catch (Exception e) { // TODO
+			 * Auto-generated catch block e.printStackTrace(); } break;
+			 */
 		
 		case "M_SECA":
 			try {
@@ -1775,6 +1761,34 @@ public class RegulatoryReportServices {
    		            System.out.println("Fetched M_CA6 archival data: " + CA6List.size());
    		            break;		     
 		
+   		            
+   		            
+   		            
+   			case "Q_RLFA1":
+	            List<Object[]> qrlfa1List = brrs_q_rlfa1_reportservice.getQ_RLFA1Archival();
+	            archivalData.addAll(qrlfa1List);
+	            System.out.println("Fetched Q_RLFA1 archival data: " + qrlfa1List.size());
+	            break;
+	       
+	            
+		 case "M_BOP":
+	            List<Object[]> BOPList = BRRS_M_BOP_ReportService.getM_BOPArchival();
+	            archivalData.addAll(BOPList);
+	            System.out.println("Fetched M_BOP archival data: " + BOPList.size());
+	            break;
+	            
+	            
+		 case "Q_SMME_DEP":
+	            List<Object[]> QSMMEDEPList = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival();
+	            archivalData.addAll(QSMMEDEPList);
+	            System.out.println("Fetched Q_SMME_DEP archival data: " + QSMMEDEPList.size());
+	            break;
+	            
+		 case "M_SRWA_12C":
+	            List<Object[]> MSRWA12CList = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival();
+	            archivalData.addAll(MSRWA12CList);
+	            System.out.println("Fetched Q_SMME_DEP archival data: " + MSRWA12CList.size());
+	            break;
 
 
 
@@ -2254,6 +2268,58 @@ public List<Object[]> getResub(String rptcode) {
 			            }
 			         
 			            
+			            break;
+			            
+			            
+			            
+			            
+			            
+			            
+			            
+			            
+				 case "Q_RLFA1":
+			            try {
+			                List<Object[]> resubList = brrs_q_rlfa1_reportservice.getQ_RLFA1Resub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for Q_RLFA1: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for Q_RLFA1: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			            break;
+			            
+				  case "M_BOP":
+			            try {
+			                List<Object[]> resubList = BRRS_M_BOP_ReportService.getM_BOPResub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for M_BOP: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_BOP: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			            break;
+			            
+				  case "Q_SMME_DEP":
+			            try {
+			                List<Object[]> resubList = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPResub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for Q_SMME_DEP: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for Q_SMME_DEP: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			            break;
+			            
+			            
+				  case "M_SRWA_12C":
+			            try {
+			                List<Object[]> resubList = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CResub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for M_SRWA_12C: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_SRWA_12C: " + e.getMessage());
+			                e.printStackTrace();
+			            }
 			            break;
 
 

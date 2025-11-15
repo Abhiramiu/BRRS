@@ -89,18 +89,19 @@ public class M_SRWA_12C_Summary_Entity{
     private BigDecimal R28_RWA;
 
     
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    @Id
-  
-    private Date REPORT_DATE;
-    private String REPORT_VERSION;
-    private String REPORT_FREQUENCY;
-    private String REPORT_CODE;
-    private String REPORT_DESC;
-    private String ENTITY_FLG;
-    private String MODIFY_FLG;
-    private String DEL_FLG;
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+	
+		
+	private Date	report_date;
+	private String	report_version;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	 del_flg;
 	public String getR11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE() {
 		return R11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE;
 	}
@@ -531,59 +532,61 @@ public class M_SRWA_12C_Summary_Entity{
 	public void setR28_RWA(BigDecimal r28_RWA) {
 		R28_RWA = r28_RWA;
 	}
-	public Date getREPORT_DATE() {
-		return REPORT_DATE;
+	public Date getReport_date() {
+		return report_date;
 	}
-	public void setREPORT_DATE(Date rEPORT_DATE) {
-		REPORT_DATE = rEPORT_DATE;
+	public void setReport_date(Date report_date) {
+		this.report_date = report_date;
 	}
-	public String getREPORT_VERSION() {
-		return REPORT_VERSION;
+	public String getReport_version() {
+		return report_version;
 	}
-	public void setREPORT_VERSION(String rEPORT_VERSION) {
-		REPORT_VERSION = rEPORT_VERSION;
+	public void setReport_version(String report_version) {
+		this.report_version = report_version;
 	}
-	public String getREPORT_FREQUENCY() {
-		return REPORT_FREQUENCY;
+	public String getReport_frequency() {
+		return report_frequency;
 	}
-	public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
-		REPORT_FREQUENCY = rEPORT_FREQUENCY;
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
 	}
-	public String getREPORT_CODE() {
-		return REPORT_CODE;
+	public String getReport_code() {
+		return report_code;
 	}
-	public void setREPORT_CODE(String rEPORT_CODE) {
-		REPORT_CODE = rEPORT_CODE;
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
 	}
-	public String getREPORT_DESC() {
-		return REPORT_DESC;
+	public String getReport_desc() {
+		return report_desc;
 	}
-	public void setREPORT_DESC(String rEPORT_DESC) {
-		REPORT_DESC = rEPORT_DESC;
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
 	}
-	public String getENTITY_FLG() {
-		return ENTITY_FLG;
+	public String getEntity_flg() {
+		return entity_flg;
 	}
-	public void setENTITY_FLG(String eNTITY_FLG) {
-		ENTITY_FLG = eNTITY_FLG;
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
 	}
-	public String getMODIFY_FLG() {
-		return MODIFY_FLG;
+	public String getModify_flg() {
+		return modify_flg;
 	}
-	public void setMODIFY_FLG(String mODIFY_FLG) {
-		MODIFY_FLG = mODIFY_FLG;
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
 	}
-	public String getDEL_FLG() {
-		return DEL_FLG;
+	public String getDel_flg() {
+		return del_flg;
 	}
-	public void setDEL_FLG(String dEL_FLG) {
-		DEL_FLG = dEL_FLG;
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
 	}
 	public M_SRWA_12C_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
+	
+	
+	
    
 
     

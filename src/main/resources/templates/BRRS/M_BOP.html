@@ -1025,72 +1025,85 @@ $(document).ready(function() {
 	// This is the main function that orchestrates the entire form submission process.
 	// It is triggered by the "Update" button click.
 // Make the function global so onclick="fileuploads(this)" can see it
-window.fileuploads = function(btn) {
-    // Get the report date from the button's data attribute
-    const asondate = btn.getAttribute("data-todate");
+window.fileuploads = function (btn) {
+    try {
+        // Get the report date from the button's data attribute
+        const asondate = btn.getAttribute("data-todate");
 
-    // Show loading spinner
-    $('#loader').modal('show');
+        // Show loading spinner
+        $('#loader').modal('show');
 
-    // Ensure totals are calculated before submission
-    if (typeof calculateAllTotals === "function") calculateAllTotals();
-
-    // Remove commas from all text inputs inside #fileupload
-    $("#fileupload input[type='text']").each(function () {
-        const val = $(this).val();
-        if (val && val.includes(",")) {
-            $(this).val(val.replace(/,/g, ''));
+        // Ensure totals are calculated before submission
+        if (typeof calculateRowsNetAndCP === "function") {
+            calculateRowsNetAndCP();
         }
-    });
 
-    // Validate form
-    if (!$("#fileupload").valid()) {
-        $('#loader').modal('hide');
-        return;
-    }
-
-    // Prepare FormData
-    const formData1 = new FormData();
-    formData1.append("asondate", asondate);
-
-    // Append row fields to FormData
-    for (let i = 13; i <= 36; i++) {
-        ["product", "open_position","cpdm_dt_inc","cpdm_dt_dec","net","cpdm_dt_der","cpdm_dt_dto","cp"
-        	
-        	]
-        .forEach(field => {
-            const input = $("#r" + i + "_" + field);
-            if (input.length) {
-                formData1.append(input.attr("name"), input.val());
+        // Remove commas from all text inputs inside #fileupload
+        $("#fileupload input[type='text']").each(function () {
+            const val = $(this).val();
+            if (val && val.includes(",")) {
+                $(this).val(val.replace(/,/g, ''));
             }
         });
-    }
 
-    // Send AJAX request
-    $.ajax({
-        url: './M_BOPupdate',
-        type: 'POST',
-        data: formData1,
-        processData: false,
-        contentType: false,
-        dataType: 'text'
-    })
-    .done(function() {
-        $("#resultModalLabel").text("BRRS");
-        $("#resultModalBody").text("Updated successfully.");
-        $("#resultModal").modal("show");
-    })
-    .fail(function(jqXHR) {
-        console.error("Error response:", jqXHR.responseText);
-        $("#resultModalLabel").text("Error");
-        $("#resultModalBody").text("One or more updates failed. Check console for details.");
-        $("#resultModal").modal("show");
-    })
-    .always(function() {
+        // Validate form
+        if (!$("#fileupload").valid()) {
+            $('#loader').modal('hide');
+            return;
+        }
+
+        // Retrieve type from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
+        const type = urlType || "";
+
+        // Build FormData
+        const formData = new FormData();
+        formData.append("asondate", asondate);
+        formData.append("type", type);
+
+        // Append all input fields to FormData
+        $('#fileupload').find(':input').each(function () {
+            const name = $(this).attr('name');
+            if (name) {
+                formData.append(name, $(this).val());
+            }
+        });
+
+        // Choose endpoint based on type
+        let apiUrl = './M_BOPupdate';
+        if (urlType && urlType.toUpperCase() === 'RESUB') {
+            apiUrl = './UpdateM_BOP_ReSub';
+        }
+
+        // Send AJAX request
+        $.ajax({
+            url: apiUrl,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'text',
+            success: function (response) {
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(response);
+                $("#resultModal").modal("show");
+            },
+            error: function (jqXHR) {
+                $("#resultModalLabel").text("Error");
+                $("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+                $("#resultModal").modal("show");
+            },
+            complete: function () {
+                $('#loader').modal('hide');
+            }
+        });
+
+    } catch (error) {
         $('#loader').modal('hide');
-    });
+        console.error("Error during file upload:", error);
+    }
 };
-
 
 
 

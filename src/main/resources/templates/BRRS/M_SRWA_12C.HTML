@@ -860,15 +860,16 @@ $(document).ready(function() {
 
 	
 	function fileuploads(btn) {
-	    const asondate = btn.getAttribute("data-todate");
-	    const type = btn.getAttribute("data-type");
-
-	    // Show loader
-	    $('#loader').modal('show');
-
 	    try {
+	        const asondate = btn.getAttribute("data-todate");
+
+	        // Show loader
+	        $('#loader').modal('show');
+
 	        // ✅ Step 1: Calculate totals
-	        calculateRwaForRows();
+	        if (typeof calculateRwaForRows === "function") {
+	            calculateRwaForRows();
+	        }
 
 	        // ✅ Step 2: Remove commas from all text inputs
 	        $("#fileupload input[type='text']").each(function () {
@@ -881,11 +882,17 @@ $(document).ready(function() {
 	            return;
 	        }
 
-	        // ✅ Step 4: Build FormData
+	        // ✅ Retrieve type from URL
+	        const urlParams = new URLSearchParams(window.location.search);
+	        const urlType = urlParams.get("type");
+	        const type = urlType || "";
+
+	        // ✅ Build FormData
 	        const formData = new FormData();
 	        formData.append("asondate", asondate);
 	        formData.append("type", type);
 
+	        // ✅ Append all input fields to FormData
 	        $('#fileupload').find(':input').each(function () {
 	            const name = $(this).attr('name');
 	            if (name) {
@@ -893,23 +900,28 @@ $(document).ready(function() {
 	            }
 	        });
 
-	        // ✅ Step 5: AJAX submission
+	        // ✅ Choose endpoint based on type
+	        let apiUrl = './M_SRWA_12Cupdate';
+	        if (urlType && urlType.toUpperCase() === 'RESUB') {
+	            apiUrl = './UpdateM_SRWA_12C_ReSub';
+	        }
+
+	        // ✅ Send AJAX request
 	        $.ajax({
-	            url: './M_SRWA_12CupdateAll',
+	            url: apiUrl,
 	            type: 'POST',
 	            data: formData,
 	            processData: false,
 	            contentType: false,
 	            dataType: 'text',
-	            success: function () {
+	            success: function (response) {
 	                $("#resultModalLabel").text("BRRS");
-	                $("#resultModalBody").text(" Updated Successfully.");
+	                $("#resultModalBody").text(response);
 	                $("#resultModal").modal("show");
 	            },
 	            error: function (jqXHR) {
-	                console.error("Error response:", jqXHR.responseText);
 	                $("#resultModalLabel").text("Error");
-	                $("#resultModalBody").text("Update failed. Check console for details.");
+	                $("#resultModalBody").text("Update failed: " + jqXHR.responseText);
 	                $("#resultModal").modal("show");
 	            },
 	            complete: function () {
@@ -918,13 +930,11 @@ $(document).ready(function() {
 	        });
 
 	    } catch (error) {
-	        console.error("Error in fileuploads function:", error);
 	        $('#loader').modal('hide');
-	        $("#resultModalLabel").text("Error");
-	        $("#resultModalBody").text("Unexpected error occurred. Check console.");
-	        $("#resultModal").modal("show");
+	        console.error("Error during file upload:", error);
 	    }
 	}
+
 	</script>
 
 
@@ -1602,7 +1612,7 @@ $(document).ready(function() {
 </td>
 
 <!-- R20_RISK_MULTIPLIER -->
-<td id="R20_RISK_MULTIPLIER"
+<!-- <td id="R20_RISK_MULTIPLIER"
     style="font-weight: normal; text-align: center; padding-right:10px; padding-left:20px;">
     <input
         class="display-input Show_input"
@@ -1613,8 +1623,10 @@ $(document).ready(function() {
         style="background-color: #FFFFFF; width: 200px; height: 28px; 
                border-color: transparent; text-align: center; font-weight: normal;"
         readonly />
-</td>
+</td> -->
 
+<td style="text-align: center; font-weight: normal;" id="R20_RISK_MULTIPLIER"
+    th:text="'100%'">
 <!-- R20_RWA -->
 <td id="R20_RWA"
     style="font-weight: normal; text-align: right;  padding-right:10px; padding-left:20px;" class="green-cell">

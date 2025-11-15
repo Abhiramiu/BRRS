@@ -586,7 +586,7 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_M_SRWA_12C_ReportService BRRS_M_SRWA_12C_reportservice;
 
-	@RequestMapping(value = "/M_SRWA_12CupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/M_SRWA_12Cupdate", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
@@ -596,7 +596,7 @@ public class BRRS_ReportsController {
 			System.out.println("came to single controller");
 
 			// ✅ set the asondate into entity
-			request.setREPORT_DATE(asondate);
+			request.setReport_date(asondate);
 
 			// call services
 			BRRS_M_SRWA_12C_reportservice.updateReport(request);
@@ -607,6 +607,39 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+	
+	
+	
+	@RequestMapping(value = "/UpdateM_SRWA_12C_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_SRWA_12C_Summary_Entity request,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+				// Set the asondate into the entity
+				request.setReport_date(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+			}
+
+			// Call service to create a new versioned row
+			BRRS_M_SRWA_12C_reportservice.updateReportResub(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
+	}
+	
 
 	@Autowired
 	private BRRS_M_LA2_ReportService LA2reportService;
@@ -1440,6 +1473,36 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+	
+	@RequestMapping(value = "/UpdateQ_RLFA1_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute Q_RLFA1_Summary_Entity request,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+				// Set the asondate into the entity
+				request.setReport_date(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+			}
+
+			// Call service to create a new versioned row
+			brrs_q_rlfa1_reportservice.updateReportResub(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
+	}
 
 	@Autowired
 	BRRS_M_RPD_ReportService BRRS_M_RPD_ReportService;
@@ -1523,7 +1586,7 @@ public class BRRS_ReportsController {
 			System.out.println("came to single controller");
 
 			// ? set the asondate into entity
-			request.setREPORT_DATE(asondate);
+			request.setReport_date(asondate);
 
 			// call services
 			BRRS_Q_SMME_DEP_ReportService.updateReport(request);
@@ -1533,6 +1596,36 @@ public class BRRS_ReportsController {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/UpdateQ_SMME_DEP_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute Q_SMME_DEP_Summary_Entity request,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+				// Set the asondate into the entity
+				request.setReport_date(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+			}
+
+			// Call service to create a new versioned row
+			BRRS_Q_SMME_DEP_ReportService.updateReportResub(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
 		}
 	}
 
@@ -1562,6 +1655,39 @@ public class BRRS_ReportsController {
 		}
 	}
 
+
+	@RequestMapping(value = "/UpdateM_BOP_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_BOP_Summary_Entity request,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+				// Set the asondate into the entity
+				request.setReport_date(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+			}
+
+			// Call service to create a new versioned row
+			BRRS_M_BOP_ReportService.updateReportResub(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
+	}
+	
+	
+	
 	@Autowired
 	BRRS_M_SECA_ReportService BRRS_M_SECA_reportservice;
 
