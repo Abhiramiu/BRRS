@@ -225,52 +225,48 @@ PURPOSE		: Referance Code Master
 
 
 		function populateTable(data) {
-		    const tbody = $('#usertable tbody');
-		    const rowLabelSelect = $('#rowLabel');
-		    tbody.empty(); // Clear existing rows
-		    rowLabelSelect.empty(); // Clear old options
+			const tbody = $('#usertable tbody');
+			const rowLabelSelect = $('#rowLabel');
+			tbody.empty(); // Clear existing rows
+			rowLabelSelect.empty(); // Clear old options
 
-		    // Add default "Select" option first
-		    rowLabelSelect.append('<option value="">Select Row Label</option>');
+			// Add default "Select" option first
+			rowLabelSelect.append('<option value="">Select Row Label</option>');
 
-		    // Object to store mapping: reportLabel -> fieldDescription
-		    const labelToFieldDesc = {};
+			// Object to store mapping: reportLabel -> fieldDescription
+			const labelToFieldDesc = {};
 
-		    if (data && data.length > 0) {
-		        data.forEach((item, index) => {
-		            // Extract the row number from the reportLabel (e.g., R11, R12)
-		            const rowNumberMatch = item.reportLabel ? item.reportLabel.match(/R(\d+)/) : null;
-		            const rowNum = rowNumberMatch ? rowNumberMatch[1] : '';
+			if (data && data.length > 0) {
+				data.forEach((item, index) => {
+					// Append table rows
+					let tr = `<tr>
+			                <td>${item.srlNo || ''}</td>
+			                <td>${item.fieldDescription || ''}</td>
+			                <td>${item.reportLabel || ''}</td>
+			                <td>${item.header || ''}</td>
+			                <td>${item.remarks || ''}</td>
+			            </tr>`;
+					tbody.append(tr);
 
-		            // Append table rows
-		            let tr = `<tr>
-		                <td>${index + 1}</td>
-		                <td>${item.fieldDescription || ''}</td>
-		                <td>${item.reportLabel || ''}</td>
-		                <td>${item.header || ''}</td>
-		                <td>${item.remarks || ''}</td>
-		            </tr>`;
-		            tbody.append(tr);
+					// Populate <select> only if header is not 'Y' and reportLabel exists
+					if (item.header !== 'Y' && item.reportLabel) {
+						rowLabelSelect.append(
+							`<option value="${item.reportLabel}">${item.reportLabel}</option>`
+						);
 
-		            // Populate <select> only if header is not 'Y'
-		            if (item.header !== 'Y' && item.reportLabel) {
-		                rowLabelSelect.append(
-		                    `<option value="${item.reportLabel}">${item.reportLabel}</option>`
-		                );
+						// Store mapping
+						labelToFieldDesc[item.reportLabel] = item.fieldDescription || '';
+					}
+				});
+			} else {
+				tbody.append('<tr><td colspan="5">No data available for this report code.</td></tr>');
+			}
 
-		                // Store mapping
-		                labelToFieldDesc[item.reportLabel] = item.fieldDescription || '';
-		            }
-		        });
-		    } else {
-		        tbody.append('<tr><td colspan="5">No data available for this report code.</td></tr>');
-		    }
-
-		    // 🔹 When row label changes, update field description input
-		    rowLabelSelect.off('change').on('change', function () {
-		        const selectedLabel = $(this).val();
-		        $('#fieldDescription').val(labelToFieldDesc[selectedLabel] || '');
-		    });
+			// 🔹 When row label changes, update field description input
+			rowLabelSelect.off('change').on('change', function () {
+				const selectedLabel = $(this).val();
+				$('#fieldDescription').val(labelToFieldDesc[selectedLabel] || '');
+			});
 		}
 
 

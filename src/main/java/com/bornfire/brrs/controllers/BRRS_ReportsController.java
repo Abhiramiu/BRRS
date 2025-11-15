@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +44,6 @@ import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity4;
 import com.bornfire.brrs.entities.BRRS_M_LA4_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_LIQ_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity3;
@@ -77,7 +78,6 @@ import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity3;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity4;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity5;
-import com.bornfire.brrs.entities.M_LIQ_Detail_Entity;
 import com.bornfire.brrs.entities.M_LIQ_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_OB_Summary_Entity;
 import com.bornfire.brrs.entities.M_OPTR_Summary_Entity;
@@ -126,7 +126,6 @@ import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity2;
 import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity3;
 import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity4;
 import com.bornfire.brrs.entities.Q_RLFA1_Summary_Entity;
-import com.bornfire.brrs.entities.Q_RLFA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Q_RLFA2_Summary_Entity;
 import com.bornfire.brrs.entities.Q_SMME_DEP_Summary_Entity;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity1;
@@ -177,6 +176,7 @@ import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
 import com.bornfire.brrs.services.BRRS_M_TBS_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
+import com.bornfire.brrs.services.ReportCodeMappingService;
 
 @Controller
 @ConfigurationProperties("default")
@@ -207,6 +207,9 @@ public class BRRS_ReportsController {
 
 	@Autowired
 	private BRRS_M_PLL_ReportService brrsMpllReportService;
+
+	@Autowired
+	private ReportCodeMappingService reportCodeMappingService;
 
 	private String pagesize;
 
@@ -762,6 +765,7 @@ public class BRRS_ReportsController {
 	
 	
 	
+	
 	@RequestMapping(value = "/UpdateM_CA4_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
@@ -820,13 +824,32 @@ public class BRRS_ReportsController {
 	@Autowired
 	private RegulatoryReportServices regulatoryReportServices;
 
-	@RequestMapping(value = "/getReportDataByCode", method = RequestMethod.GET)
+/*	@RequestMapping(value = "/getReportDataByCode", method = RequestMethod.GET)
 	@ResponseBody
 	public List<ReportLineItemDTO> getReportDataByCode(@RequestParam("reportCode") String reportCode) throws Exception {
 
 		System.out.println("Controller received request for report code = " + reportCode);
 
 		return regulatoryReportServices.getReportDataByCode(reportCode);
+	}
+*/
+	
+	@GetMapping("/getReportDataByCode")
+	@ResponseBody
+	public List<ReportLineItemDTO> getReportDataByCode(@RequestParam("reportCode") String reportCode) {
+		System.out.println("Controller received request for report code: " + reportCode);
+		System.out.println("reportCodeMappingService object: " + reportCodeMappingService);
+
+		try {
+			List<ReportLineItemDTO> data = reportCodeMappingService.getReportDataByCode(reportCode);
+			System.out.println("Service call succeeded, records fetched: " + data.size());
+			return data;
+		} catch (Exception e) {
+			System.err.println("Error fetching report data for " + reportCode + ": " + e.getMessage());
+			return Collections.emptyList();
+		} finally {
+			System.out.println("Controller finished processing request for report code: " + reportCode);
+		}
 	}
 
 	@Autowired
