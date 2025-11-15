@@ -1617,8 +1617,8 @@ public class BRRS_M_SFINP2_ReportService {
 			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
 			return bos.toByteArray();
 		} catch (Exception e) {
-			logger.error("Error generating BRRS_M_SFINP2 Excel", e);
-			return new byte[0];
+			 logger.error("Error generating BRRS_M_SFINP2 Excel", e);
+		     return null;  // important
 		}
 	}
 

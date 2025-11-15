@@ -1915,7 +1915,9 @@ public class RegulatoryReportServices {
 
 		if (fileData == null) {
 			// logger.warn("Excel generation failed or no data for jobId: {}", jobId);
-			jobStorage.put(jobId, null);
+			// store error flag
+            jobStorage.put(jobId, new byte[0]);  
+            
 		} else {
 			jobStorage.put(jobId, fileData);
 		}

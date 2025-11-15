@@ -424,10 +424,16 @@ public class BRRS_ReportsController {
 	public ResponseEntity<String> checkReport(@RequestParam String jobId) {
 		byte[] report = regreportServices.getReport(jobId);
 		// System.out.println("Report generation completed for: " + jobId);
-		if (report == null) {
-			return ResponseEntity.ok("PROCESSING");
-		}
-		return ResponseEntity.ok("READY");
+	    if (report == null) {
+	        return ResponseEntity.ok("PROCESSING");
+	    }
+	    if (report.length == 0) {
+	        return ResponseEntity.ok("ERROR");
+	    }
+
+	    return ResponseEntity.ok("READY");
+
+		
 	}
 
 	@RequestMapping(value = "/AIDPupdateAll", method = { RequestMethod.GET, RequestMethod.POST })

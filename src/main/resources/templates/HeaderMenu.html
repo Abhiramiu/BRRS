@@ -1026,20 +1026,26 @@
 				fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
 					.then(res => res.text())
 					.then(status => {
-						if (status === "READY") {
-							alertMsg.innerHTML = 'Report is ready! Downloading...';
-							showAlert();
-							const filename = sessionStorage.getItem("filename");
-							downloadDetailfiles(jobId, filename)
-							sessionStorage.removeItem("jobId");
-							sessionStorage.removeItem("filename");
-						} else {
+    if (status === "READY") {
+        alertMsg.innerHTML = 'Report is ready! Downloading...';
+        showAlert();
+        downloadDetailfiles(jobId, filename);
+        sessionStorage.removeItem("jobId");
+        sessionStorage.removeItem("filename");
+    } 
+    else if (status === "ERROR") {
+        alertMsg.innerHTML = 'Error occurred. Contact administration.';
+        showAlert();
+        sessionStorage.removeItem("jobId");
+        sessionStorage.removeItem("filename");
+    }
+    else {
+        alertMsg.innerHTML = 'Download Is Processing…';
+        showAlert();
+        setTimeout(checkReport, 6000);
+    }
+})
 
-							alertMsg.innerHTML = 'Download Is Processing…';
-							showAlert();
-							setTimeout(checkReport, 6000);  // ✅ keeps retrying on every page
-						}
-					})
 					.catch(err => {
 						console.error("Error checking report:", err);
 						alertMsg.innerHTML = 'Error checking report:' + err;
