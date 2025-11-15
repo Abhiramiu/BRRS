@@ -1313,19 +1313,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		
-
-		case "M_CA5":
-			try {
-				archivalData = BRRS_M_CA5_reportservice.getM_CA5Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-
-		
-
+	
 			
 		case "M_CR":
 			try {
@@ -1734,6 +1722,11 @@ public class RegulatoryReportServices {
 		            System.out.println("Fetched M_SECL archival data: " + seclList.size());
 		            break;
 
+			 case "M_CA5":
+		            List<Object[]> ca5List = BRRS_M_CA5_reportservice.getM_CA5Archival();
+		            archivalData.addAll(ca5List);
+		            System.out.println("Fetched M_CA6 archival data: " + ca5List.size());
+		            break;
 		            
 			 case "M_CA7":
 		            List<Object[]> CA7List = BRRS_M_CA7_reportservice.getM_CA7Archival();
@@ -2252,6 +2245,17 @@ public List<Object[]> getResub(String rptcode) {
 				 case "M_INT_RATES_FCA":
 			            try {
 			                List<Object[]> resubList = brrs_m_int_rates_fca_reportservice.getM_INT_RATES_FCAResub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_INT_RATES_FCA: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			            break; 
+			            
+				 case "M_CA5":
+			            try {
+			                List<Object[]> resubList = BRRS_M_CA5_reportservice.getM_CA5Resub();
 			                resubmissionData.addAll(resubList);
 			                System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
 			            } catch (Exception e) {

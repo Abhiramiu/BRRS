@@ -717,6 +717,28 @@ function cancelModify() {
 	// It hides the result and loader modals and reloads the page.
 	// Convert any dd/MM/yyyy string to yyyy-MM-dd
 	
+		// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+function closemodel() {
+	/*    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
+    setTimeout(function () {
+        location.reload();
+        }, 300);*/
+        $("#resultModal").modal("hide");
+        $('#loader').modal('hide');
+
+        // Only reload if not from Details modal
+        if (!isDetailsModal) {
+            setTimeout(function () {
+                location.reload();
+            }, 300);
+        } else {
+            // reset flag for next modal usage
+            isDetailsModal = false;
+        }
+}
+	
 	
 	
 	// Convert any dd/MM/yyyy string to yyyy-MM-dd
@@ -735,7 +757,7 @@ function cancelModify() {
 	
 	function fileuploads(btn) {
 	    const asondate = btn.getAttribute("data-todate");
-	    $('#loader').modal('show');
+	    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 
 	    // ✅ Step 1: Calculate TOTALs
 	    calculateR28AMOUNT();
@@ -744,68 +766,80 @@ function cancelModify() {
 	    calculateDerecognisedTotal();
 	     
 
-	    // ✅ Step 2: Remove commas from inputs
+	    // Remove commas from numeric inputs
 	    $("#fileupload input[type='text']").each(function () {
-	        $(this).val($(this).val().replace(/,/g, ''));
+	        var val = $(this).val();
+	        if (val && val.includes(",")) {
+	            $(this).val(val.replace(/,/g, ''));
+	        }
 	    });
 
-	    // ✅ Step 3: Validate form
 	    if (!$("#fileupload").valid()) {
 	        $('#loader').modal('hide');
 	        return;
 	    }
 
-	    // ✅ Step 4: Build one FormData object for all entities
+	    // ✅ One combined FormData for all entities
 	    const formData = new FormData();
 	    formData.append("asondate", asondate);
-
-	    // Append all inputs
-	    $('#fileupload').find(':input').each(function () {
-	        const name = $(this).attr('name');
-	        if (name) {
-	            formData.append(name, $(this).val());
-	        }
-	    });
+	    formData.append("type", type);
 	    
-	 // handle all date fields
-	    $('#fileupload input[type="date"], #fileupload input.date-field').each(function() {
-	        const name = $(this).attr('name');
-	        let val = convertDateToISO($(this).val());
-	        if (name && val.trim()) formData.append(name, val);
-	    });
 
-	    // ✅ Step 5: Send single Ajax request
+	    // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
+	    //const selectedType = $("#SRWA_12GType").val(); // Get from dropdown
+	    //formData.append("type", selectedType);
+	    //console.log("Selected type:", selectedType);
+
+	    // --- Entity fields (R10-R17) ---
+	    for (let i = 14; i <= 149; i++) {
+	        ["line_no",
+	            "note_holders",
+	            "name_of_instrument_programe",
+	            "issuing_entity_if_issued_throughan_spv",
+	            "issuance_date",
+	            "contractual_maturity_date",
+	            "effective_maturity_date_if_date",
+	            "amount",
+	            "amount_derecognised_p000",
+	            "total_p000"].forEach(field => {
+	            const input = $("#r" + i + "_" + field);
+	            if (input.length) {
+	                formData.append(input.attr("name"), input.val());
+	            }
+	        });
+	    }console.log("✅ Entity executed successfully");
+
+
+		//Select API endpoint dynamically
+		let apiUrl = './CA5updateAll'; // normal update
+		if (type && type.toUpperCase() === 'RESUB') {
+			apiUrl = './UpdateM_CA5_ReSub'; // Resubmission endpoint
+		}
+
+	    // ✅ Single AJAX call with type info
 	    $.ajax({
-	        url: './CA5updateAll',
+	        url: apiUrl,
 	        type: 'POST',
 	        data: formData,
 	        processData: false,
 	        contentType: false,
 	        dataType: 'text',
-			success: function (response) {
-			    $("#resultModalLabel").text("BRRS");
-			    $("#resultModalBody").text(response || "Updated successfully.");
-			    $("#resultModal").modal("show");
-
-			    // ✅ Reload page when modal closes
-			    $('#resultModal').on('hidden.bs.modal', function () {
-			        location.reload();
-			    });
-			},
-			error: function (jqXHR) {
-			    console.error("Error response:", jqXHR.responseText);
-			    $("#resultModalLabel").text("Error");
-			    $("#resultModalBody").text("Update failed. Check console for details.");
-			    $("#resultModal").modal("show");
-			},
-			complete: function () {
-			    $('#loader').modal('hide');
-			}
-
+	        success: function (response) {
+	            $("#resultModalLabel").text("BRRS");
+	            $("#resultModalBody").text(response);
+	            $("#resultModal").modal("show");
+	        },
+	        error: function (jqXHR) {
+	            console.log("Error response:", jqXHR.responseText);
+	            $("#resultModalLabel").text("Error");
+	            $("#resultModalBody").text("Update failed. Check console for details.");
+	            $("#resultModal").modal("show");
+	        },
+	        complete: function () {
+	            $('#loader').modal('hide');
+	        }
 	    });
 	}
-
-
 
 
 
@@ -837,6 +871,7 @@ function cancelModify() {
 						<span class="white-text"
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
+						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
@@ -844,14 +879,14 @@ function cancelModify() {
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
 						
-<!-- Modify button -->
-<!-- Modify button -->
-<button type="button" class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"
-		th:if="${type != 'ARCHIVAL'}"
-       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-        id="addRecord">Modify</button>
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
+							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+							id="addRecord">
+							Modify
+						</button>
         
         
 <!-- Cancel button (hidden initially) -->
@@ -889,6 +924,7 @@ function cancelModify() {
 								  ">
 							<i class="fa fa-download"></i>
 						</button>
+
 
                      </div>
 					</div>
@@ -12878,37 +12914,34 @@ function cancelModify() {
 
 	
 
-
-
 </tbody>	
 										
 </table>
-									
-
-
-							</div>
-   						</div>
-	<div style="text-align: center;background-color:white;">
 								
-    <button id="submitButton" 
+
+
+</div>
+							<div style="text-align: center; margin-top: 10px;">
+								
+   <button id="submitButton" 
             type="button"
-            class="custom-tab-btn Show_inputt" 
-            form="fileupload"
-            th:attr="data-todate=${asondate}" 
+            class="custom-tab-btn Show_input" 
+            form="fileupload" 
+            th:attr="data-todate=${asondate}, data-type=${type}"
             onclick="fileuploads(this);" 
-            style="display: none; margin:10px;">
+            style="display: none;">
         Submit
     </button>
+    
 </div>
 							</form>
-							</div>
-							</div>
+						</div>
 					</div>
 				</div>
 				
 			</div>
 		</div>
-	
+	</div>
 	
 	
 	<!-- Custom Cellresult Modal -->
@@ -13102,38 +13135,32 @@ function cancelModify() {
 
 
 
+					
+					
+					
+					
+					
+					
+					
+					
+					
 
 
-
-
-
-    
-    
-
-
-	
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-									
+				
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+							
