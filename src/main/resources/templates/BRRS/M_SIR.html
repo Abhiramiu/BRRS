@@ -1052,37 +1052,38 @@ $(document).ready(function(){
 									    ">
 									  Line
 									</th>
-													       <th rowspan="4" class="line-col" style="vertical-align: bottom; text-align: left; padding-left: 20px;background-color: #D8D8D8;"></th>													       
-													       <th colspan="9"style=" text-align: center;background-color: #D8D8D8;font-weight: bold;">Remaining Maturities</th>
-													     </tr>
-													     <tr>
-														
-													       <th colspan="3"  style="text-align: center;background-color: #D8D8D8;font-weight:normal;">&le; 6 months</th>
-													       <th colspan="3" style="text-align: center;background-color: #D8D8D8;font-weight:normal;">&gt; 6 months – 24 months</th>
-													       <th colspan="3" style="text-align: center;background-color: #D8D8D8;font-weight:normal;">&gt; 24 months</th>
-													     </tr>
-														<tr>
-														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;"></th>
-														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
-														 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
-														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;"></th>
-														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
-														 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
-														 	<th style="text-align: center;background-color: #D8D8D8;"></th>
-														 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
-														 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
-														 </tr>
-													     <tr>
-													       <th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Amount</th>
-													       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Charge</th>
-													       <th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Charge</th>
-													       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Amount</th>
-													       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Charge</th>
-													       <th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Charge</th>
-													       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Amount</th>
-													       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Charge</th>
-													       <th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Charge</th>
-												   		</tr>
+									<th rowspan="4" class="line-col" style="vertical-align: bottom; text-align: left; padding-left: 20px;background-color: #D8D8D8;"></th>													       
+																						       <th colspan="9"style=" text-align: center;background-color: #D8D8D8;font-weight: bold;">Remaining Maturities</th>
+																						     </tr>
+																						     <tr>
+																							
+																						       <th colspan="3"  style="text-align: center;background-color: #D8D8D8;font-weight:normal;">&le; 6 months</th>
+																						       <th colspan="3" style="text-align: center;background-color: #D8D8D8;font-weight:normal;">&gt; 6 months – 24 months</th>
+																						       <th colspan="3" style="text-align: center;background-color: #D8D8D8;font-weight:normal;">&gt; 24 months</th>
+																						     </tr>
+																							<tr>
+																							 	<th rowspan = "2" style="text-align: right;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
+																								           vertical-align: bottom;">Amount</th>
+																							 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
+																							 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
+																								<th rowspan = "2" style="text-align: right;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
+																								          vertical-align: bottom;">Amount</th>
+																							 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
+																							 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
+																								<th rowspan = "2" style="text-align: right;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
+																										vertical-align: bottom;">Amount</th>
+																							 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
+																							 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
+																							 </tr>
+																						     <tr>
+																						 
+																						       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Charge</th>
+																						       <th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Charge</th>
+																						       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Charge</th>
+																						       <th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Charge</th>
+																						       <th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Charge</th>
+																						       <th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Charge</th>
+																					   		</tr>
 												  
 						    </thead>
 
@@ -2420,7 +2421,7 @@ $(document).ready(function(){
 									         th:value="${report.r24_amt_6m != null ? #numbers.formatDecimal(report.r24_amt_6m,0,'COMMA',0,'POINT'):'0'}"
 									         id="r24_amt_6m"
 									         name="r24_amt_6m"
-									         style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
+									         style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
 									         readonly />
 									</td>
 
@@ -2450,7 +2451,7 @@ $(document).ready(function(){
 									           th:value="${report.r24_amt_6to24m != null ? #numbers.formatDecimal(report.r24_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
 									           id="r24_amt_6to24m"
 									           name="r24_amt_6to24m"
-									           style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
+									           style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
 									           readonly />
 									  </td>
 									  
@@ -2480,7 +2481,7 @@ $(document).ready(function(){
 									                 th:value="${report.r24_amt_gt24m != null ? #numbers.formatDecimal(report.r24_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
 									                 id="r24_amt_gt24m"
 									                 name="r24_amt_gt24m"
-									                 style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
+									                 style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
 									                 readonly />
 									        </td>
 
@@ -2533,7 +2534,7 @@ $(document).ready(function(){
 										         th:value="${report.r25_amt_6m != null ? #numbers.formatDecimal(report.r25_amt_6m,0,'COMMA',0,'POINT'):'0'}"
 										         id="r25_amt_6m"
 										         name="r25_amt_6m"
-										         style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
+										         style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
 										         readonly />
 										</td>
 
@@ -2563,7 +2564,7 @@ $(document).ready(function(){
 										           th:value="${report.r25_amt_6to24m != null ? #numbers.formatDecimal(report.r25_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
 										           id="r25_amt_6to24m"
 										           name="r25_amt_6to24m"
-										           style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
+										           style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
 										           readonly />
 										  </td>
 										  
@@ -2593,7 +2594,7 @@ $(document).ready(function(){
 										                 th:value="${report.r25_amt_gt24m != null ? #numbers.formatDecimal(report.r25_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
 										                 id="r25_amt_gt24m"
 										                 name="r25_amt_gt24m"
-										                 style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
+										                 style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
 										                 readonly />
 										        </td>
 
@@ -2645,7 +2646,7 @@ $(document).ready(function(){
 											         th:value="${report.r26_amt_6m != null ? #numbers.formatDecimal(report.r26_amt_6m,0,'COMMA',0,'POINT'):'0'}"
 											         id="r26_amt_6m"
 											         name="r26_amt_6m"
-											         style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
+											         style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
 											         readonly />
 											</td>
 
@@ -2675,7 +2676,7 @@ $(document).ready(function(){
 											           th:value="${report.r26_amt_6to24m != null ? #numbers.formatDecimal(report.r26_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
 											           id="r26_amt_6to24m"
 											           name="r26_amt_6to24m"
-											           style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
+											           style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
 											           readonly />
 											  </td>
 											  
@@ -2705,7 +2706,7 @@ $(document).ready(function(){
 											                 th:value="${report.r26_amt_gt24m != null ? #numbers.formatDecimal(report.r26_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
 											                 id="r26_amt_gt24m"
 											                 name="r26_amt_gt24m"
-											                 style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
+											                 style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
 											                 readonly />
 											        </td>
 
@@ -2759,7 +2760,7 @@ $(document).ready(function(){
 										           th:value="${report.r27_amt_6m != null ? #numbers.formatDecimal(report.r27_amt_6m,0,'COMMA',0,'POINT'):'0'}"
 										           id="r27_amt_6m"
 										           name="r27_amt_6m"
-										           style="background-color:rgb(107, 122, 143);width:200px;height:28px;border-color:transparent;text-align:right;"
+										           style="background-color:rgb(107, 122, 143);width:200px;height:38px;border-color:transparent;text-align:right;"
 										           readonly />
 										  </td>
 
@@ -2783,7 +2784,7 @@ $(document).ready(function(){
 										             th:value="${report.r27_amt_6to24m != null ? #numbers.formatDecimal(report.r27_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
 										             id="r27_amt_6to24m"
 										             name="r27_amt_6to24m"
-										             style="background-color:rgb(107, 122, 143);width:200px;height:28px;border-color:transparent;text-align:right;"
+										             style="background-color:rgb(107, 122, 143);width:200px;height:38px;border-color:transparent;text-align:right;"
 										             readonly />
 										    </td>
 											
@@ -2807,7 +2808,7 @@ $(document).ready(function(){
 												           th:value="${report.r27_amt_gt24m != null ? #numbers.formatDecimal(report.r27_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
 												           id="r27_amt_gt24m"
 												           name="r27_amt_gt24m"
-												           style="background-color:rgb(107, 122, 143);width:200px;height:28px;border-color:transparent;text-align:right;"
+												           style="background-color:rgb(107, 122, 143);width:200px;height:38px;border-color:transparent;text-align:right;"
 												           readonly />
 												  </td>
 
