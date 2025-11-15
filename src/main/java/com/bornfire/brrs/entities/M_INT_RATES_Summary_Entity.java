@@ -1,19 +1,44 @@
+
 package com.bornfire.brrs.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.math.BigDecimal;
+
 @Entity
 @Table(name = "BRRS_M_INT_RATES_SUMMARYTABLE")
 public class M_INT_RATES_Summary_Entity {
+	
+	
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
+	
+	//@Column(name = "REPORT_RESUBDATE")
+	//@Temporal(TemporalType.TIMESTAMP)
+	//private Date reportResubDate;
+	
+	public String report_frequency;
+	public String report_code;
+	public String report_desc;
+	public String entity_flg;
+	public String modify_flg;
+	public String del_flg;
 
 	private String R11_LENDING;
 	private BigDecimal R11_NOMINAL_INTEREST_RATE;
@@ -81,8 +106,8 @@ public class M_INT_RATES_Summary_Entity {
 	private BigDecimal R23_VOLUME;
 
 	private String R24_LENDING;
-	private String R24_NOMINAL_INTEREST_RATE;   // text output: "min - max"
-	private String R24_AVG_EFFECTIVE_RATE;  // numeric only
+	private BigDecimal R24_NOMINAL_INTEREST_RATE;   // text output: "min - max"
+	private BigDecimal R24_AVG_EFFECTIVE_RATE;  // numeric only
 	private BigDecimal R24_VOLUME;              // numeric only
 
 
@@ -175,18 +200,54 @@ public class M_INT_RATES_Summary_Entity {
 	private BigDecimal R42_NOMINAL_INTEREST_RATE;
 	private BigDecimal R42_AVG_EFFECTIVE_RATE;
 	private BigDecimal R42_VOLUME;
-	
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Id
-	private Date report_date;
-	private String report_version;
-	private String report_frequency;
-	private String report_code;
-	private String report_desc;
-	private String entity_flg;
-	private String modify_flg;
-	private String del_flg;
+	public Date getReportDate() {
+		return reportDate;
+	}
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+	public String getReportVersion() {
+		return reportVersion;
+	}
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+	public String getReport_code() {
+		return report_code;
+	}
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+	public String getReport_desc() {
+		return report_desc;
+	}
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+	public String getModify_flg() {
+		return modify_flg;
+	}
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+	public String getDel_flg() {
+		return del_flg;
+	}
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
 	public String getR11_LENDING() {
 		return R11_LENDING;
 	}
@@ -505,16 +566,16 @@ public class M_INT_RATES_Summary_Entity {
 	public void setR24_LENDING(String r24_LENDING) {
 		R24_LENDING = r24_LENDING;
 	}
-	public String getR24_NOMINAL_INTEREST_RATE() {
+	public BigDecimal getR24_NOMINAL_INTEREST_RATE() {
 		return R24_NOMINAL_INTEREST_RATE;
 	}
-	public void setR24_NOMINAL_INTEREST_RATE(String r24_NOMINAL_INTEREST_RATE) {
+	public void setR24_NOMINAL_INTEREST_RATE(BigDecimal r24_NOMINAL_INTEREST_RATE) {
 		R24_NOMINAL_INTEREST_RATE = r24_NOMINAL_INTEREST_RATE;
 	}
-	public String getR24_AVG_EFFECTIVE_RATE() {
+	public BigDecimal getR24_AVG_EFFECTIVE_RATE() {
 		return R24_AVG_EFFECTIVE_RATE;
 	}
-	public void setR24_AVG_EFFECTIVE_RATE(String r24_AVG_EFFECTIVE_RATE) {
+	public void setR24_AVG_EFFECTIVE_RATE(BigDecimal r24_AVG_EFFECTIVE_RATE) {
 		R24_AVG_EFFECTIVE_RATE = r24_AVG_EFFECTIVE_RATE;
 	}
 	public BigDecimal getR24_VOLUME() {
@@ -955,58 +1016,13 @@ public class M_INT_RATES_Summary_Entity {
 	public void setR42_VOLUME(BigDecimal r42_VOLUME) {
 		R42_VOLUME = r42_VOLUME;
 	}
-	public Date getReport_date() {
-		return report_date;
-	}
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
-	}
-	public String getReport_version() {
-		return report_version;
-	}
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
-	}
-	public String getReport_frequency() {
-		return report_frequency;
-	}
-	public void setReport_frequency(String report_frequency) {
-		this.report_frequency = report_frequency;
-	}
-	public String getReport_code() {
-		return report_code;
-	}
-	public void setReport_code(String report_code) {
-		this.report_code = report_code;
-	}
-	public String getReport_desc() {
-		return report_desc;
-	}
-	public void setReport_desc(String report_desc) {
-		this.report_desc = report_desc;
-	}
-	public String getEntity_flg() {
-		return entity_flg;
-	}
-	public void setEntity_flg(String entity_flg) {
-		this.entity_flg = entity_flg;
-	}
-	public String getModify_flg() {
-		return modify_flg;
-	}
-	public void setModify_flg(String modify_flg) {
-		this.modify_flg = modify_flg;
-	}
-	public String getDel_flg() {
-		return del_flg;
-	}
-	public void setDel_flg(String del_flg) {
-		this.del_flg = del_flg;
-	}
 	public M_INT_RATES_Summary_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+	
 	
 	
 	

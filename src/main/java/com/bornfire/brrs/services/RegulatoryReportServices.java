@@ -1345,14 +1345,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_INT_RATES":
-			try {
-				archivalData = brrs_m_int_rates_reportservice.getM_INTRATESArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
 
 		case "M_SP":
 			try {
@@ -1689,6 +1681,7 @@ public class RegulatoryReportServices {
 				archivalData.addAll(LAList);
 				System.out.println("Fetched M_LARADV archival data: " + LAList.size());
 				break;
+				
 				case "M_GP":
 				List<Object[]> GPList = BRRS_M_GP_ReportService.getM_GPArchival();
 				archivalData.addAll(GPList);
@@ -1746,7 +1739,7 @@ public class RegulatoryReportServices {
 		            archivalData.addAll(srwafList);
 		            System.out.println("Fetched M_SRWA_12F archival data: " + srwafList.size());
 		            break;
-		            
+
 		            
 			 case "M_CA7":
 		            List<Object[]> CA7List = BRRS_M_CA7_reportservice.getM_CA7Archival();
@@ -1801,6 +1794,19 @@ public class RegulatoryReportServices {
 			// 		e.printStackTrace();
 			// 	}
 			// 	break;
+
+
+		            
+			 case "M_INT_RATES":
+		            List<Object[]> intratesList = brrs_m_int_rates_reportservice.getM_INTRATESArchival();
+		            archivalData.addAll(intratesList);
+		            System.out.println("Fetched M_INT_RATES archival data: " + intratesList.size());
+		            break;
+		            
+		 
+
+			
+
 				
 				
 
@@ -2089,6 +2095,17 @@ public List<Object[]> getResub(String rptcode) {
 					System.out.println("Resubmission data fetched for M_SRWA_12F: " + resubList.size());
 				} catch (Exception e) {
 					System.err.println("Error fetching resubmission data for M_SRWA_12F: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+				
+			case "M_INT_RATES":
+				try {
+					List<Object[]> resubList = brrs_m_int_rates_reportservice.getM_INTRATESResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_INT_RATES: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_INT_RATES: " + e.getMessage());
 					e.printStackTrace();
 				}
 				break;
