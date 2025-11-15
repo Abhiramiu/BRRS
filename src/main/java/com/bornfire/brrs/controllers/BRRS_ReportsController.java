@@ -1225,7 +1225,7 @@ public class BRRS_ReportsController {
 			System.out.println("Came to single controller");
 			System.out.println(type);
 			// set date into all 4 entities
-			request1.setReport_date(asondate);
+			request1.setReportDate(asondate);
 
 			if (type.equals("ARCHIVAL")) {
 				M_SIR_Archival_Summary_Entity Archivalrequest1 = new M_SIR_Archival_Summary_Entity();
@@ -2428,9 +2428,12 @@ public ResponseEntity<String> updateReportReSubAll(
 @RequestMapping(value = "/UpdateM_CA6_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 @ResponseBody
 public ResponseEntity<String> updateReportReSub(
-		@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-		@ModelAttribute M_CA6_Summary_Entity1 request1,
-		@ModelAttribute M_CA6_Summary_Entity2 request2,
+		
+		
+
+		@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date asondate, // ✅ ISO format
+		@RequestParam(required = false) String type, @ModelAttribute M_CA6_Summary_Entity2 request1,
+		@ModelAttribute M_CA6_Summary_Entity1 request2,
 		HttpServletRequest req) {
 
 	try {
@@ -2443,8 +2446,7 @@ public ResponseEntity<String> updateReportReSub(
 		}
 
 		// Call service
-		BRRS_M_CA6_ReportService.updateReportReSub(request1, request2);
-
+		BRRS_M_CA6_ReportService.updateReportReSub(request2, request1);
 		return ResponseEntity.ok("Resubmission Updated Successfully");
 
 	} catch (Exception e) {
@@ -2452,6 +2454,36 @@ public ResponseEntity<String> updateReportReSub(
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body("M_CA6 Resubmission Update Failed: " + e.getMessage());
 	}
+}
+
+@RequestMapping(value = "/UpdateM_SIR_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateReportReSub(
+	@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	@ModelAttribute M_SIR_Summary_Entity request,
+	HttpServletRequest req) {
+
+try {
+	System.out.println("Came to Resub Controller");
+
+	if (asondate != null) {
+		// Set the asondate into the entity
+		request.setReportDate(asondate);
+		System.out.println("Set Report Date: " + asondate);
+	} else {
+		System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+	}
+
+	// Call service to create a new versioned row
+	BRRS_M_SIR_ReportService.updateReportReSub(request);
+
+	return ResponseEntity.ok("Resubmission Updated Successfully");
+
+} catch (Exception e) {
+	e.printStackTrace();
+	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			.body("Resubmission Update Failed: " + e.getMessage());
+}
 }
 
 }

@@ -49,18 +49,12 @@ import com.bornfire.brrs.entities.M_CA6_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Detail_Repo;
 import com.bornfire.brrs.entities.M_CA6_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA6_Summary_Entity2;
-import com.bornfire.brrs.entities.M_GP_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_IS_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_IS_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_IS_Summary_Entity1;
-import com.bornfire.brrs.entities.M_IS_Summary_Entity2;
 import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Archival_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Archival_Summary_Repo1;
-import java.math.BigDecimal;
 
 @Component
 @Service
@@ -152,7 +146,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA6_ReportSe
 	            mv.addObject("error", "Invalid date format for: " + todate);
 	        } catch (Exception e) {
 	            e.printStackTrace();
-	            mv.addObject("error", "An error occurred while fetching M_IS data.");
+	            mv.addObject("error", "An error occurred while fetching M_CA6 data.");
 	        }
 
 	        return mv;

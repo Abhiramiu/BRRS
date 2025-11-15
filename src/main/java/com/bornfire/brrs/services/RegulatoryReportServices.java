@@ -1569,15 +1569,11 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
-		case "M_SIR":
-			try {
-				archivalData = BRRS_M_SIR_ReportService.getM_SIRArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		/*
+		 * case "M_SIR": try { archivalData =
+		 * BRRS_M_SIR_ReportService.getM_SIRArchival(); } catch (Exception e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } break;
+		 */
 
 		/*
 		 * case "M_EPR": try { archivalData =
@@ -1783,7 +1779,11 @@ public class RegulatoryReportServices {
 	            System.out.println("Fetched Q_SMME_DEP archival data: " + MSRWA12CList.size());
 	            break;
 
-
+		 case "M_SIR":
+	            List<Object[]> SIRList = BRRS_M_SIR_ReportService.getM_SIRArchival();
+	            archivalData.addAll(SIRList);
+	            System.out.println("Fetched M_SIR archival data: " + SIRList.size());
+	            break;
 
 
 			// case "M_GP":
@@ -2339,6 +2339,20 @@ public List<Object[]> getResub(String rptcode) {
 			                System.err.println("Error fetching resubmission data for M_SRWA_12C: " + e.getMessage());
 			                e.printStackTrace();
 			            }
+			            break;
+			            
+			            
+				  case "M_SIR":
+			            try {
+			                List<Object[]> resubList = BRRS_M_SIR_ReportService.getM_SIRResub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for SIR: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_SIR: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			         
+			            
 			            break;
 
 

@@ -3,6 +3,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -279,11 +280,15 @@ public class M_SIR_Summary_Entity {
     private BigDecimal r33_capital_gt24m;
     // ================= R35 =================
     private BigDecimal r35_tot_spec_risk_ch;
-     @Temporal(TemporalType.DATE)
+
+	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
-    private Date report_date;
-    private String report_version;
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
     private String report_frequency;
     private String report_code;
     private String report_desc;
@@ -1617,17 +1622,17 @@ public class M_SIR_Summary_Entity {
 	public void setR35_tot_spec_risk_ch(BigDecimal r35_tot_spec_risk_ch) {
 		this.r35_tot_spec_risk_ch = r35_tot_spec_risk_ch;
 	}
-	public Date getReport_date() {
-		return report_date;
+	public Date getReportDate() {
+		return reportDate;
 	}
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
-	public String getReport_version() {
-		return report_version;
+	public String getReportVersion() {
+		return reportVersion;
 	}
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 	public String getReport_frequency() {
 		return report_frequency;
@@ -1663,306 +1668,6 @@ public class M_SIR_Summary_Entity {
 		return del_flg;
 	}
 	public void setDel_flg(String del_flg) {
-		this.del_flg = del_flg;
-	}
-	public M_SIR_Summary_Entity(String r12_product, BigDecimal r12_amt_6m, BigDecimal r12_risk_6m,
-			BigDecimal r12_capital_6m, BigDecimal r12_amt_6to24m, BigDecimal r12_risk_6to24m,
-			BigDecimal r12_capital_6to24m, BigDecimal r12_amt_gt24m, BigDecimal r12_risk_gt24m,
-			BigDecimal r12_capital_gt24m, String r13_product, BigDecimal r13_amt_6m, BigDecimal r13_risk_6m,
-			BigDecimal r13_capital_6m, BigDecimal r13_amt_6to24m, BigDecimal r13_risk_6to24m,
-			BigDecimal r13_capital_6to24m, BigDecimal r13_amt_gt24m, BigDecimal r13_risk_gt24m,
-			BigDecimal r13_capital_gt24m, String r14_product, BigDecimal r14_amt_6m, BigDecimal r14_risk_6m,
-			BigDecimal r14_capital_6m, BigDecimal r14_amt_6to24m, BigDecimal r14_risk_6to24m,
-			BigDecimal r14_capital_6to24m, BigDecimal r14_amt_gt24m, BigDecimal r14_risk_gt24m,
-			BigDecimal r14_capital_gt24m, String r15_product, BigDecimal r15_amt_6m, BigDecimal r15_risk_6m,
-			BigDecimal r15_capital_6m, BigDecimal r15_amt_6to24m, BigDecimal r15_risk_6to24m,
-			BigDecimal r15_capital_6to24m, BigDecimal r15_amt_gt24m, BigDecimal r15_risk_gt24m,
-			BigDecimal r15_capital_gt24m, String r16_product, BigDecimal r16_amt_6m, BigDecimal r16_risk_6m,
-			BigDecimal r16_capital_6m, BigDecimal r16_amt_6to24m, BigDecimal r16_risk_6to24m,
-			BigDecimal r16_capital_6to24m, BigDecimal r16_amt_gt24m, BigDecimal r16_risk_gt24m,
-			BigDecimal r16_capital_gt24m, String r17_product, BigDecimal r17_amt_6m, BigDecimal r17_risk_6m,
-			BigDecimal r17_capital_6m, BigDecimal r17_amt_6to24m, BigDecimal r17_risk_6to24m,
-			BigDecimal r17_capital_6to24m, BigDecimal r17_amt_gt24m, BigDecimal r17_risk_gt24m,
-			BigDecimal r17_capital_gt24m, String r18_product, BigDecimal r18_amt_6m, BigDecimal r18_risk_6m,
-			BigDecimal r18_capital_6m, BigDecimal r18_amt_6to24m, BigDecimal r18_risk_6to24m,
-			BigDecimal r18_capital_6to24m, BigDecimal r18_amt_gt24m, BigDecimal r18_risk_gt24m,
-			BigDecimal r18_capital_gt24m, String r19_product, BigDecimal r19_amt_6m, BigDecimal r19_risk_6m,
-			BigDecimal r19_capital_6m, BigDecimal r19_amt_6to24m, BigDecimal r19_risk_6to24m,
-			BigDecimal r19_capital_6to24m, BigDecimal r19_amt_gt24m, BigDecimal r19_risk_gt24m,
-			BigDecimal r19_capital_gt24m, String r20_product, BigDecimal r20_amt_6m, BigDecimal r20_risk_6m,
-			BigDecimal r20_capital_6m, BigDecimal r20_amt_6to24m, BigDecimal r20_risk_6to24m,
-			BigDecimal r20_capital_6to24m, BigDecimal r20_amt_gt24m, BigDecimal r20_risk_gt24m,
-			BigDecimal r20_capital_gt24m, String r21_product, BigDecimal r21_amt_6m, BigDecimal r21_risk_6m,
-			BigDecimal r21_capital_6m, BigDecimal r21_amt_6to24m, BigDecimal r21_risk_6to24m,
-			BigDecimal r21_capital_6to24m, BigDecimal r21_amt_gt24m, BigDecimal r21_risk_gt24m,
-			BigDecimal r21_capital_gt24m, String r22_product, BigDecimal r22_amt_6m, BigDecimal r22_risk_6m,
-			BigDecimal r22_capital_6m, BigDecimal r22_amt_6to24m, BigDecimal r22_risk_6to24m,
-			BigDecimal r22_capital_6to24m, BigDecimal r22_amt_gt24m, BigDecimal r22_risk_gt24m,
-			BigDecimal r22_capital_gt24m, String r23_product, BigDecimal r23_amt_6m, BigDecimal r23_risk_6m,
-			BigDecimal r23_capital_6m, BigDecimal r23_amt_6to24m, BigDecimal r23_risk_6to24m,
-			BigDecimal r23_capital_6to24m, BigDecimal r23_amt_gt24m, BigDecimal r23_risk_gt24m,
-			BigDecimal r23_capital_gt24m, String r24_product, BigDecimal r24_amt_6m, BigDecimal r24_risk_6m,
-			BigDecimal r24_capital_6m, BigDecimal r24_amt_6to24m, BigDecimal r24_risk_6to24m,
-			BigDecimal r24_capital_6to24m, BigDecimal r24_amt_gt24m, BigDecimal r24_risk_gt24m,
-			BigDecimal r24_capital_gt24m, String r25_product, BigDecimal r25_amt_6m, BigDecimal r25_risk_6m,
-			BigDecimal r25_capital_6m, BigDecimal r25_amt_6to24m, BigDecimal r25_risk_6to24m,
-			BigDecimal r25_capital_6to24m, BigDecimal r25_amt_gt24m, BigDecimal r25_risk_gt24m,
-			BigDecimal r25_capital_gt24m, String r26_product, BigDecimal r26_amt_6m, BigDecimal r26_risk_6m,
-			BigDecimal r26_capital_6m, BigDecimal r26_amt_6to24m, BigDecimal r26_risk_6to24m,
-			BigDecimal r26_capital_6to24m, BigDecimal r26_amt_gt24m, BigDecimal r26_risk_gt24m,
-			BigDecimal r26_capital_gt24m, String r27_product, BigDecimal r27_amt_6m, BigDecimal r27_risk_6m,
-			BigDecimal r27_capital_6m, BigDecimal r27_amt_6to24m, BigDecimal r27_risk_6to24m,
-			BigDecimal r27_capital_6to24m, BigDecimal r27_amt_gt24m, BigDecimal r27_risk_gt24m,
-			BigDecimal r27_capital_gt24m, String r28_product, BigDecimal r28_amt_6m, BigDecimal r28_risk_6m,
-			BigDecimal r28_capital_6m, BigDecimal r28_amt_6to24m, BigDecimal r28_risk_6to24m,
-			BigDecimal r28_capital_6to24m, BigDecimal r28_amt_gt24m, BigDecimal r28_risk_gt24m,
-			BigDecimal r28_capital_gt24m, String r29_product, BigDecimal r29_amt_6m, BigDecimal r29_risk_6m,
-			BigDecimal r29_capital_6m, BigDecimal r29_amt_6to24m, BigDecimal r29_risk_6to24m,
-			BigDecimal r29_capital_6to24m, BigDecimal r29_amt_gt24m, BigDecimal r29_risk_gt24m,
-			BigDecimal r29_capital_gt24m, String r30_product, BigDecimal r30_amt_6m, BigDecimal r30_risk_6m,
-			BigDecimal r30_capital_6m, BigDecimal r30_amt_6to24m, BigDecimal r30_risk_6to24m,
-			BigDecimal r30_capital_6to24m, BigDecimal r30_amt_gt24m, BigDecimal r30_risk_gt24m,
-			BigDecimal r30_capital_gt24m, String r31_product, BigDecimal r31_amt_6m, BigDecimal r31_risk_6m,
-			BigDecimal r31_capital_6m, BigDecimal r31_amt_6to24m, BigDecimal r31_risk_6to24m,
-			BigDecimal r31_capital_6to24m, BigDecimal r31_amt_gt24m, BigDecimal r31_risk_gt24m,
-			BigDecimal r31_capital_gt24m, String r32_product, BigDecimal r32_amt_6m, BigDecimal r32_risk_6m,
-			BigDecimal r32_capital_6m, BigDecimal r32_amt_6to24m, BigDecimal r32_risk_6to24m,
-			BigDecimal r32_capital_6to24m, BigDecimal r32_amt_gt24m, BigDecimal r32_risk_gt24m,
-			BigDecimal r32_capital_gt24m, String r33_product, BigDecimal r33_amt_6m, BigDecimal r33_risk_6m,
-			BigDecimal r33_capital_6m, BigDecimal r33_amt_6to24m, BigDecimal r33_risk_6to24m,
-			BigDecimal r33_capital_6to24m, BigDecimal r33_amt_gt24m, BigDecimal r33_risk_gt24m,
-			BigDecimal r33_capital_gt24m, BigDecimal r35_tot_spec_risk_ch, Date report_date, String report_version,
-			String report_frequency, String report_code, String report_desc, String entity_flg, String modify_flg,
-			String del_flg) {
-		super();
-		this.r12_product = r12_product;
-		this.r12_amt_6m = r12_amt_6m;
-		this.r12_risk_6m = r12_risk_6m;
-		this.r12_capital_6m = r12_capital_6m;
-		this.r12_amt_6to24m = r12_amt_6to24m;
-		this.r12_risk_6to24m = r12_risk_6to24m;
-		this.r12_capital_6to24m = r12_capital_6to24m;
-		this.r12_amt_gt24m = r12_amt_gt24m;
-		this.r12_risk_gt24m = r12_risk_gt24m;
-		this.r12_capital_gt24m = r12_capital_gt24m;
-		this.r13_product = r13_product;
-		this.r13_amt_6m = r13_amt_6m;
-		this.r13_risk_6m = r13_risk_6m;
-		this.r13_capital_6m = r13_capital_6m;
-		this.r13_amt_6to24m = r13_amt_6to24m;
-		this.r13_risk_6to24m = r13_risk_6to24m;
-		this.r13_capital_6to24m = r13_capital_6to24m;
-		this.r13_amt_gt24m = r13_amt_gt24m;
-		this.r13_risk_gt24m = r13_risk_gt24m;
-		this.r13_capital_gt24m = r13_capital_gt24m;
-		this.r14_product = r14_product;
-		this.r14_amt_6m = r14_amt_6m;
-		this.r14_risk_6m = r14_risk_6m;
-		this.r14_capital_6m = r14_capital_6m;
-		this.r14_amt_6to24m = r14_amt_6to24m;
-		this.r14_risk_6to24m = r14_risk_6to24m;
-		this.r14_capital_6to24m = r14_capital_6to24m;
-		this.r14_amt_gt24m = r14_amt_gt24m;
-		this.r14_risk_gt24m = r14_risk_gt24m;
-		this.r14_capital_gt24m = r14_capital_gt24m;
-		this.r15_product = r15_product;
-		this.r15_amt_6m = r15_amt_6m;
-		this.r15_risk_6m = r15_risk_6m;
-		this.r15_capital_6m = r15_capital_6m;
-		this.r15_amt_6to24m = r15_amt_6to24m;
-		this.r15_risk_6to24m = r15_risk_6to24m;
-		this.r15_capital_6to24m = r15_capital_6to24m;
-		this.r15_amt_gt24m = r15_amt_gt24m;
-		this.r15_risk_gt24m = r15_risk_gt24m;
-		this.r15_capital_gt24m = r15_capital_gt24m;
-		this.r16_product = r16_product;
-		this.r16_amt_6m = r16_amt_6m;
-		this.r16_risk_6m = r16_risk_6m;
-		this.r16_capital_6m = r16_capital_6m;
-		this.r16_amt_6to24m = r16_amt_6to24m;
-		this.r16_risk_6to24m = r16_risk_6to24m;
-		this.r16_capital_6to24m = r16_capital_6to24m;
-		this.r16_amt_gt24m = r16_amt_gt24m;
-		this.r16_risk_gt24m = r16_risk_gt24m;
-		this.r16_capital_gt24m = r16_capital_gt24m;
-		this.r17_product = r17_product;
-		this.r17_amt_6m = r17_amt_6m;
-		this.r17_risk_6m = r17_risk_6m;
-		this.r17_capital_6m = r17_capital_6m;
-		this.r17_amt_6to24m = r17_amt_6to24m;
-		this.r17_risk_6to24m = r17_risk_6to24m;
-		this.r17_capital_6to24m = r17_capital_6to24m;
-		this.r17_amt_gt24m = r17_amt_gt24m;
-		this.r17_risk_gt24m = r17_risk_gt24m;
-		this.r17_capital_gt24m = r17_capital_gt24m;
-		this.r18_product = r18_product;
-		this.r18_amt_6m = r18_amt_6m;
-		this.r18_risk_6m = r18_risk_6m;
-		this.r18_capital_6m = r18_capital_6m;
-		this.r18_amt_6to24m = r18_amt_6to24m;
-		this.r18_risk_6to24m = r18_risk_6to24m;
-		this.r18_capital_6to24m = r18_capital_6to24m;
-		this.r18_amt_gt24m = r18_amt_gt24m;
-		this.r18_risk_gt24m = r18_risk_gt24m;
-		this.r18_capital_gt24m = r18_capital_gt24m;
-		this.r19_product = r19_product;
-		this.r19_amt_6m = r19_amt_6m;
-		this.r19_risk_6m = r19_risk_6m;
-		this.r19_capital_6m = r19_capital_6m;
-		this.r19_amt_6to24m = r19_amt_6to24m;
-		this.r19_risk_6to24m = r19_risk_6to24m;
-		this.r19_capital_6to24m = r19_capital_6to24m;
-		this.r19_amt_gt24m = r19_amt_gt24m;
-		this.r19_risk_gt24m = r19_risk_gt24m;
-		this.r19_capital_gt24m = r19_capital_gt24m;
-		this.r20_product = r20_product;
-		this.r20_amt_6m = r20_amt_6m;
-		this.r20_risk_6m = r20_risk_6m;
-		this.r20_capital_6m = r20_capital_6m;
-		this.r20_amt_6to24m = r20_amt_6to24m;
-		this.r20_risk_6to24m = r20_risk_6to24m;
-		this.r20_capital_6to24m = r20_capital_6to24m;
-		this.r20_amt_gt24m = r20_amt_gt24m;
-		this.r20_risk_gt24m = r20_risk_gt24m;
-		this.r20_capital_gt24m = r20_capital_gt24m;
-		this.r21_product = r21_product;
-		this.r21_amt_6m = r21_amt_6m;
-		this.r21_risk_6m = r21_risk_6m;
-		this.r21_capital_6m = r21_capital_6m;
-		this.r21_amt_6to24m = r21_amt_6to24m;
-		this.r21_risk_6to24m = r21_risk_6to24m;
-		this.r21_capital_6to24m = r21_capital_6to24m;
-		this.r21_amt_gt24m = r21_amt_gt24m;
-		this.r21_risk_gt24m = r21_risk_gt24m;
-		this.r21_capital_gt24m = r21_capital_gt24m;
-		this.r22_product = r22_product;
-		this.r22_amt_6m = r22_amt_6m;
-		this.r22_risk_6m = r22_risk_6m;
-		this.r22_capital_6m = r22_capital_6m;
-		this.r22_amt_6to24m = r22_amt_6to24m;
-		this.r22_risk_6to24m = r22_risk_6to24m;
-		this.r22_capital_6to24m = r22_capital_6to24m;
-		this.r22_amt_gt24m = r22_amt_gt24m;
-		this.r22_risk_gt24m = r22_risk_gt24m;
-		this.r22_capital_gt24m = r22_capital_gt24m;
-		this.r23_product = r23_product;
-		this.r23_amt_6m = r23_amt_6m;
-		this.r23_risk_6m = r23_risk_6m;
-		this.r23_capital_6m = r23_capital_6m;
-		this.r23_amt_6to24m = r23_amt_6to24m;
-		this.r23_risk_6to24m = r23_risk_6to24m;
-		this.r23_capital_6to24m = r23_capital_6to24m;
-		this.r23_amt_gt24m = r23_amt_gt24m;
-		this.r23_risk_gt24m = r23_risk_gt24m;
-		this.r23_capital_gt24m = r23_capital_gt24m;
-		this.r24_product = r24_product;
-		this.r24_amt_6m = r24_amt_6m;
-		this.r24_risk_6m = r24_risk_6m;
-		this.r24_capital_6m = r24_capital_6m;
-		this.r24_amt_6to24m = r24_amt_6to24m;
-		this.r24_risk_6to24m = r24_risk_6to24m;
-		this.r24_capital_6to24m = r24_capital_6to24m;
-		this.r24_amt_gt24m = r24_amt_gt24m;
-		this.r24_risk_gt24m = r24_risk_gt24m;
-		this.r24_capital_gt24m = r24_capital_gt24m;
-		this.r25_product = r25_product;
-		this.r25_amt_6m = r25_amt_6m;
-		this.r25_risk_6m = r25_risk_6m;
-		this.r25_capital_6m = r25_capital_6m;
-		this.r25_amt_6to24m = r25_amt_6to24m;
-		this.r25_risk_6to24m = r25_risk_6to24m;
-		this.r25_capital_6to24m = r25_capital_6to24m;
-		this.r25_amt_gt24m = r25_amt_gt24m;
-		this.r25_risk_gt24m = r25_risk_gt24m;
-		this.r25_capital_gt24m = r25_capital_gt24m;
-		this.r26_product = r26_product;
-		this.r26_amt_6m = r26_amt_6m;
-		this.r26_risk_6m = r26_risk_6m;
-		this.r26_capital_6m = r26_capital_6m;
-		this.r26_amt_6to24m = r26_amt_6to24m;
-		this.r26_risk_6to24m = r26_risk_6to24m;
-		this.r26_capital_6to24m = r26_capital_6to24m;
-		this.r26_amt_gt24m = r26_amt_gt24m;
-		this.r26_risk_gt24m = r26_risk_gt24m;
-		this.r26_capital_gt24m = r26_capital_gt24m;
-		this.r27_product = r27_product;
-		this.r27_amt_6m = r27_amt_6m;
-		this.r27_risk_6m = r27_risk_6m;
-		this.r27_capital_6m = r27_capital_6m;
-		this.r27_amt_6to24m = r27_amt_6to24m;
-		this.r27_risk_6to24m = r27_risk_6to24m;
-		this.r27_capital_6to24m = r27_capital_6to24m;
-		this.r27_amt_gt24m = r27_amt_gt24m;
-		this.r27_risk_gt24m = r27_risk_gt24m;
-		this.r27_capital_gt24m = r27_capital_gt24m;
-		this.r28_product = r28_product;
-		this.r28_amt_6m = r28_amt_6m;
-		this.r28_risk_6m = r28_risk_6m;
-		this.r28_capital_6m = r28_capital_6m;
-		this.r28_amt_6to24m = r28_amt_6to24m;
-		this.r28_risk_6to24m = r28_risk_6to24m;
-		this.r28_capital_6to24m = r28_capital_6to24m;
-		this.r28_amt_gt24m = r28_amt_gt24m;
-		this.r28_risk_gt24m = r28_risk_gt24m;
-		this.r28_capital_gt24m = r28_capital_gt24m;
-		this.r29_product = r29_product;
-		this.r29_amt_6m = r29_amt_6m;
-		this.r29_risk_6m = r29_risk_6m;
-		this.r29_capital_6m = r29_capital_6m;
-		this.r29_amt_6to24m = r29_amt_6to24m;
-		this.r29_risk_6to24m = r29_risk_6to24m;
-		this.r29_capital_6to24m = r29_capital_6to24m;
-		this.r29_amt_gt24m = r29_amt_gt24m;
-		this.r29_risk_gt24m = r29_risk_gt24m;
-		this.r29_capital_gt24m = r29_capital_gt24m;
-		this.r30_product = r30_product;
-		this.r30_amt_6m = r30_amt_6m;
-		this.r30_risk_6m = r30_risk_6m;
-		this.r30_capital_6m = r30_capital_6m;
-		this.r30_amt_6to24m = r30_amt_6to24m;
-		this.r30_risk_6to24m = r30_risk_6to24m;
-		this.r30_capital_6to24m = r30_capital_6to24m;
-		this.r30_amt_gt24m = r30_amt_gt24m;
-		this.r30_risk_gt24m = r30_risk_gt24m;
-		this.r30_capital_gt24m = r30_capital_gt24m;
-		this.r31_product = r31_product;
-		this.r31_amt_6m = r31_amt_6m;
-		this.r31_risk_6m = r31_risk_6m;
-		this.r31_capital_6m = r31_capital_6m;
-		this.r31_amt_6to24m = r31_amt_6to24m;
-		this.r31_risk_6to24m = r31_risk_6to24m;
-		this.r31_capital_6to24m = r31_capital_6to24m;
-		this.r31_amt_gt24m = r31_amt_gt24m;
-		this.r31_risk_gt24m = r31_risk_gt24m;
-		this.r31_capital_gt24m = r31_capital_gt24m;
-		this.r32_product = r32_product;
-		this.r32_amt_6m = r32_amt_6m;
-		this.r32_risk_6m = r32_risk_6m;
-		this.r32_capital_6m = r32_capital_6m;
-		this.r32_amt_6to24m = r32_amt_6to24m;
-		this.r32_risk_6to24m = r32_risk_6to24m;
-		this.r32_capital_6to24m = r32_capital_6to24m;
-		this.r32_amt_gt24m = r32_amt_gt24m;
-		this.r32_risk_gt24m = r32_risk_gt24m;
-		this.r32_capital_gt24m = r32_capital_gt24m;
-		this.r33_product = r33_product;
-		this.r33_amt_6m = r33_amt_6m;
-		this.r33_risk_6m = r33_risk_6m;
-		this.r33_capital_6m = r33_capital_6m;
-		this.r33_amt_6to24m = r33_amt_6to24m;
-		this.r33_risk_6to24m = r33_risk_6to24m;
-		this.r33_capital_6to24m = r33_capital_6to24m;
-		this.r33_amt_gt24m = r33_amt_gt24m;
-		this.r33_risk_gt24m = r33_risk_gt24m;
-		this.r33_capital_gt24m = r33_capital_gt24m;
-		this.r35_tot_spec_risk_ch = r35_tot_spec_risk_ch;
-		this.report_date = report_date;
-		this.report_version = report_version;
-		this.report_frequency = report_frequency;
-		this.report_code = report_code;
-		this.report_desc = report_desc;
-		this.entity_flg = entity_flg;
-		this.modify_flg = modify_flg;
 		this.del_flg = del_flg;
 	}
 	public M_SIR_Summary_Entity() {
