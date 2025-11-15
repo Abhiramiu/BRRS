@@ -1027,7 +1027,7 @@
 					.then(res => res.text())
 					.then(status => {
     if (status === "READY") {
-        alertMsg.innerHTML = 'Report is ready! Downloading...';
+        alertMsg.innerHTML = 'Report is ready!...';
         showAlert();
         downloadDetailfiles(jobId, filename);
         sessionStorage.removeItem("jobId");

@@ -309,22 +309,42 @@ $(window).on('beforeunload', function() {
 	    var asondate = a.getAttribute("data-todate");
 	    var reportid = a.getAttribute("data-rptcode");
 	    var version = a.getAttribute("data-version");
-	    var fromdate =a.getAttribute("data-todate");
-	    
-	    if (confirm("Do you want to open report?")) {
-            $('#loader').modal('show'); // Show again before submission
-            const type = 'ARCHIVAL';
-          
-            $('#loader').modal('hide');
-            location.href = "Reports/"+reportid+"?dtltype=report&fromdate="+fromdate+"&todate="+todate+"&type="+type+"&asondate="+asondate+"&version="+version;
-        }
-        else{
-	    	$('#loader').modal('hide');
-	    }
-	    
-	           
-	    
+	    var fromdate = a.getAttribute("data-todate");
+	    var type = "ARCHIVAL";
+
+	    // Store values globally for use after user clicks YES
+	    window.reportActionData = {
+	        todate,
+	        asondate,
+	        reportid,
+	        version,
+	        fromdate,
+	        type
+	    };
+
+	    // Show modal
+	    $("#confirmModal").modal("show");
 	}
+
+	$(document).ready(function () {
+
+	    $("#confirmYes").on("click", function () {
+	        
+	        $("#confirmModal").modal("hide");
+	        $('#loader').modal('show');
+
+	        const d = window.reportActionData;
+
+	        location.href =
+	            "Reports/" + d.reportid +
+	            "?dtltype=report&fromdate=" + d.fromdate +
+	            "&todate=" + d.todate +
+	            "&type=" + d.type +
+	            "&asondate=" + d.asondate +
+	            "&version=" + d.version;
+	    });
+
+	});
 
 
 	
@@ -455,6 +475,34 @@ function getVali(a) {
 
 	
 
+	
+	
+	
+<!-- Custom Confirm Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Custom styled header -->
+      <div class="menu-title-header">
+        <div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">
+         Do you want to open the report?
+        </div>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+        	
+        <!-- Custom styled buttons -->
+        <div style="margin-top: 15px;">
+          <button type="button" class="custom-tab-btn" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" id="confirmYes" class="custom-tab-btn" style="background-color:#5c7495; color:white;">Yes</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 	
 		
 </body>
