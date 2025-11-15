@@ -1181,14 +1181,14 @@ $.ajax({
 							<thead>
 								<tr	style="background-color:#D8D8D8; text-align:left; font-weight:bold;">
 								    <th style="width:40%; text-align:left;">&nbsp;</th>
-								    <th colspan="3">GENERAL PROVISIONS</th>
+								    <th colspan="3" style="text-align:center;">GENERAL PROVISIONS</th>
 								    
 								  </tr>
 							  <tr style="background-color:#D8D8D8; text-align:center; font-weight:bold;">
 							    <th style="width:40%; text-align:right;">&nbsp;</th>
-							    <th style="text-align: left;">STAGE 1 PROVISIONS</th>
-							    <th style="text-align: left;">QUALIFYING STAGE 2 PROVISIONS</th>
-							    <th style="text-align: left;">TOTAL GENERAL PROVISIONS</th>
+							    <th style="text-align: right;">STAGE 1 PROVISIONS</th>
+							    <th style="text-align: right;">QUALIFYING STAGE 2 PROVISIONS</th>
+							    <th style="text-align: right;">TOTAL GENERAL PROVISIONS</th>
 							  </tr>
 							</thead>
 
@@ -1267,7 +1267,8 @@ $.ajax({
 										<td style="text-align: center; 
 										         vertical-align: middle; 
 										         background-color:rgb(255, 255, 255);
-										         font-weight: normal;">
+										         font-weight: normal;
+												 ">
 										    <input class="display-input show_input"
 										           type="text"
 										           th:value="${report.R12_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R12_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
@@ -3043,7 +3044,7 @@ $.ajax({
 																	  line-height: 1.2;
 																	  text-align: left;
 																	  vertical-align: middle;
-																	  font-weight: bold;
+																	  font-weight: normal;
 																	"
 																	th:title="${report.R45_PRODUCT}"
 																	th:text="${report.R45_PRODUCT}">
