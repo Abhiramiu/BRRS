@@ -1155,6 +1155,17 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_TBS":
+			try {
+				
+				repfile = BRRS_M_TBS_ReportService.getM_TBSExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		}
 		return repfile;
 	}

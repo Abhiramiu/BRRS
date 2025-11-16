@@ -1,6 +1,13 @@
 package com.bornfire.brrs.services;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,6 +15,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -748,4 +765,5160 @@ System.out.println("Entered service method M_TBS......................");
 					throw new RuntimeException("Error while creating archival resubmission record", e);
 				}
 			}
+
+
+			public byte[] getM_TBSExcel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String version) throws Exception {
+				logger.info("Service: Starting Excel generation process in memory.");
+				System.out.println(type);
+				System.out.println(version);
+				if (type.equals("ARCHIVAL") & version != null) {
+					byte[] ARCHIVALreport = getExcelM_TBSARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
+							version);
+					return ARCHIVALreport;
+				}
+				List<M_TBS_Summary_Entity> dataList =BRRS_M_TBS_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
+
+				if (dataList.isEmpty()) {
+					logger.warn("Service: No data found for M_TBS report. Returning empty result.");
+					return new byte[0];
+				}
+
+				String templateDir = env.getProperty("output.exportpathtemp");
+				String templateFileName = filename;
+				System.out.println(filename);
+				Path templatePath = Paths.get(templateDir, templateFileName);
+				System.out.println(templatePath);
+				
+				logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+				if (!Files.exists(templatePath)) {
+					// This specific exception will be caught by the controller.
+					throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+				}
+				if (!Files.isReadable(templatePath)) {
+					// A specific exception for permission errors.
+					throw new SecurityException(
+							"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+				}
+
+				// This try-with-resources block is perfect. It guarantees all resources are
+				// closed automatically.
+				try (InputStream templateInputStream = Files.newInputStream(templatePath);
+						Workbook workbook = WorkbookFactory.create(templateInputStream);
+						ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+					Sheet sheet = workbook.getSheetAt(0);
+
+					// --- Style Definitions ---
+					CreationHelper createHelper = workbook.getCreationHelper();
+
+					CellStyle dateStyle = workbook.createCellStyle();
+					dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+					dateStyle.setBorderBottom(BorderStyle.THIN);
+					dateStyle.setBorderTop(BorderStyle.THIN);
+					dateStyle.setBorderLeft(BorderStyle.THIN);
+					dateStyle.setBorderRight(BorderStyle.THIN);
+
+					CellStyle textStyle = workbook.createCellStyle();
+					textStyle.setBorderBottom(BorderStyle.THIN);
+					textStyle.setBorderTop(BorderStyle.THIN);
+					textStyle.setBorderLeft(BorderStyle.THIN);
+					textStyle.setBorderRight(BorderStyle.THIN);
+					
+					// Create the font
+					Font font = workbook.createFont();
+					font.setFontHeightInPoints((short)8); // size 8
+					font.setFontName("Arial");    
+
+					CellStyle numberStyle = workbook.createCellStyle();
+					//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+					numberStyle.setBorderBottom(BorderStyle.THIN);
+					numberStyle.setBorderTop(BorderStyle.THIN);
+					numberStyle.setBorderLeft(BorderStyle.THIN);
+					numberStyle.setBorderRight(BorderStyle.THIN);
+					numberStyle.setFont(font);
+					// --- End of Style Definitions ---
+
+					CellStyle percentStyle = workbook.createCellStyle();
+					percentStyle.cloneStyleFrom(numberStyle);
+					percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+					percentStyle.setAlignment(HorizontalAlignment.RIGHT);
+					int startRow = 10;
+
+					if (!dataList.isEmpty()) {
+						for (int i = 0; i < dataList.size(); i++) {
+							M_TBS_Summary_Entity record = dataList.get(i);
+							System.out.println("rownumber="+startRow + i);
+							Row row = sheet.getRow(startRow + i);
+							if (row == null) {
+								row = sheet.createRow(startRow + i);
+							}
+/*
+ * 	private BigDecimal R11_NV_LONG;
+			private BigDecimal R11_NV_SHORT;
+			private BigDecimal R11_FV_LONG;
+			private BigDecimal R11_FV_SHORT;
+			private BigDecimal R11_QFHA;
+ */
+							//row11
+							// Column C 
+							//row=sheet.getRow(11);
+
+							Cell cell1 = row.getCell(2);
+							if (record.getR11_NV_LONG() != null) {
+								cell1.setCellValue(record.getR11_NV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1=row.getCell(3);
+							if (record.getR11_NV_SHORT() != null) {
+								cell1.setCellValue(record.getR11_NV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}
+
+						    cell1 = row.getCell(4);
+							if (record.getR11_FV_LONG() != null) {
+								cell1.setCellValue(record.getR11_FV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}		
+								
+								
+							cell1 = row.getCell(5);
+							if (record.getR11_FV_SHORT() != null) {
+								cell1.setCellValue(record.getR11_FV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1 = row.getCell(6);
+							if (record.getR11_QFHA() != null) {
+								cell1.setCellValue(record.getR11_QFHA().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+//------ROW11---------						
+							row=sheet.getRow(11);
+						    cell1 = row.getCell(2);
+							if (record.getR12_NV_LONG() != null) {
+								cell1.setCellValue(record.getR12_NV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1=row.getCell(3);
+							if (record.getR12_NV_SHORT() != null) {
+								cell1.setCellValue(record.getR12_NV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR12_FV_LONG() != null) {
+								cell1.setCellValue(record.getR12_FV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}		
+								
+								
+							cell1 = row.getCell(5);
+							if (record.getR12_FV_SHORT() != null) {
+								cell1.setCellValue(record.getR12_FV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1 = row.getCell(6);
+							if (record.getR12_QFHA() != null) {
+								cell1.setCellValue(record.getR12_QFHA().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							//------ROW12---------						
+							row=sheet.getRow(12);
+						    cell1 = row.getCell(2);
+							if (record.getR13_NV_LONG() != null) {
+								cell1.setCellValue(record.getR13_NV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1=row.getCell(3);
+							if (record.getR13_NV_SHORT() != null) {
+								cell1.setCellValue(record.getR13_NV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR13_FV_LONG() != null) {
+								cell1.setCellValue(record.getR13_FV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}		
+								
+								
+							cell1 = row.getCell(5);
+							if (record.getR13_FV_SHORT() != null) {
+								cell1.setCellValue(record.getR13_FV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1 = row.getCell(6);
+							if (record.getR13_QFHA() != null) {
+								cell1.setCellValue(record.getR13_QFHA().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+
+							//------ROW13---------
+							row = sheet.getRow(13);
+
+							// NV_LONG
+							cell1 = row.getCell(2);
+							if (record.getR14_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR14_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							// NV_SHORT
+							cell1 = row.getCell(3);
+							if (record.getR14_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR14_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							// FV_LONG
+							cell1 = row.getCell(4);
+							if (record.getR14_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR14_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							// FV_SHORT
+							cell1 = row.getCell(5);
+							if (record.getR14_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR14_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							// QFHA
+							cell1 = row.getCell(6);
+							if (record.getR14_QFHA() != null) {
+							    cell1.setCellValue(record.getR14_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW14---------
+							row = sheet.getRow(14);
+
+							cell1 = row.getCell(2);
+							if (record.getR15_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR15_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR15_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR15_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR15_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR15_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR15_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR15_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR15_QFHA() != null) {
+							    cell1.setCellValue(record.getR15_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW15---------
+							row = sheet.getRow(15);
+
+							cell1 = row.getCell(2);
+							if (record.getR16_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR16_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR16_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR16_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR16_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR16_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR16_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR16_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR16_QFHA() != null) {
+							    cell1.setCellValue(record.getR16_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW16---------
+							row = sheet.getRow(16);
+
+							cell1 = row.getCell(2);
+							if (record.getR17_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR17_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR17_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR17_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR17_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR17_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR17_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR17_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR17_QFHA() != null) {
+							    cell1.setCellValue(record.getR17_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW17---------
+							row = sheet.getRow(17);
+
+							cell1 = row.getCell(2);
+							if (record.getR18_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR18_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR18_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR18_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR18_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR18_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR18_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR18_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR18_QFHA() != null) {
+							    cell1.setCellValue(record.getR18_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW18---------
+							row = sheet.getRow(18);
+
+							cell1 = row.getCell(2);
+							if (record.getR19_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR19_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR19_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR19_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR19_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR19_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR19_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR19_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR19_QFHA() != null) {
+							    cell1.setCellValue(record.getR19_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW19---------
+							row = sheet.getRow(19);
+
+							cell1 = row.getCell(2);
+							if (record.getR20_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR20_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR20_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR20_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR20_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR20_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR20_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR20_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR20_QFHA() != null) {
+							    cell1.setCellValue(record.getR20_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW20---------
+							row = sheet.getRow(20);
+
+							cell1 = row.getCell(2);
+							if (record.getR21_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR21_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR21_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR21_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR21_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR21_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR21_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR21_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR21_QFHA() != null) {
+							    cell1.setCellValue(record.getR21_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW21---------
+							row = sheet.getRow(21);
+
+							cell1 = row.getCell(2);
+							if (record.getR22_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR22_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR22_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR22_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR22_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR22_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR22_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR22_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR22_QFHA() != null) {
+							    cell1.setCellValue(record.getR22_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW22---------
+							row = sheet.getRow(22);
+
+							cell1 = row.getCell(2);
+							if (record.getR23_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR23_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR23_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR23_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR23_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR23_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR23_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR23_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR23_QFHA() != null) {
+							    cell1.setCellValue(record.getR23_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW23---------
+							row = sheet.getRow(23);
+
+							cell1 = row.getCell(2);
+							if (record.getR24_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR24_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR24_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR24_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR24_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR24_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR24_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR24_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR24_QFHA() != null) {
+							    cell1.setCellValue(record.getR24_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW24---------
+							row = sheet.getRow(24);
+
+							cell1 = row.getCell(2);
+							if (record.getR25_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR25_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR25_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR25_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR25_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR25_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR25_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR25_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR25_QFHA() != null) {
+							    cell1.setCellValue(record.getR25_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW25---------
+							row = sheet.getRow(25);
+
+							cell1 = row.getCell(2);
+							if (record.getR26_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR26_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR26_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR26_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR26_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR26_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR26_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR26_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR26_QFHA() != null) {
+							    cell1.setCellValue(record.getR26_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW26---------
+							row = sheet.getRow(26);
+
+							cell1 = row.getCell(2);
+							if (record.getR27_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR27_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR27_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR27_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR27_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR27_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR27_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR27_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR27_QFHA() != null) {
+							    cell1.setCellValue(record.getR27_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW27---------
+							row = sheet.getRow(27);
+
+							cell1 = row.getCell(2);
+							if (record.getR28_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR28_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR28_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR28_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR28_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR28_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR28_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR28_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR28_QFHA() != null) {
+							    cell1.setCellValue(record.getR28_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW28---------
+							row = sheet.getRow(28);
+
+							cell1 = row.getCell(2);
+							if (record.getR29_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR29_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR29_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR29_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR29_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR29_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR29_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR29_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR29_QFHA() != null) {
+							    cell1.setCellValue(record.getR29_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW29---------
+							row = sheet.getRow(29);
+
+							cell1 = row.getCell(2);
+							if (record.getR30_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR30_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR30_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR30_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR30_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR30_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR30_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR30_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR30_QFHA() != null) {
+							    cell1.setCellValue(record.getR30_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW30--------- R31
+							row = sheet.getRow(30);
+
+							// NV_LONG
+							cell1 = row.getCell(2);
+							if (record.getR31_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR31_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							// NV_SHORT
+							cell1 = row.getCell(3);
+							if (record.getR31_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR31_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							// FV_LONG
+							cell1 = row.getCell(4);
+							if (record.getR31_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR31_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							// FV_SHORT
+							cell1 = row.getCell(5);
+							if (record.getR31_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR31_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							// QFHA
+							cell1 = row.getCell(6);
+							if (record.getR31_QFHA() != null) {
+							    cell1.setCellValue(record.getR31_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW31--------- R32
+							row = sheet.getRow(31);
+
+							cell1 = row.getCell(2);
+							if (record.getR32_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR32_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR32_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR32_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR32_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR32_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR32_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR32_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR32_QFHA() != null) {
+							    cell1.setCellValue(record.getR32_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW32--------- R33
+							row = sheet.getRow(32);
+
+							cell1 = row.getCell(2);
+							if (record.getR33_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR33_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR33_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR33_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR33_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR33_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR33_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR33_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR33_QFHA() != null) {
+							    cell1.setCellValue(record.getR33_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW33--------- R34
+							row = sheet.getRow(33);
+
+							cell1 = row.getCell(2);
+							if (record.getR34_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR34_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR34_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR34_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR34_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR34_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR34_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR34_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR34_QFHA() != null) {
+							    cell1.setCellValue(record.getR34_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW34--------- R35
+							row = sheet.getRow(34);
+
+							cell1 = row.getCell(2);
+							if (record.getR35_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR35_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR35_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR35_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR35_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR35_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR35_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR35_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR35_QFHA() != null) {
+							    cell1.setCellValue(record.getR35_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW35--------- R36
+							row = sheet.getRow(35);
+
+							cell1 = row.getCell(2);
+							if (record.getR36_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR36_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR36_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR36_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR36_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR36_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR36_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR36_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR36_QFHA() != null) {
+							    cell1.setCellValue(record.getR36_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW36--------- R37
+							row = sheet.getRow(36);
+
+							cell1 = row.getCell(2);
+							if (record.getR37_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR37_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR37_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR37_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR37_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR37_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR37_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR37_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR37_QFHA() != null) {
+							    cell1.setCellValue(record.getR37_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW37--------- R38
+							row = sheet.getRow(37);
+
+							cell1 = row.getCell(2);
+							if (record.getR38_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR38_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR38_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR38_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR38_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR38_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR38_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR38_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR38_QFHA() != null) {
+							    cell1.setCellValue(record.getR38_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW38--------- R39
+							row = sheet.getRow(38);
+
+							cell1 = row.getCell(2);
+							if (record.getR39_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR39_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR39_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR39_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR39_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR39_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR39_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR39_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR39_QFHA() != null) {
+							    cell1.setCellValue(record.getR39_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW39--------- R40
+							row = sheet.getRow(39);
+
+							cell1 = row.getCell(2);
+							if (record.getR40_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR40_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR40_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR40_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR40_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR40_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR40_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR40_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR40_QFHA() != null) {
+							    cell1.setCellValue(record.getR40_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							//------ROW40--------- R41
+							row = sheet.getRow(40);
+
+							cell1 = row.getCell(2);
+							if (record.getR41_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR41_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR41_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR41_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR41_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR41_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR41_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR41_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR41_QFHA() != null) {
+							    cell1.setCellValue(record.getR41_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW41--------- R42
+							row = sheet.getRow(41);
+
+							cell1 = row.getCell(2);
+							if (record.getR42_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR42_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR42_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR42_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR42_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR42_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR42_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR42_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR42_QFHA() != null) {
+							    cell1.setCellValue(record.getR42_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW42--------- R43
+							row = sheet.getRow(42);
+
+							cell1 = row.getCell(2);
+							if (record.getR43_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR43_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR43_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR43_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR43_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR43_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR43_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR43_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR43_QFHA() != null) {
+							    cell1.setCellValue(record.getR43_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW43--------- R44
+							row = sheet.getRow(43);
+
+							cell1 = row.getCell(2);
+							if (record.getR44_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR44_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR44_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR44_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR44_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR44_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR44_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR44_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR44_QFHA() != null) {
+							    cell1.setCellValue(record.getR44_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW44--------- R45
+							row = sheet.getRow(44);
+
+							cell1 = row.getCell(2);
+							if (record.getR45_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR45_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR45_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR45_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR45_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR45_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR45_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR45_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR45_QFHA() != null) {
+							    cell1.setCellValue(record.getR45_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW45--------- R46
+							row = sheet.getRow(45);
+
+							cell1 = row.getCell(2);
+							if (record.getR46_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR46_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR46_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR46_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR46_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR46_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR46_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR46_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR46_QFHA() != null) {
+							    cell1.setCellValue(record.getR46_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW46--------- R47
+							row = sheet.getRow(46);
+
+							cell1 = row.getCell(2);
+							if (record.getR47_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR47_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR47_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR47_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR47_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR47_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR47_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR47_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR47_QFHA() != null) {
+							    cell1.setCellValue(record.getR47_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW47--------- R48
+							row = sheet.getRow(47);
+
+							cell1 = row.getCell(2);
+							if (record.getR48_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR48_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR48_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR48_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR48_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR48_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR48_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR48_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR48_QFHA() != null) {
+							    cell1.setCellValue(record.getR48_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW48--------- R49
+							row = sheet.getRow(48);
+
+							cell1 = row.getCell(2);
+							if (record.getR49_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR49_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR49_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR49_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR49_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR49_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR49_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR49_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR49_QFHA() != null) {
+							    cell1.setCellValue(record.getR49_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW49--------- R50
+							row = sheet.getRow(49);
+
+							cell1 = row.getCell(2);
+							if (record.getR50_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR50_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR50_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR50_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR50_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR50_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR50_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR50_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR50_QFHA() != null) {
+							    cell1.setCellValue(record.getR50_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+							//------ROW50--------- R51
+							row = sheet.getRow(50);
+
+							cell1 = row.getCell(2);
+							if (record.getR51_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR51_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR51_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR51_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR51_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR51_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR51_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR51_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR51_QFHA() != null) {
+							    cell1.setCellValue(record.getR51_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+							
+							
+							//------ROW51--------- R52
+							row = sheet.getRow(51);
+
+							cell1 = row.getCell(2);
+							if (record.getR52_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR52_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR52_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR52_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR52_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR52_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR52_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR52_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR52_QFHA() != null) {
+							    cell1.setCellValue(record.getR52_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							
+							//------ROW52--------- R53
+							row = sheet.getRow(52);
+
+							cell1 = row.getCell(2);
+							if (record.getR53_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR53_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR53_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR53_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR53_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR53_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR53_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR53_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR53_QFHA() != null) {
+							    cell1.setCellValue(record.getR53_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							
+							//------ROW53--------- R54
+							row = sheet.getRow(53);
+
+							cell1 = row.getCell(2);
+							if (record.getR54_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR54_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR54_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR54_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR54_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR54_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR54_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR54_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR54_QFHA() != null) {
+							    cell1.setCellValue(record.getR54_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							
+							//------ROW54--------- R55
+							row = sheet.getRow(54);
+
+							cell1 = row.getCell(2);
+							if (record.getR55_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR55_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR55_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR55_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR55_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR55_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR55_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR55_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR55_QFHA() != null) {
+							    cell1.setCellValue(record.getR55_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+}
+	workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+} else {
+	
+}
+
+// Write the final workbook content to the in-memory stream.
+workbook.write(out);
+
+logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+return out.toByteArray();
+}
+
+
+}
+			public byte[] getExcelM_TBSARCHIVAL(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String version) throws Exception {
+				logger.info("Service: Starting Excel generation process in memory.");
+				System.out.println(type);
+				System.out.println(version);
+				if (type.equals("ARCHIVAL") & version != null) {
+					
+				}
+				/*
+				 * if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+            List<M_TBS_Archival_Summary_Entity> T1Master = 
+            		BRRS_M_TBS_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
+				 */
+				List<M_TBS_Archival_Summary_Entity> dataList =BRRS_M_TBS_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate),version) ;
+
+				if (dataList.isEmpty()) {
+					logger.warn("Service: No data found for M_TBS report. Returning empty result.");
+					return new byte[0];
+				}
+
+				String templateDir = env.getProperty("output.exportpathtemp");
+				String templateFileName = filename;
+				System.out.println(filename);
+				Path templatePath = Paths.get(templateDir, templateFileName);
+				System.out.println(templatePath);
+				
+				logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+				if (!Files.exists(templatePath)) {
+					// This specific exception will be caught by the controller.
+					throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+				}
+				if (!Files.isReadable(templatePath)) {
+					// A specific exception for permission errors.
+					throw new SecurityException(
+							"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+				}
+
+				// This try-with-resources block is perfect. It guarantees all resources are
+				// closed automatically.
+				try (InputStream templateInputStream = Files.newInputStream(templatePath);
+						Workbook workbook = WorkbookFactory.create(templateInputStream);
+						ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+					Sheet sheet = workbook.getSheetAt(0);
+
+					// --- Style Definitions ---
+					CreationHelper createHelper = workbook.getCreationHelper();
+
+					CellStyle dateStyle = workbook.createCellStyle();
+					dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+					dateStyle.setBorderBottom(BorderStyle.THIN);
+					dateStyle.setBorderTop(BorderStyle.THIN);
+					dateStyle.setBorderLeft(BorderStyle.THIN);
+					dateStyle.setBorderRight(BorderStyle.THIN);
+
+					CellStyle textStyle = workbook.createCellStyle();
+					textStyle.setBorderBottom(BorderStyle.THIN);
+					textStyle.setBorderTop(BorderStyle.THIN);
+					textStyle.setBorderLeft(BorderStyle.THIN);
+					textStyle.setBorderRight(BorderStyle.THIN);
+					
+					// Create the font
+					Font font = workbook.createFont();
+					font.setFontHeightInPoints((short)8); // size 8
+					font.setFontName("Arial");    
+
+					CellStyle numberStyle = workbook.createCellStyle();
+					//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+					numberStyle.setBorderBottom(BorderStyle.THIN);
+					numberStyle.setBorderTop(BorderStyle.THIN);
+					numberStyle.setBorderLeft(BorderStyle.THIN);
+					numberStyle.setBorderRight(BorderStyle.THIN);
+					numberStyle.setFont(font);
+					// --- End of Style Definitions ---
+
+					CellStyle percentStyle = workbook.createCellStyle();
+					percentStyle.cloneStyleFrom(numberStyle);
+					percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+					percentStyle.setAlignment(HorizontalAlignment.RIGHT);
+					int startRow = 10;
+
+					if (!dataList.isEmpty()) {
+						for (int i = 0; i < dataList.size(); i++) {
+							M_TBS_Archival_Summary_Entity record = dataList.get(i);
+							System.out.println("rownumber="+startRow + i);
+							Row row = sheet.getRow(startRow + i);
+							if (row == null) {
+								row = sheet.createRow(startRow + i);
+							}
+/*
+ * 	private BigDecimal R11_NV_LONG;
+			private BigDecimal R11_NV_SHORT;
+			private BigDecimal R11_FV_LONG;
+			private BigDecimal R11_FV_SHORT;
+			private BigDecimal R11_QFHA;
+ */
+							//row11
+							// Column C 
+							//row=sheet.getRow(11);
+
+							Cell cell1 = row.getCell(2);
+							if (record.getR11_NV_LONG() != null) {
+								cell1.setCellValue(record.getR11_NV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1=row.getCell(3);
+							if (record.getR11_NV_SHORT() != null) {
+								cell1.setCellValue(record.getR11_NV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}
+
+						    cell1 = row.getCell(4);
+							if (record.getR11_FV_LONG() != null) {
+								cell1.setCellValue(record.getR11_FV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}		
+								
+								
+							cell1 = row.getCell(5);
+							if (record.getR11_FV_SHORT() != null) {
+								cell1.setCellValue(record.getR11_FV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1 = row.getCell(6);
+							if (record.getR11_QFHA() != null) {
+								cell1.setCellValue(record.getR11_QFHA().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+//------ROW11---------						
+							row=sheet.getRow(11);
+						    cell1 = row.getCell(2);
+							if (record.getR12_NV_LONG() != null) {
+								cell1.setCellValue(record.getR12_NV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1=row.getCell(3);
+							if (record.getR12_NV_SHORT() != null) {
+								cell1.setCellValue(record.getR12_NV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR12_FV_LONG() != null) {
+								cell1.setCellValue(record.getR12_FV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}		
+								
+								
+							cell1 = row.getCell(5);
+							if (record.getR12_FV_SHORT() != null) {
+								cell1.setCellValue(record.getR12_FV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1 = row.getCell(6);
+							if (record.getR12_QFHA() != null) {
+								cell1.setCellValue(record.getR12_QFHA().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							//------ROW12---------						
+							row=sheet.getRow(12);
+						    cell1 = row.getCell(2);
+							if (record.getR13_NV_LONG() != null) {
+								cell1.setCellValue(record.getR13_NV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1=row.getCell(3);
+							if (record.getR13_NV_SHORT() != null) {
+								cell1.setCellValue(record.getR13_NV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR13_FV_LONG() != null) {
+								cell1.setCellValue(record.getR13_FV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}		
+								
+								
+							cell1 = row.getCell(5);
+							if (record.getR13_FV_SHORT() != null) {
+								cell1.setCellValue(record.getR13_FV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1 = row.getCell(6);
+							if (record.getR13_QFHA() != null) {
+								cell1.setCellValue(record.getR13_QFHA().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+
+							//------ROW13---------
+							row = sheet.getRow(13);
+
+							// NV_LONG
+							cell1 = row.getCell(2);
+							if (record.getR14_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR14_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							// NV_SHORT
+							cell1 = row.getCell(3);
+							if (record.getR14_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR14_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							// FV_LONG
+							cell1 = row.getCell(4);
+							if (record.getR14_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR14_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							// FV_SHORT
+							cell1 = row.getCell(5);
+							if (record.getR14_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR14_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							// QFHA
+							cell1 = row.getCell(6);
+							if (record.getR14_QFHA() != null) {
+							    cell1.setCellValue(record.getR14_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW14---------
+							row = sheet.getRow(14);
+
+							cell1 = row.getCell(2);
+							if (record.getR15_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR15_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR15_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR15_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR15_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR15_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR15_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR15_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR15_QFHA() != null) {
+							    cell1.setCellValue(record.getR15_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW15---------
+							row = sheet.getRow(15);
+
+							cell1 = row.getCell(2);
+							if (record.getR16_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR16_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR16_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR16_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR16_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR16_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR16_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR16_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR16_QFHA() != null) {
+							    cell1.setCellValue(record.getR16_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW16---------
+							row = sheet.getRow(16);
+
+							cell1 = row.getCell(2);
+							if (record.getR17_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR17_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR17_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR17_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR17_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR17_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR17_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR17_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR17_QFHA() != null) {
+							    cell1.setCellValue(record.getR17_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW17---------
+							row = sheet.getRow(17);
+
+							cell1 = row.getCell(2);
+							if (record.getR18_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR18_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR18_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR18_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR18_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR18_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR18_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR18_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR18_QFHA() != null) {
+							    cell1.setCellValue(record.getR18_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW18---------
+							row = sheet.getRow(18);
+
+							cell1 = row.getCell(2);
+							if (record.getR19_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR19_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR19_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR19_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR19_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR19_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR19_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR19_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR19_QFHA() != null) {
+							    cell1.setCellValue(record.getR19_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW19---------
+							row = sheet.getRow(19);
+
+							cell1 = row.getCell(2);
+							if (record.getR20_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR20_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR20_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR20_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR20_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR20_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR20_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR20_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR20_QFHA() != null) {
+							    cell1.setCellValue(record.getR20_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW20---------
+							row = sheet.getRow(20);
+
+							cell1 = row.getCell(2);
+							if (record.getR21_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR21_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR21_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR21_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR21_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR21_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR21_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR21_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR21_QFHA() != null) {
+							    cell1.setCellValue(record.getR21_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW21---------
+							row = sheet.getRow(21);
+
+							cell1 = row.getCell(2);
+							if (record.getR22_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR22_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR22_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR22_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR22_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR22_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR22_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR22_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR22_QFHA() != null) {
+							    cell1.setCellValue(record.getR22_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW22---------
+							row = sheet.getRow(22);
+
+							cell1 = row.getCell(2);
+							if (record.getR23_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR23_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR23_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR23_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR23_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR23_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR23_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR23_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR23_QFHA() != null) {
+							    cell1.setCellValue(record.getR23_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW23---------
+							row = sheet.getRow(23);
+
+							cell1 = row.getCell(2);
+							if (record.getR24_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR24_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR24_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR24_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR24_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR24_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR24_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR24_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR24_QFHA() != null) {
+							    cell1.setCellValue(record.getR24_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW24---------
+							row = sheet.getRow(24);
+
+							cell1 = row.getCell(2);
+							if (record.getR25_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR25_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR25_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR25_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR25_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR25_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR25_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR25_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR25_QFHA() != null) {
+							    cell1.setCellValue(record.getR25_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW25---------
+							row = sheet.getRow(25);
+
+							cell1 = row.getCell(2);
+							if (record.getR26_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR26_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR26_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR26_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR26_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR26_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR26_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR26_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR26_QFHA() != null) {
+							    cell1.setCellValue(record.getR26_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW26---------
+							row = sheet.getRow(26);
+
+							cell1 = row.getCell(2);
+							if (record.getR27_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR27_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR27_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR27_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR27_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR27_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR27_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR27_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR27_QFHA() != null) {
+							    cell1.setCellValue(record.getR27_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW27---------
+							row = sheet.getRow(27);
+
+							cell1 = row.getCell(2);
+							if (record.getR28_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR28_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR28_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR28_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR28_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR28_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR28_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR28_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR28_QFHA() != null) {
+							    cell1.setCellValue(record.getR28_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW28---------
+							row = sheet.getRow(28);
+
+							cell1 = row.getCell(2);
+							if (record.getR29_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR29_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR29_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR29_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR29_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR29_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR29_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR29_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR29_QFHA() != null) {
+							    cell1.setCellValue(record.getR29_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW29---------
+							row = sheet.getRow(29);
+
+							cell1 = row.getCell(2);
+							if (record.getR30_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR30_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR30_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR30_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR30_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR30_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR30_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR30_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR30_QFHA() != null) {
+							    cell1.setCellValue(record.getR30_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW30--------- R31
+							row = sheet.getRow(30);
+
+							// NV_LONG
+							cell1 = row.getCell(2);
+							if (record.getR31_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR31_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							// NV_SHORT
+							cell1 = row.getCell(3);
+							if (record.getR31_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR31_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							// FV_LONG
+							cell1 = row.getCell(4);
+							if (record.getR31_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR31_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							// FV_SHORT
+							cell1 = row.getCell(5);
+							if (record.getR31_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR31_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							// QFHA
+							cell1 = row.getCell(6);
+							if (record.getR31_QFHA() != null) {
+							    cell1.setCellValue(record.getR31_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW31--------- R32
+							row = sheet.getRow(31);
+
+							cell1 = row.getCell(2);
+							if (record.getR32_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR32_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR32_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR32_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR32_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR32_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR32_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR32_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR32_QFHA() != null) {
+							    cell1.setCellValue(record.getR32_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW32--------- R33
+							row = sheet.getRow(32);
+
+							cell1 = row.getCell(2);
+							if (record.getR33_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR33_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR33_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR33_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR33_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR33_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR33_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR33_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR33_QFHA() != null) {
+							    cell1.setCellValue(record.getR33_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW33--------- R34
+							row = sheet.getRow(33);
+
+							cell1 = row.getCell(2);
+							if (record.getR34_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR34_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR34_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR34_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR34_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR34_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR34_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR34_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR34_QFHA() != null) {
+							    cell1.setCellValue(record.getR34_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW34--------- R35
+							row = sheet.getRow(34);
+
+							cell1 = row.getCell(2);
+							if (record.getR35_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR35_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR35_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR35_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR35_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR35_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR35_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR35_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR35_QFHA() != null) {
+							    cell1.setCellValue(record.getR35_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW35--------- R36
+							row = sheet.getRow(35);
+
+							cell1 = row.getCell(2);
+							if (record.getR36_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR36_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR36_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR36_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR36_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR36_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR36_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR36_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR36_QFHA() != null) {
+							    cell1.setCellValue(record.getR36_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW36--------- R37
+							row = sheet.getRow(36);
+
+							cell1 = row.getCell(2);
+							if (record.getR37_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR37_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR37_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR37_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR37_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR37_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR37_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR37_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR37_QFHA() != null) {
+							    cell1.setCellValue(record.getR37_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW37--------- R38
+							row = sheet.getRow(37);
+
+							cell1 = row.getCell(2);
+							if (record.getR38_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR38_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR38_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR38_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR38_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR38_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR38_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR38_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR38_QFHA() != null) {
+							    cell1.setCellValue(record.getR38_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW38--------- R39
+							row = sheet.getRow(38);
+
+							cell1 = row.getCell(2);
+							if (record.getR39_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR39_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR39_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR39_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR39_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR39_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR39_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR39_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR39_QFHA() != null) {
+							    cell1.setCellValue(record.getR39_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW39--------- R40
+							row = sheet.getRow(39);
+
+							cell1 = row.getCell(2);
+							if (record.getR40_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR40_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR40_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR40_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR40_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR40_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR40_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR40_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR40_QFHA() != null) {
+							    cell1.setCellValue(record.getR40_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							//------ROW40--------- R41
+							row = sheet.getRow(40);
+
+							cell1 = row.getCell(2);
+							if (record.getR41_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR41_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR41_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR41_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR41_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR41_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR41_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR41_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR41_QFHA() != null) {
+							    cell1.setCellValue(record.getR41_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW41--------- R42
+							row = sheet.getRow(41);
+
+							cell1 = row.getCell(2);
+							if (record.getR42_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR42_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR42_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR42_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR42_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR42_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR42_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR42_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR42_QFHA() != null) {
+							    cell1.setCellValue(record.getR42_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW42--------- R43
+							row = sheet.getRow(42);
+
+							cell1 = row.getCell(2);
+							if (record.getR43_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR43_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR43_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR43_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR43_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR43_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR43_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR43_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR43_QFHA() != null) {
+							    cell1.setCellValue(record.getR43_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW43--------- R44
+							row = sheet.getRow(43);
+
+							cell1 = row.getCell(2);
+							if (record.getR44_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR44_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR44_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR44_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR44_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR44_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR44_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR44_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR44_QFHA() != null) {
+							    cell1.setCellValue(record.getR44_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW44--------- R45
+							row = sheet.getRow(44);
+
+							cell1 = row.getCell(2);
+							if (record.getR45_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR45_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR45_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR45_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR45_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR45_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR45_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR45_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR45_QFHA() != null) {
+							    cell1.setCellValue(record.getR45_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW45--------- R46
+							row = sheet.getRow(45);
+
+							cell1 = row.getCell(2);
+							if (record.getR46_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR46_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR46_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR46_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR46_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR46_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR46_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR46_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR46_QFHA() != null) {
+							    cell1.setCellValue(record.getR46_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW46--------- R47
+							row = sheet.getRow(46);
+
+							cell1 = row.getCell(2);
+							if (record.getR47_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR47_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR47_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR47_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR47_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR47_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR47_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR47_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR47_QFHA() != null) {
+							    cell1.setCellValue(record.getR47_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW47--------- R48
+							row = sheet.getRow(47);
+
+							cell1 = row.getCell(2);
+							if (record.getR48_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR48_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR48_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR48_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR48_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR48_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR48_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR48_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR48_QFHA() != null) {
+							    cell1.setCellValue(record.getR48_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW48--------- R49
+							row = sheet.getRow(48);
+
+							cell1 = row.getCell(2);
+							if (record.getR49_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR49_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR49_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR49_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR49_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR49_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR49_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR49_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR49_QFHA() != null) {
+							    cell1.setCellValue(record.getR49_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW49--------- R50
+							row = sheet.getRow(49);
+
+							cell1 = row.getCell(2);
+							if (record.getR50_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR50_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR50_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR50_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR50_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR50_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR50_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR50_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR50_QFHA() != null) {
+							    cell1.setCellValue(record.getR50_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+							//------ROW50--------- R51
+							row = sheet.getRow(50);
+
+							cell1 = row.getCell(2);
+							if (record.getR51_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR51_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR51_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR51_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR51_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR51_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR51_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR51_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR51_QFHA() != null) {
+							    cell1.setCellValue(record.getR51_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+							
+							
+							//------ROW51--------- R52
+							row = sheet.getRow(51);
+
+							cell1 = row.getCell(2);
+							if (record.getR52_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR52_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR52_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR52_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR52_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR52_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR52_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR52_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR52_QFHA() != null) {
+							    cell1.setCellValue(record.getR52_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							
+							//------ROW52--------- R53
+							row = sheet.getRow(52);
+
+							cell1 = row.getCell(2);
+							if (record.getR53_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR53_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR53_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR53_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR53_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR53_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR53_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR53_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR53_QFHA() != null) {
+							    cell1.setCellValue(record.getR53_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							
+							//------ROW53--------- R54
+							row = sheet.getRow(53);
+
+							cell1 = row.getCell(2);
+							if (record.getR54_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR54_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR54_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR54_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR54_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR54_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR54_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR54_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR54_QFHA() != null) {
+							    cell1.setCellValue(record.getR54_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							
+							//------ROW54--------- R55
+							row = sheet.getRow(54);
+
+							cell1 = row.getCell(2);
+							if (record.getR55_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR55_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR55_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR55_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR55_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR55_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR55_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR55_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR55_QFHA() != null) {
+							    cell1.setCellValue(record.getR55_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+}
+	workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+} else {
+	
+}
+
+// Write the final workbook content to the in-memory stream.
+workbook.write(out);
+
+logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+return out.toByteArray();
+}
+
+
+}
+			/// Downloaded for Archival & Resub
+			public byte[] BRRS_M_tbsResubExcel(String filename, String reportId, String fromdate,
+		        String todate, String currency, String dtltype,
+		        String type, String version) throws Exception {
+
+		    logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
+
+		    if (type.equals("RESUB") & version != null) {
+		       
+		    }
+
+				List<M_TBS_Archival_Summary_Entity> dataList =BRRS_M_TBS_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate),version) ;
+
+				if (dataList.isEmpty()) {
+					logger.warn("Service: No data found for M_TBS report. Returning empty result.");
+					return new byte[0];
+				}
+
+				String templateDir = env.getProperty("output.exportpathtemp");
+				String templateFileName = filename;
+				System.out.println(filename);
+				Path templatePath = Paths.get(templateDir, templateFileName);
+				System.out.println(templatePath);
+				
+				logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+				if (!Files.exists(templatePath)) {
+					// This specific exception will be caught by the controller.
+					throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+				}
+				if (!Files.isReadable(templatePath)) {
+					// A specific exception for permission errors.
+					throw new SecurityException(
+							"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+				}
+
+				// This try-with-resources block is perfect. It guarantees all resources are
+				// closed automatically.
+				try (InputStream templateInputStream = Files.newInputStream(templatePath);
+						Workbook workbook = WorkbookFactory.create(templateInputStream);
+						ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+					Sheet sheet = workbook.getSheetAt(0);
+
+					// --- Style Definitions ---
+					CreationHelper createHelper = workbook.getCreationHelper();
+
+					CellStyle dateStyle = workbook.createCellStyle();
+					dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+					dateStyle.setBorderBottom(BorderStyle.THIN);
+					dateStyle.setBorderTop(BorderStyle.THIN);
+					dateStyle.setBorderLeft(BorderStyle.THIN);
+					dateStyle.setBorderRight(BorderStyle.THIN);
+
+					CellStyle textStyle = workbook.createCellStyle();
+					textStyle.setBorderBottom(BorderStyle.THIN);
+					textStyle.setBorderTop(BorderStyle.THIN);
+					textStyle.setBorderLeft(BorderStyle.THIN);
+					textStyle.setBorderRight(BorderStyle.THIN);
+					
+					// Create the font
+					Font font = workbook.createFont();
+					font.setFontHeightInPoints((short)8); // size 8
+					font.setFontName("Arial");    
+
+					CellStyle numberStyle = workbook.createCellStyle();
+					//numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
+					numberStyle.setBorderBottom(BorderStyle.THIN);
+					numberStyle.setBorderTop(BorderStyle.THIN);
+					numberStyle.setBorderLeft(BorderStyle.THIN);
+					numberStyle.setBorderRight(BorderStyle.THIN);
+					numberStyle.setFont(font);
+					// --- End of Style Definitions ---
+
+					CellStyle percentStyle = workbook.createCellStyle();
+					percentStyle.cloneStyleFrom(numberStyle);
+					percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+					percentStyle.setAlignment(HorizontalAlignment.RIGHT);
+					int startRow = 10;
+
+					if (!dataList.isEmpty()) {
+						for (int i = 0; i < dataList.size(); i++) {
+							M_TBS_Archival_Summary_Entity record = dataList.get(i);
+							System.out.println("rownumber="+startRow + i);
+							Row row = sheet.getRow(startRow + i);
+							if (row == null) {
+								row = sheet.createRow(startRow + i);
+							}
+/*
+ * 	private BigDecimal R11_NV_LONG;
+			private BigDecimal R11_NV_SHORT;
+			private BigDecimal R11_FV_LONG;
+			private BigDecimal R11_FV_SHORT;
+			private BigDecimal R11_QFHA;
+ */
+							//row11
+							// Column C 
+							//row=sheet.getRow(11);
+
+							Cell cell1 = row.getCell(2);
+							if (record.getR11_NV_LONG() != null) {
+								cell1.setCellValue(record.getR11_NV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1=row.getCell(3);
+							if (record.getR11_NV_SHORT() != null) {
+								cell1.setCellValue(record.getR11_NV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}
+
+						    cell1 = row.getCell(4);
+							if (record.getR11_FV_LONG() != null) {
+								cell1.setCellValue(record.getR11_FV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}		
+								
+								
+							cell1 = row.getCell(5);
+							if (record.getR11_FV_SHORT() != null) {
+								cell1.setCellValue(record.getR11_FV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1 = row.getCell(6);
+							if (record.getR11_QFHA() != null) {
+								cell1.setCellValue(record.getR11_QFHA().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+//------ROW11---------						
+							row=sheet.getRow(11);
+						    cell1 = row.getCell(2);
+							if (record.getR12_NV_LONG() != null) {
+								cell1.setCellValue(record.getR12_NV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1=row.getCell(3);
+							if (record.getR12_NV_SHORT() != null) {
+								cell1.setCellValue(record.getR12_NV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR12_FV_LONG() != null) {
+								cell1.setCellValue(record.getR12_FV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}		
+								
+								
+							cell1 = row.getCell(5);
+							if (record.getR12_FV_SHORT() != null) {
+								cell1.setCellValue(record.getR12_FV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1 = row.getCell(6);
+							if (record.getR12_QFHA() != null) {
+								cell1.setCellValue(record.getR12_QFHA().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							//------ROW12---------						
+							row=sheet.getRow(12);
+						    cell1 = row.getCell(2);
+							if (record.getR13_NV_LONG() != null) {
+								cell1.setCellValue(record.getR13_NV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1=row.getCell(3);
+							if (record.getR13_NV_SHORT() != null) {
+								cell1.setCellValue(record.getR13_NV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR13_FV_LONG() != null) {
+								cell1.setCellValue(record.getR13_FV_LONG().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}		
+								
+								
+							cell1 = row.getCell(5);
+							if (record.getR13_FV_SHORT() != null) {
+								cell1.setCellValue(record.getR13_FV_SHORT().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+							
+							cell1 = row.getCell(6);
+							if (record.getR13_QFHA() != null) {
+								cell1.setCellValue(record.getR13_QFHA().doubleValue());
+							
+							} else {
+								cell1.setCellValue("");
+								cell1.setCellStyle(textStyle);
+							}	
+
+							//------ROW13---------
+							row = sheet.getRow(13);
+
+							// NV_LONG
+							cell1 = row.getCell(2);
+							if (record.getR14_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR14_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							// NV_SHORT
+							cell1 = row.getCell(3);
+							if (record.getR14_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR14_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							// FV_LONG
+							cell1 = row.getCell(4);
+							if (record.getR14_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR14_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							// FV_SHORT
+							cell1 = row.getCell(5);
+							if (record.getR14_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR14_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							// QFHA
+							cell1 = row.getCell(6);
+							if (record.getR14_QFHA() != null) {
+							    cell1.setCellValue(record.getR14_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW14---------
+							row = sheet.getRow(14);
+
+							cell1 = row.getCell(2);
+							if (record.getR15_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR15_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR15_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR15_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR15_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR15_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR15_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR15_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR15_QFHA() != null) {
+							    cell1.setCellValue(record.getR15_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW15---------
+							row = sheet.getRow(15);
+
+							cell1 = row.getCell(2);
+							if (record.getR16_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR16_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR16_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR16_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR16_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR16_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR16_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR16_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR16_QFHA() != null) {
+							    cell1.setCellValue(record.getR16_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW16---------
+							row = sheet.getRow(16);
+
+							cell1 = row.getCell(2);
+							if (record.getR17_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR17_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR17_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR17_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR17_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR17_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR17_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR17_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR17_QFHA() != null) {
+							    cell1.setCellValue(record.getR17_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW17---------
+							row = sheet.getRow(17);
+
+							cell1 = row.getCell(2);
+							if (record.getR18_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR18_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR18_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR18_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR18_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR18_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR18_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR18_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR18_QFHA() != null) {
+							    cell1.setCellValue(record.getR18_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW18---------
+							row = sheet.getRow(18);
+
+							cell1 = row.getCell(2);
+							if (record.getR19_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR19_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR19_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR19_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR19_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR19_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR19_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR19_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR19_QFHA() != null) {
+							    cell1.setCellValue(record.getR19_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW19---------
+							row = sheet.getRow(19);
+
+							cell1 = row.getCell(2);
+							if (record.getR20_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR20_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR20_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR20_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR20_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR20_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR20_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR20_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR20_QFHA() != null) {
+							    cell1.setCellValue(record.getR20_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW20---------
+							row = sheet.getRow(20);
+
+							cell1 = row.getCell(2);
+							if (record.getR21_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR21_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR21_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR21_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR21_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR21_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR21_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR21_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR21_QFHA() != null) {
+							    cell1.setCellValue(record.getR21_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW21---------
+							row = sheet.getRow(21);
+
+							cell1 = row.getCell(2);
+							if (record.getR22_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR22_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR22_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR22_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR22_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR22_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR22_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR22_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR22_QFHA() != null) {
+							    cell1.setCellValue(record.getR22_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW22---------
+							row = sheet.getRow(22);
+
+							cell1 = row.getCell(2);
+							if (record.getR23_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR23_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR23_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR23_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR23_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR23_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR23_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR23_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR23_QFHA() != null) {
+							    cell1.setCellValue(record.getR23_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW23---------
+							row = sheet.getRow(23);
+
+							cell1 = row.getCell(2);
+							if (record.getR24_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR24_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR24_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR24_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR24_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR24_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR24_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR24_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR24_QFHA() != null) {
+							    cell1.setCellValue(record.getR24_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW24---------
+							row = sheet.getRow(24);
+
+							cell1 = row.getCell(2);
+							if (record.getR25_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR25_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR25_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR25_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR25_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR25_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR25_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR25_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR25_QFHA() != null) {
+							    cell1.setCellValue(record.getR25_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW25---------
+							row = sheet.getRow(25);
+
+							cell1 = row.getCell(2);
+							if (record.getR26_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR26_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR26_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR26_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR26_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR26_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR26_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR26_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR26_QFHA() != null) {
+							    cell1.setCellValue(record.getR26_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW26---------
+							row = sheet.getRow(26);
+
+							cell1 = row.getCell(2);
+							if (record.getR27_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR27_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR27_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR27_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR27_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR27_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR27_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR27_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR27_QFHA() != null) {
+							    cell1.setCellValue(record.getR27_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW27---------
+							row = sheet.getRow(27);
+
+							cell1 = row.getCell(2);
+							if (record.getR28_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR28_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR28_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR28_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR28_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR28_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR28_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR28_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR28_QFHA() != null) {
+							    cell1.setCellValue(record.getR28_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW28---------
+							row = sheet.getRow(28);
+
+							cell1 = row.getCell(2);
+							if (record.getR29_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR29_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR29_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR29_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR29_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR29_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR29_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR29_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR29_QFHA() != null) {
+							    cell1.setCellValue(record.getR29_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW29---------
+							row = sheet.getRow(29);
+
+							cell1 = row.getCell(2);
+							if (record.getR30_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR30_NV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(3);
+							if (record.getR30_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR30_NV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(4);
+							if (record.getR30_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR30_FV_LONG().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(5);
+							if (record.getR30_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR30_FV_SHORT().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+
+							cell1 = row.getCell(6);
+							if (record.getR30_QFHA() != null) {
+							    cell1.setCellValue(record.getR30_QFHA().doubleValue());
+							} else {
+							    cell1.setCellValue("");
+							    cell1.setCellStyle(textStyle);
+							}
+							//------ROW30--------- R31
+							row = sheet.getRow(30);
+
+							// NV_LONG
+							cell1 = row.getCell(2);
+							if (record.getR31_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR31_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							// NV_SHORT
+							cell1 = row.getCell(3);
+							if (record.getR31_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR31_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							// FV_LONG
+							cell1 = row.getCell(4);
+							if (record.getR31_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR31_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							// FV_SHORT
+							cell1 = row.getCell(5);
+							if (record.getR31_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR31_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							// QFHA
+							cell1 = row.getCell(6);
+							if (record.getR31_QFHA() != null) {
+							    cell1.setCellValue(record.getR31_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW31--------- R32
+							row = sheet.getRow(31);
+
+							cell1 = row.getCell(2);
+							if (record.getR32_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR32_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR32_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR32_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR32_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR32_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR32_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR32_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR32_QFHA() != null) {
+							    cell1.setCellValue(record.getR32_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW32--------- R33
+							row = sheet.getRow(32);
+
+							cell1 = row.getCell(2);
+							if (record.getR33_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR33_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR33_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR33_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR33_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR33_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR33_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR33_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR33_QFHA() != null) {
+							    cell1.setCellValue(record.getR33_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW33--------- R34
+							row = sheet.getRow(33);
+
+							cell1 = row.getCell(2);
+							if (record.getR34_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR34_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR34_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR34_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR34_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR34_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR34_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR34_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR34_QFHA() != null) {
+							    cell1.setCellValue(record.getR34_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW34--------- R35
+							row = sheet.getRow(34);
+
+							cell1 = row.getCell(2);
+							if (record.getR35_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR35_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR35_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR35_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR35_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR35_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR35_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR35_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR35_QFHA() != null) {
+							    cell1.setCellValue(record.getR35_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW35--------- R36
+							row = sheet.getRow(35);
+
+							cell1 = row.getCell(2);
+							if (record.getR36_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR36_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR36_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR36_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR36_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR36_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR36_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR36_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR36_QFHA() != null) {
+							    cell1.setCellValue(record.getR36_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW36--------- R37
+							row = sheet.getRow(36);
+
+							cell1 = row.getCell(2);
+							if (record.getR37_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR37_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR37_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR37_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR37_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR37_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR37_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR37_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR37_QFHA() != null) {
+							    cell1.setCellValue(record.getR37_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW37--------- R38
+							row = sheet.getRow(37);
+
+							cell1 = row.getCell(2);
+							if (record.getR38_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR38_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR38_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR38_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR38_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR38_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR38_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR38_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR38_QFHA() != null) {
+							    cell1.setCellValue(record.getR38_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW38--------- R39
+							row = sheet.getRow(38);
+
+							cell1 = row.getCell(2);
+							if (record.getR39_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR39_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR39_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR39_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR39_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR39_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR39_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR39_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR39_QFHA() != null) {
+							    cell1.setCellValue(record.getR39_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW39--------- R40
+							row = sheet.getRow(39);
+
+							cell1 = row.getCell(2);
+							if (record.getR40_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR40_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR40_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR40_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR40_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR40_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR40_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR40_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR40_QFHA() != null) {
+							    cell1.setCellValue(record.getR40_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							//------ROW40--------- R41
+							row = sheet.getRow(40);
+
+							cell1 = row.getCell(2);
+							if (record.getR41_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR41_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR41_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR41_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR41_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR41_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR41_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR41_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR41_QFHA() != null) {
+							    cell1.setCellValue(record.getR41_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW41--------- R42
+							row = sheet.getRow(41);
+
+							cell1 = row.getCell(2);
+							if (record.getR42_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR42_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR42_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR42_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR42_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR42_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR42_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR42_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR42_QFHA() != null) {
+							    cell1.setCellValue(record.getR42_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW42--------- R43
+							row = sheet.getRow(42);
+
+							cell1 = row.getCell(2);
+							if (record.getR43_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR43_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR43_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR43_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR43_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR43_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR43_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR43_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR43_QFHA() != null) {
+							    cell1.setCellValue(record.getR43_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW43--------- R44
+							row = sheet.getRow(43);
+
+							cell1 = row.getCell(2);
+							if (record.getR44_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR44_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR44_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR44_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR44_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR44_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR44_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR44_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR44_QFHA() != null) {
+							    cell1.setCellValue(record.getR44_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW44--------- R45
+							row = sheet.getRow(44);
+
+							cell1 = row.getCell(2);
+							if (record.getR45_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR45_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR45_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR45_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR45_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR45_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR45_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR45_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR45_QFHA() != null) {
+							    cell1.setCellValue(record.getR45_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW45--------- R46
+							row = sheet.getRow(45);
+
+							cell1 = row.getCell(2);
+							if (record.getR46_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR46_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR46_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR46_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR46_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR46_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR46_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR46_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR46_QFHA() != null) {
+							    cell1.setCellValue(record.getR46_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW46--------- R47
+							row = sheet.getRow(46);
+
+							cell1 = row.getCell(2);
+							if (record.getR47_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR47_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR47_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR47_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR47_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR47_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR47_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR47_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR47_QFHA() != null) {
+							    cell1.setCellValue(record.getR47_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW47--------- R48
+							row = sheet.getRow(47);
+
+							cell1 = row.getCell(2);
+							if (record.getR48_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR48_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR48_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR48_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR48_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR48_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR48_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR48_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR48_QFHA() != null) {
+							    cell1.setCellValue(record.getR48_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW48--------- R49
+							row = sheet.getRow(48);
+
+							cell1 = row.getCell(2);
+							if (record.getR49_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR49_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR49_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR49_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR49_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR49_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR49_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR49_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR49_QFHA() != null) {
+							    cell1.setCellValue(record.getR49_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+
+
+							//------ROW49--------- R50
+							row = sheet.getRow(49);
+
+							cell1 = row.getCell(2);
+							if (record.getR50_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR50_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR50_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR50_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR50_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR50_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR50_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR50_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR50_QFHA() != null) {
+							    cell1.setCellValue(record.getR50_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+							//------ROW50--------- R51
+							row = sheet.getRow(50);
+
+							cell1 = row.getCell(2);
+							if (record.getR51_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR51_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR51_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR51_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR51_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR51_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR51_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR51_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR51_QFHA() != null) {
+							    cell1.setCellValue(record.getR51_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+							
+							
+							//------ROW51--------- R52
+							row = sheet.getRow(51);
+
+							cell1 = row.getCell(2);
+							if (record.getR52_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR52_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR52_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR52_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR52_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR52_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR52_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR52_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR52_QFHA() != null) {
+							    cell1.setCellValue(record.getR52_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							
+							//------ROW52--------- R53
+							row = sheet.getRow(52);
+
+							cell1 = row.getCell(2);
+							if (record.getR53_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR53_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR53_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR53_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR53_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR53_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR53_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR53_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR53_QFHA() != null) {
+							    cell1.setCellValue(record.getR53_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							
+							//------ROW53--------- R54
+							row = sheet.getRow(53);
+
+							cell1 = row.getCell(2);
+							if (record.getR54_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR54_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR54_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR54_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR54_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR54_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR54_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR54_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR54_QFHA() != null) {
+							    cell1.setCellValue(record.getR54_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							
+							//------ROW54--------- R55
+							row = sheet.getRow(54);
+
+							cell1 = row.getCell(2);
+							if (record.getR55_NV_LONG() != null) {
+							    cell1.setCellValue(record.getR55_NV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(3);
+							if (record.getR55_NV_SHORT() != null) {
+							    cell1.setCellValue(record.getR55_NV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(4);
+							if (record.getR55_FV_LONG() != null) {
+							    cell1.setCellValue(record.getR55_FV_LONG().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(5);
+							if (record.getR55_FV_SHORT() != null) {
+							    cell1.setCellValue(record.getR55_FV_SHORT().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+							cell1 = row.getCell(6);
+							if (record.getR55_QFHA() != null) {
+							    cell1.setCellValue(record.getR55_QFHA().doubleValue());
+							} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+
+}
+	workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+} else {
+	
+}
+
+// Write the final workbook content to the in-memory stream.
+workbook.write(out);
+
+logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+return out.toByteArray();
+}
+
+
+}
+	
 }
