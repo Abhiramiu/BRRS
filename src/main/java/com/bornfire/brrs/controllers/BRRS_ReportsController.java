@@ -1640,15 +1640,15 @@ public class BRRS_ReportsController {
 
 		try {
 			System.out.println("came to single controller");
-			request1.setREPORT_DATE(asondate);
-			request2.setREPORT_DATE(asondate);
-			request3.setREPORT_DATE(asondate);
-			request4.setREPORT_DATE(asondate);
-			request5.setREPORT_DATE(asondate);
-			request6.setREPORT_DATE(asondate);
-			request7.setREPORT_DATE(asondate);
-			request8.setREPORT_DATE(asondate);
-			request9.setREPORT_DATE(asondate);
+			request1.setReportDate(asondate);
+			request2.setReportDate(asondate);
+			request3.setReportDate(asondate);
+			request4.setReportDate(asondate);
+			request5.setReportDate(asondate);
+			request6.setReportDate(asondate);
+			request7.setReportDate(asondate);
+			request8.setReportDate(asondate);
+			request9.setReportDate(asondate);
 
 			BRRS_M_RPD_ReportService.updateReport1(request1);
 			BRRS_M_RPD_ReportService.updateReport2(request2);
@@ -2542,6 +2542,50 @@ try {
 	e.printStackTrace();
 	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body("Resubmission Update Failed: " + e.getMessage());
+}
+}
+
+@RequestMapping(value = "/UpdateM_RPD_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateReportReSub(
+	@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	@ModelAttribute M_RPD_Summary_Entity1 request1,
+	@ModelAttribute M_RPD_Summary_Entity2 request2,
+	@ModelAttribute M_RPD_Summary_Entity3 request3,
+	@ModelAttribute M_RPD_Summary_Entity4 request4,
+	@ModelAttribute M_RPD_Summary_Entity5 request5,
+
+	@ModelAttribute M_RPD_Summary_Entity6 request6,
+	@ModelAttribute M_RPD_Summary_Entity7 request7,
+	@ModelAttribute M_RPD_Summary_Entity8 request8,
+	@ModelAttribute M_RPD_Summary_Entity9 request9,
+	HttpServletRequest req) {
+
+try {
+	System.out.println("Came to Q_BRANCHNET Resub Controller");
+
+	if (asondate != null) {
+		request1.setReportDate(asondate);
+		request2.setReportDate(asondate);
+		request3.setReportDate(asondate);
+		request4.setReportDate(asondate);
+		request5.setReportDate(asondate);
+		request6.setReportDate(asondate);
+		request7.setReportDate(asondate);
+		request8.setReportDate(asondate);
+		request9.setReportDate(asondate);
+		System.out.println("Set Report Date: " + asondate);
+	}
+
+	// Call service
+	BRRS_M_RPD_ReportService.updateReportReSub(request1, request2, request3, request4,request5,request6,request7,request8,request9);
+
+	return ResponseEntity.ok("Resubmission Updated Successfully");
+
+} catch (Exception e) {
+	e.printStackTrace();
+	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			.body("M_RPD Resubmission Update Failed: " + e.getMessage());
 }
 }
 

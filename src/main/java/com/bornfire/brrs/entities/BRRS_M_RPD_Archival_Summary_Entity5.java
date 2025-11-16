@@ -3,8 +3,10 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -12,6 +14,8 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_M_RPD_ARCHIVALTABLE_SUMMARY5")
+
+@IdClass(M_RPD_Archival_Summary5_PK.class)
 public class BRRS_M_RPD_Archival_Summary_Entity5 {
 
     private String R201_PRODUCT;
@@ -613,14 +617,16 @@ public class BRRS_M_RPD_Archival_Summary_Entity5 {
     private String R250_DESCRIPTION;
     private BigDecimal R250_VALUE;
     private BigDecimal R250_INTEREST_RATE;
-
-	 @Temporal(TemporalType.DATE)
-	 	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	    
-	    @Id
-	    private Date REPORT_DATE;
-
-	    private String REPORT_VERSION;
+    @Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
+	  @Column(name = "REPORT_RESUBDATE")
+	    @Temporal(TemporalType.TIMESTAMP)
+	    private Date reportResubDate;	
 	    private String REPORT_FREQUENCY;
 	    private String REPORT_CODE;
 	    private String REPORT_DESC;
@@ -3927,17 +3933,23 @@ public class BRRS_M_RPD_Archival_Summary_Entity5 {
 		public void setR250_INTEREST_RATE(BigDecimal r250_INTEREST_RATE) {
 			R250_INTEREST_RATE = r250_INTEREST_RATE;
 		}
-		public Date getREPORT_DATE() {
-			return REPORT_DATE;
+		public Date getReportDate() {
+			return reportDate;
 		}
-		public void setREPORT_DATE(Date rEPORT_DATE) {
-			REPORT_DATE = rEPORT_DATE;
+		public void setReportDate(Date reportDate) {
+			this.reportDate = reportDate;
 		}
-		public String getREPORT_VERSION() {
-			return REPORT_VERSION;
+		public String getReportVersion() {
+			return reportVersion;
 		}
-		public void setREPORT_VERSION(String rEPORT_VERSION) {
-			REPORT_VERSION = rEPORT_VERSION;
+		public void setReportVersion(String reportVersion) {
+			this.reportVersion = reportVersion;
+		}
+		public Date getReportResubDate() {
+			return reportResubDate;
+		}
+		public void setReportResubDate(Date reportResubDate) {
+			this.reportResubDate = reportResubDate;
 		}
 		public String getREPORT_FREQUENCY() {
 			return REPORT_FREQUENCY;
@@ -3979,5 +3991,4 @@ public class BRRS_M_RPD_Archival_Summary_Entity5 {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-		
 }

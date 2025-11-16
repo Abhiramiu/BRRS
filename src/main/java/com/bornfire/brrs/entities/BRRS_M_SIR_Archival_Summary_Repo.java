@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface BRRS_M_SIR_Archival_Summary_Repo extends JpaRepository<M_SIR_Archival_Summary_Entity, M_CA7_Archival_Summary_PK> {
+public interface BRRS_M_SIR_Archival_Summary_Repo extends JpaRepository<M_SIR_Archival_Summary_Entity, M_SIR_Archival_Summary_PK> {
 	
 	
 	    @Query(value = "select * from BRRS_M_SIR_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ?1 and REPORT_VERSION = ?2", nativeQuery = true)

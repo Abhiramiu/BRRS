@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -135,105 +136,130 @@ public class BRRS_M_RPD_ReportService {
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;	
+		 try {
+	            Date d1 = dateformat.parse(todate);
+
+	            // ---------- CASE 1: ARCHIVAL ----------
+	            if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+
+	                List<BRRS_M_RPD_Archival_Summary_Entity1> T1Master = BRRS_M_RPD_Archival_Summary_Repo1
+	                        .getdatabydateListarchival(d1, version);
+	                List<BRRS_M_RPD_Archival_Summary_Entity2> T2Master = BRRS_M_RPD_Archival_Summary_Repo2
+	                        .getdatabydateListarchival(d1, version);
+	                List<BRRS_M_RPD_Archival_Summary_Entity3> T3Master = BRRS_M_RPD_Archival_Summary_Repo3
+	                        .getdatabydateListarchival(d1, version);
+	                List<BRRS_M_RPD_Archival_Summary_Entity4> T4Master = BRRS_M_RPD_Archival_Summary_Repo4
+	                        .getdatabydateListarchival(d1, version);
+	                List<BRRS_M_RPD_Archival_Summary_Entity5> T5Master = BRRS_M_RPD_Archival_Summary_Repo5
+	                        .getdatabydateListarchival(d1, version);
+	                List<BRRS_M_RPD_Archival_Summary_Entity6> T6Master = BRRS_M_RPD_Archival_Summary_Repo6
+	                        .getdatabydateListarchival(d1, version);
+	                List<BRRS_M_RPD_Archival_Summary_Entity7> T7Master = BRRS_M_RPD_Archival_Summary_Repo7
+	                        .getdatabydateListarchival(d1, version);
+	                List<BRRS_M_RPD_Archival_Summary_Entity8> T8Master = BRRS_M_RPD_Archival_Summary_Repo8
+	                        .getdatabydateListarchival(d1, version);
+	                List<BRRS_M_RPD_Archival_Summary_Entity9> T9Master = BRRS_M_RPD_Archival_Summary_Repo9
+	                        .getdatabydateListarchival(d1, version);
+
+	                mv.addObject("reportsummary", T1Master);
+	    			mv.addObject("reportsummary2", T2Master);
+	    			mv.addObject("reportsummary3", T3Master);
+	    			mv.addObject("reportsummary4", T4Master);
+	    			mv.addObject("reportsummary5", T5Master);
+	    			mv.addObject("reportsummary6", T6Master);
+	    			mv.addObject("reportsummary7", T7Master);
+	    			mv.addObject("reportsummary8", T8Master);
+	    			mv.addObject("reportsummary9", T9Master);
+	            }
+	         // ---------- CASE 2: RESUB ----------
+	            else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+	            	 List<BRRS_M_RPD_Archival_Summary_Entity1> T1Master = BRRS_M_RPD_Archival_Summary_Repo1
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity2> T2Master = BRRS_M_RPD_Archival_Summary_Repo2
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity3> T3Master = BRRS_M_RPD_Archival_Summary_Repo3
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity4> T4Master = BRRS_M_RPD_Archival_Summary_Repo4
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity5> T5Master = BRRS_M_RPD_Archival_Summary_Repo5
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity6> T6Master = BRRS_M_RPD_Archival_Summary_Repo6
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity7> T7Master = BRRS_M_RPD_Archival_Summary_Repo7
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity8> T8Master = BRRS_M_RPD_Archival_Summary_Repo8
+		                        .getdatabydateListarchival(d1, version);
+		                List<BRRS_M_RPD_Archival_Summary_Entity9> T9Master = BRRS_M_RPD_Archival_Summary_Repo9
+		                        .getdatabydateListarchival(d1, version);
+
+		                mv.addObject("reportsummary", T1Master);
+		    			mv.addObject("reportsummary2", T2Master);
+		    			mv.addObject("reportsummary3", T3Master);
+		    			mv.addObject("reportsummary4", T4Master);
+		    			mv.addObject("reportsummary5", T5Master);
+		    			mv.addObject("reportsummary6", T6Master);
+		    			mv.addObject("reportsummary7", T7Master);
+		    			mv.addObject("reportsummary8", T8Master);
+		    			mv.addObject("reportsummary9", T9Master);
+	            }
+	            // ---------- CASE 3: NORMAL ----------
+	            else {
+
+	                List<M_RPD_Summary_Entity1> T1Master = BRRS_M_RPD_Summary_Repo1.getdatabydateList(d1);
+	                List<M_RPD_Summary_Entity2> T2Master = BRRS_M_RPD_Summary_Repo2.getdatabydateList(d1);
+	                List<M_RPD_Summary_Entity3> T3Master = BRRS_M_RPD_Summary_Repo3.getdatabydateList(d1);
+	                List<M_RPD_Summary_Entity4> T4Master = BRRS_M_RPD_Summary_Repo4.getdatabydateList(d1);
+	                List<M_RPD_Summary_Entity5> T5Master = BRRS_M_RPD_Summary_Repo5.getdatabydateList(d1);
+	                List<M_RPD_Summary_Entity6> T6Master = BRRS_M_RPD_Summary_Repo6.getdatabydateList(d1);
+	                List<M_RPD_Summary_Entity7> T7Master = BRRS_M_RPD_Summary_Repo7.getdatabydateList(d1);
+	                List<M_RPD_Summary_Entity8> T8Master = BRRS_M_RPD_Summary_Repo8.getdatabydateList(d1);
+	                List<M_RPD_Summary_Entity9> T9Master = BRRS_M_RPD_Summary_Repo9.getdatabydateList(d1);
+
+
+	                System.out.println("count "+T1Master.size());		
+	                System.out.println("count2 "+T2Master.size());
+	                System.out.println("count3 "+T3Master.size());
+	                System.out.println("count4 "+T4Master.size());
+	                System.out.println("count5 "+T5Master.size());
+	                System.out.println("count6 "+T6Master.size());
+	                System.out.println("count7 "+T7Master.size());
+	                System.out.println("count8 "+T8Master.size());
+	                System.out.println("count9 "+T9Master.size());
+
+	            	mv.addObject("reportsummary", T1Master);
+	        		mv.addObject("reportsummary2", T2Master);
+	        		mv.addObject("reportsummary3", T3Master);
+	        		mv.addObject("reportsummary4", T4Master);
+	        		mv.addObject("reportsummary5", T5Master);
+	        		mv.addObject("reportsummary6", T6Master);
+	        		mv.addObject("reportsummary7", T7Master);
+	        		mv.addObject("reportsummary8", T8Master);
+	        		mv.addObject("reportsummary9", T9Master);	            }
 		
-		if (type.equals("ARCHIVAL") & version != null) {
-			System.out.println(type);
-			List<BRRS_M_RPD_Archival_Summary_Entity1> T1Master = new ArrayList<BRRS_M_RPD_Archival_Summary_Entity1>();
-			List<BRRS_M_RPD_Archival_Summary_Entity2> T2Master = new ArrayList<BRRS_M_RPD_Archival_Summary_Entity2>();
-			List<BRRS_M_RPD_Archival_Summary_Entity3> T3Master = new ArrayList<BRRS_M_RPD_Archival_Summary_Entity3>();
-			List<BRRS_M_RPD_Archival_Summary_Entity4> T4Master = new ArrayList<BRRS_M_RPD_Archival_Summary_Entity4>();
-			List<BRRS_M_RPD_Archival_Summary_Entity5> T5Master = new ArrayList<BRRS_M_RPD_Archival_Summary_Entity5>();
-			List<BRRS_M_RPD_Archival_Summary_Entity6> T6Master = new ArrayList<BRRS_M_RPD_Archival_Summary_Entity6>();
-			List<BRRS_M_RPD_Archival_Summary_Entity7> T7Master = new ArrayList<BRRS_M_RPD_Archival_Summary_Entity7>();
-			List<BRRS_M_RPD_Archival_Summary_Entity8> T8Master = new ArrayList<BRRS_M_RPD_Archival_Summary_Entity8>();
-			List<BRRS_M_RPD_Archival_Summary_Entity9> T9Master = new ArrayList<BRRS_M_RPD_Archival_Summary_Entity9>();
-			
-			System.out.println(version);
-			try {
-				Date d1 = dateformat.parse(todate);
-
-				T1Master = BRRS_M_RPD_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate), version);
-				T2Master = BRRS_M_RPD_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
-				T3Master = BRRS_M_RPD_Archival_Summary_Repo3.getdatabydateListarchival(dateformat.parse(todate), version);
-				T4Master = BRRS_M_RPD_Archival_Summary_Repo4.getdatabydateListarchival(dateformat.parse(todate), version);
-				T5Master = BRRS_M_RPD_Archival_Summary_Repo5.getdatabydateListarchival(dateformat.parse(todate), version);
-				T6Master = BRRS_M_RPD_Archival_Summary_Repo6.getdatabydateListarchival(dateformat.parse(todate), version);
-				T7Master = BRRS_M_RPD_Archival_Summary_Repo7.getdatabydateListarchival(dateformat.parse(todate), version);
-				T8Master = BRRS_M_RPD_Archival_Summary_Repo8.getdatabydateListarchival(dateformat.parse(todate), version);
-				T9Master = BRRS_M_RPD_Archival_Summary_Repo9.getdatabydateListarchival(dateformat.parse(todate), version);
-
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-
-			mv.addObject("reportsummary", T1Master);
-			mv.addObject("reportsummary2", T2Master);
-			mv.addObject("reportsummary3", T3Master);
-			mv.addObject("reportsummary4", T4Master);
-			mv.addObject("reportsummary5", T5Master);
-			mv.addObject("reportsummary6", T6Master);
-			mv.addObject("reportsummary7", T7Master);
-			mv.addObject("reportsummary8", T8Master);
-			mv.addObject("reportsummary9", T9Master);
-		} 
-		else {
-		List<M_RPD_Summary_Entity1> T1Master = new ArrayList<M_RPD_Summary_Entity1>();
-		List<M_RPD_Summary_Entity2> T2Master1 = new ArrayList<M_RPD_Summary_Entity2>();
-		List<M_RPD_Summary_Entity3> T3Master3 = new ArrayList<M_RPD_Summary_Entity3>();
-		List<M_RPD_Summary_Entity4> T4Master4 = new ArrayList<M_RPD_Summary_Entity4>();
-		List<M_RPD_Summary_Entity5> T5Master5 = new ArrayList<M_RPD_Summary_Entity5>();
-		List<M_RPD_Summary_Entity6> T6Master6 = new ArrayList<M_RPD_Summary_Entity6>();
-		List<M_RPD_Summary_Entity7> T7Master7 = new ArrayList<M_RPD_Summary_Entity7>();
-		List<M_RPD_Summary_Entity8> T8Master8 = new ArrayList<M_RPD_Summary_Entity8>();
-		List<M_RPD_Summary_Entity9> T9Master9 = new ArrayList<M_RPD_Summary_Entity9>();
-		try {
-			Date d1 = dateformat.parse(todate);
-			T1Master=BRRS_M_RPD_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
-			T2Master1=BRRS_M_RPD_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
-			T3Master3=BRRS_M_RPD_Summary_Repo3.getdatabydateList(dateformat.parse(todate));
-			T4Master4=BRRS_M_RPD_Summary_Repo4.getdatabydateList(dateformat.parse(todate));
-			T5Master5=BRRS_M_RPD_Summary_Repo5.getdatabydateList(dateformat.parse(todate));
-			T6Master6=BRRS_M_RPD_Summary_Repo6.getdatabydateList(dateformat.parse(todate));
-			T7Master7=BRRS_M_RPD_Summary_Repo7.getdatabydateList(dateformat.parse(todate));
-			T8Master8=BRRS_M_RPD_Summary_Repo8.getdatabydateList(dateformat.parse(todate));
-			T9Master9=BRRS_M_RPD_Summary_Repo9.getdatabydateList(dateformat.parse(todate));
- System.out.println("count "+T1Master.size());		
- System.out.println("count2 "+T2Master1.size());
- System.out.println("count3 "+T3Master3.size());
- System.out.println("count4 "+T4Master4.size());
- System.out.println("count5 "+T5Master5.size());
- System.out.println("count6 "+T6Master6.size());
- System.out.println("count7 "+T7Master7.size());
- System.out.println("count8 "+T8Master8.size());
- System.out.println("count9 "+T9Master9.size());
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		mv.addObject("reportsummary", T1Master);
-		mv.addObject("reportsummary2", T2Master1);
-		mv.addObject("reportsummary3", T3Master3);
-		mv.addObject("reportsummary4", T4Master4);
-		mv.addObject("reportsummary5", T5Master5);
-		mv.addObject("reportsummary6", T6Master6);
-		mv.addObject("reportsummary7", T7Master7);
-		mv.addObject("reportsummary8", T8Master8);
-		mv.addObject("reportsummary9", T9Master9);
-		}
-
+	
 		mv.setViewName("BRRS/M_RPD");		
 		mv.addObject("displaymode", "summary");
 		System.out.println("scv" + mv.getViewName());
 
-		return mv;
+		 } catch (ParseException e) {
+	            e.printStackTrace();
+	            mv.addObject("error", "Invalid date format for: " + todate);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            mv.addObject("error", "An error occurred while fetching M_CA6 data.");
+	        }
 
-	}
+	        return mv;
+	    }
+	
 
 public void updateReport1(M_RPD_Summary_Entity1 entity1) {
-    System.out.println("Report Date: " + entity1.getREPORT_DATE());
+    System.out.println("Report Date: " + entity1.getReportDate());
 
-    M_RPD_Summary_Entity1 existing = BRRS_M_RPD_Summary_Repo1.findById(entity1.getREPORT_DATE())
+    M_RPD_Summary_Entity1 existing = BRRS_M_RPD_Summary_Repo1.findById(entity1.getReportDate())
         .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity1.getREPORT_DATE()));
+            "Record not found for REPORT_DATE: " + entity1.getReportDate()));
 
     // --------------------------
     // Update R28–R34 amounts
@@ -275,11 +301,11 @@ public void updateReport1(M_RPD_Summary_Entity1 entity1) {
     BRRS_M_RPD_Summary_Repo1.save(existing);
 }
 public void updateReport2(M_RPD_Summary_Entity2 entity2) {
-    System.out.println("Report Date: " + entity2.getREPORT_DATE());
+    System.out.println("Report Date: " + entity2.getReportDate());
 
-    M_RPD_Summary_Entity2 existing = BRRS_M_RPD_Summary_Repo2.findById(entity2.getREPORT_DATE())
+    M_RPD_Summary_Entity2 existing = BRRS_M_RPD_Summary_Repo2.findById(entity2.getReportDate())
         .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity2.getREPORT_DATE()));
+            "Record not found for REPORT_DATE: " + entity2.getReportDate()));
 
     try {
         for (int i = 51; i <= 100; i++) {
@@ -316,11 +342,11 @@ public void updateReport2(M_RPD_Summary_Entity2 entity2) {
 }
 
 public void updateReport3(M_RPD_Summary_Entity3 entity3) {
-    System.out.println("Report Date: " + entity3.getREPORT_DATE());
+    System.out.println("Report Date: " + entity3.getReportDate());
 
-    M_RPD_Summary_Entity3 existing = BRRS_M_RPD_Summary_Repo3.findById(entity3.getREPORT_DATE())
+    M_RPD_Summary_Entity3 existing = BRRS_M_RPD_Summary_Repo3.findById(entity3.getReportDate())
         .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity3.getREPORT_DATE()));
+            "Record not found for REPORT_DATE: " + entity3.getReportDate()));
 
     try {
         for (int i = 101; i <= 150; i++) {
@@ -357,11 +383,11 @@ public void updateReport3(M_RPD_Summary_Entity3 entity3) {
 }
 
 public void updateReport4(M_RPD_Summary_Entity4 entity4) {
-    System.out.println("Report Date: " + entity4.getREPORT_DATE());
+    System.out.println("Report Date: " + entity4.getReportDate());
 
-    M_RPD_Summary_Entity4 existing = BRRS_M_RPD_Summary_Repo4.findById(entity4.getREPORT_DATE())
+    M_RPD_Summary_Entity4 existing = BRRS_M_RPD_Summary_Repo4.findById(entity4.getReportDate())
         .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity4.getREPORT_DATE()));
+            "Record not found for REPORT_DATE: " + entity4.getReportDate()));
 
     try {
         for (int i = 151; i <= 200; i++) {
@@ -398,11 +424,11 @@ public void updateReport4(M_RPD_Summary_Entity4 entity4) {
 }
 
 public void updateReport5(M_RPD_Summary_Entity5 entity5) {
-    System.out.println("Report Date: " + entity5.getREPORT_DATE());
+    System.out.println("Report Date: " + entity5.getReportDate());
 
-    M_RPD_Summary_Entity5 existing = BRRS_M_RPD_Summary_Repo5.findById(entity5.getREPORT_DATE())
+    M_RPD_Summary_Entity5 existing = BRRS_M_RPD_Summary_Repo5.findById(entity5.getReportDate())
         .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity5.getREPORT_DATE()));
+            "Record not found for REPORT_DATE: " + entity5.getReportDate()));
 
     try {
         for (int i = 201; i <= 250; i++) {
@@ -439,11 +465,11 @@ public void updateReport5(M_RPD_Summary_Entity5 entity5) {
 }
 
 public void updateReport6(M_RPD_Summary_Entity6 entity6) {
-    System.out.println("Report Date: " + entity6.getREPORT_DATE());
+    System.out.println("Report Date: " + entity6.getReportDate());
 
-    M_RPD_Summary_Entity6 existing = BRRS_M_RPD_Summary_Repo6.findById(entity6.getREPORT_DATE())
+    M_RPD_Summary_Entity6 existing = BRRS_M_RPD_Summary_Repo6.findById(entity6.getReportDate())
         .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity6.getREPORT_DATE()));
+            "Record not found for REPORT_DATE: " + entity6.getReportDate()));
 
     try {
         for (int i = 251; i <= 300; i++) {
@@ -480,11 +506,11 @@ public void updateReport6(M_RPD_Summary_Entity6 entity6) {
 }
 
 public void updateReport7(M_RPD_Summary_Entity7 entity7) {
-    System.out.println("Report Date: " + entity7.getREPORT_DATE());
+    System.out.println("Report Date: " + entity7.getReportDate());
 
-    M_RPD_Summary_Entity7 existing = BRRS_M_RPD_Summary_Repo7.findById(entity7.getREPORT_DATE())
+    M_RPD_Summary_Entity7 existing = BRRS_M_RPD_Summary_Repo7.findById(entity7.getReportDate())
         .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity7.getREPORT_DATE()));
+            "Record not found for REPORT_DATE: " + entity7.getReportDate()));
 
     try {
         for (int i = 301; i <= 350; i++) {
@@ -521,11 +547,11 @@ public void updateReport7(M_RPD_Summary_Entity7 entity7) {
 }
 
 public void updateReport8(M_RPD_Summary_Entity8 entity8) {
-    System.out.println("Report Date: " + entity8.getREPORT_DATE());
+    System.out.println("Report Date: " + entity8.getReportDate());
 
-    M_RPD_Summary_Entity8 existing = BRRS_M_RPD_Summary_Repo8.findById(entity8.getREPORT_DATE())
+    M_RPD_Summary_Entity8 existing = BRRS_M_RPD_Summary_Repo8.findById(entity8.getReportDate())
         .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity8.getREPORT_DATE()));
+            "Record not found for REPORT_DATE: " + entity8.getReportDate()));
 
     try {
         for (int i = 351; i <= 400; i++) {
@@ -562,11 +588,11 @@ public void updateReport8(M_RPD_Summary_Entity8 entity8) {
 }
 
 public void updateReport9(M_RPD_Summary_Entity9 entity9) {
-    System.out.println("Report Date: " + entity9.getREPORT_DATE());
+    System.out.println("Report Date: " + entity9.getReportDate());
 
-    M_RPD_Summary_Entity9 existing = BRRS_M_RPD_Summary_Repo9.findById(entity9.getREPORT_DATE())
+    M_RPD_Summary_Entity9 existing = BRRS_M_RPD_Summary_Repo9.findById(entity9.getReportDate())
         .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity9.getREPORT_DATE()));
+            "Record not found for REPORT_DATE: " + entity9.getReportDate()));
 
     try {
         for (int i = 401; i <= 450; i++) {
@@ -38059,4 +38085,174 @@ public void next101(Sheet sheet,BRRS_M_RPD_Archival_Summary_Entity3 record3,BRRS
 		cell2.setCellStyle(textStyle);
 	}
 }
+
+//////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////
+/// Report Date | Report Version | Domain
+/// RESUB VIEW
+
+public List<Object[]> getM_RPDResub() {
+List<Object[]> resubList = new ArrayList<>();
+try {
+List<BRRS_M_RPD_Archival_Summary_Entity1> latestArchivalList = BRRS_M_RPD_Archival_Summary_Repo1
+.getdatabydateListWithVersion();
+
+if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+for (BRRS_M_RPD_Archival_Summary_Entity1 entity : latestArchivalList) {
+resubList.add(new Object[] {
+entity.getReportDate(),
+entity.getReportVersion()
+});
+}
+System.out.println("Fetched " + resubList.size() + " record(s)");
+} else {
+System.out.println("No archival data found.");
+}
+
+} catch (Exception e) {
+System.err.println("Error fetching M_RPD Resub data: " + e.getMessage());
+e.printStackTrace();
+}
+return resubList;
+}
+public List<Object[]> getM_RPDArchival() {
+    List<Object[]> archivalList = new ArrayList<>();
+    try {
+        List<BRRS_M_RPD_Archival_Summary_Entity1> latestArchivalList =BRRS_M_RPD_Archival_Summary_Repo1
+                .getdatabydateListWithVersion();
+
+        if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+            for (BRRS_M_RPD_Archival_Summary_Entity1 entity : latestArchivalList) {
+                archivalList.add(new Object[] {
+                        entity.getReportDate(),
+                        entity.getReportVersion()
+                });
+            }
+            System.out.println("Fetched " + archivalList.size() + " record(s)");
+        } else {
+            System.out.println("No archival data found.");
+        }
+
+    } catch (Exception e) {
+        System.err.println("Error fetchingM_RPD Resub data: " + e.getMessage());
+        e.printStackTrace();
+    }
+    return archivalList;
+}
+public void updateReportReSub(
+        M_RPD_Summary_Entity1 updatedEntity1,
+        M_RPD_Summary_Entity2 updatedEntity2,
+        M_RPD_Summary_Entity3 updatedEntity3,
+        M_RPD_Summary_Entity4 updatedEntity4,
+        M_RPD_Summary_Entity5 updatedEntity5,
+        M_RPD_Summary_Entity6 updatedEntity6,
+        M_RPD_Summary_Entity7 updatedEntity7,
+        M_RPD_Summary_Entity8 updatedEntity8,
+        M_RPD_Summary_Entity9 updatedEntity9) {
+
+     System.out.println("Came toM_LARADV Resub Service");
+     System.out.println("Report Date: " + updatedEntity1.getReportDate());
+
+     Date reportDate = updatedEntity1.getReportDate();
+     int newVersion = 1;
+
+     try {
+         // 🔹 Fetch the latest archival version for this report date from Entity1
+         Optional<BRRS_M_RPD_Archival_Summary_Entity1> latestArchivalOpt1 =BRRS_M_RPD_Archival_Summary_Repo1
+                 .getLatestArchivalVersionByDate(reportDate);
+
+         if (latestArchivalOpt1.isPresent()) {
+        	 BRRS_M_RPD_Archival_Summary_Entity1 latestArchival = latestArchivalOpt1.get();
+             try {
+                 newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
+             } catch (NumberFormatException e) {
+                 System.err.println("Invalid version format. Defaulting to version 1");
+                 newVersion = 1;
+             }
+         } else {
+             System.out.println("No previous archival found for date: " + reportDate);
+         }
+
+         // 🔹 Prevent duplicate version number in Repo1
+         boolean exists =BRRS_M_RPD_Archival_Summary_Repo1
+                 .findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
+                 .isPresent();
+
+         if (exists) {
+             throw new RuntimeException("⚠ Version " + newVersion + " already exists for report date " + reportDate);
+         }
+
+     
+         BRRS_M_RPD_Archival_Summary_Entity1 archivalEntity1 = new BRRS_M_RPD_Archival_Summary_Entity1();
+         BRRS_M_RPD_Archival_Summary_Entity2 archivalEntity2 = new BRRS_M_RPD_Archival_Summary_Entity2();
+         BRRS_M_RPD_Archival_Summary_Entity3 archivalEntity3 = new BRRS_M_RPD_Archival_Summary_Entity3();
+         BRRS_M_RPD_Archival_Summary_Entity4 archivalEntity4 = new BRRS_M_RPD_Archival_Summary_Entity4();
+         BRRS_M_RPD_Archival_Summary_Entity5 archivalEntity5 = new BRRS_M_RPD_Archival_Summary_Entity5();
+         BRRS_M_RPD_Archival_Summary_Entity6 archivalEntity6 = new BRRS_M_RPD_Archival_Summary_Entity6();
+         BRRS_M_RPD_Archival_Summary_Entity7 archivalEntity7 = new BRRS_M_RPD_Archival_Summary_Entity7();
+         BRRS_M_RPD_Archival_Summary_Entity8 archivalEntity8 = new BRRS_M_RPD_Archival_Summary_Entity8();
+         BRRS_M_RPD_Archival_Summary_Entity9 archivalEntity9 = new BRRS_M_RPD_Archival_Summary_Entity9();
+         org.springframework.beans.BeanUtils.copyProperties(updatedEntity1, archivalEntity1);
+         org.springframework.beans.BeanUtils.copyProperties(updatedEntity2, archivalEntity2);
+         org.springframework.beans.BeanUtils.copyProperties(updatedEntity3, archivalEntity3);
+         org.springframework.beans.BeanUtils.copyProperties(updatedEntity4, archivalEntity4);
+			org.springframework.beans.BeanUtils.copyProperties(updatedEntity5, archivalEntity5);
+
+	         org.springframework.beans.BeanUtils.copyProperties(updatedEntity6, archivalEntity6);
+	         org.springframework.beans.BeanUtils.copyProperties(updatedEntity7, archivalEntity7);
+	         org.springframework.beans.BeanUtils.copyProperties(updatedEntity8, archivalEntity8);
+				org.springframework.beans.BeanUtils.copyProperties(updatedEntity9, archivalEntity9);
+
+         // Set common fields
+         Date now = new Date();
+         archivalEntity1.setReportDate(reportDate);
+         archivalEntity2.setReportDate(reportDate);
+         archivalEntity3.setReportDate(reportDate);
+         archivalEntity4.setReportDate(reportDate);
+			archivalEntity5.setReportDate(reportDate);
+	         archivalEntity6.setReportDate(reportDate);
+	         archivalEntity7.setReportDate(reportDate);
+	         archivalEntity8.setReportDate(reportDate);
+				archivalEntity9.setReportDate(reportDate);
+
+         archivalEntity1.setReportVersion(String.valueOf(newVersion));
+         archivalEntity2.setReportVersion(String.valueOf(newVersion));
+         archivalEntity3.setReportVersion(String.valueOf(newVersion));
+         archivalEntity4.setReportVersion(String.valueOf(newVersion));
+			archivalEntity5.setReportVersion(String.valueOf(newVersion));
+	         archivalEntity6.setReportVersion(String.valueOf(newVersion));
+	         archivalEntity7.setReportVersion(String.valueOf(newVersion));
+	         archivalEntity8.setReportVersion(String.valueOf(newVersion));
+				archivalEntity9.setReportVersion(String.valueOf(newVersion));
+
+         archivalEntity1.setReportResubDate(now);
+         archivalEntity2.setReportResubDate(now);
+         archivalEntity3.setReportResubDate(now);
+         archivalEntity4.setReportResubDate(now);
+			 archivalEntity5.setReportResubDate(now);
+	         archivalEntity6.setReportResubDate(now);
+	         archivalEntity7.setReportResubDate(now);
+	         archivalEntity8.setReportResubDate(now);
+				 archivalEntity9.setReportResubDate(now);
+
+         System.out.println("Saving new archival version: " + newVersion);
+
+         // Save to all three archival repositories
+         BRRS_M_RPD_Archival_Summary_Repo1.save(archivalEntity1);
+         BRRS_M_RPD_Archival_Summary_Repo2.save(archivalEntity2);
+         BRRS_M_RPD_Archival_Summary_Repo3.save(archivalEntity3);
+         BRRS_M_RPD_Archival_Summary_Repo4.save(archivalEntity4);
+         BRRS_M_RPD_Archival_Summary_Repo5.save(archivalEntity5);
+         BRRS_M_RPD_Archival_Summary_Repo6.save(archivalEntity6);
+         BRRS_M_RPD_Archival_Summary_Repo7.save(archivalEntity7);
+         BRRS_M_RPD_Archival_Summary_Repo8.save(archivalEntity8);
+         BRRS_M_RPD_Archival_Summary_Repo9.save(archivalEntity9);
+
+         System.out.println("Saved archival version successfully: " + newVersion);
+
+     } catch (Exception e) {
+         e.printStackTrace();
+         throw new RuntimeException("Error while creatingM_RPD archival resubmission record", e);
+     }
+ }
+				
 }

@@ -1599,17 +1599,7 @@ public class RegulatoryReportServices {
 			 * TODO Auto-generated catch block e.printStackTrace(); } break;
 			 */
 
-		
-
-		case "M_RPD":
-			try {
-				archivalData = BRRS_M_RPD_ReportService.getM_RPDarchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-
+	
 //		case "M_OPTR":
 //			try {
 //				archivalData = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
@@ -1794,7 +1784,11 @@ public class RegulatoryReportServices {
 		            System.out.println("Fetched M_INT_RATES archival data: " + intratesList.size());
 		            break;
 		            
-		 
+			 case "M_RPD":
+		            List<Object[]> RPDList = BRRS_M_RPD_ReportService.getM_RPDArchival();
+		            archivalData.addAll(RPDList);
+		            System.out.println("Fetched M_SIR archival data: " + RPDList.size());
+		            break;
 
 			
 
@@ -2362,6 +2356,18 @@ public List<Object[]> getResub(String rptcode) {
 			                System.out.println("Resubmission data fetched for SIR: " + resubList.size());
 			            } catch (Exception e) {
 			                System.err.println("Error fetching resubmission data for M_SIR: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			         
+			            
+			            break;
+				  case "M_RPD":
+			            try {
+			                List<Object[]> resubList = BRRS_M_RPD_ReportService.getM_RPDResub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for RPD: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_RPD: " + e.getMessage());
 			                e.printStackTrace();
 			            }
 			         

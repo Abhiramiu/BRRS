@@ -432,10 +432,10 @@ function downloadfile(button) {
 				window.URL.revokeObjectURL(url);
 				document.body.removeChild(a);
 
-				showResultModal('Success', 'The file has been downloaded successfully.');
-			} else {
-				showResultModal('Information', 'No data was available to create a download.');
-			}
+				showResultModal('BRRS', filename + ' downloaded successfully.');
+							} else {
+								showResultModal('Information', 'No data was available to create a download.');
+							}
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
 			$('#loader').modal('hide');
@@ -781,9 +781,12 @@ function fileuploads(btn) {
     const formData = $("#fileupload").serialize() +
         "&asondate=" + encodeURIComponent(asondate) +
         "&type=" + encodeURIComponent(type);
-
+		let apiUrl = './M_RPDupdateAll';
+						if (type && type.toUpperCase() === 'RESUB') {
+							apiUrl = './UpdateM_RPD_ReSub'; 
+						}
     $.ajax({
-        url: './M_RPDupdateAll',
+        url: apiUrl,
         type: 'POST',
         data: formData,
         dataType: 'text',
@@ -849,12 +852,13 @@ function fileuploads(btn) {
 				id="custom-tab-btnDetails" onclick="showdetails();"
 				th:if="${displaymode == 'summary'}">Details</button>
 		<!-- Modify button -->
-				<button type="button" class="custom-tab-btn"
-				        onclick="showmodify(this);"
-				        title="Click to EDIT Records"
-						th:if="${type != 'ARCHIVAL'}"
-						       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-				        id="addRecord">Modify</button>
+		<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+											title="Click to EDIT Records"
+											th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
+											th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+											id="addRecord">
+											Modify
+										</button>
 
 				<!-- Cancel button (hidden initially) -->
 				<button type="button" class="custom-tab-btn"
@@ -871,7 +875,7 @@ function fileuploads(btn) {
                      data-todate=${todate}, 
                      data-currency=${currency},  
                      data-dtltype=${dtltype}, 
-                     data-filename='M-RPD.xls',
+                     data-filename='M-RPD.xlsx',
                      data-type=${type},
                      data-version=${version}"
                      

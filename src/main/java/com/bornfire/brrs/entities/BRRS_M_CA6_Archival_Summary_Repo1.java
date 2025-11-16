@@ -21,7 +21,7 @@ public interface BRRS_M_CA6_Archival_Summary_Repo1    extends JpaRepository<M_CA
     Optional<M_CA6_Archival_Summary_Entity1> getLatestArchivalVersionByDate(Date reportDate);
 
     // Fetch by primary key (used internally by Spring Data JPA)
-    Optional<M_IS_Summary_Entity1> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
+    Optional<M_CA6_Summary_Entity1> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
 
     @Query(value = "SELECT * FROM BRRS_M_CA6_ARCHIVALTABLE_SUMMARY1 " +
             "WHERE REPORT_VERSION IS NOT NULL " +

@@ -3,8 +3,10 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -13,6 +15,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_RPD_ARCHIVALTABLE_SUMMARY6")
+
+@IdClass(M_RPD_Archival_Summary6_PK.class)
 public class BRRS_M_RPD_Archival_Summary_Entity6 {
 	  private String R251_PRODUCT;
 	    private String R251_NAME_INSIDER_BORROWER;
@@ -614,14 +618,16 @@ public class BRRS_M_RPD_Archival_Summary_Entity6 {
 	    private BigDecimal R300_VALUE;
 	    private BigDecimal R300_INTEREST_RATE;
 
-		
-		 @Temporal(TemporalType.DATE)
-		 	@DateTimeFormat(pattern = "dd/MM/yyyy")
-		    
-		    @Id
-		    private Date REPORT_DATE;
-
-		    private String REPORT_VERSION;
+	    @Temporal(TemporalType.DATE)
+		@DateTimeFormat(pattern = "dd/MM/yyyy")
+		@Id
+		@Column(name = "REPORT_DATE")
+		private Date reportDate;
+		@Column(name = "REPORT_VERSION")
+		private String reportVersion;
+		  @Column(name = "REPORT_RESUBDATE")
+		    @Temporal(TemporalType.TIMESTAMP)
+		    private Date reportResubDate;
 		    private String REPORT_FREQUENCY;
 		    private String REPORT_CODE;
 		    private String REPORT_DESC;
@@ -3928,17 +3934,23 @@ public class BRRS_M_RPD_Archival_Summary_Entity6 {
 			public void setR300_INTEREST_RATE(BigDecimal r300_INTEREST_RATE) {
 				R300_INTEREST_RATE = r300_INTEREST_RATE;
 			}
-			public Date getREPORT_DATE() {
-				return REPORT_DATE;
+			public Date getReportDate() {
+				return reportDate;
 			}
-			public void setREPORT_DATE(Date rEPORT_DATE) {
-				REPORT_DATE = rEPORT_DATE;
+			public void setReportDate(Date reportDate) {
+				this.reportDate = reportDate;
 			}
-			public String getREPORT_VERSION() {
-				return REPORT_VERSION;
+			public String getReportVersion() {
+				return reportVersion;
 			}
-			public void setREPORT_VERSION(String rEPORT_VERSION) {
-				REPORT_VERSION = rEPORT_VERSION;
+			public void setReportVersion(String reportVersion) {
+				this.reportVersion = reportVersion;
+			}
+			public Date getReportResubDate() {
+				return reportResubDate;
+			}
+			public void setReportResubDate(Date reportResubDate) {
+				this.reportResubDate = reportResubDate;
 			}
 			public String getREPORT_FREQUENCY() {
 				return REPORT_FREQUENCY;
