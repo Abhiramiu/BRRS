@@ -12,7 +12,7 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_SECA_ARCHIVAL_TABLE_SUMMARY")
+@Table(name = "BRRS_M_SECA_ARCHIVALTABLE_SUMMARY")
 public class M_SECA_Archival_Summary_Entity {
 
 	private String R13_PRODUCT;

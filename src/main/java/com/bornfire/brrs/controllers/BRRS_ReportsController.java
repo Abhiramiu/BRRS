@@ -1428,13 +1428,13 @@ public class BRRS_ReportsController {
 			System.out.println("Came to single controller");
 
 			// set date into all 7 entities
-			request1.setReport_date(asondate);
-			request2.setReport_date(asondate);
-			request3.setReport_date(asondate);
-			request4.setReport_date(asondate);
-			request5.setReport_date(asondate);
-			request6.setReport_date(asondate);
-			request7.setReport_date(asondate);
+			request1.setReportDate(asondate);
+			request2.setReportDate(asondate);
+			request3.setReportDate(asondate);
+			request4.setReportDate(asondate);
+			request5.setReportDate(asondate);
+			request6.setReportDate(asondate);
+			request7.setReportDate(asondate);
 
 			// call services
 			brrs_m_srwa_12b_reportservice.updateReport1(request1);
@@ -2618,5 +2618,46 @@ try {
 			.body("Resubmission Update Failed: " + e.getMessage());
 }
 }
+@RequestMapping(value = "/UpdateM_SRWA_12B_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateReportReSubAll(
+		@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		@ModelAttribute M_SRWA_12B_Summary_Entity1 request1,
+		@ModelAttribute M_SRWA_12B_Summary_Entity2 request2,
+		@ModelAttribute M_SRWA_12B_Summary_Entity3 request3,
+		@ModelAttribute M_SRWA_12B_Summary_Entity4 request4,
+		@ModelAttribute M_SRWA_12B_Summary_Entity5 request5,
+		@ModelAttribute M_SRWA_12B_Summary_Entity6 request6,
+		@ModelAttribute M_SRWA_12B_Summary_Entity7 request7,
+		HttpServletRequest req) {
+
+	try {
+		System.out.println("Came to M_SRWA_!2B Resub Controller");
+
+		if (asondate != null) {
+			request1.setReportDate(asondate);
+			request2.setReportDate(asondate);
+			request3.setReportDate(asondate);
+			request4.setReportDate(asondate);
+			request5.setReportDate(asondate);
+			request6.setReportDate(asondate);
+			request7.setReportDate(asondate);
+			
+			System.out.println("🗓 Set Report Date: " + asondate);
+		}
+
+		// ✅ Call service
+		brrs_m_srwa_12b_reportservice.updateReportReSub(request1, request2, request3, request4,
+				request5, request6, request7);
+
+		return ResponseEntity.ok("Resubmission Updated Successfully");
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body("M_SRWA_12B Resubmission Update Failed: " + e.getMessage());
+	}
+}
+
 
 }

@@ -1532,16 +1532,11 @@ public class RegulatoryReportServices {
 		// 		e.printStackTrace();
 		// 	}
 
-		case "M_SRWA_12B":
-			try {
-				archivalData = brrs_m_srwa_12b_reportservice.getM_SRWA_12BArchival();
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			break;
+			case "M_SRWA_12B":
+				List<Object[]> srwabList = brrs_m_srwa_12b_reportservice.getM_SRWA_12BArchival();
+				archivalData.addAll(srwabList);
+				System.out.println("Fetched M_SRWA_12B archival data: " + srwabList.size());
+				break;
 
 		// case "Q_BRANCHNET":
 		// 	try {
@@ -2398,6 +2393,18 @@ public List<Object[]> getResub(String rptcode) {
 			         
 			            
 			            break;
+			            
+					case "M_SRWA_12B":
+						try {
+							List<Object[]> resubList = brrs_m_srwa_12b_reportservice.getM_SRWA_12BResub();
+							resubmissionData.addAll(resubList);
+							System.out.println("Resubmission data fetched for M_SRWA_12B: " + resubList.size());
+						} catch (Exception e) {
+							System.err.println("Error fetching resubmission data for M_SRWA_12B: " + e.getMessage());
+							e.printStackTrace();
+						}
+						break;
+			            
 
 
 

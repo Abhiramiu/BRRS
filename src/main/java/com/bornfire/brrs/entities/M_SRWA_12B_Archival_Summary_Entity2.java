@@ -3,6 +3,8 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.IdClass;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -13,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "BRRS_M_SRWA_12B_ARCHIVALTABLE_SUMMARY2")
+@IdClass(M_SRWA_12B_Archival_Summary2_PK.class)
 
 public class M_SRWA_12B_Archival_Summary_Entity2{
 private String r51_product;
@@ -1107,12 +1110,18 @@ private BigDecimal r89_rwa_exp_notcov_crm_rwa;
 private BigDecimal r89_unsecu_exp_credit_risk_rwa;
 private BigDecimal r89_rwa_unsecu_exp_rwa;
 private BigDecimal r89_tot_rwa;
+@Id
+@Temporal(TemporalType.DATE)
+@Column(name = "REPORT_DATE")
+private Date reportDate;
 
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Id
-	private Date report_date;
-	private String report_version;
+@Id
+@Column(name = "REPORT_VERSION")
+private String reportVersion;
+
+@Column(name = "REPORT_RESUBDATE")
+@Temporal(TemporalType.TIMESTAMP)
+private Date reportResubDate;
 	private String report_frequency;
 	private String report_code;
 	private String report_desc;
@@ -16103,35 +16112,47 @@ private BigDecimal r89_tot_rwa;
 
 
 
-	public Date getReport_date() {
-		return report_date;
+	public Date getReportDate() {
+		return reportDate;
 	}
 
 
 
 
 
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 
 
 
 
 
-	public String getReport_version() {
-		return report_version;
+	public String getReportVersion() {
+		return reportVersion;
 	}
 
 
 
 
 
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+
+	
+
+	public Date getReportResubDate() {
+		return reportResubDate;
 	}
 
 
+
+
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
 
 
 

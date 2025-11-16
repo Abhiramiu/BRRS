@@ -3,6 +3,7 @@ package com.bornfire.brrs.entities;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -1000,11 +1001,14 @@ private BigDecimal r50_rwa_unsecu_exp_rwa;
 private BigDecimal r50_tot_rwa;
 
 
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Id
-	private Date report_date;
-	private String report_version;
+@Temporal(TemporalType.DATE)
+@DateTimeFormat(pattern = "dd/MM/yyyy")
+@Id
+@Column(name = "REPORT_DATE")
+private Date reportDate;
+@Column(name = "REPORT_VERSION")
+private String reportVersion;
+
 	private String report_frequency;
 	private String report_code;
 	private String report_desc;
@@ -15544,32 +15548,36 @@ private BigDecimal r50_tot_rwa;
 
 
 
-	public Date getReport_date() {
-		return report_date;
+
+
+
+
+	public Date getReportDate() {
+		return reportDate;
 	}
 
 
 
 
 
-	public void setReport_date(Date report_date) {
-		this.report_date = report_date;
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 
 
 
 
 
-	public String getReport_version() {
-		return report_version;
+	public String getReportVersion() {
+		return reportVersion;
 	}
 
 
 
 
 
-	public void setReport_version(String report_version) {
-		this.report_version = report_version;
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 
 
