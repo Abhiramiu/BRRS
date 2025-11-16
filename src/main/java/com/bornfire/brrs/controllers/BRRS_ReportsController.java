@@ -2255,7 +2255,7 @@ public class BRRS_ReportsController {
 
 		try {
 			System.out.println("came to single controller");
-			request.setREPORT_DATE(asondate);
+			request.setReportDate(asondate);
 
 			BRRS_M_TBS_ReportService.updateReport(request);
 
@@ -2586,6 +2586,36 @@ try {
 	e.printStackTrace();
 	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body("M_RPD Resubmission Update Failed: " + e.getMessage());
+}
+}
+
+@RequestMapping(value = "/UpdateM_TBS_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateReportReSub(
+	@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	@ModelAttribute M_TBS_Summary_Entity request,
+	HttpServletRequest req) {
+
+try {
+	System.out.println("Came to Resub Controller");
+
+	if (asondate != null) {
+		// Set the asondate into the entity
+		request.setReportDate(asondate);
+		System.out.println("Set Report Date: " + asondate);
+	} else {
+		System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+	}
+
+	// Call service to create a new versioned row
+	BRRS_M_TBS_ReportService.updateReportReSub(request);
+
+	return ResponseEntity.ok("Resubmission Updated Successfully");
+
+} catch (Exception e) {
+	e.printStackTrace();
+	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			.body("Resubmission Update Failed: " + e.getMessage());
 }
 }
 

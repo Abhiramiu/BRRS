@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -20,6 +21,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_TBS_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_TBS_Summary_Repo;
+import com.bornfire.brrs.entities.M_TBS_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_TBS_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_TBS_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_TBS_Summary_Entity;
 import com.bornfire.brrs.entities.M_TBS_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_TBS_Summary_Entity;
 
@@ -54,58 +59,48 @@ System.out.println("Entered service method M_TBS......................");
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;	
-		
-			if (type.equals("ARCHIVAL") & version != null) {
-			System.out.println(type);
-			List<M_TBS_Archival_Summary_Entity> T1Master = new ArrayList<M_TBS_Archival_Summary_Entity>();
-			System.out.println(version);
-			try {
-				Date d1 = dateformat.parse(todate);
-
-				T1Master = BRRS_M_TBS_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
-
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-
-			mv.addObject("reportsummary", T1Master);
-		} else{
-		
-		 
-		List<M_TBS_Summary_Entity> T1Master = new ArrayList<M_TBS_Summary_Entity>();
 		try {
 			Date d1 = dateformat.parse(todate);
-			
-			 T1Master=BRRS_M_TBS_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-		
+
+	 // ---------- CASE 1: ARCHIVAL ----------
+        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+            List<M_TBS_Archival_Summary_Entity> T1Master = 
+            		BRRS_M_TBS_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
+            
+            mv.addObject("reportsummary", T1Master);
+        }
+        // ---------- CASE 2: RESUB ----------
+        else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+            List<M_TBS_Archival_Summary_Entity> T1Master =
+            		BRRS_M_TBS_Archival_Summary_Repo.getdatabydateListarchival(d1, version);
+            
+            mv.addObject("reportsummary", T1Master);
+        }
+
+        // ---------- CASE 3: NORMAL ----------
+        else {
+            List<M_TBS_Summary_Entity> T1Master = 
+            		BRRS_M_TBS_Summary_Repo.getdatabydateListWithVersion(todate);
+            System.out.println("T1Master Size "+T1Master.size());
+            mv.addObject("reportsummary", T1Master);
+        }
+
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		mv.addObject("reportsummary", T1Master);
-}
+
 		mv.setViewName("BRRS/M_TBS");		
 		mv.addObject("displaymode", "summary");
 		System.out.println("scv" + mv.getViewName());
 		return mv;
 }
-	public List<Object> getM_TBSArchival() {
-		List<Object> M_TBSArchivallist = new ArrayList<>();
-		try {
-			M_TBSArchivallist = BRRS_M_TBS_Archival_Summary_Repo.getM_TBSarchival();
-			System.out.println("countser" + M_TBSArchivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_TBS Archival data: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return M_TBSArchivallist;
-	}
+	
 	public void updateReport(M_TBS_Summary_Entity Entity) {
-	    System.out.println("Report Date: " + Entity.getREPORT_DATE());
+	    System.out.println("Report Date: " + Entity.getReportDate());
 
-	    M_TBS_Summary_Entity existing = BRRS_M_TBS_Summary_Repo.findById(Entity.getREPORT_DATE())
+	    M_TBS_Summary_Entity existing = BRRS_M_TBS_Summary_Repo.findById(Entity.getReportDate())
 	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + Entity.getREPORT_DATE()));
+	                    "Record not found for REPORT_DATE: " + Entity.getReportDate()));
 	    //  R11 =SUM(C12:C16)+C21
 
 	    try {
@@ -638,4 +633,119 @@ System.out.println("Entered service method M_TBS......................");
 	    
 	        BRRS_M_TBS_Summary_Repo.save(existing);
 	}
+
+
+	/// RESUB VIEW
+	public List<Object[]> getM_TBSResub() {
+	List<Object[]> resubList = new ArrayList<>();
+	try {
+	List<M_TBS_Archival_Summary_Entity> latestArchivalList = 
+			BRRS_M_TBS_Archival_Summary_Repo.getdatabydateListWithVersionAll();
+
+	if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+	for (M_TBS_Archival_Summary_Entity entity : latestArchivalList) {
+	Object[] row = new Object[] {
+	entity.getReportDate(),
+	entity.getReportVersion()
+	};
+	resubList.add(row);
+	}
+	System.out.println("Fetched " + resubList.size() + " record(s)");
+	} else {
+	System.out.println("No archival data found.");
+	}
+	} catch (Exception e) {
+	System.err.println("Error fetching M_TBS Resub data: " + e.getMessage());
+	e.printStackTrace();
+	}
+	return resubList;
+	}
+
+	
+	//Archival View
+	public List<Object[]> getM_TBSArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
+
+		try {
+			List<M_TBS_Archival_Summary_Entity> repoData = BRRS_M_TBS_Archival_Summary_Repo
+					.getdatabydateListWithVersionAll();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (M_TBS_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] {
+							entity.getReportDate(), 
+							entity.getReportVersion() 
+					};
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				M_TBS_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReportVersion());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching M_TBS Archival data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return archivalList;
+	}		
+	// Resubmit the values , latest version and Resub Date
+			public void updateReportReSub(M_TBS_Summary_Entity updatedEntity) {
+				System.out.println("Came to Resub Service");
+				System.out.println("Report Date: " + updatedEntity.getReportDate());
+
+				Date reportDate = updatedEntity.getReportDate();
+				int newVersion = 1;
+
+				try {
+					// Fetch the latest archival version for this report date
+					Optional<M_TBS_Archival_Summary_Entity> latestArchivalOpt = BRRS_M_TBS_Archival_Summary_Repo
+							.getLatestArchivalVersionByDate(reportDate);
+
+					// Determine next version number
+					if (latestArchivalOpt.isPresent()) {
+						M_TBS_Archival_Summary_Entity latestArchival = latestArchivalOpt.get();
+						try {
+							newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
+						} catch (NumberFormatException e) {
+							System.err.println("Invalid version format. Defaulting to version 1");
+							newVersion = 1;
+						}
+					} else {
+						System.out.println("No previous archival found for date: " + reportDate);
+					}
+
+					// Prevent duplicate version number
+					boolean exists = BRRS_M_TBS_Archival_Summary_Repo
+							.findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
+							.isPresent();
+
+					if (exists) {
+						throw new RuntimeException("Version " + newVersion + " already exists for report date " + reportDate);
+					}
+
+					// Copy summary entity to archival entity
+					M_TBS_Archival_Summary_Entity archivalEntity = new M_TBS_Archival_Summary_Entity();
+					org.springframework.beans.BeanUtils.copyProperties(updatedEntity, archivalEntity);
+
+					archivalEntity.setReportDate(reportDate);
+					archivalEntity.setReportVersion(String.valueOf(newVersion));
+					archivalEntity.setReportResubDate(new Date());
+
+					System.out.println("Saving new archival version: " + newVersion);
+
+					// Save new version to repository
+					BRRS_M_TBS_Archival_Summary_Repo.save(archivalEntity);
+
+					System.out.println(" Saved archival version successfully: " + newVersion);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw new RuntimeException("Error while creating archival resubmission record", e);
+				}
+			}
 }

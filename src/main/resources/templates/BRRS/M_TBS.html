@@ -1081,8 +1081,12 @@ $(document).ready(function() {
 	        formData.append(name, value);
 	    });
 
+		let apiUrl = './M_TBSupdateAll';
+		if (type && type.toUpperCase() === 'RESUB') {
+			apiUrl = './UpdateM_TBS_ReSub'; 
+		}
 	    $.ajax({
-	        url: './M_TBSupdateAll',
+	        url: apiUrl,
 	        type: 'POST',
 	        data: formData,
 	        processData: false,
@@ -1153,12 +1157,14 @@ $(document).ready(function() {
         <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();" th:if="${displaymode == 'Details'}">Summary</button>
         <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();" th:if="${displaymode == 'summary'}">Details</button>
 		<!-- Modify button -->
-						<button type="button" class="custom-tab-btn"
-						        onclick="showmodify(this);"
-						        title="Click to EDIT Records"
-								th:if="${type != 'ARCHIVAL'}"
-								       th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-						        id="addRecord">Modify</button>
+
+		<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+			title="Click to EDIT Records"
+			th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
+			th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+			id="addRecord">
+			Modify
+		</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn"

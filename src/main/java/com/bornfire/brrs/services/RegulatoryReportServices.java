@@ -1789,6 +1789,13 @@ public class RegulatoryReportServices {
 		            archivalData.addAll(RPDList);
 		            System.out.println("Fetched M_SIR archival data: " + RPDList.size());
 		            break;
+		            
+		            
+			 case "M_TBS":
+		            List<Object[]> TBSList = BRRS_M_TBS_ReportService.getM_TBSArchival();
+		            archivalData.addAll(TBSList);
+		            System.out.println("Fetched TBS archival data: " + TBSList.size());
+		            break;
 
 			
 
@@ -1801,14 +1808,7 @@ public class RegulatoryReportServices {
 	              break;
 
 
-			case "M_TBS":
-				try {
-					archivalData = BRRS_M_TBS_ReportService.getM_TBSArchival();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
+			
 		
 		}
 		return archivalData;
@@ -2368,6 +2368,20 @@ public List<Object[]> getResub(String rptcode) {
 			                System.out.println("Resubmission data fetched for RPD: " + resubList.size());
 			            } catch (Exception e) {
 			                System.err.println("Error fetching resubmission data for M_RPD: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			         
+			            
+			            break;
+			            
+			            
+				  case "M_TBS":
+			            try {
+			                List<Object[]> resubList = BRRS_M_TBS_ReportService.getM_TBSResub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for TBS: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_TBS: " + e.getMessage());
 			                e.printStackTrace();
 			            }
 			         
