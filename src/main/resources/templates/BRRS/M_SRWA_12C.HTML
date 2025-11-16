@@ -394,9 +394,9 @@ function downloadfile(button) {
 	var secid = button.getAttribute('data-secid');
 	var dtltype = button.getAttribute('data-dtltype');
 	var filename = button.getAttribute('data-filename');
-	
+	var type = button.getAttribute('data-type');
+	var version = button.getAttribute('data-version');
 	$('#loader').modal('show');
-
 	$.ajax({
 		url: './downloadExcel?reportid=' + reportid +
 			'&fromdate=' + fromdate +
@@ -405,16 +405,17 @@ function downloadfile(button) {
 			'&currency=' + currency +
 			'&subreportid=' + subreportid +
 			'&secid=' + secid +
-			'&filename=' + filename,
+			'&filename=' + filename +
+			'&type=' + type +
+			'&version=' + version,
 		type: 'GET',
 		xhrFields: {
 			responseType: 'blob'
 		},
 		success: function (data) {
 			$('#loader').modal('hide');
-
 			if (data && data.size > 100) {
-				const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+				const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 				const url = window.URL.createObjectURL(blob);
 				const a = document.createElement('a');
 				a.style.display = 'none';
@@ -424,7 +425,6 @@ function downloadfile(button) {
 				a.click();
 				window.URL.revokeObjectURL(url);
 				document.body.removeChild(a);
-
 				showResultModal('BRRS', filename + ' downloaded successfully.');
 			} else {
 				showResultModal('Information', 'No data was available to create a download.');

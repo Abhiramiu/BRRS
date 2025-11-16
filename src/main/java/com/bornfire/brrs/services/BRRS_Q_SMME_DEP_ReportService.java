@@ -44,6 +44,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_Q_SMME_DEP_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_SMME_DEP_Summary_Repo;
+import com.bornfire.brrs.entities.M_SRWA_12C_Summary_Entity;
 import com.bornfire.brrs.entities.Q_RLFA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Q_RLFA2_Summary_Entity;
 import com.bornfire.brrs.entities.Q_SMME_DEP_Archival_Summary_Entity;
@@ -147,12 +148,27 @@ public class BRRS_Q_SMME_DEP_ReportService {
 			  mv.addObject("reportsummary", T1Master); }
 			  
 			  // ---------- CASE 3: NORMAL ---------- 
-			  else { List<Q_SMME_DEP_Summary_Entity>
-			  T1Master =
-					  BRRS_Q_SMME_DEP_Summary_Repo.getdatabydateListWithVersion(todate);
-			  System.out.println("T1Master Size "+T1Master.size());
-			  mv.addObject("reportsummary", T1Master); }
-			  
+				/*
+				 * else { List<Q_SMME_DEP_Summary_Entity> T1Master =
+				 * BRRS_Q_SMME_DEP_Summary_Repo.getdatabydateListWithVersion(todate);
+				 * System.out.println("T1Master Size "+T1Master.size());
+				 * mv.addObject("reportsummary", T1Master); }
+				 */
+			  else {List<Q_SMME_DEP_Summary_Entity> T1Master = new ArrayList<Q_SMME_DEP_Summary_Entity>();
+				try {
+					Date d2 = dateformat.parse(todate);
+					// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
+
+					// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
+					// ", BRF1_REPORT_ENTITY.class)
+					// .setParameter(1, df.parse(todate)).getResultList();
+					T1Master = BRRS_Q_SMME_DEP_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+					mv.addObject("report_date", dateformat.format(d2));
+
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				mv.addObject("reportsummary", T1Master); }
 			  } catch (ParseException e) { e.printStackTrace(); }
 			  
 			  mv.setViewName("BRRS/Q_SMME_DEP"); mv.addObject("displaymode", "summary");
