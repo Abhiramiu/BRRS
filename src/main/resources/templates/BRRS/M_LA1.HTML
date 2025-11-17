@@ -439,63 +439,73 @@ PURPOSE		: BRRSREPORT
 
 
 		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
 
+		    var reportid = button.getAttribute('data-reportid');
+		    var asondate = button.getAttribute('data-asondate');
+		    var fromdate = button.getAttribute('data-fromdate');
+		    var todate = button.getAttribute('data-todate');
+		    var currency = button.getAttribute('data-currency');
+		    var subreportid = button.getAttribute('data-subreportid');
+		    var secid = button.getAttribute('data-secid');
+		    var dtltype = button.getAttribute('data-dtltype');
+		    var filename = button.getAttribute('data-filename');
+		    var type = button.getAttribute('data-type');
+		    var version = button.getAttribute('data-version');
 
-			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
-			loader.show();
+		    // Show loader modal (Bootstrap 5)
+		    var loader = new bootstrap.Modal(
+		        document.getElementById('loader'),
+		        { backdrop: 'static', keyboard: false }
+		    );
+		    loader.show();
 
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
+		    $.ajax({
+		        url: './downloadExcel?reportid=' + reportid +
+		            '&fromdate=' + fromdate +
+		            '&asondate=' + asondate +
+		            '&todate=' + todate +
+		            '&currency=' + currency +
+		            '&subreportid=' + subreportid +
+		            '&secid=' + secid +
+		            '&filename=' + filename +
+		            '&type=' + type +
+		            '&version=' + version,
+		        type: 'GET',
+		        xhrFields: { responseType: 'blob' },
 
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
+		        success: function (data) {
 
-						showResultModal('Success', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
+		            if (data && data.size > 100) {
+		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+		                const url = window.URL.createObjectURL(blob);
+		                const a = document.createElement('a');
+
+		                a.style.display = 'none';
+		                a.href = url;
+		                a.download = filename;
+
+		                document.body.appendChild(a);
+		                a.click();
+
+		                window.URL.revokeObjectURL(url);
+		                document.body.removeChild(a);
+
+		                showResultModal('Success', filename + ' downloaded successfully.');
+		            } else {
+		                showResultModal('Information', 'No data was available to create a download.');
+		            }
+		        },
+
+		        error: function (jqXHR, textStatus, errorThrown) {
+		            console.error("Download failed:", textStatus, errorThrown);
+		            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+		        },
+
+		        complete: function () {
+		            // Hide loader ALWAYS (success, error, timeout, exception)
+		            loader.hide();
+		        }
+		    });
 		}
 
 		function editRecord() {
@@ -519,7 +529,6 @@ PURPOSE		: BRRSREPORT
 
 	</script>
 
-	</script>
 	<script th:inline="javascript">
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
@@ -644,7 +653,7 @@ PURPOSE		: BRRSREPORT
 				.then(res => res.text())
 				.then(status => {
 					if (status === "READY") {
-						alertMsg.innerHTML = 'Report is ready! Downloading…';
+						alertMsg.innerHTML = 'Report is ready! Downloaded…';
 						showAlert();
 						const filename = sessionStorage.getItem("filename");
 						downloadDetailfile(jobId, filename)
@@ -755,40 +764,87 @@ PURPOSE		: BRRSREPORT
 		}
 	</script>
 
-	<script th:inline="javascript">
-		$(document).ready(function () {
-			$('#reportdetails').DataTable({
-				scrollY: "550px",            // ✅ Adjust vertical scroll height
-				scrollX: true,               // ✅ Horizontal scrolling
-				scrollCollapse: true,
-				autoWidth: false,
-				paging: true,
-				searching: true,
-				lengthChange: false,
-				ordering: true,
-				pageLength: 100,
-				fixedHeader: {
-					header: true,
-					footer: false
-				},                           // ✅ Ensures header stays visible
-				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-			});
-		});
-	</script>
-	<style>
-		.dataTables_scrollHeadInner,
-		table.dataTable {
-			width: 100% !important;
-			margin: -2px auto !important;
-		}
+		<style>
+					/* Keep the header fixed and aligned */
+					.dataTables_scrollHeadInner,
+					.dataTables_scrollBody table {
+					  width: 100% !important;
+					}
 
-		/* ✅ Prevent wrapping in all table cells */
-		#reportdetails th,
-		#reportdetails td {
-			white-space: nowrap;
-		}
-	</style>
+					/* Prevent thead shrinking at zoom */
+					.dataTables_scrollHeadInner table {
+					  width: 100% !important;
+					  min-width: 100% !important;
+					}
 
+					#reportdetails {
+					  width: 100% !important;
+					  table-layout: fixed !important;
+					}
+
+					#reportdetails th, 
+					#reportdetails td {
+					  white-space: nowrap;
+					}
+					table.dataTable th.dt-type-numeric,
+						table.dataTable th.dt-type-date,
+						table.dataTable td.dt-type-numeric,
+						table.dataTable td.dt-type-date {
+						    text-align: left !important;
+						}
+						
+						/* Right-align header (6th column = ACCT BALANCE) */
+															table.dataTable th.dt-type-numeric:nth-child(6) {
+															  text-align: right !important;
+															}
+															
+															/* Right-align data (6th column = ACCT BALANCE) */
+																									#reportdetails td:nth-child(6),
+																									.dataTables_scrollHeadInner table th:nth-child(6) {
+																									 text-align: right !important;
+																									 padding-right: 10px !important;
+																										}
+						
+				
+
+
+
+						  
+						</style>
+				<script th:inline="javascript">
+				  $(document).ready(function () {
+				    var table = $('#reportdetails').DataTable({
+				      scrollY: "550px",
+				      scrollX: true,
+				      scrollCollapse: true,
+				      autoWidth: false,
+				      paging: true,
+				      searching: true,
+				      lengthChange: false,
+				      ordering: true,
+				      pageLength: 100,
+				      fixedHeader: true, // ✅ You can simply set it to true
+					  // ✅ Column width settings
+					   columnDefs: [
+					     { width: "60px", targets: 0 },   // Edit icon column
+					     { width: "150px", targets: 1 }  ,  // S No column
+						 { width: "300px", targets: 7 }    // S No column
+					   ],
+
+				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+				    });
+
+				    // ✅ Fix alignment on resize / zoom
+				    $(window).on('resize', function () {
+				      table.columns.adjust().draw(false);
+				    });
+
+				    // ✅ Fix initial misalignment if loaded at non-100% zoom
+				    setTimeout(function () {
+				      table.columns.adjust().draw(false);
+				    }, 500);
+				  });
+				</script>
 
 	<style>
 		.header-bar {
@@ -1949,79 +2005,94 @@ PURPOSE		: BRRSREPORT
 
 				<!--  DETAIL -->
 				<div th:if="${displaymode == 'Details'}">
-					<div class="row">
-						<div class="col-sm-12">
-							<div class="table-container" style="border-right: 1px solid #dee2e6; ">
-								<table class="table table-striped table-bordered table-hover" id="reportdetails">
-									<thead class="thead-light">
 
-										<tr>
-											<th> </th>
-											<th>S No</th>
-											<th>CUST ID</th>
-											<th>ACCT NUMBER</th>
-											<th>SCHM DESC</th>
-											<!--<th>ACCT NAME</th>-->
-											<th>ACCT BALANCE</th>
-											<th>APPROVED LIMIT</th>
-											<th>REPORT LABEL</th>
-											<th>REPORT ADDL CRITERIA 1</th>
-											<th>REPORT ADDL CRITERIA 2</th>
-											<th>REPORT ADDL CRITERIA 3</th>
-											<th>REPORT DATE</th>
-										</tr>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="table-container" style="border-right: 1px solid #dee2e6;">
+                <table class="table table-striped table-bordered table-hover" id="reportdetails">
+                    <thead class="thead-light">
+                        <tr>
+                            <th></th>
+                            <th>S No</th>
+                            <th>CUST ID</th>
+                            <th style="text-align:left;">ACCT NUMBER</th>
+                            <th>SCHM DESC</th>
+                            <th style="text-align:right;">ACCT BALANCE</th>
+                            <th style="text-align:right;">APPROVED LIMIT</th>
+                            <th style="text-align:left;">REPORT LABEL</th>
+                            <th>REPORT ADDL CRITERIA 1</th>
+                            <th>REPORT ADDL CRITERIA 2</th>
+                            <th>REPORT ADDL CRITERIA 3</th>
+                            <th>REPORT DATE</th>
+                        </tr>
+                    </thead>
 
-									</thead>
+                    <tbody style="font-family: Arial;">
+                        <tr th:each="report, srlno : ${reportdetails}">
+                            <td>
+                                <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+                                    <i class="fas fa-edit" style="color: black; cursor:pointer;"
+                                        th:attr="data-acctNo=${report.acct_number},
+                                                 data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
+                                                 data-type=${type}"
+                                        onclick="openDetail(this, 'edit')">
+                                    </i>
+                                </a>
+                            </td>
 
-									<tbody style="font-family: Arial;">
-										<tr th:each="report, srlno : ${reportdetails}">
-											<td>
-												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record">
-													<i class="fas fa-edit" style="color: black; cursor:pointer;"
-														th:attr="data-acctNo=${report.acct_number},
-														data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')}" onclick="openDetail(this, 'edit')"></i>
+                            <td th:text="${srlno.index + 1}"></td>
 
-												</a>
-											</td>
-											<td th:text="${srlno.index + 1}"></td>
-											<td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
-											<td th:text="${report.acct_number != null ? report.acct_number : '-'}"></td>
-											<!--<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>-->
-											<td th:text="${report.schm_desc!= null ? report.schm_desc : '-'}"></td>
-											<td align="right" th:text="${report.acct_balance_in_pula != null 
-																									? #numbers.formatDecimal(report.acct_balance_in_pula,1,'COMMA',0,'POINT') : '0'}"></td>
-											<td align="right" th:text="${report.sanction_limit != null 
-																									? #numbers.formatDecimal(report.sanction_limit,1,'COMMA',0,'POINT') : '0'}"></td>
-											<td th:text="${report.report_label != null ? report.report_label : '-'}">
-											</td>
-											<td
-												th:text="${report.report_addl_criteria_1 != null ? report.report_addl_criteria_1 : '-'}">
-											</td>
-											<td
-												th:text="${report.report_addl_criteria_2 != null ? report.report_addl_criteria_2 : '-'}">
-											</td>
-											<td
-												th:text="${report.report_addl_criteria_3 != null ? report.report_addl_criteria_3 : '-'}">
-											</td>
-											<td th:text="${report.report_date != null 
-																									? #dates.format(report.report_date, 'dd-MM-yyyy') : '-'}"></td>
-										</tr>
-									</tbody>
-								</table>
+                            <td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
 
-							</div>
+                            <td style="text-align:left;" 
+                                th:text="${report.acct_number != null ? report.acct_number : '-'}">
+                            </td>
 
-							<!-- Submit Button -->
-							<div style="text-align: center; margin-top: 15px; background-color: white;">
-								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-									onclick="updateform();" style="display: none;">
-									Submit
-								</button>
-							</div>
-						</div>
-					</div>
-				</div>
+                            <td th:text="${report.schm_desc != null ? report.schm_desc : '-'}"></td>
+
+                            <td style="text-align:right;"
+                                th:text="${report.acct_balance_in_pula != null 
+                                        ? #numbers.formatDecimal(report.acct_balance_in_pula,1,'COMMA',0,'POINT') 
+                                        : '0'}">
+                            </td>
+
+                            <td style="text-align:right;"
+                                th:text="${report.sanction_limit != null 
+                                        ? #numbers.formatDecimal(report.sanction_limit,1,'COMMA',0,'POINT') 
+                                        : '0'}">
+                            </td>
+
+                            <td style="text-align:left;"
+                                th:text="${report.report_label != null ? report.report_label : '-'}">
+                            </td>
+
+                            <td th:text="${report.report_addl_criteria_1 != null ? report.report_addl_criteria_1 : '-'}"></td>
+
+                            <td th:text="${report.report_addl_criteria_2 != null ? report.report_addl_criteria_2 : '-'}"></td>
+
+                            <td th:text="${report.report_addl_criteria_3 != null ? report.report_addl_criteria_3 : '-'}"></td>
+
+                            <td th:text="${report.report_date != null 
+                                        ? #dates.format(report.report_date, 'dd-MM-yyyy') 
+                                        : '-'}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Submit Button -->
+            <div style="text-align: center; margin-top: 15px; background-color: white;">
+                <button id="submitButton" type="button" class="custom-tab-btn Show_input"
+                        onclick="updateform();" style="display: none;">
+                    Submit
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
 
 				<!-- M_la1 Detail Form Screen -->
 				<div th:if="${formmode == 'edit'}" class="card">
@@ -2112,13 +2183,13 @@ PURPOSE		: BRRSREPORT
 
 								<div class="col-sm-1"></div>
 
-								<div class="row formline" style="margin-top:10px;">
 									<label class="col-sm-2">Report Date</label>
 									<div class="col-sm-3">
 										<input type="date" name="report_Date" class="form-control form-control-sm"
-											th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" />
+											th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly/>
 									</div>
 								</div>
+							
 
 								<!-- Update Button -->
 								<div style="text-align:center; margin-top:20px;">

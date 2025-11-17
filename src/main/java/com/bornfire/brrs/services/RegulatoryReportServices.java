@@ -1170,110 +1170,95 @@ public class RegulatoryReportServices {
 		return repfile;
 	}
 
-	public byte[] getDownloadDetailFile(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
+	public byte[] getDownloadDetailFile(String filename, String fromdate, String todate, 
+            String currency, String dtltype, String type, String version) {
 
-		System.out.println("came to common service");
-		if ("MSFinP2Detail".equals(filename)) {
-			return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
-		}
+			System.out.println("came to common service");
+			
+			if ("MSFinP2Detail".equals(filename)) {
+			return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("MSFinP1Detail".equals(filename)) {
+			return BRRS_M_SFINP1_reportservice.getM_SFINP1DetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("MLA4Detail".equals(filename)) {
+			return BRRS_M_LA4_reportservice.BRRS_M_LA4DetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("MISDetail".equals(filename)) {
+			return BRRS_M_IS_reportservice.BRRS_M_ISDetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("MCA2Detail".equals(filename)) {
+			return BRRS_M_CA2_reportservice.getM_CA2DetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_SPDetail".equals(filename)) {
+			return BRRS_M_SP_reportservice.getM_SPDetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_MRCDetail".equals(filename)) {
+			return BRRS_M_MRC_reportservice.BRRS_M_MRCDetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_CA1Detail".equals(filename)) {
+			return BRRS_M_CA1_reportservice.BRRS_M_CA1DetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_PIDetail".equals(filename)) {
+			return BRRS_M_PI_reportservice.BRRS_M_PIDetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_LA1Detail".equals(filename)) {
+			return BRRS_M_LA1_reportservice.BRRS_M_LA1DetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_DEP1Detail".equals(filename)) {
+			return BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_LA3Detail".equals(filename)) {
+			return BRRS_M_LA3_reportservice.BRRS_M_LA3DetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_LA5Detail".equals(filename)) {
+			return BRRS_M_LA5_reportservice.BRRS_M_LA5DetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_DEP2Detail".equals(filename)) {
+			return BRRS_M_DEP2_reportservice.BRRS_M_DEP2DetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_PLLDetail".equals(filename)) {
+			return BRRS_M_PLL_reportservice.getM_PLLDetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_DEP3Detail".equals(filename)) {
+			return BRRS_M_DEP3_reportservice.BRRS_M_DEP3DetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_IRBDetail".equals(filename)) {
+			return brrs_m_irb_reportService.BRRS_M_IRBDetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_LIQDetail".equals(filename)) {
+			return BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("Q_SUMMEDetail".equals(filename)) {
+			return BRRS_Q_SMME_Intrest_Income_ReportService.BRRS_Q_SMMEDetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			} 
+			else if ("M_LIQ".equals(filename)) {
+			return BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(
+			filename, fromdate, todate, currency, dtltype, type, version);
+			}
+			
+			return new byte[0];
+			}
 
-		if ("MSFinP1Detail".equals(filename)) {
-			return BRRS_M_SFINP1_reportservice.getM_SFINP1DetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
-		}
-
-		if ("MLA4Detail".equals(filename)) {
-			return BRRS_M_LA4_reportservice.BRRS_M_LA4DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-
-		if ("MISDetail".equals(filename)) {
-			return BRRS_M_IS_reportservice.BRRS_M_ISDetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-
-		if ("MCA2Detail".equals(filename)) {
-			return BRRS_M_CA2_reportservice.getM_CA2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-
-		/*
-		 * if ("MCA5Detail".equals(filename)) { return
-		 * BRRS_M_CA5_reportservice.BRRS_M_CA5DetailExcel(filename, fromdate, todate,
-		 * currency, dtltype, type, version); }
-		 */
-
-		if ("M_SPDetail".equals(filename)) {
-			return BRRS_M_SP_reportservice.getM_SPDetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-
-		// if ("M_SRWA_12HDetail".equals(filename)) {
-		// 	return BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HDetailExcel(filename, fromdate, todate, currency,
-		// 			dtltype, type, version);
-		// }
-
-		if ("M_MRCDetail".equals(filename)) {
-			return BRRS_M_MRC_reportservice.BRRS_M_MRCDetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-
-		if ("M_CA1Detail".equals(filename)) {
-			return BRRS_M_CA1_reportservice.BRRS_M_CA1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-
-		if ("M_PIDetail".equals(filename)) {
-			return BRRS_M_PI_reportservice.BRRS_M_PIDetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-
-		if ("M_LA1Detail".equals(filename)) {
-			return BRRS_M_LA1_reportservice.BRRS_M_LA1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-
-		if ("M_DEP1Detail".equals(filename)) {
-			return BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-		if ("M_LA3Detail".equals(filename)) {
-			return BRRS_M_LA3_reportservice.BRRS_M_LA3DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-		if ("M_LA5Detail".equals(filename)) {
-			return BRRS_M_LA5_reportservice.BRRS_M_LA5DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-		if ("M_DEP2Detail".equals(filename)) {
-			return BRRS_M_DEP2_reportservice.BRRS_M_DEP2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-		if ("M_PLLDetail".equals(filename)) {
-			return BRRS_M_PLL_reportservice.getM_PLLDetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-		if ("M_DEP3Detail".equals(filename)) {
-			return BRRS_M_DEP3_reportservice.BRRS_M_DEP3DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-		if ("M_IRBDetail".equals(filename)) {
-			return brrs_m_irb_reportService.BRRS_M_IRBDetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-		if ("M_LIQDetail".equals(filename)) {
-			return BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
-		}
-		if ("Q_SUMMEDetail".equals(filename)) {
-			return BRRS_Q_SMME_Intrest_Income_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);
-		}
-
-		return new byte[0];
-	}
 
 	public List<Object> getArchival(String rptcode) {
 
@@ -1900,6 +1885,12 @@ public class RegulatoryReportServices {
 		else if ("M_SRWA_12A".equals(filename)) {
 
 			fileData = brrs_m_srwa_12a_reportservice.getM_SRWA_12ADetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+
+		}
+		else if ("M_LIQ".equals(filename)) {
+
+			fileData = BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 
 		}
