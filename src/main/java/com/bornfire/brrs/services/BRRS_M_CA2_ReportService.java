@@ -27,6 +27,7 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -688,18 +689,21 @@ dataStyle.setBorderBottom(border);
 dataStyle.setBorderLeft(border);
 dataStyle.setBorderRight(border);
 
-// ACCT BALANCE style (right aligned with 3 decimals)
+//ACCT BALANCE style (right aligned with thousand separator)
 CellStyle balanceStyle = workbook.createCellStyle();
+DataFormat df = workbook.createDataFormat();
 balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+balanceStyle.setDataFormat(df.getFormat("#,##0.000"));  // 1000 separator + 3 decimals
 balanceStyle.setBorderTop(border);
 balanceStyle.setBorderBottom(border);
 balanceStyle.setBorderLeft(border);
 balanceStyle.setBorderRight(border);
 
+
+
 // Header row
 String[] headers = {
-"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID", "REPORT_DATE"
+"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "ROWID", "COLUMNID", "REPORT_DATE"
 };
 
 XSSFRow headerRow = sheet.createRow(0);
@@ -1281,17 +1285,19 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 
 	        // ACCT BALANCE style (right aligned with 3 decimals)
 	        CellStyle balanceStyle = workbook.createCellStyle();
-	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
-	        balanceStyle.setBorderTop(border);
-	        balanceStyle.setBorderBottom(border);
-	        balanceStyle.setBorderLeft(border);
-	        balanceStyle.setBorderRight(border);
+			DataFormat df = workbook.createDataFormat();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(df.getFormat("#,##0.000"));  // 1000 separator + 3 decimals
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
+
 
 
 	     // Header row
 	     String[] headers = {
-	     "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID", "REPORT_DATE"
+	     "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "ROWID", "COLUMNID", "REPORT_DATE"
 	     };
 
 	     XSSFRow headerRow = sheet.createRow(0);
@@ -1321,13 +1327,24 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	     row.createCell(1).setCellValue(item.getAcctNumber());
 	     row.createCell(2).setCellValue(item.getAcctName());
 
-	     // ACCT BALANCE (right aligned, 3 decimal places)
+	  // ACCT BALANCE (right aligned, 3 decimal places with comma separator)
 	     Cell balanceCell = row.createCell(3);
+
 	     if (item.getAcctBalanceInPula() != null) {
-	     balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+	         balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 	     } else {
-	     balanceCell.setCellValue(0);
+	         balanceCell.setCellValue(0);
 	     }
+
+	     // Create style with thousand separator and decimal point
+	     DataFormat format = workbook.createDataFormat();
+
+	     // Format: 1,234,567.890
+	     balanceStyle.setDataFormat(format.getFormat("#,##0.000"));
+
+	     // Right alignment (optional)
+	     balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+
 	     balanceCell.setCellStyle(balanceStyle);
 
 	     row.createCell(4).setCellValue(item.getReportLable());
