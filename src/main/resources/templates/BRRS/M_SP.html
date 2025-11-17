@@ -560,7 +560,7 @@ function showResultModal(title, message) {
 		        .then(res => res.text())
 		        .then(status => {
 		            if (status === "READY") {
-		            	alertMsg.innerHTML ='Report is ready! Downloading…';
+		            	alertMsg.innerHTML ='Report is ready! Downloaded…';
 		           	 	showAlert();
 		                const filename = sessionStorage.getItem("filename");
 		                downloadDetailfile(jobId,filename)
@@ -663,7 +663,6 @@ function showdetailsbyRowAndColumn(a) {
 }
 </script>
 
-</script>
 		<script th:inline="javascript">
 		    /*<![CDATA[*/
 		    const reportId = /*[[${reportid}]]*/ null;
@@ -982,7 +981,7 @@ function showdetailsbyRowAndColumn(a) {
 						<!-- <h5 style = "font-weight:bold;color:black;">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT<br>(1) MONTHLY SCHEDULE M-SP: STATEMENT OF FINANCIAL POSITION AS AT<br>(P'000)<br> </h5> -->
 							<div
 								class="table-wrapper table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6;max-height:720px; overflow-y: auto;">
+								style="border-right: 1px solid #dee2e6;max-height:90vh; overflow-y: auto;">
 								<table
 									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 									id="reports">
@@ -1293,7 +1292,7 @@ function showdetailsbyRowAndColumn(a) {
 				<!--  DETAIL -->
 												<div th:if="${displaymode == 'Details'}">
 													<div class="row">
-														<div class="col-sm-12">
+														<div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
 															<div class="table-container" 
 																style="border-right: 1px solid #dee2e6; ">
 																<table class="table table-striped table-bordered table-hover"
@@ -1416,7 +1415,7 @@ function showdetailsbyRowAndColumn(a) {
 			        <label class="col-sm-2 col-form-label">Report Date</label>
 			        <div class="col-sm-3">
 			          <input type="date" name="reportDate" class="form-control form-control-sm"
-			                 th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" />
+			                 th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" readonly/>
 			        </div>
 
 			        <div class="col-sm-1"></div>
