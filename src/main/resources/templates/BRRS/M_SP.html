@@ -399,7 +399,7 @@ $(window).on('beforeunload', function() {
 	
 	function showsummary() {
 		$('#loader').modal('show');
-		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;								
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/					
 		location.href = Callurl;
 
 	}
@@ -443,6 +443,8 @@ function downloadfile(button) {
 	var secid = button.getAttribute('data-secid');
 	var dtltype = button.getAttribute('data-dtltype');
 	var filename = button.getAttribute('data-filename');
+	var type = button.getAttribute('data-type');
+	var version = button.getAttribute('data-version');
 
 	$('#loader').modal('show');
 
@@ -454,7 +456,9 @@ function downloadfile(button) {
 			'&currency=' + currency +
 			'&subreportid=' + subreportid +
 			'&secid=' + secid +
-			'&filename=' + filename,
+			'&filename=' + filename +
+			'&type=' + type +
+			'&version=' + version,
 		type: 'GET',
 		xhrFields: {
 			responseType: 'blob'
@@ -667,6 +671,13 @@ function showdetailsbyRowAndColumn(a) {
 		</script>
 <script>
 	function openDetail(elem, mode) {
+		
+		var type = elem.getAttribute('data-type');   
+
+					        if (type === "ARCHIVAL") {
+					            showResultModal('BRRS',"Archived Data cannot be modified");
+					            return;
+					        }
 		const acctNo = elem.getAttribute("data-acctNo");
 		 const asondate = elem.getAttribute("data-asondate");
 		location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
@@ -1311,7 +1322,7 @@ function showdetailsbyRowAndColumn(a) {
 																					title="Click to Edit this Record">
 																					<i class="fas fa-edit" style="color: black; cursor:pointer;"
 																						th:attr="data-acctNo=${report.acctNumber},
-																						data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')}"
+																						data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
 																						onclick="openDetail(this, 'edit')"></i>
 
 																				</a>
