@@ -926,25 +926,35 @@ function showdetailsbyRowAndColumn(a) {
 		
 			<div th:insert="HeaderMenu :: header"></div>
 
-			<div class="card"  >
-				<div class="card-header" style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
-					<div class="header-bar" onclick="back();">
-					  <!-- ⬅️ Left circular arrow -->
-					  <div class="left-arrow-circle">
-					    <i class="fa fa-arrow-left"></i>
-					  </div>
+			<div class="card-header"
+			     style="background-color: rgb(107, 122, 143); 
+			            display: flex; 
+			            justify-content: space-between; 
+			            align-items: center; 
+			            flex-wrap: nowrap;
+			            padding: 10px;">
 
-					  <!-- Title -->
-					  <h5 class="header-title">
-					    M-SP: SPECIFIC PROVISIONS - LOANS AND ADVANCES
-					  </h5>
+			    <!-- LEFT SECTION -->
+			    <div style="display: flex; align-items: center; gap: 15px; min-width: 0;">
 
-					  <!-- 🚌 Bus display box -->
-					  <div class="boards">
-					    <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
-					  </div>
-					</div>
+			        <!-- Back Button -->
+			        <div class="left-arrow-circle" onclick="back();">
+			            <i class="fa fa-arrow-left"></i>
+			        </div>
 
+			        <!-- Title -->
+			        <h5 style="font-family: arial; font-size: 18px; font-weight: bold; color: white; margin: 0; white-space: nowrap;">
+			            (31b) M-SP: SPECIFIC PROVISIONS - LOANS AND ADVANCES (P'000)
+			        </h5>
+
+			        <!-- Bus Scrolling Text -->
+			        <div class="boards" style="min-width: 250px;">
+			            <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+			        </div>
+			    </div>
+
+			
+			
 
     <div class="custom-tab-btn-group nav-buttons" style="display: flex; color: white; align-items: center;">
         <!-- 📅 Date -->
@@ -1006,7 +1016,7 @@ function showdetailsbyRowAndColumn(a) {
 												<!--  style="background-color: #b3b6b9"
 												style="text-align: center; background-color: #b3b6b9"-->
 											<th colspan="3"
-												style = "font-weight:bold;text-align: center;color:black;">SPECIFIC PROVISIONS</th>										
+												style = "font-weight:bold;text-align: center;color:black;">SPECIFIC PROVISIONS (P'000)</th>										
 										</tr>
 <tr  style="background-color: black; ">
 											
@@ -1014,11 +1024,11 @@ function showdetailsbyRowAndColumn(a) {
 												<!--  style="background-color: #b3b6b9"
 												style="text-align: center; background-color: #b3b6b9"-->
 											<th rowspan="1"
-												style = "font-weight:bold;color:black; text-align:right;">QUALIFYING STAGE 2 PROVISIONS</th>
+												style = "font-weight:bold;color:black; text-align:right;">QUALIFYING STAGE 2 PROVISIONS </th>
 <th rowspan="1"
-												style = "font-weight:bold;color:black; text-align:right;"> STAGE 3  PROVISIONS</th>
+												style = "font-weight:bold;color:black; text-align:right;"> STAGE 3  PROVISIONS </th>
 <th rowspan="1"
-												style = "font-weight:bold;color:black; text-align:right;">TOTAL SPECIFIC PROVISIONS</th>										
+												style = "font-weight:bold;color:black; text-align:right;">TOTAL SPECIFIC PROVISIONS </th>										
 										</tr>		
 											</thead>
 							<tbody th:each="report: ${reportsummary}"
@@ -1319,7 +1329,7 @@ function showdetailsbyRowAndColumn(a) {
 																			<th>CUST ID</th>
 																			<th>ACCT NUMBER</th>
 																			<th>ACCT NAME</th>
-																			<th>ACCT BALANCE</th>
+																			<th>ACCT BALANCE IN PULA</th>
 																			<th>PROVISION</th>
 																			<th>REPORT LABEL</th>
 																			<th>REPORT ADDL CRITERIA 1</th>
@@ -1344,10 +1354,9 @@ function showdetailsbyRowAndColumn(a) {
 																			<td th:text="${report.custId != null ? report.custId : '-'}"></td>
 																			<td th:text="${report.acctNumber != null ? report.acctNumber : '-'}"></td>
 																			<td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
-																			<td align="right" th:text="${report.acctBalanceInPula != null 
-																																	? #numbers.formatDecimal(report.acctBalanceInPula, 1, 0) : '0'}"></td>
-																			<td align="right" th:text="${report.provision != null 
-																									? #numbers.formatDecimal(report.provision, 1, 0) : '0'}"></td>
+																			
+																			<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInPula,1,'COMMA',0,'POINT')}"></td>
+																			<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.provision,1,'COMMA',0,'POINT')}"></td>
 																			<td th:text="${report.reportLable != null ? report.reportLable : '-'}">
 																			</td>
 																			<td

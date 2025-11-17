@@ -1517,7 +1517,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 	        // ACCT BALANCE style (right aligned with 3 decimals)
 	        CellStyle balanceStyle = workbook.createCellStyle();
 	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 	        balanceStyle.setBorderTop(border);
 	        balanceStyle.setBorderBottom(border);
 	        balanceStyle.setBorderLeft(border);
@@ -2898,7 +2898,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	        // ACCT BALANCE style (right aligned with 3 decimals)
 	        CellStyle balanceStyle = workbook.createCellStyle();
 	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 	        balanceStyle.setBorderTop(border);
 	        balanceStyle.setBorderBottom(border);
 	        balanceStyle.setBorderLeft(border);
