@@ -245,10 +245,7 @@ PURPOSE		: BRRSREPORT
 			/* Optional: pointer cursor */
 		}
 
-		.table-bordered td,
-		.table-bordered th {
-			border: 1px solid #000 !important;
-		}
+	
 	</style>
 
 	<style>
@@ -804,6 +801,10 @@ PURPOSE		: BRRSREPORT
 															table.dataTable th.dt-type-numeric:nth-child(6) {
 															  text-align: right !important;
 															}
+						/* Right-align header (6th column = ACCT BALANCE) */
+															table.dataTable th.dt-type-numeric:nth-child(7) {
+															 text-align: right !important;
+															}
 															
 															/* Right-align data (6th column = ACCT BALANCE) */
 																									#reportdetails td:nth-child(6),
@@ -811,6 +812,12 @@ PURPOSE		: BRRSREPORT
 																									 text-align: right !important;
 																									 padding-right: 10px !important;
 																										}
+															/* Right-align data (6th column = ACCT BALANCE) */
+																									#reportdetails td:nth-child(7),
+																									.dataTables_scrollHeadInner table th:nth-child(6) {
+																									 text-align: right !important;
+																									 padding-right: 10px !important;
+																																					}
 						
 				
 
@@ -1031,11 +1038,11 @@ PURPOSE		: BRRSREPORT
 											</th>
 											<th
 												style="background-color: #D8D8D8;text-align: right; vertical-align:middle;">
-												Approved Limit
+												Approved Limit (P'000)
 											</th>
 											<th
 												style="background-color: #D8D8D8;text-align: right; vertical-align:middle;">
-												Balance Outstanding
+												Balance Outstanding (P'000)
 											</th>
 											<th
 												style="background-color: #D8D8D8;text-align: right; vertical-align:middle;">
@@ -2024,7 +2031,7 @@ PURPOSE		: BRRSREPORT
                             <th>CUST ID</th>
                             <th style="text-align:left;">ACCT NUMBER</th>
                             <th>SCHM DESC</th>
-                            <th style="text-align:right;">ACCT BALANCE</th>
+                            <th style="text-align:right;">ACCT BALANCE IN PULA</th>
                             <th style="text-align:right;">APPROVED LIMIT</th>
                             <th style="text-align:left;">REPORT LABEL</th>
                             <th>REPORT ADDL CRITERIA 1</th>

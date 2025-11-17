@@ -1958,10 +1958,7 @@ public class BRRS_M_LA1_ReportService {
 			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
 			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 			
-			// Right-aligned header style for sanction limit
-						CellStyle rightAlignedHeaderStyle1 = workbook.createCellStyle();
-						rightAlignedHeaderStyle1.cloneStyleFrom(headerStyle);
-						rightAlignedHeaderStyle1.setAlignment(HorizontalAlignment.RIGHT);
+			
 						
 			// Default data style (left aligned)
 			CellStyle dataStyle = workbook.createCellStyle();
@@ -1990,14 +1987,14 @@ public class BRRS_M_LA1_ReportService {
 			sanctionStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "SCHM DESC", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
+			String[] headers = { "CUST ID", "ACCT NUMBER", "SCHM DESC", "ACCT BALANCE IN PULA", "APPROVED LIMIT", "REPORT LABEL",
 					"REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
-				if (i == 3) { // ACCT BALANCE
+				if (i == 3|| i == 4) { // ACCT BALANCE
 					cell.setCellStyle(rightAlignedHeaderStyle);
 				} else {
 					cell.setCellStyle(headerStyle);
@@ -2027,13 +2024,13 @@ public class BRRS_M_LA1_ReportService {
 					balanceCell.setCellStyle(balanceStyle);
 
 					// sanction (right aligned, 3 decimal places)
-					Cell sanctionCell = row.createCell(4);
+					Cell balanceCell1 = row.createCell(4);
 					if (item.getSanction_limit() != null) {
-						sanctionCell.setCellValue(item.getSanction_limit().doubleValue());
+						balanceCell1.setCellValue(item.getSanction_limit().doubleValue());
 					} else {
-						sanctionCell.setCellValue(0);
+						balanceCell1.setCellValue(0);
 					}
-					sanctionCell.setCellStyle(sanctionStyle);
+					balanceCell1.setCellStyle(balanceStyle);
 
 					row.createCell(5).setCellValue(item.getReport_label());
 					row.createCell(6).setCellValue(item.getReport_addl_criteria_1());
@@ -3819,33 +3816,29 @@ public class BRRS_M_LA1_ReportService {
 	        dataStyle.setBorderLeft(border);
 	        dataStyle.setBorderRight(border);
 
-	        // Numeric style (3 decimal places)
-	        CellStyle numericStyle = workbook.createCellStyle();
-	        numericStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        numericStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-	        numericStyle.setBorderTop(border);
-	        numericStyle.setBorderBottom(border);
-	        numericStyle.setBorderLeft(border);
-	        numericStyle.setBorderRight(border);
-
-	        // Sanction style (right aligned with 3 decimals)
-	        CellStyle sanctionStyle = workbook.createCellStyle();
-	        sanctionStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-	        sanctionStyle.setBorderTop(border);
-	        sanctionStyle.setBorderBottom(border);
-	        sanctionStyle.setBorderLeft(border);
-	        sanctionStyle.setBorderRight(border);
-
+	        // ACCT BALANCE style (right aligned with 3 decimals)
+	        CellStyle balanceStyle = workbook.createCellStyle();
+	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+	        balanceStyle.setBorderTop(border);
+	        balanceStyle.setBorderBottom(border);
+	        balanceStyle.setBorderLeft(border);
+	        balanceStyle.setBorderRight(border);
 	        // Header row
-	        String[] headers = { "CUST ID", "ACCT NUMBER", "SCHM DESC", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
+	        String[] headers = { "CUST ID", "ACCT NUMBER", "SCHM DESC", "ACCT BALANCE IN PULA", "APPROVED LIMIT", "REPORT LABEL",
 	                "REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
 
 	        XSSFRow headerRow = sheet.createRow(0);
 	        for (int i = 0; i < headers.length; i++) {
 	            Cell cell = headerRow.createCell(i);
 	            cell.setCellValue(headers[i]);
-	            cell.setCellStyle((i == 3 || i == 4) ? rightAlignedHeaderStyle : headerStyle);
+
+	            if (i == 3|| i == 4) { // ACCT BALANCE
+	                cell.setCellStyle(rightAlignedHeaderStyle);
+	            } else {
+	                cell.setCellStyle(headerStyle);
+	            }
+
 	            sheet.setColumnWidth(i, 5000);
 	        }
 
@@ -3866,19 +3859,25 @@ public class BRRS_M_LA1_ReportService {
 	                row.createCell(1).setCellValue(item.getAcct_number());
 	                row.createCell(2).setCellValue(item.getSchm_desc());
 
-	                // ACCT BALANCE (right aligned, 3 decimal places)
+	             // ACCT BALANCE (right aligned, 3 decimal places)
 	                Cell balanceCell = row.createCell(3);
-	                balanceCell.setCellValue(item.getAcct_balance_in_pula() != null
-	                        ? item.getAcct_balance_in_pula().doubleValue()
-	                        : 0.000);
-	                balanceCell.setCellStyle(numericStyle);
+	                if (item.getAcct_balance_in_pula() != null) {
+	                    balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
+	                } else {
+	                    balanceCell.setCellValue(0);
+	                }
+	                balanceCell.setCellStyle(balanceStyle);
 
-	                // APPROVED LIMIT (sanction)
+	                
+	                
+	             // ACCT BALANCE (right aligned, 3 decimal places)
 	                Cell sanctionCell = row.createCell(4);
-	                sanctionCell.setCellValue(item.getSanction_limit() != null
-	                        ? item.getSanction_limit().doubleValue()
-	                        : 0.000);
-	                sanctionCell.setCellStyle(sanctionStyle);
+	                if (item.getSanction_limit() != null) {
+	                	sanctionCell.setCellValue(item.getSanction_limit().doubleValue());
+	                } else {
+	                	sanctionCell.setCellValue(0);
+	                }
+	                sanctionCell.setCellStyle(balanceStyle);
 
 	                // Remaining text columns
 	                row.createCell(5).setCellValue(item.getReport_label());

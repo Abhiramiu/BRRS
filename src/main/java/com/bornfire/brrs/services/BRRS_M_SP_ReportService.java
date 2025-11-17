@@ -1525,7 +1525,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 
 	        // Header row
 	        String[] headers = {
-	            "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE","PROVISION", "ROWID", "COLUMNID", "REPORT_DATE"
+	            "CUST ID", "ACCT NUMBER", "ACCT NAME", "ACCT BALANCE","PROVISION", "ROWID", "COLUMNID", "REPORT_DATE"
 	        };
 
 	        XSSFRow headerRow = sheet.createRow(0);

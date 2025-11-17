@@ -106,7 +106,7 @@ PURPOSE		: BRRS_M_SPREPORT
   }
 
   .card-header h5 {
-    font-size: 22px;
+    font-size: 20px;
     color: #fff;
     font-weight: 600;
   }
@@ -737,7 +737,7 @@ function showdetailsbyRowAndColumn(a) {
 				transform: translateY(6px);
 			  background-color: rgb(107, 122, 143);
 			  color: white;
-			  padding: 5px 87px;
+			  padding: 5px 70px;
 			  border-radius: 8px;
 			  overflow: hidden;
 			  white-space: nowrap;
@@ -926,35 +926,27 @@ function showdetailsbyRowAndColumn(a) {
 		
 			<div th:insert="HeaderMenu :: header"></div>
 
-			<div class="card-header"
-			     style="background-color: rgb(107, 122, 143); 
-			            display: flex; 
-			            justify-content: space-between; 
-			            align-items: center; 
-			            flex-wrap: nowrap;
-			            padding: 10px;">
-
-			    <!-- LEFT SECTION -->
-			    <div style="display: flex; align-items: center; gap: 15px; min-width: 0;">
-
-			        <!-- Back Button -->
-			        <div class="left-arrow-circle" onclick="back();">
-			            <i class="fa fa-arrow-left"></i>
-			        </div>
-
-			        <!-- Title -->
-			        <h5 style="font-family: arial; font-size: 18px; font-weight: bold; color: white; margin: 0; white-space: nowrap;">
-			            (31b) M-SP: SPECIFIC PROVISIONS - LOANS AND ADVANCES (P'000)
-			        </h5>
-
-			        <!-- Bus Scrolling Text -->
-			        <div class="boards" style="min-width: 250px;">
-			            <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
-			        </div>
-			    </div>
-
 			
 			
+			<div class="card"  >
+				<div class="card-header" style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div class="header-bar" onclick="back();">
+					  <!-- ⬅️ Left circular arrow -->
+					  <div class="left-arrow-circle">
+					    <i class="fa fa-arrow-left"></i>
+					  </div>
+
+					  <!-- Title -->
+					  <h5 class="header-title">
+					    (31b) M-SP: SPECIFIC PROVISIONS - LOANS AND ADVANCES (P'000)
+					  </h5>
+
+					  <!-- 🚌 Bus display box -->
+					  <div class="boards">
+					    <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+					  </div>
+					</div>
+
 
     <div class="custom-tab-btn-group nav-buttons" style="display: flex; color: white; align-items: center;">
         <!-- 📅 Date -->

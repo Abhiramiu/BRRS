@@ -1539,7 +1539,7 @@ public class BRRS_ReportsController {
 			// call services
 			q_rlfa2_reportService.updateReport(request);
 
-			return ResponseEntity.ok("All Reports Updated Successfully");
+			return ResponseEntity.ok("Updated Successfully");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
