@@ -1296,7 +1296,7 @@ PURPOSE		: BRRS REPORT
                      data-todate=${todate}, 
                      data-currency=${currency},  
                      data-dtltype=${dtltype}, 
-                     data-filename='M_LIQ.xls',
+                     data-filename='M_LIQ.xlsx',
                      data-type=${type},
 		                     data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
@@ -1936,7 +1936,7 @@ PURPOSE		: BRRS REPORT
 						<div class="col-sm-12" >
 							<div class="table-responsive scrollable-table-container"
 								style="border-right: 1px solid #dee2e6;">
-								<table class="table table-striped table-bordered table-hover" id="reportdetails">
+								<table class="table table-striped table-bordered table-hover" id="reportdetail">
 								<thead class="thead-light">
 										<tr>
 											<th></th>
@@ -1971,7 +1971,7 @@ PURPOSE		: BRRS REPORT
 											<td th:text="${report.acct_number}"></td>
 											<td th:text="${report.acct_name}"></td>
 
-											<td style="text-align:right;"
+											<td style="text-align:right !important;"
     th:text="${#numbers.formatDecimal(report.acct_balance_in_pula, 1, 'COMMA', 0, 'POINT')}">
 </td>
 
@@ -2261,5 +2261,42 @@ PURPOSE		: BRRS REPORT
 		width: auto;
 	}
 </style>
+<script th:inline="javascript">
+				  $(document).ready(function () {
+				    var table = $('#reportdetail').DataTable({
+				      scrollY: "550px",
+				      scrollX: true,
+				      scrollCollapse: true,
+				      autoWidth: false,
+				      paging: true,
+				      searching: true,
+				      lengthChange: false,
+				      ordering: true,
+				      pageLength: 100,
+				      fixedHeader: true, // ✅ You can simply set it to true
+					  // ✅ Column width settings
+					  columnDefs: [
+    { width: "60px", targets: 0 },
+    { width: "100px", targets: 1 },
+    { width: "250px", targets: 5 },
+    { width: "250px", targets: 7 },
 
+    // ⭐ Right align these 5 columns
+    { className: "dt-right", targets: [3, 4, 5, 7, 8] }
+],
+
+				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+				    });
+
+				    // ✅ Fix alignment on resize / zoom
+				    $(window).on('resize', function () {
+				      table.columns.adjust().draw(false);
+				    });
+
+				    // ✅ Fix initial misalignment if loaded at non-100% zoom
+				    setTimeout(function () {
+				      table.columns.adjust().draw(false);
+				    }, 500);
+				  });
+				</script>
 </html>
