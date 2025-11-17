@@ -352,7 +352,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 				success: function(roleId) {
 					// console.log("User Role ID:", roleId);
 				
-					if (roleId === "ADM-C" || roleId === "USR-C" ) {
+					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}

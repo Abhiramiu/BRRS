@@ -300,6 +300,39 @@ PURPOSE		: BWRBRREPORT
             $('#loader').modal('hide');
         });
 
+
+        
+		
+		
+		$(document).ready(function() {
+			Maker_Checker_Function(); 
+		});
+
+		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",    
+				type: "GET",
+				success: function(roleId) {
+					// console.log("User Role ID:", roleId);
+				
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						const modifyBtn = document.getElementById("addRecord");
+						if (modifyBtn) modifyBtn.style.display = "none";
+					}
+
+					if (roleId === "ADM-M" || roleId === "USR-M") {
+								const button = document.getElementById("custom-tab-btnAdd");
+								if (button) button.style.display = "none";
+							}
+
+				},
+				error: function(err) {
+					console.error("Error fetching role:", err);
+		     }
+		    });
+		}
+		
         function home() {
             $("#loader").modal("toggle");
             location.href = 'Dashboard'
