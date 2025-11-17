@@ -2906,7 +2906,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 
 	        // Header row
 	        String[] headers = {
-	            "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID", "REPORT_DATE"
+	            "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE","PROVISION", "ROWID", "COLUMNID", "REPORT_DATE"
 	        };
 
 	        XSSFRow headerRow = sheet.createRow(0);

@@ -15,10 +15,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class M_CA2_Archival_Detail_Entity {
 	
-	@Id
+
     @Column(name = "CUST_ID", length = 100)
     private String custId;
 
+	@Id
     @Column(name = "ACCT_NUMBER", length = 100)
     private String acctNumber;
 

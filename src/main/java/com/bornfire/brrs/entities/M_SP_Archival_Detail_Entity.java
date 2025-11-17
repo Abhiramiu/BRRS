@@ -14,10 +14,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_M_SP_ARCHIVALTABLE_DETAIL")
 
 public class M_SP_Archival_Detail_Entity {
-	@Id
+
     @Column(name = "CUST_ID", length = 100)
     private String custId;
 
+	@Id
     @Column(name = "ACCT_NUMBER", length = 100)
     private String acctNumber;
 
@@ -62,7 +63,7 @@ public class M_SP_Archival_Detail_Entity {
     private BigDecimal acctBalanceInPula;
     
     @Column(name = "REPORT_DATE")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date reportDate;
 
     @Column(name = "REPORT_NAME", length = 100)

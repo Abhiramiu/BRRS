@@ -372,8 +372,17 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "downloaddetailExcel", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<ByteArrayResource> detailDownload(HttpServletResponse response,
-			@RequestParam("jobId") String jobId, @RequestParam("filename") String filename)
+			@RequestParam("jobId") String jobId, @RequestParam("filename") String filename, @RequestParam(value = "type", required = false) String type,
+	        @RequestParam(value = "version", required = false) String version,
+	        @RequestParam(value = "todate", required = false) String todate)
 			throws SQLException, FileNotFoundException {
+		
+		System.out.println("🔵 [CONTROLLER] DETAIL DOWNLOAD CALLED");
+	    System.out.println("JobId Passed = " + jobId);
+	    System.out.println("Filename Passed = " + filename);
+	    System.out.println("TYPE Passed = " + type);
+	    System.out.println("VERSION Passed = " + version);
+	    System.out.println("TODATE Passed = " + todate);
 
 		response.setContentType("application/octet-stream");
 
