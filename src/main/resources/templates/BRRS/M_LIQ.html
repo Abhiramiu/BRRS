@@ -1166,7 +1166,7 @@ PURPOSE		: BRRS REPORT
 		#reportdetails,
 		#reportdetails th,
 		#reportdetails td {
-			border: 1px solid black !important;
+			
 		}
 
 		#reportdetails {
@@ -1174,38 +1174,39 @@ PURPOSE		: BRRS REPORT
 		}
 	</style>
 	<script th:inline="javascript">
-		$(document).ready(function () {
-			var table = $('#reportdetails').DataTable({
-				scrollY: "550px",
-				scrollCollapse: true,
-				autoWidth: true,
-				paging: true,
-				searching: true,
-				lengthChange: false,
-				ordering: true,
-				pageLength: 100,
-				fixedHeader: true, // ✅ You can simply set it to true
-				// ✅ Column width settings
-				columnDefs: [
-					{width: "60px", targets: 0},   // Edit icon column
-					{width: "150px", targets: 1},  // S No column
-					{width: "300px", targets: 7}    // S No column
-				],
+				  $(document).ready(function () {
+				    var table = $('#reportdetails').DataTable({
+				      scrollY: "550px",
+				      scrollX: true,
+				      scrollCollapse: true,
+				      autoWidth: false,
+				      paging: true,
+				      searching: true,
+				      lengthChange: false,
+				      ordering: true,
+				      pageLength: 100,
+				      fixedHeader: true, // ✅ You can simply set it to true
+					  // ✅ Column width settings
+					   columnDefs: [
+					     { width: "60px", targets: 0 },   // Edit icon column
+					     { width: "150px", targets: 1 }  ,  // S No column
+						 { width: "300px", targets: 7 }    // S No column
+					   ],
 
-				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-			});
+				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+				    });
 
-			// ✅ Fix alignment on resize / zoom
-			$(window).on('resize', function () {
-				table.columns.adjust().draw(false);
-			});
+				    // ✅ Fix alignment on resize / zoom
+				    $(window).on('resize', function () {
+				      table.columns.adjust().draw(false);
+				    });
 
-			// ✅ Fix initial misalignment if loaded at non-100% zoom
-			setTimeout(function () {
-				table.columns.adjust().draw(false);
-			}, 500);
-		});
-	</script>
+				    // ✅ Fix initial misalignment if loaded at non-100% zoom
+				    setTimeout(function () {
+				      table.columns.adjust().draw(false);
+				    }, 500);
+				  });
+				</script>
 
 	<script th:inline="javascript">
 		/*<![CDATA[*/
@@ -1935,10 +1936,8 @@ PURPOSE		: BRRS REPORT
 						<div class="col-sm-12" >
 							<div class="table-responsive scrollable-table-container"
 								style="border-right: 1px solid #dee2e6;">
-								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reportdetails">
-									<thead class="thead-light">
+								<table class="table table-striped table-bordered table-hover" id="reportdetails">
+								<thead class="thead-light">
 										<tr>
 											<th></th>
 											<th>S No</th>

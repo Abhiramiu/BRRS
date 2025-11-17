@@ -1,7 +1,6 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -22,6 +21,7 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -30,6 +30,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFDataFormat;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -55,7 +57,6 @@ import com.bornfire.brrs.entities.BRRS_M_LIQ_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_LIQ_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA2_Detail_Entity;
 import com.bornfire.brrs.entities.M_LIQ_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_LIQ_Archival_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_LIQ_Archival_Summary_Entity;
@@ -683,16 +684,21 @@ public class BRRS_M_LIQ_ReportService {
 			dataStyle.setBorderRight(border);
 
 			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
+	        CellStyle balanceStyle = workbook.createCellStyle();
+	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+	        balanceStyle.setBorderTop(border);
+	        balanceStyle.setBorderBottom(border);
+	        balanceStyle.setBorderLeft(border);
+	        balanceStyle.setBorderRight(border);
 
+
+
+
+
+			
 			// Header row
-			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -1209,13 +1215,16 @@ public class BRRS_M_LIQ_ReportService {
 			dataStyle.setBorderRight(border);
 
 // ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
+			// ACCT BALANCE style (right aligned with 3 decimals)
+	        CellStyle balanceStyle = workbook.createCellStyle();
+	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+	        balanceStyle.setBorderTop(border);
+	        balanceStyle.setBorderBottom(border);
+	        balanceStyle.setBorderLeft(border);
+	        balanceStyle.setBorderRight(border);
+
+
 
 // Header row
 			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA",  "REPORT LABEL", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
