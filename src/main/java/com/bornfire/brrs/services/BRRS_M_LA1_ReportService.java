@@ -249,6 +249,11 @@ public class BRRS_M_LA1_ReportService {
 	public byte[] BRRS_M_LA1Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
+		// ARCHIVAL check
+				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+					logger.info("Service: Generating ARCHIVAL report for version {}", version);
+					return getExcelM_LA1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+				}
 
 		List<M_LA1_Summary_Entity> dataList = BRRS_M_LA1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
@@ -3833,7 +3838,7 @@ public class BRRS_M_LA1_ReportService {
 	        sanctionStyle.setBorderRight(border);
 
 	        // Header row
-	        String[] headers = { "CUST ID", "ACCT NO", "SCHM DESC", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
+	        String[] headers = { "CUST ID", "ACCT NUMBER", "SCHM DESC", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
 	                "REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
 
 	        XSSFRow headerRow = sheet.createRow(0);
