@@ -179,15 +179,14 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 					columnId = parts[1];
 				}
 			}
-			System.out.println(type);
+		
 			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
 				// 🔹 Archival branch
 				List<M_SP_Archival_Detail_Entity> T1Dt1;
 				if (rowId != null && columnId != null) {
 					T1Dt1 = BRRS_M_SP_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
 				} else {
-					T1Dt1 = BRRS_M_SP_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+					T1Dt1 = BRRS_M_SP_Archival_Detail_Repo.getdatabydateList(parsedDate, version);					
 				}
 
 				mv.addObject("reportdetails", T1Dt1);
@@ -239,8 +238,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelM_SPARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-		}
+		}  
+	
 
+		
 		// Fetch data
 
 		List<M_SP_Summary_Entity> dataList =BRRS_M_SP_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
@@ -1479,7 +1480,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 						version);
 				return ARCHIVALreport;
 			}
-
+			
 	        XSSFWorkbook workbook = new XSSFWorkbook();
 	        XSSFSheet sheet = workbook.createSheet("M_SPDetails");
 
@@ -1623,9 +1624,11 @@ public List<Object> getM_SPArchival() {
 	public byte[] getExcelM_SPARCHIVAL(String filename, String reportId, String fromdate, String todate,
 										   String currency, String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
+		
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
+		System.out.println("Testing");
 		List<M_SP_Archival_Summary_Entity> dataList = BRRS_M_SP_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
@@ -1640,7 +1643,7 @@ public List<Object> getM_SPArchival() {
 		Path templatePath = Paths.get(templateDir, templateFileName);
 		System.out.println(templatePath);
 
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+		logger.info("Service: Attempting1 to load template from path: {}", templatePath.toAbsolutePath());
 
 		if (!Files.exists(templatePath)) {
 			// This specific exception will be caught by the controller.
@@ -2911,7 +2914,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	            Cell cell = headerRow.createCell(i);
 	            cell.setCellValue(headers[i]);
 
-	            if (i == 3) { // ACCT BALANCE
+	            if (i == 3|| i == 4) { // ACCT BALANCE
 	                cell.setCellStyle(rightAlignedHeaderStyle);
 	            } else {
 	                cell.setCellStyle(headerStyle);
@@ -2934,29 +2937,38 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	     					row.createCell(1).setCellValue(item.getAcctNumber());
 	     					row.createCell(2).setCellValue(item.getAcctName());
 
-	                // ACCT BALANCE (right aligned, 3 decimal places)
-	                Cell balanceCell = row.createCell(3);
-	                if (item.getAcctBalanceInPula() != null) {
-	                    balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
-	                } else {
-	                    balanceCell.setCellValue(0);
-	                }
-	                balanceCell.setCellStyle(balanceStyle);
+	     				// ACCT BALANCE (right aligned, 3 decimal places)
+	    	                Cell balanceCell = row.createCell(3);
+	    	                if (item.getAcctBalanceInPula() != null) {
+	    	                    balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+	    	                } else {
+	    	                    balanceCell.setCellValue(0);
+	    	                }
+	    	                balanceCell.setCellStyle(balanceStyle);
+	    	                
+	    	             // ACCT BALANCE (right aligned, 3 decimal places)
+	    	                Cell balanceCell1 = row.createCell(4);
+	    	                if (item.getProvision() != null) {
+	    	                    balanceCell1.setCellValue(item.getProvision().doubleValue());
+	    	                } else {
+	    	                    balanceCell1.setCellValue(0);
+	    	                }
+	    	                balanceCell1.setCellStyle(balanceStyle);
 
-	                row.createCell(4).setCellValue(item.getReportLable());
-	                row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-	                row.createCell(6).setCellValue(
-	                    item.getReportDate() != null ?
-	                    new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
-	                );
+	    	                row.createCell(5).setCellValue(item.getReportLable());
+	    	                row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+	    	                row.createCell(7).setCellValue(
+	    	                    item.getReportDate() != null ?
+	    	                    new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
+	    	                );
 
-	                // Apply data style for all other cells
-	                for (int j = 0; j < 7; j++) {
-	                    if (j != 3) {
-	                        row.getCell(j).setCellStyle(dataStyle);
-	                    }
-	                }
-	            }
+	    	                // Apply data style for all other cells
+	    	                for (int j = 0; j < 7; j++) {
+	    	                    if (j != 3 && j != 4) {
+	    	                        row.getCell(j).setCellStyle(dataStyle);
+	    	                    }
+	    	                }
+	    	            }
 	        } else {
 	            logger.info("No data found for M_SP — only header will be written.");
 	        }
