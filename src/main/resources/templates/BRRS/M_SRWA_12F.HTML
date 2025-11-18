@@ -2420,7 +2420,7 @@ function fileuploads(btn) {
                th:value="${#strings.defaultString(report.R37_NAME_OF_CORPORATE, 'Total')}"
                id="R37_NAME_OF_CORPORATE"
                name="R37_NAME_OF_CORPORATE"
-               style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: left;"
+               style="background-color:#FFFFFF; font-weight: bold; height: 28px; border-color: transparent; text-align: left;"
                readonly />
     </td>
 
@@ -2451,13 +2451,13 @@ function fileuploads(btn) {
                readonly />
     </td>
 
-    <td id="ROW37" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+    <td id="ROW37" style="background-color:#999999; padding-left: 20px; font-weight: bold;text-align: right;">
+        <!-- <input class="display-input Show_inputnonEditable" type="text"
                th:value="${report.R37_RISK_WEIGHT != null ? #numbers.formatDecimal(report.R37_RISK_WEIGHT, 1, 0, 'POINT') : '0'}"
                id="R37_RISK_WEIGHT"
                name="R37_RISK_WEIGHT"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
+               readonly /> -->
     </td>
 
     <td id="ROW37" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;text-align: right;">

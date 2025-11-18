@@ -286,6 +286,8 @@ PURPOSE		: BWRBRREPORT
 		}
 	</style>
 	<script th:inline="javascript">
+	let isDetailsModal = false;
+	
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -342,6 +344,7 @@ PURPOSE		: BWRBRREPORT
 		}
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+			 isDetailsModal = true; 
 
 			showResultModal('BRRS', ' Details page not available for Manual Report');
 		}
@@ -714,12 +717,25 @@ PURPOSE		: BWRBRREPORT
 		// This function is for closing the modal after an action is complete.
 		// It hides the result and loader modals and reloads the page.
 		function closemodel() {
-			$("#resultModal").modal("hide");
+			/* $("#resultModal").modal("hide");
 			$('#loader').modal('hide');
 			// Reload the page after a short delay to ensure the modal animation completes smoothly.
 			setTimeout(function () {
 				location.reload();
-			}, 300);
+			}, 300); */
+			
+			$("#resultModal").modal("hide");
+	        $('#loader').modal('hide');
+
+	        // Only reload if not from Details modal
+	        if (!isDetailsModal) {
+	            setTimeout(function () {
+	                location.reload();
+	            }, 300);
+	        } else {
+	            // reset flag for next modal usage
+	            isDetailsModal = false;
+	        }
 		}
 
 		function fileuploads(btn) {
@@ -1012,16 +1028,14 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 											</tr>
-											<tr>
-												<td></td>
-												<td></td>
-												<td></td>
+											<tr style="border:none !important;">
+												<td colspan="3" style="height: 30px; border: none !important;"></td>
 											</tr>
 										</tbody>
 
 										<tr>
 											<td colspan="7"
-												style="text-align: left; font-weight: bold;background-color: #FFFFFF ">
+												style="text-align: left; font-weight: bold; border:none !important; background-color: #FFFFFF ">
 												B. Threshold deductions:
 												<span style="font-weight: normal;">
 													(Recognition capped at 10 percent of the bank’s common equity
@@ -1144,28 +1158,33 @@ PURPOSE		: BWRBRREPORT
 
 										<tbody class="thead-light">
 
-											<tr>
+											<tr style="border:none !important;">
 												<th colspan="3"
-													style="text-align: left;color: red;background-color: #FFFFFF ">
+													style="text-align: left;color: red; border:none !important; background-color: #FFFFFF ">
 													Important note: (1) The amount of the three items (33,34,35) not
 													deducted (threshold amounts) in the calculation of CET1 will be
 													treated as other assets and risk-weighted at 250 percent. </th>
 											</tr>
-											<tr>
+											<tr style="border:none !important;">
 												<th colspan="3"
-													style="text-align: left;color: red;background-color: #FFFFFF  ">
+													style="text-align: left;color: red; border:none !important; background-color: #FFFFFF  ">
 													(2) Line 36: The amount above the 10 percent threshold shall be
 													deducted from CET1, and the amount below threshold shall be
 													risk-weighted as appropriate as per Schedule M-SRWA </th>
 											</tr>
-											<tr>
 
-												<th colspan="3" style="text-align: left;background-color: #FFFFFF ">
+											<tr style="border:none !important;">
+												<td colspan="3" style="height: 25px; border: none !important;"></td>
+											</tr>
+											
+											<tr style="border:none !important;">
+
+												<th colspan="3" style="text-align: left; border:none !important; background-color: #FFFFFF ">
 													2. Regulatory adjustments applied in the calculation of Additional
 													Tier1 Capital </th>
 											</tr>
-											<tr>
-												<th colspan="3" style="text-align: left; background-color: #FFFFFF ">
+											<tr style="border:none !important;">
+												<th colspan="3" style="text-align: left; border:none !important; background-color: #FFFFFF ">
 													A. Full decductions </th>
 											</tr>
 
@@ -1257,10 +1276,8 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 											</tr>
-											<tr>
-												<td></td>
-												<td></td>
-												<td></td>
+											<tr style="border:none !important;">
+												<td colspan="3" style="height: 30px; border: none !important;"></td>
 											</tr>
 										</tbody>
 
@@ -1268,15 +1285,23 @@ PURPOSE		: BWRBRREPORT
 
 										<tbody class="thead-light">
 
-											<tr>
-												<th style="text-align: left; background-color: #FFFFFF">
+											<tr style="border:none !important;">
+												<th style="text-align: left; border:none !important; background-color: #FFFFFF">
 													B. Threshold decductions:</th>
-												<th style="text-align: left;background-color: #FFFFFF ">
+												<td style="text-align: left; border:none !important; background-color: #FFFFFF ">
 													( Recognition capped at 10 percent of the bank’scommon equity (after
 													the application of all regulatory adjustments set out under
-													paragraph 4.10)</th>
+													paragraph 4.10)</td>
 											</tr>
+											
+											
+											<!-- First header row -->
+											<tr>
+												<td></td>
+												<td></td>
+												<td></td>
 
+											</tr>
 
 										</tbody>
 										<tbody id="entity" th:each="report: ${reportsummary}"
@@ -1331,26 +1356,20 @@ PURPOSE		: BWRBRREPORT
 												</td>
 											</tr>
 
-											<tr>
-												<td></td>
-												<td></td>
-												<td></td>
+											<tr style="border:none !important;">
+												<td colspan="3" style="height: 30px; border: none !important;"></td>
 											</tr>
 										</tbody>
 
 										<thead class="thead-light">
-											<tr>
-												<th colspan="3" style="text-align: left; background-color: #FFFFFF "> 2.
+											<tr style="border:none !important;">
+												<th colspan="3" style="text-align: left; border:none !important; background-color: #FFFFFF "> 2.
 													Regulatory adjustments applied in the calculation of Tier2 Capital
 												</th>
 											</tr>
-											<tr>
-												<th style="text-align: left; background-color: #FFFFFF ">
+											<tr style="border:none !important;">
+												<th style="text-align: left; border:none !important; background-color: #FFFFFF ">
 													A. Full decductions</th>
-												<th style="text-align: left;background-color: #FFFFFF ">
-													( Recognition capped at 10 percent of the bank’scommon equity (after
-													the application of all regulatory adjustments set out under
-													paragraph 4.15)</th>
 											</tr>
 
 
@@ -1435,27 +1454,18 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 											</tr>
-											<tr>
-												<td></td>
-												<td></td>
-												<td></td>
+											<tr style="border:none !important;">
+												<td colspan="3" style="height: 30px; border: none !important;"></td>
 											</tr>
 										</tbody>
 
-										<thead class="thead-light">
-											<!-- First header row -->
-											<tr style="background-color: #b3b6b9">
-												<th></th>
-												<th></th>
-												<th></th>
-											</tr>
-										</thead>
+										
 										<tbody id="entity" th:each="report: ${reportsummary}"
 											style="font-family: Arial;">
 
 											<tr>
-												<th>B. Threshold decductions:</th>
-												<td colspan="2">( Recognition capped at 10 percent of the bank’scommon
+												<th style="border:none !important;">B. Threshold decductions:</th>
+												<td colspan="2" style="border:none !important;">( Recognition capped at 10 percent of the bank’scommon
 													equity (after the application of all regulatory adjustments set out
 													under paragraph 4.15)</td>
 												</th>
@@ -1510,10 +1520,8 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 											</tr>
-											<tr>
-												<td></td>
-												<td></td>
-												<td></td>
+											<tr style="border:none !important;">
+												<td colspan="3" style="height: 30px; border: none !important;"></td>
 											</tr>
 										</tbody>
 
@@ -1647,13 +1655,12 @@ PURPOSE		: BWRBRREPORT
 		z-index: 5;
 	}
 
-	.scrollable-table-container thead tr:nth-child(2) {
+	/* .scrollable-table-container thead tr:nth-child(2) {
 		position: sticky;
 		top: 36px;
-		/* adjust based on row height */
 		background-color: #b3b6b9;
 		z-index: 4;
-	}
+	} */
 
 	.scrollable-table-container thead tr:nth-child(3) {
 		position: sticky;
@@ -1731,5 +1738,12 @@ PURPOSE		: BWRBRREPORT
 		width: auto;
 	}
 </style>
+
+<style>
+    .dataTables_scrollHead {
+        position: static !important;
+    }
+</style>
+
 
 </html>
