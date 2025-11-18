@@ -1570,7 +1570,43 @@ $(document).ready(function () {
 
 
 
+<script th:inline="javascript">
+		function showdetailsbyRowAndColumn(a) {
+			var rowId = a.getAttribute('RowId');
+			var columnId = a.getAttribute('ColumnId');
+			var cellValue = a.textContent || a.innerText;
 
+			if (cellValue !== '0') {
+				// Set dynamic message in modal (instead of confirm)
+				document.getElementById("cellresultModalLabel").innerText =
+					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+				// Show custom Bootstrap modal
+				$('#cellresultModal').modal('show');
+
+				// Handle Yes button
+				document.querySelector('.yes-btn').onclick = function () {
+					$('#cellresultModal').modal('hide');
+
+					// Show loader
+					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+						backdrop: 'static',
+						keyboard: false
+					});
+					$('#loader').modal('show');
+
+					// Build dynamic URL
+					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+					location.href = Callurl;
+				};
+			} else {
+				// Use your custom alert modal instead of window.alert
+				showResultModal("Alert", "No Records available for this selected cell.");
+			}
+		}
+	</script>
 
 
 
@@ -21326,7 +21362,9 @@ $(document).ready(function () {
 				<td th:each="report : ${reportsummary6}"
     id="r124_expo_crm"
     style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r124_expo_crm != null ? #numbers.formatDecimal(report.r124_expo_crm, 1, 'COMMA', 0, 'POINT') : '0'}">
+    th:text="${report.r124_expo_crm != null ? #numbers.formatDecimal(report.r124_expo_crm, 1, 'COMMA', 0, 'POINT') : '0'}"
+    th:attr="RowId='R124', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)">
 </td>
 		<!-- D -->
 		<td id="ROW124" style="padding-left: 20px; font-weight: bold; text-align: right;" >
@@ -22376,7 +22414,11 @@ $(document).ready(function () {
 				<td th:each="report : ${reportsummary6}"
     id="r129_expo_crm"
     style=" padding-right:10px;  text-align: right;"
-    th:text="${report.r129_expo_crm != null ? #numbers.formatDecimal(report.r129_expo_crm, 1, 'COMMA', 0, 'POINT') : '0'}">
+    th:text="${report.r129_expo_crm != null ? #numbers.formatDecimal(report.r129_expo_crm, 1, 'COMMA', 0, 'POINT') : '0'}"
+    
+    
+     th:attr="RowId='R129', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)">
 </td>
 		<!-- D -->
 		<td id="ROW129" style="padding-left: 20px; font-weight: bold; text-align: right;" >
@@ -26899,7 +26941,10 @@ $(document).ready(function () {
 				<td th:each="report : ${reportsummary6}"
     id="r158_nom_pri_amt"
     style="   text-align: right;"
-    th:text="${report.r158_nom_pri_amt != null ? #numbers.formatDecimal(report.r158_nom_pri_amt, 0, 'COMMA', 0, 'POINT') : '0'}">
+    th:text="${report.r158_nom_pri_amt != null ? #numbers.formatDecimal(report.r158_nom_pri_amt, 0, 'COMMA', 0, 'POINT') : '0'}"
+    
+     th:attr="RowId='R158', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)">
 </td>
 		<!-- D % -->
 		<!-- <td id="ROW158" style="padding-left: 20px; font-weight: bold; text-align: right;">
