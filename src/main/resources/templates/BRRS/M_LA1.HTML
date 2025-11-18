@@ -801,6 +801,8 @@ PURPOSE		: BRRSREPORT
 															table.dataTable th.dt-type-numeric:nth-child(6) {
 															  text-align: right !important;
 															}
+															
+															
 						/* Right-align header (6th column = ACCT BALANCE) */
 															table.dataTable th.dt-type-numeric:nth-child(7) {
 															 text-align: right !important;
@@ -841,8 +843,9 @@ PURPOSE		: BRRSREPORT
 					  // ✅ Column width settings
 					   columnDefs: [
 					     { width: "60px", targets: 0 },   // Edit icon column
-					     { width: "150px", targets: 1 }  ,  // S No column
-						 { width: "300px", targets: 7 }    // S No column
+					     { width: "100px", targets: 1 }  ,  // S No column
+						 { width: "113px", targets: 7 }    // S No column
+						
 					   ],
 
 				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
