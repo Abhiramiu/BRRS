@@ -321,6 +321,40 @@ PURPOSE		: BWRBRREPORT
       .table-bordered th {
         border: 1px solid #000 !important;
       }
+      		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 5px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
     </style>
 
     <script th:inline="javascript">
@@ -1073,8 +1107,13 @@ function fileuploads(btn) {
 						</div>
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">(22) MONTHLY SCHEDLE: M-OPTR: OPTIONS RISK</h5>
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+							(22) MONTHLY SCHEDLE: M-OPTR: OPTIONS RISK</h5>
 					</div>
+					<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text"> BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+						</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
