@@ -21,7 +21,6 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -30,12 +29,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFDataFormat;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,11 +96,11 @@ public class BRRS_M_LIQ_ReportService {
 			Pageable pageable, String type, String version) {
 
 		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
+		/*Session hs = sessionFactory.getCurrentSession();
 
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
+		int startItem = currentPage * pageSize;*/
 
 		System.out.println("testing");
 		System.out.println(version);
@@ -115,7 +111,7 @@ public class BRRS_M_LIQ_ReportService {
 			List<M_LIQ_Archival_Manual_Summary_Entity> T2Master = new ArrayList<M_LIQ_Archival_Manual_Summary_Entity>();
 			System.out.println(version);
 			try {
-				Date d1 = dateformat.parse(todate);
+				//Date d1 = dateformat.parse(todate);
 
 				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
 				// ", BRF1_REPORT_ENTITY.class)
@@ -178,7 +174,7 @@ public class BRRS_M_LIQ_ReportService {
 
 		ModelAndView mv = new ModelAndView();
 
-		Session hs = sessionFactory.getCurrentSession();
+		//Session hs = sessionFactory.getCurrentSession();
 
 		try {
 			Date parsedDate = null;
@@ -683,10 +679,10 @@ public class BRRS_M_LIQ_ReportService {
 			dataStyle.setBorderLeft(border);
 			dataStyle.setBorderRight(border);
 
-			// ACCT BALANCE style (right aligned with 3 decimals)
+			// ACCT BALANCE style 
 	        CellStyle balanceStyle = workbook.createCellStyle();
 	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
 	        balanceStyle.setBorderTop(border);
 	        balanceStyle.setBorderBottom(border);
 	        balanceStyle.setBorderLeft(border);
@@ -1218,7 +1214,7 @@ public class BRRS_M_LIQ_ReportService {
 			// ACCT BALANCE style (right aligned with 3 decimals)
 	        CellStyle balanceStyle = workbook.createCellStyle();
 	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
 	        balanceStyle.setBorderTop(border);
 	        balanceStyle.setBorderBottom(border);
 	        balanceStyle.setBorderLeft(border);

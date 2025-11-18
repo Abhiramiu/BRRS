@@ -1,10 +1,7 @@
 package com.bornfire.brrs.services;
 
-import org.springframework.web.servlet.ModelAndView;
-
-
-
 import java.io.ByteArrayOutputStream;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -17,8 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -39,15 +34,11 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,21 +47,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.M_CA2_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_CA2_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.M_CA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_CA2_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA2_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_CA2_Detail_Repo;
-import com.bornfire.brrs.entities.M_CA2_Summary_Entity;
-import com.bornfire.brrs.entities.M_FXR_Summary_Entity1;
-import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
-import com.bornfire.brrs.entities.BRRS_M_CA2_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.BRRS_M_CA2_Manual_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA2_Manual_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_CA2_Manual_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_CA2_Manual_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_CA2_Summary_Repo;
+import com.bornfire.brrs.entities.M_CA2_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_CA2_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_CA2_Detail_Entity;
+import com.bornfire.brrs.entities.M_CA2_Manual_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
+import com.bornfire.brrs.entities.M_CA2_Summary_Entity;
 
 @Component
 @Service
@@ -108,10 +98,10 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 	public ModelAndView getM_CA2View(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String type, String version) {
 		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
+		/*Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;	
+		int startItem = currentPage * pageSize;	*/
 
 		System.out.println("testing");
 		System.out.println(version);
@@ -122,7 +112,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 			List<M_CA2_Manual_Archival_Summary_Entity> T2Master = new ArrayList<M_CA2_Manual_Archival_Summary_Entity>();
 			System.out.println(version);
 			try {
-				Date d1 = dateformat.parse(todate);
+				//Date d1 = dateformat.parse(todate);
 
 				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
 				// ", BRF1_REPORT_ENTITY.class)
@@ -142,7 +132,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 		List<M_CA2_Manual_Summary_Entity> T2Master = new ArrayList<M_CA2_Manual_Summary_Entity>();
 		
 		try {
-			Date d1 = dateformat.parse(todate);
+			//Date d1 = dateformat.parse(todate);
 			// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
 
 			//T1Master = hs.createQuery("from  BRF1_REPORT_ENTITY a where a.report_date = ?1 ", BRF1_REPORT_ENTITY.class)
@@ -179,7 +169,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 		int totalPages = 0;
 
 		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
+		//Session hs = sessionFactory.getCurrentSession();
 
 		try {
 			Date parsedDate = null;
@@ -692,12 +682,20 @@ dataStyle.setBorderRight(border);
 //ACCT BALANCE style (right aligned with thousand separator)
 CellStyle balanceStyle = workbook.createCellStyle();
 DataFormat df = workbook.createDataFormat();
+
+// Force US-style thousand separator (international)
+balanceStyle.setDataFormat(
+    df.getFormat("#,##0;(#,##0)")
+);
+
 balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-balanceStyle.setDataFormat(df.getFormat("#,##0.000"));  // 1000 separator + 3 decimals
 balanceStyle.setBorderTop(border);
 balanceStyle.setBorderBottom(border);
 balanceStyle.setBorderLeft(border);
 balanceStyle.setBorderRight(border);
+
+
+
 
 
 
