@@ -353,7 +353,7 @@ label.error {
 				transform: translateY(6px);
 			  background-color: rgb(107, 122, 143);
 			  color: white;
-			  padding: 5px 150px;
+			  padding: 5px 5px;
 			  border-radius: 8px;
 			  overflow: hidden;
 			  white-space: nowrap;
@@ -820,6 +820,16 @@ function showResultModal(title, message) {
 	$('#resultModal').modal('show');
 }
 
+function showResultModalDetail(title, message) {
+	// Set the text for the modal elements
+	$('#resultModalLabel1').text(title);
+	$('#resultModalBody1').text(message);
+
+	// Show the modal
+	$('#resultModal1').modal('show');
+}
+
+
 </script>  
 
  
@@ -1154,7 +1164,7 @@ function cancelModify() {
 
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
+	function closemodels() {
 	    $("#resultModal").modal("hide");
 	    $('#loader').modal('hide');
 
@@ -2016,7 +2026,7 @@ function cancelModify() {
 
 
 
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -2031,12 +2041,34 @@ function cancelModify() {
 					style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodels()"
+						data-dismiss="modal">ok</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- For Edit in Detail page -->
+	<div class="modal fade" id="resultModal1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel1"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody1"></p>
+					<!-- Your custom styled button -->
 					<button type="button" class="custom-tab-btn" onclick="closemodel()"
 						data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
 	</div>
+	
 <!-- Custom Cellresult Modal -->
 		<div class="modal fade" id="cellresultModal">
 		  <div class="modal-dialog modal-dialog-centered">
