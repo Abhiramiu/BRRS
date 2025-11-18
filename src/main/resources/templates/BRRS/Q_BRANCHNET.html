@@ -221,6 +221,77 @@ PURPOSE		: BWRBRREPORT
 			/* Normal label color 
 		}*/
     </style>
+	
+	<style>
+				.header-bar {
+				  display: flex;
+				  align-items: center;
+				  flex-wrap: wrap; /* ✅ allows wrapping on smaller screens */
+				  gap: 10px; /* spacing between elements */
+				  cursor: pointer;
+				}
+
+				/* 🔘 Circular arrow */
+				.left-arrow-circle {
+				  width: 35px;
+				  height: 35px;
+				  border-radius: 50%;
+				  background-color: white;
+				  color: #1f3a93;
+				  display: flex;
+				  align-items: center;
+				  justify-content: center;
+				  margin-right: 10px;
+				}
+
+				.left-arrow-circle i {
+				  font-size: 18px;
+				}
+
+				/* 🏷️ Title */
+				.header-title {
+				  font-family: Arial, sans-serif;
+				  font-size: 20px;
+				  font-weight: bold;
+				  color: white;
+				  margin: 0;
+				  flex-shrink: 0;
+				}
+
+				/* 🚌 Bus display style box */
+				.boards {
+					transform: translateY(6px);
+				  background-color: rgb(107, 122, 143);
+				  color: white;
+				  padding: 5px 45px;
+				  border-radius: 8px;
+				  overflow: hidden;
+				  white-space: nowrap;
+				  flex: 1; /* ✅ makes it take available space dynamically */
+				  min-width: 200px;
+				  box-shadow: 0 0 10px rgb(107, 122, 143);
+				  position: relative;
+				}
+
+				/* ✨ Scrolling animation */
+				.scrolling-text {
+				  display: inline-block;
+				  font-family: "Courier New", monospace;
+				  font-weight: bold;
+				  letter-spacing: 1px;
+				  animation: scroll-left 10s linear infinite;
+				}
+
+				@keyframes scroll-left {
+				  0% {
+				    transform: translateX(100%);
+				  }
+				  100% {
+				    transform: translateX(-100%);
+				  }
+				}
+
+				</style>
     <style>
         /* Red border for invalid inputs */
         input.error,
@@ -903,76 +974,69 @@ $.ajax({
     <div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
         <div class="row">
             <div th:insert="HeaderMenu :: header"></div>
-            <div class="card">
-                <div class="card-header"
-                    style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
-                    <div style="display: flex; align-items: center;" onclick="back();">
-                        <!-- ⬅️ Left circular arrow -->
-                        <div class="left-arrow-circle">
-                            <i class="fa fa-arrow-left"></i>
-                        </div>
-                        <!-- Title -->
-                        <h5
-                            style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-                            Q-BRANCHNET: BRANCH NETWORK</h5>
-                    </div>
-                    <div class="custom-tab-btn-group nav-buttons"
-                        style="display: flex; color: white; align-items: center;">
-                        <!-- 📅 Date -->
-                        <span class="white-text"
-                            style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span
-                                th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
-                        </span>
-                        <!-- Buttons -->
-                        <input type="hidden" id="selectedTab" th:value="${displaymode}">
-                        <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-                            th:if="${displaymode == 'Details'}">Summary</button>
-                        <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-                            th:if="${displaymode == 'summary'}">Details</button>
+			
+			<div class="card"  >
+							<div class="card-header" style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+								<div class="header-bar" onclick="back();">
+								  <!-- ⬅️ Left circular arrow -->
+								  <div class="left-arrow-circle">
+								    <i class="fa fa-arrow-left"></i>
+								  </div>
 
-                        <!-- Modify button -->
-                        <button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-                            title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'}"
-                            th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-                            id="addRecord">Modify</button>
+								  <!-- Title -->
+								  <h5 class="header-title">
+								    (13) QUARTERLY SCHEDLE: Q-BRANCHNET:  BRANCH NETWORK				
+								  </h5>
 
-                        <!-- Cancel button (hidden initially) -->
-                        <button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
-                            onclick="cancelModify();" style="display: none;">Cancel</button>
+								  <!-- 🚌 Bus display box -->
+								  <div class="boards">
+								    <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+								  </div>
+								</div>
 
 
-                        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-                            th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
-                   				 data-asondate=${asondate},
-                   				 data-fromdate=${fromdate},
-                    				 data-todate=${todate},
-                    				 data-currency=${currency}, 
-                    				 data-dtltype=${dtltype},
-                    				 data-filename='Q_BRANCHNET.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
-                            <i class="fa fa-download"></i>
-                        </button>
+			    <div class="custom-tab-btn-group nav-buttons" style="display: flex; color: white; align-items: center;">
+			        <!-- 📅 Date -->
+			        <span class="white-text" style="color:white !important; font-size: 17px; margin-right: 20px;">Report Date:
+			            <span th:text="${#strings.replace(asondate, '/', '-')}"></span>
+			        </span>
 
-
-
-                        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-                            th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-								    data-fromdate=${fromdate},
-								    data-todate=${todate},
-									data-currency=${currency},  
-												data-dtltype=${dtltype}, 
-								    data-filename='MSFinP2Detail',
-									data-type=${type},
-												data-version=${version}
-								  ">
-                            <i class="fa fa-download"></i>
-                        </button>
-
-
-                    </div>
-
-                </div>
+			        <!-- Buttons -->
+			        <input type="hidden" id="selectedTab" th:value="${displaymode}">
+			        <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();" th:if="${displaymode == 'Details'}">Summary</button>
+			        <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();" th:if="${displaymode == 'summary'}">Details</button>
+			        <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+			            th:attr="data-reportid=${reportid}, 
+			                     data-asondate=${asondate}, 
+			                     data-fromdate=${fromdate}, 
+			                     data-todate=${todate}, 
+			                     data-currency=${currency},  
+			                     data-dtltype=${dtltype}, 
+			                     data-filename='Q_BRANCHNET.xlsx',
+			                     data-type=${type},
+			                     data-version=${version}"
+								
+			            onclick="downloadfile(this);">
+			            <i class="fa fa-download"></i>
+			        </button>
+					<button
+							  type="button"
+							  class="custom-tab-btn"
+							  id="custom-tab-btnAdd"
+							  th:if="${displaymode == 'Details'}"
+							  onclick="startReport(this);"
+							  th:attr="
+							    data-fromdate=${fromdate},
+							    data-todate=${todate},
+							    data-type=${type},
+					            data-version=${version},
+							    data-filename='M_SPDetail'
+							  ">
+							  <i class="fa fa-download"></i>
+							</button>
+			    </div>
+			</div>
+			</div>
                 <div th:if="${displaymode == 'summary'}">
                     <div class="row">
                         <div class="col-sm-12">
