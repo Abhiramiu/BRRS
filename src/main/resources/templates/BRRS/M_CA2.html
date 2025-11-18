@@ -1292,9 +1292,9 @@ function cancelModify() {
 
                 // ✅ Handle SUCCESS & NON-SUCCESS (Information)
                 if (response && response.toLowerCase().includes('success')) {
-                    showResultModal('Success', response);
+                	showResultModalDetail('Success', response);
                 } else {
-                    showResultModal('Information', response || 'No data updated.');
+                	showResultModalDetail('Information', response || 'No data updated.');
                 }
 
                 // Redirect after 1.5 sec
@@ -1312,7 +1312,7 @@ function cancelModify() {
                 console.error("Update error:", error);
 
                 // ✅ Handle ERROR
-                showResultModal('Error', 'Failed to update record. Please try again.');
+                showResultModalDetail('Error', 'Failed to update record. Please try again.');
 
                 // Redirect back after delay even on error
                 setTimeout(() => {
