@@ -645,10 +645,13 @@ $(document).ready(function() {
 	    $('#loader').modal('show');
 	    calculateAllTotals();
 
-	    const formData = new FormData();
-	    formData.append("asondate", asondate);
-	    formData.append("type", type);
-
+	    //const formData = new FormData();
+	    //formData.append("asondate", asondate);
+	    //formData.append("type", type);
+		const formData = new FormData();
+	
+		formData.append("asondate", asondate);   // for view API
+		formData.append("type", type);
 	    // handle all text fields
 	    $('#fileupload input[type="text"]').each(function () {
 	        const name = $(this).attr('name');
@@ -663,7 +666,7 @@ $(document).ready(function() {
 	        if (name && val.trim()) formData.append(name, val);
 	    });
 		// Step 5: Select API endpoint dynamically
-		let apiUrl = './M_CA6updateAll'; // normal update
+		let apiUrl = './MCA6updateAll'; // normal update
 		if (type && type.toUpperCase() === 'RESUB') {
 			apiUrl = './UpdateM_CA6_ReSub'; // Resubmission endpoint
 		}

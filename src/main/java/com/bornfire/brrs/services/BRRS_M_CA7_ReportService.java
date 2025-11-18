@@ -306,15 +306,12 @@ try {
 					}
 					//row19
 					// Column c
-						row=sheet.getRow(18);
-					 cell1 = row.getCell(2);
-						if (record.getR19_cap_year1()!= null) {
-							cell1.setCellValue(record.getR19_cap_year1().toString() + "%");
-							cell1.setCellStyle(numberStyle); 
-						} else {
-							cell1.setCellValue("");
-							cell1.setCellStyle(textStyle);
-						}
+					/*
+					 * row=sheet.getRow(18); cell1 = row.getCell(2); if (record.getR19_cap_year1()!=
+					 * null) { cell1.setCellValue(record.getR19_cap_year1().toString() + "%");
+					 * cell1.setCellStyle(numberStyle); } else { cell1.setCellValue("");
+					 * cell1.setCellStyle(textStyle); }
+					 */
 				
 
 						//row19
@@ -330,16 +327,13 @@ try {
 						
 						//row20
 						// Column c
-						row=sheet.getRow(19);
-					 cell1 = row.getCell(2);
-					 	if (record.getR20_cap_year2()!= null) {
-							cell1.setCellValue(record.getR20_cap_year2().toString() + "%");
-							cell1.setCellStyle(numberStyle); 
-							
-						} else {
-							cell1.setCellValue("");
-							cell1.setCellStyle(textStyle);
-						}
+						/*
+						 * row=sheet.getRow(19); cell1 = row.getCell(2); if (record.getR20_cap_year2()!=
+						 * null) { cell1.setCellValue(record.getR20_cap_year2().toString() + "%");
+						 * cell1.setCellStyle(numberStyle);
+						 * 
+						 * } else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+						 */
 					 	//row20
 						// Column d		
 					 cell1 = row.getCell(3);
@@ -352,16 +346,13 @@ try {
 						}	
 						//row21
 						// Column c
-						row=sheet.getRow(20);
-					 cell1 = row.getCell(2);
-						if (record.getR21_cap_year3()!= null) {
-							cell1.setCellValue(record.getR21_cap_year3().toString() + "%");
-							cell1.setCellStyle(numberStyle); 
-							
-						} else {
-							cell1.setCellValue("");
-							cell1.setCellStyle(textStyle);
-						}
+						/*
+						 * row=sheet.getRow(20); cell1 = row.getCell(2); if (record.getR21_cap_year3()!=
+						 * null) { cell1.setCellValue(record.getR21_cap_year3().toString() + "%");
+						 * cell1.setCellStyle(numberStyle);
+						 * 
+						 * } else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+						 */
 						//row21
 						// Column d	
 					 cell1 = row.getCell(3);
@@ -531,16 +522,12 @@ return out.toByteArray();
 					}
 					//row19
 					// Column c
-						row=sheet.getRow(18);
-					 cell1 = row.getCell(2);
-						if (record.getR19_cap_year1()!= null) {
-							cell1.setCellValue(record.getR19_cap_year1().toString() + "%");
-							cell1.setCellStyle(numberStyle); 
-						} else {
-							cell1.setCellValue("");
-							cell1.setCellStyle(textStyle);
-						}
-
+					/*
+					 * row=sheet.getRow(18); cell1 = row.getCell(2); if (record.getR19_cap_year1()!=
+					 * null) { cell1.setCellValue(record.getR19_cap_year1().toString() + "%");
+					 * cell1.setCellStyle(numberStyle); } else { cell1.setCellValue("");
+					 * cell1.setCellStyle(textStyle); }
+					 */
 						//row19
 						// Column d
 					 cell1 = row.getCell(3);
@@ -554,16 +541,13 @@ return out.toByteArray();
 						
 						//row20
 						// Column c
-						row=sheet.getRow(19);
-					 cell1 = row.getCell(2);
-					 	if (record.getR20_cap_year2()!= null) {
-							cell1.setCellValue(record.getR20_cap_year2().toString() + "%");
-							cell1.setCellStyle(numberStyle); 
-							
-						} else {
-							cell1.setCellValue("");
-							cell1.setCellStyle(textStyle);
-						}
+						/*
+						 * row=sheet.getRow(19); cell1 = row.getCell(2); if (record.getR20_cap_year2()!=
+						 * null) { cell1.setCellValue(record.getR20_cap_year2().toString() + "%");
+						 * cell1.setCellStyle(numberStyle);
+						 * 
+						 * } else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+						 */
 					 	//row20
 						// Column d		
 					 cell1 = row.getCell(3);
@@ -576,16 +560,13 @@ return out.toByteArray();
 						}	
 						//row21
 						// Column c
-						row=sheet.getRow(20);
-					 cell1 = row.getCell(2);
-						if (record.getR21_cap_year3()!= null) {
-							cell1.setCellValue(record.getR21_cap_year3().toString() + "%");
-							cell1.setCellStyle(numberStyle); 
-							
-						} else {
-							cell1.setCellValue("");
-							cell1.setCellStyle(textStyle);
-						}
+						/*
+						 * row=sheet.getRow(20); cell1 = row.getCell(2); if (record.getR21_cap_year3()!=
+						 * null) { cell1.setCellValue(record.getR21_cap_year3().toString() + "%");
+						 * cell1.setCellStyle(numberStyle);
+						 * 
+						 * } else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+						 */
 						//row21
 						// Column d	
 					 cell1 = row.getCell(3);
@@ -873,16 +854,12 @@ return out.toByteArray();
 						}
 						//row19
 						// Column c
-							row=sheet.getRow(18);
-						 cell1 = row.getCell(2);
-							if (record.getR19_cap_year1()!= null) {
-								cell1.setCellValue(record.getR19_cap_year1().toString() + "%");
-								cell1.setCellStyle(numberStyle); 
-							} else {
-								cell1.setCellValue("");
-								cell1.setCellStyle(textStyle);
-							}
-					
+						/*
+						 * row=sheet.getRow(18); cell1 = row.getCell(2); if (record.getR19_cap_year1()!=
+						 * null) { cell1.setCellValue(record.getR19_cap_year1().toString() + "%");
+						 * cell1.setCellStyle(numberStyle); } else { cell1.setCellValue("");
+						 * cell1.setCellStyle(textStyle); }
+						 */
 
 							//row19
 							// Column d
@@ -897,16 +874,13 @@ return out.toByteArray();
 							
 							//row20
 							// Column c
-							row=sheet.getRow(19);
-						 cell1 = row.getCell(2);
-						 	if (record.getR20_cap_year2()!= null) {
-								cell1.setCellValue(record.getR20_cap_year2().toString() + "%");
-								cell1.setCellStyle(numberStyle); 
-								
-							} else {
-								cell1.setCellValue("");
-								cell1.setCellStyle(textStyle);
-							}
+							/*
+							 * row=sheet.getRow(19); cell1 = row.getCell(2); if (record.getR20_cap_year2()!=
+							 * null) { cell1.setCellValue(record.getR20_cap_year2().toString() + "%");
+							 * cell1.setCellStyle(numberStyle);
+							 * 
+							 * } else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+							 */
 						 	//row20
 							// Column d		
 						 cell1 = row.getCell(3);
@@ -919,16 +893,13 @@ return out.toByteArray();
 							}	
 							//row21
 							// Column c
-							row=sheet.getRow(20);
-						 cell1 = row.getCell(2);
-							if (record.getR21_cap_year3()!= null) {
-								cell1.setCellValue(record.getR21_cap_year3().toString() + "%");
-								cell1.setCellStyle(numberStyle); 
-								
-							} else {
-								cell1.setCellValue("");
-								cell1.setCellStyle(textStyle);
-							}
+							/*
+							 * row=sheet.getRow(20); cell1 = row.getCell(2); if (record.getR21_cap_year3()!=
+							 * null) { cell1.setCellValue(record.getR21_cap_year3().toString() + "%");
+							 * cell1.setCellStyle(numberStyle);
+							 * 
+							 * } else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
+							 */
 							//row21
 							// Column d	
 						 cell1 = row.getCell(3);

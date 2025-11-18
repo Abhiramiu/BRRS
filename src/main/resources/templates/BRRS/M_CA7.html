@@ -789,27 +789,7 @@ $(document).ready(function() {
 
 	        formData.append(name, value);
 	    });
-		const r12Fields = ["pre_ifrs_pro", "post_ifrs9_pro", "trans_amt"];
-
-		    r12Fields.forEach(field => {
-		        const id = "#r12_" + field;
-		        const input = $(id);
-		        if (input.length) {
-		            formData.append(input.attr("name"), input.val());
-		            console.log(" R12 field appended:", input.attr("name"), "=", input.val());
-		        }
-		    });
-			for (let i = 19; i <= 22; i++) {
-			        const suffix = "amt_add_year" + (i - 18); 
-			        const id = "#r" + i + "_" + suffix;
-
-			        const input = $(id);
-			        if (input.length) {
-			            formData.append(input.attr("name"), input.val());
-			            console.log("✔ R" + i + " field appended:", input.attr("name"), "=", input.val());
-			        }
-			    }
-
+		
 				
 				let apiUrl = './MCA7updateAll';
 				if (type && type.toUpperCase() === 'RESUB') {

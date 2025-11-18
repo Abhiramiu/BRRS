@@ -655,7 +655,7 @@ function formatNumber(num) {
     if (num === null || num === undefined || num === "") return "";
     const parsed = parseFloat(num.toString().replace(/,/g, ""));
     if (isNaN(parsed)) return "";
-    return parsed.toLocaleString('en-US'); // Indian style (1,00,000)
+    return parsed.toLocaleString('en-US'); // format with commas
 }
 
 function parseNumber(val) {
@@ -668,11 +668,9 @@ function parseNumber(val) {
 function showmodify(btn) {
     for (let i = 11; i <= 450; i++) {
         [
-            "_APPROVED_LIMIT",
-            "_OUTSTANDING_AMOUNT",
-            "_EXCESS_OVER_CEILING",
-            "_CURRENT_PROVISIONS",
-            "_VALUE"
+          "_NAME_INSIDER_BORROWER", "_DESCRIPTION", "_APPROVED_LIMIT",
+          "_OUTSTANDING_AMOUNT", "_EXCESS_OVER_CEILING",
+          "_CURRENT_PROVISIONS", "_VALUE"
         ].forEach(suffix => {
             $(`#R${i}${suffix}`)
                 .prop("readonly", false)
@@ -681,15 +679,11 @@ function showmodify(btn) {
         });
     }
 
-    // lock final total row
-    const readonlyIds = [
-        "R451_APPROVED_LIMIT",
-        "R451_OUTSTANDING_AMOUNT",
-        "R451_EXCESS_OVER_CEILING",
-        "R451_CURRENT_PROVISIONS",
-        "R451_VALUE"
-    ];
-    readonlyIds.forEach(id => $("#" + id).prop("readonly", true));
+    // Lock final total row (R451)
+    ["R451_APPROVED_LIMIT","R451_OUTSTANDING_AMOUNT","R451_EXCESS_OVER_CEILING",
+     "R451_CURRENT_PROVISIONS","R451_VALUE"].forEach(id => {
+        $("#" + id).prop("readonly", true);
+    });
 
     $('input[type="date"]').prop("readonly", false);
     $("#submitButton, #cancelRecord").show();
@@ -698,6 +692,7 @@ function showmodify(btn) {
     calculateAllTotals();
 }
 
+// Cancel modification
 function cancelModify() {
     if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
         location.reload();
@@ -711,15 +706,9 @@ function calculateAllTotals() {
     let grandTotals = { limit: 0, out: 0, exc: 0, cur: 0, val: 0 };
 
     const groupRanges = [
-        [11, 50, 4511],
-        [51, 100, 4512],
-        [101, 150, 4513],
-        [151, 200, 4514],
-        [201, 250, 4515],
-        [251, 300, 4516],
-        [301, 350, 4517],
-        [351, 400, 4518],
-        [401, 450, 4519]
+        [11, 50, 4511], [51, 100, 4512], [101, 150, 4513],
+        [151, 200, 4514], [201, 250, 4515], [251, 300, 4516],
+        [301, 350, 4517], [351, 400, 4518], [401, 450, 4519]
     ];
 
     groupRanges.forEach(([start, end, row]) => {
@@ -755,65 +744,98 @@ function calculateAllTotals() {
     $("#R451_VALUE").val(formatNumber(grandTotals.val));
 }
 
+// Preserve string fields
+function preserveStrings() {
+    for (let i = 11; i <= 450; i++) {
+        let name = $("#R" + i + "_NAME_INSIDER_BORROWER").val() || "";
+        let desc = $("#R" + i + "_DESCRIPTION").val() || "";
+        $("#R" + i + "_NAME_INSIDER_BORROWER").val(name.trim());
+        $("#R" + i + "_DESCRIPTION").val(desc.trim());
+    }
+}
+
 // ==============================
 // ✅ Apply Formatting + Bind Events
 // ==============================
 $(document).ready(function () {
-    // 1️⃣ Format all numeric fields on load (so prefilled values get commas)
     for (let i = 11; i <= 450; i++) {
-        [
-            "_APPROVED_LIMIT",
-            "_OUTSTANDING_AMOUNT",
-            "_EXCESS_OVER_CEILING",
-            "_CURRENT_PROVISIONS",
-            "_VALUE"
-        ].forEach(suffix => {
+        // Numeric fields
+        ["_APPROVED_LIMIT","_OUTSTANDING_AMOUNT","_EXCESS_OVER_CEILING","_CURRENT_PROVISIONS","_VALUE"]
+        .forEach(suffix => {
             const input = $("#R" + i + suffix);
-            input.val(formatNumber(parseNumber(input.val()))); // format existing values
+            input.val(formatNumber(parseNumber(input.val())));
 
-            // On typing
             input.on("input", function () {
                 let val = $(this).val().replace(/,/g, "");
-                if (!isNaN(val) && val !== "") {
-                    $(this).val(formatNumber(val));
-                }
+                if (!isNaN(val) && val !== "") $(this).val(formatNumber(val));
                 calculateAllTotals();
             });
 
-            // On blur, ensure proper formatting
             input.on("blur", function () {
                 $(this).val(formatNumber(parseNumber($(this).val())));
             });
         });
+
+        // String fields
+        ["_NAME_INSIDER_BORROWER","_DESCRIPTION"].forEach(suffix => {
+            const input = $("#R" + i + suffix);
+            input.val(input.val() ? input.val().trim() : "");
+        });
+    }
+
+    // Optional phaseout calculation fields
+    for (let i = 11; i <= 450; i++) {
+        $("#R" + i + "_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, #R" + i + "_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT")
+        .on("input", calculationtable1)
+        .on("blur", function() {
+            $(this).val(formatNumber(parseNumber($(this).val())));
+        });
     }
 
     calculateAllTotals();
+    preserveStrings();
     $("#submitButton, #cancelRecord").hide();
 });
 
-// ==============================
-// ✅ File Upload (unchanged)
-// ==============================
 function fileuploads(btn) {
     const asondate = btn.getAttribute("data-todate");
     const type = btn.getAttribute("data-type");
 
     $('#loader').modal('show');
 
-    $("#fileupload input[type='text']").each(function () {
-        let val = $(this).val();
-        if (val && typeof val === "string") {
-            $(this).val(val.replace(/,/g, ''));
-        }
-    });
+    // Collect all input and textarea values
+    const formDataObj = { asondate: asondate, type: type };
+	$("#fileupload input[type='text'], #fileupload textarea").each(function () {
+	    const id = $(this).attr('id');
+	    if (!id) return;
 
-    const formData = $("#fileupload").serialize() +
-        "&asondate=" + encodeURIComponent(asondate) +
-        "&type=" + encodeURIComponent(type);
-		let apiUrl = './M_RPDupdateAll';
-						if (type && type.toUpperCase() === 'RESUB') {
-							apiUrl = './UpdateM_RPD_ReSub'; 
-						}
+	    // Force value read even if disabled
+	    $(this).prop("disabled", false);
+	    let val = $(this).val() || "";
+
+	    // Numeric fields
+	    const numericFields = [
+	        "_APPROVED_LIMIT","_OUTSTANDING_AMOUNT","_EXCESS_OVER_CEILING",
+	        "_CURRENT_PROVISIONS","_VALUE",
+	        "_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT",
+	        "_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
+	    ];
+
+	    if (numericFields.some(suffix => id.endsWith(suffix))) {
+	        val = val.replace(/,/g, '');
+	    } else {
+	        val = val.trim();
+	    }
+
+	    console.log("Sending:", id, val); // DEBUG
+	    formDataObj[id] = val;
+	});
+
+    const formData = $.param(formDataObj); // serialize manually
+
+    let apiUrl = './M_RPDupdateAll';
+    if (type && type.toUpperCase() === 'RESUB') apiUrl = './UpdateM_RPD_ReSub';
+
     $.ajax({
         url: apiUrl,
         type: 'POST',
@@ -837,8 +859,8 @@ function fileuploads(btn) {
         }
     });
 }
-</script>
 
+</script>
 
 </script>
 
