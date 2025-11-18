@@ -310,6 +310,65 @@ label.error {
 </style>
 
 
+
+</style>
+
+
+	<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 80px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
+
+
+
+
+
+
+
+
+
 <script th:inline="javascript">
 
 let isDetailsModal = false;
@@ -772,7 +831,14 @@ function calculateRwaForRows() {
         13: 50,
         14: 75,
         15: 100,
-        20: 100 // only R20 has 100%
+    //  R20 to R26 → all 100%
+        20: 100,
+        21: 100,
+        22: 100,
+        23: 100,
+        24: 100,
+        25: 100,
+        26: 100
     };
 
     // 🔹 Helper function to calculate a group (start–end range, totalRow)
@@ -1003,8 +1069,16 @@ $(document).ready(function() {
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							M- SRWA 12c (Failed Trades): Risk Weighted Asset Disclosure for Failed Trades</h5>
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							Monthly Schedule M- SRWA 12c (Failed Trades): Risk Weighted Asset Disclosure for Failed Trades						
+</h5>
+
+                       <!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+						</div>
+						
+						
 					</div>
 
 					<div class="custom-tab-btn-group nav-buttons"
@@ -1602,6 +1676,7 @@ $(document).ready(function() {
 
 
 
+                                      
                                        <tr>
     <td style="text-align: right; font-weight: normal; ">8</td>
     <td style="text-align: right;font-weight: normal;"></td>
@@ -1658,7 +1733,7 @@ $(document).ready(function() {
         readonly />
 </td> -->
 
-<td style="text-align: center; font-weight: normal;" id="R20_RISK_MULTIPLIER"
+<td style="text-align: center; font-weight: normal;" id="R20_RISK_MULTIPLIER" rowspan="7"
     th:text="'100%'">
 <!-- R20_RWA -->
 <td id="R20_RWA"
@@ -1719,7 +1794,7 @@ $(document).ready(function() {
 	th:text="${report.R21_RISK_MULTIPLIER}+'%'" th:attr="RowId='R21', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
 	
 	
-	<td style="text-align: right;font-weight:  normal;" ></td>
+	<!-- <td style="text-align: right;font-weight:  normal;" ></td> -->
 	
    <!--  <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R21_RWA}" ></td> -->
    
@@ -1781,7 +1856,7 @@ $(document).ready(function() {
     
   <!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R22_RISK_MULTIPLIER}+'%'" th:attr="RowId='R22', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
   
-  <td style="text-align: right;font-weight:  normal;" ></td>
+  <!-- <td style="text-align: right;font-weight:  normal;" ></td> -->
   
   
   <!--   <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R22_RWA}" ></td> -->
@@ -1843,7 +1918,7 @@ $(document).ready(function() {
   <!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R23_RISK_MULTIPLIER}+'%'" th:attr="RowId='R23', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
   
   
-  <td style="text-align: right;font-weight:  normal;" ></td>
+  <!-- <td style="text-align: right;font-weight:  normal;" ></td> -->
   
   
     <!-- <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R23_RWA}" ></td> -->
@@ -1908,7 +1983,7 @@ $(document).ready(function() {
     
   <!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R24_RISK_MULTIPLIER}+'%'" th:attr="RowId='R24', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
   
-  <td style="text-align: right;font-weight:  normal;" ></td>
+ <!--  <td style="text-align: right;font-weight:  normal;" ></td> -->
   
     <!-- <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R24_RWA}" ></td> -->
     
@@ -1967,8 +2042,8 @@ $(document).ready(function() {
    <!-- <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R25_RISK_MULTIPLIER}+'%'" th:attr="RowId='R25', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
    
    
-   <td style="text-align: right;font-weight:  normal;" ></td>
-   
+ <!--   <td style="text-align: right;font-weight:  normal;" ></td>
+    -->
    
     <!-- <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R25_RWA}" ></td> -->
     
@@ -2030,7 +2105,7 @@ $(document).ready(function() {
   <!--  <td style="text-align: center;font-weight:  normal;background-color: white;" th:text="${report.R26_RISK_MULTIPLIER}+'%'" th:attr="RowId='R26', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
   
   
-  <td style="text-align: right;font-weight:  normal;" ></td>
+ <!--  <td style="text-align: right;font-weight:  normal;" ></td> -->
   
    <!--  <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R26_RWA}" ></td> -->
    
@@ -2049,7 +2124,6 @@ $(document).ready(function() {
 </td>
    
 </tr>
-
 <tr>
     <td style="text-align: right; font-weight: normal; ">15</td>
     <td></td>
