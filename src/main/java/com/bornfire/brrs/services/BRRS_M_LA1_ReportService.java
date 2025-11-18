@@ -1971,7 +1971,7 @@ public class BRRS_M_LA1_ReportService {
 			// ACCT BALANCE style (right aligned with 3 decimals)
 			CellStyle balanceStyle = workbook.createCellStyle();
 			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 			balanceStyle.setBorderTop(border);
 			balanceStyle.setBorderBottom(border);
 			balanceStyle.setBorderLeft(border);
@@ -1980,7 +1980,7 @@ public class BRRS_M_LA1_ReportService {
 			// sanction style (right aligned with 3 decimals)
 			CellStyle sanctionStyle = workbook.createCellStyle();
 			sanctionStyle.setAlignment(HorizontalAlignment.RIGHT);
-			sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+			sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 			sanctionStyle.setBorderTop(border);
 			sanctionStyle.setBorderBottom(border);
 			sanctionStyle.setBorderLeft(border);
