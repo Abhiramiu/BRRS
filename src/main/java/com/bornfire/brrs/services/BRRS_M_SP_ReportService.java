@@ -1525,7 +1525,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 
 	        // Header row
 	        String[] headers = {
-	            "CUST ID", "ACCT NUMBER", "ACCT NAME", "ACCT BALANCE","PROVISION", "ROWID", "COLUMNID", "REPORT_DATE"
+	            "CUST ID", "ACCT NUMBER", "ACCT NAME", "ACCT BALANCE IN PULA","PROVISION", "ROWID", "COLUMNID", "REPORT_DATE"
 	        };
 
 	        XSSFRow headerRow = sheet.createRow(0);
@@ -1581,7 +1581,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SP_ReportSer
 	                );
 
 	                // Apply data style for all other cells
-	                for (int j = 0; j < 7; j++) {
+	                for (int j = 0; j < 8; j++) {
 	                    if (j != 3 && j != 4) {
 	                        row.getCell(j).setCellStyle(dataStyle);
 	                    }
@@ -2963,7 +2963,7 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	    	                );
 
 	    	                // Apply data style for all other cells
-	    	                for (int j = 0; j < 7; j++) {
+	    	                for (int j = 0; j < 8; j++) {
 	    	                    if (j != 3 && j != 4) {
 	    	                        row.getCell(j).setCellStyle(dataStyle);
 	    	                    }

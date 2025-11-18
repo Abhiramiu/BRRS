@@ -1337,8 +1337,8 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 	     // Create style with thousand separator and decimal point
 	     DataFormat format = workbook.createDataFormat();
 
-	     // Format: 1,234,567.890
-	     balanceStyle.setDataFormat(format.getFormat("#,##0.000"));
+	     // Format: 1,234,567
+	     balanceStyle.setDataFormat(format.getFormat("#,##0"));
 
 	     // Right alignment (optional)
 	     balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
