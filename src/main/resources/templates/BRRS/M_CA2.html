@@ -1292,7 +1292,7 @@ function cancelModify() {
 
                 // ✅ Handle SUCCESS & NON-SUCCESS (Information)
                 if (response && response.toLowerCase().includes('success')) {
-                	showResultModalDetail('Success', response);
+                	showResultModalDetail('BRRS', response);
                 } else {
                 	showResultModalDetail('Information', response || 'No data updated.');
                 }
