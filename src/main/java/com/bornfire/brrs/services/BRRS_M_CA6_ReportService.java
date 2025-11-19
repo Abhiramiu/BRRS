@@ -49,6 +49,7 @@ import com.bornfire.brrs.entities.M_CA6_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Detail_Repo;
 import com.bornfire.brrs.entities.M_CA6_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA6_Summary_Entity2;
+import com.bornfire.brrs.entities.M_INT_RATES_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_CA6_Summary_Repo1;
@@ -96,7 +97,8 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA6_ReportSe
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;	
-
+		System.out.println("testing");
+		System.out.println(version);
 		 try {
 	            Date d1 = dateformat.parse(todate);
 
@@ -118,7 +120,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA6_ReportSe
 	                        .getdatabydateListarchival(d1, version);
 	                List<M_CA6_Archival_Summary_Entity2> T2Master = BRRS_M_CA6_Archival_Summary_Repo2
 	                        .getdatabydateListarchival(d1, version);
-
+	                System.out.println(version);
 	                mv.addObject("reportsummary", T1Master);
 	                mv.addObject("reportsummary1", T2Master);
 	            }
@@ -285,11 +287,35 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA6_ReportSe
 public byte[] getM_CA6Excel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype , String type ,
 		String version) throws Exception {
 	logger.info("Service: Starting Excel generation process in memory.");
+
+logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
+
+// Convert string to Date
+Date reportDate = dateformat.parse(todate);
+
 	if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
 		logger.info("Service: Generating ARCHIVAL report for version {}", version);
 		return getExcelM_CA6ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 	}
 
+	// RESUB check
+	else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+	logger.info("Service: Generating RESUB report for version {}", version);
+
+
+	List<M_CA6_Archival_Summary_Entity1> T1Master =
+			BRRS_M_CA6_Archival_Summary_Repo1.getdatabydateListarchival(reportDate, version);
+
+
+	List<M_CA6_Archival_Summary_Entity2> T2Master =
+			BRRS_M_CA6_Archival_Summary_Repo2.getdatabydateListarchival(reportDate, version);
+
+	// Generate Excel for RESUB
+	return BRRS_M_CA6ResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+	}
+	
+	
+	
 	List<M_CA6_Summary_Entity1> dataList =M_CA6_Summary_Repo1.getdatabydateList(dateformat.parse(todate)) ;
 
 	List<M_CA6_Summary_Entity2> dataList1 =M_CA6_Summary_Repo2.getdatabydateList(dateformat.parse(todate)) ;
@@ -1180,7 +1206,8 @@ public byte[] getM_CA6Excel(String filename,String reportId, String fromdate, St
 public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String version) throws Exception {
 	logger.info("Service: Starting Excel generation process in memory.");
 
-
+	if ("ARCHIVAL".equals(type) && version != null) {
+	}
 	List<M_CA6_Archival_Summary_Entity1> dataList = BRRS_M_CA6_Archival_Summary_Repo1
 			.getdatabydateListarchival(dateformat.parse(todate), version);
 	List<M_CA6_Archival_Summary_Entity2> dataList1 = BRRS_M_CA6_Archival_Summary_Repo2
@@ -2446,7 +2473,7 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 	logger.info("Service: Starting Excel generation process in memory for RESUB Excel.");
 
 	if (type.equals("RESUB") & version != null) {
-
+		System.out.println("comming to resubexcel"+version);
 	}
 
 	List<M_CA6_Archival_Summary_Entity1> dataList = BRRS_M_CA6_Archival_Summary_Repo1

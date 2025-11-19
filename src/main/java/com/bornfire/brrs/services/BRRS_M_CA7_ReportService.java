@@ -45,6 +45,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_CA7_Summary_Repo;
+import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity1;
+import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_CA7_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12G_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12G_Summary_Entity;
@@ -185,6 +187,12 @@ try {
 	
 	public byte[] getM_CA7Excel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
+
+
+logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
+
+// Convert string to Date
+Date reportDate = dateformat.parse(todate);
 // ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
@@ -192,6 +200,20 @@ try {
 		}
 
 
+		// RESUB check
+		else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+		logger.info("Service: Generating RESUB report for version {}", version);
+
+
+		List<M_CA7_Archival_Summary_Entity> T1Master =
+				BRRS_M_CA7_Archival_Summary_Repo.getdatabydateListarchival(reportDate, version);
+
+
+		
+		// Generate Excel for RESUB
+		return BRRS_M_CA7ResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+		}
+		
 		List<M_CA7_Summary_Entity> dataList =BRRS_M_CA7_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
 
 		if (dataList.isEmpty()) {
@@ -411,7 +433,7 @@ return out.toByteArray();
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for M_SFINP2 report. Returning empty result.");
+			logger.warn("Service: No data found for M_ca7 report. Returning empty result.");
 			return new byte[0];
 		}
 		String templateDir = env.getProperty("output.exportpathtemp");
