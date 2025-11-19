@@ -47,12 +47,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 //import com.bornfire.brrs.entities.BRRS_M_SECA_Archival_Detail_Entity;
 //import com.bornfire.brrs.entities.BRRS_M_SECA_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.M_SECA_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_SECA_Manual_Archival_Summary_Entity;
 //import com.bornfire.brrs.entities.BRRS_M_SECA_Detail_Repo;
-import com.bornfire.brrs.entities.M_SECA_Summary_Entity;
+import com.bornfire.brrs.entities.M_SECA_Manual_Summary_Entity;
 
-import com.bornfire.brrs.entities.BRRS_M_SECA_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SECA_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_SECA_Manual_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_SECA_Manual_Archival_Summary_Repo;
 //import com.bornfire.brrs.entities.BRRS_M_SECA_Detail_Entity;
 
 
@@ -75,13 +75,13 @@ public class BRRS_M_SECA_ReportService {
 //	BRRS_M_SECA_Detail_Repo BRRS_M_SECA_Detail_Repo;
 
 	@Autowired
-	BRRS_M_SECA_Summary_Repo BRRS_M_SECA_Summary_Repo;
+	BRRS_M_SECA_Manual_Summary_Repo BRRS_M_SECA_Summary_Repo;
 
 //	@Autowired
 //	BRRS_M_SECA_Archival_Detail_Repo BRRS_M_SECA_Archival_Detail_Repo;
 
 	@Autowired
-	BRRS_M_SECA_Archival_Summary_Repo BRRS_M_SECA_Archival_Summary_Repo;
+	BRRS_M_SECA_Manual_Archival_Summary_Repo BRRS_M_SECA_Archival_Summary_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -98,7 +98,7 @@ public class BRRS_M_SECA_ReportService {
 
 		if (type.equals("ARCHIVAL") & version != null) {
 			System.out.println(type);
-			List<M_SECA_Archival_Summary_Entity> T1Master = new ArrayList<M_SECA_Archival_Summary_Entity>();
+			List<M_SECA_Manual_Archival_Summary_Entity> T1Master = new ArrayList<M_SECA_Manual_Archival_Summary_Entity>();
 			System.out.println(version);
 			try {
 				Date d1 = dateformat.parse(todate);
@@ -114,7 +114,7 @@ public class BRRS_M_SECA_ReportService {
 
 			mv.addObject("reportsummary", T1Master);
 		} else {
-			List<M_SECA_Summary_Entity> T1Master = new ArrayList<M_SECA_Summary_Entity>();
+			List<M_SECA_Manual_Summary_Entity> T1Master = new ArrayList<M_SECA_Manual_Summary_Entity>();
 			try {
 				Date d1 = dateformat.parse(todate);
 
@@ -137,11 +137,11 @@ public class BRRS_M_SECA_ReportService {
 	}
 	
 	
-	public void updateReport1(M_SECA_Summary_Entity updatedEntity) {
+	public void updateReport1(M_SECA_Manual_Summary_Entity updatedEntity) {
 	    System.out.println("Came to services1");
 	    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-	    M_SECA_Summary_Entity existing = BRRS_M_SECA_Summary_Repo.findById(updatedEntity.getReport_date())
+	    M_SECA_Manual_Summary_Entity existing = BRRS_M_SECA_Summary_Repo.findById(updatedEntity.getReport_date())
 	            .orElseThrow(() -> new RuntimeException(
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
@@ -162,8 +162,8 @@ public class BRRS_M_SECA_ReportService {
 	                String setterName = "set" + prefix + field;
 
 	                try {
-	                    Method getter = M_SECA_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_SECA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	                    Method getter = M_SECA_Manual_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = M_SECA_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
 	                    Object newValue = getter.invoke(updatedEntity);
 	                    setter.invoke(existing, newValue);
@@ -191,8 +191,8 @@ for (int i : targetRows) {
         String setterName = "set" + prefix + field;
 
         try {
-            Method getter = M_SECA_Summary_Entity.class.getMethod(getterName);
-            Method setter = M_SECA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+            Method getter = M_SECA_Manual_Summary_Entity.class.getMethod(getterName);
+            Method setter = M_SECA_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
             Object newValue = getter.invoke(updatedEntity);
             setter.invoke(existing, newValue);
@@ -218,8 +218,8 @@ for (int i = 14; i <= 57; i++) {
                 String setterName = "set" + prefix + field;
 
                 try {
-                    Method getter = M_SECA_Summary_Entity.class.getMethod(getterName);
-                    Method setter = M_SECA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+                    Method getter = M_SECA_Manual_Summary_Entity.class.getMethod(getterName);
+                    Method setter = M_SECA_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
                     Object newValue = getter.invoke(updatedEntity);
                     setter.invoke(existing, newValue);
@@ -331,7 +331,7 @@ for (int i = 14; i <= 57; i++) {
 		}
 
 		// Fetch data
-		List<M_SECA_Summary_Entity> dataList = BRRS_M_SECA_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+		List<M_SECA_Manual_Summary_Entity> dataList = BRRS_M_SECA_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_SECA report. Returning empty result.");
@@ -393,7 +393,7 @@ for (int i = 14; i <= 57; i++) {
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					M_SECA_Summary_Entity record = dataList.get(i);
+					M_SECA_Manual_Summary_Entity record = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);	
 					
@@ -4932,7 +4932,7 @@ for (int i = 14; i <= 57; i++) {
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
-		List<M_SECA_Archival_Summary_Entity> dataList = BRRS_M_SECA_Archival_Summary_Repo
+		List<M_SECA_Manual_Archival_Summary_Entity> dataList = BRRS_M_SECA_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
@@ -5000,7 +5000,7 @@ for (int i = 14; i <= 57; i++) {
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					M_SECA_Archival_Summary_Entity record = dataList.get(i);
+					M_SECA_Manual_Archival_Summary_Entity record = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {

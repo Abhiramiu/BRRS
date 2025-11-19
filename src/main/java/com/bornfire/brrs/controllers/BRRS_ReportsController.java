@@ -91,7 +91,7 @@ import com.bornfire.brrs.entities.M_RPD_Summary_Entity6;
 import com.bornfire.brrs.entities.M_RPD_Summary_Entity7;
 import com.bornfire.brrs.entities.M_RPD_Summary_Entity8;
 import com.bornfire.brrs.entities.M_RPD_Summary_Entity9;
-import com.bornfire.brrs.entities.M_SECA_Summary_Entity;
+import com.bornfire.brrs.entities.M_SECA_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_SECL_Summary_Entity;
 import com.bornfire.brrs.entities.M_SFINP1_Summary_Manual_Entity;
 import com.bornfire.brrs.entities.M_SIR_Archival_Summary_Entity;
@@ -1924,7 +1924,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SECA_Summary_Entity request) {
+			@ModelAttribute M_SECA_Manual_Summary_Entity request) {
 
 		try {
 			System.out.println("came to single controller");

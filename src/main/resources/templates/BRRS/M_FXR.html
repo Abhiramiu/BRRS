@@ -1180,15 +1180,15 @@ function fileuploads(btn) {
 						</div>
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;margin-right: 10px;">
 (20) MONTHLY SCHEDLE: M-FXR: FOREIGN EXCHANGE RISK</h5>
 					</div>
-					<!-- Moving bus-board text -->
-						<div class="boards">
-							<p class="scrolling-text"> BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
-						</div>
+        <!-- Bus Scrolling Text -->
+        <div class="boards" style="min-width: 250px;">
+            <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+        </div>
 					<div class="custom-tab-btn-group nav-buttons"
-						style="display: flex; color: white; align-items: center;">
+						style="display: flex; color: white; align-items: center;margin-left: 10px;">
 						<!-- 📅 Date -->
 						<span class="white-text"
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
@@ -1872,7 +1872,7 @@ function fileuploads(btn) {
     
 </tr>
 <tr>
-<td id="ROW17" colspan="7" style="border: none;"></td>
+<td style="border: none !important;" id="ROW17" colspan="7" ></td>
 <td id="ROW17" style="font-weight: bold; text-align: left; border: none;">Total Position</td>
    <!-- th:value="${report.r17_net_long_position != null ? #numbers.formatDecimal(report.r17_net_long_position, 0, 'COMMA', 0, 'POINT') : '0'}" -->
 <td id="ROW17" style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
