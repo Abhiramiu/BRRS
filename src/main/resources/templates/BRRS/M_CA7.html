@@ -933,6 +933,16 @@ $(document).ready(function() {
 		#reportdetails {
 			border-collapse: collapse;
 		}
+
+		  
+				td.empty-cell {
+				       border: none !important;
+				       border-width: 0 !important;
+				       outline: none !important;
+				       box-shadow: none !important;
+				   }
+		
+	
 	</style>
 	<script th:inline="javascript">
 				  $(document).ready(function () {
@@ -1073,198 +1083,249 @@ $(document).ready(function() {
 				<form action="#" method="POST" id="fileupload">
 					<div class="table-wrapper table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6; ">
 						<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports">
-							<thead>
-							                      <!-- Section 1 Heading -->
-							                      <tr style="border-bottom: 2px solid black;">
-							                          <th style="text-align: left;background-color: #D8D8D8;">1</th>
-							                          <th style="text-align: center;background-color: #D8D8D8;"colspan="3" class="text-left">TRANSITIONAL ADJUSTMENT AMOUNTS</th>
-							                      </tr>
-												  
-							                      <tr>
-													<th style="text-align: center;"></th>							                          <th style="text-align: right;background-color: #D8D8D8;">PRE-IFRS PROVISIONS (CLOSING BALANCE OF IAS39 PROVISIONS    (1)</th>
-							                          <th style="text-align: right;background-color: #D8D8D8;">POST-IFRS 9 PROVISION (DAY 1 OF IFRS 9 PROVISIONS)    (2)</th>
-							                          <th style="text-align: right;background-color: #D8D8D8;">TRANSITIONAL ADJUSTMENT AMOUNT (NEW PROVISIONS) P'000   (3)= (2)-(1)</th>
-							                      </tr>
-												  
-							                  </thead>
+						    <thead>
+						        <!-- Section 1 Heading -->
+						   
+														
+														<tr style="border:none !important;">
+																					    <td style="height:30px; border:none !important;"></td>
+																					    <td colspan="3" style="height:30px; border:none !important;"></td>
+																					</tr>
 
-              <tbody th:each="report : ${reportsummary}" style="font-family: Arial;">
-                  <!-- Section 1 Values -->
-				  
-                  <tr>
-					<td></td>
-					<td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-					    <input class="display-input show_input"
-					           type="text"
-					           th:value="${#numbers.formatDecimal(report.r12_pre_ifrs_pro, 1, 'COMMA', 0, 'POINT')}"
-					           id="r12_pre_ifrs_pro"
-					           name="r12_pre_ifrs_pro"
-					           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-					                  border-color: transparent; text-align: right;"
-					           readonly />
-					  </td>
-                      
-					  <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
-				    <input class="display-input show_input"
-				           type="text"
-						   th:value="${#numbers.formatDecimal(report.r12_post_ifrs9_pro, 1, 'COMMA', 0, 'POINT')}"
-				           id="r12_post_ifrs9_pro"
-				           name="r12_post_ifrs9_pro"
-				           style="background-color:#FFFFFF; width: 100%; height: 28px; 
-				                  border-color: transparent; text-align: right;"
-				           readonly /></td>
-				   <td id="ROW12" style="padding-left: 20px; font-weight: bold;background-color:rgb(107, 122, 143)">
-				   			    <input class="display-input show_input"
-				   			           type="text"
-									   th:value="${#numbers.formatDecimal(report.r12_trans_amt, 1, 'COMMA', 0, 'POINT')}"
-				   			           id="r12_trans_amt"
-				   			           name="r12_trans_amt"
-				   			           style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px;
-				   			                  border-color: transparent; text-align: right;"
-				   			           readonly /></td>
-                      
-                  </tr>
+																					<!-- Section 2 Heading -->
+																					<tr>
+																					    <td style="height:30px; border:25px solid transparent !important; text-align: center;">1</td>
+																					    <td colspan="3"style="height:30px; border:25px solid transparent !important; text-align: left;font-weight:bold;">
+																					        TRANSITIONAL ADJUSTMENT AMOUNTS
+																					    </td>
+																					</tr>
 
-				  <td>
-					<td></td>
-				      <td colspan="4" style="border: 1px solid black;">&nbsp;</td>
-				  </tr>
+																					<tr>
+																									            <td style="height:30px; border:1px solid transparent !important;"></td>
+																									            <td colspan="3" style="border:none !important; height:30px;">&nbsp;</td>
+																									        </tr>
 
-                  <!-- Section 2 Heading -->
-                  <tr>
-					
-                      <td style="text-align: left;background-color: #D8D8D8;">2</td>
-                      <th style="text-align: center;background-color: #D8D8D8;"colspan="3" class="text-left">Transitional Amount Added Back to Common Equity Tier 1 Capital During the Transition Period</th>
-                  </tr>
+														
+												        <!-- Section 2 Table Header -->
+												        <tr style="border:none !important;">
+												            <td style="border:none !important;height:30px;"></td>
 
-                  <tr>
-					<td></td>
-                      <th style="text-align: left;background-color: #D8D8D8;">Financial Year*</th>
-                      <th style="text-align: center;background-color: #D8D8D8;font-weight: normal;">Cap (%)</th>
-                      <th style="text-align: right;background-color: #D8D8D8;">Amount added back to CET1 P'000</th>
-                  </tr>
+												            <th style="text-align: left;background-color: #D8D8D8;">PRE-IFRS PROVISIONS (CLOSING BALANCE OF IAS39 PROVISIONS) (1)</th>
+												            <th style="text-align: center;background-color: #D8D8D8;font-weight: bold;">POST-IFRS 9 PROVISION (DAY 1 OF IFRS 9 PROVISIONS) (2)</th>
+												            <th style="text-align: right;background-color: #D8D8D8;">TRANSITIONAL ADJUSTMENT AMOUNT (3) = (2) - (1)</th>
+												        </tr>
 
-                  <!-- Section 2 Rows -->
-                  <tr>
-					<td></td>
-							 <td id="ROW19" style=" font-weight: bold;">
-					 			 <input class="display-input show_input"
-					          	 type="text"
-					         	  th:value="${#strings.defaultString(report.r19_product, 'N/A')}"
-					         	  id="r19_product"
-					         	  name="r19_product"
-					        	   style="background-color:#FFFFFF; width: 500px; height: 28px; 
-					                  border-color: transparent; text-align:left;font-weight: bold;padding-left: 20px;"
-					           readonly />
-							   
-							  </td>
-							  <td id="ROW19" style="padding-left: 20px;text-align: center;"
-					  				th:text="${report.r19_cap_year1}+'%'"
-					  				></td>
+								
+						    </thead>
 
-							  
+						    <tbody th:each="report : ${reportsummary}" style="font-family: Arial;">
 
-			 <td id="ROW19" style="padding-left: 20px; font-weight: bold;background-color: rgb(107, 122, 143);color: white;">
-    			    <input class="display-input show_input"
-    			           type="text"
-						   th:value="${#numbers.formatDecimal(report.r19_amt_add_year1, 1, 'COMMA', 0, 'POINT')}"
-    			           id="r19_amt_add_year1"
-    			           name="r19_amt_add_year1"
-    			           style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px; 
-    			                  border-color: transparent; text-align: right;"
-    			           readonly /></td>
-                     
-                  </tr>
-                  <tr>
-					<td></td>
-								<td id="ROW20" style=" font-weight: bold;">
-								  <input class="display-input show_input"
-								           type="text"
-								           th:value="${#strings.defaultString(report.r20_product, 'N/A')}"
-								           id="r20_product"
-								           name="r20_product"
-								           style="background-color:#FFFFFF; width: 500px; height: 28px; 
-								                  border-color: transparent; text-align:left;font-weight: bold;padding-left: 20px;"
-								           readonly />
-								  </td>  
-								  
-								  <td id="ROW20" style="padding-left: 20px; text-align: center;"
-								  											  				th:text="${report.r20_cap_year2}+'%'"
-								  											  				></td>
-											  
-								  <td id="ROW20" style="padding-left: 20px; font-weight: bold;background-color: rgb(107, 122, 143);color: white;">
-								      <input class="display-input show_input"
-								             type="text"
-											 th:value="${#numbers.formatDecimal(report.r20_amt_add_year2, 1, 'COMMA', 0, 'POINT')}"
-								             id="r20_amt_add_year2"
-								             name="r20_amt_add_year2"
-								             style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px; 
-								                    border-color: transparent; text-align: right;"
-								             readonly /></td>
-                  </tr>
-                  <tr>
-					<td></td>
-					
-					<td id="ROW21" style=" font-weight: bold;">
-												  <input class="display-input show_input"
-												           type="text"
-												           th:value="${#strings.defaultString(report.r21_product, 'N/A')}"
-												           id="r21_product"
-												           name="r21_product"
-												           style="background-color:#FFFFFF; width: 500px; height: 28px; 
-												                  border-color: transparent; text-align:left;font-weight: bold;padding-left: 20px;"
-												           readonly />
-												  </td>  
-												  
+						        <!-- Section 1 Values -->
+						        <tr style="border:none !important;">
+						            <td style="border:none !important;height:30px;"></td>
 
-												  <td id="ROW21" style="padding-left: 20px; text-align: center;"
-												  				th:text="${report.r21_cap_year3}+'%'"
-												  				></td>
+						            <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+						                <input class="display-input show_input"
+						                       type="text"
+						                       th:value="${#numbers.formatDecimal(report.r12_pre_ifrs_pro, 1, 'COMMA', 0, 'POINT')}"
+						                       id="r12_pre_ifrs_pro"
+						                       name="r12_pre_ifrs_pro"
+						                       style="background-color:#FFFFFF; width: 100%; height: 28px;
+						                              border-color: transparent; text-align: right;"
+						                       readonly />
+						            </td>
 
-									   
-												  <td id="ROW21" style="padding-left: 20px; font-weight: bold;background-color:rgb(107, 122, 143)">
-												      <input class="display-input show_input"
-												             type="text"
-															 th:value="${#numbers.formatDecimal(report.r21_amt_add_year3, 1, 'COMMA', 0, 'POINT')}"
-												             id="r21_amt_add_year3"
-												             name="r21_amt_add_year3"
-												             style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px;
-												                    border-color: transparent; text-align: right;"
-												             readonly /></td>
+						            <td id="ROW12" style="padding-left: 20px; font-weight: bold;">
+						                <input class="display-input show_input"
+						                       type="text"
+						                       th:value="${#numbers.formatDecimal(report.r12_post_ifrs9_pro, 1, 'COMMA', 0, 'POINT')}"
+						                       id="r12_post_ifrs9_pro"
+						                       name="r12_post_ifrs9_pro"
+						                       style="background-color:#FFFFFF; width: 100%; height: 28px;
+						                              border-color: transparent; text-align: right;"
+						                       readonly />
+						            </td>
 
-                  </tr>
-                  <tr>
-					<td></td>
-					<td id="ROW22" style=" font-weight: bold;">
-																  <input class="display-input show_input"
-																           type="text"
-																           th:value="${#strings.defaultString(report.r22_product, 'N/A')}"
-																           id="r22_product"
-																           name="r22_product"
-																           style="background-color:#FFFFFF; width: 500px; height: 28px; 
-																                  border-color: transparent; text-align:left;font-weight: bold;"
-																           readonly />
-																  </td>  
-						  <td id="ROW22" style="padding-left: 20px; text-align: center;"
-						  				th:text="${report.r22_cap_year4}"
-						  				></td>
+						            <td id="ROW12"
+						                style="padding-left: 20px; font-weight: bold; background-color:rgb(107, 122, 143)">
+						                <input class="display-input show_input"
+						                       type="text"
+						                       th:value="${#numbers.formatDecimal(report.r12_trans_amt, 1, 'COMMA', 0, 'POINT')}"
+						                       id="r12_trans_amt"
+						                       name="r12_trans_amt"
+						                       style="background-color:rgb(107, 122, 143); color: white; width: 100%;
+						                              height: 28px; border-color: transparent; text-align: right;"
+						                       readonly />
+						            </td>
+						        </tr>
 
-						
-								  															   														   						  </td>
-																  <td id="ROW22" style="padding-left: 20px; font-weight: bold;background-color:rgb(107, 122, 143)">
-																      <input class="display-input show_input"
-																             type="text"
-																			 th:value="${#numbers.formatDecimal(report.r22_amt_add_year4, 1, 'COMMA', 0, 'POINT')}"
-																			   
-																             id="r22_amt_add_year4"
-																             name="r22_amt_add_year4"
-																             style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px;
-																                    border-color: transparent; text-align: right;"
-																             readonly /></td>
-                   
-                  </tr>
-              </tbody>
+
+								<!-- Clean blank spacer row -->
+								<tr style="border:none !important;">
+								    <td style="height:30px; border:none !important;"></td>
+								    <td colspan="3" style="height:30px; border:none !important;"></td>
+								</tr>
+
+								<!-- Section 2 Heading -->
+								<tr>
+								    <td style="height:30px; border:1px solid transparent !important; text-align: center;">2</td>
+								    <td colspan="3"style=" height:30px; border:1px solid transparent !important; text-align: left;font-weight:bold;">
+								       Transitional Amount Added Back to Common Equity Tier 1 Capital During the Transition Period
+								    </td>
+								</tr>
+
+						        <tr>
+						            <td style="height:30px; border:1px solid transparent !important;"></td>
+						            <td colspan="3" style="border:none !important; height:30px;">&nbsp;</td>
+						        </tr>
+
+						        <!-- Section 2 Table Header -->
+						        <tr style="border:none !important;">
+						            <td style="border:none !important;height:30px;"></td>
+
+						            <th style="text-align: left;background-color: #D8D8D8;">Financial Year*</th>
+						            <th style="text-align: center;background-color: #D8D8D8;font-weight: normal;">Cap (%)</th>
+						            <th style="text-align: right;background-color: #D8D8D8;">Amount added back to CET1 P'000</th>
+						        </tr>
+
+						        <!-- ROW19 -->
+						        <tr style="border:none !important;">
+						            <td style="border:none !important;height:30px;"></td>
+
+						            <td id="ROW19" style="font-weight: bold;">
+						                <input class="display-input show_input"
+						                       type="text"
+						                       th:value="${#strings.defaultString(report.r19_product, 'N/A')}"
+						                       id="r19_product"
+						                       name="r19_product"
+						                       style="background-color:#FFFFFF; width: 500px; height: 28px;
+						                              border-color: transparent; text-align:left; padding-left: 20px;"
+						                       readonly />
+						            </td>
+
+						            <!--<td id="ROW19" style="text-align: center;">
+						                <span th:text="${report.r19_cap_year1} + '%'"></span>
+						            </td>-->
+									<td id="ROW21" style="text-align: center;">
+							                <span th:text="75 + '%'"></span>
+							            </td>
+						            <td id="ROW19"
+						                style="padding-left: 20px; font-weight: bold;background-color: rgb(107, 122, 143); color:white;">
+						                <input class="display-input show_input"
+						                       type="text"
+						                       th:value="${#numbers.formatDecimal(report.r19_amt_add_year1, 1, 'COMMA', 0, 'POINT')}"
+						                       id="r19_amt_add_year1"
+						                       name="r19_amt_add_year1"
+						                       style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px;
+						                              border-color: transparent; text-align: right;"
+						                       readonly />
+						            </td>
+						        </tr>
+
+						        <!-- ROW20 -->
+						        <tr style="border:none !important;">
+						            <td style="border:none !important;height:30px;"></td>
+
+						            <td id="ROW20" style="font-weight: bold;">
+						                <input class="display-input show_input"
+						                       type="text"
+						                       th:value="${#strings.defaultString(report.r20_product, 'N/A')}"
+						                       id="r20_product"
+						                       name="r20_product"
+						                       style="background-color:#FFFFFF; width: 500px; height: 28px;
+						                              border-color: transparent; text-align:left; padding-left: 20px;"
+						                       readonly />
+						            </td>
+
+						           <!-- <td id="ROW20" style="text-align: center;">
+						                <span th:text="${report.r20_cap_year2} + '%'"></span>
+						            </td>-->
+									<td id="ROW21" style="text-align: center;">
+							                <span th:text="50 + '%'"></span>
+							            </td>
+						            <td id="ROW20"
+						                style="padding-left: 20px; font-weight: bold;background-color: rgb(107, 122, 143); color:white;">
+						                <input class="display-input show_input"
+						                       type="text"
+						                       th:value="${#numbers.formatDecimal(report.r20_amt_add_year2, 1, 'COMMA', 0, 'POINT')}"
+						                       id="r20_amt_add_year2"
+						                       name="r20_amt_add_year2"
+						                       style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px;
+						                              border-color: transparent; text-align: right;"
+						                       readonly />
+						            </td>
+						        </tr>
+
+						        <!-- ROW21 -->
+						        <tr style="border:none !important;">
+						            <td style="border:none !important;height:30px;"></td>
+
+						            <td id="ROW21" style="font-weight: bold;">
+						                <input class="display-input show_input"
+						                       type="text"
+						                       th:value="${#strings.defaultString(report.r21_product, 'N/A')}"
+						                       id="r21_product"
+						                       name="r21_product"
+						                       style="background-color:#FFFFFF; width: 500px; height: 28px;
+						                              border-color: transparent; text-align:left; padding-left: 20px;"
+						                       readonly />
+						            </td>
+
+						          <!--  <td id="ROW21" style="text-align: center;">
+						                <span th:text="${report.r21_cap_year3} + '%'"></span>
+						            </td>-->
+									<td id="ROW21" style="text-align: center;">
+														                <span th:text="25 + '%'"></span>
+														            </td>
+
+						            <td id="ROW21"
+						                style="padding-left: 20px; font-weight: bold;background-color: rgb(107, 122, 143); color:white;">
+						                <input class="display-input show_input"
+						                       type="text"
+						                       th:value="${#numbers.formatDecimal(report.r21_amt_add_year3, 1, 'COMMA', 0, 'POINT')}"
+						                       id="r21_amt_add_year3"
+						                       name="r21_amt_add_year3"
+						                       style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px;
+						                              border-color: transparent; text-align: right;"
+						                       readonly />
+						            </td>
+						        </tr>
+
+						        <!-- ROW22 -->
+						        <tr style="border:none !important;">
+						            <td style="border:none !important;height:30px;"></td>
+
+						            <td id="ROW22" style="font-weight: bold;">
+						                <input class="display-input show_input"
+						                       type="text"
+						                       th:value="${#strings.defaultString(report.r22_product, 'N/A')}"
+						                       id="r22_product"
+						                       name="r22_product"
+						                       style="background-color:#FFFFFF; width: 500px; height: 28px;
+						                              border-color: transparent; text-align:left; padding-left: 1%;"
+						                       readonly />
+						            </td>
+
+						            <td id="ROW22" style="text-align: center;">
+						                <span th:text="${report.r22_cap_year4}"></span>
+						            </td>
+
+						            <td id="ROW22"
+						                style="padding-left: 20px; font-weight: bold;background-color: rgb(107, 122, 143); color:white;">
+						                <input class="display-input show_input"
+						                       type="text"
+						                       th:value="${#numbers.formatDecimal(report.r22_amt_add_year4, 1, 'COMMA', 0, 'POINT')}"
+						                       id="r22_amt_add_year4"
+						                       name="r22_amt_add_year4"
+						                       style="background-color:rgb(107, 122, 143); color: white; width: 100%; height: 28px;
+						                              border-color: transparent; text-align: right;padding-right: 0%;"
+						                       readonly />
+						            </td>
+						        </tr>
+
+						    </tbody>
 						</table>
+
 						</div>
 <div style="text-align: center; margin-top: 10px;">
 												
@@ -1468,7 +1529,7 @@ $(document).ready(function() {
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {
 	/* This is the key: it creates the scroll context */
-	max-height: 358px;
+	max-height: 490px;
 	/* Or a suitable height like 80vh for responsive design */
 	overflow-y: auto;
 	border: 1px solid #ccc;
