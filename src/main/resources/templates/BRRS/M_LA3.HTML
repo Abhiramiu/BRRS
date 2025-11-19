@@ -281,8 +281,8 @@ PURPOSE		: BRRSREPORT
 			/* Optional: pointer cursor */
 		}
 
-		.table-bordered td,
-		.table-bordered th {
+		.table-borderedSummary td,
+		.table-borderedSummary th {
 			border: 1px solid #000 !important;
 		}
 	</style>
@@ -466,6 +466,13 @@ PURPOSE		: BRRSREPORT
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
+		function showResultModalDetail(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel1').text(title);
+			$('#resultModalBody1').text(message);
+			// Show the modal
+			$('#resultModal1').modal('show');
+		}
 	</script>
 
 
@@ -587,12 +594,15 @@ PURPOSE		: BRRSREPORT
 
 		// This function is for closing the modal after an action is complete.
 		// It hides the result and loader modals and reloads the page.
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
+		function closemodels() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
 
-			
-		}
+		// Reload the page after a short delay to ensure the modal animation completes smoothly.
+		    setTimeout(function () {
+		        location.reload();
+		    }, 300);
+	}
 
 		function fileuploads(btn) {
 			const asondate = btn.getAttribute("data-todate");
@@ -669,9 +679,9 @@ PURPOSE		: BRRSREPORT
 
 				            // Show message via modal
 				            if (response && response.toLowerCase().includes('success')) {
-				                showResultModal('Success', response);
+				            	showResultModalDetail('Success', response);
 				            } else {
-				                showResultModal('Information', response || 'No data updated.');
+				            	showResultModalDetail('Information', response || 'No data updated.');
 				            }
 
 				            // ✅ Redirect back to the previous page after short delay
@@ -688,7 +698,7 @@ PURPOSE		: BRRSREPORT
 				            $('#loader').modal('hide');
 				            console.error("Update error:", error);
 
-				            showResultModal('Error', 'Failed to update record. Please try again.');
+				            showResultModalDetail('Error', 'Failed to update record. Please try again.');
 
 				            // ✅ On error also return to previous page after delay
 				            setTimeout(() => {
@@ -888,33 +898,13 @@ PURPOSE		: BRRSREPORT
 
 
 	
-		<script th:inline="javascript">
-			  $(document).ready(function () {
-			    $('#reportdetails').DataTable({
-			      scrollY: "550px",            // ✅ Adjust vertical scroll height
-			      scrollX: true,               // ✅ Horizontal scrolling
-			      scrollCollapse: true,
-			      autoWidth: false,
-			      paging: true,
-			      searching: true,
-			      lengthChange: false,
-			      ordering: true,
-			      pageLength: 100,
-			      fixedHeader: {
-			        header: true,
-			        footer: false
-			      },                           // ✅ Ensures header stays visible
-			      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-			    });
-			  });
-			</script>		
 		
 		
 			<style>
 				  .dataTables_scrollHeadInner,
 				  table.dataTable {
 				    width: 100% !important;
-				    margin: -2px auto !important;
+				   
 				  }
 
 				  /* ✅ Prevent wrapping in all table cells */
@@ -935,53 +925,40 @@ PURPOSE		: BRRSREPORT
 				    cursor: pointer;
 				  }
 
-				 /* 🚌 Bus display style box */
-				 /*  .boards {
-				    background-color: rgb(107, 122, 143);
-				    color: white;
-				    padding: 6px -1px;
-				    border-radius: 8px;
-				    overflow: hidden;
-				    white-space: nowrap;
-				    width: 500px; 
-				    box-shadow: 0 0 10px rgb(107, 122, 143);
-				    position: relative;
-					transform: translateY(10px);
-				  }*/
-				  
-				  /* 🚌 Bus display style box */
-				  			.boards {
-				  				transform: translateY(6px);
-				  			  background-color: rgb(107, 122, 143);
-				  			  color: white;
-				  			  padding: 5px 87px;
-				  			  border-radius: 8px;
-				  			  overflow: hidden;
-				  			  white-space: nowrap;
-				  			  flex: 1; /* ✅ makes it take available space dynamically */
-				  			  min-width: 200px;
-				  			  box-shadow: 0 0 10px rgb(107, 122, 143);
-				  			  position: relative;
-				  			}
+				/* 🚌 Bus display style box */
+			.boards {
+				margin-left: 20px;
+				transform: translateY(6px);
+			  background-color: rgb(107, 122, 143);
+			  color: white;
+			  padding: 5px 5px !important;
+			  border-radius: 8px;
+			  overflow: hidden;
+			  white-space: nowrap;
+			  flex: 1; /* ✅ makes it take available space dynamically */
+			  min-width: 200px;
+			  box-shadow: 0 0 10px rgb(107, 122, 143);
+			  position: relative;
+			}
 
-				  /* ✨ Scrolling animation */
-				  .scrolling-text {
-				    display: inline-block;
-				    font-family: "Courier New", monospace;
-				    font-weight: bold;
-				    letter-spacing: 1px;
-				    animation: scroll-left 10s linear infinite;
-				  }
+			/* ✨ Scrolling animation */
+			.scrolling-text {
+			  display: inline-block;
+			  font-family: "Courier New", monospace;
+			  font-weight: bold;
+			  letter-spacing: 1px;
+			  animation: scroll-left 10s linear infinite;
+			}
 
-				  /* Animation keyframes */
-				  @keyframes scroll-left {
-				    0% {
-				      transform: translateX(100%);
-				    }
-				    100% {
-				      transform: translateX(-100%);
-				    }
-				  }
+			@keyframes scroll-left {
+			  0% {
+			    transform: translateX(100%);
+			  }
+			  100% {
+			    transform: translateX(-100%);
+			  }
+			}
+
 				</style>
 
 
@@ -1001,84 +978,119 @@ PURPOSE		: BRRSREPORT
 			<div th:insert="HeaderMenu :: header"></div>
 			<div class="card">
 				<div class="card-header"
-					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
-					<div style="display: flex; align-items: center;" onclick="back();">
-						<!-- ⬅️ Left circular arrow -->
-						<div class="left-arrow-circle">
-							<i class="fa fa-arrow-left"></i>
-						</div>
-						
-						<!-- Title -->
-										  				  <h5 class="header-title">
-										  				 (27) MONTHLY SCHEDULE: M-LA3 : TYPES OF ADVANCES AND APPLICABLE INTEREST RATES
-										  				  </h5>
+     style="background-color: rgb(107, 122, 143);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            padding: 10px;">
 
-										  				  <!-- 🚌 Bus display box -->
-										  				  <div class="boards">
-										  				    <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
-										  				  </div>
-										  				</div>
-						
-						
-						
+    <!-- LEFT SECTION -->
+    <div style="display: flex; align-items: center; gap: 5px; min-width: 0;">
 
-					<div class="custom-tab-btn-group nav-buttons"
-						style="display: flex; color: white; align-items: center;">
-						<!-- 📅 Date -->
-						<span class="white-text"
-							style="color: white !important; font-size: 10px; margin-right: 20px;">Report
-							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
-						</span>
+        <!-- Back Button -->
+        <div class="left-arrow-circle" onclick="back();">
+            <i class="fa fa-arrow-left"></i>
+        </div>
 
-						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
+        <!-- Title -->
+        <h5 class="header-title"
+            style="font-family: Arial; font-size: 16px; font-weight: bold; color: white; margin: 0; white-space: nowrap;">
+            (27) MONTHLY SCHEDULE: M-LA3 : TYPES OF ADVANCES AND APPLICABLE INTEREST RATES
+        </h5>
 
-						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'}"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							id="addRecord">Modify</button>
-
-						<!-- Cancel button (hidden initially) -->
-						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();" style="display: none;">Cancel</button>
+        <!-- Bus Scrolling Text -->
+        <div class="boards" style="min-width: 250px;">
+            <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+        </div>
+    </div>
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='M_LA3.xlsx'" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
-						</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-		    data-fromdate=${fromdate},
-		    data-todate=${todate},
-			data-currency=${currency},  
-						data-dtltype=${dtltype}, 
-		    data-filename='M_LA3Detail',
-			data-type=${type},
-						data-version=${version}">
-							<i class="fa fa-download"></i>
-						</button>
-					</div>
-				</div>
+    <!-- RIGHT SECTION -->
+    <div class="nav-buttons"
+         style="display: flex; align-items: center; padding-left:10px; gap: 12px; flex-shrink: 0; white-space: nowrap;">
+
+        <!-- REPORT DATE -->
+        <span style="color:#fff !important; font-size:12px; font-weight:600; white-space: nowrap;">
+            Report Date:
+            <span th:text="${#strings.replace(asondate, '/', '-')}"
+                  style="color:#fff !important;">2025-09-18</span>
+        </span>
+
+        <!-- Summary Button -->
+        <button class="custom-tab-btn"
+                th:if="${displaymode == 'Details'}"
+                onclick="showsummary();">
+            Summary
+        </button>
+
+        <!-- Details Button -->
+        <button class="custom-tab-btn"
+                th:if="${displaymode == 'summary'}"
+                onclick="showdetails();">
+            Details
+        </button>
+
+        <!-- Modify Button -->
+        <button type="button"
+                class="custom-tab-btn"
+                onclick="showmodify(this);"
+                title="Click to EDIT Records"
+                th:if="${type != 'ARCHIVAL'}"
+                th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+                id="addRecord">
+            Modify
+        </button>
+
+        <!-- Cancel Button -->
+        <button class="custom-tab-btn"
+                id="cancelRecord"
+                onclick="cancelModify();"
+                style="display:none;"
+                title="Cancel editing">
+            Cancel
+        </button>
+
+
+        <!-- Download – Summary -->
+        <button type="button" class="custom-tab-btn"
+            th:if="${displaymode == 'summary'}"
+            th:attr="data-reportid=${reportid},
+                     data-asondate=${asondate},
+                     data-fromdate=${fromdate},
+                     data-todate=${todate},
+                     data-currency=${currency},
+                     data-dtltype=${dtltype},
+                     data-filename='M_LA3.xlsx'"
+            onclick="downloadfile(this);">
+            <i class="fa fa-download"></i>
+        </button>
+
+        <!-- Download – Details -->
+        <button type="button" class="custom-tab-btn"
+            th:if="${displaymode == 'Details'}"
+            th:attr="data-fromdate=${fromdate},
+                     data-todate=${todate},
+                     data-currency=${currency},
+                     data-dtltype=${dtltype},
+                     data-filename='M_LA3Detail',
+                     data-type=${type},
+                     data-version=${version}"
+            onclick="startReport(this);">
+            <i class="fa fa-download"></i>
+        </button>
+
+    </div>
+</div>
+
 
 				<div th:if="${displaymode == 'summary'}">
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="table-wrapper table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6; ">
+								style="border-right: 1px solid #dee2e6; max-height:90vh; overflow-y: auto;">
 								<table
-									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									class="sticky-header-table table table-bordered table-borderedSummary table-cell table-sm table-condensed"
 									id="reports">
 									<thead class="thead-light"
 										style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
@@ -1091,7 +1103,7 @@ PURPOSE		: BRRSREPORT
 														RATES </th>
 													<th style="text-align: right;">No. of A/Cs</th>
 													<th style="text-align: right;"> Approved Limit </th>
-													<th style="text-align: right;">Amount Outstanding</th>
+													<th style="text-align: right;">Amount Outstanding In Pula</th>
 
 												</tr>
 											</thead>
@@ -1208,7 +1220,7 @@ PURPOSE		: BRRSREPORT
 
 								<div style="border-right: 1px solid #dee2e6; ">
 									<table
-										class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+										class="sticky-header-table table table-bordered table-borderedSummary table-cell table-sm table-condensed"
 										id="reports">
 										<thead class="thead-light"
 											style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
@@ -1222,7 +1234,7 @@ PURPOSE		: BRRSREPORT
 															LOANS AND ADVANCES BY MATURITY </th>
 														<th style="text-align: right;">No. of A/Cs</th>
 														<th style="text-align: right;"> Approved Limit </th>
-														<th style="text-align: right;">Amount Outstanding</th>
+														<th style="text-align: right;">Amount Outstanding In Pula</th>
 
 													</tr>
 												</thead>
@@ -1402,21 +1414,21 @@ PURPOSE		: BRRSREPORT
 
 										<div style="border-right: 1px solid #dee2e6; ">
 											<table
-												class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+												class="sticky-header-table table table-bordered  table-borderedSummary table-cell table-sm table-condensed"
 												id="reports">
 												<thead class="thead-light"
 													style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
 													<tr style="background-color: black; ">
 														<thead class="thead-light">
 															<tr style="background-color: #b3b6b9 ">
-																<th rowspan="1" style="text-align: left; width: 555px;">
+																<th rowspan="1" style="text-align: left; width: 750px;">
 																	(26B) LOANS AND ADVANCES BY MATURITY</th>
-																<th style="text-align: right; width: 25px;">No. of A/Cs
+																<th style="text-align: right; ">No. of A/Cs
 																</th>
-																<th style="text-align: right; width: 270px;">Approved
+																<th style="text-align: right; ">Approved
 																	Limit</th>
-																<th style="text-align: right; width: 350px;">Amount
-																	Outstanding</th>
+																<th style="text-align: right;">Amount
+																	Outstanding In Pula</th>
 															</tr>
 														</thead>
 
@@ -1693,20 +1705,18 @@ PURPOSE		: BRRSREPORT
 				</div>
 
 				<!--  DETAIL -->
-				<div th:if="${displaymode == 'Details'}">
-					<div class="row">
-						<div class="col-sm-12">
-							<div class="table-container" style="border-right: 1px solid #dee2e6; ">
-								<table class="table table-striped table-bordered table-hover" id="reportdetails">
-									<thead class="thead-light">
-
-										<tr>
-											<th> </th>
+					<div th:if="${displaymode == 'Details'}">
+			<div class="row">
+				<div class="col-sm-12" >
+		<div class="table-container" style="border-right: 1px solid #dee2e6;">
+							<table class="table table-striped table-bordered table-hover" id="reportdetail">
+							 <thead class="thead-light">
+            <tr>						<th> </th>
 											<th>S No</th>
 											<th>CUST ID</th>
 											<th>ACCT NUMBER</th>
 											<th>ACCT NAME</th>
-											<th>ACCT BALANCE</th>
+											<th>ACCT BALANCE IN PULA</th>
 											<th>APPROVED LIMIT</th>
 											<th>REPORT LABEL</th>
 											<th>REPORT ADDL CRITERIA 1</th>
@@ -1733,11 +1743,18 @@ PURPOSE		: BRRSREPORT
 											<td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
 											<td th:text="${report.acct_number != null ? report.acct_number : '-'}"></td>
 											<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>
-											<td align="right" th:text="${report.acct_balance_in_pula != null 
-																													? #numbers.formatDecimal(report.acct_balance_in_pula, 1, 2) : '0.00'}"></td>
-											<td align="right" th:text="${report.sanction_limit != null 
-																													? #numbers.formatDecimal(report.sanction_limit, 1, 2) : '0.00'}"></td>
-											<td th:text="${report.report_label != null ? report.report_label : '-'}">
+											<td style="text-align:right !important;"
+    th:text="${report.acct_balance_in_pula != null 
+        ? #numbers.formatDecimal(report.acct_balance_in_pula, 1, 'COMMA', 0, 'POINT') 
+        : '0'}">
+</td>
+
+<td style="text-align:right !important;"
+    th:text="${report.sanction_limit != null 
+        ? #numbers.formatDecimal(report.sanction_limit, 1, 'COMMA', 0, 'POINT') 
+        : '0'}">
+</td>
+<td th:text="${report.report_label != null ? report.report_label : '-'}">
 											</td>
 											<td
 												th:text="${report.report_addl_criteria_1 != null ? report.report_addl_criteria_1 : '-'}">
@@ -1853,7 +1870,7 @@ PURPOSE		: BRRSREPORT
 										<label class="col-sm-2">Report Date</label>
 										<div class="col-sm-3">
 										<input type="date" name="report_Date" class="form-control form-control-sm"
-										th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" />
+										th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly/>
 										</div>
 										</div>
 
@@ -1908,6 +1925,26 @@ PURPOSE		: BRRSREPORT
 					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 						<p id="resultModalBody"></p>
 						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodels()"
+							data-dismiss="modal">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Detail update handling -->
+		<div class="modal fade" id="resultModal1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
+						</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody1"></p>
+						<!-- Your custom styled button -->
 						<button type="button" class="custom-tab-btn" onclick="closemodel()"
 							data-dismiss="modal">OK</button>
 					</div>
@@ -1946,10 +1983,7 @@ PURPOSE		: BRRSREPORT
 
 
 <style>
-	.dataTables_scrollHeadInner,
-	table.dataTable {
-		width: 100% !important;
-	}
+	
 
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
@@ -2055,5 +2089,39 @@ PURPOSE		: BRRSREPORT
 		width: auto;
 	}
 </style>
+<script th:inline="javascript">
+				  $(document).ready(function () {
+				    var table = $('#reportdetail').DataTable({
+				      scrollY: "550px",
+				      scrollX: true,
+				      scrollCollapse: true,
+				      autoWidth: false,
+				      paging: true,
+				      searching: true,
+				      lengthChange: false,
+				      ordering: true,
+				      pageLength: 100,
+				      fixedHeader: true, // ✅ You can simply set it to true
+					  // ✅ Column width settings
+					   columnDefs: [
+					     { width: "60px", targets: 0 },   // Edit icon column
+					     { width: "100px", targets: 1 }  ,  // S No column
+					     { width: "250px", targets: 5 }  
+						 
+					   ],
 
+				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+				    });
+
+				    // ✅ Fix alignment on resize / zoom
+				    $(window).on('resize', function () {
+				      table.columns.adjust().draw(false);
+				    });
+
+				    // ✅ Fix initial misalignment if loaded at non-100% zoom
+				    setTimeout(function () {
+				      table.columns.adjust().draw(false);
+				    }, 500);
+				  });
+				</script>
 </html>

@@ -1043,25 +1043,26 @@ public class BRRS_M_LA3_ReportService {
 			dataStyle.setBorderRight(border);
 
 			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
+			 CellStyle balanceStyle = workbook.createCellStyle();
+		        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+		        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
+		        balanceStyle.setBorderTop(border);
+		        balanceStyle.setBorderBottom(border);
+		        balanceStyle.setBorderLeft(border);
+		        balanceStyle.setBorderRight(border);
+
 
 			// sanction style (right aligned with 3 decimals)
 			CellStyle sanctionStyle = workbook.createCellStyle();
 			sanctionStyle.setAlignment(HorizontalAlignment.RIGHT);
-			sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+			sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
 			sanctionStyle.setBorderTop(border);
 			sanctionStyle.setBorderBottom(border);
 			sanctionStyle.setBorderLeft(border);
 			sanctionStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "APPROVED LIMIT", "REPORT LABEL",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "APPROVED LIMIT", "REPORT LABEL",
 					"REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
@@ -1954,18 +1955,18 @@ public class BRRS_M_LA3_ReportService {
 			dataStyle.setBorderRight(border);
 
 			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
+			 CellStyle balanceStyle = workbook.createCellStyle();
+		        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+		        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
+		        balanceStyle.setBorderTop(border);
+		        balanceStyle.setBorderBottom(border);
+		        balanceStyle.setBorderLeft(border);
+		        balanceStyle.setBorderRight(border);
 
 			// sanction style (right aligned with 3 decimals)
 						CellStyle sanctionStyle = workbook.createCellStyle();
 						sanctionStyle.setAlignment(HorizontalAlignment.RIGHT);
-						sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
+						sanctionStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
 						sanctionStyle.setBorderTop(border);
 						sanctionStyle.setBorderBottom(border);
 						sanctionStyle.setBorderLeft(border);

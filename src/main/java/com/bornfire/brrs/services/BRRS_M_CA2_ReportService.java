@@ -681,14 +681,8 @@ dataStyle.setBorderRight(border);
 
 //ACCT BALANCE style (right aligned with thousand separator)
 CellStyle balanceStyle = workbook.createCellStyle();
-DataFormat df = workbook.createDataFormat();
-
-// Force US-style thousand separator (international)
-balanceStyle.setDataFormat(
-    df.getFormat("#,##0;(#,##0)")
-);
-
 balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
 balanceStyle.setBorderTop(border);
 balanceStyle.setBorderBottom(border);
 balanceStyle.setBorderLeft(border);
@@ -1283,14 +1277,12 @@ public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String to
 
 	        // ACCT BALANCE style (right aligned with 3 decimals)
 	        CellStyle balanceStyle = workbook.createCellStyle();
-			DataFormat df = workbook.createDataFormat();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(df.getFormat("#,##0.000"));  // 1000 separator + 3 decimals
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-
+	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
+	        balanceStyle.setBorderTop(border);
+	        balanceStyle.setBorderBottom(border);
+	        balanceStyle.setBorderLeft(border);
+	        balanceStyle.setBorderRight(border);
 
 
 	     // Header row
