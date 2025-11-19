@@ -600,7 +600,7 @@ public byte[] getM_CA6Excel(String filename,String reportId, String fromdate, St
 				}
 
 				//row24
-				row = sheet.getRow(12);
+				row = sheet.getRow(23);
 				// Column D
 				cell3 = row.createCell(3);
 				if (record.getR24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
@@ -1489,7 +1489,7 @@ public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String from
 				}
 
 				//row24
-				row = sheet.getRow(12);
+				row = sheet.getRow(23);
 				// Column D
 				cell3 = row.createCell(3);
 				if (record.getR24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
@@ -2756,7 +2756,7 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 				}
 
 				//row24
-				row = sheet.getRow(12);
+				row = sheet.getRow(23);
 				// Column D
 				cell3 = row.createCell(3);
 				if (record.getR24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {

@@ -1067,6 +1067,12 @@ $(document).ready(function(){
 			text-align: right !important;
 			padding-right: 10px !important;
 		}
+	
+		    .no-border td {
+		        border: none !important;
+		    }
+		
+
 	</style>
 	<style>
 		#reportdetails,
@@ -1255,16 +1261,31 @@ $(document).ready(function(){
 																						       <th colspan="3" style="text-align: center;background-color: #D8D8D8;font-weight:normal;">&gt; 24 months</th>
 																						     </tr>
 																							<tr>
-																							 	<th rowspan = "2" style="text-align: right;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
-																								           vertical-align: bottom;">Amount</th>
+																								<th rowspan="2" 
+																								      style="background-color: #D8D8D8; font-weight: normal;
+																								             text-align: right; 
+																								             vertical-align: bottom;">
+																								      Amount
+																								  </th>
+
 																							 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
 																							 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
-																								<th rowspan = "2" style="text-align: right;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
-																								          vertical-align: bottom;">Amount</th>
+																								<th rowspan="2" 
+																										      style="background-color: #D8D8D8; font-weight: normal;
+																										             text-align: right; 
+																										             vertical-align: bottom;">
+																										      Amount
+																										  </th>
+
 																							 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
 																							 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
-																								<th rowspan = "2" style="text-align: right;background-color: #D8D8D8;font-weight:normal;															text-align: center; 
-																										vertical-align: bottom;">Amount</th>
+																								<th rowspan="2" 
+																						      style="background-color: #D8D8D8; font-weight: normal;
+																						             text-align: right; 
+																						             vertical-align: bottom;">
+																						      Amount
+																						  </th>
+
 																							 	<th style="text-align: center;background-color: #D8D8D8;font-weight:normal;">Risk</th>
 																							 	<th style="text-align: right;background-color: #D8D8D8;font-weight:normal;">Capital</th>
 																							 </tr>
@@ -3633,45 +3654,55 @@ $(document).ready(function(){
 								   style="background-color:rgb(107, 122, 143);width:200px;height:28px;border-color:transparent;text-align:right;"
 								   readonly />
 						  </td>
-						  <td style="background-color:rgb(192, 192, 192);">C
+						  <td style="background-color:rgb(192, 192, 192);width:200px;height:28px;">C
 						  				
 						  			  </td>
 
 			</tr>
-			<tr>
-					<td style="height:30px;"></td>
-					<td  style="height:30px;"></td>
-					<td  style="height:30px;"></td>
-					<td  style="height:30px;"></td>
-					<td  style="height:30px;"></td>
-					<td  style="height:30px;"></td>
-					<td  style="height:30px;"></td>
-					<td  style="height:30px;"></td>
-					<td  style="height:30px;"></td>
-					<td  style="height:30px;"></td>
-					<td  style="height:30px;"></td>
-				</tr>
-			<tr>
-				        <td></td>
-				        <td  style="text-align: right; font-weight: bold;">Total Specific Risk Charge</td>
-				        <td></td>
-						<td></td>
-		 <td style="background-color:rgb(107, 122, 143);">
-				<input class="display-input show_input"
-				   type="text"
-				   th:value="${report.r35_tot_spec_risk_ch != null ? #numbers.formatDecimal(report.r35_tot_spec_risk_ch,0,'COMMA',0,'POINT'):'0'}"
-				   id="r35_tot_spec_risk_ch"
-				   name="r35_tot_spec_risk_ch"
-				   style="background-color:rgb(107, 122, 143);width:200px;height:28px;border-color:transparent;text-align:right;"
-				   readonly />
-				</td>
-				        <td style="text-align: left;background-color:rgb(192, 192, 192);">D = Sum (A:C)</td>
-				        <td></td>
-				        <td></td>
-				        <td></td>
-				        <td></td>
-				        <td></td>
-				  </tr>
+			
+			<tr style="border:none !important;">
+			    <td style="height:30px;border:none !important;"></td>
+			    <td style="height:30px;border:none !important;"></td>
+			    <td style="height:30px;border:none !important;"></td>
+			    <td style="height:30px;border:none !important;"></td>
+			    <td style="height:30px;border:none !important;"></td>
+			    <td style="height:30px;border:none !important;"></td>
+			    <td style="height:30px;border:none !important;"></td>
+			    <td style="height:30px;border:none !important;"></td>
+			    <td style="height:30px;border:none !important;"></td>
+			    <td style="height:30px;border:none !important;"></td>
+			    <td style="height:30px;border:none !important;"></td>
+			</tr>
+			<tr style="border:none !important;">
+			    <td style="border:none !important;height:30px;"></td>
+
+			    <td style="text-align: right; font-weight: bold;">
+			        Total Specific Risk Charge
+			    </td>
+
+			    <td style="border:none !important;height:30px;"></td>
+			    <td style="border:none !important;height:30px;"></td>
+
+			    <td style="background-color:rgb(107, 122, 143);">
+			        <input class="display-input show_input"
+			               type="text"
+			               th:value="${report.r35_tot_spec_risk_ch != null ? #numbers.formatDecimal(report.r35_tot_spec_risk_ch,0,'COMMA',0,'POINT'):'0'}"
+			               id="r35_tot_spec_risk_ch"
+			               name="r35_tot_spec_risk_ch"
+			               style="background-color:rgb(107, 122, 143);width:200px;height:28px;border-color:transparent;text-align:right;"
+			               readonly />
+			    </td>
+
+			    <td style="text-align: left;background-color:rgb(192, 192, 192);">
+			        D = Sum (A:C)
+			    </td>
+
+			    <td style="border:none !important;height:30px;"></td>
+			    <td style="border:none !important;height:30px;"></td>
+			    <td style="border:none !important;height:30px;"></td>
+			    <td style="border:none !important;height:30px;"></td>
+			    <td style="border:none !important;height:30px;"></td>
+			</tr>
 
 
 			  
