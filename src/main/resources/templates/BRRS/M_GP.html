@@ -1085,23 +1085,14 @@ $.ajax({
 	dataType: 'text',
 	success: function (response) {
 		$("#resultModalLabel").text("BRRS");
-		$("#resultModalBody").text(response);
-		$("#resultModal").modal("show");
+		            $("#resultModalBody").text("Updated Successfully.");
+		            $("#resultModal").modal("show");
+					//  Wait for user to close the modal manually
+								    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+								        location.reload(); // reload ONLY when modal is closed
+								    });
+								},
 
-		// ✅ Redirect after short delay (so user sees the success message)
-		if (response.includes("Resubmission Updated Successfully")) {
-			setTimeout(function() {
-				// Go back to the previous page user came from
-				if (document.referrer && document.referrer !== '') {
-					// Redirect to the page that opened this one
-					window.location.href = document.referrer;
-				} else {
-					// If no referrer, just go one step back in history
-					window.history.back();
-				}
-			}, 2000); // wait 2 seconds before redirect
-		}
-	},
 	error: function (jqXHR) {
 		$("#resultModalLabel").text("Error");
 		$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
@@ -1287,7 +1278,7 @@ $.ajax({
 											  line-height: 1.2;
 											  text-align: left;
 											  vertical-align: middle;
-											  font-weight: normal;
+											  font-weight: normal; padding-left: 1%;
 										    "
 										    th:title="${report.R12_PRODUCT}"
 										    th:text="${report.R12_PRODUCT}">
@@ -1342,7 +1333,7 @@ $.ajax({
 											  line-height: 1.2;
 											  text-align: left;
 											  vertical-align: middle;
-											  font-weight: normal;
+											  font-weight: normal; padding-left: 1%;
 										    "
 										    th:title="${report.R13_PRODUCT}"
 										    th:text="${report.R13_PRODUCT}">
@@ -1396,7 +1387,7 @@ $.ajax({
 												  line-height: 1.2;
 												  text-align: left;
 												  vertical-align: middle;
-												  font-weight: normal;
+												  font-weight: normal; padding-left: 1%;
 												"
 												th:title="${report.R14_PRODUCT}"
 												th:text="${report.R14_PRODUCT}">
@@ -1450,7 +1441,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: bold;
+													  font-weight: bold; padding-left: 1%;
 													"
 													th:title="${report.R15_PRODUCT}"
 													th:text="${report.R15_PRODUCT}">
@@ -1504,7 +1495,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal;
+													  font-weight: normal; padding-left: 1%;
 													"
 													th:title="${report.R16_PRODUCT}"
 													th:text="${report.R16_PRODUCT}">
@@ -1558,7 +1549,7 @@ $.ajax({
 												  line-height: 1.2;
 												  text-align: left;
 												  vertical-align: middle;
-												  font-weight: normal;
+												  font-weight: normal; padding-left: 1%;
 												"
 												th:title="${report.R17_PRODUCT}"
 												th:text="${report.R17_PRODUCT}">
@@ -1612,7 +1603,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal;
+													  font-weight: normal; padding-left: 1%;
 													"
 													th:title="${report.R18_PRODUCT}"
 													th:text="${report.R18_PRODUCT}">
@@ -1666,7 +1657,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal;
+													  font-weight: normal; padding-left: 1%;
 													"
 													th:title="${report.R19_PRODUCT}"
 													th:text="${report.R19_PRODUCT}">
@@ -1720,7 +1711,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal;
+													  font-weight: normal; padding-left: 1%;
 													"
 													th:title="${report.R20_PRODUCT}"
 													th:text="${report.R20_PRODUCT}">
@@ -1774,7 +1765,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal;
+													  font-weight: normal; padding-left: 1%;
 													"
 													th:title="${report.R21_PRODUCT}"
 													th:text="${report.R21_PRODUCT}">
@@ -1828,7 +1819,7 @@ $.ajax({
 														  line-height: 1.2;
 														  text-align: left;
 														  vertical-align: middle;
-														  font-weight: normal;
+														  font-weight: normal; padding-left: 1%;
 														"
 														th:title="${report.R22_PRODUCT}"
 														th:text="${report.R22_PRODUCT}">
@@ -1882,7 +1873,7 @@ $.ajax({
 												  line-height: 1.2;
 												  text-align: left;
 												  vertical-align: middle;
-												  font-weight: normal;
+												  font-weight: normal; padding-left: 1%;
 												"
 												th:title="${report.R23_PRODUCT}"
 												th:text="${report.R23_PRODUCT}">
@@ -1936,7 +1927,7 @@ $.ajax({
 												  line-height: 1.2;
 												  text-align: left;
 												  vertical-align: middle;
-												  font-weight: normal;
+												  font-weight: normal; padding-left: 1%;
 												"
 												th:title="${report.R24_PRODUCT}"
 												th:text="${report.R24_PRODUCT}">
@@ -1990,7 +1981,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal;
+													  font-weight: normal; padding-left: 1%;
 													"
 													th:title="${report.R25_PRODUCT}"
 													th:text="${report.R25_PRODUCT}">
@@ -2044,7 +2035,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal;
+													  font-weight: normal; padding-left: 1%;
 													"
 													th:title="${report.R26_PRODUCT}"
 													th:text="${report.R26_PRODUCT}">
@@ -2098,7 +2089,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal;
+													  font-weight: normal; padding-left: 1%;
 													"
 													th:title="${report.R27_PRODUCT}"
 													th:text="${report.R27_PRODUCT}">
@@ -2152,7 +2143,7 @@ $.ajax({
 														  line-height: 1.2;
 														  text-align: left;
 														  vertical-align: middle;
-														  font-weight: normal;
+														  font-weight: normal; padding-left: 1%;
 														"
 														th:title="${report.R28_PRODUCT}"
 														th:text="${report.R28_PRODUCT}">
@@ -2206,7 +2197,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: bold;
+															  font-weight: bold; padding-left: 1%;
 															"
 															th:title="${report.R29_PRODUCT}"
 															th:text="${report.R29_PRODUCT}">
@@ -2260,7 +2251,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: normal;
+															  font-weight: normal; padding-left: 1%;
 															"
 															th:title="${report.R30_PRODUCT}"
 															th:text="${report.R30_PRODUCT}">
@@ -2314,7 +2305,7 @@ $.ajax({
 														  line-height: 1.2;
 														  text-align: left;
 														  vertical-align: middle;
-														  font-weight: normal;
+														  font-weight: normal; padding-left: 1%;
 														"
 														th:title="${report.R31_PRODUCT}"
 														th:text="${report.R31_PRODUCT}">
@@ -2368,7 +2359,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: normal;
+															  font-weight: normal; padding-left: 1%;
 															"
 															th:title="${report.R32_PRODUCT}"
 															th:text="${report.R32_PRODUCT}">
@@ -2422,7 +2413,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: normal;
+															  font-weight: normal; padding-left: 1%;
 															"
 															th:title="${report.R33_PRODUCT}"
 															th:text="${report.R33_PRODUCT}">
@@ -2476,7 +2467,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: normal;
+															  font-weight: normal; padding-left: 1%;
 															"
 															th:title="${report.R34_PRODUCT}"
 															th:text="${report.R34_PRODUCT}">
@@ -2530,7 +2521,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: normal;
+															  font-weight: normal; padding-left: 1%;
 															"
 															th:title="${report.R35_PRODUCT}"
 															th:text="${report.R35_PRODUCT}">
@@ -2584,7 +2575,7 @@ $.ajax({
 																  line-height: 1.2;
 																  text-align: left;
 																  vertical-align: middle;
-																  font-weight: normal;
+																  font-weight: normal; padding-left: 1%;
 																"
 																th:title="${report.R36_PRODUCT}"
 																th:text="${report.R36_PRODUCT}">
@@ -2638,7 +2629,7 @@ $.ajax({
 														  line-height: 1.2;
 														  text-align: left;
 														  vertical-align: middle;
-														  font-weight: normal;
+														  font-weight: normal; padding-left: 1%;
 														"
 														th:title="${report.R37_PRODUCT}"
 														th:text="${report.R37_PRODUCT}">
@@ -2692,7 +2683,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: bold;
+															  font-weight: bold; padding-left: 1%;
 															"
 															th:title="${report.R38_PRODUCT}"
 															th:text="${report.R38_PRODUCT}">
@@ -2746,7 +2737,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: normal;
+															  font-weight: normal; padding-left: 1%;
 															"
 															th:title="${report.R39_PRODUCT}"
 															th:text="${report.R39_PRODUCT}">
@@ -2800,7 +2791,7 @@ $.ajax({
 														  line-height: 1.2;
 														  text-align: left;
 														  vertical-align: middle;
-														  font-weight: normal;
+														  font-weight: normal; padding-left: 1%;
 														"
 														th:title="${report.R40_PRODUCT}"
 														th:text="${report.R40_PRODUCT}">
@@ -2854,7 +2845,7 @@ $.ajax({
 																  line-height: 1.2;
 																  text-align: left;
 																  vertical-align: middle;
-																  font-weight: bold;
+																  font-weight: bold; 
 																"
 																th:title="${report.R41_PRODUCT}"
 																th:text="${report.R41_PRODUCT}">
@@ -2909,7 +2900,7 @@ $.ajax({
 																	  line-height: 1.2;
 																	  text-align: left;
 																	  vertical-align: middle;
-																	  font-weight: normal;
+																	  font-weight: normal; padding-left: 1%;
 																	"
 																	th:title="${report.R42_PRODUCT}"
 																	th:text="${report.R42_PRODUCT}">
@@ -2963,7 +2954,7 @@ $.ajax({
 																	  line-height: 1.2;
 																	  text-align: left;
 																	  vertical-align: middle;
-																	  font-weight: normal;
+																	  font-weight: normal; padding-left: 1%;
 																	"
 																	th:title="${report.R43_PRODUCT}"
 																	th:text="${report.R43_PRODUCT}">
@@ -3017,7 +3008,7 @@ $.ajax({
 																  line-height: 1.2;
 																  text-align: left;
 																  vertical-align: middle;
-																  font-weight: normal;
+																  font-weight: normal; padding-left: 1%;
 																"
 																th:title="${report.R44_PRODUCT}"
 																th:text="${report.R44_PRODUCT}">
@@ -3072,7 +3063,7 @@ $.ajax({
 																	  line-height: 1.2;
 																	  text-align: left;
 																	  vertical-align: middle;
-																	  font-weight: normal;
+																	  font-weight: normal; padding-left: 2%;
 																	"
 																	th:title="${report.R45_PRODUCT}"
 																	th:text="${report.R45_PRODUCT}">
@@ -3126,7 +3117,7 @@ $.ajax({
 																	  line-height: 1.2;
 																	  text-align: left;
 																	  vertical-align: middle;
-																	  font-weight: normal;
+																	  font-weight: normal;padding-left: 2%;
 																	"
 																	th:title="${report.R46_PRODUCT}"
 																	th:text="${report.R46_PRODUCT}">
@@ -3180,7 +3171,7 @@ $.ajax({
 																  line-height: 1.2;
 																  text-align: left;
 																  vertical-align: middle;
-																  font-weight: normal;
+																  font-weight: normal;padding-left: 2%;
 																"
 																th:title="${report.R47_PRODUCT}"
 																th:text="${report.R47_PRODUCT}">
@@ -3235,7 +3226,7 @@ $.ajax({
 																	  line-height: 1.2;
 																	  text-align: left;
 																	  vertical-align: middle;
-																	  font-weight: normal;
+																	  font-weight: normal;padding-left: 2%;
 																	"
 																	th:title="${report.R48_PRODUCT}"
 																	th:text="${report.R48_PRODUCT}">
@@ -3290,7 +3281,7 @@ $.ajax({
 																		  line-height: 1.2;
 																		  text-align: left;
 																		  vertical-align: middle;
-																		  font-weight: bold;
+																		  font-weight: bold;padding-left: 2%;
 																		"
 																		th:title="${report.R49_PRODUCT}"
 																		th:text="${report.R49_PRODUCT}">
@@ -3344,7 +3335,7 @@ $.ajax({
 																		  line-height: 1.2;
 																		  text-align: left;
 																		  vertical-align: middle;
-																		  font-weight: normal;
+																		  font-weight: normal;padding-left: 2%;
 																		"
 																		th:title="${report.R50_PRODUCT}"
 																		th:text="${report.R50_PRODUCT}">
@@ -3398,7 +3389,7 @@ $.ajax({
 																	  line-height: 1.2;
 																	  text-align: left;
 																	  vertical-align: middle;
-																	  font-weight: normal;
+																	  font-weight: normal;padding-left: 2%;
 																	"
 																	th:title="${report.R51_PRODUCT}"
 																	th:text="${report.R51_PRODUCT}">
@@ -3453,7 +3444,7 @@ $.ajax({
 																		  line-height: 1.2;
 																		  text-align: left;
 																		  vertical-align: middle;
-																		  font-weight: normal;
+																		  font-weight: normal;padding-left: 2%;
 																		"
 																		th:title="${report.R52_PRODUCT}"
 																		th:text="${report.R52_PRODUCT}">
@@ -3509,7 +3500,7 @@ $.ajax({
 																						  line-height: 1.2;
 																						  text-align: left;
 																						  vertical-align: middle;
-																						  font-weight: bold;
+																						  font-weight: bold;padding-left: 3%;
 																						"
 																						th:title="${report.R53_PRODUCT}"
 																						th:text="${report.R53_PRODUCT}">
@@ -3563,7 +3554,7 @@ $.ajax({
 																			  line-height: 1.2;
 																			  text-align: left;
 																			  vertical-align: middle;
-																			  font-weight: normal;
+																			  font-weight: normal;padding-left: 3%;
 																			"
 																			th:title="${report.R54_PRODUCT}"
 																			th:text="${report.R54_PRODUCT}">
@@ -3617,7 +3608,7 @@ $.ajax({
 																		  line-height: 1.2;
 																		  text-align: left;
 																		  vertical-align: middle;
-																		  font-weight: normal;
+																		  font-weight: normal;padding-left: 3%;
 																		"
 																		th:title="${report.R55_PRODUCT}"
 																		th:text="${report.R55_PRODUCT}">
@@ -3672,7 +3663,7 @@ $.ajax({
 																			  line-height: 1.2;
 																			  text-align: left;
 																			  vertical-align: middle;
-																			  font-weight: normal;
+																			  font-weight: normal;padding-left: 3%;
 																			"
 																			th:title="${report.R56_PRODUCT}"
 																			th:text="${report.R56_PRODUCT}">
@@ -3728,7 +3719,7 @@ $.ajax({
 																							  line-height: 1.2;
 																							  text-align: left;
 																							  vertical-align: middle;
-																							  font-weight: bold;
+																							  font-weight: bold;padding-left: 3%;
 																							"
 																							th:title="${report.R57_PRODUCT}"
 																							th:text="${report.R57_PRODUCT}">
@@ -3782,7 +3773,7 @@ $.ajax({
 																				  line-height: 1.2;
 																				  text-align: left;
 																				  vertical-align: middle;
-																				  font-weight: normal;
+																				  font-weight: normal;padding-left: 3%;
 																				"
 																				th:title="${report.R58_PRODUCT}"
 																				th:text="${report.R58_PRODUCT}">
@@ -3836,7 +3827,7 @@ $.ajax({
 																			  line-height: 1.2;
 																			  text-align: left;
 																			  vertical-align: middle;
-																			  font-weight: normal;
+																			  font-weight: normal;padding-left: 3%;
 																			"
 																			th:title="${report.R59_PRODUCT}"
 																			th:text="${report.R59_PRODUCT}">
@@ -3891,7 +3882,7 @@ $.ajax({
 																				  line-height: 1.2;
 																				  text-align: left;
 																				  vertical-align: middle;
-																				  font-weight: normal;
+																				  font-weight: normal;padding-left: 3%;
 																				"
 																				th:title="${report.R60_PRODUCT}"
 																				th:text="${report.R60_PRODUCT}">
@@ -3945,7 +3936,7 @@ $.ajax({
 																					  line-height: 1.2;
 																					  text-align: left;
 																					  vertical-align: middle;
-																					  font-weight: normal;
+																					  font-weight: normal;padding-left: 3%;
 																					"
 																					th:title="${report.R61_PRODUCT}"
 																					th:text="${report.R61_PRODUCT}">
@@ -3999,7 +3990,7 @@ $.ajax({
 																				  line-height: 1.2;
 																				  text-align: left;
 																				  vertical-align: middle;
-																				  font-weight: normal;
+																				  font-weight: normal;padding-left: 3%;
 																				"
 																				th:title="${report.R62_PRODUCT}"
 																				th:text="${report.R62_PRODUCT}">
@@ -4054,7 +4045,7 @@ $.ajax({
 																					  line-height: 1.2;
 																					  text-align: left;
 																					  vertical-align: middle;
-																					  font-weight: normal;
+																					  font-weight: normal;padding-left: 2%;
 																					"
 																					th:title="${report.R63_PRODUCT}"
 																					th:text="${report.R63_PRODUCT}">
