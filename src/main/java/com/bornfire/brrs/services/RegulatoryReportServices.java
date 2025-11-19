@@ -177,6 +177,8 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_LARADV_ReportService brrs_m_laradv_reportservice;
 	
+	@Autowired
+	BRRS_M_OR2_ReportService brrs_m_or2_reportservice;
 	
 	@Autowired
 	BRRS_Q_SMME_DEP_ReportService BRRS_Q_SMME_DEP_ReportService;
@@ -285,6 +287,11 @@ public class RegulatoryReportServices {
 
 		case "M_CA7":
 			repsummary = BRRS_M_CA7_reportservice.getM_CA7View(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+			break;
+			
+		case "M_OR2":
+			repsummary = brrs_m_or2_reportservice.getM_OR2View(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
 
@@ -1002,6 +1009,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_OR2":
+			try {
+				repfile = brrs_m_or2_reportservice.getM_OR2Excel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		case "M_FXR":
 			try {
@@ -1484,14 +1501,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
-		case "M_SEC":
-			try {
-				archivalData = brrs_m_sec_reportservice.getM_SECArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
 			
 		// case "M_LARADV":
 		// 	try {
@@ -1701,6 +1710,18 @@ public class RegulatoryReportServices {
 		            List<Object[]> seclList = brrs_m_secl_reportservice.getM_SECLArchival();
 		            archivalData.addAll(seclList);
 		            System.out.println("Fetched M_SECL archival data: " + seclList.size());
+		            break;
+		            
+			 case "M_OR2":
+		            List<Object[]> or2List = brrs_m_or2_reportservice.getM_OR2Archival();
+		            archivalData.addAll(or2List);
+		            System.out.println("Fetched M_OR2 archival data: " + or2List.size());
+		            break;
+		            
+			 case "M_SEC":
+		            List<Object[]> secList = brrs_m_sec_reportservice.getM_SECArchival();
+		            archivalData.addAll(secList);
+		            System.out.println("Fetched M_SECL archival data: " + secList.size());
 		            break;
 
 			 case "M_CA5":
@@ -2094,6 +2115,17 @@ public List<Object[]> getResub(String rptcode) {
 				}
 				break;
 				
+			case "M_SEC":
+				try {
+					List<Object[]> resubList = brrs_m_sec_reportservice.getM_SECResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_SEC: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_SEC: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+				
 			case "M_INT_RATES":
 				try {
 					List<Object[]> resubList = brrs_m_int_rates_reportservice.getM_INTRATESResub();
@@ -2251,6 +2283,17 @@ public List<Object[]> getResub(String rptcode) {
 			                System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
 			            } catch (Exception e) {
 			                System.err.println("Error fetching resubmission data for M_INT_RATES_FCA: " + e.getMessage());
+			                e.printStackTrace();
+			            }
+			            break; 
+			            
+				 case "M_OR2":
+			            try {
+			                List<Object[]> resubList = brrs_m_or2_reportservice.getM_OR2Resub();
+			                resubmissionData.addAll(resubList);
+			                System.out.println("Resubmission data fetched for M_OR2: " + resubList.size());
+			            } catch (Exception e) {
+			                System.err.println("Error fetching resubmission data for M_OR2: " + e.getMessage());
 			                e.printStackTrace();
 			            }
 			            break; 

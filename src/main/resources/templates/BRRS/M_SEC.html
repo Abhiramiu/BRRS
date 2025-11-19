@@ -2148,68 +2148,114 @@ $(document).ready(function () {
 
 <script>
 
-function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+// This function is for closing the modal after an action is complete.
+// It hides the result and loader modals and reloads the page.
+function closemodel() {
+$("#resultModal").modal("hide");
+/*    $("#resultModal").modal("hide");
+$('#loader').modal('hide');
+setTimeout(function () {
+    location.reload();
+}, 300);
+    }, 300);*/
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
+
+    // Only reload if not from Details modal
+    if (!isDetailsModal) {
+        setTimeout(function () {
+            location.reload();
+        }, 300);
+    } else {
+        // reset flag for next modal usage
+        isDetailsModal = false;
+    }
+}
+
 </script>
 
 <script>
 	
-	function fileuploads(btn) {
-	    const asondate = btn.getAttribute("data-todate");
-	    $('#loader').modal('show');
-
+function fileuploads(btn) {
+	var asondate = btn.getAttribute("data-todate");
+	const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
+	
 	    // ✅ Step 1: Calculate totals
 	    calculateSubLiabilitiesTotal1();
 	    calculateDebtCertificatesTotal2();
 	    calculateR31Totals();
 	    calculateR43Totals();
+	    
+	    $('#loader').modal('show');
 
-	    // ✅ Step 2: Remove commas from inputs
-	    $("#fileupload input[type='text']").each(function () {
-	        $(this).val($(this).val().replace(/,/g, ''));
-	    });
-
-	    // ✅ Step 3: Validate form
 	    if (!$("#fileupload").valid()) {
 	        $('#loader').modal('hide');
 	        return;
 	    }
 
-	    // ✅ Step 4: Build one FormData object for all entities
-	    const formData = new FormData();
-	    formData.append("asondate", asondate);
-
-	    // Append all inputs
-	    $('#fileupload').find(':input').each(function () {
-	        const name = $(this).attr('name');
-	        if (name) {
-	            formData.append(name, $(this).val());
+	 // Remove commas from numeric inputs
+	    $("#fileupload input[type='text']").each(function () {
+	        var val = $(this).val();
+	        if (val && val.includes(",")) {
+	            $(this).val(val.replace(/,/g, ''));
 	        }
 	    });
 
-	    // ✅ Step 5: Send single Ajax request
+	    if (!$("#fileupload").valid()) {
+	        $('#loader').modal('hide');
+	        return;
+	    }
+
+	    // ✅ One combined FormData for all entities
+	    const formData = new FormData();
+	    formData.append("asondate", asondate);
+	    formData.append("type", type);
+
+
+	    // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
+	    //const selectedType = $("#SRWA_12GType").val(); // Get from dropdown
+	    //formData.append("type", selectedType);
+	    //console.log("Selected type:", selectedType);
+
+	    // --- Entity fields (R10-R17) ---
+	    for (let i = 11; i <= 42; i++) {
+	        ["O_1Y_FT", "O_1Y_HTM", "O_1Y_TOTAL", "1_5Y_FT", "1_5Y_HTM", "1_5Y_TOTAL",
+				"O5Y_FT", "O5Y_HTM", "O5Y_TOTAL", "T_FT", "T_HTM", "T_TOTAL"].forEach(field => {
+	            const input = $("#R" + i + "_" + field);
+	            if (input.length) {
+	                formData.append(input.attr("name"), input.val());
+	            }
+	        });
+	    }console.log("✅ Entity executed successfully");
+
+	    //Select API endpoint dynamically
+	    let apiUrl = './SECupdateAll'; // normal update
+	    if (type && type.toUpperCase() === 'RESUB') {
+	    	apiUrl = './UpdateM_SEC_ReSub'; // Resubmission endpoint
+	    }
+
+
+	    // ✅ Single AJAX call with type info
 	    $.ajax({
-	        url: './SECupdateAll',
+	        url: apiUrl,
 	        type: 'POST',
 	        data: formData,
 	        processData: false,
 	        contentType: false,
 	        dataType: 'text',
-	        success: function () {
+	        success: function (response) {
 	            $("#resultModalLabel").text("BRRS");
-	            $("#resultModalBody").text("Updated successfully.");
+	            $("#resultModalBody").text(response);
 	            $("#resultModal").modal("show");
-				setTimeout(() => location.reload(), 1500);
-	        },
+
+	    	    //  Wait for user to close the modal manually
+	    	    $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+	    	        location.reload(); // reload ONLY when modal is closed
+	    	    });
+	    	},
 	        error: function (jqXHR) {
-	            console.error("Error response:", jqXHR.responseText);
+	            console.log("Error response:", jqXHR.responseText);
 	            $("#resultModalLabel").text("Error");
 	            $("#resultModalBody").text("Update failed. Check console for details.");
 	            $("#resultModal").modal("show");
@@ -2218,7 +2264,12 @@ function closemodel() {
 	            $('#loader').modal('hide');
 	        }
 	    });
-	}
+
+	    console.log("✅ AJAX executed successfully");
+	    }
+
+
+
 
 </script>
 
@@ -2503,6 +2554,150 @@ function closemodel() {
         }
       }
     </script>
+    
+    <style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 80px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
+
+
+
+
+	<style>
+		/* Keep the header fixed and aligned */
+		.dataTables_scrollHeadInner,
+		.dataTables_scrollBody table {
+			width: 100% !important;
+		}
+
+		/* Prevent thead shrinking at zoom */
+		.dataTables_scrollHeadInner table {
+			width: 100% !important;
+			min-width: 100% !important;
+		}
+
+		#reportdetails {
+			width: 100% !important;
+			table-layout: fixed !important;
+		}
+
+		#reportdetails th,
+		#reportdetails td {
+			white-space: nowrap;
+		}
+
+		table.dataTable th.dt-type-numeric,
+		table.dataTable th.dt-type-date,
+		table.dataTable td.dt-type-numeric,
+		table.dataTable td.dt-type-date {
+			text-align: left !important;
+		}
+
+		table.dataTable th.dt-type-numeric:nth-child(6) {
+			text-align: right !important;
+		}
+
+		/* ✅ Right-align both header and data (6th column = ACCT BALANCE) */
+		#reportdetails th.dt-type-numeric:nth-child(6),
+		#reportdetails td:nth-child(6),
+		.dataTables_scrollHeadInner table th:nth-child(6) {
+			text-align: right !important;
+			padding-right: 10px !important;
+		}
+	</style>
+	<style>
+		#reportdetails,
+		#reportdetails th,
+		#reportdetails td {
+			
+		}
+
+		#reportdetails {
+			border-collapse: collapse;
+		}
+	</style>
+	<script th:inline="javascript">
+				  $(document).ready(function () {
+				    var table = $('#reportdetails').DataTable({
+				      scrollY: "550px",
+				      scrollX: true,
+				      scrollCollapse: true,
+				      autoWidth: false,
+				      paging: true,
+				      searching: true,
+				      lengthChange: false,
+				      ordering: true,
+				      pageLength: 100,
+				      fixedHeader: true, // ✅ You can simply set it to true
+					  // ✅ Column width settings
+					   columnDefs: [
+					     { width: "60px", targets: 0 },   // Edit icon column
+					     { width: "150px", targets: 1 }  ,  // S No column
+						 { width: "300px", targets: 7 }    // S No column
+					   ],
+
+				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+				    });
+
+				    // ✅ Fix alignment on resize / zoom
+				    $(window).on('resize', function () {
+				      table.columns.adjust().draw(false);
+				    });
+
+				    // ✅ Fix initial misalignment if loaded at non-100% zoom
+				    setTimeout(function () {
+				      table.columns.adjust().draw(false);
+				    }, 500);
+				  });
+				</script>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const reportId = /*[[${reportid}]]*/ null;
+		/*]]>*/
+	</script>
 
 
 
@@ -2529,16 +2724,14 @@ function closemodel() {
 						</div>
 
 						<!-- Title -->
-						<h5 style="
-                  font-family: arial;
-                  font-size: 20px;
-                  padding-top: 10px;
-                  font-weight: bold;
-                  color: white;
-                ">
-							(49)MONTHLY SCHEDULE: Q-SEC - ANALYSIS OF SECURITES BY MATURITY
-						</h5>
+						<h5
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							(14) MONTHLY SCHEDLE: M-OR2: STANDARDISED APPROACH</h5>
 					</div>
+					<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+						</div>
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
@@ -2552,33 +2745,44 @@ function closemodel() {
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
+				
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>
+							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+							id="addRecord">
+							Modify
+						</button>
+
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-                    				 data-asondate=${asondate}, 
-                    				 data-fromdate=${fromdate}, 
-                     				 data-todate=${todate}, 
-                     				 data-currency=${currency},  
-                     				 data-dtltype=${dtltype}, 
-                     				 data-filename='M_SEC.xlsx',
+							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+                   				 data-asondate=${asondate},
+                   				 data-fromdate=${fromdate},
+                    				 data-todate=${todate},
+                    				 data-currency=${currency}, 
+                    				 data-dtltype=${dtltype},
+                    				 data-filename='M_SEC.xlsx',
 					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
+					    			 data-version=${version}"
+									  onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
+
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-						    data-fromdate=${fromdate},
-						    data-todate=${todate},
-						    data-filename='M_SECDetail',
-						  ">
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+									data-currency=${currency},  
+												data-dtltype=${dtltype}, 
+								    data-filename='M_SECDetail',
+									data-type=${type},
+												data-version=${version}
+								  ">
 							<i class="fa fa-download"></i>
 						</button>
 						<!---	<button type="button" class="custom-tab-btn"
@@ -2607,7 +2811,7 @@ function closemodel() {
 									id="reports">
 									<thead class="thead-light">
 										<tr>
-											<th>
+											<th colspan="2">
 												(11A) Subordinated liabilities
 											</th>
 										<tr>
@@ -2725,12 +2929,11 @@ function closemodel() {
 
 									<tbody th:each="report: ${reportsummary1}" style="font-family: Arial;">
 										<tr>
-
-											<td id="ROW11" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text"
-													th:value="'Current year'" id="R11_PRODUCT" name="R11_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+                                                         
+                                                         <td id="ROW11" >
+                                                                        Current year
+                                                                   </td>
+                                                         
 
 											<td id="ROW11"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -2742,11 +2945,11 @@ function closemodel() {
 										</tr>
 
 										<tr>
-											<td id="ROW12" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text"
-													th:value="'Current year + 1'" id="R12_PRODUCT" name="R12_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											
+													
+													<td id="ROW12" >
+                                                                        Current year + 1
+                                                                   </td>
 
 											<td id="ROW12"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -2757,11 +2960,12 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW13" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text"
-													th:value="'Current year + 2'" id="R13_PRODUCT" name="R13_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											<td id="ROW13" >
+                                                                        Current year +2
+
+                                                                   </td>
+													
+													
 
 											<td id="ROW13"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -2772,11 +2976,9 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW14" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text"
-													th:value="'Current year + 3'" id="R14_PRODUCT" name="R14_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											<td id="ROW14" >
+                                                                        Current year + 3
+                                                                   </td>
 
 											<td id="ROW14"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -2787,11 +2989,9 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW15" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text"
-													th:value="'Current year + 4'" id="R15_PRODUCT" name="R15_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											<td id="ROW15" >
+                                                                        Current year + 4
+                                                                   </td>
 
 											<td id="ROW15"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -2802,12 +3002,9 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW16" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text"
-													th:value="'Current year + 5'" id="R16_PRODUCT" name="R16_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
-
+											<td id="ROW16" >
+                                                                        Current year + 5
+                                                                   </td>
 											<td id="ROW16"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
 													class="display-input Show_input" type="text"
@@ -2817,12 +3014,9 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW17" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text"
-													th:value="'More than current year + 5'" id="R17_PRODUCT"
-													name="R17_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											<td id="ROW17" >
+                                                                        More than current year + 5
+                                                                   </td>
 
 											<td id="ROW17"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -2833,11 +3027,9 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW18" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text"
-													th:value="'Perpetuals'" id="R18_PRODUCT" name="R18_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											<td id="ROW18" >
+                                                                        Perpetuals
+                                                                   </td>
 
 											<td id="ROW18"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -2848,18 +3040,10 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW19">
-    <input
-        class="display-input Show_inputnonEditable"
-        type="text"
-        th:value="'Total'"
-        id="R19_PRODUCT"
-        name="R19_PRODUCT"
-        style="background-color: #f7f8f7; width: 300px; height: 28px; 
-               border-color: transparent; text-align: left; padding-left: 20px; 
-               font-weight: bold; color: black;"
-        readonly />
-</td>
+											<td id="ROW19" style="font-weight: bold;">
+                                                                        Total
+                                                                   </td>
+
 
 
 												<td id="ROW19"
@@ -2884,7 +3068,7 @@ function closemodel() {
 										<tr>
 											<th style="background-color: #D8D8D8; text-align: left;">Debt
 												certificates including bonds</th>
-											<th style="background-color: #D8D8D8; text-align: left;">Total carrying
+											<th style="background-color: #D8D8D8; text-align: right;">Total carrying
 												amount </th>
 										</tr>
 
@@ -2895,12 +3079,9 @@ function closemodel() {
 
 									<tbody th:each="report: ${reportsummary2}" style="font-family: Arial;">
 										<tr>
-											<td id="ROW11" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text"
-													th:value="'Customer saving certificates'" id="R11_PRODUCT"
-													name="R11_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											<td id="ROW11">
+                                                                        Customer saving certificates		
+                                                                   </td>
 
 											<td id="ROW11"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -2911,11 +3092,9 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW12" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text" th:value="'Bonds'"
-													id="R12_PRODUCT" name="R12_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											<td id="ROW12">
+                                                                        Bonds		
+                                                                   </td>
 
 											<td id="ROW12"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -2926,11 +3105,9 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW13" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable" type="text"
-													th:value="'Convertible'" id="R13_PRODUCT" name="R13_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											<td id="ROW13">
+                                                                       Convertible		
+                                                                   </td>
 
 											<td id="ROW13"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -2941,11 +3118,9 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW14" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text"
-													th:value="'Non-convertible'" id="R14_PRODUCT" name="R14_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											<td id="ROW14">
+                                                                        Non-convertible		
+                                                                   </td>
 
 											<td id="ROW14"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -2956,11 +3131,9 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW15" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text" th:value="'Other'"
-													id="R15_PRODUCT" name="R15_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											<td id="ROW15">
+                                                                        Other 		
+                                                                   </td>
 
 											<td id="ROW15"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -2971,13 +3144,9 @@ function closemodel() {
 													readonly /></td>
 										</tr>
 										<tr>
-											<td id="ROW16" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable" type="text" th:value="'Total'"
-													id="R16_PRODUCT" name="R16_PRODUCT"
-													style="background-color: #f7f8f7; width: 300px; height: 28px; 
-               border-color: transparent; text-align: left; padding-left: 20px; 
-               font-weight: bold; color: black;"
-													readonly /></td>
+											<td id="ROW16" style="font-weight: bold;">
+                                                                        Total
+                                                                   </td>
 											
 											<td id="ROW16"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;"><input
@@ -3021,53 +3190,31 @@ function closemodel() {
 											                          "> Total </th>
 										</tr>
 
-										<tr>
-											<th>
-												For Trading
-											</th>
-											<th>
-												Held to Maturity
-											</th>
-											<th>
-												Total
-											</th>
-											<th>
-												For Trading
-											</th>
-											<th>
-												Held to Maturity
-											</th>
-											<th>
-												Total
-											</th>
-											<th>
-												For Trading
-											</th>
-											<th>
-												Held to Maturity
-											</th>
-											<th>
-												Total
-											</th>
-											<th>
-												For Trading
-											</th>
-											<th>
-												Held to Maturity
-											</th>
-											<th>
-												Total
-											</th>
-										</tr>
+										<tr style="text-align:right;">
+    <th>For Trading</th>
+    <th>Held to Maturity</th>
+    <th>Total</th>
+
+    <th>For Trading</th>
+    <th>Held to Maturity</th>
+    <th>Total</th>
+
+    <th>For Trading</th>
+    <th>Held to Maturity</th>
+    <th>Total</th>
+
+    <th>For Trading</th>
+    <th>Held to Maturity</th>
+    <th>Total</th>
+</tr>
+
 									</thead>
 
 									<tbody th:each="report: ${reportsummary3}" style="font-family: Arial;">
 										<tr>
-											<td id="ROW26" style="font-weight: bold;"><input
-													class="display-input Show_inputnonEditable " type="text"
-													th:value="'Commercial Paper'" id="R26_PRODUCT" name="R26_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly /></td>
+											<td id="ROW26">
+                                                                        Commercial Paper
+                                                                   </td>
 
 											<td id="ROW26"
 												style="padding-left: 20px; font-weight: bold; text-align: right;"><input
@@ -3158,12 +3305,9 @@ function closemodel() {
 
 										<!-- R27 -->
 										<tr>
-											<td id="ROW27" style="font-weight: bold;">
-												<input class="display-input Show_inputnonEditable " type="text"
-													th:value="'Debentures'" id="R27_PRODUCT" name="R27_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly />
-											</td>
+											<td id="ROW27">
+                                                                        Debentures
+                                                                   </td>
 											<td id="ROW27"
 												style="padding-left: 20px; font-weight: bold; text-align: right;">
 												<input class="display-input Show_input" type="text"
@@ -3264,12 +3408,9 @@ function closemodel() {
 
 
 										<tr>
-											<td id="ROW28" style="font-weight: bold;">
-												<input class="display-input Show_inputnonEditable " type="text"
-													th:value="'Bankers Acceptances'" id="R28_PRODUCT" name="R28_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly />
-											</td>
+											<td id="ROW28" >
+                                                                        Bankers Acceptances
+                                                                   </td>
 											<td id="ROW28"
 												style="padding-left: 20px; font-weight: bold; text-align: right;">
 												<input class="display-input Show_input" type="text"
@@ -3369,12 +3510,9 @@ function closemodel() {
 										</tr>
 
 										<tr>
-											<td id="ROW29" style="font-weight: bold;">
-												<input class="display-input Show_inputnonEditable " type="text"
-													th:value="'Corporate Bonds'" id="R29_PRODUCT" name="R29_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly />
-											</td>
+											<td id="ROW29">
+                                                                        Corporate Bonds
+                                                                   </td>
 											<td id="ROW29"
 												style="padding-left: 20px; font-weight: bold; text-align: right;">
 												<input class="display-input Show_input" type="text"
@@ -3475,12 +3613,9 @@ function closemodel() {
 
 
 										<tr>
-											<td id="ROW30" style="font-weight: bold;">
-												<input class="display-input Show_inputnonEditable " type="text" th:value="'Others'"
-													id="R30_PRODUCT" name="R30_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly />
-											</td>
+											<td id="ROW30" >
+                                                                        Others
+                                                                   </td>
 											<td id="ROW30"
 												style="padding-left: 20px; font-weight: bold; text-align: right;">
 												<input class="display-input Show_input" type="text"
@@ -3581,13 +3716,8 @@ function closemodel() {
 
 										<tr>
 											<td id="ROW31" style="font-weight: bold;">
-												<input class="display-input Show_inputnonEditable " type="text" th:value="'Total'"
-													id="R31_PRODUCT" name="R31_PRODUCT"
-													style="background-color: #f7f8f7; width: 300px; height: 28px; 
-               border-color: transparent; text-align: left; padding-left: 20px; 
-               font-weight: bold; color: black;"
-													readonly />
-											</td>
+                                                                        Total
+                                                                   </td>
 											<td id="ROW31"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
 												<input class="display-input Show_inputnonEditable" type="text"
@@ -3719,7 +3849,7 @@ function closemodel() {
 											                          "> Total </th>
 										</tr>
 
-										<tr>
+										<tr style="text-align:right;">
 											<th>
 												For Trading
 											</th>
@@ -3761,12 +3891,10 @@ function closemodel() {
 
 									<tbody th:each="report: ${reportsummary4}" style="font-family: Arial;">
 										<tr>
-											<td id="ROW36" style="font-weight: bold;">
-												<input class="display-input Show_inputnonEditable " type="text"
-													th:value="'1. Treasury Bills'" id="R36_PRODUCT" name="R36_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly />
-											</td>
+											<td id="ROW36">
+                                                                        1. Treasury Bills
+
+                                                                   </td>
 											<td id="ROW36"
 												style="padding-left: 20px; font-weight: bold; text-align: right;">
 												<input class="display-input Show_input" type="text"
@@ -3866,12 +3994,9 @@ function closemodel() {
 										</tr>
 
 										<tr>
-											<td id="ROW37" style="font-weight: bold;">
-												<input class="display-input Show_input " type="text"
-													th:value="'2. Treasury Bonds'" id="R37_PRODUCT" name="R37_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly />
-											</td>
+											<td id="ROW37">
+                                                                       2. Treasury Bonds
+                                                                   </td>
 											<td id="ROW37"
 												style="padding-left: 20px; font-weight: bold; text-align: right;">
 												<input class="display-input Show_input" type="text"
@@ -3972,12 +4097,9 @@ function closemodel() {
 
 
 										<tr>
-											<td id="ROW38" style="font-weight: bold;">
-												<input class="display-input Show_inputnonEditable " type="text"
-													th:value="'3. Commercial Paper'" id="R38_PRODUCT" name="R38_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly />
-											</td>
+											<td id="ROW38">
+                                                                       3. Commercial Paper
+                                                                   </td>
 											<td id="ROW38"
 												style="padding-left: 20px; font-weight: bold; text-align: right;">
 												<input class="display-input Show_input" type="text"
@@ -4076,12 +4198,9 @@ function closemodel() {
 											</td>
 										</tr>
 										<tr>
-											<td id="ROW39" style="font-weight: bold;">
-												<input class="display-input Show_inputnonEditable " type="text"
-													th:value="'4, Debentures'" id="R39_PRODUCT" name="R39_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly />
-											</td>
+											<td id="ROW39">
+                                                                        4, Debentures
+                                                                   </td>
 											<td id="ROW39"
 												style="padding-left: 20px; font-weight: bold; text-align: right;">
 												<input class="display-input Show_input" type="text"
@@ -4181,13 +4300,9 @@ function closemodel() {
 										</tr>
 
 										<tr>
-											<td id="ROW40" style="font-weight: bold;">
-												<input class="display-input Show_inputnonEditable " type="text"
-													th:value="'5. Bankers Acceptances'" id="R40_PRODUCT"
-													name="R40_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly />
-											</td>
+											<td id="ROW40">
+                                                                        5. Bankers Acceptances
+                                                                   </td>
 											<td id="ROW40"
 												style="padding-left: 20px; font-weight: bold; text-align: right;">
 												<input class="display-input Show_input" type="text"
@@ -4288,12 +4403,9 @@ function closemodel() {
 
 
 										<tr>
-											<td id="ROW41" style="font-weight: bold;">
-												<input class="display-input Show_inputnonEditable " type="text"
-													th:value="'6. Corporate Bonds'" id="R41_PRODUCT" name="R41_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly />
-											</td>
+											<td id="ROW41">
+                                                                        6. Corporate Bonds
+                                                                   </td>
 											<td id="ROW41"
 												style="padding-left: 20px; font-weight: bold; text-align: right;">
 												<input class="display-input Show_input" type="text"
@@ -4394,12 +4506,9 @@ function closemodel() {
 
 
 										<tr>
-											<td id="ROW42" style="font-weight: bold;">
-												<input class="display-input Show_inputnonEditable " type="text"
-													th:value="'7. Others'" id="R42_PRODUCT" name="R42_PRODUCT"
-													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
-													readonly />
-											</td>
+											<td id="ROW42">
+                                                                        7. Others
+                                                                   </td>
 											<td id="ROW42"
 												style="padding-left: 20px; font-weight: bold; text-align: right;">
 												<input class="display-input Show_input" type="text"
@@ -4499,13 +4608,8 @@ function closemodel() {
 										</tr>
 										<tr>
 											<td id="ROW43" style="font-weight: bold;">
-												<input class="display-input Show_inputnonEditable " type="text" th:value="'Total'"
-													id="R43_PRODUCT" name="R43_PRODUCT"
-													style="background-color: #f7f8f7; width: 300px; height: 28px; 
-               border-color: transparent; text-align: left; padding-left: 20px; 
-               font-weight: bold; color: black;"
-													readonly />
-											</td>
+                                                                        Total
+                                                                   </td>
 											<td id="ROW43"
 												style="padding-left: 20px; font-weight: bold; text-align: right; background-color: rgb(107, 122, 143); color: white;">
 												<input class="display-input Show_inputnonEditable" type="text"
@@ -4603,30 +4707,68 @@ function closemodel() {
 													readonly />
 											</td>
 										</tr>
-									</tbody>	
+									
+</tbody>	
 										
 </table>
-								
-
-
-</div>
+		</div>
 							<div style="text-align: center; margin-top: 10px;">
 								
     <button id="submitButton" 
             type="button"
             class="custom-tab-btn Show_input" 
             form="fileupload"
-            th:attr="data-todate=${asondate}" 
+            th:attr="data-todate=${asondate}, data-type=${type}"
             onclick="fileuploads(this);" 
             style="display: none;">
         Submit
     </button>
 </div>
 							</form>
+							</div>
 						</div>
 					</div>
 				</div>
 				
+			</div>
+		</div>
+		
+		<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -4778,10 +4920,11 @@ function closemodel() {
 	#reports thead th {
 		position: sticky;
 		top: 0;
-		background-color: #f8f9fa;
+		background-color: #D8D8D8; /* light gray header */
 		/* Match Bootstrap thead-light */
 		z-index: 2;
 	}
+
 
 	div.dataTables_wrapper div.dataTables_paginate {
 		text-align: right !important;
@@ -4817,6 +4960,14 @@ function closemodel() {
 		display: inline-block;
 		width: auto;
 	}
+	.scrollable-table-container thead tr:nth-child(1),
+.scrollable-table-container thead tr:nth-child(2),
+.scrollable-table-container thead tr:nth-child(3),
+.scrollable-table-container thead tr:nth-child(4),
+.scrollable-table-container thead tr:nth-child(5) {
+    background-color: #D8D8D8; /* set header color */
+}
+	
 </style>
 
 </html>

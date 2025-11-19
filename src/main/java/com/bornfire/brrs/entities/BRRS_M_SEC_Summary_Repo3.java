@@ -2,16 +2,27 @@ package com.bornfire.brrs.entities;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface BRRS_M_SEC_Summary_Repo3 extends JpaRepository<BRRS_M_SEC_Summary_Entity3, Date> {
+public interface BRRS_M_SEC_Summary_Repo3
+        extends JpaRepository<BRRS_M_SEC_Summary_Entity3, Date> {
 
-	@Query(value = "select * from BRRS_M_SEC_SUMMARYTABLE3", nativeQuery = true)
-	List<BRRS_M_SEC_Summary_Entity3> getdatabydateList(Date rpt_code);
-	
+    // Fetch all rows for a specific report date
+    @Query(value = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE3 WHERE REPORT_DATE = ?1", nativeQuery = true)
+    List<BRRS_M_SEC_Summary_Entity3> getdatabydateList(Date rpt_date);
+    
+@Query(value = "SELECT *  FROM BRRS_M_SEC_SUMMARYTABLE3 WHERE REPORT_DATE = ?1   AND REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+List<BRRS_M_SEC_Summary_Entity3> getdatabydateListWithVersion(String todate);
+
+    // Find the latest version for a report date
+    Optional<BRRS_M_SEC_Summary_Entity3> findTopByReportDateOrderByReportVersionDesc(Date reportDate);
+
+    // Check if a version exists for a report date
+    Optional<BRRS_M_SEC_Summary_Entity3> findByReportDateAndReportVersion(Date reportDate, String reportVersion);
+
+        @Query(value = "SELECT *  FROM BRRS_M_SEC_SUMMARYTABLE3 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC FETCH FIRST 1 ROWS ONLY ", nativeQuery = true)
+    List<BRRS_M_SEC_Summary_Entity3> getdatabydateListWithVersion();
 }
-

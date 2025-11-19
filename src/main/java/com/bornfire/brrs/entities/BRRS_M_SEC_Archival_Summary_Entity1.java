@@ -1,21 +1,22 @@
 package com.bornfire.brrs.entities;
 
-
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
-
 @Entity
-@Table(name = "BRRS_M_SEC_ARCHIVALTABLE_SUMMARY1") 
-
+@Table(name = "BRRS_M_SEC_ARCHIVALTABLE_SUMMARY1")
+@IdClass(M_SEC_Archival_Summary1_PK.class)
 public class BRRS_M_SEC_Archival_Summary_Entity1 {
+	
 private String R11_PRODUCT;
 private BigDecimal R11_TCA;
 private String R12_PRODUCT;
@@ -35,18 +36,27 @@ private BigDecimal R18_TCA;
 private String R19_PRODUCT;
 private BigDecimal R19_TCA;
 
+@Id
 @Temporal(TemporalType.DATE)
 @DateTimeFormat(pattern = "dd/MM/yyyy")
-@Id
-private Date REPORT_DATE;
+@Column(name = "REPORT_DATE")
+private Date reportDate;
 
-private String REPORT_VERSION;
-private String REPORT_FREQUENCY;
-private String REPORT_CODE;
-private String REPORT_DESC;
-private String ENTITY_FLG;
-private String MODIFY_FLG;
-private String DEL_FLG;
+@Id
+@Column(name = "REPORT_VERSION")
+private String reportVersion;
+
+@Column(name = "REPORT_RESUBDATE")
+@Temporal(TemporalType.TIMESTAMP)
+private Date reportResubDate;
+
+
+private String report_frequency;
+private String report_code;
+private String report_desc;
+private String entity_flg;
+private String modify_flg;
+private String del_flg;
 public String getR11_PRODUCT() {
 	return R11_PRODUCT;
 }
@@ -155,53 +165,59 @@ public BigDecimal getR19_TCA() {
 public void setR19_TCA(BigDecimal r19_TCA) {
 	R19_TCA = r19_TCA;
 }
-public Date getREPORT_DATE() {
-	return REPORT_DATE;
+public Date getReportDate() {
+	return reportDate;
 }
-public void setREPORT_DATE(Date rEPORT_DATE) {
-	REPORT_DATE = rEPORT_DATE;
+public void setReportDate(Date reportDate) {
+	this.reportDate = reportDate;
 }
-public String getREPORT_VERSION() {
-	return REPORT_VERSION;
+public String getReportVersion() {
+	return reportVersion;
 }
-public void setREPORT_VERSION(String rEPORT_VERSION) {
-	REPORT_VERSION = rEPORT_VERSION;
+public void setReportVersion(String reportVersion) {
+	this.reportVersion = reportVersion;
 }
-public String getREPORT_FREQUENCY() {
-	return REPORT_FREQUENCY;
+public Date getReportResubDate() {
+	return reportResubDate;
 }
-public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
-	REPORT_FREQUENCY = rEPORT_FREQUENCY;
+public void setReportResubDate(Date reportResubDate) {
+	this.reportResubDate = reportResubDate;
 }
-public String getREPORT_CODE() {
-	return REPORT_CODE;
+public String getReport_frequency() {
+	return report_frequency;
 }
-public void setREPORT_CODE(String rEPORT_CODE) {
-	REPORT_CODE = rEPORT_CODE;
+public void setReport_frequency(String report_frequency) {
+	this.report_frequency = report_frequency;
 }
-public String getREPORT_DESC() {
-	return REPORT_DESC;
+public String getReport_code() {
+	return report_code;
 }
-public void setREPORT_DESC(String rEPORT_DESC) {
-	REPORT_DESC = rEPORT_DESC;
+public void setReport_code(String report_code) {
+	this.report_code = report_code;
 }
-public String getENTITY_FLG() {
-	return ENTITY_FLG;
+public String getReport_desc() {
+	return report_desc;
 }
-public void setENTITY_FLG(String eNTITY_FLG) {
-	ENTITY_FLG = eNTITY_FLG;
+public void setReport_desc(String report_desc) {
+	this.report_desc = report_desc;
 }
-public String getMODIFY_FLG() {
-	return MODIFY_FLG;
+public String getEntity_flg() {
+	return entity_flg;
 }
-public void setMODIFY_FLG(String mODIFY_FLG) {
-	MODIFY_FLG = mODIFY_FLG;
+public void setEntity_flg(String entity_flg) {
+	this.entity_flg = entity_flg;
 }
-public String getDEL_FLG() {
-	return DEL_FLG;
+public String getModify_flg() {
+	return modify_flg;
 }
-public void setDEL_FLG(String dEL_FLG) {
-	DEL_FLG = dEL_FLG;
+public void setModify_flg(String modify_flg) {
+	this.modify_flg = modify_flg;
+}
+public String getDel_flg() {
+	return del_flg;
+}
+public void setDel_flg(String del_flg) {
+	this.del_flg = del_flg;
 }
 public BRRS_M_SEC_Archival_Summary_Entity1() {
 	super();
