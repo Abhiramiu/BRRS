@@ -814,10 +814,155 @@ function fileuploads(btn) {
 	    console.log("✅ AJAX executed successfully");
 	}
 
+</script>
+
+<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 80px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
 
 
 
+
+	<style>
+		/* Keep the header fixed and aligned */
+		.dataTables_scrollHeadInner,
+		.dataTables_scrollBody table {
+			width: 100% !important;
+		}
+
+		/* Prevent thead shrinking at zoom */
+		.dataTables_scrollHeadInner table {
+			width: 100% !important;
+			min-width: 100% !important;
+		}
+
+		#reportdetails {
+			width: 100% !important;
+			table-layout: fixed !important;
+		}
+
+		#reportdetails th,
+		#reportdetails td {
+			white-space: nowrap;
+		}
+
+		table.dataTable th.dt-type-numeric,
+		table.dataTable th.dt-type-date,
+		table.dataTable td.dt-type-numeric,
+		table.dataTable td.dt-type-date {
+			text-align: left !important;
+		}
+
+		table.dataTable th.dt-type-numeric:nth-child(6) {
+			text-align: right !important;
+		}
+
+		/* ✅ Right-align both header and data (6th column = ACCT BALANCE) */
+		#reportdetails th.dt-type-numeric:nth-child(6),
+		#reportdetails td:nth-child(6),
+		.dataTables_scrollHeadInner table th:nth-child(6) {
+			text-align: right !important;
+			padding-right: 10px !important;
+		}
+	</style>
+	<style>
+		#reportdetails,
+		#reportdetails th,
+		#reportdetails td {
+			
+		}
+
+		#reportdetails {
+			border-collapse: collapse;
+		}
+	</style>
+	<script th:inline="javascript">
+				  $(document).ready(function () {
+				    var table = $('#reportdetails').DataTable({
+				      scrollY: "550px",
+				      scrollX: true,
+				      scrollCollapse: true,
+				      autoWidth: false,
+				      paging: true,
+				      searching: true,
+				      lengthChange: false,
+				      ordering: true,
+				      pageLength: 100,
+				      fixedHeader: true, // ✅ You can simply set it to true
+					  // ✅ Column width settings
+					   columnDefs: [
+					     { width: "60px", targets: 0 },   // Edit icon column
+					     { width: "150px", targets: 1 }  ,  // S No column
+						 { width: "300px", targets: 7 }    // S No column
+					   ],
+
+				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+				    });
+
+				    // ✅ Fix alignment on resize / zoom
+				    $(window).on('resize', function () {
+				      table.columns.adjust().draw(false);
+				    });
+
+				    // ✅ Fix initial misalignment if loaded at non-100% zoom
+				    setTimeout(function () {
+				      table.columns.adjust().draw(false);
+				    }, 500);
+				  });
+				</script>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const reportId = /*[[${reportid}]]*/ null;
+		/*]]>*/
 	</script>
+
+
+
+
 </head>
 <title>BRRS</title>
 
@@ -835,9 +980,15 @@ function fileuploads(btn) {
 						</div>
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							Monthly Schedule M-SRWA 12f - Schedule of Rated Corporates</h5>
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							Monthly Schedule M-SRWA 12f - Schedule of Rated Corporates </h5>
 					</div>
+					<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+					
+						</div>
+						
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
