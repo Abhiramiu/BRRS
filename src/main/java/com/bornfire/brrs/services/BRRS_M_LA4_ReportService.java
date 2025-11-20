@@ -5048,27 +5048,25 @@ public class BRRS_M_LA4_ReportService {
 	
 	
 	public void updateReport(M_LA4_Summary_Entity2 updatedEntity) {
+
 	    System.out.println("➡️ Entered updateReport() for LA4 Summary");
 	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-	    // Fetch existing record by REPORT_DATE
+	    // Fetch existing record
 	    M_LA4_Summary_Entity2 existing = M_LA4_Summary_Repo2.findById(updatedEntity.getReportDate())
 	            .orElseThrow(() -> new RuntimeException(
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
 	    try {
-	        // 1️⃣ Loop through all R11 to R64 rows
 	        for (int i = 11; i <= 64; i++) {
 	            String prefix = "R" + i + "_";
 	            String[] fields = { "FACTORING_DEBTORS", "LEASING" };
 
 	            for (String field : fields) {
-	                // ✅ Convert field names like FACTORING_DEBTORS → FactoringDebtors
 	                String camelField = Arrays.stream(field.toLowerCase().split("_"))
 	                        .map(s -> s.substring(0, 1).toUpperCase() + s.substring(1))
 	                        .collect(Collectors.joining(""));
 
-	                // ✅ Build proper getter/setter method names like getR12FactoringDebtors()
 	                String getterName = "get" + prefix.replace("_", "") + camelField;
 	                String setterName = "set" + prefix.replace("_", "") + camelField;
 
@@ -5080,13 +5078,12 @@ public class BRRS_M_LA4_ReportService {
 	                    setter.invoke(existing, newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    // Ignore missing fields safely
 	                    continue;
 	                }
 	            }
 	        }
 
-	        // 2️⃣ Update common fields (report metadata)
+	        // Metadata
 	        existing.setReportVersion(updatedEntity.getReportVersion());
 	        existing.setReportFrequency(updatedEntity.getReportFrequency());
 	        existing.setReportCode(updatedEntity.getReportCode());
@@ -5099,9 +5096,19 @@ public class BRRS_M_LA4_ReportService {
 	        throw new RuntimeException("❌ Error while updating LA4 Summary fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
-	    M_LA4_Summary_Repo2.save(existing);
-	    System.out.println("✅ LA4 Summary updated successfully for date: " + updatedEntity.getReportDate());
+	    // FIRST COMMIT
+	    M_LA4_Summary_Repo2.saveAndFlush(existing);  // 🔴 IMPORTANT — forces immediate COMMIT
+	    System.out.println("✅ LA4 Summary updated and COMMITTED");
+
+	    // NOW PROCEDURE CAN SEE UPDATED DATA
+	    String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
+	            .format(updatedEntity.getReportDate())
+	            .toUpperCase();
+
+	    String sql = "BEGIN BRRS.BRRS_M_LA4_SUMMARY_PROCEDURE('" + oracleDate + "'); END;";
+	    jdbcTemplate.execute(sql);
+
+	    System.out.println("Procedure executed for date: " + oracleDate);
 	}
 
 //	public boolean updateProvision(M_LA4_Detail_Entity la4Data) {

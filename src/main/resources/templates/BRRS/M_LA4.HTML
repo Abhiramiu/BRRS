@@ -1130,7 +1130,7 @@ function calculateR64Totals() {
                    				 data-todate=${todate},
                    				 data-currency=${currency},
                    				 data-dtltype=${dtltype},
-                   				 data-filename='MLA4.xlsx',
+                   				 data-filename='M_LA4.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
@@ -1215,7 +1215,7 @@ function calculateR64Totals() {
 		    <td id="r12_C2" style=" text-align: right;">
 		        <input class="display-input Show_input" type="text"
 		            th:value="${reportsummary2 != null and reportsummary2.size() > stat.index and reportsummary2[stat.index].r12FactoringDebtors != null
-		                        ? reportsummary2[stat.index].r12FactoringDebtors
+		                        ? reportsummary2[stat.index].r12FactoringDebtors 
 		                        : 0}"
 		            id="r12_FACTORING_DEBTORS" name="r12FactoringDebtors"
 		            style=" width: 150px; height: 28px; border-color: transparent; text-align: right;"
@@ -1237,8 +1237,7 @@ function calculateR64Totals() {
 		    <td id="r12_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R12', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r12OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r12_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R12', ColumnId='C6'"
+		    <td id="r12_C6" style=" text-align: right; background-color: rgb(107, 122, 143);color: white;" 
 		        th:text="${#numbers.formatDecimal(row1.r12Total,1,'COMMA',0,'POINT')}"></td>
 		   
 		</tr>
@@ -1274,8 +1273,7 @@ function calculateR64Totals() {
 		    <td id="r13_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R13', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r13OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r13_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R13', ColumnId='C6'"
+		    <td id="r13_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
 		        th:text="${#numbers.formatDecimal(row1.r13Total,1,'COMMA',0,'POINT')}"></td>
 		 
 		</tr>
@@ -1311,8 +1309,8 @@ function calculateR64Totals() {
 		    <td id="r14_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R14', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r14OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r14_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R14', ColumnId='C6'"
+		    <td id="r14_C6" style=" text-align: right; background-color: rgb(107, 122, 143);color: white;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r14Total,1,'COMMA',0,'POINT')}"></td>
 		
 		</tr>
@@ -1349,7 +1347,7 @@ function calculateR64Totals() {
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R15', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r15OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
 		    <td id="r15_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R15', ColumnId='C6'"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r15Total,1,'COMMA',0,'POINT')}"></td>
 		 
 		</tr>
@@ -1385,8 +1383,8 @@ function calculateR64Totals() {
 		    <td id="r16_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R16', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r16OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r16_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R16', ColumnId='C6'"
+		    <td id="r16_C6" style=" background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		       
 		        th:text="${#numbers.formatDecimal(row1.r16Total,1,'COMMA',0,'POINT')}"></td>
 		       
 		  
@@ -1424,8 +1422,8 @@ function calculateR64Totals() {
 		    <td id="r17_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R17', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r17OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r17_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R17', ColumnId='C6'"
+		    <td id="r17_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r17Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R18 Row === -->
@@ -1460,8 +1458,8 @@ function calculateR64Totals() {
 		    <td id="r18_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R18', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r18OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r18_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R18', ColumnId='C6'"
+		    <td id="r18_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		       
 		        th:text="${#numbers.formatDecimal(row1.r18Total,1,'COMMA',0,'POINT')}"></td>
 		
 		</tr>
@@ -1497,8 +1495,8 @@ function calculateR64Totals() {
 		    <td id="r19_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R19', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r19OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r19_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R19', ColumnId='C6'"
+		    <td id="r19_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r19Total,1,'COMMA',0,'POINT')}"></td>
 		
 		</tr>
@@ -1534,8 +1532,8 @@ function calculateR64Totals() {
 		    <td id="r20_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R20', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r20OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r20_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R20', ColumnId='C6'"
+		    <td id="r20_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r20Total,1,'COMMA',0,'POINT')}"></td>
 		       
 		 
@@ -1572,8 +1570,8 @@ function calculateR64Totals() {
 		    <td id="r21_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R21', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r21OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r21_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R21', ColumnId='C6'"
+		    <td id="r21_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r21Total,1,'COMMA',0,'POINT')}"></td>
 		       
 		
@@ -1610,8 +1608,8 @@ function calculateR64Totals() {
 		    <td id="r22_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R22', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r22OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r22_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R22', ColumnId='C6'"
+		    <td id="r22_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r22Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R23 Row === -->
@@ -1646,8 +1644,8 @@ function calculateR64Totals() {
 		    <td id="r23_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R23', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r23OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r23_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R23', ColumnId='C6'"
+		    <td id="r23_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		       
 		        th:text="${#numbers.formatDecimal(row1.r23Total,1,'COMMA',0,'POINT')}"></td>
 		
 		</tr>
@@ -1683,8 +1681,8 @@ function calculateR64Totals() {
 		    <td id="r24_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R24', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r24OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r24_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R24', ColumnId='C6'"
+		    <td id="r24_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r24Total,1,'COMMA',0,'POINT')}"></td>
 		
 		</tr>
@@ -1720,8 +1718,8 @@ function calculateR64Totals() {
 		    <td id="r25_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R25', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r25OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r25_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R25', ColumnId='C6'"
+		    <td id="r25_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r25Total,1,'COMMA',0,'POINT')}"></td>
 		
 		</tr>
@@ -1758,8 +1756,8 @@ function calculateR64Totals() {
 		    <td id="r26_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R26', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r26OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r26_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R26', ColumnId='C6'"
+		    <td id="r26_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r26Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R27 Row === -->
@@ -1794,8 +1792,8 @@ function calculateR64Totals() {
 		    <td id="r27_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R27', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r27OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r27_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R27', ColumnId='C6'"
+		    <td id="r27_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r27Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R28 Row === -->
@@ -1830,8 +1828,8 @@ function calculateR64Totals() {
 		    <td id="r28_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R28', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r28OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r28_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R28', ColumnId='C6'"
+		    <td id="r28_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r28Total,1,'COMMA',0,'POINT')}"></td>
 		
 		</tr>
@@ -1868,7 +1866,7 @@ function calculateR64Totals() {
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R29', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r29OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
 		    <td id="r29_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R29', ColumnId='C6'"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r29Total,1,'COMMA',0,'POINT')}"></td>
 		
 		</tr>
@@ -1904,8 +1902,8 @@ function calculateR64Totals() {
 		    <td id="r30_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R30', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r30OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r30_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R30', ColumnId='C6'"
+		    <td id="r30_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r30Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R31 Row === -->
@@ -1940,8 +1938,8 @@ function calculateR64Totals() {
 		    <td id="r31_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R31', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r31OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r31_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R31', ColumnId='C6'"
+		    <td id="r31_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r31Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R32 Row === -->
@@ -1976,8 +1974,8 @@ function calculateR64Totals() {
 		    <td id="r32_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R32', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r32OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r32_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R32', ColumnId='C6'"
+		    <td id="r32_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		       
 		        th:text="${#numbers.formatDecimal(row1.r32Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R33 Row === -->
@@ -2012,8 +2010,8 @@ function calculateR64Totals() {
 		    <td id="r33_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R33', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r33OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r33_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R33', ColumnId='C6'"
+		    <td id="r33_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r33Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R34 Row === -->
@@ -2048,8 +2046,8 @@ function calculateR64Totals() {
 		    <td id="r34_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R34', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r34OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r34_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R34', ColumnId='C6'"
+		    <td id="r34_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r34Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R35 Row === -->
@@ -2084,8 +2082,8 @@ function calculateR64Totals() {
 		    <td id="r35_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R35', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r35OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r35_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R35', ColumnId='C6'"
+		    <td id="r35_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		      
 		        th:text="${#numbers.formatDecimal(row1.r35Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R36 Row === -->
@@ -2120,8 +2118,8 @@ function calculateR64Totals() {
 		    <td id="r36_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R36', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r36OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r36_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R36', ColumnId='C6'"
+		    <td id="r36_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r36Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R37 Row === -->
@@ -2156,8 +2154,8 @@ function calculateR64Totals() {
 		    <td id="r37_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R37', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r37OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r37_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R37', ColumnId='C6'"
+		    <td id="r37_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r37Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R38 Row === -->
@@ -2193,7 +2191,7 @@ function calculateR64Totals() {
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R38', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r38OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
 		    <td id="r38_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R38', ColumnId='C6'"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r38Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R39 Row === -->
@@ -2228,8 +2226,8 @@ function calculateR64Totals() {
 		    <td id="r39_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R39', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r39OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r39_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R39', ColumnId='C6'"
+		    <td id="r39_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		       
 		        th:text="${#numbers.formatDecimal(row1.r39Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R40 Row === -->
@@ -2264,8 +2262,8 @@ function calculateR64Totals() {
 		    <td id="r40_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R40', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r40OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r40_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R40', ColumnId='C6'"
+		    <td id="r40_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r40Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R41 Row === -->
@@ -2301,7 +2299,7 @@ function calculateR64Totals() {
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R41', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r41OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
 		    <td id="r41_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R41', ColumnId='C6'"
+		       
 		        th:text="${#numbers.formatDecimal(row1.r41Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R42 Row === -->
@@ -2336,8 +2334,8 @@ function calculateR64Totals() {
 		    <td id="r42_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R42', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r42OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r42_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R42', ColumnId='C6'"
+		    <td id="r42_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r42Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R43 Row === -->
@@ -2372,8 +2370,8 @@ function calculateR64Totals() {
 		    <td id="r43_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R43', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r43OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r43_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R43', ColumnId='C6'"
+		    <td id="r43_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r43Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R44 Row === -->
@@ -2409,7 +2407,7 @@ function calculateR64Totals() {
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R44', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r44OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
 		    <td id="r44_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R44', ColumnId='C6'"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r44Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R45 Row === -->
@@ -2444,8 +2442,8 @@ function calculateR64Totals() {
 		    <td id="r45_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R45', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r45OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r45_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R45', ColumnId='C6'"
+		    <td id="r45_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r45Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R46 Row === -->
@@ -2480,8 +2478,8 @@ function calculateR64Totals() {
 		    <td id="r46_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R46', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r46OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r46_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R46', ColumnId='C6'"
+		    <td id="r46_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		       
 		        th:text="${#numbers.formatDecimal(row1.r46Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R47 Row === -->
@@ -2516,8 +2514,8 @@ function calculateR64Totals() {
 		    <td id="r47_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R47', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r47OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r47_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R47', ColumnId='C6'"
+		    <td id="r47_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r47Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R48 Row === -->
@@ -2552,8 +2550,8 @@ function calculateR64Totals() {
 		    <td id="r48_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R48', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r48OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r48_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R48', ColumnId='C6'"
+		    <td id="r48_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r48Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R49 Row === -->
@@ -2589,7 +2587,7 @@ function calculateR64Totals() {
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R49', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r49OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
 		    <td id="r49_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R49', ColumnId='C6'"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r49Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R50 Row === -->
@@ -2624,8 +2622,8 @@ function calculateR64Totals() {
 		    <td id="r50_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R50', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r50OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r50_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R50', ColumnId='C6'"
+		    <td id="r50_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r50Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R51 Row === -->
@@ -2660,8 +2658,8 @@ function calculateR64Totals() {
 		    <td id="r51_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R51', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r51OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r51_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R51', ColumnId='C6'"
+		    <td id="r51_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		       
 		        th:text="${#numbers.formatDecimal(row1.r51Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R52 Row === -->
@@ -2696,8 +2694,8 @@ function calculateR64Totals() {
 		    <td id="r52_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R52', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r52OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r52_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R52', ColumnId='C6'"
+		    <td id="r52_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r52Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R53 Row === -->
@@ -2733,7 +2731,7 @@ function calculateR64Totals() {
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R53', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r53OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
 		    <td id="r53_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R53', ColumnId='C6'"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r53Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R54 Row === -->
@@ -2769,8 +2767,8 @@ function calculateR64Totals() {
 		    <td id="r54_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R54', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r54OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r54_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R54', ColumnId='C6'"
+		    <td id="r54_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r54Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R55 Row === -->
@@ -2808,8 +2806,8 @@ function calculateR64Totals() {
 		    <td id="r55_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R55', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r55OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r55_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R55', ColumnId='C6'"
+		    <td id="r55_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r55Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R56 Row === -->
@@ -2847,8 +2845,8 @@ function calculateR64Totals() {
 		    <td id="r56_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R56', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r56OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r56_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R56', ColumnId='C6'"
+		    <td id="r56_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r56Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R57 Row === -->
@@ -2887,7 +2885,7 @@ function calculateR64Totals() {
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R57', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r57OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
 		    <td id="r57_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R57', ColumnId='C6'"
+		       
 		        th:text="${#numbers.formatDecimal(row1.r57Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R58 Row === -->
@@ -2925,8 +2923,8 @@ function calculateR64Totals() {
 		    <td id="r58_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R58', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r58OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r58_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R58', ColumnId='C6'"
+		    <td id="r58_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r58Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R59 Row === -->
@@ -2964,8 +2962,8 @@ function calculateR64Totals() {
 		    <td id="r59_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R59', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r59OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r59_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R59', ColumnId='C6'"
+		    <td id="r59_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r59Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R60 Row === -->
@@ -3003,8 +3001,8 @@ function calculateR64Totals() {
 		    <td id="r60_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R60', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r60OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r60_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R60', ColumnId='C6'"
+		    <td id="r60_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r60Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R61 Row === -->
@@ -3042,8 +3040,8 @@ function calculateR64Totals() {
 		    <td id="r61_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R61', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r61OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r61_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R61', ColumnId='C6'"
+		    <td id="r61_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r61Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R62 Row === -->
@@ -3081,8 +3079,8 @@ function calculateR64Totals() {
 		    <td id="r62_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R62', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r62OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r62_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R62', ColumnId='C6'"
+		    <td id="r62_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		       
 		        th:text="${#numbers.formatDecimal(row1.r62Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R63 Row === -->
@@ -3120,8 +3118,8 @@ function calculateR64Totals() {
 		    <td id="r63_C5" style=" text-align: right;"
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R63', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r63OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
-		    <td id="r63_C6" style=" text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R63', ColumnId='C6'"
+		    <td id="r63_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
+		        
 		        th:text="${#numbers.formatDecimal(row1.r63Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 		<!-- === R64 Row === -->
@@ -3160,7 +3158,7 @@ function calculateR64Totals() {
 		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R64', ColumnId='C5'"
 		        th:text="${#numbers.formatDecimal(row1.r64OtherInstallmentLoans,1,'COMMA',0,'POINT')}"></td>
 		    <td id="r64_C6" style="background-color: rgb(107, 122, 143);color: white; text-align: right;"
-		        onclick="showdetailsbyRowAndColumn(this)"  th:attr="RowId='R64', ColumnId='C6'"
+		       
 		        th:text="${#numbers.formatDecimal(row1.r64Total,1,'COMMA',0,'POINT')}"></td>
 		</tr>
 											</tbody>
