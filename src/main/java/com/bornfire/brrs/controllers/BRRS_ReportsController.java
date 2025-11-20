@@ -1943,58 +1943,58 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@RequestMapping(value = "/updateMLA4", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public String updateMLA4(@ModelAttribute M_LA4_Detail_Entity Data) {
-		System.out.println("Came to Controller ");
-		System.out.println("Received update for ACCT_NO: " + Data.getAcct_number());
-		// System.out.println("sanction value: " + Data.getSanction_limit());
-		System.out.println("balance value: " + Data.getAcct_balance_in_pula());
-
-		boolean updated = brrs_M_LA4_ReportService.updateProvision(Data);
-
-		if (updated) {
-			return "M_LA4 Detail updated successfully!";
-		} else {
-			return "Record not found for update!";
-		}
-	}
-
-	@Autowired
-	private BRRS_M_LA4_Detail_Repo M_LA4_Detail_Repo;
-
-	@RequestMapping(value = "/MLA4_Detail", method = { RequestMethod.GET, RequestMethod.POST })
-	public String showMLA4Detail(@RequestParam(required = false) String formmode,
-			@RequestParam(required = false) String acctNo, @RequestParam(required = false) BigDecimal sanction_limit,
-			@RequestParam(required = false) BigDecimal acct_balance_in_pula, Model model) {
-
-		M_LA4_Detail_Entity la4Entity = M_LA4_Detail_Repo.findByAcctnumber(acctNo);
-
-		if (la4Entity != null) {
-
-			if (acct_balance_in_pula != null) {
-				la4Entity.setAcct_balance_in_pula(acct_balance_in_pula);
-			}
-
-			if (sanction_limit != null || acct_balance_in_pula != null) {
-				M_LA4_Detail_Repo.save(la4Entity);
-				System.out.println("Updated Sanction Limit / Account Balance for ACCT_NO: " + acctNo);
-			}
-
-			Date reportDate = la4Entity.getReport_date();
-			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-			String formattedDate = formatter.format(reportDate);
-			model.addAttribute("asondate", formattedDate);
-		}
-
-		model.addAttribute("displaymode", "edit");
-		model.addAttribute("formmode", "edit");
-		model.addAttribute("Data", la4Entity);
-
-		return "BRRS/M_LA4";
-	}
-
-	
+//	@RequestMapping(value = "/updateMLA4", method = { RequestMethod.GET, RequestMethod.POST })
+//	@ResponseBody
+//	public String updateMLA4(@ModelAttribute M_LA4_Detail_Entity Data) {
+//		System.out.println("Came to Controller ");
+//		System.out.println("Received update for ACCT_NO: " + Data.getAcct_number());
+//		// System.out.println("sanction value: " + Data.getSanction_limit());
+//		System.out.println("balance value: " + Data.getAcct_balance_in_pula());
+//
+//		boolean updated = brrs_M_LA4_ReportService.updateProvision(Data);
+//
+//		if (updated) {
+//			return "M_LA4 Detail updated successfully!";
+//		} else {
+//			return "Record not found for update!";
+//		}
+//	}
+//
+//	@Autowired
+//	private BRRS_M_LA4_Detail_Repo M_LA4_Detail_Repo;
+//
+//	@RequestMapping(value = "/MLA4_Detail", method = { RequestMethod.GET, RequestMethod.POST })
+//	public String showMLA4Detail(@RequestParam(required = false) String formmode,
+//			@RequestParam(required = false) String acctNo, @RequestParam(required = false) BigDecimal sanction_limit,
+//			@RequestParam(required = false) BigDecimal acct_balance_in_pula, Model model) {
+//
+//		M_LA4_Detail_Entity la4Entity = M_LA4_Detail_Repo.findByAcctnumber(acctNo);
+//
+//		if (la4Entity != null) {
+//
+//			if (acct_balance_in_pula != null) {
+//				la4Entity.setAcct_balance_in_pula(acct_balance_in_pula);
+//			}
+//
+//			if (sanction_limit != null || acct_balance_in_pula != null) {
+//				M_LA4_Detail_Repo.save(la4Entity);
+//				System.out.println("Updated Sanction Limit / Account Balance for ACCT_NO: " + acctNo);
+//			}
+//
+//			Date reportDate = la4Entity.getReport_date();
+//			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+//			String formattedDate = formatter.format(reportDate);
+//			model.addAttribute("asondate", formattedDate);
+//		}
+//
+//		model.addAttribute("displaymode", "edit");
+//		model.addAttribute("formmode", "edit");
+//		model.addAttribute("Data", la4Entity);
+//
+//		return "BRRS/M_LA4";
+//	}
+//
+//	
 	
 	// Resubmission
 

@@ -25,7 +25,7 @@ public class M_LA4_Detail_Entity {
     private String	segment;
     private String	facility;
     private BigDecimal	acct_balance_in_pula;
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date	report_date;
     private String	report_name;
     private String	create_user;
