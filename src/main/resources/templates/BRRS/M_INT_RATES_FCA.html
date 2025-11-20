@@ -1315,76 +1315,76 @@ function closemodel() {
 					
 
 <tr>
-    <td id="ROW10" style="padding-left: 20px;font-weight: bold;">USD</td>
+    <td id="ROW10" style="font-weight: bold;">USD</td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R10_CURRENT != null ? #numbers.formatDecimal(report.R10_CURRENT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R10_CURRENT != null ? #numbers.formatDecimal(report.R10_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_CURRENT" name="R10_CURRENT"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R10_CALL != null ? #numbers.formatDecimal(report.R10_CALL, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R10_CALL != null ? #numbers.formatDecimal(report.R10_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_CALL" name="R10_CALL"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R10_SAVINGS != null ? #numbers.formatDecimal(report.R10_SAVINGS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R10_SAVINGS != null ? #numbers.formatDecimal(report.R10_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_SAVINGS" name="R10_SAVINGS"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R10_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R10_NOTICE_0_31_DAYS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R10_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R10_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_NOTICE_0_31_DAYS" name="R10_NOTICE_0_31_DAYS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R10_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R10_NOTICE_32_88_DAYS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R10_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R10_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_NOTICE_32_88_DAYS" name="R10_NOTICE_32_88_DAYS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R10_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R10_91_DEPOSIT_DAY, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R10_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R10_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_91_DEPOSIT_DAY" name="R10_91_DEPOSIT_DAY"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R10_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_1_6_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R10_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_FD_1_6_MONTHS" name="R10_FD_1_6_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R10_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_7_12_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R10_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_FD_7_12_MONTHS" name="R10_FD_7_12_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R10_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_13_18_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R10_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_FD_13_18_MONTHS" name="R10_FD_13_18_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R10_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_19_24_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R10_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_FD_19_24_MONTHS" name="R10_FD_19_24_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R10_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_OVER_24_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R10_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R10_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_FD_OVER_24_MONTHS" name="R10_FD_OVER_24_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R10_TOTAL != null ? #numbers.formatDecimal(report.R10_TOTAL, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R10_TOTAL != null ? #numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_TOTAL" name="R10_TOTAL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
@@ -1393,77 +1393,77 @@ function closemodel() {
 
 
 <tr>
-    <td id="ROW11" style="padding-left: 20px;font-weight: bold;">ZAR
+    <td id="ROW11" style="font-weight: bold;">ZAR
 </td>
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_CURRENT != null ? #numbers.formatDecimal(report.R11_CURRENT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_CURRENT != null ? #numbers.formatDecimal(report.R11_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_CURRENT" name="R11_CURRENT"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_CALL != null ? #numbers.formatDecimal(report.R11_CALL, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_CALL != null ? #numbers.formatDecimal(report.R11_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_CALL" name="R11_CALL"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_SAVINGS != null ? #numbers.formatDecimal(report.R11_SAVINGS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_SAVINGS != null ? #numbers.formatDecimal(report.R11_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_SAVINGS" name="R11_SAVINGS"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R11_NOTICE_0_31_DAYS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R11_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_NOTICE_0_31_DAYS" name="R11_NOTICE_0_31_DAYS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R11_NOTICE_32_88_DAYS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R11_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_NOTICE_32_88_DAYS" name="R11_NOTICE_32_88_DAYS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R11_91_DEPOSIT_DAY, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R11_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_91_DEPOSIT_DAY" name="R11_91_DEPOSIT_DAY"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_1_6_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_FD_1_6_MONTHS" name="R11_FD_1_6_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_7_12_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_FD_7_12_MONTHS" name="R11_FD_7_12_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_13_18_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_FD_13_18_MONTHS" name="R11_FD_13_18_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_19_24_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_FD_19_24_MONTHS" name="R11_FD_19_24_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW11" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R11_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_OVER_24_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R11_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_FD_OVER_24_MONTHS" name="R11_FD_OVER_24_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW11" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_TOTAL" name="R11_TOTAL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
@@ -1472,77 +1472,77 @@ function closemodel() {
 
 
 <tr>
-    <td id="ROW12" style="padding-left: 20px;font-weight: bold;">GBP
+    <td id="ROW12" style="font-weight: bold;">GBP
 </td>
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_CURRENT != null ? #numbers.formatDecimal(report.R12_CURRENT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_CURRENT != null ? #numbers.formatDecimal(report.R12_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_CURRENT" name="R12_CURRENT"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_CALL != null ? #numbers.formatDecimal(report.R12_CALL, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_CALL != null ? #numbers.formatDecimal(report.R12_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_CALL" name="R12_CALL"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_SAVINGS != null ? #numbers.formatDecimal(report.R12_SAVINGS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_SAVINGS != null ? #numbers.formatDecimal(report.R12_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_SAVINGS" name="R12_SAVINGS"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R12_NOTICE_0_31_DAYS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R12_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_NOTICE_0_31_DAYS" name="R12_NOTICE_0_31_DAYS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R12_NOTICE_32_88_DAYS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R12_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_NOTICE_32_88_DAYS" name="R12_NOTICE_32_88_DAYS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R12_91_DEPOSIT_DAY, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R12_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_91_DEPOSIT_DAY" name="R12_91_DEPOSIT_DAY"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_1_6_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_FD_1_6_MONTHS" name="R12_FD_1_6_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_7_12_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_FD_7_12_MONTHS" name="R12_FD_7_12_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_13_18_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_FD_13_18_MONTHS" name="R12_FD_13_18_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_19_24_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_FD_19_24_MONTHS" name="R12_FD_19_24_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW12" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R12_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_OVER_24_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R12_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_FD_OVER_24_MONTHS" name="R12_FD_OVER_24_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW12" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R12_TOTAL != null ? #numbers.formatDecimal(report.R12_TOTAL, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R12_TOTAL != null ? #numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_TOTAL" name="R12_TOTAL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
@@ -1551,77 +1551,77 @@ function closemodel() {
 
 
 <tr>
-    <td id="ROW13" style="padding-left: 20px;font-weight: bold;">EURO
+    <td id="ROW13" style="font-weight: bold;">EURO
 </td>
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_CURRENT != null ? #numbers.formatDecimal(report.R13_CURRENT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_CURRENT != null ? #numbers.formatDecimal(report.R13_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_CURRENT" name="R13_CURRENT"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_CALL != null ? #numbers.formatDecimal(report.R13_CALL, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_CALL != null ? #numbers.formatDecimal(report.R13_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_CALL" name="R13_CALL"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_SAVINGS != null ? #numbers.formatDecimal(report.R13_SAVINGS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_SAVINGS != null ? #numbers.formatDecimal(report.R13_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_SAVINGS" name="R13_SAVINGS"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R13_NOTICE_0_31_DAYS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R13_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_NOTICE_0_31_DAYS" name="R13_NOTICE_0_31_DAYS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R13_NOTICE_32_88_DAYS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R13_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_NOTICE_32_88_DAYS" name="R13_NOTICE_32_88_DAYS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R13_91_DEPOSIT_DAY, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R13_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_91_DEPOSIT_DAY" name="R13_91_DEPOSIT_DAY"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_1_6_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_FD_1_6_MONTHS" name="R13_FD_1_6_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_7_12_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_FD_7_12_MONTHS" name="R13_FD_7_12_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_13_18_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_FD_13_18_MONTHS" name="R13_FD_13_18_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_19_24_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_FD_19_24_MONTHS" name="R13_FD_19_24_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW13" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R13_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_OVER_24_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R13_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_FD_OVER_24_MONTHS" name="R13_FD_OVER_24_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW13" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_TOTAL" name="R13_TOTAL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
@@ -1630,77 +1630,77 @@ function closemodel() {
 
 
 <tr>
-    <td id="ROW14" style="padding-left: 20px;font-weight: bold;">Other*
+    <td id="ROW14" style="font-weight: bold;">Other*
 </td>
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_CURRENT != null ? #numbers.formatDecimal(report.R14_CURRENT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_CURRENT != null ? #numbers.formatDecimal(report.R14_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_CURRENT" name="R14_CURRENT"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_CALL != null ? #numbers.formatDecimal(report.R14_CALL, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_CALL != null ? #numbers.formatDecimal(report.R14_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_CALL" name="R14_CALL"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_SAVINGS != null ? #numbers.formatDecimal(report.R14_SAVINGS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_SAVINGS != null ? #numbers.formatDecimal(report.R14_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_SAVINGS" name="R14_SAVINGS"
                style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R14_NOTICE_0_31_DAYS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R14_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_NOTICE_0_31_DAYS" name="R14_NOTICE_0_31_DAYS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R14_NOTICE_32_88_DAYS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R14_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_NOTICE_32_88_DAYS" name="R14_NOTICE_32_88_DAYS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R14_91_DEPOSIT_DAY, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R14_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_91_DEPOSIT_DAY" name="R14_91_DEPOSIT_DAY"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_1_6_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_FD_1_6_MONTHS" name="R14_FD_1_6_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_7_12_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_FD_7_12_MONTHS" name="R14_FD_7_12_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_13_18_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_FD_13_18_MONTHS" name="R14_FD_13_18_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_19_24_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_FD_19_24_MONTHS" name="R14_FD_19_24_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW14" style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_input" type="text"
-               th:value="${report.R14_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_OVER_24_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R14_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_FD_OVER_24_MONTHS" name="R14_FD_OVER_24_MONTHS"
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW14" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_TOTAL" name="R14_TOTAL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
@@ -1709,77 +1709,77 @@ function closemodel() {
 
 
 <tr>
-    <td id="ROW15" style="padding-left: 20px;font-weight: bold;">TOTAL
+    <td id="ROW15" style="font-weight: bold;">TOTAL
 </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R15_CURRENT != null ? #numbers.formatDecimal(report.R15_CURRENT, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_CURRENT != null ? #numbers.formatDecimal(report.R15_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_CURRENT" name="R15_CURRENT"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R15_CALL != null ? #numbers.formatDecimal(report.R15_CALL, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_CALL != null ? #numbers.formatDecimal(report.R15_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_CALL" name="R15_CALL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R15_SAVINGS != null ? #numbers.formatDecimal(report.R15_SAVINGS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_SAVINGS != null ? #numbers.formatDecimal(report.R15_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_SAVINGS" name="R15_SAVINGS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R15_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R15_NOTICE_0_31_DAYS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R15_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_NOTICE_0_31_DAYS" name="R15_NOTICE_0_31_DAYS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R15_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R15_NOTICE_32_88_DAYS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R15_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_NOTICE_32_88_DAYS" name="R15_NOTICE_32_88_DAYS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R15_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R15_91_DEPOSIT_DAY, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R15_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_91_DEPOSIT_DAY" name="R15_91_DEPOSIT_DAY"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R15_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_1_6_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_FD_1_6_MONTHS" name="R15_FD_1_6_MONTHS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R15_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_7_12_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_FD_7_12_MONTHS" name="R15_FD_7_12_MONTHS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R15_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_13_18_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_FD_13_18_MONTHS" name="R15_FD_13_18_MONTHS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R15_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_19_24_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_FD_19_24_MONTHS" name="R15_FD_19_24_MONTHS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R15_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_OVER_24_MONTHS, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_FD_OVER_24_MONTHS" name="R15_FD_OVER_24_MONTHS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
         <input class="display-input Show_inputnonEditable" type="text"
-               th:value="${report.R15_TOTAL != null ? #numbers.formatDecimal(report.R15_TOTAL, 1, 0, 'POINT') : '0'}"
+               th:value="${report.R15_TOTAL != null ? #numbers.formatDecimal(report.R15_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_TOTAL" name="R15_TOTAL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>

@@ -163,6 +163,78 @@ PURPOSE		: BWRBRREPORT
 			text-overflow: ellipsis;
 		}
 	</style>
+	
+	<style>
+				.header-bar {
+				  display: flex;
+				  align-items: center;
+				  flex-wrap: wrap; /* ✅ allows wrapping on smaller screens */
+				  gap: 10px; /* spacing between elements */
+				  cursor: pointer;
+				}
+
+				/* 🔘 Circular arrow */
+				.left-arrow-circle {
+				  width: 35px;
+				  height: 35px;
+				  border-radius: 50%;
+				  background-color: white;
+				  color: #1f3a93;
+				  display: flex;
+				  align-items: center;
+				  justify-content: center;
+				  margin-right: 10px;
+				}
+
+				.left-arrow-circle i {
+				  font-size: 18px;
+				}
+
+				/* 🏷️ Title */
+				.header-title {
+				  font-family: Arial, sans-serif;
+				  font-size: 20px;
+				  font-weight: bold;
+				  color: white;
+				  margin: 0;
+				  flex-shrink: 0;
+				}
+
+				/* 🚌 Bus display style box */
+				.boards {
+					transform: translateY(6px);
+				  background-color: rgb(107, 122, 143);
+				  color: white;
+				  padding: 5px 45px;
+				  border-radius: 8px;
+				  overflow: hidden;
+				  white-space: nowrap;
+				  flex: 1; /* ✅ makes it take available space dynamically */
+				  min-width: 200px;
+				  box-shadow: 0 0 10px rgb(107, 122, 143);
+				  position: relative;
+				}
+
+				/* ✨ Scrolling animation */
+				.scrolling-text {
+				  display: inline-block;
+				  font-family: "Courier New", monospace;
+				  font-weight: bold;
+				  letter-spacing: 1px;
+				  animation: scroll-left 10s linear infinite;
+				}
+
+				@keyframes scroll-left {
+				  0% {
+				    transform: translateX(100%);
+				  }
+				  100% {
+				    transform: translateX(-100%);
+				  }
+				}
+
+				</style>
+	
 	<style>
 		.form-group {
 			position: relative;
@@ -578,25 +650,25 @@ function cancelModify() {
 
 	    // Set totals with 2 decimal formatting
 	    $("#R17_TOTAL_LONG_POS").val(
-	        totalLP.toLocaleString('en-IN')
+	        totalLP.toLocaleString('en-US')
 	    );
 	    $("#R17_TOTAL_SHORT_POS").val(
-	        totalSP.toLocaleString('en-IN')
+	        totalSP.toLocaleString('en-US')
 	    );
 	    $("#R17_GROSS_OPEN_POS").val(
-	        totalGP.toLocaleString('en-IN')
+	        totalGP.toLocaleString('en-US')
 	    );
 	    $("#R17_CAPITAL_CHARGE_BASIS_RISK").val(
-	        totalCapitalcharge.toLocaleString('en-IN')
+	        totalCapitalcharge.toLocaleString('en-US')
 	    );
 	    $("#R17_NET_OPEN_POS").val(
-	        totalNP.toLocaleString('en-IN')
+	        totalNP.toLocaleString('en-US')
 	    );
 	    $("#R17_CAPITAL_CHARGE_DIR_RISK").val(
-	        totalDirRisk.toLocaleString('en-IN')
+	        totalDirRisk.toLocaleString('en-US')
 	    );
 	    $("#R17_TOTAL_CAPITAL_CHARGE").val(
-	        totalCommodity.toLocaleString('en-IN')
+	        totalCommodity.toLocaleString('en-US')
 	    );
 	}
 
@@ -614,7 +686,7 @@ function calculateR10Totals() {
 	        let ChargeVal = parseFloat($("#R" + i + "_CHARGE_BASIS_RISK").val().replace(/,/g, "")) || 0;
 	        Capital = GrossVal * ChargeVal;
 			$("#R"+i+"_CAPITAL_CHARGE_BASIS_RISK").val(
-				Capital.toLocaleString('en-IN')
+				Capital.toLocaleString('en-US')
 			);
 
 			let LongVal = parseFloat($("#R" + i + "_TOTAL_LONG_POS").val().replace(/,/g, "")) || 0;
@@ -622,21 +694,21 @@ function calculateR10Totals() {
 			Net = LongVal - ShortVal;
 
 			$("#R"+i+"_NET_OPEN_POS").val(
-				Net.toLocaleString('en-IN')
+				Net.toLocaleString('en-US')
 			);
 
 			let NetVal = parseFloat($("#R" + i + "_NET_OPEN_POS").val().replace(/,/g, "")) || 0;
 	        let RiskVal = parseFloat($("#R" + i + "_CHARGE_DIR_RISK").val().replace(/,/g, "")) || 0;
 			Dir_Risk= Net * RiskVal;
 			$("#R"+i+"_CAPITAL_CHARGE_DIR_RISK").val(
-				Dir_Risk.toLocaleString('en-IN')
+				Dir_Risk.toLocaleString('en-US')
 			);
 
 			let CapVal1 = parseFloat($("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").val().replace(/,/g, "")) || 0;
 	        let CapVal2 = parseFloat($("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").val().replace(/,/g, "")) || 0;
 			Commodity = CapVal1 + Capital;
 			$("#R"+i+"_TOTAL_CAPITAL_CHARGE").val(
-				Commodity.toLocaleString('en-IN')
+				Commodity.toLocaleString('en-US')
 			);
 	    }
 
@@ -824,6 +896,11 @@ function calculateR10Totals() {
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
 							(21) MONTHLY SCHEDULE: M-CR: COMMODITIES RISK</h5>
+
+						<div class="boards" style="margin-left: 20px;">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING
+								SUPERVISION DEPARTMENT</p>
+						</div>
 					</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
