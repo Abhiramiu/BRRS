@@ -285,6 +285,65 @@ PURPOSE		: BWRBRREPORT
 			border: 1px solid #000 !important;
 		}
 	</style>
+	
+	
+	
+	<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 80px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	<script th:inline="javascript">
 	let isDetailsModal = false;
 	
@@ -656,7 +715,7 @@ PURPOSE		: BWRBRREPORT
 			calculateR46Totals();
 		}
 
-		// Calculating Totals for 46 row
+		/* // Calculating Totals for 46 row
 		function calculateR46Totals() {
 			let amt1 = parseFloat($("#R41_AMOUNT").val()?.replace(/,/g, "")) || 0;
 			let amt2 = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
@@ -676,7 +735,43 @@ PURPOSE		: BWRBRREPORT
 
 			$("#R45_AMOUNT").on("input", calculateR46Totals);
 		});
+ */
+ 
+ 
+ 
+//Calculating Totals for 46 row
+ function calculateR46Totals() {
+ 	let amt1 = parseFloat($("#R41_AMOUNT").val()?.replace(/,/g, "")) || 0;
+ 	let amt2 = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
+ 	let totalAmount = amt1 + amt2;
 
+ 	$("#R46_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
+ }
+
+ // NEW: R45 = R44
+ function copyR44ToR45() {
+ 	let r44 = parseFloat($("#R44_AMOUNT").val()?.replace(/,/g, "")) || 0;
+ 	$("#R45_AMOUNT").val(r44.toLocaleString("en-IN"));
+ 	calculateR46Totals();
+ }
+
+ // Call on page load for section 2
+ $(document).ready(function () {
+	 calculateR41Totals();
+ 	calculateR46Totals();
+
+ 	for (let i = 36; i <= 40; i++) {
+ 		$("#R" + i + "_AMOUNT").on("input", calculateR41Totals);
+ 	}
+
+ 	// When R44 changes → update R45 automatically
+ 	$("#R44_AMOUNT").on("input", copyR44ToR45);
+ });
+
+ 
+ 
+ 
+ 
 		// Calculating Totals for 55 row
 		function calculateR55Totals() {
 			let totalAmount = 0;
@@ -689,7 +784,7 @@ PURPOSE		: BWRBRREPORT
 			$("#R55_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
 			calculateR60Totals();
 		}
-
+/* 
 		// Calculating Totals for 60 row
 		function calculateR60Totals() {
 			let amt1 = parseFloat($("#R55_AMOUNT").val()?.replace(/,/g, "")) || 0;
@@ -709,94 +804,142 @@ PURPOSE		: BWRBRREPORT
 			}
 
 			$("#R59_AMOUNT").on("input", calculateR60Totals);
+		}); */
+		
+		// Calculating Totals for 60 row
+		function calculateR60Totals() {
+		    let amt1 = parseFloat($("#R55_AMOUNT").val()?.replace(/,/g, "")) || 0;
+		    let amt2 = parseFloat($("#R59_AMOUNT").val()?.replace(/,/g, "")) || 0;
+		    let totalAmount = amt1 + amt2;
+
+		    $("#R60_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
+		}
+
+		// NEW: R59 = R58
+		function copyR58ToR59() {
+		    let r58 = parseFloat($("#R58_AMOUNT").val()?.replace(/,/g, "")) || 0;
+		    $("#R59_AMOUNT").val(r58.toLocaleString("en-IN"));
+		    calculateR60Totals();
+		}
+
+		// Call on page load for section 3
+		$(document).ready(function () {
+			calculateR55Totals();
+		    calculateR60Totals();
+
+		    for (let i = 50; i <= 54; i++) {
+		        $("#R" + i + "_AMOUNT").on("input", calculateR55Totals);
+		    }
+
+		    // When R58 changes → update R59
+		    $("#R58_AMOUNT").on("input", copyR58ToR59);
+
+		    // Already existing
+		    $("#R59_AMOUNT").on("input", calculateR60Totals);
 		});
+
 	</script>
 
 	<script>
 
-		// This function is for closing the modal after an action is complete.
-		// It hides the result and loader modals and reloads the page.
-		function closemodel() {
-			/* $("#resultModal").modal("hide");
-			$('#loader').modal('hide');
-			// Reload the page after a short delay to ensure the modal animation completes smoothly.
-			setTimeout(function () {
-				location.reload();
-			}, 300); */
-			
-			$("#resultModal").modal("hide");
-	        $('#loader').modal('hide');
+	// Close modal after action completes
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
 
-	        // Only reload if not from Details modal
-	        if (!isDetailsModal) {
-	            setTimeout(function () {
-	                location.reload();
-	            }, 300);
-	        } else {
-	            // reset flag for next modal usage
-	            isDetailsModal = false;
+	    // Only reload if not from Details modal
+	    if (!isDetailsModal) {
+	        setTimeout(function () {
+	            location.reload();
+	        }, 300);
+	    } else {
+	        isDetailsModal = false; // Reset flag
+	    }
+	}
+
+
+	// File Upload Function
+	function fileuploads(btn) {
+	    try {
+
+	        const asondate = btn.getAttribute("data-todate");
+	        const btnType = btn.getAttribute("data-type");
+
+	        $('#loader').modal('show');
+
+	        // Step 1: Calculate totals
+	        calculateR20Totals();
+	        calculateR28Totals();
+	        calculateR29Totals();
+	        calculateR41Totals();
+	        calculateR46Totals();
+	        calculateR55Totals();
+	        calculateR60Totals();
+
+	        // Step 2: Remove commas from inputs
+	        $("#fileupload input[type='text']").each(function () {
+	            $(this).val($(this).val().replace(/,/g, ''));
+	        });
+
+	        // Step 3: Validate form
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
 	        }
-		}
 
-		function fileuploads(btn) {
-			const asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type");
+	        // Step 4: Retrieve type from URL
+	        const urlParams = new URLSearchParams(window.location.search);
+	        const urlType = urlParams.get("type");
+	        const type = urlType || btnType || "";
 
-			$('#loader').modal('show');
-			// ✅ Step 1: Calculate totals
-			calculateR20Totals();
-			calculateR28Totals();
-			calculateR29Totals();
-			calculateR41Totals();
-			calculateR46Totals();
-			calculateR55Totals();
-			calculateR60Totals();
+	        // Step 5: Build FormData
+	        const formData = new FormData();
+	        formData.append("asondate", asondate);
+	        formData.append("type", type);
 
-			// ✅ Step 2: Remove commas from inputs
-			$("#fileupload input[type='text']").each(function () {
-				$(this).val($(this).val().replace(/,/g, ''));
-			});
-			// ✅ Step 3: Validate form
-			if (!$("#fileupload").valid()) {
-				$('#loader').modal('hide');
-				return;
-			}
+	        // Append all input fields
+	        $('#fileupload').find(':input').each(function () {
+	            const name = $(this).attr('name');
+	            if (name) {
+	                formData.append(name, $(this).val());
+	            }
+	        });
 
-			// ✅ Step 4: Build one FormData object for all entities
-			const formData = new FormData();
-			formData.append("asondate", asondate);
-			formData.append("type", type);
-			// Append all inputs
-			$('#fileupload').find(':input').each(function () {
-				const name = $(this).attr('name');
-				if (name) {
-					formData.append(name, $(this).val());
-				}
-			});
-			// ✅ Step 5: Send single Ajax request
-			$.ajax({
-				url: './CA3updateAll',
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				dataType: 'text',
-				success: function () {
-					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text(" Updated Successfully.");
-					$("#resultModal").modal("show");
-				},
-				error: function (jqXHR) {
-					console.error("Error response:", jqXHR.responseText);
-					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed. Check console for details.");
-					$("#resultModal").modal("show");
-				},
-				complete: function () {
-					$('#loader').modal('hide');
-				}
-			});
-		}
+	        // Step 6: Decide API URL
+	        let apiUrl = './CA3updateAll';
+	        if (urlType && urlType.toUpperCase() === 'RESUB') {
+	            apiUrl = './UpdateM_CA3_ReSub';
+	        }
+
+	        // Step 7: AJAX call
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'POST',
+	            data: formData,
+	            processData: false,
+	            contentType: false,
+	            dataType: 'text',
+	            success: function (response) {
+	                $("#resultModalLabel").text("BRRS");
+	                $("#resultModalBody").text(response);
+	                $("#resultModal").modal("show");
+	            },
+	            error: function (jqXHR) {
+	                $("#resultModalLabel").text("Error");
+	                $("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+	                $("#resultModal").modal("show");
+	            },
+	            complete: function () {
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+	        $('#loader').modal('hide');
+	        console.error("Error during file upload:", error);
+	    }
+	}
+
 	</script>
 </head>
 <title>BRRS</title>
@@ -815,8 +958,17 @@ PURPOSE		: BWRBRREPORT
 						</div>
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+
 							M-CA3: REGULATORY ADJUSTMENTS APPLIED IN THE CALCULATION OF CAPITAL</h5>
+							
+							
+							
+							<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+						</div>
+							
 					</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
@@ -847,7 +999,7 @@ PURPOSE		: BWRBRREPORT
                    				 data-todate=${todate},
                    				 data-currency=${currency},
                    				 data-dtltype=${dtltype},
-                   				 data-filename='M_CA3.xls',
+                   				 data-filename='M_CA3.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
@@ -880,14 +1032,14 @@ PURPOSE		: BWRBRREPORT
 										id="reports">
 										<thead class="thead-light">
 											<tr>
-												<th colspan="7" style="text-align: left; ">
+												<th colspan="7" style="text-align: left; font-weight:  bold; ">
 													A. Full decductions </th>
 											</tr>
 											<!-- First header row -->
 											<tr style="background-color: #b3b6b9">
-												<th style="text-align: center; background-color: #D8D8D8;">Line</th>
-												<th style="text-align: center; background-color: #D8D8D8;">Item</th>
-												<th width="250" style="text-align:right; background-color: #D8D8D8;">
+												<th style="text-align: center; background-color: #D8D8D8; font-weight:  bold;">Line</th>
+												<th style="text-align: center; background-color: #D8D8D8; font-weight:  bold;">Item</th>
+												<th width="250" style="text-align:right; background-color: #D8D8D8;font-weight:  bold;">
 													Amount(P'000)</th>
 											</tr>
 										</thead>
@@ -1147,12 +1299,12 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 											</tr>
-											</tr>
-											<tr>
+											
+											<!-- <tr>
 												<td></td>
 												<td></td>
 												<td></td>
-											</tr>
+											</tr> -->
 
 										</tbody>
 
@@ -1179,23 +1331,23 @@ PURPOSE		: BWRBRREPORT
 											
 											<tr style="border:none !important;">
 
-												<th colspan="3" style="text-align: left; border:none !important; background-color: #FFFFFF ">
+												<th colspan="3" style="text-align: left; border:none !important; font-weight:  bold; background-color: #FFFFFF ">
 													2. Regulatory adjustments applied in the calculation of Additional
 													Tier1 Capital </th>
 											</tr>
 											<tr style="border:none !important;">
-												<th colspan="3" style="text-align: left; border:none !important; background-color: #FFFFFF ">
+												<th colspan="3" style="text-align: left; border:none !important; font-weight:  bold; background-color: #FFFFFF ">
 													A. Full decductions </th>
 											</tr>
 
 
 											<!-- First header row -->
-											<tr>
+											<!-- <tr>
 												<td></td>
 												<td></td>
 												<td></td>
 
-											</tr>
+											</tr> -->
 										</tbody>
 
 										<tbody id="entity" th:each="report: ${reportsummary}"
@@ -1296,12 +1448,12 @@ PURPOSE		: BWRBRREPORT
 											
 											
 											<!-- First header row -->
-											<tr>
+											<!-- <tr>
 												<td></td>
 												<td></td>
 												<td></td>
 
-											</tr>
+											</tr> -->
 
 										</tbody>
 										<tbody id="entity" th:each="report: ${reportsummary}"

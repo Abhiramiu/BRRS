@@ -1447,14 +1447,11 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_CA3":
-			try {
-				archivalData = BRRS_M_CA3_reportservice.getM_CA3Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+		/*
+		 * case "M_CA3": try { archivalData =
+		 * BRRS_M_CA3_reportservice.getM_CA3Archival(); } catch (Exception e) { // TODO
+		 * Auto-generated catch block e.printStackTrace(); } break;
+		 */
 
 		case "M_AIDP":
 			try {
@@ -1812,7 +1809,11 @@ public class RegulatoryReportServices {
 			
 
 				
-				
+			 case "M_CA3":
+		            List<Object[]> ca3List = BRRS_M_CA3_reportservice.getM_CA3Archival();
+		            archivalData.addAll(ca3List);
+		            System.out.println("Fetched TBS archival data: " + ca3List.size());
+		            break;
 
 				
 	         default:
@@ -2448,7 +2449,16 @@ public List<Object[]> getResub(String rptcode) {
 							e.printStackTrace();
 						}
 						break;
-			            
+					case "M_CA3":
+						try {
+							List<Object[]> resubList = BRRS_M_CA3_reportservice.getM_CA3Resub();
+							resubmissionData.addAll(resubList);
+							System.out.println("Resubmission data fetched for M_CA3: " + resubList.size());
+						} catch (Exception e) {
+							System.err.println("Error fetching resubmission data for M_CA3: " + e.getMessage());
+							e.printStackTrace();
+						}
+						break;
 
 
 
