@@ -80,7 +80,7 @@ public class ReportLineItemService {
 				case "M_GMIRT": startRowIndex = 8; endRowIndex = 11; break;
 				case "M_IRB": startRowIndex = 9; endRowIndex = 105; break;
 				case "M_EPR": startRowIndex = 10; endRowIndex = 22; break;
-				case "M_FXR": startRowIndex = 10; endRowIndex = 28; break;
+				case "M_FXR": startRowIndex = 9; endRowIndex = 28; break;
 				case "M_CR": startRowIndex = 9; endRowIndex = 16; break;
 	            case "M_OPTR": startRowIndex = 9; endRowIndex = 14; break;
 				case "M_GALOR": startRowIndex = 9; endRowIndex = 113; break;
@@ -154,7 +154,7 @@ public class ReportLineItemService {
 	            ReportLineItemDTO dto = new ReportLineItemDTO();
 	            dto.setSrlNo(srlNo);
 	            dto.setFieldDescription(desc.trim());
-	            dto.setReportLabel(String.format("R%d", srlNo + 10));
+	            dto.setReportLabel(String.format("R%d", r));
 	            dto.setHeader(isHeader ? "Y" : " ");
 	            dto.setRemarks("");
 
@@ -177,7 +177,7 @@ public class ReportLineItemService {
 
 	    switch (reportCode.toUpperCase()) {
 
-	        case "M_PI": return new int[]{5,6};
+	        case "M_PI": return new int[]{6};
 	        case "M-SFINP1": return new int[]{2,3};
 	        case "M-SFINP2": return new int[]{2,3};
 	        case "M_LIQ": return new int[]{4};
@@ -218,7 +218,7 @@ public class ReportLineItemService {
 	        case "M-LIQ2": return new int[]{6};
 	        case "M-LIQGAP": return expand(1,7);   // 1 to 7
 	        case "M-CR": return new int[]{1,2,3,5,6,8,9};
-	        case "M-FXR": return new int[]{8,9,10};
+	        case "M_FXR": return new int[]{8,9,10};
 	        case "M-OPTR": return new int[]{4,5,6,7,8};
 	        case "M-LA1": return new int[]{1,2,3};
 	        case "M-LA2": return new int[]{1};
