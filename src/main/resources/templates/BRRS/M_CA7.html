@@ -730,24 +730,25 @@ function calculate12Totals() {
     calculateCET1AddBack(trans);
 }
 
-	function calculateCET1AddBack(trans) {
-	    const raw19 = Math.round(trans * 0.75 * 100); // adjust scale to P'000
-	    const raw20 = Math.round(trans * 0.50 * 100);
-	    const raw21 = Math.round(trans * 0.25 * 100);
-	    const raw22 = Math.round(trans * 0.0 * 100);
+function calculateCET1AddBack(trans) {
+    const raw19 = Math.round(trans * 0.75);  // FIXED 75%
+    const raw20 = Math.round(trans * 0.50);  // 50%
+    const raw21 = Math.round(trans * 0.25);  // 25%
+    const raw22 = Math.round(trans * 0.0);   // 0%
 
-	    // Display nicely
-	    $("#r19_amt_add_year1").val(formatNumber(raw19));
-	    $("#r20_amt_add_year2").val(formatNumber(raw20));
-	    $("#r21_amt_add_year3").val(formatNumber(raw21));
-	    $("#r22_amt_add_year4").val(formatNumber(raw22));
+    // Display nicely
+    $("#r19_amt_add_year1").val(formatNumber(raw19));
+    $("#r20_amt_add_year2").val(formatNumber(raw20));
+    $("#r21_amt_add_year3").val(formatNumber(raw21));
+    $("#r22_amt_add_year4").val(formatNumber(raw22));
 
-	    // Keep raw values for backend
-	    $("#r19_amt_add_year1_raw").val(raw19);
-	    $("#r20_amt_add_year2_raw").val(raw20);
-	    $("#r21_amt_add_year3_raw").val(raw21);
-	    $("#r22_amt_add_year4_raw").val(raw22);
-	}
+    // Keep raw values for backend
+    $("#r19_amt_add_year1_raw").val(raw19);
+    $("#r20_amt_add_year2_raw").val(raw20);
+    $("#r21_amt_add_year3_raw").val(raw21);
+    $("#r22_amt_add_year4_raw").val(raw22);
+}
+
 
 
 $(document).ready(function() {
@@ -830,8 +831,7 @@ $(document).ready(function() {
 
 </script>
 
-
-	<style>
+<style>
 		.left-arrow-circle {
 			background-color: white;
 			color: #007bff;
@@ -933,16 +933,6 @@ $(document).ready(function() {
 		#reportdetails {
 			border-collapse: collapse;
 		}
-
-		  
-				td.empty-cell {
-				       border: none !important;
-				       border-width: 0 !important;
-				       outline: none !important;
-				       box-shadow: none !important;
-				   }
-		
-	
 	</style>
 	<script th:inline="javascript">
 				  $(document).ready(function () {
@@ -984,20 +974,16 @@ $(document).ready(function() {
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
 	</script>
-
+	
+	
+	
 </head>
-
-
-
-
 <title>BRRS</title>
+
 <body>
-	<div class="container-fluid"
-		style="padding-left: 0px; padding-right: 0px;">
+	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
 		<div class="row">
-
 			<div th:insert="HeaderMenu :: header"></div>
-
 			<div class="card">
 				<div class="card-header"
 					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
@@ -1006,19 +992,20 @@ $(document).ready(function() {
 						<div class="left-arrow-circle">
 							<i class="fa fa-arrow-left"></i>
 						</div>
-
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white; margin: 0 10px;">
-							(11) MONTHLY SCHEDULE: M-CA7: TRANSITIONAL ADJUSTMENT AMOUNT (NEW PROVISIONS)
-						</h5>
-						<!-- Moving bus-board text -->
-											<div class="boards">
-												<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
-											</div>
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin-right: 10px; margin: 0 10px;">
+							(11) MONTHLY SCHEDULE:M-CA7:TRANSITIONAL ADJUSTMENT AMOUNT (NEW PROVISIONS)</h5>
+					</div>
+					<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+						</div>
+						<!-- Title -->
+						
 
 						
-					</div>
+					
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
@@ -1087,10 +1074,7 @@ $(document).ready(function() {
 						        <!-- Section 1 Heading -->
 						   
 														
-														<tr style="border:none !important;">
-																					    <td style="height:30px; border:none !important;"></td>
-																					    <td colspan="3" style="height:30px; border:none !important;"></td>
-																					</tr>
+														
 
 																					<!-- Section 2 Heading -->
 																					<tr>
@@ -1102,7 +1086,7 @@ $(document).ready(function() {
 
 																					<tr>
 																									            <td style="height:30px; border:1px solid transparent !important;"></td>
-																									            <td colspan="3" style="border:none !important; height:30px;">&nbsp;</td>
+																									            <td colspan="3" style="border:none !important; height:10px;">&nbsp;</td>
 																									        </tr>
 
 														
@@ -1199,7 +1183,7 @@ $(document).ready(function() {
 						                       id="r19_product"
 						                       name="r19_product"
 						                       style="background-color:#FFFFFF; width: 500px; height: 28px;
-						                              border-color: transparent; text-align:left; padding-left: 20px;"
+						                              border-color: transparent; text-align:left; padding-left: 20px;font-weight: bold;"
 						                       readonly />
 						            </td>
 
@@ -1233,7 +1217,7 @@ $(document).ready(function() {
 						                       id="r20_product"
 						                       name="r20_product"
 						                       style="background-color:#FFFFFF; width: 500px; height: 28px;
-						                              border-color: transparent; text-align:left; padding-left: 20px;"
+						                              border-color: transparent; text-align:left; padding-left: 20px;font-weight: bold;"
 						                       readonly />
 						            </td>
 
@@ -1267,7 +1251,7 @@ $(document).ready(function() {
 						                       id="r21_product"
 						                       name="r21_product"
 						                       style="background-color:#FFFFFF; width: 500px; height: 28px;
-						                              border-color: transparent; text-align:left; padding-left: 20px;"
+						                              border-color: transparent; text-align:left; padding-left: 20px;font-weight: bold;"
 						                       readonly />
 						            </td>
 
@@ -1302,7 +1286,7 @@ $(document).ready(function() {
 						                       id="r22_product"
 						                       name="r22_product"
 						                       style="background-color:#FFFFFF; width: 500px; height: 28px;
-						                              border-color: transparent; text-align:left; padding-left: 1%;"
+						                              border-color: transparent; text-align:left; padding-left: 1%;font-weight: bold;"
 						                       readonly />
 						            </td>
 
