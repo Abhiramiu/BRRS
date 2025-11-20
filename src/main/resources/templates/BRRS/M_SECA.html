@@ -926,7 +926,7 @@ function showmodify(btn) {
 
     // Highlight editable fields for rows 11 to 60
     for (let i = 14; i <= 57; i++) {
-    if ([17, 32, 35, 38, 43, 47, 51].includes(i)) continue;
+    if ([17, 32, 35, 36, 38, 43, 47, 51].includes(i)) continue;
 
     let fields = ["EQUITY", "BONDS", "BOBC", "TRES_BILLS", "REPURCHASE_AGREE",
     	"CERT_OF_DEP", "COM_PAPER", "PLEDGED_ASSET", "OTHER"];
@@ -937,10 +937,11 @@ function showmodify(btn) {
         }
     });
 }
-    for (let i = 14; i <= 57; i++) {
-        if ([36].includes(i)) continue;
+    for (let i = 36; i <= 36; i++) {
+        //if ([36].includes(i)) continue;
 
-        let fields = ["BONDS", "BOBC"];
+        let fields = ["EQUITY", "TRES_BILLS", "REPURCHASE_AGREE",
+        	"CERT_OF_DEP", "COM_PAPER", "PLEDGED_ASSET", "OTHER"];
         fields.forEach(field => {
             let selector = `#R${i}_${field}`;
             if ($(selector).length) {
