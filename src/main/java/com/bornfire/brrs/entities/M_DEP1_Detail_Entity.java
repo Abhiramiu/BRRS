@@ -19,11 +19,11 @@ public class M_DEP1_Detail_Entity {
    private String acctName;
    @Column(name = "DATA_TYPE")
    private String dataType;
-   @Column(name = "COLUMN_ID")
-   private String columnId;
+   @Column(name = "REPORT_ADDL_CRITERIA_1")
+   private String reportAddlCriteria1;
   
-   @Column(name = "ROW_ID")
-   private String rowId;
+   @Column(name = "REPORT_LABLE")
+   private String reportLable;
    @Column(name = "REPORT_REMARKS")
    private String reportRemarks;
    @Column(name = "MODIFICATION_REMARKS")
@@ -52,12 +52,14 @@ public class M_DEP1_Detail_Entity {
    @Column(name = "VERIFY_TIME")
    @DateTimeFormat(pattern = "dd-MM-yyyy")
    private Date verifyTime;
-   @Column(name = "ENTITY_FLG")
-   private char entityFlg;
-   @Column(name = "MODIFY_FLG")
-   private char modifyFlg;
-   @Column(name = "DEL_FLG")
-   private char delFlg;
+   @Column(name = "ENTITY_FLG", length = 1)
+   private String entityFlg;
+
+   @Column(name = "MODIFY_FLG", length = 1)
+   private String modifyFlg;
+
+   @Column(name = "DEL_FLG", length = 1)
+   private String delFlg;
    public String getCustId() {
 	return custId;
    }
@@ -82,19 +84,20 @@ public class M_DEP1_Detail_Entity {
    public void setDataType(String dataType) {
 	this.dataType = dataType;
    }
-   public String getColumnId() {
-	return columnId;
-   }
-   public void setColumnId(String columnId) {
-	this.columnId = columnId;
-   }
-   public String getRowId() {
-	return rowId;
-   }
-   public void setRowId(String rowId) {
-	this.rowId = rowId;
-   }
-   public String getReportRemarks() {
+  
+   public String getReportAddlCriteria1() {
+	return reportAddlCriteria1;
+}
+public void setReportAddlCriteria1(String reportAddlCriteria1) {
+	this.reportAddlCriteria1 = reportAddlCriteria1;
+}
+public String getReportLable() {
+	return reportLable;
+}
+public void setReportLable(String reportLable) {
+	this.reportLable = reportLable;
+}
+public String getReportRemarks() {
 	return reportRemarks;
    }
    public void setReportRemarks(String reportRemarks) {
@@ -166,25 +169,28 @@ public class M_DEP1_Detail_Entity {
    public void setVerifyTime(Date verifyTime) {
 	this.verifyTime = verifyTime;
    }
-   public char getEntityFlg() {
+ 
+   
+   
+   public String getEntityFlg() {
 	return entityFlg;
-   }
-   public void setEntityFlg(char entityFlg) {
+}
+public void setEntityFlg(String entityFlg) {
 	this.entityFlg = entityFlg;
-   }
-   public char getModifyFlg() {
+}
+public String getModifyFlg() {
 	return modifyFlg;
-   }
-   public void setModifyFlg(char modifyFlg) {
+}
+public void setModifyFlg(String modifyFlg) {
 	this.modifyFlg = modifyFlg;
-   }
-   public char getDelFlg() {
+}
+public String getDelFlg() {
 	return delFlg;
-   }
-   public void setDelFlg(char delFlg) {
+}
+public void setDelFlg(String delFlg) {
 	this.delFlg = delFlg;
-   }
-   public M_DEP1_Detail_Entity() {
+}
+public M_DEP1_Detail_Entity() {
 	super();
 	// TODO Auto-generated constructor stub
    }

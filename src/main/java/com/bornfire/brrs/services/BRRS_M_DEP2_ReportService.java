@@ -147,15 +147,15 @@ public class BRRS_M_DEP2_ReportService {
 				parsedDate = dateformat.parse(todate);
 			}
 
-			String rowId = null;
-			String columnId = null;
+			String reportLable = null;
+			String reportAddlCriteria1 = null;
 
 			// ✅ Split the filter string here
 			if (filter != null && filter.contains(",")) {
 				String[] parts = filter.split(",");
 				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
+					reportLable = parts[0];
+					reportAddlCriteria1 = parts[1];
 				}
 			}
 
@@ -164,8 +164,8 @@ public class BRRS_M_DEP2_ReportService {
 				System.out.println(version);
 				// 🔹 Archival branch
 				List<M_DEP2_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_DEP2_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+				if (reportLable != null && reportAddlCriteria1 != null) {
+					T1Dt1 = M_DEP2_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria1, parsedDate, version);
 				} else {
 					T1Dt1 = M_DEP2_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
 					totalPages = M_DEP2_Detail_Repo.getdatacount(parsedDate);
@@ -182,8 +182,8 @@ public class BRRS_M_DEP2_ReportService {
 				System.out.println("Praveen");
 				// 🔹 Current branch
 				List<M_DEP2_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_DEP2_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+				if (reportLable != null && reportAddlCriteria1 != null) {
+					T1Dt1 = M_DEP2_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria1, parsedDate);
 				} else {
 					T1Dt1 = M_DEP2_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
 					totalPages = M_DEP2_Detail_Repo.getdatacount(parsedDate);
@@ -5562,7 +5562,7 @@ public class BRRS_M_DEP2_ReportService {
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 // Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT_LABLE", "REPORT_ADDL_CRITERIA_1",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -5593,8 +5593,8 @@ public class BRRS_M_DEP2_ReportService {
 						balanceCell.setCellValue(0.000);
 					}
 					balanceCell.setCellStyle(balanceStyle);
-					row.createCell(4).setCellValue(item.getRowId());
-					row.createCell(5).setCellValue(item.getColumnId());
+					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
@@ -10935,7 +10935,7 @@ public class BRRS_M_DEP2_ReportService {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("MSFinP2Detail");
+			XSSFSheet sheet = workbook.createSheet("MDEP2Detail");
 
 			// Common border style
 			BorderStyle border = BorderStyle.THIN;
@@ -10977,7 +10977,7 @@ public class BRRS_M_DEP2_ReportService {
 			balanceStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT_LABLE", "REPORT_ADDL_CRITERIA_1",
 					"REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
@@ -11018,8 +11018,8 @@ public class BRRS_M_DEP2_ReportService {
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getRowId());
-					row.createCell(5).setCellValue(item.getColumnId());
+					row.createCell(4).setCellValue(item.getReportLable());
+					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
