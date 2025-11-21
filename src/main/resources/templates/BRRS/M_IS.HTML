@@ -245,7 +245,7 @@ PURPOSE		: BWRBRREPORT
 			width: 35px;
 			height: 35px;
 			border-radius: 50%;
-			background-color: white;
+			background-color: white;font-weight:bold;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -265,7 +265,7 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		.left-arrow-circle:hover i {
-			color: white;
+			color: white;font-weight:bold;
 		}
 
 		.white-text span {
@@ -291,6 +291,7 @@ PURPOSE		: BWRBRREPORT
 		}
 	</style>
 	<script th:inline="javascript">
+		let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -345,8 +346,9 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			showResultModal('BRRS', ' Details page not available for Manual Report');
-		}
+    isDetailsModal = true; // mark that this modal is from Details
+    showResultModal('BRRS', 'Details page not available for Manual Report');
+}
 
 		function showsummary() {
 			$('#loader').modal('show');
@@ -558,261 +560,223 @@ PURPOSE		: BWRBRREPORT
 
 
 	<SCRIPT>
-		$(document).ready(function () {
+	// ======================================================
+// AUTO CALCULATIONS FOR R10–R16
+// ======================================================
 
-			calculateRowTotals();   // G10–G15 + R10_TOTAL–R15_TOTAL
-			calculateR16();         // R16 column totals
-			calculateR16Total();    // R16_TOTAL (NEW)
+$(window).on("load", function () {
 
-			// Auto run on input
-			$("[id^='R10_'], [id^='R11_'], [id^='R12_'], [id^='R13_'], [id^='R14_'], [id^='R15_']")
-				.on("keyup change", function () {
-					calculateRowTotals();
-					calculateR16();
-					calculateR16Total();
-				});
+    calculateR15Totals();     // G10–G15 + R16 (D/E/F)
+    calculateR16Total();      // R16_TOTAL
 
-		});
-
-		// ======================================================
-		// 1️⃣ D+E+F = G (Row TOTALS 10–15)
-		// ======================================================
-		function calculateRowTotals() {
-
-			for (let i = 10; i <= 15; i++) {
-
-				let D = Number($("#R" + i + "_HELD_TO_MATURITY").val()) || 0;
-				let E = Number($("#R" + i + "_AVAILABLE_FOR_SALE").val()) || 0;
-				let F = Number($("#R" + i + "_FAIR_VALUE_PROFIT_AND_LOSS").val()) || 0;
-
-				let G = D + E + F;
-
-				// Set row totals
-				$("#R" + i + "_TOTAL").val(G);  // R10_TOTAL etc.
-				$("#G" + i).val(G);             // G10–G15 (if exists)
-			}
-		}
-
-		// ======================================================
-		// 2️⃣ R16 = SUM(R10–R15) for D, E, F columns
-		// ======================================================
-		function calculateR16() {
-
-			// D Column
-			let sumD = 0;
-			for (let i = 10; i <= 15; i++) {
-				sumD += Number($("#R" + i + "_HELD_TO_MATURITY").val()) || 0;
-			}
-			$("#R16_HELD_TO_MATURITY").val(sumD);
-
-			// E Column
-			let sumE = 0;
-			for (let i = 10; i <= 15; i++) {
-				sumE += Number($("#R" + i + "_AVAILABLE_FOR_SALE").val()) || 0;
-			}
-			$("#R16_AVAILABLE_FOR_SALE").val(sumE);
-
-			// F Column
-			let sumF = 0;
-			for (let i = 10; i <= 15; i++) {
-				sumF += Number($("#R" + i + "_FAIR_VALUE_PROFIT_AND_LOSS").val()) || 0;
-			}
-			$("#R16_FAIR_VALUE_PROFIT_AND_LOSS").val(sumF);
-		}
-
-		// ======================================================
-		// 3️⃣ NEW → R16_TOTAL = SUM(R10_TOTAL–R15_TOTAL)
-		// ======================================================
-		function calculateR16Total() {
-
-			let total = 0;
-
-			for (let i = 10; i <= 15; i++) {
-				total += Number($("#R" + i + "_TOTAL").val()) || 0;
-			}
-
-			$("#R16_TOTAL").val(total);  // Final overall total
-		}
-		$(document).ready(function () {
-
-			calculateRow21to35Totals();   // Row totals I21–I35
-			calculateR35();               // R35 column totals
-			calculateR35Total();          // R35_TOTAL
-			calculateR31Special();        // R31 special calculation
-
-			// Auto-run on input for rows 21–35
-			$("[id^='R21_'], [id^='R22_'], [id^='R23_'], [id^='R24_'], [id^='R25_'], [id^='R26_'], " +
-				"[id^='R27_'], [id^='R28_'], [id^='R29_'], [id^='R30_'], [id^='R31_'], [id^='R32_'], " +
-				"[id^='R33_'], [id^='R34_'], [id^='R35_']")
-				.on("keyup change", function () {
-					calculateRow21to35Totals();
-					calculateR35();
-					calculateR35Total();
-					calculateR31Special();
-				});
-
-		});
+    // Auto-run on input for rows 10–15
+    $("[id^='R10_'], [id^='R11_'], [id^='R12_'], [id^='R13_'], [id^='R14_'], [id^='R15_']")
+        .on("keyup change", function () {
+            calculateR15Totals();
+            calculateR16Total();
+        });
+});
 
 
-		// ======================================================
-		// 1️⃣ ROW TOTALS → I21 to I35  (SUM D,E,F,G,H of same row)
-		// ======================================================
-		function calculateRow21to35Totals() {
+// ======================================================
+// 1️⃣ D + E + F = G  (Row TOTALS R10–R15)
+//    Also calculates R16 (sum of D/E/F)
+// ======================================================
+function calculateR15Totals() {
 
-			for (let i = 21; i <= 35; i++) {
+    let HTM = 0, AFS = 0, FVPAL = 0;
 
-				let D = Number($("#R" + i + "_HELD_FOR_TRADING").val()) || 0;
-				let E = Number($("#R" + i + "_AMORTISED_COST").val()) || 0;
-				let F = Number($("#R" + i + "_AVAILABLE_FOR_SALE").val()) || 0;
-				let G = Number($("#R" + i + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val()) || 0;
-				let H = Number($("#R" + i + "_QUALIFYING_FOR_HEDGE_ACCOUNTING").val()) || 0;
+    for (let i = 10; i <= 15; i++) {
 
-				let I = D + E + F + G + H;
+        let c = parseFloat($("#R" + i + "_FAIR_VALUE_PROFIT_AND_LOSS").val().replace(/,/g, "")) || 0;
+        let a = parseFloat($("#R" + i + "_HELD_TO_MATURITY").val().replace(/,/g, "")) || 0;
+        let b = parseFloat($("#R" + i + "_AVAILABLE_FOR_SALE").val().replace(/,/g, "")) || 0;
 
-				$("#R" + i + "_TOTAL").val(I);     // R21_TOTAL ... R35_TOTAL
-				$("#I" + i).val(I);                // If I21-I35 input exists
-			}
-		}
+        let rowTotal = a + b + c;
 
+        $("#R" + i + "_TOTAL").val(rowTotal.toLocaleString('en-US'));
 
-		// ======================================================
-		// 2️⃣ COLUMN TOTALS → R35 (SUM R21–R34)
-		// ======================================================
-		function calculateR35() {
+        HTM += a;
+        AFS += b;
+        FVPAL += c;
+    }
 
-			// D column
-			let sumD = 0;
-			for (let i = 21; i <= 31; i++) {
-				sumD += Number($("#R" + i + "_HELD_FOR_TRADING").val()) || 0;
-			}
-			$("#R35_HELD_FOR_TRADING").val(sumD);
-
-			// E column
-			let sumE = 0;
-			for (let i = 21; i <= 31; i++) {
-				sumE += Number($("#R" + i + "_AMORTISED_COST").val()) || 0;
-			}
-			$("#R35_AMORTISED_COST").val(sumE);
-
-			// F column
-			let sumF = 0;
-			for (let i = 21; i <= 31; i++) {
-				sumF += Number($("#R" + i + "_AVAILABLE_FOR_SALE").val()) || 0;
-			}
-			$("#R35_AVAILABLE_FOR_SALE").val(sumF);
-
-			// G column
-			let sumG = 0;
-			for (let i = 21; i <= 31; i++) {
-				sumG += Number($("#R" + i + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val()) || 0;
-			}
-			$("#R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val(sumG);
-
-			// H column
-			let sumH = 0;
-			for (let i = 21; i <= 31; i++) {
-				sumH += Number($("#R" + i + "_QUALIFYING_FOR_HEDGE_ACCOUNTING").val()) || 0;
-			}
-			$("#R35_QUALIFYING_FOR_HEDGE_ACCOUNTING").val(sumH);
-		}
+    // R16 totals
+	
+    $("#R16_FAIR_VALUE_PROFIT_AND_LOSS").val(FVPAL.toLocaleString('en-US'));
+    $("#R16_HELD_TO_MATURITY").val(HTM.toLocaleString('en-US'));
+    $("#R16_AVAILABLE_FOR_SALE").val(AFS.toLocaleString('en-US'));
+}
 
 
-		// ======================================================
-		// 3️⃣ R35_TOTAL = SUM(I21–I34)
-		// ======================================================
-		function calculateR35Total() {
 
-			let total = 0;
+// 2️⃣ R16_TOTAL = SUM(G10–G15)
+// ======================================================
+function calculateR16Total() {
 
-			for (let i = 21; i <= 31; i++) {
-				total += Number($("#R" + i + "_TOTAL").val()) || 0;
-			}
+    let total = 0;
 
-			$("#R35_TOTAL").val(total);
-		}
+    for (let i = 10; i <= 15; i++) {
+        let g = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
+        total += g;
+    }
+
+    $("#R16_TOTAL").val(total.toLocaleString('en-US'));
+}
+$(window).on("load", function () {
+
+    // Run once when page loads
+    calculateR35Totals();
+
+    // Auto-run when any input from rows 21–34 is changed (use 'input' for better coverage)
+    let selectors = [];
+    for (let i = 21; i <= 34; i++) selectors.push("[id^='R" + i + "_']");
+    $(selectors.join(",")).on("input change", function () {
+        calculateR35Totals();
+    });
+});
+
+function _toNumberFromSelector(selector) {
+    // safe parsing: return 0 when no element or empty value
+    let el = $(selector);
+    if (!el || el.length === 0) return 0;
+    let v = el.val();
+    if (v === undefined || v === null || v === "") return 0;
+    v = v.toString().replace(/,/g, "");
+    return parseFloat(v) || 0;
+}
 
 
-		// ======================================================
-		// 4️⃣ SPECIAL → R31 = SUM (R32–R34) column-wise (D–I)
-		// ======================================================
-		function calculateR31Special() {
+function calculateR35Totals() {
 
-			// Loop all 5 columns D,E,F,G,H and fill TOTAL column I31 also
-			let cols = [
-				"HELD_FOR_TRADING",
-				"AMORTISED_COST",
-				"AVAILABLE_FOR_SALE",
-				"FAIR_VALUE_THROUGH_PROFIT_AND_LOSS",
-				"QUALIFYING_FOR_HEDGE_ACCOUNTING"
-			];
+    let sumD = 0, sumE = 0, sumF = 0, sumG = 0, sumH = 0, sumI = 0;
 
-			let finalRowTotal = 0;
+    // -------------------------------------------
+    // ROWS 21 TO 30 (Normal addition rows)
+    // -------------------------------------------
+    for (let i = 21; i <= 30; i++) {
 
-			cols.forEach(col => {
-				let sum = 0;
+        let D = parseFloat($("#R" + i + "_HELD_FOR_TRADING").val().replace(/,/g, "")) || 0;
+        let E = parseFloat($("#R" + i + "_AMORTISED_COST").val().replace(/,/g, "")) || 0;
+        let F = parseFloat($("#R" + i + "_AVAILABLE_FOR_SALE").val().replace(/,/g, "")) || 0;
+        let G = parseFloat($("#R" + i + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val().replace(/,/g, "")) || 0;
+        let H = parseFloat($("#R" + i + "_QUALIFYING_FOR_HEDGE_ACCOUNTING").val().replace(/,/g, "")) || 0;
 
-				sum += Number($("#R32_" + col).val()) || 0;
-				sum += Number($("#R33_" + col).val()) || 0;
-				sum += Number($("#R34_" + col).val()) || 0;
+        let I = D + E + F + G + H;
 
-				$("#R31_" + col).val(sum);
+        $("#R" + i + "_TOTAL").val(I.toLocaleString('en-US'));
 
-				finalRowTotal += sum;
-			});
+        sumD += D;
+        sumE += E;
+        sumF += F;
+        sumG += G;
+        sumH += H;
+        sumI += I;
+    }
 
-			$("#R31_TOTAL").val(finalRowTotal);
-		}
+    // -------------------------------------------
+    // ROW 31 = SUM OF ROWS 32 + 33 + 34
+    // -------------------------------------------
+
+    let D31 = 0, E31 = 0, F31 = 0, G31 = 0, H31 = 0, I31 = 0;
+
+    for (let r = 32; r <= 34; r++) {
+        D31 += parseFloat($("#R" + r + "_HELD_FOR_TRADING").val().replace(/,/g, "")) || 0;
+        E31 += parseFloat($("#R" + r + "_AMORTISED_COST").val().replace(/,/g, "")) || 0;
+        F31 += parseFloat($("#R" + r + "_AVAILABLE_FOR_SALE").val().replace(/,/g, "")) || 0;
+        G31 += parseFloat($("#R" + r + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val().replace(/,/g, "")) || 0;
+        H31 += parseFloat($("#R" + r + "_QUALIFYING_FOR_HEDGE_ACCOUNTING").val().replace(/,/g, "")) || 0;
+        I31 += parseFloat($("#R" + r + "_TOTAL").val().replace(/,/g, "")) || 0;
+    }
+
+    // PUT VALUES INTO ROW 31
+    $("#R31_HELD_FOR_TRADING").val(D31.toLocaleString('en-US'));
+    $("#R31_AMORTISED_COST").val(E31.toLocaleString('en-US'));
+    $("#R31_AVAILABLE_FOR_SALE").val(F31.toLocaleString('en-US'));
+    $("#R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val(G31.toLocaleString('en-US'));
+    $("#R31_QUALIFYING_FOR_HEDGE_ACCOUNTING").val(H31.toLocaleString('en-US'));
+    $("#R31_TOTAL").val(I31.toLocaleString('en-US'));
+
+    // Add Row 31 values to column totals
+    sumD += D31;
+    sumE += E31;
+    sumF += F31;
+    sumG += G31;
+    sumH += H31;
+    sumI += I31;
+
+    // -------------------------------------------
+    // ROWS 32–34 CALCULATE NORMAL TOTAL
+    // -------------------------------------------
+
+    for (let r = 32; r <= 34; r++) {
+        let D = parseFloat($("#R" + r + "_HELD_FOR_TRADING").val().replace(/,/g, "")) || 0;
+        let E = parseFloat($("#R" + r + "_AMORTISED_COST").val().replace(/,/g, "")) || 0;
+        let F = parseFloat($("#R" + r + "_AVAILABLE_FOR_SALE").val().replace(/,/g, "")) || 0;
+        let G = parseFloat($("#R" + r + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val().replace(/,/g, "")) || 0;
+        let H = parseFloat($("#R" + r + "_QUALIFYING_FOR_HEDGE_ACCOUNTING").val().replace(/,/g, "")) || 0;
+
+        let I = D + E + F + G + H;
+
+        $("#R" + r + "_TOTAL").val(I.toLocaleString('en-US'));
+    }
+
+    // -------------------------------------------
+    // ROW 35 GRAND TOTAL
+    // -------------------------------------------
+    $("#R35_HELD_FOR_TRADING").val(sumD.toLocaleString('en-US'));
+    $("#R35_AMORTISED_COST").val(sumE.toLocaleString('en-US'));
+    $("#R35_AVAILABLE_FOR_SALE").val(sumF.toLocaleString('en-US'));
+    $("#R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val(sumG.toLocaleString('en-US'));
+    $("#R35_QUALIFYING_FOR_HEDGE_ACCOUNTING").val(sumH.toLocaleString('en-US'));
+    $("#R35_TOTAL").val(sumI.toLocaleString('en-US'));
+}
+
 
 	</SCRIPT>
 
 
 	<script>
-function closemodel() {
+// Declare globally
+	function closemodel() {
     $("#resultModal").modal("hide");
     $('#loader').modal('hide');
 
-    const message = $("#resultModalBody").text();
-
-    // 1️⃣ Success message → go back
-    if (message.includes("Resubmission Updated Successfully")) {
-        window.history.back();
-        return;
+    // Only reload if not from Details modal
+    if (!isDetailsModal) {
+        setTimeout(function () {
+            location.reload();
+        }, 300);
+    } else {
+        // reset flag for next modal usage
+        isDetailsModal = false;
     }
-
-    // 2️⃣ If modal is opened from Details → DO NOT RELOAD
-    if (isDetailsModal === true) {
-        isDetailsModal = false;  // reset for next time
-        return;                  // STOP here → no reload
-    }
-
-    // 3️⃣ Default → reload page
-    setTimeout(() => location.reload(), 300);
 }
 
-		function fileuploads(btn) {
-			const asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 
-			$('#loader').modal('show');
+function fileuploads(btn) {
 
-			// Step 1: Calculate totals
-			calculateR16();
-			calculateR16Total();
+    const asondate = btn.getAttribute("data-todate");
+    const type = btn.getAttribute("data-type");
 
-			calculateR31Special();
-			calculateR35();
-			calculateR35Total();
+    $('#loader').modal('show');
 
-			// Step 2: Remove commas
-			$("#fileupload input[type='text']").each(function () {
-				$(this).val($(this).val().replace(/,/g, ''));
-			});
+    // Correct calculations
+    calculateR15Totals();
+    calculateR16Total();
+	calculateR15Totals();
 
-			// Step 3: Validate form
-			if (!$("#fileupload").valid()) {
-				$('#loader').modal('hide');
-				return;
-			}
+
+    // Remove commas BEFORE submit
+    $("#fileupload input[type='text']").each(function () {
+        $(this).val($(this).val().replace(/,/g, ""));
+    });
+
+    // Validate
+    if (!$("#fileupload").valid()) {
+        $('#loader').modal('hide');
+        return;
+    }
 
 			// Step 4: Build FormData
 			const formData = new FormData();
@@ -824,50 +788,51 @@ function closemodel() {
 				if (name) formData.append(name, $(this).val());
 			});
 
-			// Step 5: Select API endpoint dynamically
-			let apiUrl = './M_ISupdateAll'; // normal update
-			if (type && type.toUpperCase() === 'RESUB') {
-				apiUrl = './UpdateM_ISReSub'; // Resubmission endpoint
-			}
+// Step 5: Select API endpoint dynamically
+let apiUrl = './M_ISupdateAll'; // normal update
+if (type && type.toUpperCase() === 'RESUB') {
+	apiUrl = './UpdateM_ISReSub'; // Resubmission endpoint
+}
 
-			// Step 6: AJAX call
-			$.ajax({
-				url: apiUrl,
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				dataType: 'text',
-				success: function (response) {
-					$("#resultModalLabel").text("BRRS");
-					$("#resultModalBody").text(response);
-					$("#resultModal").modal("show");
+// Step 6: AJAX call
+$.ajax({
+	url: apiUrl,
+	type: 'POST',
+	data: formData,
+	processData: false,
+	contentType: false,
+	dataType: 'text',
+	success: function (response) {
+		$("#resultModalLabel").text("BRRS");
+		$("#resultModalBody").text(response);
+		$("#resultModal").modal("show");
 
-					// ✅ Redirect after short delay (so user sees the success message)
-					if (response.includes("Resubmission Updated Successfully")) {
-						setTimeout(function () {
-							// Go back to the previous page user came from
-							if (document.referrer && document.referrer !== '') {
-								// Redirect to the page that opened this one
-								window.location.href = document.referrer;
-							} else {
-								// If no referrer, just go one step back in history
-								window.history.back();
-							}
-						}, 2000); // wait 2 seconds before redirect
-					}
-				},
-				error: function (jqXHR) {
-					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
-					$("#resultModal").modal("show");
-				},
-				complete: function () {
-					$('#loader').modal('hide');
+		// ✅ Redirect after short delay (so user sees the success message)
+		if (response.includes("Resubmission Updated Successfully")) {
+			setTimeout(function() {
+				// Go back to the previous page user came from
+				if (document.referrer && document.referrer !== '') {
+					// Redirect to the page that opened this one
+					window.location.href = document.referrer;
+				} else {
+					// If no referrer, just go one step back in history
+					window.history.back();
 				}
-			});
+			}, 2000); // wait 2 seconds before redirect
+		}
+	},
+	error: function (jqXHR) {
+		$("#resultModalLabel").text("Error");
+		$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+		$("#resultModal").modal("show");
+	},
+	complete: function () {
+		$('#loader').modal('hide');
+	}
+});
 
 		}
+
 
 
 	</script>
@@ -888,11 +853,11 @@ function closemodel() {
 						</div>
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+							style="font-family: arial; font-size: 20px; padding-top: 10px;font-weight:bold; color: white;font-weight:bold;">
 							  M-IS: ANALYSIS OF INCOME AND SECURITIES BY CLASSIFICATION</h5>
 					</div>
 					<div class="custom-tab-btn-group nav-buttons"
-						style="display: flex; color: white; align-items: center;">
+						style="display: flex; color: white;font-weight:bold; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span
@@ -960,20 +925,20 @@ function closemodel() {
 										<thead class="thead-light">
 											<tr style="background-color: #b3b6b9 ">
 
-												<th rowspan="3" style="text-align: left; padding-left: 20px;">
+												<th rowspan="3" style="text-align: left; ">
 													(5A)
 													INCOME ON INVESTMENTS AND SECURITIES </th>
 												<th
-													style="text-align: center; vertical-align:center;background-color: #D8D8D8; ">
+													style="text-align: right; vertical-align:center;background-color: #D8D8D8; ">
 													Fair Value (Profit and Loss)</th>
 												<th
-													style="text-align: center; vertical-align:center;background-color: #D8D8D8; ">
+													style="text-align: right; vertical-align:center;background-color: #D8D8D8; ">
 													Held to Maturity </th>
 												<th
-													style="text-align: center; vertical-align:center;background-color: #D8D8D8; ">
+													style="text-align: right; vertical-align:center;background-color: #D8D8D8; ">
 													Available for Sale</th>
 												<th
-													style="text-align: center; vertical-align:center;background-color: #D8D8D8;">
+													style="text-align: right; vertical-align:center;background-color: #D8D8D8;">
 													Total </th>
 											</tr>
 										</thead>
@@ -986,28 +951,28 @@ function closemodel() {
 														style="background-color: #FFFFFF; height: 28px;width: 500px; border-color: transparent; text-align: left;"
 														readonly /></td>
 
-												<td id="R0W10" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W10" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_FAIR_VALUE_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R10_FAIR_VALUE_PROFIT_AND_LOSS, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R10_FAIR_VALUE_PROFIT_AND_LOSS"
 														name="R10_FAIR_VALUE_PROFIT_AND_LOSS"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right; "
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
 
-												<td id="R0W10" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W10" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_HELD_TO_MATURITY != null ? #numbers.formatDecimal(report.R10_HELD_TO_MATURITY, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R10_HELD_TO_MATURITY" name="R10_HELD_TO_MATURITY"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
-												<td id="R0W10" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W10" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R10_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R10_AVAILABLE_FOR_SALE" name="R10_AVAILABLE_FOR_SALE"
-														style="background-color: #FFFFFF;  height: 28px;width: 300px; border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF;  height: 28px;width: 350px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
@@ -1015,7 +980,7 @@ function closemodel() {
 													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R10_TOTAL }" id="R10_TOTAL" name="R10_TOTAL"
-														style="background-color: #FFFFFF;height: 28px;width: 300px;border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF;height: 28px;width: 350px;border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1027,28 +992,28 @@ function closemodel() {
 														style="background-color: #FFFFFF;width: 500px;  height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="R0W11" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W11" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R11_FAIR_VALUE_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R11_FAIR_VALUE_PROFIT_AND_LOSS, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R11_FAIR_VALUE_PROFIT_AND_LOSS"
 														name="R11_FAIR_VALUE_PROFIT_AND_LOSS"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right; "
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
 
-												<td id="R0W11" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W11" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R11_HELD_TO_MATURITY != null ? #numbers.formatDecimal(report.R11_HELD_TO_MATURITY, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R11_HELD_TO_MATURITY" name="R11_HELD_TO_MATURITY"
-														style="background-color: #FFFFFF;  height: 28px; width: 300px;border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF;  height: 28px; width: 350px;border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
-												<td id="R0W11" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W11" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R11_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R11_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R11_AVAILABLE_FOR_SALE" name="R11_AVAILABLE_FOR_SALE"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
@@ -1056,7 +1021,7 @@ function closemodel() {
 													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R11_TOTAL }" id="R11_TOTAL" name="R11_TOTAL"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1067,28 +1032,28 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 500px;  height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="R0W12" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W12" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R12_FAIR_VALUE_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R12_FAIR_VALUE_PROFIT_AND_LOSS, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R12_FAIR_VALUE_PROFIT_AND_LOSS"
 														name="R12_FAIR_VALUE_PROFIT_AND_LOSS"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right; "
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
 
-												<td id="R0W12" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W12" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R12_HELD_TO_MATURITY != null ? #numbers.formatDecimal(report.R12_HELD_TO_MATURITY, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R12_HELD_TO_MATURITY" name="R12_HELD_TO_MATURITY"
-														style="background-color: #FFFFFF;  height: 28px;width: 300px; border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF;  height: 28px;width: 350px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
-												<td id="R0W12" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W12" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R12_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R12_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R12_AVAILABLE_FOR_SALE" name="R12_AVAILABLE_FOR_SALE"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
@@ -1096,7 +1061,7 @@ function closemodel() {
 													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R12_TOTAL }" id="R12_TOTAL" name="R12_TOTAL"
-														style="background-color: #FFFFFF; height: 28px;width: 300px;border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px;width: 350px;border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1108,28 +1073,28 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="R0W13" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W13" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R13_FAIR_VALUE_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R13_FAIR_VALUE_PROFIT_AND_LOSS, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R13_FAIR_VALUE_PROFIT_AND_LOSS"
 														name="R13_FAIR_VALUE_PROFIT_AND_LOSS"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right; "
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
 
-												<td id="R0W13" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W13" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R13_HELD_TO_MATURITY != null ? #numbers.formatDecimal(report.R13_HELD_TO_MATURITY, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R13_HELD_TO_MATURITY" name="R13_HELD_TO_MATURITY"
-														style="background-color: #FFFFFF;  height: 28px;width: 300px; border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF;  height: 28px;width: 350px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
-												<td id="R0W13" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W13" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R13_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R13_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R13_AVAILABLE_FOR_SALE" name="R13_AVAILABLE_FOR_SALE"
-														style="background-color: #FFFFFF; height: 28px; width: 300px;border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF; height: 28px; width: 350px;border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
@@ -1137,7 +1102,7 @@ function closemodel() {
 													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R13_TOTAL }" id="R13_TOTAL" name="R13_TOTAL"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1149,28 +1114,28 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 800px;width: 500px;  height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="R0W14" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W14" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R14_FAIR_VALUE_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R14_FAIR_VALUE_PROFIT_AND_LOSS, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R14_FAIR_VALUE_PROFIT_AND_LOSS"
 														name="R14_FAIR_VALUE_PROFIT_AND_LOSS"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right; "
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
 
-												<td id="R0W14" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W14" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R14_HELD_TO_MATURITY != null ? #numbers.formatDecimal(report.R14_HELD_TO_MATURITY, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R14_HELD_TO_MATURITY" name="R14_HELD_TO_MATURITY"
-														style="background-color: #FFFFFF;  height: 28px; width: 300px;border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF;  height: 28px; width: 350px;border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
-												<td id="R0W14" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W14" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R14_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R14_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R14_AVAILABLE_FOR_SALE" name="R14_AVAILABLE_FOR_SALE"
-														style="background-color: #FFFFFF; height: 28px; width: 300px;border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF; height: 28px; width: 350px;border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
@@ -1178,7 +1143,7 @@ function closemodel() {
 													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R14_TOTAL }" id="R14_TOTAL" name="R14_TOTAL"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1191,28 +1156,28 @@ function closemodel() {
 														style="background-color: #FFFFFF;  height: 28px; width: 500px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="R0W15" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W15" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R15_FAIR_VALUE_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R15_FAIR_VALUE_PROFIT_AND_LOSS, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R15_FAIR_VALUE_PROFIT_AND_LOSS"
 														name="R15_FAIR_VALUE_PROFIT_AND_LOSS"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right; "
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right; "
 														readonly />
 												</td>
 
-												<td id="R0W15" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W15" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R15_HELD_TO_MATURITY != null ? #numbers.formatDecimal(report.R15_HELD_TO_MATURITY, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R15_HELD_TO_MATURITY" name="R15_HELD_TO_MATURITY"
-														style="background-color: #FFFFFF;  height: 28px; width: 300px;border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF;  height: 28px; width: 350px;border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
-												<td id="R0W15" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W15" style="font-weight:bold;padding-left: 20px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R15_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R15_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R15_AVAILABLE_FOR_SALE" name="R15_AVAILABLE_FOR_SALE"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right;"
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
@@ -1220,7 +1185,7 @@ function closemodel() {
 													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R15_TOTAL }" id="R15_TOTAL" name="R15_TOTAL"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1229,43 +1194,43 @@ function closemodel() {
 														class="display-input Show_input " type="text"
 														th:value="'TOTAL INCOME ON INVESTMENT AND SECURITIES (SUM OF LINES (1) TO (6):'"
 														id="R16_PRODUCT" name="R16_PRODUCT"
-														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left;"
-														readonly /></td>
+														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left;font-weight: bold;"
+														 /></td>
 
 												<td id="R0W16"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R16_FAIR_VALUE_PROFIT_AND_LOSS }"
 														id="R16_FAIR_VALUE_PROFIT_AND_LOSS"
 														name="R16_FAIR_VALUE_PROFIT_AND_LOSS"
-														style="background-color: rgb(117, 122, 143);color: white; height: 28px;width: 300px; border-color: transparent; text-align: right; "
-														readonly />
+														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold; height: 28px;width: 350px; border-color: transparent; text-align: right; "
+														 />
 												</td>
 
 												<td id="R0W16"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R16_HELD_TO_MATURITY }"
 														id="R16_HELD_TO_MATURITY" name="R16_HELD_TO_MATURITY"
-														style="background-color: rgb(117, 122, 143);color: white;  height: 28px;width: 300px; border-color: transparent; text-align: right;"
-														readonly />
+														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold;  height: 28px;width: 350px; border-color: transparent; text-align: right;"
+														 />
 												</td>
 
 												<td id="R0W16"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R16_AVAILABLE_FOR_SALE}"
 														id="R16_AVAILABLE_FOR_SALE" name="R16_AVAILABLE_FOR_SALE"
-														style="background-color: rgb(117, 122, 143);color: white; height: 28px;width: 300px; border-color: transparent; text-align: right;"
-														readonly />
+														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold; height: 28px;width: 350px; border-color: transparent; text-align: right;"
+														 />
 												</td>
 
 												<td id="ROW16"
 													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R16_TOTAL }" id="R16_TOTAL" name="R16_TOTAL"
-														style="background-color: #FFFFFF; height: 28px;width: 300px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
-														readonly />
+														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
+														 />
 												</td>
 											</tr>
 
@@ -1277,28 +1242,28 @@ function closemodel() {
 										<thead class="thead-light">
 											<tr style="background-color: #b3b6b9">
 
-												<th rowspan="3" style="text-align: left;padding-left: 20px;">
+												<th rowspan="3" style="text-align: left;">
 													(5B)
 													TYPES OF INVESTMENT SECURITIES AND OTHER INVESTMENTS </th>
 												<th
-													style="text-align: center; vertical-align:center;background-color: #D8D8D8;">
+													style="text-align: right; vertical-align:center;background-color: #D8D8D8;">
 													Held for trading </th>
 												<th
-													style="text-align: center; vertical-align:center;background-color: #D8D8D8;">
+													style="text-align: right; vertical-align:center;background-color: #D8D8D8;">
 													Amortised cost </th>
 												<th
-													style="text-align: center; vertical-align:center;background-color: #D8D8D8;">
+													style="text-align: right; vertical-align:center;background-color: #D8D8D8;">
 													Available for sale </th>
 												<th
-													style="text-align: center; vertical-align:center;background-color: #D8D8D8;">
+													style="text-align: right; vertical-align:center;background-color: #D8D8D8;">
 													Fair value through profit & loss
 												</th>
 												<th
-													style="text-align: center; vertical-align:center;background-color: #D8D8D8;">
+													style="text-align: right; vertical-align:center;background-color: #D8D8D8;">
 													Qualifying for hedge accounting
 												</th>
 												<th
-													style="text-align: center; WIDTH:180PX ;vertical-align:center;background-color: #D8D8D8;">
+													style="text-align: right; WIDTH:180PX ;vertical-align:center;background-color: #D8D8D8;">
 													Total </th>
 											</tr>
 										<tbody th:each="report: ${reportsummary1}" style="font-family: Arial;">
@@ -1310,7 +1275,7 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="R0W21" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W21" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R21_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R21_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R21_HELD_FOR_TRADING" name="R21_HELD_FOR_TRADING"
@@ -1318,7 +1283,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W21" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W21" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R21_AMORTISED_COST != null ? #numbers.formatDecimal(report.R21_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R21_AMORTISED_COST" name="R21_AMORTISED_COST"
@@ -1326,14 +1291,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W21" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W21" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R21_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R21_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R21_AVAILABLE_FOR_SALE" name="R21_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW21" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW21" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R21_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R21_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R21_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -1342,7 +1307,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW21" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW21" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R21_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R21_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R21_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -1352,10 +1317,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW15"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R21_TOTAL }" id="R21_TOTAL" name="R21_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1367,7 +1332,7 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="R0W22" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W22" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R22_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R22_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R22_HELD_FOR_TRADING" name="R22_HELD_FOR_TRADING"
@@ -1375,7 +1340,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W22" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W22" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R22_AMORTISED_COST != null ? #numbers.formatDecimal(report.R22_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R22_AMORTISED_COST" name="R22_AMORTISED_COST"
@@ -1383,14 +1348,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W22" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W22" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R22_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R22_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R22_AVAILABLE_FOR_SALE" name="R22_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW22" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW22" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R22_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R22_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R22_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -1399,7 +1364,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW22" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW22" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R22_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R22_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R22_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -1409,10 +1374,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW15"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R22_TOTAL }" id="R22_TOTAL" name="R22_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1424,7 +1389,7 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="R0W23" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W23" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R23_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R23_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R23_HELD_FOR_TRADING" name="R23_HELD_FOR_TRADING"
@@ -1432,7 +1397,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W23" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W23" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R23_AMORTISED_COST != null ? #numbers.formatDecimal(report.R23_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R23_AMORTISED_COST" name="R23_AMORTISED_COST"
@@ -1440,14 +1405,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W23" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W23" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R23_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R23_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R23_AVAILABLE_FOR_SALE" name="R23_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW23" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW23" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R23_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R23_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R23_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -1456,7 +1421,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW23" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW23" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R23_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R23_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R23_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -1466,10 +1431,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW15"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R23_TOTAL }" id="R23_TOTAL" name="R23_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1481,7 +1446,7 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="R0W24" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W24" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R24_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R24_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R24_HELD_FOR_TRADING" name="R24_HELD_FOR_TRADING"
@@ -1489,7 +1454,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W24" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W24" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R24_AMORTISED_COST != null ? #numbers.formatDecimal(report.R24_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R24_AMORTISED_COST" name="R24_AMORTISED_COST"
@@ -1497,14 +1462,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W24" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W24" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R24_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R24_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R24_AVAILABLE_FOR_SALE" name="R24_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW24" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW24" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R24_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R24_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R24_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -1513,7 +1478,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW24" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW24" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R24_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R24_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R24_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -1523,10 +1488,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW15"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R24_TOTAL }" id="R24_TOTAL" name="R24_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1539,7 +1504,7 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="R0W25" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W25" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R25_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R25_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R25_HELD_FOR_TRADING" name="R25_HELD_FOR_TRADING"
@@ -1547,7 +1512,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W25" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W25" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R25_AMORTISED_COST != null ? #numbers.formatDecimal(report.R25_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R25_AMORTISED_COST" name="R25_AMORTISED_COST"
@@ -1555,14 +1520,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W25" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W25" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R25_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R25_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R25_AVAILABLE_FOR_SALE" name="R25_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW25" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW25" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R25_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R25_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R25_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -1571,7 +1536,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW25" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW25" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R25_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R25_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R25_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -1581,10 +1546,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW25"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R25_TOTAL }" id="R25_TOTAL" name="R25_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1596,7 +1561,7 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left;"
 														readonly /></td>
 
-												<td id="R0W26" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W26" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R26_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R26_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R26_HELD_FOR_TRADING" name="R26_HELD_FOR_TRADING"
@@ -1604,7 +1569,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W26" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W26" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R26_AMORTISED_COST != null ? #numbers.formatDecimal(report.R26_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R26_AMORTISED_COST" name="R26_AMORTISED_COST"
@@ -1612,14 +1577,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W26" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W26" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R26_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R26_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R26_AVAILABLE_FOR_SALE" name="R26_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW26" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW26" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R26_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R26_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R26_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -1628,7 +1593,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW26" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW26" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R26_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R26_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R26_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -1638,10 +1603,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW26"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R26_TOTAL }" id="R26_TOTAL" name="R26_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1653,7 +1618,7 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="R0W27" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W27" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R27_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R27_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R27_HELD_FOR_TRADING" name="R27_HELD_FOR_TRADING"
@@ -1661,7 +1626,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W27" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W27" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R27_AMORTISED_COST != null ? #numbers.formatDecimal(report.R27_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R27_AMORTISED_COST" name="R27_AMORTISED_COST"
@@ -1669,14 +1634,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W27" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W27" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R27_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R27_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R27_AVAILABLE_FOR_SALE" name="R27_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW27" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW27" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R27_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R27_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R27_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -1685,7 +1650,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW27" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW27" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R27_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R27_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R27_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -1695,10 +1660,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW27"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R27_TOTAL }" id="R27_TOTAL" name="R27_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1711,7 +1676,7 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left;"
 														readonly /></td>
 
-												<td id="R0W28" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W28" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R28_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R28_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R28_HELD_FOR_TRADING" name="R28_HELD_FOR_TRADING"
@@ -1719,7 +1684,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W28" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W28" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R28_AMORTISED_COST != null ? #numbers.formatDecimal(report.R28_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R28_AMORTISED_COST" name="R28_AMORTISED_COST"
@@ -1727,14 +1692,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="R0W28" style=" font-weight: bold;padding-left: 20px;">
+												<td id="R0W28" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R28_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R28_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R28_AVAILABLE_FOR_SALE" name="R28_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW28" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW28" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R28_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R28_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R28_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -1743,7 +1708,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW28" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW28" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R28_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R28_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R28_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -1753,10 +1718,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW28"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R28_TOTAL }" id="R28_TOTAL" name="R28_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1768,7 +1733,7 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="ROW29" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW29" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R29_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R29_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R29_HELD_FOR_TRADING" name="R29_HELD_FOR_TRADING"
@@ -1776,7 +1741,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW29" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW29" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R29_AMORTISED_COST != null ? #numbers.formatDecimal(report.R29_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R29_AMORTISED_COST" name="R29_AMORTISED_COST"
@@ -1784,14 +1749,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW29" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW29" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R29_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R29_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R29_AVAILABLE_FOR_SALE" name="R29_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW29" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW29" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R29_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R29_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R29_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -1800,7 +1765,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW29" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW29" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R29_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R29_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R29_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -1810,10 +1775,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW29"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R29_TOTAL }" id="R29_TOTAL" name="R29_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1825,7 +1790,7 @@ function closemodel() {
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
-												<td id="ROW30" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW30" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R30_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R30_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R30_HELD_FOR_TRADING" name="R30_HELD_FOR_TRADING"
@@ -1833,7 +1798,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW30" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW30" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R30_AMORTISED_COST != null ? #numbers.formatDecimal(report.R30_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R30_AMORTISED_COST" name="R30_AMORTISED_COST"
@@ -1841,14 +1806,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW30" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW30" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R30_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R30_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R30_AVAILABLE_FOR_SALE" name="R30_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW30" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW30" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R30_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R30_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R30_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -1857,7 +1822,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW30" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW30" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R30_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R30_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R30_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -1867,10 +1832,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW30"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R30_TOTAL }" id="R30_TOTAL" name="R30_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1884,56 +1849,56 @@ function closemodel() {
 														readonly /></td>
 
 												<td id="ROW31"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R31_HELD_FOR_TRADING}"
 														id="R31_HELD_FOR_TRADING" name="R31_HELD_FOR_TRADING"
-														style="background-color: rgb(117, 122, 143);height: 28px; border-color: transparent; text-align: right;color: white; "
+														style="background-color: rgb(117, 122, 143);height: 28px; border-color: transparent; text-align: right;color: white;font-weight:bold; "
 														readonly />
 												</td>
 
 												<td id="ROW31"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R31_AMORTISED_COST }" id="R31_AMORTISED_COST"
 														name="R31_AMORTISED_COST"
-														style=" height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style=" height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
 														readonly />
 												</td>
 
 												<td id="ROW31"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R31_AVAILABLE_FOR_SALE }"
 														id="R31_AVAILABLE_FOR_SALE" name="R31_AVAILABLE_FOR_SALE"
-														style="background-color: rgb(117, 122, 143); height: 28px; border-color: transparent; text-align: right;color: white;"
+														style="background-color: rgb(117, 122, 143); height: 28px; border-color: transparent; text-align: right;color: white;font-weight:bold;"
 														readonly />
 												</td>
 												<td id="ROW31"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"
 														id="R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
 														name="R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
-														style="background-color: rgb(117, 122, 143);  height: 28px; border-color: transparent; text-align: right;color: white;"
+														style="background-color: rgb(117, 122, 143);  height: 28px; border-color: transparent; text-align: right;color: white;font-weight:bold;"
 														readonly />
 												</td>
 
 												<td id="ROW31"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R31_QUALIFYING_FOR_HEDGE_ACCOUNTING }"
 														id="R31_QUALIFYING_FOR_HEDGE_ACCOUNTING"
 														name="R31_QUALIFYING_FOR_HEDGE_ACCOUNTING"
-														style="background-color: rgb(117, 122, 143); height: 28px; border-color: transparent; text-align: right;color: white;"
+														style="background-color: rgb(117, 122, 143); height: 28px; border-color: transparent; text-align: right;color: white;font-weight:bold;"
 														readonly />
 												</td>
 
 												<td id="ROW31"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R31_TOTAL }" id="R31_TOTAL" name="R31_TOTAL"
-														style="background-color: rgb(117, 122, 143); height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: rgb(117, 122, 143); height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1942,10 +1907,10 @@ function closemodel() {
 												<td id="ROW32" style="font-weight: bold;"><input
 														class="display-input Show_input " type="text" th:value="'(a)'"
 														id="R32_PRODUCT" name="R32_PRODUCT"
-														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 40px;"
 														readonly /></td>
 
-												<td id="ROW32" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW32" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R32_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R32_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R32_HELD_FOR_TRADING" name="R32_HELD_FOR_TRADING"
@@ -1953,7 +1918,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW32" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW32" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R32_AMORTISED_COST != null ? #numbers.formatDecimal(report.R32_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R32_AMORTISED_COST" name="R32_AMORTISED_COST"
@@ -1961,14 +1926,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW32" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW32" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R32_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R32_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R32_AVAILABLE_FOR_SALE" name="R32_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW32" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW32" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R32_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R32_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R32_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -1977,7 +1942,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW32" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW32" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R32_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R32_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R32_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -1987,10 +1952,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW32"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R32_TOTAL }" id="R32_TOTAL" name="R32_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -1999,10 +1964,10 @@ function closemodel() {
 												<td id="ROW33" style="font-weight: bold;"><input
 														class="display-input Show_input " type="text" th:value="'(b)'"
 														id="R33_PRODUCT" name="R33_PRODUCT"
-														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px;"
+														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; padding-left: 40px;"
 														readonly /></td>
 
-												<td id="ROW33" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW33" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R33_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R33_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R33_HELD_FOR_TRADING" name="R33_HELD_FOR_TRADING"
@@ -2010,7 +1975,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW33" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW33" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R33_AMORTISED_COST != null ? #numbers.formatDecimal(report.R33_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R33_AMORTISED_COST" name="R33_AMORTISED_COST"
@@ -2018,14 +1983,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW33" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW33" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R33_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R33_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R33_AVAILABLE_FOR_SALE" name="R33_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW33" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW33" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R33_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R33_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R33_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -2034,7 +1999,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW33" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW33" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R33_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R33_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R33_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -2044,10 +2009,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW33"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R33_TOTAL }" id="R33_TOTAL" name="R33_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -2056,10 +2021,10 @@ function closemodel() {
 												<td id="ROW34" style="font-weight: bold;"><input
 														class="display-input Show_input " type="text" th:value="'(c) '"
 														id="R34_PRODUCT" name="R34_PRODUCT"
-														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left;padding-left: 20px;"
+														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left;padding-left: 40px;"
 														readonly /></td>
 
-												<td id="ROW34" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW34" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R34_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R34_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
 														id="R34_HELD_FOR_TRADING" name="R34_HELD_FOR_TRADING"
@@ -2067,7 +2032,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW34" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW34" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R34_AMORTISED_COST != null ? #numbers.formatDecimal(report.R34_AMORTISED_COST, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R34_AMORTISED_COST" name="R34_AMORTISED_COST"
@@ -2075,14 +2040,14 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW34" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW34" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R34_AVAILABLE_FOR_SALE != null ? #numbers.formatDecimal(report.R34_AVAILABLE_FOR_SALE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R34_AVAILABLE_FOR_SALE" name="R34_AVAILABLE_FOR_SALE"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-												<td id="ROW34" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW34" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R34_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS != null ? #numbers.formatDecimal(report.R34_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R34_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
@@ -2091,7 +2056,7 @@ function closemodel() {
 														readonly />
 												</td>
 
-												<td id="ROW34" style=" font-weight: bold;padding-left: 20px;">
+												<td id="ROW34" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R34_QUALIFYING_FOR_HEDGE_ACCOUNTING != null ? #numbers.formatDecimal(report.R34_QUALIFYING_FOR_HEDGE_ACCOUNTING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R34_QUALIFYING_FOR_HEDGE_ACCOUNTING"
@@ -2101,10 +2066,10 @@ function closemodel() {
 												</td>
 
 												<td id="ROW34"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R34_TOTAL }" id="R34_TOTAL" name="R34_TOTAL"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -2114,60 +2079,60 @@ function closemodel() {
 														class="display-input Show_input " type="text"
 														th:value="'TOTAL INVESTMENTS'" id="R35_PRODUCT"
 														name="R35_PRODUCT"
-														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left;"
+														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left;font-weight: bold;"
 														readonly /></td>
 
 												<td id="ROW35"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R35_HELD_FOR_TRADING}"
 														id="R35_HELD_FOR_TRADING" name="R35_HELD_FOR_TRADING"
-														style="background-color: rgb(117, 122, 143);color: white;height: 28px; border-color: transparent; text-align: right; "
+														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold;height: 28px; border-color: transparent; text-align: right;font-weight:bold; "
 														readonly />
 												</td>
 
 												<td id="ROW35"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R35_AMORTISED_COST}" id="R35_AMORTISED_COST"
 														name="R35_AMORTISED_COST"
-														style="background-color: rgb(117, 122, 143);color: white;  height: 28px; border-color: transparent; text-align: right;"
+														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold;  height: 28px; border-color: transparent; text-align: right;font-weight:bold;"
 														readonly />
 												</td>
 
 												<td id="ROW35"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R35_AVAILABLE_FOR_SALE}"
 														id="R35_AVAILABLE_FOR_SALE" name="R35_AVAILABLE_FOR_SALE"
-														style="background-color: rgb(117, 122, 143);color: white; height: 28px; border-color: transparent; text-align: right;"
+														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold; height: 28px; border-color: transparent; text-align: right;font-weight:bold;"
 														readonly />
 												</td>
 												<td id="ROW35"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS}"
 														id="R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
 														name="R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS"
-														style="background-color: rgb(117, 122, 143);color: white;  height: 28px; border-color: transparent; text-align: right;"
+														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold;  height: 28px; border-color: transparent; text-align: right;font-weight:bold;"
 														readonly />
 												</td>
 
 												<td id="ROW35"
-													style=" font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R35_QUALIFYING_FOR_HEDGE_ACCOUNTING}"
 														id="R35_QUALIFYING_FOR_HEDGE_ACCOUNTING"
 														name="R35_QUALIFYING_FOR_HEDGE_ACCOUNTING"
-														style="background-color: rgb(117, 122, 143);color: white;height: 28px; border-color: transparent; text-align: right;"
+														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold;height: 28px; border-color: transparent; text-align: right;font-weight:bold;"
 														readonly />
 												</td>
 
 												<td id="ROW35"
-													style="font-weight: bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
+													style="font-weight: bold;padding-left: 40px;background-color: rgb(117, 122, 143);">
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R35_TOTAL }" id="R35_TOTAL" name="R35_TOTAL"
-														style=" height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;"
+														style=" height: 28px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;font-weight:bold;"
 														readonly />
 												</td>
 											</tr>
@@ -2201,7 +2166,7 @@ function closemodel() {
 				<!-- Custom header -->
 				<div class="menu-title-header"
 					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;font-weight:bold;">
 						Do you want to open the report?
 					</div>
 				</div>
@@ -2240,7 +2205,7 @@ function closemodel() {
 			<div class="modal-content">
 				<!-- Your custom styled header -->
 				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;font-weight:bold;">
 						<!-- Title will be set by JavaScript -->
 					</div>
 				</div>
