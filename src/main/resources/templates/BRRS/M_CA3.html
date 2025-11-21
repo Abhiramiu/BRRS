@@ -659,7 +659,7 @@ PURPOSE		: BWRBRREPORT
 			}
 
 			// Format with comma separation
-			$("#R20_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
+			$("#R20_AMOUNT").val(totalAmount.toLocaleString("en-US"));
 			calculateR29Totals();
 		}
 
@@ -673,7 +673,7 @@ PURPOSE		: BWRBRREPORT
 			}
 
 			// Format with comma separation
-			$("#R28_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
+			$("#R28_AMOUNT").val(totalAmount.toLocaleString("en-US"));
 			calculateR29Totals();
 		}
 
@@ -684,7 +684,7 @@ PURPOSE		: BWRBRREPORT
 			let totalAmount = amt1 + amt2;
 
 			// Format with comma separation
-			$("#R29_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
+			$("#R29_AMOUNT").val(totalAmount.toLocaleString("en-US"));
 		}
 
 		// Call on page load for section 1
@@ -711,7 +711,7 @@ PURPOSE		: BWRBRREPORT
 			}
 
 			// Format with comma separation
-			$("#R41_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
+			$("#R41_AMOUNT").val(totalAmount.toLocaleString("en-US"));
 			calculateR46Totals();
 		}
 
@@ -745,13 +745,13 @@ PURPOSE		: BWRBRREPORT
  	let amt2 = parseFloat($("#R45_AMOUNT").val()?.replace(/,/g, "")) || 0;
  	let totalAmount = amt1 + amt2;
 
- 	$("#R46_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
+ 	$("#R46_AMOUNT").val(totalAmount.toLocaleString("en-US"));
  }
 
  // NEW: R45 = R44
  function copyR44ToR45() {
  	let r44 = parseFloat($("#R44_AMOUNT").val()?.replace(/,/g, "")) || 0;
- 	$("#R45_AMOUNT").val(r44.toLocaleString("en-IN"));
+ 	$("#R45_AMOUNT").val(r44.toLocaleString("en-US"));
  	calculateR46Totals();
  }
 
@@ -781,7 +781,7 @@ PURPOSE		: BWRBRREPORT
 				totalAmount += amt;
 			}
 
-			$("#R55_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
+			$("#R55_AMOUNT").val(totalAmount.toLocaleString("en-US"));
 			calculateR60Totals();
 		}
 /* 
@@ -812,13 +812,13 @@ PURPOSE		: BWRBRREPORT
 		    let amt2 = parseFloat($("#R59_AMOUNT").val()?.replace(/,/g, "")) || 0;
 		    let totalAmount = amt1 + amt2;
 
-		    $("#R60_AMOUNT").val(totalAmount.toLocaleString("en-IN"));
+		    $("#R60_AMOUNT").val(totalAmount.toLocaleString("en-US"));
 		}
 
 		// NEW: R59 = R58
 		function copyR58ToR59() {
 		    let r58 = parseFloat($("#R58_AMOUNT").val()?.replace(/,/g, "")) || 0;
-		    $("#R59_AMOUNT").val(r58.toLocaleString("en-IN"));
+		    $("#R59_AMOUNT").val(r58.toLocaleString("en-US"));
 		    calculateR60Totals();
 		}
 
@@ -1039,9 +1039,9 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 											<!-- First header row -->
 											<tr style="background-color: #b3b6b9">
-												<th style="text-align: center; background-color: #D8D8D8; font-weight:  bold;">Line</th>
+												<th style="text-align: center; background-color: #D8D8D8; width: 80px; font-weight:  bold;">Line</th>
 												<th style="text-align: center; background-color: #D8D8D8; font-weight:  bold;">Item</th>
-												<th width="250" style="text-align:right; background-color: #D8D8D8;font-weight:  bold;">
+												<th width="20%" style="text-align:right; background-color: #D8D8D8;font-weight:  bold;">
 													Amount(P'000)</th>
 											</tr>
 										</thead>

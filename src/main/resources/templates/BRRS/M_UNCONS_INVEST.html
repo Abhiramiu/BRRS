@@ -221,6 +221,78 @@ PURPOSE		: BWRBRREPORT
 			/* Normal label color */
 		}
 	</style>
+	
+	<style>
+				.header-bar {
+				  display: flex;
+				  align-items: center;
+				  flex-wrap: wrap; /* ✅ allows wrapping on smaller screens */
+				  gap: 10px; /* spacing between elements */
+				  cursor: pointer;
+				}
+
+				/* 🔘 Circular arrow */
+				.left-arrow-circle {
+				  width: 35px;
+				  height: 35px;
+				  border-radius: 50%;
+				  background-color: white;
+				  color: #1f3a93;
+				  display: flex;
+				  align-items: center;
+				  justify-content: center;
+				  margin-right: 10px;
+				}
+
+				.left-arrow-circle i {
+				  font-size: 18px;
+				}
+
+				/* 🏷️ Title */
+				.header-title {
+				  font-family: Arial, sans-serif;
+				  font-size: 20px;
+				  font-weight: bold;
+				  color: white;
+				  margin: 0;
+				  flex-shrink: 0;
+				}
+
+				/* 🚌 Bus display style box */
+				.boards {
+					transform: translateY(6px);
+				  background-color: rgb(107, 122, 143);
+				  color: white;
+				  padding: 5px 45px;
+				  border-radius: 8px;
+				  overflow: hidden;
+				  white-space: nowrap;
+				  flex: 1; /* ✅ makes it take available space dynamically */
+				  min-width: 200px;
+				  box-shadow: 0 0 10px rgb(107, 122, 143);
+				  position: relative;
+				}
+
+				/* ✨ Scrolling animation */
+				.scrolling-text {
+				  display: inline-block;
+				  font-family: "Courier New", monospace;
+				  font-weight: bold;
+				  letter-spacing: 1px;
+				  animation: scroll-left 10s linear infinite;
+				}
+
+				@keyframes scroll-left {
+				  0% {
+				    transform: translateX(100%);
+				  }
+				  100% {
+				    transform: translateX(-100%);
+				  }
+				}
+
+				</style>
+	
 	<style>
 		/* Red border for invalid inputs */
 		input.error,
@@ -286,6 +358,8 @@ PURPOSE		: BWRBRREPORT
 		}
 	</style>
 	<script th:inline="javascript">
+	let isDetailsModal = false;
+	
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -341,6 +415,7 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+			isDetailsModal = true; 
 		
 			 showResultModal('BRRS',' Details page not available for Manual Report');
 		}
@@ -621,13 +696,26 @@ function cancelModify() {
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
 	function closemodel() {
-	    $("#resultModal").modal("hide");
+	    /* $("#resultModal").modal("hide");
 	    $('#loader').modal('hide');
 
 	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
 	    setTimeout(function () {
 	        location.reload();
-	    }, 300);
+	    }, 300); */
+	    
+	    $("#resultModal").modal("hide");
+        $('#loader').modal('hide');
+
+        // Only reload if not from Details modal
+        if (!isDetailsModal) {
+            setTimeout(function () {
+                location.reload();
+            }, 300);
+        } else {
+            // reset flag for next modal usage
+            isDetailsModal = false;
+        }
 	}
 
 	
@@ -677,7 +765,7 @@ function cancelModify() {
 							        dataType: 'text',
 							        success: function () {
 							            $("#resultModalLabel").text("BRRS");
-							            $("#resultModalBody").text("Updated Successfully");
+							            $("#resultModalBody").text("Updated Successfully.");
 							            $("#resultModal").modal("show");
 							        },
 							        error: function (jqXHR) {
@@ -712,8 +800,12 @@ function cancelModify() {
 						</div>
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							M-UNCONS INVEST: INVESTMENT IN UNCONSILIDATED INVESTMENTS AND ASSOCIATED COMPANIES</h5>
+							style="font-family: arial; font-size: 20px; margin-right: 10px; padding-top: 10px; font-weight: bold; color: white;">
+							(50) MONTHLY SCHEDULE: M-UNCONS INVEST: INVESTMENT IN  <br> UNCONSILIDATED INVESTMENTS AND ASSOCIATED COMPANIES</h5>
+							
+						<div class="boards">
+								    <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+								  </div>
 					</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
@@ -788,8 +880,9 @@ function cancelModify() {
 									id="reports">
 									<thead class="thead-light">
 									<tr>
-									<th colspan="7" style="text-align: left; padding-left: 20px; width: 900px;">
+									<th colspan="2" style="text-align: left; padding-left: 20px; width: 900px;">
 										       (12A) INVESTMENT IN UNCONSOLIDATED SUBSIDIARIES    </th>
+								    <th colspan="6" style="border:none !important; border-color:transparent !important;"></th>
 									</tr>
 					
 										<tr style="background-color: #b3b6b9;">
@@ -801,7 +894,7 @@ function cancelModify() {
 										    <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle; width: 150px;">Percentage of Additional Tier 1 holding</th>
 										    <th style="background-color: #D8D8D8;text-align: right;vertical-align:middle; width: 150px;">Percentage of Tier 2 holding</th>
 										    
-										    
+										 
 										</tr>
 
 										
@@ -853,8 +946,7 @@ function cancelModify() {
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 				           readonly />
 				    </td>
-
-    
+				    
 				
 		
 
@@ -1047,20 +1139,15 @@ function cancelModify() {
 </tr>
 
 
-
+<tr style="border: none !important;">
+	<td colspan="3" style="height: 30px; border: none !important;"></td>
 </tr>
 
-<tr>
-	<td></td>
-	<td></td>
-	<td></td>
-</tr>
-
-	</tbody>
+										</tbody>
 	
 	<thead class="thead-light">
 									<tr>
-									<th colspan="7" style="text-align: left; padding-left: 20px; width: 900px;">
+									<th colspan="8" style="text-align: left; padding-left: 20px; width: 900px;">
 										       (12B) INVESTMENT IN UNCONSOLIDATED SUBSIDIARIES, ASSOCIATED AND JOINT VENTURES  COMPANIES **</th>
 									</tr>
 					
@@ -1130,7 +1217,7 @@ function cancelModify() {
 						<td id="ROW22" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R22_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R22_PROFIT_OR_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
+						               th:value="${report.R22_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R22_PROFIT_OR_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R22_PROFIT_OR_LOSS"
 						               name="R22_PROFIT_OR_LOSS"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1208,7 +1295,7 @@ function cancelModify() {
 						<td id="ROW23" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R23_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R22_PROFIT_OR_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
+						               th:value="${report.R23_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R23_PROFIT_OR_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R23_PROFIT_OR_LOSS"
 						               name="R23_PROFIT_OR_LOSS"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1285,7 +1372,7 @@ function cancelModify() {
 						<td id="ROW24" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R24_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R24_PROFIT_OR_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
+						               th:value="${report.R24_PROFIT_OR_LOSS != null ? #numbers.formatDecimal(report.R24_PROFIT_OR_LOSS, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R24_PROFIT_OR_LOSS"
 						               name="R24_PROFIT_OR_LOSS"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1312,25 +1399,22 @@ function cancelModify() {
 								    </td>
 
 		</tr>
-		<tr>
-					<td> </td>
-					<td> </td>			
-					<td></td>
-				</tr>	
-		<tr>
-			<td colspan="7"> *If an investor has discontinued recognition of own share of loss</td>
+		<tr style="border: none !important;">
+	        <td colspan="3" style="height: 30px; border: none !important;"></td>
+        </tr>	
+		<tr style="border: none !important;">
+			<td colspan="7" style="border: none !important;"> *If an investor has discontinued recognition of own share of loss</td>
 			
 		</tr>
-		<tr>
-							<td> </td>
-							<td> </td>			
-							<td></td>
-						</tr>									
+		<tr style="border: none !important;">
+	        <td colspan="3" style="height: 30px; border: none !important;"></td>
+        </tr>									
 	</tbody>	
 	<thead class="thead-light">
 	    <tr style="background-color: #b3b6b9;">
 	        <th style="background-color: #D8D8D8;text-align: center; width: 200px;">Manual entry</th>
 	        <th style="background-color: #D8D8D8;text-align: right; vertical-align:middle; width: 150px;">Fair value</th>
+	        <th colspan="6"></th>
 	    </tr>
 	</thead>
 	
@@ -1348,18 +1432,18 @@ function cancelModify() {
 				               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 				           readonly />
 				    </td>
+				   <td colspan="6" ></td>
 	        
 	    </tr>
-		<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
+		<tr style="border: none !important;">
+	        <td colspan="3" style="height: 30px; border: none !important;"></td>
+        </tr>
+        
 	</tbody>
 	
 	<thead class="thead-light">
 									<tr>
-									<th colspan="7" style="text-align: left; padding-left: 20px; width: 900px;">
+									<th colspan="8" style="text-align: left; padding-left: 20px; width: 900px;">
 										      (12C) INVESTMENT IN SIGNIFICANT (UNCONSOLIDATED) SUBSIDIARIES **</th>
 									</tr>
 					
@@ -1426,7 +1510,7 @@ function cancelModify() {
 						<td id="ROW35" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R35_CURRENCY != null ? #numbers.formatDecimal(report.R35_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
+						               th:value="${report.R35_CURRENCY != null ? #numbers.formatDecimal(report.R35_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R35_CURRENCY"
 						               name="R35_CURRENCY"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1498,7 +1582,7 @@ function cancelModify() {
 						<td id="ROW36" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R36_CURRENCY != null ? #numbers.formatDecimal(report.R35_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
+						               th:value="${report.R36_CURRENCY != null ? #numbers.formatDecimal(report.R36_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R36_CURRENCY"
 						               name="R36_CURRENCY"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1570,7 +1654,7 @@ function cancelModify() {
 						<td id="ROW37" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R37_CURRENCY != null ? #numbers.formatDecimal(report.R37_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
+						               th:value="${report.R37_CURRENCY != null ? #numbers.formatDecimal(report.R37_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R37_CURRENCY"
 						               name="R37_CURRENCY"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1642,7 +1726,7 @@ function cancelModify() {
 						<td id="ROW38" style="padding-left: 20px; font-weight: bold;">
 						        <input class="display-input Show_input"
 						               type="text"
-						               th:value="${R38_CURRENCY != null ? #numbers.formatDecimal(report.R38_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
+						               th:value="${report.R38_CURRENCY != null ? #numbers.formatDecimal(report.R38_CURRENCY, 1,'COMMA', 0, 'POINT') : '0'}"
 						               id="R38_CURRENCY"
 						               name="R38_CURRENCY"
 						               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1669,11 +1753,9 @@ function cancelModify() {
 								    </td>
 		</tr>	
 	
-		<tr>
-			<td></td>
-			<td></td>
-			<td></td>
-		</tr>									
+		<tr style="border: none !important;">
+	        <td colspan="3" style="height: 30px; border: none !important;"></td>
+        </tr>									
 	</tbody>	
 
 
