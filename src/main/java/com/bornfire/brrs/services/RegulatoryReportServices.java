@@ -2052,6 +2052,11 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_M_DEP1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+			  case "M_DEP2":
+					modelAndView = BRRS_M_DEP2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 			 
 
 			default:
@@ -2111,6 +2116,10 @@ public class RegulatoryReportServices {
 					
 			  case "M_DEP1":
 					response = BRRS_M_DEP1_reportservice.updateDetailEdit(request);
+					break;
+					
+			  case "M_DEP2":
+					response = BRRS_M_DEP2_reportservice.updateDetailEdit(request);
 					break;
 
 

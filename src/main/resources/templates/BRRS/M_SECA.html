@@ -1374,8 +1374,12 @@ function cancelModify() {
 	    let total = 0;
 
 	        let C2 = parseFloat($("#R36_EQUITY").val().replace(/,/g, "")) || 0;
-	        let C3 = parseFloat($("#R36_BONDS").val().replace(/,/g, "")) || 0;
-		let C4 = parseFloat($("#R36_BOBC").val().replace(/,/g, "")) || 0;
+	        //let C3 = parseFloat($("#R36_BONDS").val().replace(/,/g, "")) || 0;
+	let C3 = parseFloat($("#R36_BONDS").is("input") ?
+			$("#R36_BONDS").val().replace(/,/g, "") : $("#R36_BONDS").text().replace(/,/g, "")) || 0;
+		//let C4 = parseFloat($("#R36_BOBC").val().replace(/,/g, "")) || 0;
+		let C4 = parseFloat($("#R36_BOBC").is("input") ?
+				$("#R36_BOBC").val().replace(/,/g, "") : $("#R36_BOBC").text().replace(/,/g, "")) || 0;
 	        let C5 = parseFloat($("#R36_TRES_BILLS").val().replace(/,/g, "")) || 0;
 	        let C6 = parseFloat($("#R36_REPURCHASE_AGREE").val().replace(/,/g, "")) || 0;
 	        let C7 = parseFloat($("#R36_COM_PAPER").val().replace(/,/g, "")) || 0;
@@ -1853,7 +1857,7 @@ function cancelModify() {
 	calculateR34Totals(); // Calculate once on load
 
 	// --- Event Listeners for Row 36 ---
-	const r36_source_fields = ["#R36_EQUITY", "#R36_BONDS", "#R36_BOBC", "#R36_TRES_BILLS", "#R36_REPURCHASE_AGREE", "#R36_COM_PAPER", "#R36_CERT_OF_DEP", "#R36_PLEDGED_ASSET", "#R36_OTHER"];
+	const r36_source_fields = ["#R36_EQUITY", "#R36_TRES_BILLS", "#R36_REPURCHASE_AGREE", "#R36_COM_PAPER", "#R36_CERT_OF_DEP", "#R36_PLEDGED_ASSET", "#R36_OTHER"];
 	$(r36_source_fields.join(', ')).on("input", calculateR36Totals);
 	calculateR36Totals(); // Calculate once on load
 
@@ -2424,8 +2428,12 @@ function cancelModify() {
 		for (const i of rowsToProcess) {
 		        // This is the "same content" from your original loop
 		        let C2 = parseFloat($("#R" + i + "_EQUITY").val().replace(/,/g, "")) || 0;
-		        let C3 = parseFloat($("#R" + i + "_BONDS").val().replace(/,/g, "")) || 0;
-		        let C4 = parseFloat($("#R" + i + "_BOBC").val().replace(/,/g, "")) || 0;
+		        //let C3 = parseFloat($("#R" + i + "_BONDS").val().replace(/,/g, "")) || 0;
+		let C3 = parseFloat($("#R" + i + "_BONDS").is("input") ?
+				$("#R" + i + "_BONDS").val().replace(/,/g, "") : $("#R" + i + "_BONDS").text().replace(/,/g, "")) || 0;
+		        //let C4 = parseFloat($("#R" + i + "_BOBC").val().replace(/,/g, "")) || 0;
+		let C4 = parseFloat($("#R" + i + "_BOBC").is("input") ?
+				$("#R" + i + "_BOBC").val().replace(/,/g, "") : $("#R" + i + "_BOBC").text().replace(/,/g, "")) || 0;
 		        let C5 = parseFloat($("#R" + i + "_TRES_BILLS").val().replace(/,/g, "")) || 0;
 		        let C6 = parseFloat($("#R" + i + "_REPURCHASE_AGREE").val().replace(/,/g, "")) || 0;
 		        let C7 = parseFloat($("#R" + i + "_COM_PAPER").val().replace(/,/g, "")) || 0;
@@ -2466,11 +2474,23 @@ function cancelModify() {
 	    calculateR35Totals();
 
 	 // Recalculate whenever R36–R57 values change
-		for (let i = 36; i <= 57; i++) {
+		for (let i = 37; i <= 57; i++) {
 			if ([38, 43, 47, 51].includes(i)) continue;
 
 			// Attach the listener to all 9 columns for the current row
 			$("#R" + i + "_EQUITY, #R" + i + "_BONDS, #R" + i + "_BOBC, #R" + i + "_TRES_BILLS, #R"
+					+ i + "_REPURCHASE_AGREE, #R" + i + "_COM_PAPER, #R" + i + "_CERT_OF_DEP, #R"
+					+ i + "_PLEDGED_ASSET, #R" + i + "_OTHER").on("input", function() {
+				
+				calculateR35Totals();
+			
+			});
+		}
+		for (let i = 36; i <= 36; i++) {
+			//if ([38, 43, 47, 51].includes(i)) continue;
+
+			// Attach the listener to all 9 columns for the current row
+			$("#R" + i + "_EQUITY, #R" + i + "_TRES_BILLS, #R"
 					+ i + "_REPURCHASE_AGREE, #R" + i + "_COM_PAPER, #R" + i + "_CERT_OF_DEP, #R"
 					+ i + "_PLEDGED_ASSET, #R" + i + "_OTHER").on("input", function() {
 				
@@ -4980,22 +5000,25 @@ calculateR13Last();
 	id="R36_EQUITY" name="R36_EQUITY"
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
-
-                <td style="text-align:right;">
+<td id="R36_BONDS" th:text="${#numbers.formatDecimal(report.R36_BONDS, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R10', reportAddlCriteria1='C3'" 
+onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td>
+                <!-- <td style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R36_BONDS != null ? #numbers.formatDecimal(report.R36_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R36_BONDS" name="R36_BONDS"
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td>
+	readonly /></td> -->
 
-                <td style="text-align:right;">
+<td id="R36_BOBC" th:text="${#numbers.formatDecimal(report.R36_BOBC, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R10', reportAddlCriteria1='C3'" 
+onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td>
+                <!-- <td style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R36_BOBC != null ? #numbers.formatDecimal(report.R36_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R36_BOBC" name="R36_BOBC"
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-	readonly /></td>
+	readonly /></td> -->
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"

@@ -270,8 +270,8 @@ public class M_SECA_Manual_Summary_Entity {
 	private BigDecimal R35_TOTAL;
 	private String R36_PRODUCT;
 	private BigDecimal R36_EQUITY;
-	private BigDecimal R36_BONDS;
-	private BigDecimal R36_BOBC;
+//	private BigDecimal R36_BONDS;
+//	private BigDecimal R36_BOBC;
 	private BigDecimal R36_TRES_BILLS;
 	private BigDecimal R36_REPURCHASE_AGREE;
 	private BigDecimal R36_COM_PAPER;
@@ -4629,36 +4629,36 @@ public class M_SECA_Manual_Summary_Entity {
 
 
 
-
-
-	public BigDecimal getR36_BONDS() {
-		return R36_BONDS;
-	}
-
-
-
-
-
-	public void setR36_BONDS(BigDecimal r36_BONDS) {
-		R36_BONDS = r36_BONDS;
-	}
-
-
-
-
-
-	public BigDecimal getR36_BOBC() {
-		return R36_BOBC;
-	}
-
-
-
-
-
-	public void setR36_BOBC(BigDecimal r36_BOBC) {
-		R36_BOBC = r36_BOBC;
-	}
-
+//
+//
+//	public BigDecimal getR36_BONDS() {
+//		return R36_BONDS;
+//	}
+//
+//
+//
+//
+//
+//	public void setR36_BONDS(BigDecimal r36_BONDS) {
+//		R36_BONDS = r36_BONDS;
+//	}
+//
+//
+//
+//
+//
+//	public BigDecimal getR36_BOBC() {
+//		return R36_BOBC;
+//	}
+//
+//
+//
+//
+//
+//	public void setR36_BOBC(BigDecimal r36_BOBC) {
+//		R36_BOBC = r36_BOBC;
+//	}
+//
 
 
 

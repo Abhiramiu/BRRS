@@ -1,8 +1,11 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,10 +15,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -27,15 +34,19 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_DEP2_Archival_Detail_Repo;
@@ -78,7 +89,7 @@ public class BRRS_M_DEP2_ReportService {
 			String dtltype, Pageable pageable, String type, String version) {
 
 		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
+//		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
@@ -139,7 +150,7 @@ public class BRRS_M_DEP2_ReportService {
 		int totalPages = 0;
 
 		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
+//		Session hs = sessionFactory.getCurrentSession();
 
 		try {
 			Date parsedDate = null;
@@ -11049,4 +11060,120 @@ public class BRRS_M_DEP2_ReportService {
 			return new byte[0];
 		}
 	}
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_DEP2"); // ✅ match the report name
+	    System.out.println("Hello");
+	    if (acctNo != null) {
+	    	M_DEP2_Detail_Entity la1Entity = M_DEP2_Detail_Repo.findByAcctnumber(acctNo);
+	        if (la1Entity != null && la1Entity.getReportDate() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
+	            mv.addObject("asondate", formattedDate);
+	        }
+	        mv.addObject("Data", la1Entity);
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+
+
+	
+public ModelAndView updateDetailEdit(String acctNo, String formMode) {
+    ModelAndView mv = new ModelAndView("BRRS/M_DEP2"); // ✅ match the report name
+
+    if (acctNo != null) {
+        M_DEP2_Detail_Entity la1Entity = M_DEP2_Detail_Repo.findByAcctnumber(acctNo);
+        if (la1Entity != null && la1Entity.getReportDate() != null) {
+            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
+            mv.addObject("asondate", formattedDate);
+            System.out.println(formattedDate);
+        }
+        mv.addObject("Data", la1Entity);
+    }
+
+    mv.addObject("displaymode", "edit");
+    mv.addObject("formmode", formMode != null ? formMode : "edit");
+    return mv;
+}
+
+@Transactional
+public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+    try {
+        String acctNo = request.getParameter("acctNumber");
+        String provisionStr = request.getParameter("acctBalanceInpula");
+        String acctName = request.getParameter("acctName");
+        String reportDateStr = request.getParameter("reportDate");
+
+        logger.info("Received update for ACCT_NO: {}", acctNo);
+
+        M_DEP2_Detail_Entity existing = M_DEP2_Detail_Repo.findByAcctnumber(acctNo);
+        if (existing == null) {
+            logger.warn("No record found for ACCT_NO: {}", acctNo);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+        }
+
+        boolean isChanged = false;
+
+        if (acctName != null && !acctName.isEmpty()) {
+            if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+                existing.setAcctName(acctName);
+                isChanged = true;
+                logger.info("Account name updated to {}", acctName);
+            }
+        }
+
+        if (provisionStr != null && !provisionStr.isEmpty()) {
+            BigDecimal newProvision = new BigDecimal(provisionStr);
+            if (existing.getAcctBalanceInpula() == null ||
+                existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
+                existing.setAcctBalanceInpula(newProvision);
+                isChanged = true;
+                logger.info("Balance updated to {}", newProvision);
+            }
+        }
+        
+        
+
+        if (isChanged) {
+        	M_DEP2_Detail_Repo.save(existing);
+            logger.info("Record updated successfully for account {}", acctNo);
+
+            // Format date for procedure
+            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+            // Run summary procedure after commit
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void afterCommit() {
+                    try {
+                        logger.info("Transaction committed — calling BRRS_M_DEP2_SUMMARY_PROCEDURE({})",
+                                formattedDate);
+                        jdbcTemplate.update("BEGIN BRRS_M_DEP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
+                        logger.info("Procedure executed successfully after commit.");
+                    } catch (Exception e) {
+                        logger.error("Error executing procedure after commit", e);
+                    }
+                }
+            });
+
+            return ResponseEntity.ok("Record updated successfully!");
+        } else {
+            logger.info("No changes detected for ACCT_NO: {}", acctNo);
+            return ResponseEntity.ok("No changes were made.");
+        }
+
+    } catch (Exception e) {
+        logger.error("Error updating M_DEP2 record", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error updating record: " + e.getMessage());
+    }
+}
+
+
 }
