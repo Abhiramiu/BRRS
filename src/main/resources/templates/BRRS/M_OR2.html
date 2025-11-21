@@ -1756,7 +1756,7 @@ function fileuploads(btn) {
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;margin-left: 10px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+							style="color: white !important; font-size: 16px; margin-right: 20px;margin-left: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -1821,6 +1821,13 @@ function fileuploads(btn) {
 									<thead class="thead-light">
 										<!-- Row 1 -->
 										<tr>
+    <th colspan="12"
+        style="background-color: white; color: black; vertical-align: bottom; font-weight: bold; text-align: left; border: none !important;">
+        RISK-WEIGHTED ASSETS FOR OPERATIONAL RISK: THE STANDARDISED APPROACH
+    </th>
+</tr>
+
+										<tr>
 											<th style="background-color: white; width: 50px;"></th>
 											<th colspan="2" style="background-color: #b3b6b9; text-align: center;"></th>
 											<th colspan="8"
@@ -1831,42 +1838,42 @@ function fileuploads(btn) {
 
 										<!--Row 2-->
 										<tr>
-											<th style="width: 50px; background-color: white; font-weight: bold;"></th>
+											<th style="width: 50px; background-color: white; vertical-align:middle; font-weight: bold;"></th>
 											<th
-												style="text-align: center; background-color: #D8D8D8; font-weight: bold; color: black;">
+												style="text-align: left; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
 												Year</th>
 											<th
-												style="text-align: left; background-color: #D8D8D8; font-weight: bold; color: black;">
+												style="text-align: left; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
 												Business Line/Month</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
 												Corporate Finance</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
 												Trading and Sales</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
 												Retail Banking</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
 												Commercial Banking</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
 												Payments and Settlemements</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
 												Agency Services</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
 												Asset Managemet</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
 												Retail Brokerage</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
 												Operational Risk Capital Charge</th>
 											<th
-												style="text-align: right; background-color: #D8D8D8; font-weight: bold; color: black;">
+												style="text-align: right; background-color: #D8D8D8;vertical-align:middle; font-weight: bold; color: black;">
 												Risk Weight Factor</th>
 										</tr>
 										
@@ -1878,9 +1885,10 @@ function fileuploads(btn) {
 
 									<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 										<tr>
-    <td style="text-align: center; background-color: white;" rowspan="12">1</td>
+    <td style="text-align: center; vertical-align: bottom; background-color: white;" rowspan="12">1</td>
 
-   <td id="ROW12" rowspan="12" style="width:100px; text-align:center;">
+
+   <td id="ROW12" rowspan="12" style="width:100px;vertical-align: middle; text-align:center;">
     1
 </td>
 
@@ -2923,7 +2931,7 @@ function fileuploads(btn) {
 											<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r25_corporate_finance != null ? #numbers.formatDecimal(report.r25_corporate_finance, 1, 0, 'POINT') : '0.18'}"
+               th:value="${report.r25_corporate_finance != null ? #numbers.formatDecimal(report.r25_corporate_finance, 1,'COMMA', 0, 'POINT') : '0.18'}"
                id="r25_corporate_finance"
                name="r25_corporate_finance"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -2932,7 +2940,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r25_trading_and_sales != null ? #numbers.formatDecimal(report.r25_trading_and_sales, 1, 0, 'POINT') : '0.18'}"
+               th:value="${report.r25_trading_and_sales != null ? #numbers.formatDecimal(report.r25_trading_and_sales, 1, 'COMMA', 0, 'POINT') : '0.18'}"
                id="r25_trading_and_sales"
                name="r25_trading_and_sales"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -2941,7 +2949,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r25_retail_banking != null ? #numbers.formatDecimal(report.r25_retail_banking, 1, 0, 'POINT') : '0.12'}"
+               th:value="${report.r25_retail_banking != null ? #numbers.formatDecimal(report.r25_retail_banking, 1,'COMMA',  0, 'POINT') : '0.12'}"
                id="r25_retail_banking"
                name="r25_retail_banking"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -2950,7 +2958,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r25_commercial_banking != null ? #numbers.formatDecimal(report.r25_commercial_banking, 1, 0, 'POINT') : '0.15'}"
+               th:value="${report.r25_commercial_banking != null ? #numbers.formatDecimal(report.r25_commercial_banking, 1, 'COMMA', 0, 'POINT') : '0.15'}"
                id="r25_commercial_banking"
                name="r25_commercial_banking"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -2959,7 +2967,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r25_payments_and_settlements != null ? #numbers.formatDecimal(report.r25_payments_and_settlements, 1, 0, 'POINT') : '0.18'}"
+               th:value="${report.r25_payments_and_settlements != null ? #numbers.formatDecimal(report.r25_payments_and_settlements, 1,'COMMA', 0, 'POINT') : '0.18'}"
                id="r25_payments_and_settlements"
                name="r25_payments_and_settlements"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -2968,7 +2976,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r25_agency_services != null ? #numbers.formatDecimal(report.r25_agency_services, 1, 0, 'POINT') : '0.15'}"
+               th:value="${report.r25_agency_services != null ? #numbers.formatDecimal(report.r25_agency_services, 1, 'COMMA', 0, 'POINT') : '0.15'}"
                id="r25_agency_services"
                name="r25_agency_services"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -2977,7 +2985,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r25_asset_management != null ? #numbers.formatDecimal(report.r25_asset_management, 1, 0, 'POINT') : '0.12'}"
+               th:value="${report.r25_asset_management != null ? #numbers.formatDecimal(report.r25_asset_management, 1,'COMMA', 0, 'POINT') : '0.12'}"
                id="r25_asset_management"
                name="r25_asset_management"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -2986,7 +2994,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r25_retail_brokerage != null ? #numbers.formatDecimal(report.r25_retail_brokerage, 1, 0, 'POINT') : '0.12'}"
+               th:value="${report.r25_retail_brokerage != null ? #numbers.formatDecimal(report.r25_retail_brokerage, 1,'COMMA', 0, 'POINT') : '0.12'}"
                id="r25_retail_brokerage"
                name="r25_retail_brokerage"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -3079,7 +3087,7 @@ function fileuploads(btn) {
 </td>
 											<td colspan="8" style="background-color: #b3b6b9; text-align: center;"></td>
 											 <td style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
+        <input class="display-input Show_inputnonEditable"
                type="text"
                th:value="${report.r27_operational_risk_cap_charge != null ? #numbers.formatDecimal(report.r27_operational_risk_cap_charge, 1,'COMMA', 0, 'POINT') : '0'}"
                id="r27_operational_risk_cap_charge"
@@ -3090,8 +3098,8 @@ function fileuploads(btn) {
 										</tr>
 
 										<tr>
-											<td style="text-align: center; background-color: white;" rowspan="12">6</td>
-											<td id="ROW28" rowspan="12" style="width:100px; text-align:center;">
+											<td style="text-align: center;vertical-align:bottom; background-color: white;" rowspan="12">6</td>
+											<td id="ROW28" rowspan="12" style="width:100px; vertical-align:middle; text-align:center;">
     2
 </td>
 											<td id="ROW28">
@@ -4033,7 +4041,7 @@ function fileuploads(btn) {
 <tr>
     <td style="text-align: center; background-color: white;">7</td>
     <td style="font-weight: normal;font-weight: bold; width:150px;" colspan="2">
-        Business Line Gross Income for Year 1
+        Business Line Gross Income for Year 2
     </td>
 
     <td style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
@@ -4112,13 +4120,13 @@ function fileuploads(btn) {
 <tr>
     <td style="text-align: center; background-color: white;">8</td>
     <td style="font-weight: normal;font-weight: bold; width:150px;" colspan="2">
-        Operational Risk Factor denoted Beta (β)
+       Operational Risk Factor denoted Beta (β)	
     </td>
 
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r41_corporate_finance != null ? #numbers.formatDecimal(report.r41_corporate_finance, 1, 0, 'POINT') : '0.18'}"
+               th:value="${report.r41_corporate_finance != null ? #numbers.formatDecimal(report.r41_corporate_finance, 1,'COMMA', 0, 'POINT') : '0.18'}"
                id="r41_corporate_finance"
                name="r41_corporate_finance"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -4127,7 +4135,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r41_trading_and_sales != null ? #numbers.formatDecimal(report.r41_trading_and_sales, 1, 0, 'POINT') : '0.18'}"
+               th:value="${report.r41_trading_and_sales != null ? #numbers.formatDecimal(report.r41_trading_and_sales, 1, 'COMMA', 0, 'POINT') : '0.18'}"
                id="r41_trading_and_sales"
                name="r41_trading_and_sales"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -4136,7 +4144,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r41_retail_banking != null ? #numbers.formatDecimal(report.r41_retail_banking, 1, 0, 'POINT') : '0.12'}"
+               th:value="${report.r41_retail_banking != null ? #numbers.formatDecimal(report.r41_retail_banking, 1,'COMMA', 0, 'POINT') : '0.12'}"
                id="r41_retail_banking"
                name="r41_retail_banking"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -4145,7 +4153,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r41_commercial_banking != null ? #numbers.formatDecimal(report.r41_commercial_banking, 1, 0, 'POINT') : '0.15'}"
+               th:value="${report.r41_commercial_banking != null ? #numbers.formatDecimal(report.r41_commercial_banking, 1,'COMMA', 0, 'POINT') : '0.15'}"
                id="r41_commercial_banking"
                name="r41_commercial_banking"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -4154,7 +4162,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r41_payments_and_settlements != null ? #numbers.formatDecimal(report.r41_payments_and_settlements, 1, 0, 'POINT') : '0.18'}"
+               th:value="${report.r41_payments_and_settlements != null ? #numbers.formatDecimal(report.r41_payments_and_settlements, 1,'COMMA', 0, 'POINT') : '0.18'}"
                id="r41_payments_and_settlements"
                name="r41_payments_and_settlements"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -4163,7 +4171,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r41_agency_services != null ? #numbers.formatDecimal(report.r41_agency_services, 1, 0, 'POINT') : '0.15'}"
+               th:value="${report.r41_agency_services != null ? #numbers.formatDecimal(report.r41_agency_services, 1,'COMMA', 0, 'POINT') : '0.15'}"
                id="r41_agency_services"
                name="r41_agency_services"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -4172,7 +4180,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r41_asset_management != null ? #numbers.formatDecimal(report.r41_asset_management, 1, 0, 'POINT') : '0.12'}"
+               th:value="${report.r41_asset_management != null ? #numbers.formatDecimal(report.r41_asset_management, 1,'COMMA', 0, 'POINT') : '0.12'}"
                id="r41_asset_management"
                name="r41_asset_management"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -4181,7 +4189,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r41_retail_brokerage != null ? #numbers.formatDecimal(report.r41_retail_brokerage, 1, 0, 'POINT') : '0.12'}"
+               th:value="${report.r41_retail_brokerage != null ? #numbers.formatDecimal(report.r41_retail_brokerage, 1,'COMMA', 0, 'POINT') : '0.12'}"
                id="r41_retail_brokerage"
                name="r41_retail_brokerage"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -4191,7 +4199,7 @@ function fileuploads(btn) {
 <tr>
     <td style="text-align: center; background-color: white;">9</td>
     <td style="font-weight: normal;font-weight: bold; width:150px;" colspan="2">
-        Gross Income for Year 1 multiplied by β
+        Gross Income for Year 2 multiplied by β	
     </td>
 
     <td style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
@@ -4270,13 +4278,13 @@ function fileuploads(btn) {
 <tr>
     <td style="text-align: center; background-color: white;">10</td>
     <td style="font-weight: normal;font-weight: bold; width:150px;" colspan="2">
-        Operational Risk Capital Charge for Year 1
+        Operational Risk Capital Charge for Year 2
     </td>
 
     <td colspan="8" style="background-color: #b3b6b9; text-align: center;"></td>
 
     <td style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
+        <input class="display-input Show_inputnonEditable"
                type="text"
                th:value="${report.r43_operational_risk_cap_charge != null ? #numbers.formatDecimal(report.r43_operational_risk_cap_charge, 1,'COMMA', 0, 'POINT') : '0'}"
                id="r43_operational_risk_cap_charge"
@@ -4286,9 +4294,9 @@ function fileuploads(btn) {
 </tr>
 
 										<tr>
-											<td style="text-align: center; background-color: white;" rowspan="13">11
+											<td style="text-align: center; vertical-align:bottom; background-color: white;" rowspan="13">11
 											</td>
-											<td id="ROW44" rowspan="13" style="width:100px; text-align:center;">
+											<td id="ROW44" rowspan="13" style="width:100px; vertical-align:middle; text-align:center;">
     3
 </td>
 											<tr>
@@ -5230,7 +5238,7 @@ function fileuploads(btn) {
 <tr>
     <td style="text-align: center; background-color: white;">12</td>
     <td style="font-weight: normal;font-weight: bold; width:150px;" colspan="2">
-        Business Line Gross Income for Year 2
+        Business Line Gross Income for Year 3	
     </td>
 
     <td style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
@@ -5308,13 +5316,13 @@ function fileuploads(btn) {
 <tr>
     <td style="text-align: center; background-color: white;">13</td>
     <td style="font-weight: normal;font-weight: bold; width:150px;" colspan="2">
-        Operational Risk Factor denoted Beta (β)
+        Operational Risk Factor denoted Beta (β)	
     </td>
 
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r57_corporate_finance != null ? #numbers.formatDecimal(report.r57_corporate_finance, 1, 0, 'POINT') : '0.18'}"
+               th:value="${report.r57_corporate_finance != null ? #numbers.formatDecimal(report.r57_corporate_finance, 1,'COMMA', 0, 'POINT') : '0.18'}"
                id="r57_corporate_finance"
                name="r57_corporate_finance"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -5323,7 +5331,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r57_trading_and_sales != null ? #numbers.formatDecimal(report.r57_trading_and_sales, 1, 0, 'POINT') : '0.18'}"
+               th:value="${report.r57_trading_and_sales != null ? #numbers.formatDecimal(report.r57_trading_and_sales, 1,'COMMA', 0, 'POINT') : '0.18'}"
                id="r57_trading_and_sales"
                name="r57_trading_and_sales"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -5332,7 +5340,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r57_retail_banking != null ? #numbers.formatDecimal(report.r57_retail_banking, 1, 0, 'POINT') : '0.12'}"
+               th:value="${report.r57_retail_banking != null ? #numbers.formatDecimal(report.r57_retail_banking, 1,'COMMA', 0, 'POINT') : '0.12'}"
                id="r57_retail_banking"
                name="r57_retail_banking"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -5341,7 +5349,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r57_commercial_banking != null ? #numbers.formatDecimal(report.r57_commercial_banking, 1, 0, 'POINT') : '0.15'}"
+               th:value="${report.r57_commercial_banking != null ? #numbers.formatDecimal(report.r57_commercial_banking, 1, 'COMMA', 0, 'POINT') : '0.15'}"
                id="r57_commercial_banking"
                name="r57_commercial_banking"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -5350,7 +5358,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r57_payments_and_settlements != null ? #numbers.formatDecimal(report.r57_payments_and_settlements, 1, 0, 'POINT') : '0.18'}"
+               th:value="${report.r57_payments_and_settlements != null ? #numbers.formatDecimal(report.r57_payments_and_settlements, 1,'COMMA', 0, 'POINT') : '0.18'}"
                id="r57_payments_and_settlements"
                name="r57_payments_and_settlements"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -5359,7 +5367,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r57_agency_services != null ? #numbers.formatDecimal(report.r57_agency_services, 1, 0, 'POINT') : '0.15'}"
+               th:value="${report.r57_agency_services != null ? #numbers.formatDecimal(report.r57_agency_services, 1,'COMMA', 0, 'POINT') : '0.15'}"
                id="r57_agency_services"
                name="r57_agency_services"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -5368,7 +5376,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r57_asset_management != null ? #numbers.formatDecimal(report.r57_asset_management, 1, 0, 'POINT') : '0.12'}"
+               th:value="${report.r57_asset_management != null ? #numbers.formatDecimal(report.r57_asset_management, 1,'COMMA', 0, 'POINT') : '0.12'}"
                id="r57_asset_management"
                name="r57_asset_management"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -5377,7 +5385,7 @@ function fileuploads(btn) {
     <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r57_retail_brokerage != null ? #numbers.formatDecimal(report.r57_retail_brokerage, 1, 0, 'POINT') : '0.12'}"
+               th:value="${report.r57_retail_brokerage != null ? #numbers.formatDecimal(report.r57_retail_brokerage, 1,'COMMA', 0, 'POINT') : '0.12'}"
                id="r57_retail_brokerage"
                name="r57_retail_brokerage"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -5387,7 +5395,7 @@ function fileuploads(btn) {
 										<tr>
     <td style="text-align: center; background-color: white;">14</td>
     <td style="font-weight: normal;font-weight: bold; width:150px;" colspan="2">
-        Gross Income for Year 2 multiplied by β
+        Gross Income for Year 3 multiplied by  β	
     </td>
 
     <td style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
@@ -5475,13 +5483,13 @@ function fileuploads(btn) {
 <tr>
     <td style="text-align: center; background-color: white;">15</td>
     <td style="font-weight: normal;font-weight: bold; width:150px;" colspan="2">
-        Operational Risk Capital Charge for Year 2
+        Operational Risk Capital Charge for Year 3	
     </td>
 
     <td colspan="8" style="background-color: #b3b6b9; text-align: center;"></td>
 
     <td style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
+        <input class="display-input Show_inputnonEditable"
                type="text"
                th:value="${report.r59_operational_risk_cap_charge != null ? #numbers.formatDecimal(report.r59_operational_risk_cap_charge, 1,'COMMA', 0, 'POINT') : '0'}"
                id="r59_operational_risk_cap_charge"
@@ -5504,7 +5512,7 @@ function fileuploads(btn) {
     <td colspan="8" style="background-color: #b3b6b9; text-align: center;"></td>
 
     <td style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
+        <input class="display-input Show_inputnonEditable"
                type="text"
                th:value="${report.r61_operational_risk_cap_charge != null ? #numbers.formatDecimal(report.r61_operational_risk_cap_charge, 1,'COMMA', 0, 'POINT') : '0'}"
                id="r61_operational_risk_cap_charge"
@@ -5521,13 +5529,13 @@ function fileuploads(btn) {
 
     <td colspan="8" style="background-color: #b3b6b9; text-align: center;"></td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
+    <td style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r62_operational_risk_cap_charge != null ? #numbers.formatDecimal(report.r62_operational_risk_cap_charge, 1, 0, 'POINT') : '3.00'}"
+               th:value="${report.r62_operational_risk_cap_charge != null ? #numbers.formatDecimal(report.r62_operational_risk_cap_charge, 1,'COMMA', 0, 'POINT') : '3.00'}"
                id="r62_operational_risk_cap_charge"
                name="r62_operational_risk_cap_charge"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
+               style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"readonly />
     </td>
 </tr>
 
@@ -5540,7 +5548,7 @@ function fileuploads(btn) {
     <td colspan="8" style="background-color: #b3b6b9; text-align: center;"></td>
 
     <td style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
+        <input class="display-input Show_inputnonEditable"
                type="text"
                th:value="${report.r63_operational_risk_cap_charge != null ? #numbers.formatDecimal(report.r63_operational_risk_cap_charge, 1, 0, 'POINT') : '0'}"
                id="r63_operational_risk_cap_charge"
@@ -5559,9 +5567,9 @@ function fileuploads(btn) {
 											<td colspan="1" style="background-color: black; text-align: center;">
 											</td>
 											<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
+        <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r64_risk_weight_factor != null ? #numbers.formatDecimal(report.r64_risk_weight_factor, 1, 0, 'POINT') : '6.7'}"
+               th:value="${report.r64_risk_weight_factor != null ? #numbers.formatDecimal(report.r64_risk_weight_factor, 1,'COMMA', 0, 'POINT') : '6.7'}"
                id="r64_risk_weight_factor"
                name="r64_risk_weight_factor"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
@@ -5578,7 +5586,7 @@ function fileuploads(btn) {
     <td colspan="1" style="background-color: black; text-align: center;">
 											</td>
     <td style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_input"
+        <input class="display-input Show_inputnonEditable"
                type="text"
                th:value="${report.r65_risk_weight_factor != null ? #numbers.formatDecimal(report.r65_risk_weight_factor, 1, 0, 'POINT') : '0'}"
                id="r65_risk_weight_factor"

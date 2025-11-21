@@ -121,7 +121,7 @@ public class BRRS_M_OR2_ReportService {
 	    try {
 	        // Loop from R11 to R50 and copy fields
 	        for (int i = 12; i <= 23; i++) {
-	            String prefix = "r" + i + "_";
+	            String prefix = "R" + i + "_";
 	            String[] fields = {"corporate_finance",
 	            		"trading_and_sales",
 	            		"retail_banking",
@@ -150,7 +150,7 @@ public class BRRS_M_OR2_ReportService {
 
 	        // Loop from R17 to R30 and copy fields
 	        for (int i = 28; i <= 39; i++) {
-	            String prefix = "r" + i + "_";
+	            String prefix = "R" + i + "_";
 	            String[] fields = {"corporate_finance",
 	            		"trading_and_sales",
 	            		"retail_banking",
@@ -178,7 +178,7 @@ public class BRRS_M_OR2_ReportService {
 
 	        // Loop from R32 to R33 and copy fields
 	        for (int i = 44; i <= 55; i++) {
-	            String prefix = "r" + i + "_";
+	            String prefix = "R" + i + "_";
 	            String[] fields = {"corporate_finance",
 	            		"trading_and_sales",
 	            		"retail_banking",
@@ -206,7 +206,7 @@ public class BRRS_M_OR2_ReportService {
 
 	        // Loop from R35 to R36 and copy fields
 	        for (int i = 59; i <= 65; i++) {
-	            String prefix = "r" + i + "_";
+	            String prefix = "R" + i + "_";
 	            String[] fields = {"operational_risk_cap_charge","risk_weight_factor"};
 
 	            for (String field : fields) {
@@ -240,7 +240,7 @@ public class BRRS_M_OR2_ReportService {
 
 	            // Loop from R12 to R57 and copy fields
 	            for (int i = 12; i <= 65; i++) {
-	                String prefix = "r" + i + "_";
+	                String prefix = "R" + i + "_";
 
 	                for (String field : totalFields) {
 	                    String getterName = "get" + prefix + field;

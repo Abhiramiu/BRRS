@@ -195,6 +195,9 @@ public class RegulatoryReportServices {
 	BRRS_M_LARADV_ReportService brrs_m_laradv_reportservice;
 	
 	@Autowired
+	BRRS_M_LIQGAP_ReportService brrs_m_liqgap_reportservice;
+	
+	@Autowired
 	BRRS_M_OR2_ReportService brrs_m_or2_reportservice;
 	
 	@Autowired
@@ -382,6 +385,11 @@ public class RegulatoryReportServices {
 
 		case "M_LIQ":
 			repsummary = BRRS_M_LIQ_reportservice.getM_LIQView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+			break;
+			
+		case "M_LIQGAP":
+			repsummary = brrs_m_liqgap_reportservice.getM_LIQGAPView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
 
