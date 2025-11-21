@@ -46,6 +46,7 @@ import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo8;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo9;
 import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity2;
+import com.bornfire.brrs.entities.M_CA7_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo5;
 import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo6;
@@ -675,6 +676,12 @@ public List<Object> getM_RPDarchival() {
 
 public byte[] getM_RPDExcel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String version) throws Exception {
 	logger.info("Service: Starting Excel generation process in memory.");
+
+
+logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
+
+// Convert string to Date
+Date reportDate = dateformat.parse(todate);
 	System.out.println(type);
 	System.out.println(version);
 	if (type.equals("ARCHIVAL") & version != null) {
@@ -682,6 +689,38 @@ public byte[] getM_RPDExcel(String filename,String reportId, String fromdate, St
 				version);
 		return ARCHIVALreport;
 	}
+
+
+	// RESUB check
+	else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+	logger.info("Service: Generating RESUB report for version {}", version);
+
+
+	List<BRRS_M_RPD_Archival_Summary_Entity1> T1Master =
+			BRRS_M_RPD_Archival_Summary_Repo1.getdatabydateListarchival(reportDate, version);
+	List<BRRS_M_RPD_Archival_Summary_Entity2> T2Master = BRRS_M_RPD_Archival_Summary_Repo2
+			.getdatabydateListarchival(reportDate, version);
+	List<BRRS_M_RPD_Archival_Summary_Entity3> T3Master = BRRS_M_RPD_Archival_Summary_Repo3
+			.getdatabydateListarchival(reportDate, version);
+	List<BRRS_M_RPD_Archival_Summary_Entity4> T4Master = BRRS_M_RPD_Archival_Summary_Repo4
+			.getdatabydateListarchival(reportDate, version);
+	List<BRRS_M_RPD_Archival_Summary_Entity5> T5Master = BRRS_M_RPD_Archival_Summary_Repo5
+			.getdatabydateListarchival(reportDate, version);
+	List<BRRS_M_RPD_Archival_Summary_Entity6> T6Master = BRRS_M_RPD_Archival_Summary_Repo6
+			.getdatabydateListarchival(reportDate, version);
+	List<BRRS_M_RPD_Archival_Summary_Entity7> T7Master = BRRS_M_RPD_Archival_Summary_Repo7
+			.getdatabydateListarchival(reportDate, version);
+	List<BRRS_M_RPD_Archival_Summary_Entity8> T8Master = BRRS_M_RPD_Archival_Summary_Repo8
+			.getdatabydateListarchival(reportDate, version);
+
+	List<BRRS_M_RPD_Archival_Summary_Entity9> T9Master = BRRS_M_RPD_Archival_Summary_Repo9
+			.getdatabydateListarchival(reportDate, version);
+
+	
+	// Generate Excel for RESUB
+	return BRRS_M_RPDResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+	}
+	
 	List<M_RPD_Summary_Entity1> dataList1 =BRRS_M_RPD_Summary_Repo1.getdatabydateList(dateformat.parse(todate)) ;
 	List<M_RPD_Summary_Entity2> dataList2 =BRRS_M_RPD_Summary_Repo2.getdatabydateList(dateformat.parse(todate)) ;
 	List<M_RPD_Summary_Entity3> dataList3 =BRRS_M_RPD_Summary_Repo3.getdatabydateList(dateformat.parse(todate)) ;

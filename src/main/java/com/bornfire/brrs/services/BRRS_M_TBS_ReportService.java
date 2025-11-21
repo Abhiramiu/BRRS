@@ -38,6 +38,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_TBS_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_TBS_Summary_Repo;
+import com.bornfire.brrs.entities.M_CA7_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_TBS_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_TBS_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_TBS_Archival_Summary_Entity;
@@ -769,6 +770,12 @@ System.out.println("Entered service method M_TBS......................");
 
 			public byte[] getM_TBSExcel(String filename,String reportId, String fromdate, String todate, String currency, String dtltype,String type,String version) throws Exception {
 				logger.info("Service: Starting Excel generation process in memory.");
+
+
+logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
+
+// Convert string to Date
+Date reportDate = dateformat.parse(todate);
 				System.out.println(type);
 				System.out.println(version);
 				if (type.equals("ARCHIVAL") & version != null) {
@@ -776,6 +783,22 @@ System.out.println("Entered service method M_TBS......................");
 							version);
 					return ARCHIVALreport;
 				}
+
+
+				// RESUB check
+				else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
+				logger.info("Service: Generating RESUB report for version {}", version);
+
+
+				List<M_TBS_Archival_Summary_Entity> T1Master =
+						BRRS_M_TBS_Archival_Summary_Repo.getdatabydateListarchival(reportDate, version);
+
+
+				
+				// Generate Excel for RESUB
+				return BRRS_M_tbsResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+				}
+				
 				List<M_TBS_Summary_Entity> dataList =BRRS_M_TBS_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
 
 				if (dataList.isEmpty()) {
