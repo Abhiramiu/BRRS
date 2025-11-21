@@ -115,7 +115,7 @@ public class BDGF_Services {
 	                + "SOL_ID=?, CUSTOMER_ID=?, CUSTOMER_NAME=?, ACCT_OPEN_DATE=?, AMOUNT_DEPOSITED=?, "
 	                + "CURRENCY=?, PERIOD=?, RATE_OF_INTEREST=?, HUNDRED=?, BAL_EQUI_TO_BWP=?, "
 	                + "OUTSTANDING_BALANCE=?, OUSTNDNG_BAL_UGX=?, MATURITY_DATE=?, MATURITY_AMOUNT=?, SCHEME=?, "
-	                + "CR_PREF_INT_RATE=?, SEGMENT=?, REFERENCE_DATE=?, DIFFERENCE=?, DAYS=?, PERIOD_DAYS=?, "
+	                + "CR_PREF_INT_RATE=?, SEGMENT=?, REFERENCE_DATE=?, DIFFERENCE=?, LIQGAP_BUCKET=?,MDEP2A_BUCKET=?,MDEP_BUCKET=?, PERIOD_DAYS=?, "
 	                + "EFFECTIVE_INTEREST_RATE=?, BDGF_FLG='Y', ENTRY_DATE=?, ENTRY_USER=?, ENTRY_FLG='Y' "
 	                + "WHERE ACCOUNT_NO=? AND REPORT_DATE=?";
 
@@ -125,9 +125,9 @@ public class BDGF_Services {
 	        String insertMaster = "INSERT INTO GENERAL_MASTER_TABLE (ID, SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, ACCOUNT_NO, "
 	                + "ACCT_OPEN_DATE, AMOUNT_DEPOSITED, CURRENCY, PERIOD, RATE_OF_INTEREST, HUNDRED, BAL_EQUI_TO_BWP, "
 	                + "OUTSTANDING_BALANCE, OUSTNDNG_BAL_UGX, MATURITY_DATE, MATURITY_AMOUNT, SCHEME, CR_PREF_INT_RATE, "
-	                + "SEGMENT, REFERENCE_DATE, DIFFERENCE, DAYS, PERIOD_DAYS, EFFECTIVE_INTEREST_RATE, REPORT_DATE, "
+	                + "SEGMENT, REFERENCE_DATE, DIFFERENCE, LIQGAP_BUCKET,MDEP2A_BUCKET,MDEP_BUCKET, PERIOD_DAYS, EFFECTIVE_INTEREST_RATE, REPORT_DATE, "
 	                + "ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG, BDGF_FLG) "
-	                + "VALUES (" + String.join(",", Collections.nCopies(30, "?")) + ")";
+	                + "VALUES (" + String.join(",", Collections.nCopies(32, "?")) + ")";
 
 	        PreparedStatement stmtInsertMaster = conn.prepareStatement(insertMaster);
 
@@ -136,9 +136,9 @@ public class BDGF_Services {
 	                + "SOL_ID, S_NO, ACCOUNT_NO, CUSTOMER_ID, CUSTOMER_NAME, ACCT_OPEN_DATE, AMOUNT_DEPOSITED, "
 	                + "CURRENCY, PERIOD, RATE_OF_INTEREST, HUNDRED, BAL_EQUI_TO_BWP, OUTSTANDING_BALANCE, "
 	                + "OUSTNDNG_BAL_UGX, MATURITY_DATE, MATURITY_AMOUNT, SCHEME, CR_PREF_INT_RATE, SEGMENT, "
-	                + "REFERENCE_DATE, DIFFERENCE, DAYS, PERIOD_DAYS, EFFECTIVE_INTEREST_RATE, REPORT_DATE, "
+	                + "REFERENCE_DATE, DIFFERENCE, LIQGAP_BUCKET, MDEP2A_BUCKET, MDEP_BUCKET, PERIOD_DAYS, EFFECTIVE_INTEREST_RATE, REPORT_DATE, "
 	                + "ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG)"
-	                + " VALUES (" + String.join(",", Collections.nCopies(29, "?")) + ")";
+	                + " VALUES (" + String.join(",", Collections.nCopies(31, "?")) + ")";
 
 	        PreparedStatement stmtInsertBDGF = conn.prepareStatement(insertSql);
 
@@ -159,7 +159,7 @@ public class BDGF_Services {
 
 	            try {
 	                String accountNo = getCellStringSafe(row, 2, formatter, evaluator);
-	                java.sql.Date reportDate = getCellDateSafe(row, 24, formatter, evaluator);
+	                java.sql.Date reportDate = getCellDateSafe(row, 26, formatter, evaluator);
 
 	                // 🧹 Delete duplicate BDGF
 	                stmtDeleteBDGF.setString(1, accountNo);
@@ -189,9 +189,11 @@ public class BDGF_Services {
 	                stmtInsertBDGF.setString(++col, getCellStringSafe(row, 18, formatter, evaluator)); // SEGMENT
 	                stmtInsertBDGF.setDate(++col, getCellDateSafe(row, 19, formatter, evaluator)); // REFERENCE_DATE
 	                stmtInsertBDGF.setBigDecimal(++col, getCellDecimalSafe(row, 20, formatter, evaluator)); // DIFFERENCE
-	                stmtInsertBDGF.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // DAYS
-	                stmtInsertBDGF.setBigDecimal(++col, getCellDecimalSafe(row, 22, formatter, evaluator)); // PERIOD_DAYS
-	                stmtInsertBDGF.setBigDecimal(++col, getCellDecimalSafe(row, 23, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
+	                stmtInsertBDGF.setString(++col, getCellStringSafe(row, 21, formatter, evaluator)); // SEGMENT
+	                stmtInsertBDGF.setString(++col, getCellStringSafe(row, 22, formatter, evaluator)); // SEGMENT
+	                stmtInsertBDGF.setString(++col, getCellStringSafe(row, 23, formatter, evaluator)); // SEGMENT
+		            stmtInsertBDGF.setBigDecimal(++col, getCellDecimalSafe(row, 24, formatter, evaluator)); // PERIOD_DAYS
+	                stmtInsertBDGF.setBigDecimal(++col, getCellDecimalSafe(row, 25, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
 	                stmtInsertBDGF.setDate(++col, reportDate);
 	                stmtInsertBDGF.setDate(++col, new java.sql.Date(System.currentTimeMillis()));
 	                stmtInsertBDGF.setString(++col, userid);
@@ -220,9 +222,11 @@ public class BDGF_Services {
 	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 18, formatter, evaluator)); // SEGMENT
 	                stmtUpdateMaster.setDate(++col, getCellDateSafe(row, 19, formatter, evaluator)); // REFERENCE_DATE
 	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 20, formatter, evaluator)); // DIFFERENCE
-	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // DAYS
-	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 22, formatter, evaluator)); // PERIOD_DAYS
-	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 23, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 21, formatter, evaluator)); 
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 22, formatter, evaluator)); 
+	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 23, formatter, evaluator)); 
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 24, formatter, evaluator)); // PERIOD_DAYS
+	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 25, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
 	                stmtUpdateMaster.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
 	                stmtUpdateMaster.setString(++col, userid); // ENTRY_USER
 	                stmtUpdateMaster.setString(++col, accountNo); // WHERE ACCOUNT_NO
@@ -254,9 +258,12 @@ public class BDGF_Services {
 	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 18, formatter, evaluator)); // SEGMENT
 	                    stmtInsertMaster.setDate(++col, getCellDateSafe(row, 19, formatter, evaluator)); // REFERENCE_DATE
 	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 20, formatter, evaluator)); // DIFFERENCE
-	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // DAYS
-	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 22, formatter, evaluator)); // PERIOD_DAYS
-	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 23, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 21, formatter, evaluator)); 
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 22, formatter, evaluator)); 
+	                    stmtInsertMaster.setString(++col, getCellStringSafe(row, 23, formatter, evaluator)); 
+	                    
+		                stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 24, formatter, evaluator)); // PERIOD_DAYS
+	                    stmtInsertMaster.setBigDecimal(++col, getCellDecimalSafe(row, 25, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
 	                    stmtInsertMaster.setDate(++col, reportDate); // REPORT_DATE
 	                    stmtInsertMaster.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
 	                    stmtInsertMaster.setString(++col, userid); // ENTRY_USER

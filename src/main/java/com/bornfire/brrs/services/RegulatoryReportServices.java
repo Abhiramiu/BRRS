@@ -2502,8 +2502,11 @@ public List<Object[]> getResub(String rptcode) {
 		return resubmissionData;
 	}
 
+
+
 public byte[] getConsolidatedDownloadFile(String filename, String asondate, String fromdate, String todate,
 		String currency, String type, String version) throws ParseException {
+
 
 //List of all reports you want to include
 	List<String> reportList = Arrays.asList("M_SFINP1", "M_SFINP2", "M_LA1", "M_LA2", "M_LA3", "M_LA4", "M_LA5",
@@ -2863,5 +2866,30 @@ private void copySheetContent(Sheet src, Sheet dest) {
     }
 }
 
+
+public byte[] getPdfDownloadFile(String reportId, String filename, String asondate, String fromdate, String todate,
+		String currency, String subreportid, String secid, String dtltype, String reportingTime,
+		String instancecode, String filter, String type, String version) {
+
+	byte[] pdffile = null;
+
+	switch (reportId) {
+
+	case "M_SFINP1":
+		try {
+			byte[] excelBytes = BRRS_M_SFINP1_reportservice.getM_SFINP1Excel(filename, reportId, fromdate, todate, currency,
+					dtltype, type, version);
+			
+			
+			pdffile = BRRS_M_SFINP1_reportservice.convertExcelBytesToPdf(excelBytes);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		break;
+	}
+	return pdffile;
+}
 
 }

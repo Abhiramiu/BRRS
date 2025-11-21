@@ -1,9 +1,8 @@
 package com.bornfire.brrs.services;
-import org.springframework.web.servlet.ModelAndView;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
@@ -13,24 +12,28 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.transaction.Transactional;
+import java.util.Set;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -40,28 +43,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.entities.BRRS_M_SFINP1_Archival_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_SFINP1_Archival_Summary_Manual_Repo;
+import com.bornfire.brrs.entities.BRRS_M_SFINP1_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_SFINP1_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_SFINP1_Summary_Manual_Repo;
+import com.bornfire.brrs.entities.BRRS_M_SFINP1_Summary_Repo;
 //import com.bornfire.brrs.controllers.CBUAE_BRF_ReportsController;
 import com.bornfire.brrs.entities.M_SFINP1_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.BRRS_M_SFINP1_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.M_SFINP1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SFINP1_Archival_Summary_Manual_Entity;
-import com.bornfire.brrs.entities.BRRS_M_SFINP1_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SFINP1_Archival_Summary_Manual_Repo;
 import com.bornfire.brrs.entities.M_SFINP1_Detail_Entity;
-import com.bornfire.brrs.entities.BRRS_M_SFINP1_Detail_Repo;
 import com.bornfire.brrs.entities.M_SFINP1_Summary_Entity;
 import com.bornfire.brrs.entities.M_SFINP1_Summary_Manual_Entity;
-import com.bornfire.brrs.entities.M_SFINP2_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_SFINP2_Detail_Entity;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity1;
-import com.bornfire.brrs.entities.BRRS_M_SFINP1_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SFINP1_Summary_Manual_Repo;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
+
+
 @Component
 @Service
 public class BRRS_M_SFINP1_ReportService {
@@ -183,7 +193,7 @@ return mv;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
 		int totalPages = 0;
 		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
+		//Session hs = sessionFactory.getCurrentSession();
 		try {
 			Date parsedDate = null;
 			if (todate != null && !todate.isEmpty()) {
@@ -3851,5 +3861,117 @@ XSSFWorkbook workbook = new XSSFWorkbook();
 	        return new byte[0];
 	    }
 	}
+
+
+public byte[] convertExcelBytesToPdf(byte[] excelBytes) throws Exception {
+    try (
+        InputStream inputStream = new ByteArrayInputStream(excelBytes);
+        Workbook workbook = WorkbookFactory.create(inputStream); // will return XSSFWorkbook
+        ByteArrayOutputStream pdfOut = new ByteArrayOutputStream()
+    ) {
+        Sheet sheet = workbook.getSheetAt(0);
+
+        Document document = new Document(PageSize.A3.rotate(), 20, 20, 20, 20);
+        PdfWriter.getInstance(document, pdfOut);
+        document.open();
+
+        // Get the header row
+        Row headerRow = null;
+        for (Row r : sheet) {
+            if (r != null && r.getLastCellNum() > 0) {
+                headerRow = r;
+                break;
+            }
+        }
+        if (headerRow == null) throw new IllegalArgumentException("Excel sheet is empty.");
+
+        int firstCol = headerRow.getFirstCellNum();
+        int lastCol = headerRow.getLastCellNum();
+
+        PdfPTable table = new PdfPTable(lastCol - firstCol);
+        table.setWidthPercentage(100);
+        table.setSpacingBefore(10f);
+
+        FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+        DataFormatter formatter = new DataFormatter();
+
+        List<CellRangeAddress> mergedRegions = sheet.getMergedRegions();
+        Set<String> mergedCells = new HashSet<>();
+
+        for (int rowIndex = 0; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+            Row row = sheet.getRow(rowIndex);
+            if (row == null) continue;
+
+            for (int colIndex = firstCol; colIndex < lastCol; colIndex++) {
+
+                String cellKey = rowIndex + "-" + colIndex;
+                if (mergedCells.contains(cellKey)) continue;
+
+                Cell cell = row.getCell(colIndex);
+                String cellValue = "";
+
+                if (cell != null) {
+                    if (cell.getCellType() == CellType.FORMULA) {
+                        CellValue eval = evaluator.evaluate(cell);
+                        if (eval != null) {
+                            switch (eval.getCellType()) {
+                                case STRING:  cellValue = eval.getStringValue(); break;
+                                case NUMERIC: cellValue = formatter.formatCellValue(cell); break;
+                                case BOOLEAN: cellValue = String.valueOf(eval.getBooleanValue()); break;
+                                default:      cellValue = "";
+                            }
+                        }
+                    } else {
+                        cellValue = formatter.formatCellValue(cell);
+                    }
+                }
+
+                PdfPCell pdfCell = new PdfPCell(new Phrase(cellValue));
+
+                // Handle merged cells
+                for (CellRangeAddress range : mergedRegions) {
+                    if (range.isInRange(rowIndex, colIndex)) {
+                        int rowspan = range.getLastRow() - range.getFirstRow() + 1;
+                        int colspan = range.getLastColumn() - range.getFirstColumn() + 1;
+
+                        if (rowIndex == range.getFirstRow() && colIndex == range.getFirstColumn()) {
+                            if (rowspan > 1) pdfCell.setRowspan(rowspan);
+                            if (colspan > 1) pdfCell.setColspan(colspan);
+                        } else {
+                            mergedCells.add(cellKey);
+                            pdfCell = null;
+                        }
+                        break;
+                    }
+                }
+
+                if (pdfCell == null) continue;
+
+                // Background color (XSSF only)
+                BaseColor bgColor = null;
+                if (cell != null) {
+                    XSSFColor color = (XSSFColor) cell.getCellStyle().getFillForegroundColorColor();
+                    if (color != null && color.getRGB() != null) {
+                        byte[] rgb = color.getRGB();
+                        bgColor = new BaseColor(rgb[0] & 0xFF, rgb[1] & 0xFF, rgb[2] & 0xFF);
+                    }
+                }
+
+                if (bgColor != null) pdfCell.setBackgroundColor(bgColor);
+
+                pdfCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                pdfCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                pdfCell.setPadding(4f);
+
+                table.addCell(pdfCell);
+            }
+        }
+
+        document.add(table);
+        document.close();
+        return pdfOut.toByteArray();
+    }
+}
+
 }
 

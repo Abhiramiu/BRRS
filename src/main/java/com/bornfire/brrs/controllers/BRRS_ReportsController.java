@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -2884,4 +2885,45 @@ public ResponseEntity<ByteArrayResource> downloadConsolidatedExcel(
             .body(resource);
 }
 
+
+@RequestMapping(value = "downloaddetailpdf", method = { RequestMethod.GET, RequestMethod.POST })
+public void detailDownloadpdf(HttpServletResponse response,			  
+		  @RequestParam("reportid") String reportid,			  
+		  @RequestParam("asondate") String asondate,			  
+		  @RequestParam("fromdate") String fromdate,			  
+		  @RequestParam("todate") String todate,			  
+		  @RequestParam("currency") String currency,			  
+		  @RequestParam(value = "subreportid", required = false) String subreportid,			  
+		  @RequestParam(value = "secid", required = false) String secid,			  
+		  @RequestParam(value = "dtltype", required = false) String dtltype,			  
+		  @RequestParam(value = "reportingTime", required = false) String reportingTime,			  
+		  @RequestParam(value = "filename", required = false) String filename,			  
+		  @RequestParam(value = "instancecode", required = false) String instancecode,			  
+		  @RequestParam(value = "filter", required = false) String filter,
+		  @RequestParam(value = "type", required = false) String type,
+		  @RequestParam(value = "version", required = false) String version) throws
+		  SQLException, FileNotFoundException 
+		 {
+	System.out.println("Control");
+	
+	try { 
+		byte[] pdfBytes = regreportServices.getPdfDownloadFile(
+		        reportid, filename, asondate, fromdate, todate,
+		        currency, subreportid, secid, dtltype,
+		        reportingTime, instancecode, filter, type, version
+		);
+
+	  //  Write PDF to response 
+		  response.setContentType("application/pdf");
+	        response.setHeader("Content-Disposition", "attachment; filename=\"report.pdf\"");
+	        response.setContentLength(pdfBytes.length);
+
+	        try (ServletOutputStream out = response.getOutputStream()) {
+	            out.write(pdfBytes);
+	            out.flush();
+	        }
+	} catch (Exception e) {
+		logger.error("Controller ERROR: A critical error occurred during file generation.", e);
+	}
+}
 }
