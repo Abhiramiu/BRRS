@@ -1768,4 +1768,21 @@ public class NavigationController {
 	// return "BRRS/BRRSResubmissionform";
 	// }
 
+	
+	 @GetMapping("/toDownloadExcel")
+	    public String redirectToDownloadExcel(
+	            @RequestParam String asondate,
+	            @RequestParam String fromdate,
+	            @RequestParam String todate,
+	            @RequestParam String currency,
+	            @RequestParam String type,
+	            @RequestParam String version,
+	            @RequestParam String filename) {
+
+	        String redirectUrl = String.format(
+	            "redirect:/Reports/downloadConsolidatedExcel?asondate=%s&fromdate=%s&todate=%s&currency=%s&type=%s&version=%s&filename=%s",
+	            asondate, fromdate, todate, currency, type, version, filename);
+
+	        return redirectUrl;
+	    }
 }

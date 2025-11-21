@@ -14,6 +14,8 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,6 +181,11 @@ import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
 import com.bornfire.brrs.services.BRRS_M_TBS_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
+import com.bornfire.brrs.entities.BrrsMNosvosP1;
+import com.bornfire.brrs.entities.BrrsMNosvosP2;
+import com.bornfire.brrs.entities.BrrsMNosvosP3;
+import com.bornfire.brrs.entities.BrrsMNosvosP4;
+import com.bornfire.brrs.services.BRRS_M_NOSVOS_ReportService;
 
 @Controller
 @ConfigurationProperties("default")
@@ -212,6 +219,9 @@ public class BRRS_ReportsController {
 
 	@Autowired
 	private ReportCodeMappingService reportCodeMappingService;
+	
+	@Autowired
+	BRRS_M_NOSVOS_ReportService BRRS_M_NOSVOS_ReportService;
 
 	private String pagesize;
 
@@ -2800,5 +2810,78 @@ public ResponseEntity<String> updateReportReSubAll(
 	}
 }
 
+
+@RequestMapping(value = "/NOSVOSupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> NOSVOSupdateAll(
+		@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+		@ModelAttribute BrrsMNosvosP1 request1, @ModelAttribute BrrsMNosvosP2 request2,
+		@ModelAttribute BrrsMNosvosP3 request3,
+		@ModelAttribute BrrsMNosvosP4 request4) {
+	try {
+
+		// set date into all 4 entities
+		request1.setREPORT_DATE(asondate);
+		request2.setREPORT_DATE(asondate);
+		request3.setREPORT_DATE(asondate);
+		request4.setREPORT_DATE(asondate);
+
+		// call services
+		BRRS_M_NOSVOS_ReportService.updateReport(request1);
+		BRRS_M_NOSVOS_ReportService.updateReport2(request2);
+		BRRS_M_NOSVOS_ReportService.updateReport3(request3);
+		BRRS_M_NOSVOS_ReportService.updateReport4(request4);
+
+		return ResponseEntity.ok("All Reports Updated Successfully");
+	} catch (Exception e) {
+		e.printStackTrace();
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+	}
+}
+
+@GetMapping("/downloadExcel1")
+public void downloadExcel(@RequestParam String asondate,
+                          @RequestParam String fromdate,
+                          @RequestParam String todate,
+                          @RequestParam String currency,
+                          @RequestParam String type,
+                          @RequestParam String version,
+                          @RequestParam String filename,
+                          HttpServletResponse response) throws IOException, ParseException {
+
+    byte[] file = regreportServices.getConsolidatedDownloadFile(filename, asondate, fromdate, todate, currency, type, version);
+
+    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    response.setHeader("Content-Disposition", "attachment; filename=" + filename + ".xlsx");
+    response.getOutputStream().write(file);
+    response.getOutputStream().flush();
+}
+
+@RequestMapping(value = "downloadConsolidatedExcel", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<ByteArrayResource> downloadConsolidatedExcel(
+        @RequestParam("asondate") String asondate,
+        @RequestParam("fromdate") String fromdate,
+        @RequestParam("todate") String todate,
+        @RequestParam("currency") String currency,
+        @RequestParam(value = "type", required = false) String type,
+        @RequestParam(value = "version", required = false) String version) {
+
+    byte[] excelData = regreportServices.generateConsolidatedExcel(asondate, fromdate, todate, currency, type, version);
+
+    if (excelData == null || excelData.length == 0)
+        return ResponseEntity.noContent().build();
+
+    ByteArrayResource resource = new ByteArrayResource(excelData);
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Consolidated_Report.xlsx");
+
+    return ResponseEntity.ok()
+            .headers(headers)
+            .contentLength(excelData.length)
+            .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+            .body(resource);
+}
 
 }

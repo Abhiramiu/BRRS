@@ -1366,13 +1366,27 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 							</li>
 							
 							<!--  this list is for download option -->
-							<li class="nav-item" style=" text-align: center;"	
+							<!--<li class="nav-item" style=" text-align: center;"	
 								th:if="${true}">
-<!-- th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRRS_Reports')}"> -->
+ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRRS_Reports')}"> 
 								<a href="#" class="dropdown-toggle" id="downloadbtn" onclick="downloadFile()">Download</a>
 
 
-							</li>
+							</li>-->
+							<li class="nav-item dropdown" style=" text-align: center;"
+						th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'AUDIT_US')}">
+						
+							<a href="#" class="dropdown-toggle">Consolidated Download</a>
+							<ul class="dropdown-menu">
+								
+								<li>
+								<a  href="#" class="nav-link" id="Consolidated_Excel"  onclick="contentLoadExcel(this)">Excel</a>
+								</li>
+								<li>
+								<a href="#" class="nav-link" id="Consolidated_Pdf" 
+										onclick="contentLoad(this)">Pdf</a></li>
+							</ul>
+						</li>
 
 
 							<!-- <li class="nav-item dropdown" style=" text-align: center;">
@@ -1464,6 +1478,89 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 			</div>
 		</div>
 	</div>
+	
+	
+	
+			<div class="modal fade" id="excelModal" tabindex="-1" aria-labelledby="excelModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="excelModalLabel">Download Consolidated Report</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="excelForm">
+          <div class="mb-3">
+            <label class="form-label">Ason Date</label>
+            <input type="date" class="form-control" id="asondate">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">From Date</label>
+            <input type="date" class="form-control" id="fromdate">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">To Date</label>
+            <input type="date" class="form-control" id="todate">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Currency</label>
+            <input type="text" class="form-control" id="currency" value="FJD">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Type</label>
+            <select id="type" class="form-select">
+              <option value="SUMMARY">SUMMARY</option>
+              <option value="DETAIL">DETAIL</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Version</label>
+            <input type="text" class="form-control" id="version" value="V1">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Filename</label>
+            <input type="text" class="form-control" id="filename" value="Consolidated_Report">
+          </div>
+        </form>
+      </div>
+
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 10px;">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Error</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="errorModalBody">
+        <!-- Error message will be injected here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success" onclick="submitExcelDownload()">Download</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 	<div class="alert alert-danger custom-alert" role="alert" id="autoHideAlert" style="display:none;">
 		<button type="button" class="close" aria-label="Close" onclick="hideAlert()">
 			<span aria-hidden="true">&times;</span>
@@ -1569,6 +1666,69 @@ th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAIN
 	});
 </script>
 
+<script>
+	function contentLoadExcel(a) {
+    // Open the modal when the function is triggered
+    $('#excelModal').modal('show');
+}
+
+function submitExcelDownload() {
+    const asondate = $('#asondate').val();
+    const fromdate = $('#fromdate').val();
+    const todate = $('#todate').val();
+    const currency = $('#currency').val();
+    const type = $('#type').val();
+    const version = $('#version').val();
+    const filename = $('#filename').val();
+
+    if (!asondate || !fromdate || !todate) {
+        showErrorModal("⚠️ Please select all date fields before downloading.");
+        return;
+    }
+
+    // Convert yyyy-mm-dd → dd/MM/yyyy
+    const formatDate = date => {
+        const [y, m, d] = date.split("-");
+        return `${d}/${m}/${y}`;
+    };
+
+    const formattedAson = formatDate(asondate);
+    const formattedFrom = formatDate(fromdate);
+    const formattedTo = formatDate(todate);
+
+    // Show loader modal
+    $('#loader').modal('show');
+    $('#excelModal').modal('hide');
+
+    // Build request URL
+    const url = `toDownloadExcel?asondate=${encodeURIComponent(formattedAson)}&fromdate=${encodeURIComponent(formattedFrom)}&todate=${encodeURIComponent(formattedTo)}&currency=${encodeURIComponent(currency)}&type=${encodeURIComponent(type)}&version=${encodeURIComponent(version)}&filename=${encodeURIComponent(filename)}`;
+
+    // Fetch as a HEAD first to check if it exists
+    fetch(url, { method: 'HEAD' })
+        .then(response => {
+            if (response.ok) {
+                // If file is ready, redirect for download
+                window.location.href = url;
+            } else {
+                throw new Error(`Server responded with status ${response.status} (${response.statusText})`);
+            }
+        })
+        .catch(error => {
+            console.error("Excel download failed:", error);
+            showErrorModal("❌ Download Failed!<br><br>" + error.message);
+        })
+        .finally(() => {
+            $('#loader').modal('hide');
+        });
+}
+
+
+
+function showErrorModal(message) {
+    $('#errorModalBody').html(message);
+    $('#errorModal').modal('show');
+}
+</script>
 
 
 </html>
