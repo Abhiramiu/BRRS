@@ -135,7 +135,10 @@ public class ReportLineItemService {
 
 	        int srlNo = 1;
 
-	        int descColIndex = 0; // Column A (Description)
+	     
+	        int[] descColumns = Description(reportCode.toUpperCase());
+	        int descColIndex = (descColumns != null && descColumns.length > 0) ? descColumns[0] : 0;
+
 
 	        for (int r = startRowIndex; r <= endRowIndex; r++) {
 
@@ -419,81 +422,90 @@ public class ReportLineItemService {
 	    }
 	}
 	
+
 private int[] Description(String reportCode) {
 
 	    switch (reportCode.toUpperCase()) {
 
-	        case "M_PI": return new int[0];
-	        case "M-SFINP1": return new int[0];
-	        case "M-SFINP2": return new int[0];
-	        case "M_LIQ": return new int[0];
-	        case "M_SCI & E": return new int[0];
-	        case "M_IS": return new int[1];
-	        case "M_CA1": return new int[1];
-	        case "M_CA2": return new int[1];
-	        case "M_CA3": return new int[0];
-	        case "M_CA4": return new int[1];
-	        case "M_CA5": return new int[1];
-	        case "M_CA6": return new int[1];
-	        case "M_CA7": return new int[1];
-	        case "M-SRWA 12A": return new int[1];
-			case "M-SRWA 12B":return new int[1];
-	        case "M-SRWA 12C": return new int[1];
-	        case "M-SRWA 12D": return new int[3];
-	        case "M-SRWA 12E": return new int[0];
-	        case "M-SRWA 12F": return new int[1];
-	        case "M-SRWA 12G": return new int[1];
-	        case "M-SRWA 12H": return new int[1];
-	        case "M-OR1": return new int[1];
-	        case "M-OR2": return new int[1];
-	        case "M-MRC": return new int[1];
-	        case "M-SIR": return new int[1]; 
-	        case "M-IRB": return new int[1];
-	        case "M-GALOR": return new int[0];
-	        case "M-CALOC": return new int[0];
-	        case "M-I (S&CA)": return new int[0];
-	        case "M-SP": return new int[0];
-	        case "M-DEP1": return new int[0];
-	        case "M-NOSVOS": return new int[1];
-	        case "M-AIDP": return new int[0];
-	        case "M-GMIRT": return new int[1];
-	        case "M-EPR": return new int[1];
-	        case "M-LIQGAP": return new int[0];
-	        case "M-CR": return new int[0];
-	        case "M-FXR": return new int[1];
-	        case "M-OPTR": return new int[1];
-	        case "M-LA1": return new int[0];
-	        case "M-LA2": return new int[0];
-	        case "M-LA3": return new int[0];
-	        case "M-LA4": return new int[0];
-	        case "M-LA5": return new int[0];
-	        case "M-PLL": return new int[0];
-	        case "M-PD": return new int[0];
-	        case "M-GP": return new int[0];
-	        case "M-DEP2":  return new int[0];
-	        case "M-DEP3":  return new int[0];
-	        case "M-OB":  return new int[0];
-	        case "M-BOP":  return new int[0];
-	        case "M-INTRATES":  return new int[0];
-	        case "M-INT .RATES(FCA)": return new int[0];
-	        case "M-SECA":  return new int[0];
-	        case "M-SECL":  return new int[0];
-	        case "M-RPD":  return new int[0];
-	        case "M-FAS":  return new int[0];
-	        case "M-SEC":  return new int[0];
-	        case "M-UNCONS INVEST":  return new int[0];
-	        case "Q-ATF":  return new int[0];
-	        case "Q-RLFA1":  return new int[0];
-	        case "Q-RLFA2":  return new int[0];
-	        case "Q-SMME(LOAN & ADVANCE)":  return new int[0];
-	        case "Q-SMME DEP":  return new int[0];
-	        case "Q-SMME (INTREST & INCOME)":  return new int[0];
-	        case "Q-STAFF":  return new int[0];
-	        case "Q-LARADV":  return new int[0];
-	        case "Q-BRANCHNET":  return new int[1];
+	        case "M_PI": return new int[] {0};
+	        case "M-SFINP1": return new int[] {0};
+	        case "M-SFINP2": return new int[] {0};
+	        case "M_LIQ": return new int[] {0};
+	        case "M_SCI": return new int[] {0};
+	        case "M_IS": return new int[] {0};
+	        case "M_CA1": return new int[] {1};
+	        case "M_CA2": return new int[] {1};
+	        case "M_CA3": return new int[] {1};
+	        case "M_CA4": return new int[] {0};
+	        case "M_CA5": return new int[] {1};
+	        case "M_CA6": return new int[] {1};
+	        case "M_CA7": return new int[] {1};
+	        case "M_SRWA12A": return new int[]{1};
+			case "M_SRWA12B":return new int[]{1};
+	        case "M_SRWA12C": return new int[]{2};
+	        case "M_SRWA12D": return new int[]{3,14};
+	        case "M_SRWA12E": return new int[]{1};
+	        case "M_SRWA12F": return new int[] {1};
+	        case "M_SRWA12G": return new int[] {1};
+	        case "M_SRWA12H": return new int[]{1};
+	        case "M_OR1": return new int[]{1};
+	        case "M_OR2": return new int[]{1};
+	        case "M_MRC": return new int[]{1};
+	        case "M_SIR": return new int[]{1};
+	        case "M_IRB": return new int[]{1};
+	        case "M_GALOR": return new int[]{0};
+	        case "M_CALOC": return new int[]{0};
+	        case "M_I": return new int[]{0};
+	        case "M_SP": return new int[]{0};
+	        case "M_NOSVOS": return new int[] {1};
+	        case "M_AIDP": return new int[]{0};
+	        case "M_GMIRT": return new int[]{1};
+	        case "M_EPR": return new int[]{1};
+	        case "M_TBS": return new int[]{1};
+	        case "M_LIQGAP": return new int[]{0};
+	        case "M_CR": return new int[]{0};
+	        case "M_FXR": return new int[]{1};
+	        case "M_OPTR": return new int[] {1,2,3};
+	        
+	        
+	        case "M_LA1": return new int[]{0};
+	        case "M_LA2": return new int[]{0};
+	        case "M_LA3": return new int[]{0};
+	        case "M_LA4": return new int[]{0};
+	        case "M_LA5": return new int[]{0};
+	        case "M_PLL": return new int[]{0};
+	        case "M_PD": return new int[]{0};
+	        case "M_GP": return new int[]{0};
+	        case "M_DEP1": return new int[]{0};
+	        case "M_DEP2":  return new int[]{0};
+	        case "M_DEP3":  return new int[]{0};
+	        case "M_DEP4":  return new int[]{1};
+	        case "M_OB":  return new int[]{0};
+	        case "M_BOP":  return new int[]{0};
+	        case "M_INTRATES":  return new int[]{0};
+	        case "M_RATESFCA": return new int[]{0};
+	        case "M_SECA":  return new int[]{0};
+	        case "M_SECL":  return new int[]{0};
+	        case "M_RPD":  return new int[]{0};
+	        case "M_FAS":  return new int[]{0};
+	        case "M_SEC":  return new int[]{0};
+	        case "M_UNCONS_INVEST":  return new int[0];
+	        case "Q_ATF":  return new int[0];
+	        case "Q_RLFA1":  return new int[0];
+	        case "Q_RLFA2":  return new int[0];
+	        case "Q_SMME_LOANS":  return new int[]{0};
+	        case "Q_SMME_DEP":  return new int[]{0};
+	        case "Q_SMME_INT":  return new int[]{0};
+	        case "Q_STAFF":  return new int[]{0};
+	        case "Q_LARADV":  return new int[]{0};
+	        case "Q_BRANCHNET":  return new int[]{1};
 
+	  
+	       
 	        default:
 	            return new int[]{}; // no formula override
 	    }
+	    
+	    
 	}
 }
