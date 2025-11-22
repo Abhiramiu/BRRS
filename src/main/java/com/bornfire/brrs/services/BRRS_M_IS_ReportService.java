@@ -1,4 +1,5 @@
 package com.bornfire.brrs.services;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -94,80 +95,81 @@ public class BRRS_M_IS_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-            public ModelAndView getM_ISView(
-            String reportId, String fromdate, String todate,
-            String currency, String dtltype, Pageable pageable,
-            String type, String version) {
+	public ModelAndView getM_ISView(
+			String reportId, String fromdate, String todate,
+			String currency, String dtltype, Pageable pageable,
+			String type, String version) {
 
-        ModelAndView mv = new ModelAndView();
-        Session hs = sessionFactory.getCurrentSession();
+		ModelAndView mv = new ModelAndView();
+		Session hs = sessionFactory.getCurrentSession();
 
-        int pageSize = pageable.getPageSize();
-        int currentPage = pageable.getPageNumber();
-        int startItem = currentPage * pageSize;
+		int pageSize = pageable.getPageSize();
+		int currentPage = pageable.getPageNumber();
+		int startItem = currentPage * pageSize;
 
-        try {
-            Date d1 = dateformat.parse(todate);
+		try {
+			Date d1 = dateformat.parse(todate);
 
-            // ---------- CASE 1: ARCHIVAL ----------
-            if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			// ---------- CASE 1: ARCHIVAL ----------
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
-                List<M_IS_Archival_Summary_Entity1> T1Master = M_IS_Archival_Summary_Repo1
-                        .getdatabydateListarchival(d1, version);
-                List<M_IS_Archival_Summary_Entity2> T2Master = M_IS_Archival_Summary_Repo2
-                        .getdatabydateListarchival(d1, version);
-                List<M_IS_Mapping_ArchivalSummaryEntity> T3Master = M_IS_Mapping_ArchivalSummaryRepo
-                        .getdatabydateListarchival(d1, version);
-                mv.addObject("reportsummary", T1Master);
-                mv.addObject("reportsummary1", T2Master);
+				List<M_IS_Archival_Summary_Entity1> T1Master = M_IS_Archival_Summary_Repo1
+						.getdatabydateListarchival(d1, version);
+				List<M_IS_Archival_Summary_Entity2> T2Master = M_IS_Archival_Summary_Repo2
+						.getdatabydateListarchival(d1, version);
+				List<M_IS_Mapping_ArchivalSummaryEntity> T3Master = M_IS_Mapping_ArchivalSummaryRepo
+						.getdatabydateListarchival(d1, version);
+						System.out.println("T3Master count = " + T3Master.size());
+
+				mv.addObject("reportsummary", T1Master);
+				mv.addObject("reportsummary1", T2Master);
 				mv.addObject("reportsummary2", T3Master);
 				
-            }
 
-            // ---------- CASE 2: RESUB ----------
-            else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+			}
 
-                List<M_IS_Archival_Summary_Entity1> T1Master = M_IS_Archival_Summary_Repo1
-                        .getdatabydateListarchival(d1, version);
-                List<M_IS_Archival_Summary_Entity2> T2Master = M_IS_Archival_Summary_Repo2
-                        .getdatabydateListarchival(d1, version);
+			// ---------- CASE 2: RESUB ----------
+			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
-                mv.addObject("reportsummary", T1Master);
-                mv.addObject("reportsummary1", T2Master);
-            }
+				List<M_IS_Archival_Summary_Entity1> T1Master = M_IS_Archival_Summary_Repo1
+						.getdatabydateListarchival(d1, version);
+				List<M_IS_Archival_Summary_Entity2> T2Master = M_IS_Archival_Summary_Repo2
+						.getdatabydateListarchival(d1, version);
 
-            // ---------- CASE 3: NORMAL ----------
-            else {
+				mv.addObject("reportsummary", T1Master);
+				mv.addObject("reportsummary1", T2Master);
+			}
 
-                List<M_IS_Summary_Entity1> T1Master = M_IS_Summary_Repo1.getdatabydateList(d1);
-                List<M_IS_Summary_Entity2> T2Master = M_IS_Summary_Repo2.getdatabydateList(d1);
-				 List<M_IS_Mapping_SummaryEntity> T3Master = M_IS_Mapping_SummaryRepo.getdatabydateList(d1);
+			// ---------- CASE 3: NORMAL ----------
+			else {
 
-                System.out.println("T1Master Size: " + T1Master.size());
-                System.out.println("T2Master Size: " + T2Master.size());
+				List<M_IS_Summary_Entity1> T1Master = M_IS_Summary_Repo1.getdatabydateList(d1);
+				List<M_IS_Summary_Entity2> T2Master = M_IS_Summary_Repo2.getdatabydateList(d1);
+				List<M_IS_Mapping_SummaryEntity> T3Master = M_IS_Mapping_SummaryRepo.getdatabydateList(d1);
+
+				System.out.println("T1Master Size: " + T1Master.size());
+				System.out.println("T2Master Size: " + T2Master.size());
 				System.out.println("T3Master Size: " + T3Master.size());
 
-                mv.addObject("reportsummary", T1Master);
-                mv.addObject("reportsummary1", T2Master);
+				mv.addObject("reportsummary", T1Master);
+				mv.addObject("reportsummary1", T2Master);
 				mv.addObject("reportsummary2", T3Master);
-            }
+			}
 
-            mv.setViewName("BRRS/M_IS");
-            mv.addObject("displaymode", "summary");
-            System.out.println("✅ View set: " + mv.getViewName());
+			mv.setViewName("BRRS/M_IS");
+			mv.addObject("displaymode", "summary");
+			System.out.println("✅ View set: " + mv.getViewName());
 
-        } catch (ParseException e) {
-            e.printStackTrace();
-            mv.addObject("error", "Invalid date format for: " + todate);
-        } catch (Exception e) {
-            e.printStackTrace();
-            mv.addObject("error", "An error occurred while fetching M_IS data.");
-        }
+		} catch (ParseException e) {
+			e.printStackTrace();
+			mv.addObject("error", "Invalid date format for: " + todate);
+		} catch (Exception e) {
+			e.printStackTrace();
+			mv.addObject("error", "An error occurred while fetching M_IS data.");
+		}
 
-        return mv;
-    }
-
-
+		return mv;
+	}
 
 	public ModelAndView getM_IScurrentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String filter,
@@ -260,7 +262,8 @@ public class BRRS_M_IS_ReportService {
 			for (int i = 10; i <= 16; i++) {
 				String prefix = "R" + i + "_";
 
-				String[] fields = { "PRODUCT","FAIR_VALUE_PROFIT_AND_LOSS", "HELD_TO_MATURITY", "AVAILABLE_FOR_SALE","TOTAL" };
+				String[] fields = { "PRODUCT", "FAIR_VALUE_PROFIT_AND_LOSS", "HELD_TO_MATURITY", "AVAILABLE_FOR_SALE",
+						"TOTAL" };
 
 				for (String field : fields) {
 					String getterName = "getR" + i + "_" + field;
@@ -301,8 +304,8 @@ public class BRRS_M_IS_ReportService {
 			for (int i = 21; i <= 35; i++) {
 				String prefix = "R" + i + "_";
 
-				String[] fields = {  "PRODUCT","HELD_FOR_TRADING", "AMORTISED_COST", "AVAILABLE_FOR_SALE",
-						"FAIR_VALUE_THROUGH_PROFIT_AND_LOSS", "QUALIFYING_FOR_HEDGE_ACCOUNTING","TOTAL" };
+				String[] fields = { "PRODUCT", "HELD_FOR_TRADING", "AMORTISED_COST", "AVAILABLE_FOR_SALE",
+						"FAIR_VALUE_THROUGH_PROFIT_AND_LOSS", "QUALIFYING_FOR_HEDGE_ACCOUNTING", "TOTAL" };
 
 				for (String field : fields) {
 					String getterName = "getR" + i + "_" + field;
@@ -472,8 +475,8 @@ public class BRRS_M_IS_ReportService {
 				.getdatabydateList(dateformat.parse(todate));
 		List<M_IS_Summary_Entity2> dataList1 = M_IS_Summary_Repo2
 				.getdatabydateList(dateformat.parse(todate));
-		List<M_IS_Mapping_SummaryEntity> dataList2 = M_IS_Mapping_SummaryRepo	
-		        .getdatabydateList(dateformat.parse(todate));	
+		List<M_IS_Mapping_SummaryEntity> dataList2 = M_IS_Mapping_SummaryRepo
+				.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for brrs2.4 report. Returning empty result.");
@@ -538,7 +541,7 @@ public class BRRS_M_IS_ReportService {
 
 					M_IS_Summary_Entity1 record = dataList.get(i);
 					M_IS_Summary_Entity2 record2 = dataList1.get(i);
-					M_IS_Mapping_SummaryEntity record3 =dataList2.get(i);
+					M_IS_Mapping_SummaryEntity record3 = dataList2.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -1496,7 +1499,7 @@ public class BRRS_M_IS_ReportService {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("MSFinP2Detail");
+			XSSFSheet sheet = workbook.createSheet("M_ISDetail");
 
 			// Common border style
 			BorderStyle border = BorderStyle.THIN;
@@ -1578,8 +1581,8 @@ public class BRRS_M_IS_ReportService {
 					}
 					balanceCell.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getRowId());
-					row.createCell(5).setCellValue(item.getColumnId());
+					row.createCell(4).setCellValue(item.getReportLabel());
+					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
@@ -2790,8 +2793,8 @@ public class BRRS_M_IS_ReportService {
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 		List<M_IS_Archival_Summary_Entity2> dataList1 = M_IS_Archival_Summary_Repo2
 				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<M_IS_Mapping_ArchivalSummaryEntity> dataList2 =M_IS_Mapping_ArchivalSummaryRepo
-		         .getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_IS_Mapping_ArchivalSummaryEntity> dataList2 = M_IS_Mapping_ArchivalSummaryRepo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_IS report. Returning empty result.");
@@ -2860,7 +2863,7 @@ public class BRRS_M_IS_ReportService {
 
 					M_IS_Archival_Summary_Entity1 record = dataList.get(i);
 					M_IS_Archival_Summary_Entity2 record2 = dataList1.get(i);
-					M_IS_Mapping_ArchivalSummaryEntity record3 =dataList2.get(i);
+					M_IS_Mapping_ArchivalSummaryEntity record3 = dataList2.get(i);
 
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);

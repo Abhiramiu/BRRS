@@ -22,11 +22,11 @@ public class M_IS_Archival_Detail_Entity {
    private String acctName;
    @Column(name = "DATA_TYPE")
    private String dataType;
-   @Column(name = "COLUMN_ID")
-   private String columnId;
-  
-   @Column(name = "ROW_ID")
-   private String rowId;
+	@Column(name = "REPORT_ADDL_CRITERIA_1")
+	private String reportAddlCriteria_1;
+
+@Column(name = "REPORT_LABEL")
+private String reportLabel;  
    @Column(name = "REPORT_REMARKS")
    private String reportRemarks;
    @Column(name = "MODIFICATION_REMARKS")
@@ -85,17 +85,18 @@ public class M_IS_Archival_Detail_Entity {
 	public void setDataType(String dataType) {
 		this.dataType = dataType;
 	}
-	public String getColumnId() {
-		return columnId;
+
+	public String getReportAddlCriteria_1() {
+		return reportAddlCriteria_1;
 	}
-	public void setColumnId(String columnId) {
-		this.columnId = columnId;
+	public void setReportAddlCriteria_1(String reportAddlCriteria_1) {
+		this.reportAddlCriteria_1 = reportAddlCriteria_1;
 	}
-	public String getRowId() {
-		return rowId;
+	public String getReportLabel() {
+		return reportLabel;
 	}
-	public void setRowId(String rowId) {
-		this.rowId = rowId;
+	public void setReportLabel(String reportLabel) {
+		this.reportLabel = reportLabel;
 	}
 	public String getReportRemarks() {
 		return reportRemarks;

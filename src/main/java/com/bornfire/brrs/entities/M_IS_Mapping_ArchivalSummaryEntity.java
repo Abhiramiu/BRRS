@@ -1,23 +1,20 @@
+
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
 import org.springframework.format.annotation.DateTimeFormat;
-
 
 @Entity
 @Table(name = "BRRS_M_IS_MAPPING_ARCHIVALSUMMARYTABLE")
-
 public class M_IS_Mapping_ArchivalSummaryEntity {
-
+    
     public BigDecimal R28_HELD_FOR_TRADING;
     
 	@Temporal(TemporalType.DATE)
