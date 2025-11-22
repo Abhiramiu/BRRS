@@ -1528,6 +1528,7 @@ function fileuploads(btn) {
         		"payments_and_settlements",
         		"agency_services",
         		"asset_management",
+        		"retail_brokerage",
         		"operational_risk_cap_charge",
         		"risk_weight_factor"].forEach(field => {
 	            const input = $("#r" + i + "_" + field);
@@ -2928,77 +2929,78 @@ function fileuploads(btn) {
     Operational Risk Factor denoted Beta (β)	
 
 </td>
-											<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+		<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r25_corporate_finance != null ? #numbers.formatDecimal(report.r25_corporate_finance, 1,'COMMA', 0, 'POINT') : '0.18'}"
+               th:value="${report.r25_corporate_finance != null and report.r25_corporate_finance != 0 ? #numbers.formatDecimal(report.r25_corporate_finance, 1,'COMMA', 2, 'POINT') : '0.18'}"
                id="r25_corporate_finance"
                name="r25_corporate_finance"
                style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
     </td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r25_trading_and_sales != null ? #numbers.formatDecimal(report.r25_trading_and_sales, 1, 'COMMA', 0, 'POINT') : '0.18'}"
-               id="r25_trading_and_sales"
-               name="r25_trading_and_sales"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+   <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r25_trading_and_sales != null and report.r25_trading_and_sales != 0 ? #numbers.formatDecimal(report.r25_trading_and_sales, 1,'COMMA', 2, 'POINT') : '0.18'}"
+           id="r25_trading_and_sales"
+           name="r25_trading_and_sales"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r25_retail_banking != null ? #numbers.formatDecimal(report.r25_retail_banking, 1,'COMMA',  0, 'POINT') : '0.12'}"
-               id="r25_retail_banking"
-               name="r25_retail_banking"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r25_retail_banking != null and report.r25_retail_banking != 0 ? #numbers.formatDecimal(report.r25_retail_banking, 1,'COMMA', 2, 'POINT') : '0.12'}"
+           id="r25_retail_banking"
+           name="r25_retail_banking"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r25_commercial_banking != null ? #numbers.formatDecimal(report.r25_commercial_banking, 1, 'COMMA', 0, 'POINT') : '0.15'}"
-               id="r25_commercial_banking"
-               name="r25_commercial_banking"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r25_commercial_banking != null and report.r25_commercial_banking != 0 ? #numbers.formatDecimal(report.r25_commercial_banking, 1,'COMMA', 2, 'POINT') : '0.15'}"
+           id="r25_commercial_banking"
+           name="r25_commercial_banking"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r25_payments_and_settlements != null ? #numbers.formatDecimal(report.r25_payments_and_settlements, 1,'COMMA', 0, 'POINT') : '0.18'}"
-               id="r25_payments_and_settlements"
-               name="r25_payments_and_settlements"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r25_payments_and_settlements != null and report.r25_payments_and_settlements != 0 ? #numbers.formatDecimal(report.r25_payments_and_settlements, 1,'COMMA', 2, 'POINT') : '0.18'}"
+           id="r25_payments_and_settlements"
+           name="r25_payments_and_settlements"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r25_agency_services != null ? #numbers.formatDecimal(report.r25_agency_services, 1, 'COMMA', 0, 'POINT') : '0.15'}"
-               id="r25_agency_services"
-               name="r25_agency_services"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r25_agency_services != null and report.r25_agency_services != 0 ? #numbers.formatDecimal(report.r25_agency_services, 1,'COMMA', 2, 'POINT') : '0.15'}"
+           id="r25_agency_services"
+           name="r25_agency_services"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r25_asset_management != null ? #numbers.formatDecimal(report.r25_asset_management, 1,'COMMA', 0, 'POINT') : '0.12'}"
-               id="r25_asset_management"
-               name="r25_asset_management"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r25_asset_management != null and report.r25_asset_management != 0 ? #numbers.formatDecimal(report.r25_asset_management, 1,'COMMA', 2, 'POINT') : '0.12'}"
+           id="r25_asset_management"
+           name="r25_asset_management"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r25_retail_brokerage != null ? #numbers.formatDecimal(report.r25_retail_brokerage, 1,'COMMA', 0, 'POINT') : '0.12'}"
-               id="r25_retail_brokerage"
-               name="r25_retail_brokerage"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r25_retail_brokerage != null and report.r25_retail_brokerage != 0 ? #numbers.formatDecimal(report.r25_retail_brokerage, 1,'COMMA', 2, 'POINT') : '0.12'}"
+           id="r25_retail_brokerage"
+           name="r25_retail_brokerage"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
+   
 </tr>
 
 										<tr>
@@ -4123,77 +4125,79 @@ function fileuploads(btn) {
        Operational Risk Factor denoted Beta (β)	
     </td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r41_corporate_finance != null ? #numbers.formatDecimal(report.r41_corporate_finance, 1,'COMMA', 0, 'POINT') : '0.18'}"
-               id="r41_corporate_finance"
-               name="r41_corporate_finance"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+   <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r41_corporate_finance != null and report.r41_corporate_finance != 0 ? #numbers.formatDecimal(report.r41_corporate_finance, 1,'COMMA', 2, 'POINT') : '0.18'}"
+           id="r41_corporate_finance"
+           name="r41_corporate_finance"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r41_trading_and_sales != null ? #numbers.formatDecimal(report.r41_trading_and_sales, 1, 'COMMA', 0, 'POINT') : '0.18'}"
-               id="r41_trading_and_sales"
-               name="r41_trading_and_sales"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r41_trading_and_sales != null and report.r41_trading_and_sales != 0 ? #numbers.formatDecimal(report.r41_trading_and_sales, 1,'COMMA', 2, 'POINT') : '0.18'}"
+           id="r41_trading_and_sales"
+           name="r41_trading_and_sales"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r41_retail_banking != null ? #numbers.formatDecimal(report.r41_retail_banking, 1,'COMMA', 0, 'POINT') : '0.12'}"
-               id="r41_retail_banking"
-               name="r41_retail_banking"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r41_retail_banking != null and report.r41_retail_banking != 0 ? #numbers.formatDecimal(report.r41_retail_banking, 1,'COMMA', 2, 'POINT') : '0.12'}"
+           id="r41_retail_banking"
+           name="r41_retail_banking"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r41_commercial_banking != null ? #numbers.formatDecimal(report.r41_commercial_banking, 1,'COMMA', 0, 'POINT') : '0.15'}"
-               id="r41_commercial_banking"
-               name="r41_commercial_banking"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r41_commercial_banking != null and report.r41_commercial_banking != 0 ? #numbers.formatDecimal(report.r41_commercial_banking, 1,'COMMA', 2, 'POINT') : '0.15'}"
+           id="r41_commercial_banking"
+           name="r41_commercial_banking"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r41_payments_and_settlements != null ? #numbers.formatDecimal(report.r41_payments_and_settlements, 1,'COMMA', 0, 'POINT') : '0.18'}"
-               id="r41_payments_and_settlements"
-               name="r41_payments_and_settlements"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r41_payments_and_settlements != null and report.r41_payments_and_settlements != 0 ? #numbers.formatDecimal(report.r41_payments_and_settlements, 1,'COMMA', 2, 'POINT') : '0.18'}"
+           id="r41_payments_and_settlements"
+           name="r41_payments_and_settlements"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r41_agency_services != null ? #numbers.formatDecimal(report.r41_agency_services, 1,'COMMA', 0, 'POINT') : '0.15'}"
-               id="r41_agency_services"
-               name="r41_agency_services"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r41_agency_services != null and report.r41_agency_services != 0 ? #numbers.formatDecimal(report.r41_agency_services, 1,'COMMA', 2, 'POINT') : '0.15'}"
+           id="r41_agency_services"
+           name="r41_agency_services"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r41_asset_management != null ? #numbers.formatDecimal(report.r41_asset_management, 1,'COMMA', 0, 'POINT') : '0.12'}"
-               id="r41_asset_management"
-               name="r41_asset_management"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r41_asset_management != null and report.r41_asset_management != 0 ? #numbers.formatDecimal(report.r41_asset_management, 1,'COMMA', 2, 'POINT') : '0.12'}"
+           id="r41_asset_management"
+           name="r41_asset_management"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r41_retail_brokerage != null ? #numbers.formatDecimal(report.r41_retail_brokerage, 1,'COMMA', 0, 'POINT') : '0.12'}"
-               id="r41_retail_brokerage"
-               name="r41_retail_brokerage"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r41_retail_brokerage != null and report.r41_retail_brokerage != 0 ? #numbers.formatDecimal(report.r41_retail_brokerage, 1,'COMMA', 2, 'POINT') : '0.12'}"
+           id="r41_retail_brokerage"
+           name="r41_retail_brokerage"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
+
+    
 </tr>
 
 <tr>
@@ -5319,79 +5323,79 @@ function fileuploads(btn) {
         Operational Risk Factor denoted Beta (β)	
     </td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r57_corporate_finance != null ? #numbers.formatDecimal(report.r57_corporate_finance, 1,'COMMA', 0, 'POINT') : '0.18'}"
-               id="r57_corporate_finance"
-               name="r57_corporate_finance"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+   <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r57_corporate_finance != null and report.r57_corporate_finance != 0 ? #numbers.formatDecimal(report.r57_corporate_finance, 1,'COMMA', 2, 'POINT') : '0.18'}"
+           id="r57_corporate_finance"
+           name="r57_corporate_finance"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r57_trading_and_sales != null ? #numbers.formatDecimal(report.r57_trading_and_sales, 1,'COMMA', 0, 'POINT') : '0.18'}"
-               id="r57_trading_and_sales"
-               name="r57_trading_and_sales"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r57_trading_and_sales != null and report.r57_trading_and_sales != 0 ? #numbers.formatDecimal(report.r57_trading_and_sales, 1,'COMMA', 2, 'POINT') : '0.18'}"
+           id="r57_trading_and_sales"
+           name="r57_trading_and_sales"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r57_retail_banking != null ? #numbers.formatDecimal(report.r57_retail_banking, 1,'COMMA', 0, 'POINT') : '0.12'}"
-               id="r57_retail_banking"
-               name="r57_retail_banking"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r57_retail_banking != null and report.r57_retail_banking != 0 ? #numbers.formatDecimal(report.r57_retail_banking, 1,'COMMA', 2, 'POINT') : '0.12'}"
+           id="r57_retail_banking"
+           name="r57_retail_banking"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r57_commercial_banking != null ? #numbers.formatDecimal(report.r57_commercial_banking, 1, 'COMMA', 0, 'POINT') : '0.15'}"
-               id="r57_commercial_banking"
-               name="r57_commercial_banking"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r57_commercial_banking != null and report.r57_commercial_banking != 0 ? #numbers.formatDecimal(report.r57_commercial_banking, 1,'COMMA', 2, 'POINT') : '0.15'}"
+           id="r57_commercial_banking"
+           name="r57_commercial_banking"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r57_payments_and_settlements != null ? #numbers.formatDecimal(report.r57_payments_and_settlements, 1,'COMMA', 0, 'POINT') : '0.18'}"
-               id="r57_payments_and_settlements"
-               name="r57_payments_and_settlements"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r57_payments_and_settlements != null and report.r57_payments_and_settlements != 0 ? #numbers.formatDecimal(report.r57_payments_and_settlements, 1,'COMMA', 2, 'POINT') : '0.18'}"
+           id="r57_payments_and_settlements"
+           name="r57_payments_and_settlements"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r57_agency_services != null ? #numbers.formatDecimal(report.r57_agency_services, 1,'COMMA', 0, 'POINT') : '0.15'}"
-               id="r57_agency_services"
-               name="r57_agency_services"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r57_agency_services != null and report.r57_agency_services != 0 ? #numbers.formatDecimal(report.r57_agency_services, 1,'COMMA', 2, 'POINT') : '0.15'}"
+           id="r57_agency_services"
+           name="r57_agency_services"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r57_asset_management != null ? #numbers.formatDecimal(report.r57_asset_management, 1,'COMMA', 0, 'POINT') : '0.12'}"
-               id="r57_asset_management"
-               name="r57_asset_management"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r57_asset_management != null and report.r57_asset_management != 0 ? #numbers.formatDecimal(report.r57_asset_management, 1,'COMMA', 2, 'POINT') : '0.12'}"
+           id="r57_asset_management"
+           name="r57_asset_management"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
-    <td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r57_retail_brokerage != null ? #numbers.formatDecimal(report.r57_retail_brokerage, 1,'COMMA', 0, 'POINT') : '0.12'}"
-               id="r57_retail_brokerage"
-               name="r57_retail_brokerage"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
-</tr>
+<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r57_retail_brokerage != null and report.r57_retail_brokerage != 0 ? #numbers.formatDecimal(report.r57_retail_brokerage, 1,'COMMA', 2, 'POINT') : '0.12'}"
+           id="r57_retail_brokerage"
+           name="r57_retail_brokerage"
+           style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
 
+ </tr>
 										<tr>
     <td style="text-align: center; background-color: white;">14</td>
     <td style="font-weight: normal;font-weight: bold; width:150px;" colspan="2">
@@ -5530,13 +5534,15 @@ function fileuploads(btn) {
     <td colspan="8" style="background-color: #b3b6b9; text-align: center;"></td>
 
     <td style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r62_operational_risk_cap_charge != null ? #numbers.formatDecimal(report.r62_operational_risk_cap_charge, 1,'COMMA', 0, 'POINT') : '3.00'}"
-               id="r62_operational_risk_cap_charge"
-               name="r62_operational_risk_cap_charge"
-               style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+           th:value="${report.r62_operational_risk_cap_charge != null and report.r62_operational_risk_cap_charge != 0 ? 
+#numbers.formatDecimal(report.r62_operational_risk_cap_charge, 1,'COMMA', 2, 'POINT') : '3.00'}"
+           id="r62_operational_risk_cap_charge"
+           name="r62_operational_risk_cap_charge"
+           style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
+
 </tr>
 
 			<tr>
@@ -5566,14 +5572,18 @@ function fileuploads(btn) {
 											</td>
 											<td colspan="1" style="background-color: black; text-align: center;">
 											</td>
-											<td style="background-color: #d3d3d3; padding-left: 20px; font-weight: bold;">
-        <input class="display-input Show_inputnonEditable"
-               type="text"
-               th:value="${report.r64_risk_weight_factor != null ? #numbers.formatDecimal(report.r64_risk_weight_factor, 1,'COMMA', 0, 'POINT') : '6.7'}"
-               id="r64_risk_weight_factor"
-               name="r64_risk_weight_factor"
-               style="background-color: #d3d3d3; height:28px; border-color:transparent; text-align:right;"readonly />
-    </td>
+											<td style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_inputnonEditable"
+           type="text"
+          th:value="${report.r64_risk_weight_factor != null and report.r64_risk_weight_factor > 0 
+           and report.r64_risk_weight_factor <= 6.7 ?
+           #numbers.formatDecimal(report.r64_risk_weight_factor, 1,'COMMA', 1, 'POINT') : '6.7'}"
+           id="r64_risk_weight_factor"
+           name="r64_risk_weight_factor"
+           style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;" readonly />
+</td>
+
+
 </tr>
 
 										<tr>
