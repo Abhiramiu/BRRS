@@ -38,6 +38,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 
 @Component
@@ -216,6 +217,10 @@ public class RegulatoryReportServices {
 	BRRS_M_NOSVOS_ReportService BRRS_M_NOSVOS_reportservice;
 			@Autowired
 	BRRS_M_CALOC_ReportService BRRS_M_CALOC_reportService;
+			
+			
+	@Autowired
+    BRRS_M_GMIRT_ReportService brrs_m_gmirt_reportservice;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -519,6 +524,22 @@ public class RegulatoryReportServices {
 				repsummary = BRRS_M_NOSVOS_reportservice.getM_NOSVOSView(reportId, fromdate, todate, currency, dtltype,
 						pageable, type, version);
 			break;
+			
+			
+			
+			
+		  case "M_GMIRT":
+				
+				repsummary = brrs_m_gmirt_reportservice.getM_GMIRTView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
+			
+			
+			
+			
+			
+			
+			
 		}
 
 		return repsummary;
@@ -648,6 +669,12 @@ public class RegulatoryReportServices {
 			repdetail = brrs_m_srwa_12a_reportservice.getM_SRWA_12AcurrentDtl(reportId, fromdate, todate, currency,
 					dtltype, pageable, Filter, type, version);
 			break;
+			
+		  case "M_GMIRT":
+				
+				repdetail = brrs_m_gmirt_reportservice. getM_GMIRTcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
 
 		}
 		return repdetail;
@@ -1233,6 +1260,17 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_GMIRT":
+			try {
+				
+				repfile = brrs_m_gmirt_reportservice.getM_GMIRTExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		}
 		return repfile;
 	}
@@ -1690,6 +1728,15 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_GMIRT":
+			try {
+				archivalData = brrs_m_gmirt_reportservice.getM_GMIRTArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		
 	//New Archival 
 				case "M_SRWA_12H":
@@ -1981,6 +2028,12 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 
 		}
+		
+		else if ("M_GMIRT_Detail".equals(filename)) {
+		       
+	        fileData = brrs_m_gmirt_reportservice.getM_GMIRTDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);   
+	    }
 		else if ("M_LIQ".equals(filename)) {
 
 			fileData = BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(filename, fromdate, todate, currency,

@@ -1,6 +1,7 @@
 package com.bornfire.brrs.controllers;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -15,8 +16,6 @@ import java.util.UUID;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +45,14 @@ import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity4;
-import com.bornfire.brrs.entities.BRRS_M_LA4_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity1;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity3;
 import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity4;
+import com.bornfire.brrs.entities.BrrsMNosvosP1;
+import com.bornfire.brrs.entities.BrrsMNosvosP2;
+import com.bornfire.brrs.entities.BrrsMNosvosP3;
+import com.bornfire.brrs.entities.BrrsMNosvosP4;
 import com.bornfire.brrs.entities.M_BOP_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA3_Summary_Entity;
@@ -66,6 +68,7 @@ import com.bornfire.brrs.entities.M_EPR_Summary_Entity;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity1;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity2;
 import com.bornfire.brrs.entities.M_FXR_Summary_Entity3;
+import com.bornfire.brrs.entities.M_GMIRT_Summary_Entity;
 import com.bornfire.brrs.entities.M_GP_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_Summary_Entity;
@@ -74,7 +77,6 @@ import com.bornfire.brrs.entities.M_IS_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
 import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
-import com.bornfire.brrs.entities.M_LA4_Detail_Entity;
 import com.bornfire.brrs.entities.M_LA4_Summary_Entity2;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity1;
 import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
@@ -117,6 +119,7 @@ import com.bornfire.brrs.entities.M_SRWA_12C_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12G_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12H_Summary_Entity;
+import com.bornfire.brrs.entities.M_TBS_Summary_Entity;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity3;
@@ -135,7 +138,6 @@ import com.bornfire.brrs.entities.Q_SMME_DEP_Summary_Entity;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity1;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity2;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity3;
-import com.bornfire.brrs.entities.M_TBS_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_BOP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA2_ReportService;
@@ -147,6 +149,7 @@ import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
+import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService;
@@ -157,6 +160,7 @@ import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LARADV_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
+import com.bornfire.brrs.services.BRRS_M_NOSVOS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OB_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OPTR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OR2_ReportService;
@@ -173,20 +177,15 @@ import com.bornfire.brrs.services.BRRS_M_SRWA_12C_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12F_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12G_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService;
+import com.bornfire.brrs.services.BRRS_M_TBS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
-import com.bornfire.brrs.services.BRRS_M_TBS_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
-import com.bornfire.brrs.entities.BrrsMNosvosP1;
-import com.bornfire.brrs.entities.BrrsMNosvosP2;
-import com.bornfire.brrs.entities.BrrsMNosvosP3;
-import com.bornfire.brrs.entities.BrrsMNosvosP4;
-import com.bornfire.brrs.services.BRRS_M_NOSVOS_ReportService;
 
 @Controller
 @ConfigurationProperties("default")
@@ -223,6 +222,8 @@ public class BRRS_ReportsController {
 	
 	@Autowired
 	BRRS_M_NOSVOS_ReportService BRRS_M_NOSVOS_ReportService;
+	
+	
 
 	private String pagesize;
 
@@ -2739,6 +2740,39 @@ try {
 	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body("M_RPD Resubmission Update Failed: " + e.getMessage());
 }
+}
+
+
+
+
+@Autowired
+BRRS_M_GMIRT_ReportService brrs_m_gmirt_reportservice;
+
+@RequestMapping(value = "/M_GMIRTupdate", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateReport(
+    @RequestParam(required = false) 
+    @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+    @ModelAttribute M_GMIRT_Summary_Entity request
+   ) {
+
+    try {
+        System.out.println("came to single controller");
+        
+        // ✅ set the asondate into entity
+        request.setReport_date(asondate);
+        
+        
+     // call services
+        brrs_m_gmirt_reportservice.updateReport(request);
+        
+        
+        return ResponseEntity.ok(" Updated Successfully");
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body("Update Failed: " + e.getMessage());
+    }
 }
 
 @RequestMapping(value = "/UpdateM_TBS_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
