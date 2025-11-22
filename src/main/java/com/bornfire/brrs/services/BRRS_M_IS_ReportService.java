@@ -44,7 +44,11 @@ import com.bornfire.brrs.entities.M_IS_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_IS_Archival_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_IS_Archival_Summary_Repo2;
 import com.bornfire.brrs.entities.M_IS_Detail_Entity;
+import com.bornfire.brrs.entities.M_IS_Mapping_ArchivalSummaryEntity;
+import com.bornfire.brrs.entities.M_IS_Mapping_SummaryEntity;
 import com.bornfire.brrs.entities.BRRS_M_IS_Detail_Repo;
+import com.bornfire.brrs.entities.BRRS_M_IS_Mapping_ArchivalSummaryRepo;
+import com.bornfire.brrs.entities.BRRS_M_IS_Mapping_SummaryRepo;
 import com.bornfire.brrs.entities.M_IS_Summary_Entity1;
 import com.bornfire.brrs.entities.M_IS_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_IS_Summary_Repo1;
@@ -82,9 +86,15 @@ public class BRRS_M_IS_ReportService {
 	@Autowired
 	BRRS_M_IS_Archival_Summary_Repo2 M_IS_Archival_Summary_Repo2;
 
+	@Autowired
+	BRRS_M_IS_Mapping_SummaryRepo M_IS_Mapping_SummaryRepo;
+
+	@Autowired
+	BRRS_M_IS_Mapping_ArchivalSummaryRepo M_IS_Mapping_ArchivalSummaryRepo;
+
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-    public ModelAndView getM_ISView(
+            public ModelAndView getM_ISView(
             String reportId, String fromdate, String todate,
             String currency, String dtltype, Pageable pageable,
             String type, String version) {
@@ -106,9 +116,12 @@ public class BRRS_M_IS_ReportService {
                         .getdatabydateListarchival(d1, version);
                 List<M_IS_Archival_Summary_Entity2> T2Master = M_IS_Archival_Summary_Repo2
                         .getdatabydateListarchival(d1, version);
-
+                List<M_IS_Mapping_ArchivalSummaryEntity> T3Master = M_IS_Mapping_ArchivalSummaryRepo
+                        .getdatabydateListarchival(d1, version);
                 mv.addObject("reportsummary", T1Master);
                 mv.addObject("reportsummary1", T2Master);
+				mv.addObject("reportsummary2", T3Master);
+				
             }
 
             // ---------- CASE 2: RESUB ----------
@@ -128,12 +141,15 @@ public class BRRS_M_IS_ReportService {
 
                 List<M_IS_Summary_Entity1> T1Master = M_IS_Summary_Repo1.getdatabydateList(d1);
                 List<M_IS_Summary_Entity2> T2Master = M_IS_Summary_Repo2.getdatabydateList(d1);
+				 List<M_IS_Mapping_SummaryEntity> T3Master = M_IS_Mapping_SummaryRepo.getdatabydateList(d1);
 
                 System.out.println("T1Master Size: " + T1Master.size());
                 System.out.println("T2Master Size: " + T2Master.size());
+				System.out.println("T3Master Size: " + T3Master.size());
 
                 mv.addObject("reportsummary", T1Master);
                 mv.addObject("reportsummary1", T2Master);
+				mv.addObject("reportsummary2", T3Master);
             }
 
             mv.setViewName("BRRS/M_IS");
@@ -150,6 +166,7 @@ public class BRRS_M_IS_ReportService {
 
         return mv;
     }
+
 
 
 	public ModelAndView getM_IScurrentDtl(String reportId, String fromdate, String todate, String currency,
@@ -396,8 +413,8 @@ public class BRRS_M_IS_ReportService {
 						balanceCell.setCellValue(0.000);
 					}
 					balanceCell.setCellStyle(balanceStyle);
-					row.createCell(4).setCellValue(item.getRowId());
-					row.createCell(5).setCellValue(item.getColumnId());
+					row.createCell(4).setCellValue(item.getReportLabel());
+					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
 					row.createCell(6)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
@@ -446,6 +463,8 @@ public class BRRS_M_IS_ReportService {
 					.getdatabydateListarchival(dateformat.parse(todate), version);
 			List<M_IS_Archival_Summary_Entity2> dataList1 = M_IS_Archival_Summary_Repo2
 					.getdatabydateListarchival(dateformat.parse(todate), version);
+			List<M_IS_Mapping_ArchivalSummaryEntity> dataList2 = M_IS_Mapping_ArchivalSummaryRepo
+					.getdatabydateListarchival(dateformat.parse(todate), version);
 			// Generate Excel for RESUB
 			return BRRS_M_ISResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -453,6 +472,8 @@ public class BRRS_M_IS_ReportService {
 				.getdatabydateList(dateformat.parse(todate));
 		List<M_IS_Summary_Entity2> dataList1 = M_IS_Summary_Repo2
 				.getdatabydateList(dateformat.parse(todate));
+		List<M_IS_Mapping_SummaryEntity> dataList2 = M_IS_Mapping_SummaryRepo	
+		        .getdatabydateList(dateformat.parse(todate));	
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for brrs2.4 report. Returning empty result.");
@@ -517,6 +538,7 @@ public class BRRS_M_IS_ReportService {
 
 					M_IS_Summary_Entity1 record = dataList.get(i);
 					M_IS_Summary_Entity2 record2 = dataList1.get(i);
+					M_IS_Mapping_SummaryEntity record3 =dataList2.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -1117,12 +1139,12 @@ public class BRRS_M_IS_ReportService {
 						cell7.setCellStyle(textStyle);
 					}
 
-					// row28
+					// // row28
 					row = sheet.getRow(27);
 					// Column D
 					cell3 = row.createCell(3);
-					if (record2.getR28_HELD_FOR_TRADING() != null) {
-						cell3.setCellValue(record2.getR28_HELD_FOR_TRADING().doubleValue());
+					if (record3.getR28_HELD_FOR_TRADING() != null) {
+						cell3.setCellValue(record3.getR28_HELD_FOR_TRADING().doubleValue());
 						cell3.setCellStyle(numberStyle);
 					} else {
 						cell3.setCellValue("");
@@ -1617,6 +1639,8 @@ public class BRRS_M_IS_ReportService {
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 		List<M_IS_Archival_Summary_Entity2> dataList1 = M_IS_Archival_Summary_Repo2
 				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_IS_Mapping_ArchivalSummaryEntity> dataList2 = M_IS_Mapping_ArchivalSummaryRepo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_IS report. Returning empty result.");
@@ -1682,6 +1706,7 @@ public class BRRS_M_IS_ReportService {
 
 					M_IS_Archival_Summary_Entity1 record = dataList.get(i);
 					M_IS_Archival_Summary_Entity2 record2 = dataList1.get(i);
+					M_IS_Mapping_ArchivalSummaryEntity record3 = dataList2.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -2286,8 +2311,8 @@ public class BRRS_M_IS_ReportService {
 					row = sheet.getRow(27);
 					// Column D
 					cell3 = row.createCell(3);
-					if (record2.getR28_HELD_FOR_TRADING() != null) {
-						cell3.setCellValue(record2.getR28_HELD_FOR_TRADING().doubleValue());
+					if (record3.getR28_HELD_FOR_TRADING() != null) {
+						cell3.setCellValue(record3.getR28_HELD_FOR_TRADING().doubleValue());
 						cell3.setCellStyle(numberStyle);
 					} else {
 						cell3.setCellValue("");
@@ -2765,6 +2790,8 @@ public class BRRS_M_IS_ReportService {
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 		List<M_IS_Archival_Summary_Entity2> dataList1 = M_IS_Archival_Summary_Repo2
 				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_IS_Mapping_ArchivalSummaryEntity> dataList2 =M_IS_Mapping_ArchivalSummaryRepo
+		         .getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_IS report. Returning empty result.");
@@ -2833,6 +2860,8 @@ public class BRRS_M_IS_ReportService {
 
 					M_IS_Archival_Summary_Entity1 record = dataList.get(i);
 					M_IS_Archival_Summary_Entity2 record2 = dataList1.get(i);
+					M_IS_Mapping_ArchivalSummaryEntity record3 =dataList2.get(i);
+
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -3437,8 +3466,8 @@ public class BRRS_M_IS_ReportService {
 					row = sheet.getRow(27);
 					// Column D
 					cell3 = row.createCell(3);
-					if (record2.getR28_HELD_FOR_TRADING() != null) {
-						cell3.setCellValue(record2.getR28_HELD_FOR_TRADING().doubleValue());
+					if (record3.getR28_HELD_FOR_TRADING() != null) {
+						cell3.setCellValue(record3.getR28_HELD_FOR_TRADING().doubleValue());
 						cell3.setCellStyle(numberStyle);
 					} else {
 						cell3.setCellValue("");

@@ -214,6 +214,8 @@ public class RegulatoryReportServices {
 	
 	@Autowired
 	BRRS_M_NOSVOS_ReportService BRRS_M_NOSVOS_reportservice;
+			@Autowired
+	BRRS_M_CALOC_ReportService BRRS_M_CALOC_reportService;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -260,6 +262,11 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_CA6_reportservice.getM_CA6View(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
+				case "M_CALOC":
+				repsummary = BRRS_M_CALOC_reportService.getBRRS_M_CALOCview(reportId, fromdate, todate, currency,
+						dtltype, pageable, type, version);
+				break;
+
 
 		case "M_CA5":
 			repsummary = BRRS_M_CA5_reportservice.getM_CA5View(reportId, fromdate, todate, currency, dtltype, pageable,
@@ -540,6 +547,11 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_M_LA4_reportservice.getM_LA4currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
+							case "M_CALOC":
+
+				repdetail = BRRS_M_CALOC_reportService.getM_CALOCcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype, pageable, Filter, type, version);
+				break;
 
 		case "M_IS":
 			repdetail = BRRS_M_IS_reportservice.getM_IScurrentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -796,6 +808,17 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+
+					case "M_CALOC":
+				try {
+					repfile = BRRS_M_CALOC_reportService.getBRRS_M_CALOCExcel(filename, reportId, fromdate, todate,
+							currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 		case "M_SRWA_12C":
 			try {
@@ -1410,6 +1433,14 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+									case "M_CALOC":
+				try {
+					archivalData = BRRS_M_CALOC_reportService.getM_CALOCArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 		case "M_DEP1":
 			try {
 				archivalData = BRRS_M_DEP1_reportservice.getM_DEP1Archival();
@@ -1936,7 +1967,12 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("M_SPDetail")) {
 			fileData = BRRS_M_SP_reportservice.getM_SPDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
-		} 
+		} else if ("M_CALOC".equals(filename)) {
+
+			fileData = BRRS_M_CALOC_reportService.getBRRSM_CALOCDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+
+		}
 
 
 		else if ("M_SRWA_12A".equals(filename)) {

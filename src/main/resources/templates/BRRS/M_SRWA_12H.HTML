@@ -3276,7 +3276,7 @@ $.ajax({
 													<input class="display-input Show_input" type="text" id="R53_PRODUCT"
 														name="R53_PRODUCT"
 														th:value="'Eligible Guarantors/Protection Providers for Credit Risk *'"
-														style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: left;text-decoration: underline;"
+														style="background-color: #FFFFFF; width: 400px; height: 28px; border-color: transparent; text-align: left;text-decoration: underline;font-weight: bold;"
 														readonly />
 												</td>
 												<td style="text-align: right; ">
@@ -4934,8 +4934,8 @@ $.ajax({
 											<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
 											<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 3, 3, 'COMMA')}"
 												style="text-align: right;"></td>
-											<td style="text-align: left;" th:text="${report.rowId}"></td>
-											<td th:text="${report.columnId}"></td>
+											<td style="text-align: left;" th:text="${report.reportLable}"></td>
+											<td th:text="${report.reportAddlCriteria_1S}"></td>
 											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>
 									</tbody>

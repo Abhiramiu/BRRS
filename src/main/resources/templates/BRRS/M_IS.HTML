@@ -345,15 +345,50 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		//to fetch summary from the database - called from the summary button
-		function showdetails() {
-    isDetailsModal = true; // mark that this modal is from Details
-    showResultModal('BRRS', 'Details page not available for Manual Report');
-}
+// 		function showdetails() {
+//     isDetailsModal = true; // mark that this modal is from Details
+//     showResultModal('BRRS', 'Details page not available for Manual Report');
+// }
+
+		// function showsummary() {
+		// 	$('#loader').modal('show');
+		// 	var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
+		// 		location.href = Callurl;
+		// }
+
+				function showdetails() {
+			var Callurl;
+	    	$('#loader').modal('show');
+	        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+	        location.href = Callurl;
+	        	console.log(Callurl);
+	   /*  $.ajax({
+	        type: 'get',
+	        url: Callurl,
+	        beforeSend: function () {
+	            $('#loader').modal('show'); // 🔄 Show loader
+	        },
+	        success: function (data) {
+	            $('.content').html(data);
+	            //$("#detailsbtn").addClass("active");
+	            //tablepagination();
+	        },
+	        complete: function () {
+	            $('#loader').modal('hide'); 
+	        },
+	        error: function () {
+	        	  $('#loader').modal('hide');
+	            alert("Something went wrongss. Please try again.");
+	          
+	        }
+	    }); */
+			
+		}
 
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
-				location.href = Callurl;
+			location.href = Callurl;
 		}
 
 
@@ -452,17 +487,32 @@ PURPOSE		: BWRBRREPORT
 		}
 	</script>
 
-	<script>function showmodify(btn) {
+	<script>
+	function showmodify(btn) {
 			// ✅ List of IDs that should ALWAYS remain readonly
-			var readonlyIds = [
-				"R9_STAFF_COMPLEMENT", "R10_STAFF_COMPLEMENT", "R11_STAFF_COMPLEMENT", "R12_STAFF_COMPLEMENT", "R13_STAFF_COMPLEMENT", "R15_STAFF_COMPLEMENT",
-				"R21_SENIOR_MANAGEMENT_COMPENSATION", "R22_SENIOR_MANAGEMENT_COMPENSATION", "R23_SENIOR_MANAGEMENT_COMPENSATION", "R24_STR21_SENIOR_MANAGEMENT_COMPENSATIONAFF_COMPLEMENT", "R25_SENIOR_MANAGEMENT_COMPENSATION", "R26_SENIOR_MANAGEMENT_COMPENSATION", "R27_SENIOR_MANAGEMENT_COMPENSATION", "R28_SENIOR_MANAGEMENT_COMPENSATION",
-				"R33_STAFF_LOANS", "R34_STAFF_LOANS", "R35_STAFF_LOANS", "R36_STAFF_LOANS", "R37_STAFF_LOANS", "R38_STAFF_LOANS",
-				"R15_LOCAL", "R15_EXPARIATES", "R9_TOTAL", "R10_TOTAL", "R11_TOTAL", "R12_TOTAL",
-				"R13_TOTAL", "R14_TOTAL", "R15_TOTAL", "R28_LOCAL", "R28_EXPARIATES", "R21_TOTAL",
-				"R22_TOTAL", "R23_TOTAL", "R24_TOTAL", "R25_TOTAL", "R26_TOTAL", "R27_TOTAL", "R28_TOTAL",
-				"R38_ORIGINAL_AMT", "R38_BALANCE_OUTSTANDING", "R38_NO_OF_ACS"
-			];
+var readonlyIds = [
+    "R16_FAIR_VALUE_PROFIT_AND_LOSS",
+    "R16_HELD_TO_MATURITY",
+    "R16_AVAILABLE_FOR_SALE",
+    "R16_TOTAL",
+
+    "R31_AMORTISED_COST", "R31_HELD_FOR_TRADING",
+    "R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS",
+    "R31_QUALIFYING_FOR_HEDGE_ACCOUNTING",
+    "R31_AVAILABLE_FOR_SALE",
+
+    "R10_TOTAL","R11_TOTAL","R12_TOTAL","R13_TOTAL","R14_TOTAL","R15_TOTAL","R16_TOTAL","R17_TOTAL",
+    "R18_TOTAL","R19_TOTAL","R20_TOTAL","R21_TOTAL","R22_TOTAL","R23_TOTAL","R24_TOTAL","R25_TOTAL",
+    "R26_TOTAL","R27_TOTAL","R28_TOTAL","R29_TOTAL","R30_TOTAL","R31_TOTAL","R32_TOTAL","R33_TOTAL",
+    "R34_TOTAL","R35_TOTAL",
+
+    "R35_AMORTISED_COST", "R35_HELD_FOR_TRADING",
+    "R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS",
+    "R35_QUALIFYING_FOR_HEDGE_ACCOUNTING",
+    "R35_AVAILABLE_FOR_SALE",
+];
+
+
 			//"R33_INTEREST_RATE", "R34_INTEREST_RATE", "RR35_INTEREST_RATE35_STAFF_LOANS", "R36_INTEREST_RATE", "R37_INTEREST_RATE", "R38_INTEREST_RATE",
 
 			// ✅ Make all .Show_input editable except the ones in readonlyIds
@@ -488,25 +538,30 @@ PURPOSE		: BWRBRREPORT
 				});
 			}
 	
-			for (let i = 21; i <= 30; i++) {
-				let fields = [
-					// "_LOCAL",
-					// "_EXPARIATES",
+for (let i = 21; i <= 30; i++) {
+    let fields = [
+        "_HELD_FOR_TRADING",
+        "_AMORTISED_COST",
+        "_AVAILABLE_FOR_SALE",
+        "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS",
+        "_QUALIFYING_FOR_HEDGE_ACCOUNTING"
+    ];
 
-					"_HELD_FOR_TRADING",
-					"_AMORTISED_COST",
-					"_AVAILABLE_FOR_SALE",
-					"_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS",
-					"_QUALIFYING_FOR_HEDGE_ACCOUNTING"
-				];
+    fields.forEach(field => {
+
+        // ❗ Skip ONLY R28_HELD_FOR_TRADING
+        if (i === 28 && field === "_HELD_FOR_TRADING") {
+            return; // do not apply color
+        }
+
+        let selector = `#R${i}${field}`;
+
+        if ($(selector).length) {
+            $(selector).css("background-color", "#d3d3d3");
+        }
+    });
 
 
-				fields.forEach(field => {
-					let selector = `#R${i}${field}`;
-					if ($(selector).length) {
-						$(selector).css("background-color", "#d3d3d3");
-					}
-				});
 
 					for (let i = 32; i <= 34; i++) {
 				let fields = [
@@ -556,6 +611,48 @@ PURPOSE		: BWRBRREPORT
 			}
 			// ❌ If user clicks CANCEL, nothing happens
 		}
+
+			function startReport(button){
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+			
+			if(sessionfilename==filename){
+				alertMsg.innerHTML ='Download request already Processing...';
+	       	 	showAlert();
+				return;
+			}
+			
+			alertMsg.innerHTML ='Download request Processing...';
+	   	 	showAlert();
+
+			const baseUrl = '/BRRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+		    fetch(downloadUrl)  // ✅ no invalid characters now
+		        .then(res => res.text())
+		        .then(jobId => {
+
+		        	alertMsg.innerHTML ='Download request received...'+jobId;
+		       	 	showAlert();
+		            sessionStorage.setItem("jobId", jobId);
+		            sessionStorage.setItem("filename", filename);
+		            checkReport(jobId);
+		        });
+		}
+
 	</script>
 
 
@@ -645,22 +742,32 @@ function _toNumberFromSelector(selector) {
     v = v.toString().replace(/,/g, "");
     return parseFloat(v) || 0;
 }
+function getValue(id) {
+    let el = $(id);
+
+    if (el.length === 0) return 0; // No element at all
+
+    // If element has value attribute → use .val()
+    if (el.is("input")) {
+        return parseFloat(el.val().replace(/,/g, "")) || 0;
+    }
+
+    // If not input → use text content (DB display data)
+    return parseFloat(el.text().replace(/,/g, "")) || 0;
+}
 
 
 function calculateR35Totals() {
 
     let sumD = 0, sumE = 0, sumF = 0, sumG = 0, sumH = 0, sumI = 0;
 
-    // -------------------------------------------
-    // ROWS 21 TO 30 (Normal addition rows)
-    // -------------------------------------------
     for (let i = 21; i <= 30; i++) {
 
-        let D = parseFloat($("#R" + i + "_HELD_FOR_TRADING").val().replace(/,/g, "")) || 0;
-        let E = parseFloat($("#R" + i + "_AMORTISED_COST").val().replace(/,/g, "")) || 0;
-        let F = parseFloat($("#R" + i + "_AVAILABLE_FOR_SALE").val().replace(/,/g, "")) || 0;
-        let G = parseFloat($("#R" + i + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val().replace(/,/g, "")) || 0;
-        let H = parseFloat($("#R" + i + "_QUALIFYING_FOR_HEDGE_ACCOUNTING").val().replace(/,/g, "")) || 0;
+        let D = getValue(`#R${i}_HELD_FOR_TRADING`);
+        let E = getValue(`#R${i}_AMORTISED_COST`);
+        let F = getValue(`#R${i}_AVAILABLE_FOR_SALE`);
+        let G = getValue(`#R${i}_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS`);
+        let H = getValue(`#R${i}_QUALIFYING_FOR_HEDGE_ACCOUNTING`);
 
         let I = D + E + F + G + H;
 
@@ -673,6 +780,8 @@ function calculateR35Totals() {
         sumH += H;
         sumI += I;
     }
+
+
 
     // -------------------------------------------
     // ROW 31 = SUM OF ROWS 32 + 33 + 34
@@ -1195,7 +1304,7 @@ $.ajax({
 														th:value="'TOTAL INCOME ON INVESTMENT AND SECURITIES (SUM OF LINES (1) TO (6):'"
 														id="R16_PRODUCT" name="R16_PRODUCT"
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left;font-weight: bold;"
-														 /></td>
+														readonly /></td>
 
 												<td id="R0W16"
 													style="font-weight:bold;padding-left: 20px;background-color: rgb(117, 122, 143);">
@@ -1204,7 +1313,7 @@ $.ajax({
 														id="R16_FAIR_VALUE_PROFIT_AND_LOSS"
 														name="R16_FAIR_VALUE_PROFIT_AND_LOSS"
 														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold; height: 28px;width: 350px; border-color: transparent; text-align: right; "
-														 />
+														 readonly/>
 												</td>
 
 												<td id="R0W16"
@@ -1213,7 +1322,7 @@ $.ajax({
 														th:value="${report.R16_HELD_TO_MATURITY }"
 														id="R16_HELD_TO_MATURITY" name="R16_HELD_TO_MATURITY"
 														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold;  height: 28px;width: 350px; border-color: transparent; text-align: right;"
-														 />
+														readonly />
 												</td>
 
 												<td id="R0W16"
@@ -1222,7 +1331,7 @@ $.ajax({
 														th:value="${report.R16_AVAILABLE_FOR_SALE}"
 														id="R16_AVAILABLE_FOR_SALE" name="R16_AVAILABLE_FOR_SALE"
 														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold; height: 28px;width: 350px; border-color: transparent; text-align: right;"
-														 />
+														 readonly/>
 												</td>
 
 												<td id="ROW16"
@@ -1230,7 +1339,7 @@ $.ajax({
 													<input class="display-input Show_input " type="text"
 														th:value="${report.R16_TOTAL }" id="R16_TOTAL" name="R16_TOTAL"
 														style="background-color: #FFFFFF; height: 28px;width: 350px; border-color: transparent; text-align: right;background-color: rgb(117, 122, 143);color: white;font-weight:bold;"
-														 />
+														readonly />
 												</td>
 											</tr>
 
@@ -1676,13 +1785,14 @@ $.ajax({
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left;"
 														readonly /></td>
 
-												<td id="R0W28" style="font-weight:bold;padding-left: 40px;">
-													<input class="display-input Show_input" type="text"
-														th:value="${report.R28_HELD_FOR_TRADING != null ? #numbers.formatDecimal(report.R28_HELD_FOR_TRADING, 0, 'COMMA', 0, 'POINT') : '0'}"
-														id="R28_HELD_FOR_TRADING" name="R28_HELD_FOR_TRADING"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right; "
-														readonly />
-												</td>
+
+
+			 <td th:each="report : ${reportsummary2}"
+    id="R28_HELD_FOR_TRADING" name="R28_HELD_FOR_TRADING"
+    style=" padding-right:10px;  text-align: right;"
+    th:text="${report.R28_HELD_FOR_TRADING }">
+</td>
+
 
 												<td id="R0W28" style="font-weight:bold;padding-left: 40px;">
 													<input class="display-input Show_input" type="text"
@@ -2153,7 +2263,104 @@ $.ajax({
 						</div>
 					</div>
 				</div>
+					<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light">
+										<tr>
+											<th></th>
+											<th>CUST_ID</th>
+											<th>ACCT_NUMBER</th>
+											<th>ACCT_NAME</th>
+											
+											
+											
+											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
+											<th>REPORT LABLE</th>
+											<th>REPORT ADDL CRITERIA1</th>
+											<th>REPORT_DATE</th>
+										</tr>
 
+									</thead>
+
+									<tbody th:each="report: ${reportdetails}"
+										style="font-family: Arial;">
+										<tr>
+											<td><a data-toggle="tooltip" class="editrec"
+												title="Click to Edit this Record"> <i
+													class="fas fa-edit" onclick="editRecord(this)"></i>
+											</a></td>
+											<td th:text="${report.custId}"></td>
+											<td th:text="${report.acctNumber}"></td>
+											<td th:text="${report.acctName}"></td>
+											
+											<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3, 'POINT')}"></td>
+											
+											<td th:text="${report.reportLabel}"></td>
+
+
+										<td th:text="${report.reportAddlCriteria_1}"></td>
+
+											<td
+												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+										</tr>
+									</tbody>
+
+
+								</table>
+								
+								
+								
+								<div style="margin-top: 20px; text-align: center;"
+									th:if="${pagination=='YES'}">
+
+
+
+									<a th:if="${currentPage > 0}"
+										th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																	    asondate=${asondate},                             
+																	    fromdate=${fromdate},
+																	    todate=${todate},
+																	    currency=${currency},
+																	    dtltype=${dtltype},
+																	    type=${type},
+																	    version=${version},
+																	    page=${currentPage - 100},
+																	    size=100
+																	)}">
+										Previous </a> <span>Page [[${currentPage / 100 + 1}]] of
+										[[${totalPages}]]</span> <a
+										th:if="${currentPage < (totalPages - 1) * 100}"
+										th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																	    asondate=${asondate},
+																	    fromdate=${fromdate},
+																	    todate=${todate},
+																	    currency=${currency},
+																	    dtltype=${dtltype},
+																	    type=${type},
+																	    version=${version},
+																	    page=${currentPage + 100},
+																	    size=100
+																	)}">
+										Next </a>
+								</div>
+
+
+						
+
+
+							</div>
+
+
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
