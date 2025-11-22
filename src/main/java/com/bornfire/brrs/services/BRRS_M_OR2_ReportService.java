@@ -128,7 +128,8 @@ public class BRRS_M_OR2_ReportService {
 	            		"commercial_banking",
 	            		"payments_and_settlements",
 	            		"agency_services",
-	            		"asset_management"};
+	            		"asset_management",
+	            		"retail_brokerage"};
 
 	            for (String field : fields) {
 	                String getterName = "get" + prefix + field;
@@ -157,7 +158,8 @@ public class BRRS_M_OR2_ReportService {
 	            		"commercial_banking",
 	            		"payments_and_settlements",
 	            		"agency_services",
-	            		"asset_management"};
+	            		"asset_management",
+	            		"retail_brokerage"};
 
 	            for (String field : fields) {
 	                String getterName = "get" + prefix + field;
@@ -185,7 +187,8 @@ public class BRRS_M_OR2_ReportService {
 	            		"commercial_banking",
 	            		"payments_and_settlements",
 	            		"agency_services",
-	            		"asset_management"};
+	            		"asset_management",
+	            		"retail_brokerage"};
 
 	            for (String field : fields) {
 	                String getterName = "get" + prefix + field;
@@ -235,7 +238,8 @@ public class BRRS_M_OR2_ReportService {
 	            		"agency_services",
 	            		"asset_management",
 	            		"operational_risk_cap_charge",
-	            		"risk_weight_factor"
+	            		"risk_weight_factor",
+	            		"retail_brokerage"
 	            };
 
 	            // Loop from R12 to R57 and copy fields
