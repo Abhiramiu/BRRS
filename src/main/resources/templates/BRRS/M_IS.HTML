@@ -245,7 +245,8 @@ PURPOSE		: BWRBRREPORT
 			width: 35px;
 			height: 35px;
 			border-radius: 50%;
-			background-color: white;font-weight:bold;
+			background-color: white;
+			font-weight: bold;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -265,7 +266,8 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		.left-arrow-circle:hover i {
-			color: white;font-weight:bold;
+			color: white;
+			font-weight: bold;
 		}
 
 		.white-text span {
@@ -306,33 +308,33 @@ PURPOSE		: BWRBRREPORT
 		});
 
 
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
+		$(document).ready(function () {
+			Maker_Checker_Function();
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",    
+				url: "/BRRS/getUserRole",
 				type: "GET",
-				success: function(roleId) {
+				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
-				
+
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
 
 				},
-				error: function(err) {
+				error: function (err) {
 					console.error("Error fetching role:", err);
-		     }
-		    });
+				}
+			});
 		}
 
 		function home() {
@@ -345,10 +347,10 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		//to fetch summary from the database - called from the summary button
-// 		function showdetails() {
-//     isDetailsModal = true; // mark that this modal is from Details
-//     showResultModal('BRRS', 'Details page not available for Manual Report');
-// }
+		// 		function showdetails() {
+		//     isDetailsModal = true; // mark that this modal is from Details
+		//     showResultModal('BRRS', 'Details page not available for Manual Report');
+		// }
 
 		// function showsummary() {
 		// 	$('#loader').modal('show');
@@ -356,39 +358,39 @@ PURPOSE		: BWRBRREPORT
 		// 		location.href = Callurl;
 		// }
 
-				function showdetails() {
+		function showdetails() {
 			var Callurl;
-	    	$('#loader').modal('show');
-	        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-	        location.href = Callurl;
-	        	console.log(Callurl);
-	   /*  $.ajax({
-	        type: 'get',
-	        url: Callurl,
-	        beforeSend: function () {
-	            $('#loader').modal('show'); // 🔄 Show loader
-	        },
-	        success: function (data) {
-	            $('.content').html(data);
-	            //$("#detailsbtn").addClass("active");
-	            //tablepagination();
-	        },
-	        complete: function () {
-	            $('#loader').modal('hide'); 
-	        },
-	        error: function () {
-	        	  $('#loader').modal('hide');
-	            alert("Something went wrongss. Please try again.");
-	          
-	        }
-	    }); */
-			
+			$('#loader').modal('show');
+			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+				location.href = Callurl;
+			console.log(Callurl);
+			/*  $.ajax({
+				 type: 'get',
+				 url: Callurl,
+				 beforeSend: function () {
+					 $('#loader').modal('show'); // 🔄 Show loader
+				 },
+				 success: function (data) {
+					 $('.content').html(data);
+					 //$("#detailsbtn").addClass("active");
+					 //tablepagination();
+				 },
+				 complete: function () {
+					 $('#loader').modal('hide'); 
+				 },
+				 error: function () {
+					   $('#loader').modal('hide');
+					 alert("Something went wrongss. Please try again.");
+				   
+				 }
+			 }); */
+
 		}
 
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 
@@ -488,29 +490,29 @@ PURPOSE		: BWRBRREPORT
 	</script>
 
 	<script>
-	function showmodify(btn) {
+		function showmodify(btn) {
 			// ✅ List of IDs that should ALWAYS remain readonly
-var readonlyIds = [
-    "R16_FAIR_VALUE_PROFIT_AND_LOSS",
-    "R16_HELD_TO_MATURITY",
-    "R16_AVAILABLE_FOR_SALE",
-    "R16_TOTAL",
+			var readonlyIds = [
+				"R16_FAIR_VALUE_PROFIT_AND_LOSS",
+				"R16_HELD_TO_MATURITY",
+				"R16_AVAILABLE_FOR_SALE",
+				"R16_TOTAL",
 
-    "R31_AMORTISED_COST", "R31_HELD_FOR_TRADING",
-    "R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS",
-    "R31_QUALIFYING_FOR_HEDGE_ACCOUNTING",
-    "R31_AVAILABLE_FOR_SALE",
+				"R31_AMORTISED_COST", "R31_HELD_FOR_TRADING",
+				"R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS",
+				"R31_QUALIFYING_FOR_HEDGE_ACCOUNTING",
+				"R31_AVAILABLE_FOR_SALE",
 
-    "R10_TOTAL","R11_TOTAL","R12_TOTAL","R13_TOTAL","R14_TOTAL","R15_TOTAL","R16_TOTAL","R17_TOTAL",
-    "R18_TOTAL","R19_TOTAL","R20_TOTAL","R21_TOTAL","R22_TOTAL","R23_TOTAL","R24_TOTAL","R25_TOTAL",
-    "R26_TOTAL","R27_TOTAL","R28_TOTAL","R29_TOTAL","R30_TOTAL","R31_TOTAL","R32_TOTAL","R33_TOTAL",
-    "R34_TOTAL","R35_TOTAL",
+				"R10_TOTAL", "R11_TOTAL", "R12_TOTAL", "R13_TOTAL", "R14_TOTAL", "R15_TOTAL", "R16_TOTAL", "R17_TOTAL",
+				"R18_TOTAL", "R19_TOTAL", "R20_TOTAL", "R21_TOTAL", "R22_TOTAL", "R23_TOTAL", "R24_TOTAL", "R25_TOTAL",
+				"R26_TOTAL", "R27_TOTAL", "R28_TOTAL", "R29_TOTAL", "R30_TOTAL", "R31_TOTAL", "R32_TOTAL", "R33_TOTAL",
+				"R34_TOTAL", "R35_TOTAL",
 
-    "R35_AMORTISED_COST", "R35_HELD_FOR_TRADING",
-    "R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS",
-    "R35_QUALIFYING_FOR_HEDGE_ACCOUNTING",
-    "R35_AVAILABLE_FOR_SALE",
-];
+				"R35_AMORTISED_COST", "R35_HELD_FOR_TRADING",
+				"R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS",
+				"R35_QUALIFYING_FOR_HEDGE_ACCOUNTING",
+				"R35_AVAILABLE_FOR_SALE",
+			];
 
 
 			//"R33_INTEREST_RATE", "R34_INTEREST_RATE", "RR35_INTEREST_RATE35_STAFF_LOANS", "R36_INTEREST_RATE", "R37_INTEREST_RATE", "R38_INTEREST_RATE",
@@ -527,7 +529,7 @@ var readonlyIds = [
 				let fields = [
 
 					"_HELD_TO_MATURITY",
-					"_AVAILABLE_FOR_SALE","_FAIR_VALUE_PROFIT_AND_LOSS"
+					"_AVAILABLE_FOR_SALE", "_FAIR_VALUE_PROFIT_AND_LOSS"
 				];
 
 				fields.forEach(field => {
@@ -537,37 +539,9 @@ var readonlyIds = [
 					}
 				});
 			}
-	
-for (let i = 21; i <= 30; i++) {
-    let fields = [
-        "_HELD_FOR_TRADING",
-        "_AMORTISED_COST",
-        "_AVAILABLE_FOR_SALE",
-        "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS",
-        "_QUALIFYING_FOR_HEDGE_ACCOUNTING"
-    ];
 
-    fields.forEach(field => {
-
-        // ❗ Skip ONLY R28_HELD_FOR_TRADING
-        if (i === 28 && field === "_HELD_FOR_TRADING") {
-            return; // do not apply color
-        }
-
-        let selector = `#R${i}${field}`;
-
-        if ($(selector).length) {
-            $(selector).css("background-color", "#d3d3d3");
-        }
-    });
-
-
-
-					for (let i = 32; i <= 34; i++) {
+			for (let i = 21; i <= 30; i++) {
 				let fields = [
-					// "_LOCAL",
-					// "_EXPARIATES",
-
 					"_HELD_FOR_TRADING",
 					"_AMORTISED_COST",
 					"_AVAILABLE_FOR_SALE",
@@ -575,13 +549,41 @@ for (let i = 21; i <= 30; i++) {
 					"_QUALIFYING_FOR_HEDGE_ACCOUNTING"
 				];
 
-
 				fields.forEach(field => {
+
+					// ❗ Skip ONLY R28_HELD_FOR_TRADING
+					if (i === 28 && field === "_HELD_FOR_TRADING") {
+						return; // do not apply color
+					}
+
 					let selector = `#R${i}${field}`;
+
 					if ($(selector).length) {
 						$(selector).css("background-color", "#d3d3d3");
 					}
 				});
+
+
+
+				for (let i = 32; i <= 34; i++) {
+					let fields = [
+						// "_LOCAL",
+						// "_EXPARIATES",
+
+						"_HELD_FOR_TRADING",
+						"_AMORTISED_COST",
+						"_AVAILABLE_FOR_SALE",
+						"_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS",
+						"_QUALIFYING_FOR_HEDGE_ACCOUNTING"
+					];
+
+
+					fields.forEach(field => {
+						let selector = `#R${i}${field}`;
+						if ($(selector).length) {
+							$(selector).css("background-color", "#d3d3d3");
+						}
+					});
 				}
 
 				// ✅ Toggle buttons visibility
@@ -612,240 +614,240 @@ for (let i = 21; i <= 30; i++) {
 			// ❌ If user clicks CANCEL, nothing happens
 		}
 
-			
+
 	</script>
 
 
 	<SCRIPT>
-	// ======================================================
-// AUTO CALCULATIONS FOR R10–R16
-// ======================================================
+		// ======================================================
+		// AUTO CALCULATIONS FOR R10–R16
+		// ======================================================
 
-$(window).on("load", function () {
+		$(window).on("load", function () {
 
-    calculateR15Totals();     // G10–G15 + R16 (D/E/F)
-    calculateR16Total();      // R16_TOTAL
+			calculateR15Totals();     // G10–G15 + R16 (D/E/F)
+			calculateR16Total();      // R16_TOTAL
 
-    // Auto-run on input for rows 10–15
-    $("[id^='R10_'], [id^='R11_'], [id^='R12_'], [id^='R13_'], [id^='R14_'], [id^='R15_']")
-        .on("keyup change", function () {
-            calculateR15Totals();
-            calculateR16Total();
-        });
-});
-
-
-// ======================================================
-// 1️⃣ D + E + F = G  (Row TOTALS R10–R15)
-//    Also calculates R16 (sum of D/E/F)
-// ======================================================
-function calculateR15Totals() {
-
-    let HTM = 0, AFS = 0, FVPAL = 0;
-
-    for (let i = 10; i <= 15; i++) {
-
-        let c = parseFloat($("#R" + i + "_FAIR_VALUE_PROFIT_AND_LOSS").val().replace(/,/g, "")) || 0;
-        let a = parseFloat($("#R" + i + "_HELD_TO_MATURITY").val().replace(/,/g, "")) || 0;
-        let b = parseFloat($("#R" + i + "_AVAILABLE_FOR_SALE").val().replace(/,/g, "")) || 0;
-
-        let rowTotal = a + b + c;
-
-        $("#R" + i + "_TOTAL").val(rowTotal.toLocaleString('en-US'));
-
-        HTM += a;
-        AFS += b;
-        FVPAL += c;
-    }
-
-    // R16 totals
-	
-    $("#R16_FAIR_VALUE_PROFIT_AND_LOSS").val(FVPAL.toLocaleString('en-US'));
-    $("#R16_HELD_TO_MATURITY").val(HTM.toLocaleString('en-US'));
-    $("#R16_AVAILABLE_FOR_SALE").val(AFS.toLocaleString('en-US'));
-}
+			// Auto-run on input for rows 10–15
+			$("[id^='R10_'], [id^='R11_'], [id^='R12_'], [id^='R13_'], [id^='R14_'], [id^='R15_']")
+				.on("keyup change", function () {
+					calculateR15Totals();
+					calculateR16Total();
+				});
+		});
 
 
+		// ======================================================
+		// 1️⃣ D + E + F = G  (Row TOTALS R10–R15)
+		//    Also calculates R16 (sum of D/E/F)
+		// ======================================================
+		function calculateR15Totals() {
 
-// 2️⃣ R16_TOTAL = SUM(G10–G15)
-// ======================================================
-function calculateR16Total() {
+			let HTM = 0, AFS = 0, FVPAL = 0;
 
-    let total = 0;
+			for (let i = 10; i <= 15; i++) {
 
-    for (let i = 10; i <= 15; i++) {
-        let g = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
-        total += g;
-    }
+				let c = parseFloat($("#R" + i + "_FAIR_VALUE_PROFIT_AND_LOSS").val().replace(/,/g, "")) || 0;
+				let a = parseFloat($("#R" + i + "_HELD_TO_MATURITY").val().replace(/,/g, "")) || 0;
+				let b = parseFloat($("#R" + i + "_AVAILABLE_FOR_SALE").val().replace(/,/g, "")) || 0;
 
-    $("#R16_TOTAL").val(total.toLocaleString('en-US'));
-}
-$(window).on("load", function () {
+				let rowTotal = a + b + c;
 
-    // Run once when page loads
-    calculateR35Totals();
+				$("#R" + i + "_TOTAL").val(rowTotal.toLocaleString('en-US'));
 
-    // Auto-run when any input from rows 21–34 is changed (use 'input' for better coverage)
-    let selectors = [];
-    for (let i = 21; i <= 34; i++) selectors.push("[id^='R" + i + "_']");
-    $(selectors.join(",")).on("input change", function () {
-        calculateR35Totals();
-    });
-});
+				HTM += a;
+				AFS += b;
+				FVPAL += c;
+			}
 
-function _toNumberFromSelector(selector) {
-    // safe parsing: return 0 when no element or empty value
-    let el = $(selector);
-    if (!el || el.length === 0) return 0;
-    let v = el.val();
-    if (v === undefined || v === null || v === "") return 0;
-    v = v.toString().replace(/,/g, "");
-    return parseFloat(v) || 0;
-}
-function getValue(id) {
-    let el = $(id);
+			// R16 totals
 
-    if (el.length === 0) return 0; // No element at all
-
-    // If element has value attribute → use .val()
-    if (el.is("input")) {
-        return parseFloat(el.val().replace(/,/g, "")) || 0;
-    }
-
-    // If not input → use text content (DB display data)
-    return parseFloat(el.text().replace(/,/g, "")) || 0;
-}
-
-
-function calculateR35Totals() {
-
-    let sumD = 0, sumE = 0, sumF = 0, sumG = 0, sumH = 0, sumI = 0;
-
-    for (let i = 21; i <= 30; i++) {
-
-        let D = getValue(`#R${i}_HELD_FOR_TRADING`);
-        let E = getValue(`#R${i}_AMORTISED_COST`);
-        let F = getValue(`#R${i}_AVAILABLE_FOR_SALE`);
-        let G = getValue(`#R${i}_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS`);
-        let H = getValue(`#R${i}_QUALIFYING_FOR_HEDGE_ACCOUNTING`);
-
-        let I = D + E + F + G + H;
-
-        $("#R" + i + "_TOTAL").val(I.toLocaleString('en-US'));
-
-        sumD += D;
-        sumE += E;
-        sumF += F;
-        sumG += G;
-        sumH += H;
-        sumI += I;
-    }
+			$("#R16_FAIR_VALUE_PROFIT_AND_LOSS").val(FVPAL.toLocaleString('en-US'));
+			$("#R16_HELD_TO_MATURITY").val(HTM.toLocaleString('en-US'));
+			$("#R16_AVAILABLE_FOR_SALE").val(AFS.toLocaleString('en-US'));
+		}
 
 
 
-    // -------------------------------------------
-    // ROW 31 = SUM OF ROWS 32 + 33 + 34
-    // -------------------------------------------
+		// 2️⃣ R16_TOTAL = SUM(G10–G15)
+		// ======================================================
+		function calculateR16Total() {
 
-    let D31 = 0, E31 = 0, F31 = 0, G31 = 0, H31 = 0, I31 = 0;
+			let total = 0;
 
-    for (let r = 32; r <= 34; r++) {
-        D31 += parseFloat($("#R" + r + "_HELD_FOR_TRADING").val().replace(/,/g, "")) || 0;
-        E31 += parseFloat($("#R" + r + "_AMORTISED_COST").val().replace(/,/g, "")) || 0;
-        F31 += parseFloat($("#R" + r + "_AVAILABLE_FOR_SALE").val().replace(/,/g, "")) || 0;
-        G31 += parseFloat($("#R" + r + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val().replace(/,/g, "")) || 0;
-        H31 += parseFloat($("#R" + r + "_QUALIFYING_FOR_HEDGE_ACCOUNTING").val().replace(/,/g, "")) || 0;
-        I31 += parseFloat($("#R" + r + "_TOTAL").val().replace(/,/g, "")) || 0;
-    }
+			for (let i = 10; i <= 15; i++) {
+				let g = parseFloat($("#R" + i + "_TOTAL").val().replace(/,/g, "")) || 0;
+				total += g;
+			}
 
-    // PUT VALUES INTO ROW 31
-    $("#R31_HELD_FOR_TRADING").val(D31.toLocaleString('en-US'));
-    $("#R31_AMORTISED_COST").val(E31.toLocaleString('en-US'));
-    $("#R31_AVAILABLE_FOR_SALE").val(F31.toLocaleString('en-US'));
-    $("#R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val(G31.toLocaleString('en-US'));
-    $("#R31_QUALIFYING_FOR_HEDGE_ACCOUNTING").val(H31.toLocaleString('en-US'));
-    $("#R31_TOTAL").val(I31.toLocaleString('en-US'));
+			$("#R16_TOTAL").val(total.toLocaleString('en-US'));
+		}
+		$(window).on("load", function () {
 
-    // Add Row 31 values to column totals
-    sumD += D31;
-    sumE += E31;
-    sumF += F31;
-    sumG += G31;
-    sumH += H31;
-    sumI += I31;
+			// Run once when page loads
+			calculateR35Totals();
 
-    // -------------------------------------------
-    // ROWS 32–34 CALCULATE NORMAL TOTAL
-    // -------------------------------------------
+			// Auto-run when any input from rows 21–34 is changed (use 'input' for better coverage)
+			let selectors = [];
+			for (let i = 21; i <= 34; i++) selectors.push("[id^='R" + i + "_']");
+			$(selectors.join(",")).on("input change", function () {
+				calculateR35Totals();
+			});
+		});
 
-    for (let r = 32; r <= 34; r++) {
-        let D = parseFloat($("#R" + r + "_HELD_FOR_TRADING").val().replace(/,/g, "")) || 0;
-        let E = parseFloat($("#R" + r + "_AMORTISED_COST").val().replace(/,/g, "")) || 0;
-        let F = parseFloat($("#R" + r + "_AVAILABLE_FOR_SALE").val().replace(/,/g, "")) || 0;
-        let G = parseFloat($("#R" + r + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val().replace(/,/g, "")) || 0;
-        let H = parseFloat($("#R" + r + "_QUALIFYING_FOR_HEDGE_ACCOUNTING").val().replace(/,/g, "")) || 0;
+		function _toNumberFromSelector(selector) {
+			// safe parsing: return 0 when no element or empty value
+			let el = $(selector);
+			if (!el || el.length === 0) return 0;
+			let v = el.val();
+			if (v === undefined || v === null || v === "") return 0;
+			v = v.toString().replace(/,/g, "");
+			return parseFloat(v) || 0;
+		}
+		function getValue(id) {
+			let el = $(id);
 
-        let I = D + E + F + G + H;
+			if (el.length === 0) return 0; // No element at all
 
-        $("#R" + r + "_TOTAL").val(I.toLocaleString('en-US'));
-    }
+			// If element has value attribute → use .val()
+			if (el.is("input")) {
+				return parseFloat(el.val().replace(/,/g, "")) || 0;
+			}
 
-    // -------------------------------------------
-    // ROW 35 GRAND TOTAL
-    // -------------------------------------------
-    $("#R35_HELD_FOR_TRADING").val(sumD.toLocaleString('en-US'));
-    $("#R35_AMORTISED_COST").val(sumE.toLocaleString('en-US'));
-    $("#R35_AVAILABLE_FOR_SALE").val(sumF.toLocaleString('en-US'));
-    $("#R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val(sumG.toLocaleString('en-US'));
-    $("#R35_QUALIFYING_FOR_HEDGE_ACCOUNTING").val(sumH.toLocaleString('en-US'));
-    $("#R35_TOTAL").val(sumI.toLocaleString('en-US'));
-}
+			// If not input → use text content (DB display data)
+			return parseFloat(el.text().replace(/,/g, "")) || 0;
+		}
+
+
+		function calculateR35Totals() {
+
+			let sumD = 0, sumE = 0, sumF = 0, sumG = 0, sumH = 0, sumI = 0;
+
+			for (let i = 21; i <= 30; i++) {
+
+				let D = getValue(`#R${i}_HELD_FOR_TRADING`);
+				let E = getValue(`#R${i}_AMORTISED_COST`);
+				let F = getValue(`#R${i}_AVAILABLE_FOR_SALE`);
+				let G = getValue(`#R${i}_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS`);
+				let H = getValue(`#R${i}_QUALIFYING_FOR_HEDGE_ACCOUNTING`);
+
+				let I = D + E + F + G + H;
+
+				$("#R" + i + "_TOTAL").val(I.toLocaleString('en-US'));
+
+				sumD += D;
+				sumE += E;
+				sumF += F;
+				sumG += G;
+				sumH += H;
+				sumI += I;
+			}
+
+
+
+			// -------------------------------------------
+			// ROW 31 = SUM OF ROWS 32 + 33 + 34
+			// -------------------------------------------
+
+			let D31 = 0, E31 = 0, F31 = 0, G31 = 0, H31 = 0, I31 = 0;
+
+			for (let r = 32; r <= 34; r++) {
+				D31 += parseFloat($("#R" + r + "_HELD_FOR_TRADING").val().replace(/,/g, "")) || 0;
+				E31 += parseFloat($("#R" + r + "_AMORTISED_COST").val().replace(/,/g, "")) || 0;
+				F31 += parseFloat($("#R" + r + "_AVAILABLE_FOR_SALE").val().replace(/,/g, "")) || 0;
+				G31 += parseFloat($("#R" + r + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val().replace(/,/g, "")) || 0;
+				H31 += parseFloat($("#R" + r + "_QUALIFYING_FOR_HEDGE_ACCOUNTING").val().replace(/,/g, "")) || 0;
+				I31 += parseFloat($("#R" + r + "_TOTAL").val().replace(/,/g, "")) || 0;
+			}
+
+			// PUT VALUES INTO ROW 31
+			$("#R31_HELD_FOR_TRADING").val(D31.toLocaleString('en-US'));
+			$("#R31_AMORTISED_COST").val(E31.toLocaleString('en-US'));
+			$("#R31_AVAILABLE_FOR_SALE").val(F31.toLocaleString('en-US'));
+			$("#R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val(G31.toLocaleString('en-US'));
+			$("#R31_QUALIFYING_FOR_HEDGE_ACCOUNTING").val(H31.toLocaleString('en-US'));
+			$("#R31_TOTAL").val(I31.toLocaleString('en-US'));
+
+			// Add Row 31 values to column totals
+			sumD += D31;
+			sumE += E31;
+			sumF += F31;
+			sumG += G31;
+			sumH += H31;
+			sumI += I31;
+
+			// -------------------------------------------
+			// ROWS 32–34 CALCULATE NORMAL TOTAL
+			// -------------------------------------------
+
+			for (let r = 32; r <= 34; r++) {
+				let D = parseFloat($("#R" + r + "_HELD_FOR_TRADING").val().replace(/,/g, "")) || 0;
+				let E = parseFloat($("#R" + r + "_AMORTISED_COST").val().replace(/,/g, "")) || 0;
+				let F = parseFloat($("#R" + r + "_AVAILABLE_FOR_SALE").val().replace(/,/g, "")) || 0;
+				let G = parseFloat($("#R" + r + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val().replace(/,/g, "")) || 0;
+				let H = parseFloat($("#R" + r + "_QUALIFYING_FOR_HEDGE_ACCOUNTING").val().replace(/,/g, "")) || 0;
+
+				let I = D + E + F + G + H;
+
+				$("#R" + r + "_TOTAL").val(I.toLocaleString('en-US'));
+			}
+
+			// -------------------------------------------
+			// ROW 35 GRAND TOTAL
+			// -------------------------------------------
+			$("#R35_HELD_FOR_TRADING").val(sumD.toLocaleString('en-US'));
+			$("#R35_AMORTISED_COST").val(sumE.toLocaleString('en-US'));
+			$("#R35_AVAILABLE_FOR_SALE").val(sumF.toLocaleString('en-US'));
+			$("#R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val(sumG.toLocaleString('en-US'));
+			$("#R35_QUALIFYING_FOR_HEDGE_ACCOUNTING").val(sumH.toLocaleString('en-US'));
+			$("#R35_TOTAL").val(sumI.toLocaleString('en-US'));
+		}
 
 
 	</SCRIPT>
 
 
 	<script>
-// Declare globally
-	function closemodel() {
-    $("#resultModal").modal("hide");
-    $('#loader').modal('hide');
+		// Declare globally
+		function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
-    // Only reload if not from Details modal
-    if (!isDetailsModal) {
-        setTimeout(function () {
-            location.reload();
-        }, 300);
-    } else {
-        // reset flag for next modal usage
-        isDetailsModal = false;
-    }
-}
-
-
-function fileuploads(btn) {
-
-    const asondate = btn.getAttribute("data-todate");
-    const type = btn.getAttribute("data-type");
-
-    $('#loader').modal('show');
-
-    // Correct calculations
-    calculateR15Totals();
-    calculateR16Total();
-	calculateR15Totals();
+			// Only reload if not from Details modal
+			if (!isDetailsModal) {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			} else {
+				// reset flag for next modal usage
+				isDetailsModal = false;
+			}
+		}
 
 
-    // Remove commas BEFORE submit
-    $("#fileupload input[type='text']").each(function () {
-        $(this).val($(this).val().replace(/,/g, ""));
-    });
+		function fileuploads(btn) {
 
-    // Validate
-    if (!$("#fileupload").valid()) {
-        $('#loader').modal('hide');
-        return;
-    }
+			const asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type");
+
+			$('#loader').modal('show');
+
+			// Correct calculations
+			calculateR15Totals();
+			calculateR16Total();
+			calculateR15Totals();
+
+
+			// Remove commas BEFORE submit
+			$("#fileupload input[type='text']").each(function () {
+				$(this).val($(this).val().replace(/,/g, ""));
+			});
+
+			// Validate
+			if (!$("#fileupload").valid()) {
+				$('#loader').modal('hide');
+				return;
+			}
 
 			// Step 4: Build FormData
 			const formData = new FormData();
@@ -857,48 +859,48 @@ function fileuploads(btn) {
 				if (name) formData.append(name, $(this).val());
 			});
 
-// Step 5: Select API endpoint dynamically
-let apiUrl = './M_ISupdateAll'; // normal update
-if (type && type.toUpperCase() === 'RESUB') {
-	apiUrl = './UpdateM_ISReSub'; // Resubmission endpoint
-}
+			// Step 5: Select API endpoint dynamically
+			let apiUrl = './M_ISupdateAll'; // normal update
+			if (type && type.toUpperCase() === 'RESUB') {
+				apiUrl = './UpdateM_ISReSub'; // Resubmission endpoint
+			}
 
-// Step 6: AJAX call
-$.ajax({
-	url: apiUrl,
-	type: 'POST',
-	data: formData,
-	processData: false,
-	contentType: false,
-	dataType: 'text',
-	success: function (response) {
-		$("#resultModalLabel").text("BRRS");
-		$("#resultModalBody").text(response);
-		$("#resultModal").modal("show");
+			// Step 6: AJAX call
+			$.ajax({
+				url: apiUrl,
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				dataType: 'text',
+				success: function (response) {
+					$("#resultModalLabel").text("BRRS");
+					$("#resultModalBody").text(response);
+					$("#resultModal").modal("show");
 
-		// ✅ Redirect after short delay (so user sees the success message)
-		if (response.includes("Resubmission Updated Successfully")) {
-			setTimeout(function() {
-				// Go back to the previous page user came from
-				if (document.referrer && document.referrer !== '') {
-					// Redirect to the page that opened this one
-					window.location.href = document.referrer;
-				} else {
-					// If no referrer, just go one step back in history
-					window.history.back();
+					// ✅ Redirect after short delay (so user sees the success message)
+					if (response.includes("Resubmission Updated Successfully")) {
+						setTimeout(function () {
+							// Go back to the previous page user came from
+							if (document.referrer && document.referrer !== '') {
+								// Redirect to the page that opened this one
+								window.location.href = document.referrer;
+							} else {
+								// If no referrer, just go one step back in history
+								window.history.back();
+							}
+						}, 2000); // wait 2 seconds before redirect
+					}
+				},
+				error: function (jqXHR) {
+					$("#resultModalLabel").text("Error");
+					$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+					$("#resultModal").modal("show");
+				},
+				complete: function () {
+					$('#loader').modal('hide');
 				}
-			}, 2000); // wait 2 seconds before redirect
-		}
-	},
-	error: function (jqXHR) {
-		$("#resultModalLabel").text("Error");
-		$("#resultModalBody").text("Update failed: " + jqXHR.responseText);
-		$("#resultModal").modal("show");
-	},
-	complete: function () {
-		$('#loader').modal('hide');
-	}
-});
+			});
 
 		}
 
@@ -923,7 +925,7 @@ $.ajax({
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px;font-weight:bold; color: white;font-weight:bold;">
-							  M-IS: ANALYSIS OF INCOME AND SECURITIES BY CLASSIFICATION</h5>
+							M-IS: ANALYSIS OF INCOME AND SECURITIES BY CLASSIFICATION</h5>
 					</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white;font-weight:bold; align-items: center;">
@@ -1273,7 +1275,7 @@ $.ajax({
 														id="R16_FAIR_VALUE_PROFIT_AND_LOSS"
 														name="R16_FAIR_VALUE_PROFIT_AND_LOSS"
 														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold; height: 28px;width: 350px; border-color: transparent; text-align: right; "
-														 readonly/>
+														readonly />
 												</td>
 
 												<td id="R0W16"
@@ -1291,7 +1293,7 @@ $.ajax({
 														th:value="${report.R16_AVAILABLE_FOR_SALE}"
 														id="R16_AVAILABLE_FOR_SALE" name="R16_AVAILABLE_FOR_SALE"
 														style="background-color: rgb(117, 122, 143);color: white;font-weight:bold; height: 28px;width: 350px; border-color: transparent; text-align: right;"
-														 readonly/>
+														readonly />
 												</td>
 
 												<td id="ROW16"
@@ -1339,8 +1341,7 @@ $.ajax({
 											<tr>
 												<td id="R0W21" style="font-weight: bold;"><input
 														class="display-input Show_input " type="text"
-														th:value="'Treasury Bills'"
-														id="R21_PRODUCT" name="R21_PRODUCT"
+														th:value="'Treasury Bills'" id="R21_PRODUCT" name="R21_PRODUCT"
 														style="background-color: #FFFFFF; width: 800px; height: 28px; border-color: transparent; text-align: left; "
 														readonly /></td>
 
@@ -1747,11 +1748,11 @@ $.ajax({
 
 
 
-			 <td th:each="report : ${reportsummary2}"
-    id="R28_HELD_FOR_TRADING" name="R28_HELD_FOR_TRADING"
-    style=" padding-right:10px;  text-align: right;"
-    th:text="${report.R28_HELD_FOR_TRADING }">
-</td>
+												<td th:each="report : ${reportsummary2}" id="R28_HELD_FOR_TRADING"
+													name="R28_HELD_FOR_TRADING"
+													style=" padding-right:10px;  text-align: right;"
+													th:text="${report.R28_HELD_FOR_TRADING }">
+												</td>
 
 
 												<td id="R0W28" style="font-weight:bold;padding-left: 40px;">
@@ -2223,7 +2224,7 @@ $.ajax({
 						</div>
 					</div>
 				</div>
-					<div th:if="${displaymode == 'Details'}">
+				<div th:if="${displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="table-responsive scrollable-table-container"
@@ -2237,9 +2238,9 @@ $.ajax({
 											<th>CUST_ID</th>
 											<th>ACCT_NUMBER</th>
 											<th>ACCT_NAME</th>
-											
-											
-											
+
+
+
 											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
 											<th>REPORT LABLE</th>
 											<th>REPORT ADDL CRITERIA1</th>
@@ -2248,42 +2249,39 @@ $.ajax({
 
 									</thead>
 
-									<tbody th:each="report: ${reportdetails}"
-										style="font-family: Arial;">
+									<tbody th:each="report: ${reportdetails}" style="font-family: Arial;">
 										<tr>
 											<td><a data-toggle="tooltip" class="editrec"
-												title="Click to Edit this Record"> <i
-													class="fas fa-edit" onclick="editRecord(this)"></i>
-											</a></td>
+													title="Click to Edit this Record"> <i class="fas fa-edit"
+														onclick="editRecord(this)"></i>
+												</a></td>
 											<td th:text="${report.custId}"></td>
 											<td th:text="${report.acctNumber}"></td>
 											<td th:text="${report.acctName}"></td>
-											
+
 											<td style="text-align:right;"
-											th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3, 'POINT')}"></td>
-											
+												th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3, 'POINT')}">
+											</td>
+
 											<td th:text="${report.reportLabel}"></td>
 
 
-										<td th:text="${report.reportAddlCriteria_1}"></td>
+											<td th:text="${report.reportAddlCriteria_1}"></td>
 
-											<td
-												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>
 									</tbody>
 
 
 								</table>
-								
-								
-								
-								<div style="margin-top: 20px; text-align: center;"
-									th:if="${pagination=='YES'}">
 
 
 
-									<a th:if="${currentPage > 0}"
-										th:href="@{'/Reports/' + ${reportid} + '/Details'(
+								<div style="margin-top: 20px; text-align: center;" th:if="${pagination=='YES'}">
+
+
+
+									<a th:if="${currentPage > 0}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
 																	    asondate=${asondate},                             
 																	    fromdate=${fromdate},
 																	    todate=${todate},
@@ -2295,8 +2293,7 @@ $.ajax({
 																	    size=100
 																	)}">
 										Previous </a> <span>Page [[${currentPage / 100 + 1}]] of
-										[[${totalPages}]]</span> <a
-										th:if="${currentPage < (totalPages - 1) * 100}"
+										[[${totalPages}]]</span> <a th:if="${currentPage < (totalPages - 1) * 100}"
 										th:href="@{'/Reports/' + ${reportid} + '/Details'(
 																	    asondate=${asondate},
 																	    fromdate=${fromdate},
@@ -2312,7 +2309,7 @@ $.ajax({
 								</div>
 
 
-						
+
 
 
 							</div>
@@ -2333,7 +2330,8 @@ $.ajax({
 				<!-- Custom header -->
 				<div class="menu-title-header"
 					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;font-weight:bold;">
+					<div class="modal-title" id="cellresultModalLabel"
+						style="text-align: center; color: white;font-weight:bold;">
 						Do you want to open the report?
 					</div>
 				</div>
@@ -2372,7 +2370,8 @@ $.ajax({
 			<div class="modal-content">
 				<!-- Your custom styled header -->
 				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;font-weight:bold;">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;font-weight:bold;">
 						<!-- Title will be set by JavaScript -->
 					</div>
 				</div>
