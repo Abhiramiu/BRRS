@@ -1016,43 +1016,67 @@ PURPOSE		: BWRBRREPORT
 
 		}
 
-
-function showdetailsbyRowAndColumn(a) {
-			var rowId = a.getAttribute('RowId');
-			var columnId = a.getAttribute('ColumnId');
-			var cellValue = a.textContent || a.innerText;
-
-			if (cellValue !== '0') {
-				// Set dynamic message in modal (instead of confirm)
-				document.getElementById("cellresultModalLabel").innerText =
-					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
-
-				// Show custom Bootstrap modal
-				$('#cellresultModal').modal('show');
-
-				// Handle Yes button
-				document.querySelector('.yes-btn').onclick = function () {
-					$('#cellresultModal').modal('hide');
-
-					// Show loader
-					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
-						backdrop: 'static',
-						keyboard: false
-					});
-					$('#loader').modal('show');
-
-					// Build dynamic URL
-					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
-
-					location.href = Callurl;
-				};
-			} else {
-				// Use your custom alert modal instead of window.alert
-				showResultModal("Alert", "No Records available for this selected cell.");
-			}
-		}
 	</script>
+	<script th:inline="javascript">
+    function showdetailsbyRowAndColumn(a) {
+
+        var rowId = a.getAttribute('RowId');
+        var columnId = a.getAttribute('ColumnId');
+        var cellValue = a.textContent || a.innerText;
+
+        if (cellValue !== '0') {
+
+            document.getElementById("cellresultModalLabel").innerText =
+                "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+            $('#cellresultModal').modal('show');
+
+            document.querySelector('.yes-btn').onclick = function () {
+
+                $('#cellresultModal').modal('hide');
+
+                const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#loader').modal('show');
+
+                // 🔥 Thymeleaf-prepared base URL
+                var baseUrl = /*[[@{'/Reports/' + ${reportid} + '/Details'(
+                            asondate=${asondate},
+                            fromdate=${fromdate},
+                            todate=${todate},
+                            currency=${currency},
+                            dtltype=${dtltype},
+                            type=${type},
+                            version=${version}
+                )}]]*/ "";
+
+                console.log("Generated Base URL = ", baseUrl);
+
+                // Safety check: if Thymeleaf failed to generate URL
+                if (!baseUrl || baseUrl === "") {
+                    alert("ERROR: Base URL is empty. Check model attributes in controller.");
+                    $('#loader').modal('hide');
+                    return;
+                }
+
+                // 🔥 Add dynamic filter parameters
+                var finalUrl = baseUrl + "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+                console.log("Final Redirect URL = ", finalUrl);
+
+                // Redirect to details page
+                window.location.href = finalUrl;
+            };
+
+        } else {
+
+            showResultModal("Alert", "No Records available for this selected cell.");
+        }
+    }
+</script>
+
 </head>
 <title>BRRS</title>
 
@@ -1897,7 +1921,7 @@ function showdetailsbyRowAndColumn(a) {
 												<td th:each="report : ${reportsummary2}" id="R28_HELD_FOR_TRADING"
 													name="R28_HELD_FOR_TRADING"
 													style=" padding-right:10px;  text-align: right;"
-													th:text="${report.R28_HELD_FOR_TRADING }"th:attr="RowId='R28', ColumnId='C2'"
+													th:text="${report.R28_HELD_FOR_TRADING }"th:attr="RowId='R28', ColumnId='C28'"
 													onclick="showdetailsbyRowAndColumn(this)">
 												</td>
 
