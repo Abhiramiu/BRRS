@@ -890,7 +890,7 @@ public class RegulatoryReportServices {
 		case "M_CA1":
 			try {
 				repfile = BRRS_M_CA1_reportservice.BRRS_M_CA1Excel(filename, reportId, fromdate, todate, currency,
-						dtltype);
+						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1938,7 +1938,16 @@ public class RegulatoryReportServices {
 						e.printStackTrace();
 					}
 					break;
-				
+			 case "M_CA1":
+					try {
+						archivalData = BRRS_M_CA1_reportservice.getM_CA1Archival();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
+
+			
 	         default:
 	              System.out.println("No archival logic defined for report: " + rptcode);
 	              break;
