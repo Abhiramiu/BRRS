@@ -46,7 +46,6 @@ PURPOSE		: BRFREPORT
 	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
 
 
-
 	<style>
 		.btns {
 			float: right;
@@ -79,7 +78,8 @@ PURPOSE		: BRFREPORT
 		.btn-primary:not(:disabled):not(.disabled):active,
 		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
-			background-color: #cc000000;
+			background-color: #cc0000;
+			/* fixed from #cc000000 (too many zeros) */
 			border-color: #161617;
 		}
 
@@ -96,41 +96,6 @@ PURPOSE		: BRFREPORT
 
 
 	<style>
-	
-			/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 5px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
-
-		/* ✨ Scrolling animation */
-		.scrolling-text {
-			display: inline-block;
-			font-family: "Courier New", monospace;
-			font-weight: bold;
-			letter-spacing: 1px;
-			animation: scroll-left 10s linear infinite;
-		}
-
-		/* Animation keyframes */
-		@keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
-
-			100% {
-				transform: translateX(-100%);
-			}
-		}
 		div span {
 			font-weight: bold;
 			color: white !important;
@@ -179,7 +144,10 @@ PURPOSE		: BRFREPORT
 
 		.table td {
 			background-color: #FFFFFF;
+
 		}
+
+
 
 		.card-footer {
 			padding: 10px;
@@ -204,6 +172,8 @@ PURPOSE		: BRFREPORT
 			color: #28a745;
 			transform: scale(1.1);
 		}
+
+
 
 		td {
 			border: 1px solid rgb(0, 164, 166);
@@ -234,6 +204,8 @@ PURPOSE		: BRFREPORT
 			color: red;
 			padding-top: 15px;
 		}
+
+
 
 		.form-control:focus {
 			border-color: #007bff;
@@ -270,18 +242,6 @@ PURPOSE		: BRFREPORT
 		.form-control:not(:focus)~.form-legend {
 			color: #aaa;
 			/* Normal label color */
-		}
-
-		.table-cell tbody td:hover {
-			background-color: #D8D8D8;
-			/* Hover color for cell */
-			cursor: pointer;
-			/* Optional: pointer cursor */
-		}
-
-		.table-bordered td,
-		.table-bordered th {
-			border: 1px solid #000 !important;
 		}
 	</style>
 
@@ -335,45 +295,32 @@ PURPOSE		: BRFREPORT
 
 		.white-text span {
 			color: white !important;
+		}
 
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
 
+		
+	</style>
+	<style>
+		#reports,
+		#reports th,
+		#reports td {
+			border: 1px solid black !important;
+		}
+
+		#reports {
+			border-collapse: collapse;
 		}
 	</style>
 
-<script th:inline="javascript">
-							  $(document).ready(function () {
-							    var table = $('#reportdetails').DataTable({
-							      scrollY: "550px",
-							      scrollX: true,
-							      scrollCollapse: true,
-							      autoWidth: false,
-							      paging: true,
-							      searching: true,
-							      lengthChange: false,
-							      ordering: true,
-							      pageLength: 100,
-							      fixedHeader: true, // ✅ You can simply set it to true
-								  // ✅ Column width settings
-								   columnDefs: [
-								     { width: "60px", targets: 0 },   // Edit icon column
-								     { width: "150px", targets: 1 }  ,  // S No column
-									 { width: "300px", targets: 7 }    // S No column
-								   ],
 
-							      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-							    });
 
-							    // ✅ Fix alignment on resize / zoom
-							    $(window).on('resize', function () {
-							      table.columns.adjust().draw(false);
-							    });
 
-							    // ✅ Fix initial misalignment if loaded at non-100% zoom
-							    setTimeout(function () {
-							      table.columns.adjust().draw(false);
-							    }, 500);
-							  });
-							</script>
 	<script th:inline="javascript">
 
 		$(document).ready(function () {
@@ -391,7 +338,7 @@ PURPOSE		: BRFREPORT
 			$('#loader').modal('hide');
 		});
 
-
+				
 		$(document).ready(function() {
 			Maker_Checker_Function(); 
 		});
@@ -404,7 +351,7 @@ PURPOSE		: BRFREPORT
 				success: function(roleId) {
 					// console.log("User Role ID:", roleId);
 				
-					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
@@ -420,6 +367,9 @@ PURPOSE		: BRFREPORT
 		     }
 		    });
 		}
+
+
+
 
 		function home() {
 			$("#loader").modal("toggle");
@@ -440,37 +390,127 @@ PURPOSE		: BRFREPORT
 			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
 				location.href = Callurl;
 			console.log(Callurl);
-			/*  $.ajax({
-				 type: 'get',
-				 url: Callurl,
-				 beforeSend: function () {
-					 $('#loader').modal('show'); // 🔄 Show loader
-				 },
-				 success: function (data) {
-					 $('.content').html(data);
-					 //$("#detailsbtn").addClass("active");
-					 //tablepagination();
-				 },
-				 complete: function () {
-					 $('#loader').modal('hide');
-				 },
-				 error: function () {
-						  $('#loader').modal('hide');
-					 alert("Something went wrongss. Please try again.");
-				  
-				 }
-			 }); */
+
 		}
 
 		function showsummary() {
-			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
-			loader.show();
+			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
 				location.href = Callurl;
 
 		}
 	</script>
 
+	<script>
+
+		function activateTab(tabName) {
+			// Remove 'active' from all buttons
+			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+
+			// Add 'active' to selected button
+			if (tabName === 'summary') {
+				document.getElementById('custom-tab-btnSummary').classList.add('active');
+			} else if (tabName === 'Details') {
+				document.getElementById('custom-tab-btnDetails').classList.add('active');
+			}
+		}
+
+		window.onload = function () {
+			/* setTimeout(function() {
+				var selectedTab = document.getElementById("selectedTab").value;
+				alert(selectedTab);
+				activateTab(selectedTab);
+			}, 10000); */ // 10,000 milliseconds = 10 seconds
+
+			var selectedTab = document.getElementById("selectedTab").value;
+			activateTab(selectedTab);
+		};
+
+
+		function downloadfile(button) {
+		    var reportid = button.getAttribute('data-reportid');
+		    var asondate = button.getAttribute('data-asondate');
+		    var fromdate = button.getAttribute('data-fromdate');
+		    var todate = button.getAttribute('data-todate');
+		    var currency = button.getAttribute('data-currency');
+		    var subreportid = button.getAttribute('data-subreportid');
+		    var secid = button.getAttribute('data-secid');
+		    var dtltype = button.getAttribute('data-dtltype');
+		    var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+
+		    $('#loader').modal('show');
+
+		    $.ajax({
+		        url: './downloadExcel?reportid=' + reportid +
+		            '&fromdate=' + fromdate +
+		            '&asondate=' + asondate +
+		            '&todate=' + todate +
+		            '&currency=' + currency +
+		            '&subreportid=' + subreportid +
+		            '&secid=' + secid +
+		            '&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
+		        type: 'GET',
+		        xhrFields: { responseType: 'blob' },
+
+		        success: function (data) {
+		            if (data && data.size > 100) {
+		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+		                const url = window.URL.createObjectURL(blob);
+		                const a = document.createElement('a');
+
+		                a.style.display = 'none';
+		                a.href = url;
+		                a.download = filename;
+
+		                document.body.appendChild(a);
+		                a.click();
+
+		                window.URL.revokeObjectURL(url);
+		                document.body.removeChild(a);
+
+		                showResultModal('BRRS', filename + ' downloaded successfully.');
+		            } else {
+		                showResultModal('Information', 'No data was available to create a download.');
+		            }
+		        },
+
+		        error: function (jqXHR, textStatus, errorThrown) {
+		            console.error("Download failed:", textStatus, errorThrown);
+		            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+		        },
+
+		        complete: function () {
+		            // 🔥 THIS ALWAYS RUNS (success or error or exceptions)
+		            $('#loader').modal('hide');
+		        }
+		    });
+		}
+
+
+		function closemodel() {
+			// Hide the modals
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}
+
+
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+
+	</script>
 	<script>
 
 		function startReport(button) {
@@ -520,7 +560,7 @@ PURPOSE		: BRFREPORT
 				.then(res => res.text())
 				.then(status => {
 					if (status === "READY") {
-						alertMsg.innerHTML = 'Report is ready! Downloading…';
+						alertMsg.innerHTML = 'Report is ready! Downloaded';
 						showAlert();
 						const filename = sessionStorage.getItem("filename");
 						downloadDetailfile(jobId, filename)
@@ -569,7 +609,7 @@ PURPOSE		: BRFREPORT
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('BRRS', filename + ' downloaded successfully.');
+						showResultModal('BRRS', filename + ' downloaded successfully');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -584,7 +624,6 @@ PURPOSE		: BRFREPORT
 
 
 	</script>
-
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
 			var reportLable = a.getAttribute('reportLable');
@@ -624,129 +663,57 @@ PURPOSE		: BRFREPORT
 	</script>
 
 
-	<script>
 
-		function activateTab(tabName) {
-			// Remove 'active' from all buttons
-			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
-				btn.classList.remove('active');
-			});
+	
 
-			// Add 'active' to selected button
-			if (tabName === 'summary') {
-				document.getElementById('custom-tab-btnSummary').classList.add('active');
-			} else if (tabName === 'Details') {
-				document.getElementById('custom-tab-btnDetails').classList.add('active');
+
+	<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 5px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
 			}
 		}
-
-		window.onload = function () {
-			/* setTimeout(function() {
-				var selectedTab = document.getElementById("selectedTab").value;
-				alert(selectedTab);
-				activateTab(selectedTab);
-			}, 10000); */ // 10,000 milliseconds = 10 seconds
-
-			var selectedTab = document.getElementById("selectedTab").value;
-			activateTab(selectedTab);
-		};
+	</style>
 
 
-		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
-
-
-			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
-			loader.show();
-
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
-		}
-
-	//	function editRecord() {
-	//		showResultModal('Alert', 'Development in progress');
-
-		//}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
-
-		}
-
-		function showResultModal(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel').text(title);
-			$('#resultModalBody').text(message);
-
-			// Show the modal
-			$('#resultModal').modal('show');
-		}
-
-		function showResultModalDetail(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel1').text(title);
-			$('#resultModalBody1').text(message);
-
-			// Show the modal
-			$('#resultModal1').modal('show');
-		}
-
-		
-	</script>
-
-
-	
-
-	
 			<script th:inline="javascript">
 			    /*<![CDATA[*/
 			    const reportId = /*[[${reportid}]]*/ null;
@@ -834,7 +801,103 @@ PURPOSE		: BRFREPORT
 	}
 
 </script>
-	
+		<style>
+					/* Keep the header fixed and aligned */
+					.dataTables_scrollHeadInner,
+					.dataTables_scrollBody table {
+					  width: 100% !important;
+					}
+
+					/* Prevent thead shrinking at zoom */
+					.dataTables_scrollHeadInner table {
+					  width: 100% !important;
+					  min-width: 100% !important;
+					}
+
+					#reportdetails {
+					  width: 100% !important;
+					  table-layout: fixed !important;
+					}
+
+					#reportdetails th, 
+					#reportdetails td {
+					  white-space: nowrap;
+					}
+					table.dataTable th.dt-type-numeric,
+						table.dataTable th.dt-type-date,
+						table.dataTable td.dt-type-numeric,
+						table.dataTable td.dt-type-date {
+						    text-align: left !important;
+						}
+						
+						/* Right-align header (6th column = ACCT BALANCE) */
+															table.dataTable th.dt-type-numeric:nth-child(6) {
+															  text-align: right !important;
+															}
+															
+															
+						/* Right-align header (6th column = ACCT BALANCE) */
+															table.dataTable th.dt-type-numeric:nth-child(7) {
+															 text-align: right !important;
+															}
+															
+															/* Right-align data (6th column = ACCT BALANCE) */
+																									#reportdetails td:nth-child(6),
+																									.dataTables_scrollHeadInner table th:nth-child(6) {
+																									 text-align: right !important;
+																									 padding-right: 10px !important;
+																										}
+															/* Right-align data (6th column = ACCT BALANCE) */
+																									#reportdetails td:nth-child(7),
+																									.dataTables_scrollHeadInner table th:nth-child(6) {
+																									 text-align: right !important;
+																									 padding-right: 10px !important;
+																																					}
+						
+				
+
+
+
+						  
+						</style>
+				<script th:inline="javascript">
+				  $(document).ready(function () {
+				    var table = $('#reportdetails').DataTable({
+				      scrollY: "550px",
+				      scrollX: true,
+				      scrollCollapse: true,
+				      autoWidth: false,
+				      paging: true,
+				      searching: true,
+				      lengthChange: false,
+				      ordering: true,
+				      pageLength: 100,
+				      fixedHeader: true, // ✅ You can simply set it to true
+					  // ✅ Column width settings
+					   columnDefs: [
+					     { width: "60px", targets: 0 },   // Edit icon column
+					     { width: "100px", targets: 1 }  ,  // S No column
+						 { width: "113px", targets: 7 }    // S No column
+						
+					   ],
+
+				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+				    });
+
+				    // ✅ Fix alignment on resize / zoom
+				    $(window).on('resize', function () {
+				      table.columns.adjust().draw(false);
+				    });
+
+				    // ✅ Fix initial misalignment if loaded at non-100% zoom
+				    setTimeout(function () {
+				      table.columns.adjust().draw(false);
+				    }, 500);
+				  });
+				</script>
+
+
+
 
 
 
@@ -917,7 +980,7 @@ PURPOSE		: BRFREPORT
 								style="border-right: 1px solid #dee2e6; ">
 								<table
 									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
-									id="reportss">
+									id="reports">
 									<thead class="thead-light">
 										<!-- First header row -->
 										<tr style="background-color: #D8D8D8; text-align:center;">
@@ -1863,7 +1926,7 @@ PURPOSE		: BRFREPORT
 												th:text="${#numbers.formatDecimal(report.r26_total,1,'COMMA',0,'POINT')}"></td>
 										</tr>
 
-										<tr>
+									<!-- 	<tr>
 											<td style="font-weight: normal;padding-left: 60px;"
 												th:text="${report.r27_product}"></td>
 											<td style="text-align: right; font-weight: normal;"
@@ -1920,7 +1983,7 @@ PURPOSE		: BRFREPORT
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td style="text-align: right; font-weight: normal;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r27_total,1,'COMMA',0,'POINT')}"></td>
-										</tr>
+										</tr> -->
 
 										<tr>
 											<td style="font-weight: normal;padding-left: 60px;"
@@ -3646,16 +3709,17 @@ PURPOSE		: BRFREPORT
 				<div th:if="${displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
-							<div class="table-responsive scrollable-table-container"
+							<div class="table-container"
 								style="border-right: 1px solid #dee2e6;">
 								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reportss">
+									class="table table-striped table-bordered table-hover"
+									id="reportdetails">
 									<thead class="thead-light">
 										<tr>
 											<th></th>
+											<th>S No</th>
 											<th>CUST ID</th>
-											<th>ACCT NO</th>
+											<th style="text-align:left;">ACCT NO</th>
 											<th>ACCT NAME</th>
 											<th style="text-align: right;">ACCT BALANCE</th>
 											<th style="text-align: left;">REPORT LABLE</th>
@@ -3666,7 +3730,7 @@ PURPOSE		: BRFREPORT
 									</thead>
 
 									<tbody style="font-family: Arial;">
-										<tr th:each="report: ${reportdetails}">
+										<tr th:each="report, srlno : ${reportdetails}">
 											<td><a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
                         <i class="fas fa-edit" style="color: black; cursor:pointer;"
                             th:attr="data-acctNo=${report.acctNumber},
@@ -3674,6 +3738,7 @@ PURPOSE		: BRFREPORT
                             data-type=${type}"
                             onclick="openDetail(this, 'edit')"></i>
                     </a></td>
+                                            <td th:text="${srlno.index + 1}"></td>
 											<td th:text="${report.custId}"></td>
 											<td th:text="${report.acctNumber}"></td>
 											<td th:text="${report.acctName}"></td>
@@ -3892,146 +3957,117 @@ PURPOSE		: BRFREPORT
 
 
 <style>
-/* Your existing CSS - this is the correct approach */
-.scrollable-table-container {
-	/* This is the key: it creates the scroll context */
-	max-height: 620px;
-	/* Or a suitable height like 80vh for responsive design */
-	overflow-y: auto;
-	border: 1px solid #ccc;
-}
+	.dataTables_scrollHeadInner,
+	table.dataTable {
+		width: 100% !important;
+	}
 
-/* Your existing sticky header CSS, targeting the tr elements within the thead */
-.scrollable-table-container thead tr:nth-child(1) {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9;
-	z-index: 5;
-}
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 700px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		overflow-x: auto;
+		border: 1px solid #ccc;
+	}
 
-.scrollable-table-container thead tr:nth-child(2) {
-	position: sticky;
-	top: 36px; /* adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 4;
-}
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
 
-.scrollable-table-container thead tr:nth-child(3) {
-	position: sticky;
-	top: 72px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 3;
-}
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
 
-.scrollable-table-container thead tr:nth-child(4) {
-	position: sticky;
-	top: 100px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 2;
-}
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
 
-.scrollable-table-container thead tr:nth-child(5) {
-	position: sticky;
-	top: 135px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
+
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
 </style>
 
 
 <style>
-.inner {
-	max-height: 600px; /* Adjust height as needed */
-	overflow: auto;
-	border: 1px solid #dee2e6;
-}
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
 
-/* Sticky thead */
+	/* Sticky thead */
 	#reports thead th {
 		position: sticky;
 		top: 0;
-		background-color: #D8D8D8; /* light gray header */
+		background-color: #f8f9fa;
 		/* Match Bootstrap thead-light */
 		z-index: 2;
 	}
 
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
 
-div.dataTables_wrapper div.dataTables_paginate {
-	text-align: right !important;
-	float: right !important;
-	width: auto;
-	margin-top: 10px;
-}
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
 
-/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-div.dataTables_wrapper div.dataTables_info {
-	float: left !important;
-	margin-top: 10px;
-}
+	.pagination {
+		margin: 0;
+	}
 
-.pagination {
-	margin: 0;
-}
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
 
-.page-item.active .page-link {
-	background-color: #386276;
-	border-color: #386276;
-}
+	.page-link {
+		color: #386276;
+	}
 
-.page-link {
-	color: #386276;
-}
+	.page-link:hover {
+		color: #2a4a5c;
+	}
 
-.page-link:hover {
-	color: #2a4a5c;
-}
-
-.form-select {
-	display: inline-block;
-	width: auto;
-}
-	.scrollable-table-container thead tr:nth-child(1),
-.scrollable-table-container thead tr:nth-child(2),
-.scrollable-table-container thead tr:nth-child(3),
-.scrollable-table-container thead tr:nth-child(4),
-.scrollable-table-container thead tr:nth-child(5) {
-    background-color: #D8D8D8; /* set header color */
-}
-	
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
 </style>
-<script th:inline="javascript">
-				  $(document).ready(function () {
-				    var table = $('#reportdetail').DataTable({
-				      scrollY: "550px",
-				      scrollX: true,
-				      scrollCollapse: true,
-				      autoWidth: false,
-				      paging: true,
-				      searching: true,
-				      lengthChange: false,
-				      ordering: true,
-				      pageLength: 100,
-				      fixedHeader: true, // ✅ You can simply set it to true
-					  // ✅ Column width settings
-					   columnDefs: [
-					     { width: "60px", targets: 0 },   // Edit icon column
-					     { width: "100px", targets: 1 }  ,  // S No column
-					     { width: "250px", targets: 5 }  ,
-						 { width: "250px", targets: 7 }    
-					   ],
 
-				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-				    });
 
-				    // ✅ Fix alignment on resize / zoom
-				    $(window).on('resize', function () {
-				      table.columns.adjust().draw(false);
-				    });
 
-				    // ✅ Fix initial misalignment if loaded at non-100% zoom
-				    setTimeout(function () {
-				      table.columns.adjust().draw(false);
-				    }, 500);
-				  });
-				</script>
+
 </html>

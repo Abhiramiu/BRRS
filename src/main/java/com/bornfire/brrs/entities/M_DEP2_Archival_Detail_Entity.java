@@ -10,9 +10,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_M_DEP2_ARCHIVALTABLE_DETAIL")
 public class M_DEP2_Archival_Detail_Entity {
 	
-	@Id
+	
 	   @Column(name = "CUST_ID")
 	   private String custId;
+	   @Id
 	   @Column(name = "ACCT_NUMBER")
 	   private String acctNumber;
 	   @Column(name = "ACCT_NAME")
@@ -21,6 +22,10 @@ public class M_DEP2_Archival_Detail_Entity {
 	   private String dataType;
 	   @Column(name = "REPORT_ADDL_CRITERIA_1")
 	   private String reportAddlCriteria1;
+	   @Column(name = "REPORT_ADDL_CRITERIA_2")
+	   private String reportAddlCriteria2;
+	   @Column(name = "REPORT_ADDL_CRITERIA_3")
+	   private String reportAddlCriteria3;
 	  
 	   @Column(name = "REPORT_LABLE")
 	   private String reportLable;
@@ -30,8 +35,10 @@ public class M_DEP2_Archival_Detail_Entity {
 	   private String modificationRemarks;
 	   @Column(name = "DATA_ENTRY_VERSION")
 	   private String dataEntryVersion;
-	   @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+	   @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 2)
 	   private BigDecimal acctBalanceInpula;
+	   @Column(name = "SANCTION_LIMIT", precision = 24, scale = 2)
+	   private BigDecimal sanctionLimit;
 	   @Column(name = "REPORT_DATE")
 	   @DateTimeFormat(pattern = "dd-MM-yyyy")
 	   private Date reportDate;
@@ -189,6 +196,28 @@ public class M_DEP2_Archival_Detail_Entity {
 	}
 	public void setDelFlg(String delFlg) {
 		this.delFlg = delFlg;
+	}
+
+	
+	
+	
+public String getReportAddlCriteria2() {
+		return reportAddlCriteria2;
+	}
+	public void setReportAddlCriteria2(String reportAddlCriteria2) {
+		this.reportAddlCriteria2 = reportAddlCriteria2;
+	}
+	public String getReportAddlCriteria3() {
+		return reportAddlCriteria3;
+	}
+	public void setReportAddlCriteria3(String reportAddlCriteria3) {
+		this.reportAddlCriteria3 = reportAddlCriteria3;
+	}
+	public BigDecimal getSanctionLimit() {
+		return sanctionLimit;
+	}
+	public void setSanctionLimit(BigDecimal sanctionLimit) {
+		this.sanctionLimit = sanctionLimit;
 	}
    public M_DEP2_Archival_Detail_Entity() {
 	super();

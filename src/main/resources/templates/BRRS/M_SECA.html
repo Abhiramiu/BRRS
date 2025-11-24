@@ -988,6 +988,36 @@ function cancelModify() {
 	<SCRIPT>
 	// --- CALCULATION FUNCTIONS ---
 
+/*		// Calculate total for R14
+	function calculateR36BOBCTotals() {
+	    let total = 0;
+			
+			
+			let R36BOBC = parseFloat($("#R36_BOBC").is("input") ? $("#R36_BOBC").val().replace(/,/g, "") : $("#R36_BOBC").text().replace(/,/g, "")) || 0;
+
+	        let R36PLEDGEDASSET = parseFloat($("#R36_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
+	        
+	        total = R36BOBC - R36PLEDGEDASSET;
+
+	    // Put the totals into R14
+	    $("#R36_BOBC").text(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	
+	 // Reformat inputs if needed
+    if ($("#R36_BOBC").is("input")) $("#R36_BOBC").val(R36BOBC.toLocaleString('en-US'));
+    if ($("#R36_PLEDGED_ASSET").is("input")) $("#R36_PLEDGED_ASSET").val(R36PLEDGEDASSET.toLocaleString('en-US'));
+		
+		}
+	$(document).ready(function() {
+		calculateR36BOBCTotals();
+
+	    // Attach input listeners to any editable fields
+	    $("#R36_PLEDGED_ASSET").on("input", function() {
+	    	calculateR36BOBCTotals();
+	        
+	    });
+	});	
+	
+	*/
 	// Calculate total for R14
 	function calculateR14Totals() {
 	    let total = 0;
@@ -2693,6 +2723,7 @@ function fileuploads(btn) {
     $('#loader').modal('show');
 
     // Pre-calculations
+    calculateR36BOBCTotals();
 calculateR14Totals();
 calculateR15Totals();
 calculateR16Totals();
@@ -5000,8 +5031,8 @@ calculateR13Last();
 	id="R36_EQUITY" name="R36_EQUITY"
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
-<td id="R36_BONDS" th:text="${#numbers.formatDecimal(report.R36_BONDS, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R10', reportAddlCriteria1='C3'" 
-onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td>
+<td th:each="report: ${reportsummary1}" id="R36_BONDS" th:text="${#numbers.formatDecimal(report.R36_BONDS, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R10', reportAddlCriteria1='C3'" 
+ style="vertical-align: middle; text-align: right;"></td>
                 <!-- <td style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"
@@ -5010,8 +5041,8 @@ onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-al
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td> -->
 
-<td id="R36_BOBC" th:text="${#numbers.formatDecimal(report.R36_BOBC, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R10', reportAddlCriteria1='C3'" 
-onclick="showdetailsbyRowAndColumn(this)" style="vertical-align: middle; text-align: right;"></td>
+<td th:each="report: ${reportsummary1}" id="R36_BOBC" th:text="${#numbers.formatDecimal(report.R36_BOBC, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R10', reportAddlCriteria1='C3'" 
+ style="vertical-align: middle; text-align: right;"></td>
                 <!-- <td style="text-align:right;">
 	<input class="display-input Show_input nonEditable"
 	type="text"

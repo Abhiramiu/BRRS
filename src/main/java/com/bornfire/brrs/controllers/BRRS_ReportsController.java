@@ -1978,7 +1978,7 @@ public class BRRS_ReportsController {
 			// call services
 			BRRS_M_SECA_reportservice.updateReport1(request);
 
-			return ResponseEntity.ok("Updated Successfully.");
+			return ResponseEntity.ok("Updated Successfully");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
