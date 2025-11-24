@@ -223,7 +223,7 @@ public class BRRS_M_NOSVOS_ReportService {
 
 	    try {
 	        // 1️⃣ Loop from R11 to R50 and copy fields
-	        for (int i = 1; i <= 100; i++) {
+	        for (int i = 1; i <= 101; i++) {
 	            String prefix = "R" + i + "_";
 
 	            String[] fields = { "NAME_OF_BANK_AND_COUNTRY_NOSTRO", "TYPE_OF_ACCOUNT_NOSTRO", "PURPOSE_NOSTRO", "CURRENCY_NOSTRO",
@@ -285,7 +285,7 @@ public class BRRS_M_NOSVOS_ReportService {
 
 	    try {
 	        // 1️⃣ Loop from R11 to R50 and copy fields
-	        for (int i = 1; i <= 100; i++) {
+	        for (int i = 1; i <= 101; i++) {
 	            String prefix = "R" + i + "_";
 
 	            String[] fields = { "NAME_OF_BANK_AND_COUNTRY_VOSTRO", "TYPE_OF_ACCOUNT_VOSTRO", "PURPOSE_VOSTRO", "CURRENCY_VOSTRO",
@@ -347,7 +347,7 @@ public class BRRS_M_NOSVOS_ReportService {
 
 	    try {
 	        // 1️⃣ Loop from R11 to R50 and copy fields
-	        for (int i = 1; i <= 100; i++) {
+	        for (int i = 1; i <= 101; i++) {
 	            String prefix = "R" + i + "_";
 
 	            String[] fields = { "NAME_OF_BANK_NOSTRO1", "TYPE_OF_ACCOUNT_NOSTRO1", "PURPOSE_NOSTRO1", "CURRENCY_NOSTRO1",
@@ -409,7 +409,7 @@ public class BRRS_M_NOSVOS_ReportService {
 
 	    try {
 	        // 1️⃣ Loop from R11 to R50 and copy fields
-	        for (int i = 1; i <= 100; i++) {
+	        for (int i = 1; i <= 101; i++) {
 	            String prefix = "R" + i + "_";
 
 	            String[] fields = { "NAME_OF_BANK_VOSTRO1","TYPE_OF_ACCOUNT_VOSTRO1", "PURPOSE_VOSTRO1", "CURRENCY_VOSTRO1", "AMOUNT_DEMAND_VOSTRO1",
@@ -554,9 +554,9 @@ public class BRRS_M_NOSVOS_ReportService {
 	
 	
 	
-	String[] rowCodesPart1 = new String[100];
+	String[] rowCodesPart1 = new String[101];
 
-	for (int i = 1; i <= 100; i++) {
+	for (int i = 1; i <= 101; i++) {
 	    rowCodesPart1[i - 1] = "R" + i;
 	}
 
@@ -580,16 +580,16 @@ String[] fieldSuffixes4 = {
 
 
 	// First set: R11 - R50 at row 11
-	writeRowData1(sheet, dataList, rowCodesPart1, fieldSuffixes, 0, numberStyle, textStyle);
+	writeRowData1(sheet, dataList, rowCodesPart1, fieldSuffixes, 10, numberStyle, textStyle);
 	
 	// First set: R56 - R95 at row 56
-	writeRowData2(sheet, dataList2, rowCodesPart1, fieldSuffixes2, 0, numberStyle, textStyle);
+	writeRowData2(sheet, dataList2, rowCodesPart1, fieldSuffixes2, 10, numberStyle, textStyle);
 
 	// Third Set: R101 - R141 at row 101
-	writeRowData3(sheet, dataList3, rowCodesPart1, fieldSuffixes3, 0, numberStyle, textStyle);
+	writeRowData3(sheet, dataList3, rowCodesPart1, fieldSuffixes3, 118, numberStyle, textStyle);
 
 	// Fourth Set: R147 - R196 at row 146
-	writeRowData4(sheet, dataList4, rowCodesPart1, fieldSuffixes4, 0, numberStyle, textStyle);
+	writeRowData4(sheet, dataList4, rowCodesPart1, fieldSuffixes4, 118, numberStyle, textStyle);
 
 	workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 	workbook.write(out);
@@ -616,7 +616,7 @@ String[] fieldSuffixes4 = {
 			      String fieldName = rowCode+ "_" + fieldSuffixes[colIndex];
 			   
 			      // 👉 Skip column B (index 1)
-			      int excelColIndex = (colIndex >= 1) ? colIndex + 1 : colIndex;
+			      int excelColIndex = 1+colIndex ;
 
 			      Cell cell = row.createCell(excelColIndex);
 			      try {
@@ -651,6 +651,7 @@ String[] fieldSuffixes4 = {
 			}
 		}
 
+
 	
 	private void writeRowData2(Sheet sheet, List<BrrsMNosvosP2> dataList,
 		    String[] rowCodes, String[] fieldSuffixes, int baseRow,
@@ -669,7 +670,7 @@ String[] fieldSuffixes4 = {
 			      String fieldName = rowCode+ "_" + fieldSuffixes[colIndex];
 			   
 			      // 👉 Skip column B (index 1)
-			      int excelColIndex = (colIndex >= 1) ? colIndex + 1 : colIndex;
+			      int excelColIndex = 11+colIndex;
 
 			      Cell cell = row.createCell(excelColIndex);
 			      try {
@@ -721,7 +722,7 @@ String[] fieldSuffixes4 = {
 			      String fieldName = rowCode+ "_" + fieldSuffixes[colIndex];
 			   
 			      // 👉 Skip column B (index 1)
-			      int excelColIndex = (colIndex >= 1) ? colIndex + 1 : colIndex;
+			      int excelColIndex = 1+colIndex ;
 
 			      Cell cell = row.createCell(excelColIndex);
 			      try {
@@ -773,7 +774,7 @@ String[] fieldSuffixes4 = {
 	                String fieldName = rowCode + "_" + fieldSuffixes[colIndex];
 
 	                // 👉 Direct mapping, don’t skip B
-	                int excelColIndex = colIndex;
+	                int excelColIndex = 11+colIndex;
 
 	                Cell cell = row.createCell(excelColIndex);
 	                try {
@@ -875,9 +876,9 @@ String[] fieldSuffixes4 = {
 	
 	
 	
-	String[] rowCodesPart1 = new String[100];
+	String[] rowCodesPart1 = new String[101];
 
-	for (int i = 1; i <= 100; i++) {
+	for (int i = 1; i <= 101; i++) {
 	    rowCodesPart1[i - 1] = "R" + i;
 	}
 
@@ -898,16 +899,16 @@ String[] fieldSuffixes4 = {
 			};
 
 	// First set: R11 - R50 at row 11
-	writeRowData01(sheet, dataList, rowCodesPart1, fieldSuffixes, 0, numberStyle, textStyle);
+	writeRowData01(sheet, dataList, rowCodesPart1, fieldSuffixes, 10, numberStyle, textStyle);
 	
 	// First set: R56 - R95 at row 56
-	writeRowData02(sheet, dataList2, rowCodesPart1, fieldSuffixes, 0, numberStyle, textStyle);
+	writeRowData02(sheet, dataList2, rowCodesPart1, fieldSuffixes2, 10, numberStyle, textStyle);
 
 	// Third Set: R101 - R141 at row 101
-	writeRowData03(sheet, dataList3, rowCodesPart1, fieldSuffixes2, 0, numberStyle, textStyle);
+	writeRowData03(sheet, dataList3, rowCodesPart1, fieldSuffixes3, 118, numberStyle, textStyle);
 
 	// Fourth Set: R147 - R196 at row 146
-	writeRowData04(sheet, dataList4, rowCodesPart1, fieldSuffixes3, 0, numberStyle, textStyle);
+	writeRowData04(sheet, dataList4, rowCodesPart1, fieldSuffixes4, 118, numberStyle, textStyle);
 
 	workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 	workbook.write(out);
@@ -934,7 +935,7 @@ String[] fieldSuffixes4 = {
 			      String fieldName = rowCode+ "_" + fieldSuffixes[colIndex];
 			   
 			      // 👉 Skip column B (index 1)
-			      int excelColIndex = (colIndex >= 1) ? colIndex + 1 : colIndex;
+			      int excelColIndex =  colIndex + 1;
 
 			      Cell cell = row.createCell(excelColIndex);
 			      try {
@@ -987,7 +988,7 @@ String[] fieldSuffixes4 = {
 			      String fieldName = rowCode+ "_" + fieldSuffixes[colIndex];
 			   
 			      // 👉 Skip column B (index 1)
-			      int excelColIndex = (colIndex >= 1) ? colIndex + 1 : colIndex;
+			      int excelColIndex = colIndex + 11 ;
 
 			      Cell cell = row.createCell(excelColIndex);
 			      try {
@@ -1039,7 +1040,7 @@ String[] fieldSuffixes4 = {
 			      String fieldName = rowCode+ "_" + fieldSuffixes[colIndex];
 			   
 			      // 👉 Skip column B (index 1)
-			      int excelColIndex = (colIndex >= 1) ? colIndex + 1 : colIndex;
+			      int excelColIndex = colIndex + 1 ;
 
 			      Cell cell = row.createCell(excelColIndex);
 			      try {
@@ -1091,7 +1092,7 @@ String[] fieldSuffixes4 = {
 	                String fieldName = rowCode + "_" + fieldSuffixes[colIndex];
 
 	                // 👉 Direct mapping, don’t skip B
-	                int excelColIndex = colIndex;
+	                int excelColIndex = 11+colIndex;
 
 	                Cell cell = row.createCell(excelColIndex);
 	                try {

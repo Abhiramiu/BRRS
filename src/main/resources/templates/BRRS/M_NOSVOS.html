@@ -428,7 +428,7 @@ PURPOSE		: BWRBRREPORT
 			var readonlyIds = ["R101_TOTAL_AMOUNT_DEMAND_NOSTRO", "R101_TOTAL_AMOUNT_TIME_NOSTRO", "R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO", "R101_TOTAL_AMOUNT_DEMAND_VOSTRO","R101_TOTAL_AMOUNT_TIME_VOSTRO","R101_TOTAL_AMOUNT_DEMAND_NOSTRO1","R101_TOTAL_AMOUNT_TIME_NOSTRO1","R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO1",
 			"R101_TOTAL_AMOUNT_DEMAND_VOSTRO1","R101_TOTAL_AMOUNT_TIME_VOSTRO1"];
 			
-			for (let i = 1; i <= 100; i++) {
+			for (let i = 1; i <= 101; i++) {
     readonlyIds.push("R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO");
     readonlyIds.push("R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO1");
 }
@@ -439,7 +439,7 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 
-			for (let i = 1; i <= 100; i++) {
+			for (let i = 1; i <= 101; i++) {
 				$("#R" + i + "_TYPE_OF_ACCOUNT_NOSTRO_TEXT").hide();	//R11_TYPE_OF_ACC_TEXT
 				$("#R" + i + "_PURPOSE_NOSTRO_TEXT").hide();
 				$("#R" + i + "_CURRENCY_NOSTRO_TEXT").hide();
@@ -477,7 +477,7 @@ PURPOSE		: BWRBRREPORT
 
 			
 
-			for (let i = 1; i <= 100; i++) {
+			for (let i = 1; i <= 101; i++) {
 				let fields = [
 					"NAME_OF_BANK_AND_COUNTRY_NOSTRO",
 					"TYPE_OF_ACCOUNT_NOSTRO",
@@ -542,7 +542,7 @@ PURPOSE		: BWRBRREPORT
 
 				$(".Show_input").attr("readonly", true).attr("disabled", true);
 
-				for (let i = 1; i <= 100; i++) {
+				for (let i = 1; i <= 101; i++) {
 					$("#R" + i + "_TYPE_OF_ACCOUNT_NOSTRO_TEXT").show();	//R11_TYPE_OF_ACC_TEXT
 				$("#R" + i + "_PURPOSE_NOSTRO_TEXT").show();
 				$("#R" + i + "_CURRENCY_NOSTRO_TEXT").show();
@@ -611,7 +611,7 @@ function calculateR101Totals() {
     let totalAmountDemandVostro1 = 0;
     let totalAmountTimeVostro1 = 0;
 
-    for (let i = 1; i <= 100; i++) {
+    for (let i = 1; i <= 101; i++) {
 
         // Get numeric values
         let weightNostro = parseFloat($("#R" + i + "_RISK_WEIGHT_NOSTRO").val().replace(/,/g, "")) || 0;
@@ -678,7 +678,7 @@ function calculateR101Totals() {
 
     calculateR101Totals();
 
-    for (let i = 1; i <= 100; i++) {
+    for (let i = 1; i <= 101; i++) {
         $("#R" + i + "_AMOUNT_DEMAND_NOSTRO, #R" + i + "_AMOUNT_TIME_NOSTRO, #R" + i + "_RISK_WEIGHT_NOSTRO, " +
           "#R" + i + "_AMOUNT_DEMAND_NOSTRO1, #R" + i + "_AMOUNT_TIME_NOSTRO1, #R" + i + "_RISK_WEIGHT_NOSTRO1, " +
           "#R" + i + "_AMOUNT_DEMAND_VOSTRO, #R" + i + "_AMOUNT_TIME_VOSTRO, " +
@@ -821,7 +821,7 @@ function calculateR101Totals() {
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${dtltype},
-                    				 data-filename='M-AIDP.xls',
+                    				 data-filename='M_NOSVOS.xls',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
@@ -13387,6 +13387,131 @@ function calculateR101Totals() {
 														readonly />
 												</td>
 											</tr>
+											
+											
+											<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R101_NAME_OF_BANK_AND_COUNTRY_NOSTRO, 'N/A')}"
+														id="R101_NAME_OF_BANK_AND_COUNTRY_NOSTRO"
+														name="R101_NAME_OF_BANK_AND_COUNTRY_NOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_TYPE_OF_ACCOUNT_NOSTRO != null ? report.R101_TYPE_OF_ACCOUNT_NOSTRO : 'N/A'}"
+														id="R101_TYPE_OF_ACCOUNT_NOSTRO_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R101_TYPE_OF_ACCOUNT_NOSTRO"
+														name="R101_TYPE_OF_ACCOUNT_NOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R101_TYPE_OF_ACCOUNT_NOSTRO == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R101_TYPE_OF_ACCOUNT_NOSTRO == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R101_TYPE_OF_ACCOUNT_NOSTRO == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_PURPOSE_NOSTRO != null ? report.R101_PURPOSE_NOSTRO : 'N/A'}"
+														id="R101_PURPOSE_NOSTRO_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R101_PURPOSE_NOSTRO"
+														name="R101_PURPOSE_NOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R101_PURPOSE_NOSTRO == null}">N/A
+														</option>
+														<option value="PLACEMENT"
+															th:selected="${report.R101_PURPOSE_NOSTRO == 'PLACEMENT'}">
+															PLACEMENT</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R101_PURPOSE_NOSTRO == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R101_PURPOSE_NOSTRO == 'TERM LOAN'}">
+															TERM LOAN</option>
+														<option value="INTERBANK"
+															th:selected="${report.R101_PURPOSE_NOSTRO == 'INTERBANK'}">
+															INTERBANK</option>
+														<option value="INVESTMENT"
+															th:selected="${report.R101_PURPOSE_NOSTRO == 'INVESTMENT'}">
+															INVESTMENT</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_CURRENCY_NOSTRO != null ? report.R101_CURRENCY_NOSTRO : 'N/A'}"
+														id="R101_CURRENCY_NOSTRO_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R101_CURRENCY_NOSTRO"
+														name="R101_CURRENCY_NOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R101_CURRENCY_NOSTRO == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R101_CURRENCY_NOSTRO == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R101_CURRENCY_NOSTRO == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R101_CURRENCY_NOSTRO == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R101_CURRENCY_NOSTRO == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R101_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO, 'N/A')}"
+														id="R101_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO"
+														name="R101_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R101_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														id="R101_RISK_WEIGHT_NOSTRO" name="R101_RISK_WEIGHT_NOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_AMOUNT_DEMAND_NOSTRO != null ? #numbers.formatDecimal(report.R101_AMOUNT_DEMAND_NOSTRO, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R101_AMOUNT_DEMAND_NOSTRO" name="R101_AMOUNT_DEMAND_NOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_AMOUNT_TIME_NOSTRO != null ? #numbers.formatDecimal(report.R101_AMOUNT_TIME_NOSTRO, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R101_AMOUNT_TIME_NOSTRO" name="R101_AMOUNT_TIME_NOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_RISK_WEIGHTED_AMOUNT_NOSTRO != null ? #numbers.formatDecimal(report.R101_RISK_WEIGHTED_AMOUNT_NOSTRO, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R101_RISK_WEIGHTED_AMOUNT_NOSTRO"
+														name="R101_RISK_WEIGHTED_AMOUNT_NOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
 
 											<!-- ===== Row R100 End ===== -->
 											
@@ -23590,6 +23715,110 @@ function calculateR101Totals() {
 												</td>
 											</tr>
 
+
+
+
+
+<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R101_NAME_OF_BANK_AND_COUNTRY_VOSTRO, 'N/A')}"
+														id="R101_NAME_OF_BANK_AND_COUNTRY_VOSTRO"
+														name="R101_NAME_OF_BANK_AND_COUNTRY_VOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_TYPE_OF_ACCOUNT_VOSTRO != null ? report.R101_TYPE_OF_ACCOUNT_VOSTRO : 'N/A'}"
+														id="R101_TYPE_OF_ACCOUNT_VOSTRO_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R101_TYPE_OF_ACCOUNT_VOSTRO"
+														name="R101_TYPE_OF_ACCOUNT_VOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R101_TYPE_OF_ACCOUNT_VOSTRO == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R101_TYPE_OF_ACCOUNT_VOSTRO == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R101_TYPE_OF_ACCOUNT_VOSTRO == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_PURPOSE_VOSTRO != null ? report.R101_PURPOSE_VOSTRO : 'N/A'}"
+														id="R101_PURPOSE_VOSTRO_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R101_PURPOSE_VOSTRO"
+														name="R101_PURPOSE_VOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R101_PURPOSE_VOSTRO == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R101_PURPOSE_VOSTRO == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R101_PURPOSE_VOSTRO == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R101_PURPOSE_VOSTRO == 'TERM LOAN'}">
+															TERM LOAN</option>
+														<option value="INTERBANK"
+															th:selected="${report.R101_PURPOSE_VOSTRO == 'INTERBANK'}">
+															INTERBANK</option>
+														<option value="INVESTMENT"
+															th:selected="${report.R101_PURPOSE_VOSTRO == 'INVESTMENT'}">
+															INVESTMENT</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_CURRENCY_VOSTRO != null ? report.R101_CURRENCY_VOSTRO : 'N/A'}"
+														id="R101_CURRENCY_VOSTRO_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R101_CURRENCY_VOSTRO"
+														name="R101_CURRENCY_VOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R101_CURRENCY_VOSTRO == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R101_CURRENCY_VOSTRO == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R101_CURRENCY_VOSTRO == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R101_CURRENCY_VOSTRO == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R101_CURRENCY_VOSTRO == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_AMOUNT_DEMAND_VOSTRO != null ? #numbers.formatDecimal(report.R101_AMOUNT_DEMAND_VOSTRO, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R101_AMOUNT_DEMAND_VOSTRO" name="R101_AMOUNT_DEMAND_VOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_AMOUNT_TIME_VOSTRO != null ? #numbers.formatDecimal(report.R101_AMOUNT_TIME_VOSTRO, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R101_AMOUNT_TIME_VOSTRO" name="R101_AMOUNT_TIME_VOSTRO"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
 
 											<!-- ===== Row R100 End ===== -->
 											
@@ -35792,6 +36021,127 @@ function calculateR101Totals() {
 														readonly />
 												</td>
 											</tr>
+											
+											<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R101_NAME_OF_BANK_NOSTRO1, 'N/A')}"
+														id="R101_NAME_OF_BANK_NOSTRO1" name="R101_NAME_OF_BANK_NOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_TYPE_OF_ACCOUNT_NOSTRO1 != null ? report.R101_TYPE_OF_ACCOUNT_NOSTRO1 : 'N/A'}"
+														id="R101_TYPE_OF_ACCOUNT_NOSTRO1_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R101_TYPE_OF_ACCOUNT_NOSTRO1"
+														name="R101_TYPE_OF_ACCOUNT_NOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R101_TYPE_OF_ACCOUNT_NOSTRO1 == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R101_TYPE_OF_ACCOUNT_NOSTRO1 == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R101_TYPE_OF_ACCOUNT_NOSTRO1 == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_PURPOSE_NOSTRO1 != null ? report.R101_PURPOSE_NOSTRO1 : 'N/A'}"
+														id="R101_PURPOSE_NOSTRO1_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R101_PURPOSE_NOSTRO1"
+														name="R101_PURPOSE_NOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R101_PURPOSE_NOSTRO1 == null}">N/A
+														</option>
+														<option value="PLACEMENT"
+															th:selected="${report.R101_PURPOSE_NOSTRO1 == 'PLACEMENT'}">
+															PLACEMENT</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R101_PURPOSE_NOSTRO1 == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R101_PURPOSE_NOSTRO1 == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_CURRENCY_NOSTRO1 != null ? report.R101_CURRENCY_NOSTRO1 : 'N/A'}"
+														id="R101_CURRENCY_NOSTRO1_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R101_CURRENCY_NOSTRO1"
+														name="R101_CURRENCY_NOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R101_CURRENCY_NOSTRO1 == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R101_CURRENCY_NOSTRO1 == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R101_CURRENCY_NOSTRO1 == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R101_CURRENCY_NOSTRO1 == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R101_CURRENCY_NOSTRO1 == 'INR'}">INR
+														</option>
+														<option value="ZAR"
+															th:selected="${report.R101_CURRENCY_NOSTRO1 == 'ZAR'}">ZAR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R101_SOVEREIGN_RATING_NOSTRO1, 'N/A')}"
+														id="R101_SOVEREIGN_RATING_NOSTRO1"
+														name="R101_SOVEREIGN_RATING_NOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R101_RISK_WEIGHT_NOSTRO1, 'N/A')}"
+														id="R101_RISK_WEIGHT_NOSTRO1" name="R101_RISK_WEIGHT_NOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_AMOUNT_DEMAND_NOSTRO1 != null ? #numbers.formatDecimal(report.R101_AMOUNT_DEMAND_NOSTRO1, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R101_AMOUNT_DEMAND_NOSTRO1"
+														name="R101_AMOUNT_DEMAND_NOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_AMOUNT_TIME_NOSTRO1 != null ? #numbers.formatDecimal(report.R101_AMOUNT_TIME_NOSTRO1, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R101_AMOUNT_TIME_NOSTRO1" name="R101_AMOUNT_TIME_NOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_RISK_WEIGHTED_AMOUNT_NOSTRO1 != null ? #numbers.formatDecimal(report.R101_RISK_WEIGHTED_AMOUNT_NOSTRO1, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R101_RISK_WEIGHTED_AMOUNT_NOSTRO1"
+														name="R101_RISK_WEIGHTED_AMOUNT_NOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
 
 											<!-- ===== Row R100 End ===== -->
 											
@@ -45403,7 +45753,105 @@ function calculateR101Totals() {
 														readonly />
 												</td>
 											</tr>
+											
+											
+											<tr>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${#strings.defaultString(report.R101_NAME_OF_BANK_VOSTRO1, 'N/A')}"
+														id="R101_NAME_OF_BANK_VOSTRO1" name="R101_NAME_OF_BANK_VOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_TYPE_OF_ACCOUNT_VOSTRO1 != null ? report.R101_TYPE_OF_ACCOUNT_VOSTRO1 : 'N/A'}"
+														id="R101_TYPE_OF_ACCOUNT_VOSTRO1_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input"
+														id="R101_TYPE_OF_ACCOUNT_VOSTRO1"
+														name="R101_TYPE_OF_ACCOUNT_VOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R101_TYPE_OF_ACCOUNT_VOSTRO1 == null}">
+															N/A</option>
+														<option value="CURRENT"
+															th:selected="${report.R101_TYPE_OF_ACCOUNT_VOSTRO1 == 'CURRENT'}">
+															CURRENT</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R101_TYPE_OF_ACCOUNT_VOSTRO1 == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_PURPOSE_VOSTRO1 != null ? report.R101_PURPOSE_VOSTRO1 : 'N/A'}"
+														id="R101_PURPOSE_VOSTRO1_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R101_PURPOSE_VOSTRO1"
+														name="R101_PURPOSE_VOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value=""
+															th:selected="${report.R101_PURPOSE_VOSTRO1 == null}">N/A
+														</option>
+														<option value="BORROWING"
+															th:selected="${report.R101_PURPOSE_VOSTRO1 == 'BORROWING'}">
+															BORROWING</option>
+														<option value="REMITTANCE"
+															th:selected="${report.R101_PURPOSE_VOSTRO1 == 'REMITTANCE'}">
+															REMITTANCE</option>
+														<option value="TERM LOAN"
+															th:selected="${report.R101_PURPOSE_VOSTRO1 == 'TERM LOAN'}">
+															TERM LOAN</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_CURRENCY_VOSTRO1 != null ? report.R101_CURRENCY_VOSTRO1 : 'N/A'}"
+														id="R101_CURRENCY_VOSTRO1_TEXT"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
+														readonly />
+													<select class="display-input Show_input" id="R101_CURRENCY_VOSTRO1"
+														name="R101_CURRENCY_VOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left; display:none;">
+														<option value="USD"
+															th:selected="${report.R101_CURRENCY_VOSTRO1 == 'USD'}">USD
+														</option>
+														<option value="EUR"
+															th:selected="${report.R101_CURRENCY_VOSTRO1 == 'EUR'}">EUR
+														</option>
+														<option value="GBP"
+															th:selected="${report.R101_CURRENCY_VOSTRO1 == 'GBP'}">GBP
+														</option>
+														<option value="AUD"
+															th:selected="${report.R101_CURRENCY_VOSTRO1 == 'AUD'}">AUD
+														</option>
+														<option value="INR"
+															th:selected="${report.R101_CURRENCY_VOSTRO1 == 'INR'}">INR
+														</option>
+													</select>
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_AMOUNT_DEMAND_VOSTRO1 != null ? #numbers.formatDecimal(report.R101_AMOUNT_DEMAND_VOSTRO1, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R101_AMOUNT_DEMAND_VOSTRO1"
+														name="R101_AMOUNT_DEMAND_VOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+												<td style="padding-left: 20px; font-weight: bold;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R101_AMOUNT_TIME_VOSTRO1 != null ? #numbers.formatDecimal(report.R101_AMOUNT_TIME_VOSTRO1, 1, 'COMMA', 0, 'POINT') : '0.00'}"
+														id="R101_AMOUNT_TIME_VOSTRO1" name="R101_AMOUNT_TIME_VOSTRO1"
+														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+											</tr>
 
+
+	
 											<!-- ===== Row R100 End ===== -->
 											
 											<tr>

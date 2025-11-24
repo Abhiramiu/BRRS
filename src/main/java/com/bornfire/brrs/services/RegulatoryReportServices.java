@@ -1271,6 +1271,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_NOSVOS":
+			try {
+				repfile = BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		}
 		return repfile;
 	}

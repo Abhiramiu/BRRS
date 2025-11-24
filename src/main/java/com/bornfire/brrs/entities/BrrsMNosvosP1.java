@@ -39,11 +39,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R1_RISK_WEIGHT_NOSTRO")
 	private String R1_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R1_AMOUNT_DEMAND_NOSTRO")
-	private Double R1_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R1_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R1_AMOUNT_TIME_NOSTRO")
-	private Double R1_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R1_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R1_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R1_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R1_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R2_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R2_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R2_TYPE_OF_ACCOUNT_NOSTRO")
@@ -57,11 +57,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R2_RISK_WEIGHT_NOSTRO")
 	private String R2_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R2_AMOUNT_DEMAND_NOSTRO")
-	private Double R2_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R2_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R2_AMOUNT_TIME_NOSTRO")
-	private Double R2_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R2_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R2_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R2_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R2_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R3_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R3_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R3_TYPE_OF_ACCOUNT_NOSTRO")
@@ -75,11 +75,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R3_RISK_WEIGHT_NOSTRO")
 	private String R3_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R3_AMOUNT_DEMAND_NOSTRO")
-	private Double R3_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R3_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R3_AMOUNT_TIME_NOSTRO")
-	private Double R3_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R3_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R3_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R3_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R3_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R4_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R4_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R4_TYPE_OF_ACCOUNT_NOSTRO")
@@ -93,11 +93,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R4_RISK_WEIGHT_NOSTRO")
 	private String R4_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R4_AMOUNT_DEMAND_NOSTRO")
-	private Double R4_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R4_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R4_AMOUNT_TIME_NOSTRO")
-	private Double R4_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R4_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R4_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R4_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R4_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R5_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R5_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R5_TYPE_OF_ACCOUNT_NOSTRO")
@@ -111,11 +111,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R5_RISK_WEIGHT_NOSTRO")
 	private String R5_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R5_AMOUNT_DEMAND_NOSTRO")
-	private Double R5_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R5_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R5_AMOUNT_TIME_NOSTRO")
-	private Double R5_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R5_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R5_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R5_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R5_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R6_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R6_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R6_TYPE_OF_ACCOUNT_NOSTRO")
@@ -129,11 +129,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R6_RISK_WEIGHT_NOSTRO")
 	private String R6_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R6_AMOUNT_DEMAND_NOSTRO")
-	private Double R6_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R6_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R6_AMOUNT_TIME_NOSTRO")
-	private Double R6_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R6_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R6_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R6_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R6_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R7_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R7_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R7_TYPE_OF_ACCOUNT_NOSTRO")
@@ -147,11 +147,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R7_RISK_WEIGHT_NOSTRO")
 	private String R7_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R7_AMOUNT_DEMAND_NOSTRO")
-	private Double R7_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R7_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R7_AMOUNT_TIME_NOSTRO")
-	private Double R7_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R7_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R7_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R7_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R7_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R8_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R8_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R8_TYPE_OF_ACCOUNT_NOSTRO")
@@ -165,11 +165,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R8_RISK_WEIGHT_NOSTRO")
 	private String R8_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R8_AMOUNT_DEMAND_NOSTRO")
-	private Double R8_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R8_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R8_AMOUNT_TIME_NOSTRO")
-	private Double R8_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R8_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R8_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R8_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R8_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R9_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R9_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R9_TYPE_OF_ACCOUNT_NOSTRO")
@@ -183,11 +183,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R9_RISK_WEIGHT_NOSTRO")
 	private String R9_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R9_AMOUNT_DEMAND_NOSTRO")
-	private Double R9_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R9_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R9_AMOUNT_TIME_NOSTRO")
-	private Double R9_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R9_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R9_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R9_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R9_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R10_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R10_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R10_TYPE_OF_ACCOUNT_NOSTRO")
@@ -201,11 +201,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R10_RISK_WEIGHT_NOSTRO")
 	private String R10_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R10_AMOUNT_DEMAND_NOSTRO")
-	private Double R10_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R10_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R10_AMOUNT_TIME_NOSTRO")
-	private Double R10_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R10_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R10_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R10_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R10_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R11_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R11_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R11_TYPE_OF_ACCOUNT_NOSTRO")
@@ -219,11 +219,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R11_RISK_WEIGHT_NOSTRO")
 	private String R11_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R11_AMOUNT_DEMAND_NOSTRO")
-	private Double R11_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R11_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R11_AMOUNT_TIME_NOSTRO")
-	private Double R11_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R11_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R11_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R11_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R11_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R12_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R12_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R12_TYPE_OF_ACCOUNT_NOSTRO")
@@ -237,11 +237,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R12_RISK_WEIGHT_NOSTRO")
 	private String R12_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R12_AMOUNT_DEMAND_NOSTRO")
-	private Double R12_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R12_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R12_AMOUNT_TIME_NOSTRO")
-	private Double R12_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R12_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R12_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R12_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R12_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R13_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R13_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R13_TYPE_OF_ACCOUNT_NOSTRO")
@@ -255,11 +255,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R13_RISK_WEIGHT_NOSTRO")
 	private String R13_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R13_AMOUNT_DEMAND_NOSTRO")
-	private Double R13_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R13_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R13_AMOUNT_TIME_NOSTRO")
-	private Double R13_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R13_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R13_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R13_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R13_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R14_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R14_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R14_TYPE_OF_ACCOUNT_NOSTRO")
@@ -273,11 +273,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R14_RISK_WEIGHT_NOSTRO")
 	private String R14_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R14_AMOUNT_DEMAND_NOSTRO")
-	private Double R14_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R14_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R14_AMOUNT_TIME_NOSTRO")
-	private Double R14_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R14_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R14_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R14_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R14_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R15_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R15_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R15_TYPE_OF_ACCOUNT_NOSTRO")
@@ -291,11 +291,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R15_RISK_WEIGHT_NOSTRO")
 	private String R15_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R15_AMOUNT_DEMAND_NOSTRO")
-	private Double R15_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R15_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R15_AMOUNT_TIME_NOSTRO")
-	private Double R15_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R15_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R15_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R15_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R15_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R16_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R16_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R16_TYPE_OF_ACCOUNT_NOSTRO")
@@ -309,11 +309,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R16_RISK_WEIGHT_NOSTRO")
 	private String R16_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R16_AMOUNT_DEMAND_NOSTRO")
-	private Double R16_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R16_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R16_AMOUNT_TIME_NOSTRO")
-	private Double R16_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R16_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R16_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R16_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R16_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R17_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R17_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R17_TYPE_OF_ACCOUNT_NOSTRO")
@@ -327,11 +327,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R17_RISK_WEIGHT_NOSTRO")
 	private String R17_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R17_AMOUNT_DEMAND_NOSTRO")
-	private Double R17_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R17_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R17_AMOUNT_TIME_NOSTRO")
-	private Double R17_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R17_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R17_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R17_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R17_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R18_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R18_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R18_TYPE_OF_ACCOUNT_NOSTRO")
@@ -345,11 +345,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R18_RISK_WEIGHT_NOSTRO")
 	private String R18_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R18_AMOUNT_DEMAND_NOSTRO")
-	private Double R18_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R18_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R18_AMOUNT_TIME_NOSTRO")
-	private Double R18_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R18_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R18_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R18_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R18_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R19_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R19_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R19_TYPE_OF_ACCOUNT_NOSTRO")
@@ -363,11 +363,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R19_RISK_WEIGHT_NOSTRO")
 	private String R19_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R19_AMOUNT_DEMAND_NOSTRO")
-	private Double R19_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R19_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R19_AMOUNT_TIME_NOSTRO")
-	private Double R19_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R19_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R19_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R19_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R19_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R20_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R20_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R20_TYPE_OF_ACCOUNT_NOSTRO")
@@ -381,11 +381,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R20_RISK_WEIGHT_NOSTRO")
 	private String R20_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R20_AMOUNT_DEMAND_NOSTRO")
-	private Double R20_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R20_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R20_AMOUNT_TIME_NOSTRO")
-	private Double R20_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R20_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R20_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R20_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R20_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R21_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R21_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R21_TYPE_OF_ACCOUNT_NOSTRO")
@@ -399,11 +399,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R21_RISK_WEIGHT_NOSTRO")
 	private String R21_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R21_AMOUNT_DEMAND_NOSTRO")
-	private Double R21_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R21_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R21_AMOUNT_TIME_NOSTRO")
-	private Double R21_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R21_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R21_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R21_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R21_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R22_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R22_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R22_TYPE_OF_ACCOUNT_NOSTRO")
@@ -417,11 +417,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R22_RISK_WEIGHT_NOSTRO")
 	private String R22_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R22_AMOUNT_DEMAND_NOSTRO")
-	private Double R22_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R22_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R22_AMOUNT_TIME_NOSTRO")
-	private Double R22_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R22_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R22_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R22_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R22_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R23_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R23_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R23_TYPE_OF_ACCOUNT_NOSTRO")
@@ -435,11 +435,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R23_RISK_WEIGHT_NOSTRO")
 	private String R23_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R23_AMOUNT_DEMAND_NOSTRO")
-	private Double R23_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R23_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R23_AMOUNT_TIME_NOSTRO")
-	private Double R23_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R23_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R23_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R23_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R23_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R24_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R24_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R24_TYPE_OF_ACCOUNT_NOSTRO")
@@ -453,11 +453,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R24_RISK_WEIGHT_NOSTRO")
 	private String R24_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R24_AMOUNT_DEMAND_NOSTRO")
-	private Double R24_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R24_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R24_AMOUNT_TIME_NOSTRO")
-	private Double R24_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R24_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R24_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R24_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R24_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R25_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R25_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R25_TYPE_OF_ACCOUNT_NOSTRO")
@@ -471,11 +471,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R25_RISK_WEIGHT_NOSTRO")
 	private String R25_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R25_AMOUNT_DEMAND_NOSTRO")
-	private Double R25_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R25_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R25_AMOUNT_TIME_NOSTRO")
-	private Double R25_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R25_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R25_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R25_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R25_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R26_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R26_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R26_TYPE_OF_ACCOUNT_NOSTRO")
@@ -489,11 +489,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R26_RISK_WEIGHT_NOSTRO")
 	private String R26_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R26_AMOUNT_DEMAND_NOSTRO")
-	private Double R26_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R26_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R26_AMOUNT_TIME_NOSTRO")
-	private Double R26_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R26_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R26_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R26_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R26_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R27_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R27_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R27_TYPE_OF_ACCOUNT_NOSTRO")
@@ -507,11 +507,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R27_RISK_WEIGHT_NOSTRO")
 	private String R27_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R27_AMOUNT_DEMAND_NOSTRO")
-	private Double R27_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R27_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R27_AMOUNT_TIME_NOSTRO")
-	private Double R27_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R27_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R27_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R27_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R27_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R28_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R28_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R28_TYPE_OF_ACCOUNT_NOSTRO")
@@ -525,11 +525,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R28_RISK_WEIGHT_NOSTRO")
 	private String R28_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R28_AMOUNT_DEMAND_NOSTRO")
-	private Double R28_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R28_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R28_AMOUNT_TIME_NOSTRO")
-	private Double R28_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R28_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R28_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R28_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R28_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R29_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R29_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R29_TYPE_OF_ACCOUNT_NOSTRO")
@@ -543,11 +543,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R29_RISK_WEIGHT_NOSTRO")
 	private String R29_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R29_AMOUNT_DEMAND_NOSTRO")
-	private Double R29_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R29_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R29_AMOUNT_TIME_NOSTRO")
-	private Double R29_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R29_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R29_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R29_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R29_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R30_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R30_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R30_TYPE_OF_ACCOUNT_NOSTRO")
@@ -561,11 +561,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R30_RISK_WEIGHT_NOSTRO")
 	private String R30_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R30_AMOUNT_DEMAND_NOSTRO")
-	private Double R30_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R30_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R30_AMOUNT_TIME_NOSTRO")
-	private Double R30_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R30_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R30_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R30_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R30_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R31_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R31_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R31_TYPE_OF_ACCOUNT_NOSTRO")
@@ -579,11 +579,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R31_RISK_WEIGHT_NOSTRO")
 	private String R31_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R31_AMOUNT_DEMAND_NOSTRO")
-	private Double R31_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R31_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R31_AMOUNT_TIME_NOSTRO")
-	private Double R31_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R31_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R31_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R31_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R31_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R32_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R32_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R32_TYPE_OF_ACCOUNT_NOSTRO")
@@ -597,11 +597,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R32_RISK_WEIGHT_NOSTRO")
 	private String R32_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R32_AMOUNT_DEMAND_NOSTRO")
-	private Double R32_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R32_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R32_AMOUNT_TIME_NOSTRO")
-	private Double R32_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R32_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R32_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R32_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R32_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R33_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R33_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R33_TYPE_OF_ACCOUNT_NOSTRO")
@@ -615,11 +615,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R33_RISK_WEIGHT_NOSTRO")
 	private String R33_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R33_AMOUNT_DEMAND_NOSTRO")
-	private Double R33_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R33_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R33_AMOUNT_TIME_NOSTRO")
-	private Double R33_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R33_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R33_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R33_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R33_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R34_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R34_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R34_TYPE_OF_ACCOUNT_NOSTRO")
@@ -633,11 +633,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R34_RISK_WEIGHT_NOSTRO")
 	private String R34_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R34_AMOUNT_DEMAND_NOSTRO")
-	private Double R34_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R34_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R34_AMOUNT_TIME_NOSTRO")
-	private Double R34_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R34_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R34_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R34_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R34_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R35_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R35_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R35_TYPE_OF_ACCOUNT_NOSTRO")
@@ -651,11 +651,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R35_RISK_WEIGHT_NOSTRO")
 	private String R35_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R35_AMOUNT_DEMAND_NOSTRO")
-	private Double R35_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R35_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R35_AMOUNT_TIME_NOSTRO")
-	private Double R35_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R35_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R35_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R35_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R35_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R36_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R36_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R36_TYPE_OF_ACCOUNT_NOSTRO")
@@ -669,11 +669,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R36_RISK_WEIGHT_NOSTRO")
 	private String R36_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R36_AMOUNT_DEMAND_NOSTRO")
-	private Double R36_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R36_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R36_AMOUNT_TIME_NOSTRO")
-	private Double R36_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R36_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R36_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R36_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R36_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R37_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R37_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R37_TYPE_OF_ACCOUNT_NOSTRO")
@@ -687,11 +687,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R37_RISK_WEIGHT_NOSTRO")
 	private String R37_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R37_AMOUNT_DEMAND_NOSTRO")
-	private Double R37_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R37_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R37_AMOUNT_TIME_NOSTRO")
-	private Double R37_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R37_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R37_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R37_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R37_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R38_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R38_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R38_TYPE_OF_ACCOUNT_NOSTRO")
@@ -705,11 +705,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R38_RISK_WEIGHT_NOSTRO")
 	private String R38_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R38_AMOUNT_DEMAND_NOSTRO")
-	private Double R38_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R38_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R38_AMOUNT_TIME_NOSTRO")
-	private Double R38_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R38_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R38_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R38_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R38_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R39_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R39_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R39_TYPE_OF_ACCOUNT_NOSTRO")
@@ -723,11 +723,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R39_RISK_WEIGHT_NOSTRO")
 	private String R39_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R39_AMOUNT_DEMAND_NOSTRO")
-	private Double R39_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R39_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R39_AMOUNT_TIME_NOSTRO")
-	private Double R39_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R39_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R39_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R39_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R39_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R40_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R40_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R40_TYPE_OF_ACCOUNT_NOSTRO")
@@ -741,11 +741,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R40_RISK_WEIGHT_NOSTRO")
 	private String R40_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R40_AMOUNT_DEMAND_NOSTRO")
-	private Double R40_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R40_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R40_AMOUNT_TIME_NOSTRO")
-	private Double R40_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R40_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R40_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R40_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R40_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R41_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R41_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R41_TYPE_OF_ACCOUNT_NOSTRO")
@@ -759,11 +759,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R41_RISK_WEIGHT_NOSTRO")
 	private String R41_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R41_AMOUNT_DEMAND_NOSTRO")
-	private Double R41_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R41_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R41_AMOUNT_TIME_NOSTRO")
-	private Double R41_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R41_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R41_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R41_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R41_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R42_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R42_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R42_TYPE_OF_ACCOUNT_NOSTRO")
@@ -777,11 +777,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R42_RISK_WEIGHT_NOSTRO")
 	private String R42_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R42_AMOUNT_DEMAND_NOSTRO")
-	private Double R42_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R42_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R42_AMOUNT_TIME_NOSTRO")
-	private Double R42_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R42_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R42_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R42_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R42_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R43_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R43_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R43_TYPE_OF_ACCOUNT_NOSTRO")
@@ -795,11 +795,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R43_RISK_WEIGHT_NOSTRO")
 	private String R43_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R43_AMOUNT_DEMAND_NOSTRO")
-	private Double R43_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R43_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R43_AMOUNT_TIME_NOSTRO")
-	private Double R43_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R43_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R43_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R43_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R43_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R44_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R44_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R44_TYPE_OF_ACCOUNT_NOSTRO")
@@ -813,11 +813,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R44_RISK_WEIGHT_NOSTRO")
 	private String R44_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R44_AMOUNT_DEMAND_NOSTRO")
-	private Double R44_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R44_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R44_AMOUNT_TIME_NOSTRO")
-	private Double R44_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R44_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R44_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R44_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R44_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R45_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R45_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R45_TYPE_OF_ACCOUNT_NOSTRO")
@@ -831,11 +831,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R45_RISK_WEIGHT_NOSTRO")
 	private String R45_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R45_AMOUNT_DEMAND_NOSTRO")
-	private Double R45_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R45_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R45_AMOUNT_TIME_NOSTRO")
-	private Double R45_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R45_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R45_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R45_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R45_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R46_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R46_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R46_TYPE_OF_ACCOUNT_NOSTRO")
@@ -849,11 +849,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R46_RISK_WEIGHT_NOSTRO")
 	private String R46_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R46_AMOUNT_DEMAND_NOSTRO")
-	private Double R46_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R46_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R46_AMOUNT_TIME_NOSTRO")
-	private Double R46_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R46_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R46_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R46_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R46_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R47_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R47_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R47_TYPE_OF_ACCOUNT_NOSTRO")
@@ -867,11 +867,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R47_RISK_WEIGHT_NOSTRO")
 	private String R47_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R47_AMOUNT_DEMAND_NOSTRO")
-	private Double R47_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R47_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R47_AMOUNT_TIME_NOSTRO")
-	private Double R47_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R47_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R47_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R47_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R47_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R48_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R48_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R48_TYPE_OF_ACCOUNT_NOSTRO")
@@ -885,11 +885,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R48_RISK_WEIGHT_NOSTRO")
 	private String R48_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R48_AMOUNT_DEMAND_NOSTRO")
-	private Double R48_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R48_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R48_AMOUNT_TIME_NOSTRO")
-	private Double R48_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R48_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R48_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R48_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R48_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R49_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R49_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R49_TYPE_OF_ACCOUNT_NOSTRO")
@@ -903,11 +903,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R49_RISK_WEIGHT_NOSTRO")
 	private String R49_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R49_AMOUNT_DEMAND_NOSTRO")
-	private Double R49_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R49_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R49_AMOUNT_TIME_NOSTRO")
-	private Double R49_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R49_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R49_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R49_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R49_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R50_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R50_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R50_TYPE_OF_ACCOUNT_NOSTRO")
@@ -921,11 +921,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R50_RISK_WEIGHT_NOSTRO")
 	private String R50_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R50_AMOUNT_DEMAND_NOSTRO")
-	private Double R50_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R50_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R50_AMOUNT_TIME_NOSTRO")
-	private Double R50_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R50_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R50_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R50_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R50_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R51_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R51_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R51_TYPE_OF_ACCOUNT_NOSTRO")
@@ -939,11 +939,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R51_RISK_WEIGHT_NOSTRO")
 	private String R51_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R51_AMOUNT_DEMAND_NOSTRO")
-	private Double R51_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R51_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R51_AMOUNT_TIME_NOSTRO")
-	private Double R51_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R51_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R51_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R51_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R51_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R52_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R52_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R52_TYPE_OF_ACCOUNT_NOSTRO")
@@ -957,11 +957,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R52_RISK_WEIGHT_NOSTRO")
 	private String R52_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R52_AMOUNT_DEMAND_NOSTRO")
-	private Double R52_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R52_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R52_AMOUNT_TIME_NOSTRO")
-	private Double R52_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R52_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R52_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R52_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R52_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R53_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R53_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R53_TYPE_OF_ACCOUNT_NOSTRO")
@@ -975,11 +975,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R53_RISK_WEIGHT_NOSTRO")
 	private String R53_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R53_AMOUNT_DEMAND_NOSTRO")
-	private Double R53_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R53_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R53_AMOUNT_TIME_NOSTRO")
-	private Double R53_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R53_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R53_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R53_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R53_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R54_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R54_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R54_TYPE_OF_ACCOUNT_NOSTRO")
@@ -993,11 +993,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R54_RISK_WEIGHT_NOSTRO")
 	private String R54_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R54_AMOUNT_DEMAND_NOSTRO")
-	private Double R54_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R54_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R54_AMOUNT_TIME_NOSTRO")
-	private Double R54_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R54_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R54_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R54_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R54_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R55_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R55_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R55_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1011,11 +1011,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R55_RISK_WEIGHT_NOSTRO")
 	private String R55_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R55_AMOUNT_DEMAND_NOSTRO")
-	private Double R55_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R55_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R55_AMOUNT_TIME_NOSTRO")
-	private Double R55_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R55_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R55_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R55_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R55_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R56_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R56_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R56_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1029,11 +1029,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R56_RISK_WEIGHT_NOSTRO")
 	private String R56_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R56_AMOUNT_DEMAND_NOSTRO")
-	private Double R56_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R56_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R56_AMOUNT_TIME_NOSTRO")
-	private Double R56_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R56_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R56_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R56_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R56_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R57_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R57_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R57_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1047,11 +1047,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R57_RISK_WEIGHT_NOSTRO")
 	private String R57_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R57_AMOUNT_DEMAND_NOSTRO")
-	private Double R57_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R57_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R57_AMOUNT_TIME_NOSTRO")
-	private Double R57_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R57_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R57_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R57_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R57_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R58_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R58_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R58_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1065,11 +1065,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R58_RISK_WEIGHT_NOSTRO")
 	private String R58_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R58_AMOUNT_DEMAND_NOSTRO")
-	private Double R58_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R58_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R58_AMOUNT_TIME_NOSTRO")
-	private Double R58_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R58_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R58_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R58_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R58_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R59_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R59_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R59_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1083,11 +1083,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R59_RISK_WEIGHT_NOSTRO")
 	private String R59_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R59_AMOUNT_DEMAND_NOSTRO")
-	private Double R59_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R59_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R59_AMOUNT_TIME_NOSTRO")
-	private Double R59_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R59_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R59_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R59_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R59_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R60_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R60_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R60_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1101,11 +1101,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R60_RISK_WEIGHT_NOSTRO")
 	private String R60_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R60_AMOUNT_DEMAND_NOSTRO")
-	private Double R60_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R60_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R60_AMOUNT_TIME_NOSTRO")
-	private Double R60_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R60_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R60_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R60_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R60_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R61_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R61_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R61_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1119,11 +1119,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R61_RISK_WEIGHT_NOSTRO")
 	private String R61_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R61_AMOUNT_DEMAND_NOSTRO")
-	private Double R61_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R61_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R61_AMOUNT_TIME_NOSTRO")
-	private Double R61_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R61_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R61_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R61_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R61_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R62_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R62_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R62_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1137,11 +1137,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R62_RISK_WEIGHT_NOSTRO")
 	private String R62_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R62_AMOUNT_DEMAND_NOSTRO")
-	private Double R62_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R62_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R62_AMOUNT_TIME_NOSTRO")
-	private Double R62_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R62_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R62_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R62_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R62_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R63_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R63_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R63_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1155,11 +1155,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R63_RISK_WEIGHT_NOSTRO")
 	private String R63_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R63_AMOUNT_DEMAND_NOSTRO")
-	private Double R63_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R63_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R63_AMOUNT_TIME_NOSTRO")
-	private Double R63_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R63_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R63_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R63_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R63_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R64_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R64_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R64_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1173,11 +1173,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R64_RISK_WEIGHT_NOSTRO")
 	private String R64_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R64_AMOUNT_DEMAND_NOSTRO")
-	private Double R64_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R64_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R64_AMOUNT_TIME_NOSTRO")
-	private Double R64_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R64_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R64_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R64_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R64_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R65_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R65_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R65_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1191,11 +1191,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R65_RISK_WEIGHT_NOSTRO")
 	private String R65_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R65_AMOUNT_DEMAND_NOSTRO")
-	private Double R65_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R65_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R65_AMOUNT_TIME_NOSTRO")
-	private Double R65_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R65_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R65_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R65_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R65_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R66_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R66_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R66_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1209,11 +1209,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R66_RISK_WEIGHT_NOSTRO")
 	private String R66_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R66_AMOUNT_DEMAND_NOSTRO")
-	private Double R66_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R66_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R66_AMOUNT_TIME_NOSTRO")
-	private Double R66_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R66_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R66_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R66_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R66_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R67_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R67_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R67_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1227,11 +1227,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R67_RISK_WEIGHT_NOSTRO")
 	private String R67_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R67_AMOUNT_DEMAND_NOSTRO")
-	private Double R67_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R67_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R67_AMOUNT_TIME_NOSTRO")
-	private Double R67_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R67_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R67_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R67_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R67_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R68_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R68_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R68_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1245,11 +1245,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R68_RISK_WEIGHT_NOSTRO")
 	private String R68_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R68_AMOUNT_DEMAND_NOSTRO")
-	private Double R68_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R68_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R68_AMOUNT_TIME_NOSTRO")
-	private Double R68_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R68_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R68_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R68_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R68_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R69_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R69_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R69_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1263,11 +1263,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R69_RISK_WEIGHT_NOSTRO")
 	private String R69_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R69_AMOUNT_DEMAND_NOSTRO")
-	private Double R69_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R69_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R69_AMOUNT_TIME_NOSTRO")
-	private Double R69_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R69_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R69_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R69_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R69_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R70_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R70_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R70_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1281,11 +1281,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R70_RISK_WEIGHT_NOSTRO")
 	private String R70_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R70_AMOUNT_DEMAND_NOSTRO")
-	private Double R70_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R70_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R70_AMOUNT_TIME_NOSTRO")
-	private Double R70_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R70_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R70_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R70_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R70_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R71_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R71_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R71_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1299,11 +1299,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R71_RISK_WEIGHT_NOSTRO")
 	private String R71_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R71_AMOUNT_DEMAND_NOSTRO")
-	private Double R71_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R71_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R71_AMOUNT_TIME_NOSTRO")
-	private Double R71_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R71_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R71_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R71_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R71_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R72_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R72_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R72_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1317,11 +1317,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R72_RISK_WEIGHT_NOSTRO")
 	private String R72_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R72_AMOUNT_DEMAND_NOSTRO")
-	private Double R72_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R72_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R72_AMOUNT_TIME_NOSTRO")
-	private Double R72_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R72_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R72_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R72_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R72_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R73_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R73_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R73_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1335,11 +1335,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R73_RISK_WEIGHT_NOSTRO")
 	private String R73_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R73_AMOUNT_DEMAND_NOSTRO")
-	private Double R73_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R73_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R73_AMOUNT_TIME_NOSTRO")
-	private Double R73_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R73_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R73_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R73_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R73_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R74_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R74_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R74_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1353,11 +1353,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R74_RISK_WEIGHT_NOSTRO")
 	private String R74_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R74_AMOUNT_DEMAND_NOSTRO")
-	private Double R74_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R74_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R74_AMOUNT_TIME_NOSTRO")
-	private Double R74_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R74_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R74_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R74_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R74_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R75_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R75_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R75_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1371,11 +1371,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R75_RISK_WEIGHT_NOSTRO")
 	private String R75_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R75_AMOUNT_DEMAND_NOSTRO")
-	private Double R75_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R75_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R75_AMOUNT_TIME_NOSTRO")
-	private Double R75_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R75_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R75_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R75_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R75_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R76_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R76_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R76_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1389,11 +1389,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R76_RISK_WEIGHT_NOSTRO")
 	private String R76_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R76_AMOUNT_DEMAND_NOSTRO")
-	private Double R76_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R76_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R76_AMOUNT_TIME_NOSTRO")
-	private Double R76_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R76_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R76_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R76_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R76_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R77_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R77_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R77_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1407,11 +1407,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R77_RISK_WEIGHT_NOSTRO")
 	private String R77_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R77_AMOUNT_DEMAND_NOSTRO")
-	private Double R77_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R77_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R77_AMOUNT_TIME_NOSTRO")
-	private Double R77_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R77_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R77_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R77_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R77_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R78_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R78_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R78_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1425,11 +1425,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R78_RISK_WEIGHT_NOSTRO")
 	private String R78_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R78_AMOUNT_DEMAND_NOSTRO")
-	private Double R78_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R78_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R78_AMOUNT_TIME_NOSTRO")
-	private Double R78_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R78_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R78_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R78_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R78_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R79_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R79_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R79_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1443,11 +1443,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R79_RISK_WEIGHT_NOSTRO")
 	private String R79_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R79_AMOUNT_DEMAND_NOSTRO")
-	private Double R79_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R79_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R79_AMOUNT_TIME_NOSTRO")
-	private Double R79_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R79_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R79_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R79_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R79_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R80_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R80_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R80_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1461,11 +1461,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R80_RISK_WEIGHT_NOSTRO")
 	private String R80_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R80_AMOUNT_DEMAND_NOSTRO")
-	private Double R80_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R80_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R80_AMOUNT_TIME_NOSTRO")
-	private Double R80_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R80_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R80_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R80_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R80_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R81_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R81_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R81_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1479,11 +1479,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R81_RISK_WEIGHT_NOSTRO")
 	private String R81_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R81_AMOUNT_DEMAND_NOSTRO")
-	private Double R81_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R81_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R81_AMOUNT_TIME_NOSTRO")
-	private Double R81_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R81_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R81_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R81_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R81_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R82_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R82_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R82_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1497,11 +1497,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R82_RISK_WEIGHT_NOSTRO")
 	private String R82_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R82_AMOUNT_DEMAND_NOSTRO")
-	private Double R82_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R82_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R82_AMOUNT_TIME_NOSTRO")
-	private Double R82_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R82_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R82_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R82_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R82_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R83_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R83_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R83_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1515,11 +1515,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R83_RISK_WEIGHT_NOSTRO")
 	private String R83_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R83_AMOUNT_DEMAND_NOSTRO")
-	private Double R83_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R83_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R83_AMOUNT_TIME_NOSTRO")
-	private Double R83_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R83_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R83_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R83_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R83_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R84_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R84_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R84_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1533,11 +1533,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R84_RISK_WEIGHT_NOSTRO")
 	private String R84_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R84_AMOUNT_DEMAND_NOSTRO")
-	private Double R84_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R84_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R84_AMOUNT_TIME_NOSTRO")
-	private Double R84_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R84_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R84_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R84_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R84_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R85_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R85_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R85_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1551,11 +1551,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R85_RISK_WEIGHT_NOSTRO")
 	private String R85_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R85_AMOUNT_DEMAND_NOSTRO")
-	private Double R85_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R85_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R85_AMOUNT_TIME_NOSTRO")
-	private Double R85_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R85_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R85_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R85_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R85_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R86_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R86_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R86_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1569,11 +1569,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R86_RISK_WEIGHT_NOSTRO")
 	private String R86_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R86_AMOUNT_DEMAND_NOSTRO")
-	private Double R86_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R86_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R86_AMOUNT_TIME_NOSTRO")
-	private Double R86_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R86_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R86_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R86_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R86_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R87_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R87_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R87_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1587,11 +1587,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R87_RISK_WEIGHT_NOSTRO")
 	private String R87_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R87_AMOUNT_DEMAND_NOSTRO")
-	private Double R87_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R87_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R87_AMOUNT_TIME_NOSTRO")
-	private Double R87_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R87_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R87_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R87_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R87_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R88_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R88_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R88_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1605,11 +1605,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R88_RISK_WEIGHT_NOSTRO")
 	private String R88_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R88_AMOUNT_DEMAND_NOSTRO")
-	private Double R88_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R88_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R88_AMOUNT_TIME_NOSTRO")
-	private Double R88_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R88_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R88_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R88_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R88_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R89_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R89_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R89_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1623,11 +1623,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R89_RISK_WEIGHT_NOSTRO")
 	private String R89_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R89_AMOUNT_DEMAND_NOSTRO")
-	private Double R89_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R89_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R89_AMOUNT_TIME_NOSTRO")
-	private Double R89_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R89_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R89_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R89_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R89_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R90_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R90_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R90_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1641,11 +1641,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R90_RISK_WEIGHT_NOSTRO")
 	private String R90_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R90_AMOUNT_DEMAND_NOSTRO")
-	private Double R90_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R90_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R90_AMOUNT_TIME_NOSTRO")
-	private Double R90_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R90_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R90_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R90_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R90_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R91_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R91_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R91_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1659,11 +1659,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R91_RISK_WEIGHT_NOSTRO")
 	private String R91_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R91_AMOUNT_DEMAND_NOSTRO")
-	private Double R91_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R91_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R91_AMOUNT_TIME_NOSTRO")
-	private Double R91_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R91_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R91_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R91_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R91_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R92_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R92_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R92_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1677,11 +1677,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R92_RISK_WEIGHT_NOSTRO")
 	private String R92_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R92_AMOUNT_DEMAND_NOSTRO")
-	private Double R92_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R92_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R92_AMOUNT_TIME_NOSTRO")
-	private Double R92_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R92_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R92_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R92_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R92_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R93_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R93_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R93_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1695,11 +1695,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R93_RISK_WEIGHT_NOSTRO")
 	private String R93_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R93_AMOUNT_DEMAND_NOSTRO")
-	private Double R93_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R93_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R93_AMOUNT_TIME_NOSTRO")
-	private Double R93_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R93_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R93_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R93_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R93_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R94_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R94_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R94_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1713,11 +1713,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R94_RISK_WEIGHT_NOSTRO")
 	private String R94_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R94_AMOUNT_DEMAND_NOSTRO")
-	private Double R94_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R94_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R94_AMOUNT_TIME_NOSTRO")
-	private Double R94_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R94_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R94_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R94_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R94_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R95_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R95_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R95_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1731,11 +1731,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R95_RISK_WEIGHT_NOSTRO")
 	private String R95_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R95_AMOUNT_DEMAND_NOSTRO")
-	private Double R95_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R95_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R95_AMOUNT_TIME_NOSTRO")
-	private Double R95_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R95_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R95_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R95_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R95_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R96_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R96_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R96_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1749,11 +1749,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R96_RISK_WEIGHT_NOSTRO")
 	private String R96_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R96_AMOUNT_DEMAND_NOSTRO")
-	private Double R96_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R96_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R96_AMOUNT_TIME_NOSTRO")
-	private Double R96_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R96_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R96_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R96_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R96_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R97_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R97_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R97_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1767,11 +1767,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R97_RISK_WEIGHT_NOSTRO")
 	private String R97_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R97_AMOUNT_DEMAND_NOSTRO")
-	private Double R97_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R97_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R97_AMOUNT_TIME_NOSTRO")
-	private Double R97_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R97_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R97_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R97_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R97_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R98_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R98_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R98_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1785,11 +1785,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R98_RISK_WEIGHT_NOSTRO")
 	private String R98_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R98_AMOUNT_DEMAND_NOSTRO")
-	private Double R98_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R98_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R98_AMOUNT_TIME_NOSTRO")
-	private Double R98_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R98_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R98_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R98_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R98_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R99_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R99_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R99_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1803,11 +1803,11 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R99_RISK_WEIGHT_NOSTRO")
 	private String R99_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R99_AMOUNT_DEMAND_NOSTRO")
-	private Double R99_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R99_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R99_AMOUNT_TIME_NOSTRO")
-	private Double R99_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R99_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R99_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R99_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R99_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R100_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
 	private String R100_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
 	@Column(name = "R100_TYPE_OF_ACCOUNT_NOSTRO")
@@ -1821,40 +1821,141 @@ public class BrrsMNosvosP1 {
 	@Column(name = "R100_RISK_WEIGHT_NOSTRO")
 	private String R100_RISK_WEIGHT_NOSTRO;
 	@Column(name = "R100_AMOUNT_DEMAND_NOSTRO")
-	private Double R100_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R100_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R100_AMOUNT_TIME_NOSTRO")
-	private Double R100_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R100_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R100_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R100_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R100_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	@Column(name = "R101_TOTAL_AMOUNT_DEMAND_NOSTRO")
-	private Double R101_TOTAL_AMOUNT_DEMAND_NOSTRO;
+	private BigDecimal R101_TOTAL_AMOUNT_DEMAND_NOSTRO;
 	@Column(name = "R101_TOTAL_AMOUNT_TIME_NOSTRO")
-	private Double R101_TOTAL_AMOUNT_TIME_NOSTRO;
+	private BigDecimal R101_TOTAL_AMOUNT_TIME_NOSTRO;
 	@Column(name = "R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO")
-	private Double R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	private BigDecimal R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	
+	@Column(name = "R101_NAME_OF_BANK_AND_COUNTRY_NOSTRO")
+	private String R101_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
+
+	@Column(name = "R101_TYPE_OF_ACCOUNT_NOSTRO")
+	private String R101_TYPE_OF_ACCOUNT_NOSTRO;
+
+	@Column(name = "R101_PURPOSE_NOSTRO")
+	private String R101_PURPOSE_NOSTRO;
+
+	@Column(name = "R101_CURRENCY_NOSTRO")
+	private String R101_CURRENCY_NOSTRO;
+
+	@Column(name = "R101_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO")
+	private String R101_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO;
+
+	@Column(name = "R101_RISK_WEIGHT_NOSTRO")
+	private String R101_RISK_WEIGHT_NOSTRO;
+
+	@Column(name = "R101_AMOUNT_DEMAND_NOSTRO")
+	private BigDecimal R101_AMOUNT_DEMAND_NOSTRO;
+
+	@Column(name = "R101_AMOUNT_TIME_NOSTRO")
+	private BigDecimal R101_AMOUNT_TIME_NOSTRO;
+
+	@Column(name = "R101_RISK_WEIGHTED_AMOUNT_NOSTRO")
+	private BigDecimal R101_RISK_WEIGHTED_AMOUNT_NOSTRO;
 
 	
-	public Double getR101_TOTAL_AMOUNT_DEMAND_NOSTRO() {
+
+	
+	public String getR101_NAME_OF_BANK_AND_COUNTRY_NOSTRO() {
+		return R101_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
+	}
+
+	public String getR101_TYPE_OF_ACCOUNT_NOSTRO() {
+		return R101_TYPE_OF_ACCOUNT_NOSTRO;
+	}
+
+	public String getR101_PURPOSE_NOSTRO() {
+		return R101_PURPOSE_NOSTRO;
+	}
+
+	public String getR101_CURRENCY_NOSTRO() {
+		return R101_CURRENCY_NOSTRO;
+	}
+
+	public String getR101_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO() {
+		return R101_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO;
+	}
+
+	public String getR101_RISK_WEIGHT_NOSTRO() {
+		return R101_RISK_WEIGHT_NOSTRO;
+	}
+
+	public BigDecimal getR101_AMOUNT_DEMAND_NOSTRO() {
+		return R101_AMOUNT_DEMAND_NOSTRO;
+	}
+
+	public BigDecimal getR101_AMOUNT_TIME_NOSTRO() {
+		return R101_AMOUNT_TIME_NOSTRO;
+	}
+
+	public BigDecimal getR101_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+		return R101_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	}
+
+	public void setR101_NAME_OF_BANK_AND_COUNTRY_NOSTRO(String r101_NAME_OF_BANK_AND_COUNTRY_NOSTRO) {
+		R101_NAME_OF_BANK_AND_COUNTRY_NOSTRO = r101_NAME_OF_BANK_AND_COUNTRY_NOSTRO;
+	}
+
+	public void setR101_TYPE_OF_ACCOUNT_NOSTRO(String r101_TYPE_OF_ACCOUNT_NOSTRO) {
+		R101_TYPE_OF_ACCOUNT_NOSTRO = r101_TYPE_OF_ACCOUNT_NOSTRO;
+	}
+
+	public void setR101_PURPOSE_NOSTRO(String r101_PURPOSE_NOSTRO) {
+		R101_PURPOSE_NOSTRO = r101_PURPOSE_NOSTRO;
+	}
+
+	public void setR101_CURRENCY_NOSTRO(String r101_CURRENCY_NOSTRO) {
+		R101_CURRENCY_NOSTRO = r101_CURRENCY_NOSTRO;
+	}
+
+	public void setR101_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO(String r101_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO) {
+		R101_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO = r101_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO;
+	}
+
+	public void setR101_RISK_WEIGHT_NOSTRO(String r101_RISK_WEIGHT_NOSTRO) {
+		R101_RISK_WEIGHT_NOSTRO = r101_RISK_WEIGHT_NOSTRO;
+	}
+
+	public void setR101_AMOUNT_DEMAND_NOSTRO(BigDecimal r101_AMOUNT_DEMAND_NOSTRO) {
+		R101_AMOUNT_DEMAND_NOSTRO = r101_AMOUNT_DEMAND_NOSTRO;
+	}
+
+	public void setR101_AMOUNT_TIME_NOSTRO(BigDecimal r101_AMOUNT_TIME_NOSTRO) {
+		R101_AMOUNT_TIME_NOSTRO = r101_AMOUNT_TIME_NOSTRO;
+	}
+
+	public void setR101_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r101_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+		R101_RISK_WEIGHTED_AMOUNT_NOSTRO = r101_RISK_WEIGHTED_AMOUNT_NOSTRO;
+	}
+
+	public BigDecimal getR101_TOTAL_AMOUNT_DEMAND_NOSTRO() {
 		return R101_TOTAL_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR101_TOTAL_AMOUNT_DEMAND_NOSTRO(Double r101_TOTAL_AMOUNT_DEMAND_NOSTRO) {
+	public void setR101_TOTAL_AMOUNT_DEMAND_NOSTRO(BigDecimal r101_TOTAL_AMOUNT_DEMAND_NOSTRO) {
 		R101_TOTAL_AMOUNT_DEMAND_NOSTRO = r101_TOTAL_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR101_TOTAL_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR101_TOTAL_AMOUNT_TIME_NOSTRO() {
 		return R101_TOTAL_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR101_TOTAL_AMOUNT_TIME_NOSTRO(Double r101_TOTAL_AMOUNT_TIME_NOSTRO) {
+	public void setR101_TOTAL_AMOUNT_TIME_NOSTRO(BigDecimal r101_TOTAL_AMOUNT_TIME_NOSTRO) {
 		R101_TOTAL_AMOUNT_TIME_NOSTRO = r101_TOTAL_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO = r101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -1970,27 +2071,27 @@ public class BrrsMNosvosP1 {
 		R1_RISK_WEIGHT_NOSTRO = r1_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR1_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR1_AMOUNT_DEMAND_NOSTRO() {
 		return R1_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR1_AMOUNT_DEMAND_NOSTRO(Double r1_AMOUNT_DEMAND_NOSTRO) {
+	public void setR1_AMOUNT_DEMAND_NOSTRO(BigDecimal r1_AMOUNT_DEMAND_NOSTRO) {
 		R1_AMOUNT_DEMAND_NOSTRO = r1_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR1_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR1_AMOUNT_TIME_NOSTRO() {
 		return R1_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR1_AMOUNT_TIME_NOSTRO(Double r1_AMOUNT_TIME_NOSTRO) {
+	public void setR1_AMOUNT_TIME_NOSTRO(BigDecimal r1_AMOUNT_TIME_NOSTRO) {
 		R1_AMOUNT_TIME_NOSTRO = r1_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR1_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR1_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R1_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR1_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r1_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR1_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r1_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R1_RISK_WEIGHTED_AMOUNT_NOSTRO = r1_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2042,27 +2143,27 @@ public class BrrsMNosvosP1 {
 		R2_RISK_WEIGHT_NOSTRO = r2_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR2_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR2_AMOUNT_DEMAND_NOSTRO() {
 		return R2_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR2_AMOUNT_DEMAND_NOSTRO(Double r2_AMOUNT_DEMAND_NOSTRO) {
+	public void setR2_AMOUNT_DEMAND_NOSTRO(BigDecimal r2_AMOUNT_DEMAND_NOSTRO) {
 		R2_AMOUNT_DEMAND_NOSTRO = r2_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR2_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR2_AMOUNT_TIME_NOSTRO() {
 		return R2_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR2_AMOUNT_TIME_NOSTRO(Double r2_AMOUNT_TIME_NOSTRO) {
+	public void setR2_AMOUNT_TIME_NOSTRO(BigDecimal r2_AMOUNT_TIME_NOSTRO) {
 		R2_AMOUNT_TIME_NOSTRO = r2_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR2_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR2_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R2_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR2_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r2_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR2_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r2_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R2_RISK_WEIGHTED_AMOUNT_NOSTRO = r2_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2114,27 +2215,27 @@ public class BrrsMNosvosP1 {
 		R3_RISK_WEIGHT_NOSTRO = r3_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR3_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR3_AMOUNT_DEMAND_NOSTRO() {
 		return R3_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR3_AMOUNT_DEMAND_NOSTRO(Double r3_AMOUNT_DEMAND_NOSTRO) {
+	public void setR3_AMOUNT_DEMAND_NOSTRO(BigDecimal r3_AMOUNT_DEMAND_NOSTRO) {
 		R3_AMOUNT_DEMAND_NOSTRO = r3_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR3_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR3_AMOUNT_TIME_NOSTRO() {
 		return R3_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR3_AMOUNT_TIME_NOSTRO(Double r3_AMOUNT_TIME_NOSTRO) {
+	public void setR3_AMOUNT_TIME_NOSTRO(BigDecimal r3_AMOUNT_TIME_NOSTRO) {
 		R3_AMOUNT_TIME_NOSTRO = r3_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR3_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR3_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R3_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR3_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r3_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR3_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r3_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R3_RISK_WEIGHTED_AMOUNT_NOSTRO = r3_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2186,27 +2287,27 @@ public class BrrsMNosvosP1 {
 		R4_RISK_WEIGHT_NOSTRO = r4_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR4_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR4_AMOUNT_DEMAND_NOSTRO() {
 		return R4_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR4_AMOUNT_DEMAND_NOSTRO(Double r4_AMOUNT_DEMAND_NOSTRO) {
+	public void setR4_AMOUNT_DEMAND_NOSTRO(BigDecimal r4_AMOUNT_DEMAND_NOSTRO) {
 		R4_AMOUNT_DEMAND_NOSTRO = r4_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR4_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR4_AMOUNT_TIME_NOSTRO() {
 		return R4_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR4_AMOUNT_TIME_NOSTRO(Double r4_AMOUNT_TIME_NOSTRO) {
+	public void setR4_AMOUNT_TIME_NOSTRO(BigDecimal r4_AMOUNT_TIME_NOSTRO) {
 		R4_AMOUNT_TIME_NOSTRO = r4_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR4_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR4_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R4_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR4_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r4_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR4_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r4_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R4_RISK_WEIGHTED_AMOUNT_NOSTRO = r4_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2258,27 +2359,27 @@ public class BrrsMNosvosP1 {
 		R5_RISK_WEIGHT_NOSTRO = r5_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR5_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR5_AMOUNT_DEMAND_NOSTRO() {
 		return R5_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR5_AMOUNT_DEMAND_NOSTRO(Double r5_AMOUNT_DEMAND_NOSTRO) {
+	public void setR5_AMOUNT_DEMAND_NOSTRO(BigDecimal r5_AMOUNT_DEMAND_NOSTRO) {
 		R5_AMOUNT_DEMAND_NOSTRO = r5_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR5_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR5_AMOUNT_TIME_NOSTRO() {
 		return R5_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR5_AMOUNT_TIME_NOSTRO(Double r5_AMOUNT_TIME_NOSTRO) {
+	public void setR5_AMOUNT_TIME_NOSTRO(BigDecimal r5_AMOUNT_TIME_NOSTRO) {
 		R5_AMOUNT_TIME_NOSTRO = r5_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR5_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR5_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R5_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR5_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r5_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR5_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r5_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R5_RISK_WEIGHTED_AMOUNT_NOSTRO = r5_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2330,27 +2431,27 @@ public class BrrsMNosvosP1 {
 		R6_RISK_WEIGHT_NOSTRO = r6_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR6_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR6_AMOUNT_DEMAND_NOSTRO() {
 		return R6_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR6_AMOUNT_DEMAND_NOSTRO(Double r6_AMOUNT_DEMAND_NOSTRO) {
+	public void setR6_AMOUNT_DEMAND_NOSTRO(BigDecimal r6_AMOUNT_DEMAND_NOSTRO) {
 		R6_AMOUNT_DEMAND_NOSTRO = r6_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR6_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR6_AMOUNT_TIME_NOSTRO() {
 		return R6_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR6_AMOUNT_TIME_NOSTRO(Double r6_AMOUNT_TIME_NOSTRO) {
+	public void setR6_AMOUNT_TIME_NOSTRO(BigDecimal r6_AMOUNT_TIME_NOSTRO) {
 		R6_AMOUNT_TIME_NOSTRO = r6_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR6_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR6_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R6_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR6_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r6_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR6_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r6_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R6_RISK_WEIGHTED_AMOUNT_NOSTRO = r6_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2402,27 +2503,27 @@ public class BrrsMNosvosP1 {
 		R7_RISK_WEIGHT_NOSTRO = r7_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR7_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR7_AMOUNT_DEMAND_NOSTRO() {
 		return R7_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR7_AMOUNT_DEMAND_NOSTRO(Double r7_AMOUNT_DEMAND_NOSTRO) {
+	public void setR7_AMOUNT_DEMAND_NOSTRO(BigDecimal r7_AMOUNT_DEMAND_NOSTRO) {
 		R7_AMOUNT_DEMAND_NOSTRO = r7_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR7_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR7_AMOUNT_TIME_NOSTRO() {
 		return R7_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR7_AMOUNT_TIME_NOSTRO(Double r7_AMOUNT_TIME_NOSTRO) {
+	public void setR7_AMOUNT_TIME_NOSTRO(BigDecimal r7_AMOUNT_TIME_NOSTRO) {
 		R7_AMOUNT_TIME_NOSTRO = r7_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR7_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR7_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R7_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR7_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r7_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR7_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r7_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R7_RISK_WEIGHTED_AMOUNT_NOSTRO = r7_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2474,27 +2575,27 @@ public class BrrsMNosvosP1 {
 		R8_RISK_WEIGHT_NOSTRO = r8_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR8_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR8_AMOUNT_DEMAND_NOSTRO() {
 		return R8_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR8_AMOUNT_DEMAND_NOSTRO(Double r8_AMOUNT_DEMAND_NOSTRO) {
+	public void setR8_AMOUNT_DEMAND_NOSTRO(BigDecimal r8_AMOUNT_DEMAND_NOSTRO) {
 		R8_AMOUNT_DEMAND_NOSTRO = r8_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR8_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR8_AMOUNT_TIME_NOSTRO() {
 		return R8_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR8_AMOUNT_TIME_NOSTRO(Double r8_AMOUNT_TIME_NOSTRO) {
+	public void setR8_AMOUNT_TIME_NOSTRO(BigDecimal r8_AMOUNT_TIME_NOSTRO) {
 		R8_AMOUNT_TIME_NOSTRO = r8_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR8_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR8_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R8_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR8_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r8_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR8_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r8_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R8_RISK_WEIGHTED_AMOUNT_NOSTRO = r8_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2546,27 +2647,27 @@ public class BrrsMNosvosP1 {
 		R9_RISK_WEIGHT_NOSTRO = r9_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR9_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR9_AMOUNT_DEMAND_NOSTRO() {
 		return R9_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR9_AMOUNT_DEMAND_NOSTRO(Double r9_AMOUNT_DEMAND_NOSTRO) {
+	public void setR9_AMOUNT_DEMAND_NOSTRO(BigDecimal r9_AMOUNT_DEMAND_NOSTRO) {
 		R9_AMOUNT_DEMAND_NOSTRO = r9_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR9_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR9_AMOUNT_TIME_NOSTRO() {
 		return R9_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR9_AMOUNT_TIME_NOSTRO(Double r9_AMOUNT_TIME_NOSTRO) {
+	public void setR9_AMOUNT_TIME_NOSTRO(BigDecimal r9_AMOUNT_TIME_NOSTRO) {
 		R9_AMOUNT_TIME_NOSTRO = r9_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR9_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR9_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R9_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR9_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r9_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR9_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r9_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R9_RISK_WEIGHTED_AMOUNT_NOSTRO = r9_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2618,27 +2719,27 @@ public class BrrsMNosvosP1 {
 		R10_RISK_WEIGHT_NOSTRO = r10_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR10_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR10_AMOUNT_DEMAND_NOSTRO() {
 		return R10_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR10_AMOUNT_DEMAND_NOSTRO(Double r10_AMOUNT_DEMAND_NOSTRO) {
+	public void setR10_AMOUNT_DEMAND_NOSTRO(BigDecimal r10_AMOUNT_DEMAND_NOSTRO) {
 		R10_AMOUNT_DEMAND_NOSTRO = r10_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR10_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR10_AMOUNT_TIME_NOSTRO() {
 		return R10_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR10_AMOUNT_TIME_NOSTRO(Double r10_AMOUNT_TIME_NOSTRO) {
+	public void setR10_AMOUNT_TIME_NOSTRO(BigDecimal r10_AMOUNT_TIME_NOSTRO) {
 		R10_AMOUNT_TIME_NOSTRO = r10_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR10_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR10_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R10_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR10_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r10_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR10_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r10_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R10_RISK_WEIGHTED_AMOUNT_NOSTRO = r10_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2690,27 +2791,27 @@ public class BrrsMNosvosP1 {
 		R11_RISK_WEIGHT_NOSTRO = r11_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR11_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR11_AMOUNT_DEMAND_NOSTRO() {
 		return R11_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR11_AMOUNT_DEMAND_NOSTRO(Double r11_AMOUNT_DEMAND_NOSTRO) {
+	public void setR11_AMOUNT_DEMAND_NOSTRO(BigDecimal r11_AMOUNT_DEMAND_NOSTRO) {
 		R11_AMOUNT_DEMAND_NOSTRO = r11_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR11_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR11_AMOUNT_TIME_NOSTRO() {
 		return R11_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR11_AMOUNT_TIME_NOSTRO(Double r11_AMOUNT_TIME_NOSTRO) {
+	public void setR11_AMOUNT_TIME_NOSTRO(BigDecimal r11_AMOUNT_TIME_NOSTRO) {
 		R11_AMOUNT_TIME_NOSTRO = r11_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR11_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR11_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R11_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR11_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r11_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR11_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r11_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R11_RISK_WEIGHTED_AMOUNT_NOSTRO = r11_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2762,27 +2863,27 @@ public class BrrsMNosvosP1 {
 		R12_RISK_WEIGHT_NOSTRO = r12_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR12_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR12_AMOUNT_DEMAND_NOSTRO() {
 		return R12_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR12_AMOUNT_DEMAND_NOSTRO(Double r12_AMOUNT_DEMAND_NOSTRO) {
+	public void setR12_AMOUNT_DEMAND_NOSTRO(BigDecimal r12_AMOUNT_DEMAND_NOSTRO) {
 		R12_AMOUNT_DEMAND_NOSTRO = r12_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR12_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR12_AMOUNT_TIME_NOSTRO() {
 		return R12_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR12_AMOUNT_TIME_NOSTRO(Double r12_AMOUNT_TIME_NOSTRO) {
+	public void setR12_AMOUNT_TIME_NOSTRO(BigDecimal r12_AMOUNT_TIME_NOSTRO) {
 		R12_AMOUNT_TIME_NOSTRO = r12_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR12_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR12_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R12_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR12_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r12_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR12_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r12_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R12_RISK_WEIGHTED_AMOUNT_NOSTRO = r12_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2834,27 +2935,27 @@ public class BrrsMNosvosP1 {
 		R13_RISK_WEIGHT_NOSTRO = r13_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR13_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR13_AMOUNT_DEMAND_NOSTRO() {
 		return R13_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR13_AMOUNT_DEMAND_NOSTRO(Double r13_AMOUNT_DEMAND_NOSTRO) {
+	public void setR13_AMOUNT_DEMAND_NOSTRO(BigDecimal r13_AMOUNT_DEMAND_NOSTRO) {
 		R13_AMOUNT_DEMAND_NOSTRO = r13_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR13_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR13_AMOUNT_TIME_NOSTRO() {
 		return R13_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR13_AMOUNT_TIME_NOSTRO(Double r13_AMOUNT_TIME_NOSTRO) {
+	public void setR13_AMOUNT_TIME_NOSTRO(BigDecimal r13_AMOUNT_TIME_NOSTRO) {
 		R13_AMOUNT_TIME_NOSTRO = r13_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR13_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR13_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R13_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR13_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r13_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR13_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r13_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R13_RISK_WEIGHTED_AMOUNT_NOSTRO = r13_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2906,27 +3007,27 @@ public class BrrsMNosvosP1 {
 		R14_RISK_WEIGHT_NOSTRO = r14_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR14_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR14_AMOUNT_DEMAND_NOSTRO() {
 		return R14_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR14_AMOUNT_DEMAND_NOSTRO(Double r14_AMOUNT_DEMAND_NOSTRO) {
+	public void setR14_AMOUNT_DEMAND_NOSTRO(BigDecimal r14_AMOUNT_DEMAND_NOSTRO) {
 		R14_AMOUNT_DEMAND_NOSTRO = r14_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR14_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR14_AMOUNT_TIME_NOSTRO() {
 		return R14_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR14_AMOUNT_TIME_NOSTRO(Double r14_AMOUNT_TIME_NOSTRO) {
+	public void setR14_AMOUNT_TIME_NOSTRO(BigDecimal r14_AMOUNT_TIME_NOSTRO) {
 		R14_AMOUNT_TIME_NOSTRO = r14_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR14_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR14_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R14_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR14_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r14_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR14_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r14_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R14_RISK_WEIGHTED_AMOUNT_NOSTRO = r14_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -2978,27 +3079,27 @@ public class BrrsMNosvosP1 {
 		R15_RISK_WEIGHT_NOSTRO = r15_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR15_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR15_AMOUNT_DEMAND_NOSTRO() {
 		return R15_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR15_AMOUNT_DEMAND_NOSTRO(Double r15_AMOUNT_DEMAND_NOSTRO) {
+	public void setR15_AMOUNT_DEMAND_NOSTRO(BigDecimal r15_AMOUNT_DEMAND_NOSTRO) {
 		R15_AMOUNT_DEMAND_NOSTRO = r15_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR15_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR15_AMOUNT_TIME_NOSTRO() {
 		return R15_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR15_AMOUNT_TIME_NOSTRO(Double r15_AMOUNT_TIME_NOSTRO) {
+	public void setR15_AMOUNT_TIME_NOSTRO(BigDecimal r15_AMOUNT_TIME_NOSTRO) {
 		R15_AMOUNT_TIME_NOSTRO = r15_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR15_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR15_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R15_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR15_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r15_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR15_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r15_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R15_RISK_WEIGHTED_AMOUNT_NOSTRO = r15_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3050,27 +3151,27 @@ public class BrrsMNosvosP1 {
 		R16_RISK_WEIGHT_NOSTRO = r16_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR16_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR16_AMOUNT_DEMAND_NOSTRO() {
 		return R16_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR16_AMOUNT_DEMAND_NOSTRO(Double r16_AMOUNT_DEMAND_NOSTRO) {
+	public void setR16_AMOUNT_DEMAND_NOSTRO(BigDecimal r16_AMOUNT_DEMAND_NOSTRO) {
 		R16_AMOUNT_DEMAND_NOSTRO = r16_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR16_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR16_AMOUNT_TIME_NOSTRO() {
 		return R16_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR16_AMOUNT_TIME_NOSTRO(Double r16_AMOUNT_TIME_NOSTRO) {
+	public void setR16_AMOUNT_TIME_NOSTRO(BigDecimal r16_AMOUNT_TIME_NOSTRO) {
 		R16_AMOUNT_TIME_NOSTRO = r16_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR16_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR16_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R16_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR16_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r16_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR16_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r16_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R16_RISK_WEIGHTED_AMOUNT_NOSTRO = r16_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3122,27 +3223,27 @@ public class BrrsMNosvosP1 {
 		R17_RISK_WEIGHT_NOSTRO = r17_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR17_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR17_AMOUNT_DEMAND_NOSTRO() {
 		return R17_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR17_AMOUNT_DEMAND_NOSTRO(Double r17_AMOUNT_DEMAND_NOSTRO) {
+	public void setR17_AMOUNT_DEMAND_NOSTRO(BigDecimal r17_AMOUNT_DEMAND_NOSTRO) {
 		R17_AMOUNT_DEMAND_NOSTRO = r17_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR17_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR17_AMOUNT_TIME_NOSTRO() {
 		return R17_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR17_AMOUNT_TIME_NOSTRO(Double r17_AMOUNT_TIME_NOSTRO) {
+	public void setR17_AMOUNT_TIME_NOSTRO(BigDecimal r17_AMOUNT_TIME_NOSTRO) {
 		R17_AMOUNT_TIME_NOSTRO = r17_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR17_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR17_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R17_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR17_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r17_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR17_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r17_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R17_RISK_WEIGHTED_AMOUNT_NOSTRO = r17_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3194,27 +3295,27 @@ public class BrrsMNosvosP1 {
 		R18_RISK_WEIGHT_NOSTRO = r18_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR18_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR18_AMOUNT_DEMAND_NOSTRO() {
 		return R18_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR18_AMOUNT_DEMAND_NOSTRO(Double r18_AMOUNT_DEMAND_NOSTRO) {
+	public void setR18_AMOUNT_DEMAND_NOSTRO(BigDecimal r18_AMOUNT_DEMAND_NOSTRO) {
 		R18_AMOUNT_DEMAND_NOSTRO = r18_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR18_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR18_AMOUNT_TIME_NOSTRO() {
 		return R18_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR18_AMOUNT_TIME_NOSTRO(Double r18_AMOUNT_TIME_NOSTRO) {
+	public void setR18_AMOUNT_TIME_NOSTRO(BigDecimal r18_AMOUNT_TIME_NOSTRO) {
 		R18_AMOUNT_TIME_NOSTRO = r18_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR18_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR18_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R18_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR18_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r18_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR18_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r18_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R18_RISK_WEIGHTED_AMOUNT_NOSTRO = r18_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3266,27 +3367,27 @@ public class BrrsMNosvosP1 {
 		R19_RISK_WEIGHT_NOSTRO = r19_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR19_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR19_AMOUNT_DEMAND_NOSTRO() {
 		return R19_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR19_AMOUNT_DEMAND_NOSTRO(Double r19_AMOUNT_DEMAND_NOSTRO) {
+	public void setR19_AMOUNT_DEMAND_NOSTRO(BigDecimal r19_AMOUNT_DEMAND_NOSTRO) {
 		R19_AMOUNT_DEMAND_NOSTRO = r19_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR19_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR19_AMOUNT_TIME_NOSTRO() {
 		return R19_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR19_AMOUNT_TIME_NOSTRO(Double r19_AMOUNT_TIME_NOSTRO) {
+	public void setR19_AMOUNT_TIME_NOSTRO(BigDecimal r19_AMOUNT_TIME_NOSTRO) {
 		R19_AMOUNT_TIME_NOSTRO = r19_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR19_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR19_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R19_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR19_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r19_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR19_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r19_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R19_RISK_WEIGHTED_AMOUNT_NOSTRO = r19_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3338,27 +3439,27 @@ public class BrrsMNosvosP1 {
 		R20_RISK_WEIGHT_NOSTRO = r20_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR20_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR20_AMOUNT_DEMAND_NOSTRO() {
 		return R20_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR20_AMOUNT_DEMAND_NOSTRO(Double r20_AMOUNT_DEMAND_NOSTRO) {
+	public void setR20_AMOUNT_DEMAND_NOSTRO(BigDecimal r20_AMOUNT_DEMAND_NOSTRO) {
 		R20_AMOUNT_DEMAND_NOSTRO = r20_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR20_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR20_AMOUNT_TIME_NOSTRO() {
 		return R20_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR20_AMOUNT_TIME_NOSTRO(Double r20_AMOUNT_TIME_NOSTRO) {
+	public void setR20_AMOUNT_TIME_NOSTRO(BigDecimal r20_AMOUNT_TIME_NOSTRO) {
 		R20_AMOUNT_TIME_NOSTRO = r20_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR20_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR20_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R20_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR20_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r20_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR20_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r20_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R20_RISK_WEIGHTED_AMOUNT_NOSTRO = r20_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3410,27 +3511,27 @@ public class BrrsMNosvosP1 {
 		R21_RISK_WEIGHT_NOSTRO = r21_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR21_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR21_AMOUNT_DEMAND_NOSTRO() {
 		return R21_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR21_AMOUNT_DEMAND_NOSTRO(Double r21_AMOUNT_DEMAND_NOSTRO) {
+	public void setR21_AMOUNT_DEMAND_NOSTRO(BigDecimal r21_AMOUNT_DEMAND_NOSTRO) {
 		R21_AMOUNT_DEMAND_NOSTRO = r21_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR21_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR21_AMOUNT_TIME_NOSTRO() {
 		return R21_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR21_AMOUNT_TIME_NOSTRO(Double r21_AMOUNT_TIME_NOSTRO) {
+	public void setR21_AMOUNT_TIME_NOSTRO(BigDecimal r21_AMOUNT_TIME_NOSTRO) {
 		R21_AMOUNT_TIME_NOSTRO = r21_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR21_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR21_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R21_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR21_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r21_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR21_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r21_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R21_RISK_WEIGHTED_AMOUNT_NOSTRO = r21_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3482,27 +3583,27 @@ public class BrrsMNosvosP1 {
 		R22_RISK_WEIGHT_NOSTRO = r22_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR22_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR22_AMOUNT_DEMAND_NOSTRO() {
 		return R22_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR22_AMOUNT_DEMAND_NOSTRO(Double r22_AMOUNT_DEMAND_NOSTRO) {
+	public void setR22_AMOUNT_DEMAND_NOSTRO(BigDecimal r22_AMOUNT_DEMAND_NOSTRO) {
 		R22_AMOUNT_DEMAND_NOSTRO = r22_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR22_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR22_AMOUNT_TIME_NOSTRO() {
 		return R22_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR22_AMOUNT_TIME_NOSTRO(Double r22_AMOUNT_TIME_NOSTRO) {
+	public void setR22_AMOUNT_TIME_NOSTRO(BigDecimal r22_AMOUNT_TIME_NOSTRO) {
 		R22_AMOUNT_TIME_NOSTRO = r22_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR22_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR22_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R22_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR22_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r22_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR22_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r22_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R22_RISK_WEIGHTED_AMOUNT_NOSTRO = r22_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3554,27 +3655,27 @@ public class BrrsMNosvosP1 {
 		R23_RISK_WEIGHT_NOSTRO = r23_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR23_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR23_AMOUNT_DEMAND_NOSTRO() {
 		return R23_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR23_AMOUNT_DEMAND_NOSTRO(Double r23_AMOUNT_DEMAND_NOSTRO) {
+	public void setR23_AMOUNT_DEMAND_NOSTRO(BigDecimal r23_AMOUNT_DEMAND_NOSTRO) {
 		R23_AMOUNT_DEMAND_NOSTRO = r23_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR23_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR23_AMOUNT_TIME_NOSTRO() {
 		return R23_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR23_AMOUNT_TIME_NOSTRO(Double r23_AMOUNT_TIME_NOSTRO) {
+	public void setR23_AMOUNT_TIME_NOSTRO(BigDecimal r23_AMOUNT_TIME_NOSTRO) {
 		R23_AMOUNT_TIME_NOSTRO = r23_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR23_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR23_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R23_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR23_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r23_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR23_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r23_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R23_RISK_WEIGHTED_AMOUNT_NOSTRO = r23_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3626,27 +3727,27 @@ public class BrrsMNosvosP1 {
 		R24_RISK_WEIGHT_NOSTRO = r24_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR24_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR24_AMOUNT_DEMAND_NOSTRO() {
 		return R24_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR24_AMOUNT_DEMAND_NOSTRO(Double r24_AMOUNT_DEMAND_NOSTRO) {
+	public void setR24_AMOUNT_DEMAND_NOSTRO(BigDecimal r24_AMOUNT_DEMAND_NOSTRO) {
 		R24_AMOUNT_DEMAND_NOSTRO = r24_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR24_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR24_AMOUNT_TIME_NOSTRO() {
 		return R24_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR24_AMOUNT_TIME_NOSTRO(Double r24_AMOUNT_TIME_NOSTRO) {
+	public void setR24_AMOUNT_TIME_NOSTRO(BigDecimal r24_AMOUNT_TIME_NOSTRO) {
 		R24_AMOUNT_TIME_NOSTRO = r24_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR24_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR24_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R24_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR24_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r24_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR24_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r24_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R24_RISK_WEIGHTED_AMOUNT_NOSTRO = r24_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3698,27 +3799,27 @@ public class BrrsMNosvosP1 {
 		R25_RISK_WEIGHT_NOSTRO = r25_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR25_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR25_AMOUNT_DEMAND_NOSTRO() {
 		return R25_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR25_AMOUNT_DEMAND_NOSTRO(Double r25_AMOUNT_DEMAND_NOSTRO) {
+	public void setR25_AMOUNT_DEMAND_NOSTRO(BigDecimal r25_AMOUNT_DEMAND_NOSTRO) {
 		R25_AMOUNT_DEMAND_NOSTRO = r25_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR25_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR25_AMOUNT_TIME_NOSTRO() {
 		return R25_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR25_AMOUNT_TIME_NOSTRO(Double r25_AMOUNT_TIME_NOSTRO) {
+	public void setR25_AMOUNT_TIME_NOSTRO(BigDecimal r25_AMOUNT_TIME_NOSTRO) {
 		R25_AMOUNT_TIME_NOSTRO = r25_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR25_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR25_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R25_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR25_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r25_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR25_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r25_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R25_RISK_WEIGHTED_AMOUNT_NOSTRO = r25_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3770,27 +3871,27 @@ public class BrrsMNosvosP1 {
 		R26_RISK_WEIGHT_NOSTRO = r26_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR26_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR26_AMOUNT_DEMAND_NOSTRO() {
 		return R26_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR26_AMOUNT_DEMAND_NOSTRO(Double r26_AMOUNT_DEMAND_NOSTRO) {
+	public void setR26_AMOUNT_DEMAND_NOSTRO(BigDecimal r26_AMOUNT_DEMAND_NOSTRO) {
 		R26_AMOUNT_DEMAND_NOSTRO = r26_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR26_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR26_AMOUNT_TIME_NOSTRO() {
 		return R26_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR26_AMOUNT_TIME_NOSTRO(Double r26_AMOUNT_TIME_NOSTRO) {
+	public void setR26_AMOUNT_TIME_NOSTRO(BigDecimal r26_AMOUNT_TIME_NOSTRO) {
 		R26_AMOUNT_TIME_NOSTRO = r26_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR26_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR26_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R26_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR26_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r26_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR26_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r26_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R26_RISK_WEIGHTED_AMOUNT_NOSTRO = r26_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3842,27 +3943,27 @@ public class BrrsMNosvosP1 {
 		R27_RISK_WEIGHT_NOSTRO = r27_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR27_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR27_AMOUNT_DEMAND_NOSTRO() {
 		return R27_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR27_AMOUNT_DEMAND_NOSTRO(Double r27_AMOUNT_DEMAND_NOSTRO) {
+	public void setR27_AMOUNT_DEMAND_NOSTRO(BigDecimal r27_AMOUNT_DEMAND_NOSTRO) {
 		R27_AMOUNT_DEMAND_NOSTRO = r27_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR27_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR27_AMOUNT_TIME_NOSTRO() {
 		return R27_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR27_AMOUNT_TIME_NOSTRO(Double r27_AMOUNT_TIME_NOSTRO) {
+	public void setR27_AMOUNT_TIME_NOSTRO(BigDecimal r27_AMOUNT_TIME_NOSTRO) {
 		R27_AMOUNT_TIME_NOSTRO = r27_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR27_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR27_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R27_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR27_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r27_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR27_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r27_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R27_RISK_WEIGHTED_AMOUNT_NOSTRO = r27_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3914,27 +4015,27 @@ public class BrrsMNosvosP1 {
 		R28_RISK_WEIGHT_NOSTRO = r28_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR28_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR28_AMOUNT_DEMAND_NOSTRO() {
 		return R28_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR28_AMOUNT_DEMAND_NOSTRO(Double r28_AMOUNT_DEMAND_NOSTRO) {
+	public void setR28_AMOUNT_DEMAND_NOSTRO(BigDecimal r28_AMOUNT_DEMAND_NOSTRO) {
 		R28_AMOUNT_DEMAND_NOSTRO = r28_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR28_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR28_AMOUNT_TIME_NOSTRO() {
 		return R28_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR28_AMOUNT_TIME_NOSTRO(Double r28_AMOUNT_TIME_NOSTRO) {
+	public void setR28_AMOUNT_TIME_NOSTRO(BigDecimal r28_AMOUNT_TIME_NOSTRO) {
 		R28_AMOUNT_TIME_NOSTRO = r28_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR28_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR28_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R28_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR28_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r28_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR28_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r28_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R28_RISK_WEIGHTED_AMOUNT_NOSTRO = r28_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -3986,27 +4087,27 @@ public class BrrsMNosvosP1 {
 		R29_RISK_WEIGHT_NOSTRO = r29_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR29_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR29_AMOUNT_DEMAND_NOSTRO() {
 		return R29_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR29_AMOUNT_DEMAND_NOSTRO(Double r29_AMOUNT_DEMAND_NOSTRO) {
+	public void setR29_AMOUNT_DEMAND_NOSTRO(BigDecimal r29_AMOUNT_DEMAND_NOSTRO) {
 		R29_AMOUNT_DEMAND_NOSTRO = r29_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR29_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR29_AMOUNT_TIME_NOSTRO() {
 		return R29_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR29_AMOUNT_TIME_NOSTRO(Double r29_AMOUNT_TIME_NOSTRO) {
+	public void setR29_AMOUNT_TIME_NOSTRO(BigDecimal r29_AMOUNT_TIME_NOSTRO) {
 		R29_AMOUNT_TIME_NOSTRO = r29_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR29_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR29_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R29_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR29_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r29_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR29_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r29_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R29_RISK_WEIGHTED_AMOUNT_NOSTRO = r29_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4058,27 +4159,27 @@ public class BrrsMNosvosP1 {
 		R30_RISK_WEIGHT_NOSTRO = r30_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR30_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR30_AMOUNT_DEMAND_NOSTRO() {
 		return R30_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR30_AMOUNT_DEMAND_NOSTRO(Double r30_AMOUNT_DEMAND_NOSTRO) {
+	public void setR30_AMOUNT_DEMAND_NOSTRO(BigDecimal r30_AMOUNT_DEMAND_NOSTRO) {
 		R30_AMOUNT_DEMAND_NOSTRO = r30_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR30_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR30_AMOUNT_TIME_NOSTRO() {
 		return R30_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR30_AMOUNT_TIME_NOSTRO(Double r30_AMOUNT_TIME_NOSTRO) {
+	public void setR30_AMOUNT_TIME_NOSTRO(BigDecimal r30_AMOUNT_TIME_NOSTRO) {
 		R30_AMOUNT_TIME_NOSTRO = r30_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR30_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR30_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R30_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR30_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r30_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR30_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r30_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R30_RISK_WEIGHTED_AMOUNT_NOSTRO = r30_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4130,27 +4231,27 @@ public class BrrsMNosvosP1 {
 		R31_RISK_WEIGHT_NOSTRO = r31_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR31_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR31_AMOUNT_DEMAND_NOSTRO() {
 		return R31_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR31_AMOUNT_DEMAND_NOSTRO(Double r31_AMOUNT_DEMAND_NOSTRO) {
+	public void setR31_AMOUNT_DEMAND_NOSTRO(BigDecimal r31_AMOUNT_DEMAND_NOSTRO) {
 		R31_AMOUNT_DEMAND_NOSTRO = r31_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR31_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR31_AMOUNT_TIME_NOSTRO() {
 		return R31_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR31_AMOUNT_TIME_NOSTRO(Double r31_AMOUNT_TIME_NOSTRO) {
+	public void setR31_AMOUNT_TIME_NOSTRO(BigDecimal r31_AMOUNT_TIME_NOSTRO) {
 		R31_AMOUNT_TIME_NOSTRO = r31_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR31_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR31_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R31_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR31_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r31_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR31_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r31_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R31_RISK_WEIGHTED_AMOUNT_NOSTRO = r31_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4202,27 +4303,27 @@ public class BrrsMNosvosP1 {
 		R32_RISK_WEIGHT_NOSTRO = r32_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR32_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR32_AMOUNT_DEMAND_NOSTRO() {
 		return R32_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR32_AMOUNT_DEMAND_NOSTRO(Double r32_AMOUNT_DEMAND_NOSTRO) {
+	public void setR32_AMOUNT_DEMAND_NOSTRO(BigDecimal r32_AMOUNT_DEMAND_NOSTRO) {
 		R32_AMOUNT_DEMAND_NOSTRO = r32_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR32_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR32_AMOUNT_TIME_NOSTRO() {
 		return R32_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR32_AMOUNT_TIME_NOSTRO(Double r32_AMOUNT_TIME_NOSTRO) {
+	public void setR32_AMOUNT_TIME_NOSTRO(BigDecimal r32_AMOUNT_TIME_NOSTRO) {
 		R32_AMOUNT_TIME_NOSTRO = r32_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR32_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR32_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R32_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR32_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r32_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR32_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r32_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R32_RISK_WEIGHTED_AMOUNT_NOSTRO = r32_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4274,27 +4375,27 @@ public class BrrsMNosvosP1 {
 		R33_RISK_WEIGHT_NOSTRO = r33_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR33_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR33_AMOUNT_DEMAND_NOSTRO() {
 		return R33_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR33_AMOUNT_DEMAND_NOSTRO(Double r33_AMOUNT_DEMAND_NOSTRO) {
+	public void setR33_AMOUNT_DEMAND_NOSTRO(BigDecimal r33_AMOUNT_DEMAND_NOSTRO) {
 		R33_AMOUNT_DEMAND_NOSTRO = r33_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR33_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR33_AMOUNT_TIME_NOSTRO() {
 		return R33_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR33_AMOUNT_TIME_NOSTRO(Double r33_AMOUNT_TIME_NOSTRO) {
+	public void setR33_AMOUNT_TIME_NOSTRO(BigDecimal r33_AMOUNT_TIME_NOSTRO) {
 		R33_AMOUNT_TIME_NOSTRO = r33_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR33_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR33_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R33_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR33_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r33_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR33_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r33_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R33_RISK_WEIGHTED_AMOUNT_NOSTRO = r33_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4346,27 +4447,27 @@ public class BrrsMNosvosP1 {
 		R34_RISK_WEIGHT_NOSTRO = r34_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR34_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR34_AMOUNT_DEMAND_NOSTRO() {
 		return R34_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR34_AMOUNT_DEMAND_NOSTRO(Double r34_AMOUNT_DEMAND_NOSTRO) {
+	public void setR34_AMOUNT_DEMAND_NOSTRO(BigDecimal r34_AMOUNT_DEMAND_NOSTRO) {
 		R34_AMOUNT_DEMAND_NOSTRO = r34_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR34_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR34_AMOUNT_TIME_NOSTRO() {
 		return R34_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR34_AMOUNT_TIME_NOSTRO(Double r34_AMOUNT_TIME_NOSTRO) {
+	public void setR34_AMOUNT_TIME_NOSTRO(BigDecimal r34_AMOUNT_TIME_NOSTRO) {
 		R34_AMOUNT_TIME_NOSTRO = r34_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR34_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR34_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R34_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR34_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r34_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR34_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r34_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R34_RISK_WEIGHTED_AMOUNT_NOSTRO = r34_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4418,27 +4519,27 @@ public class BrrsMNosvosP1 {
 		R35_RISK_WEIGHT_NOSTRO = r35_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR35_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR35_AMOUNT_DEMAND_NOSTRO() {
 		return R35_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR35_AMOUNT_DEMAND_NOSTRO(Double r35_AMOUNT_DEMAND_NOSTRO) {
+	public void setR35_AMOUNT_DEMAND_NOSTRO(BigDecimal r35_AMOUNT_DEMAND_NOSTRO) {
 		R35_AMOUNT_DEMAND_NOSTRO = r35_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR35_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR35_AMOUNT_TIME_NOSTRO() {
 		return R35_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR35_AMOUNT_TIME_NOSTRO(Double r35_AMOUNT_TIME_NOSTRO) {
+	public void setR35_AMOUNT_TIME_NOSTRO(BigDecimal r35_AMOUNT_TIME_NOSTRO) {
 		R35_AMOUNT_TIME_NOSTRO = r35_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR35_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR35_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R35_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR35_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r35_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR35_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r35_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R35_RISK_WEIGHTED_AMOUNT_NOSTRO = r35_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4490,27 +4591,27 @@ public class BrrsMNosvosP1 {
 		R36_RISK_WEIGHT_NOSTRO = r36_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR36_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR36_AMOUNT_DEMAND_NOSTRO() {
 		return R36_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR36_AMOUNT_DEMAND_NOSTRO(Double r36_AMOUNT_DEMAND_NOSTRO) {
+	public void setR36_AMOUNT_DEMAND_NOSTRO(BigDecimal r36_AMOUNT_DEMAND_NOSTRO) {
 		R36_AMOUNT_DEMAND_NOSTRO = r36_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR36_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR36_AMOUNT_TIME_NOSTRO() {
 		return R36_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR36_AMOUNT_TIME_NOSTRO(Double r36_AMOUNT_TIME_NOSTRO) {
+	public void setR36_AMOUNT_TIME_NOSTRO(BigDecimal r36_AMOUNT_TIME_NOSTRO) {
 		R36_AMOUNT_TIME_NOSTRO = r36_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR36_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR36_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R36_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR36_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r36_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR36_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r36_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R36_RISK_WEIGHTED_AMOUNT_NOSTRO = r36_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4562,27 +4663,27 @@ public class BrrsMNosvosP1 {
 		R37_RISK_WEIGHT_NOSTRO = r37_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR37_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR37_AMOUNT_DEMAND_NOSTRO() {
 		return R37_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR37_AMOUNT_DEMAND_NOSTRO(Double r37_AMOUNT_DEMAND_NOSTRO) {
+	public void setR37_AMOUNT_DEMAND_NOSTRO(BigDecimal r37_AMOUNT_DEMAND_NOSTRO) {
 		R37_AMOUNT_DEMAND_NOSTRO = r37_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR37_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR37_AMOUNT_TIME_NOSTRO() {
 		return R37_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR37_AMOUNT_TIME_NOSTRO(Double r37_AMOUNT_TIME_NOSTRO) {
+	public void setR37_AMOUNT_TIME_NOSTRO(BigDecimal r37_AMOUNT_TIME_NOSTRO) {
 		R37_AMOUNT_TIME_NOSTRO = r37_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR37_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR37_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R37_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR37_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r37_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR37_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r37_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R37_RISK_WEIGHTED_AMOUNT_NOSTRO = r37_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4634,27 +4735,27 @@ public class BrrsMNosvosP1 {
 		R38_RISK_WEIGHT_NOSTRO = r38_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR38_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR38_AMOUNT_DEMAND_NOSTRO() {
 		return R38_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR38_AMOUNT_DEMAND_NOSTRO(Double r38_AMOUNT_DEMAND_NOSTRO) {
+	public void setR38_AMOUNT_DEMAND_NOSTRO(BigDecimal r38_AMOUNT_DEMAND_NOSTRO) {
 		R38_AMOUNT_DEMAND_NOSTRO = r38_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR38_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR38_AMOUNT_TIME_NOSTRO() {
 		return R38_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR38_AMOUNT_TIME_NOSTRO(Double r38_AMOUNT_TIME_NOSTRO) {
+	public void setR38_AMOUNT_TIME_NOSTRO(BigDecimal r38_AMOUNT_TIME_NOSTRO) {
 		R38_AMOUNT_TIME_NOSTRO = r38_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR38_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR38_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R38_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR38_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r38_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR38_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r38_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R38_RISK_WEIGHTED_AMOUNT_NOSTRO = r38_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4706,27 +4807,27 @@ public class BrrsMNosvosP1 {
 		R39_RISK_WEIGHT_NOSTRO = r39_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR39_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR39_AMOUNT_DEMAND_NOSTRO() {
 		return R39_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR39_AMOUNT_DEMAND_NOSTRO(Double r39_AMOUNT_DEMAND_NOSTRO) {
+	public void setR39_AMOUNT_DEMAND_NOSTRO(BigDecimal r39_AMOUNT_DEMAND_NOSTRO) {
 		R39_AMOUNT_DEMAND_NOSTRO = r39_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR39_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR39_AMOUNT_TIME_NOSTRO() {
 		return R39_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR39_AMOUNT_TIME_NOSTRO(Double r39_AMOUNT_TIME_NOSTRO) {
+	public void setR39_AMOUNT_TIME_NOSTRO(BigDecimal r39_AMOUNT_TIME_NOSTRO) {
 		R39_AMOUNT_TIME_NOSTRO = r39_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR39_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR39_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R39_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR39_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r39_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR39_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r39_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R39_RISK_WEIGHTED_AMOUNT_NOSTRO = r39_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4778,27 +4879,27 @@ public class BrrsMNosvosP1 {
 		R40_RISK_WEIGHT_NOSTRO = r40_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR40_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR40_AMOUNT_DEMAND_NOSTRO() {
 		return R40_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR40_AMOUNT_DEMAND_NOSTRO(Double r40_AMOUNT_DEMAND_NOSTRO) {
+	public void setR40_AMOUNT_DEMAND_NOSTRO(BigDecimal r40_AMOUNT_DEMAND_NOSTRO) {
 		R40_AMOUNT_DEMAND_NOSTRO = r40_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR40_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR40_AMOUNT_TIME_NOSTRO() {
 		return R40_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR40_AMOUNT_TIME_NOSTRO(Double r40_AMOUNT_TIME_NOSTRO) {
+	public void setR40_AMOUNT_TIME_NOSTRO(BigDecimal r40_AMOUNT_TIME_NOSTRO) {
 		R40_AMOUNT_TIME_NOSTRO = r40_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR40_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR40_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R40_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR40_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r40_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR40_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r40_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R40_RISK_WEIGHTED_AMOUNT_NOSTRO = r40_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4850,27 +4951,27 @@ public class BrrsMNosvosP1 {
 		R41_RISK_WEIGHT_NOSTRO = r41_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR41_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR41_AMOUNT_DEMAND_NOSTRO() {
 		return R41_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR41_AMOUNT_DEMAND_NOSTRO(Double r41_AMOUNT_DEMAND_NOSTRO) {
+	public void setR41_AMOUNT_DEMAND_NOSTRO(BigDecimal r41_AMOUNT_DEMAND_NOSTRO) {
 		R41_AMOUNT_DEMAND_NOSTRO = r41_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR41_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR41_AMOUNT_TIME_NOSTRO() {
 		return R41_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR41_AMOUNT_TIME_NOSTRO(Double r41_AMOUNT_TIME_NOSTRO) {
+	public void setR41_AMOUNT_TIME_NOSTRO(BigDecimal r41_AMOUNT_TIME_NOSTRO) {
 		R41_AMOUNT_TIME_NOSTRO = r41_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR41_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR41_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R41_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR41_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r41_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR41_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r41_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R41_RISK_WEIGHTED_AMOUNT_NOSTRO = r41_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4922,27 +5023,27 @@ public class BrrsMNosvosP1 {
 		R42_RISK_WEIGHT_NOSTRO = r42_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR42_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR42_AMOUNT_DEMAND_NOSTRO() {
 		return R42_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR42_AMOUNT_DEMAND_NOSTRO(Double r42_AMOUNT_DEMAND_NOSTRO) {
+	public void setR42_AMOUNT_DEMAND_NOSTRO(BigDecimal r42_AMOUNT_DEMAND_NOSTRO) {
 		R42_AMOUNT_DEMAND_NOSTRO = r42_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR42_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR42_AMOUNT_TIME_NOSTRO() {
 		return R42_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR42_AMOUNT_TIME_NOSTRO(Double r42_AMOUNT_TIME_NOSTRO) {
+	public void setR42_AMOUNT_TIME_NOSTRO(BigDecimal r42_AMOUNT_TIME_NOSTRO) {
 		R42_AMOUNT_TIME_NOSTRO = r42_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR42_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR42_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R42_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR42_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r42_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR42_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r42_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R42_RISK_WEIGHTED_AMOUNT_NOSTRO = r42_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -4994,27 +5095,27 @@ public class BrrsMNosvosP1 {
 		R43_RISK_WEIGHT_NOSTRO = r43_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR43_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR43_AMOUNT_DEMAND_NOSTRO() {
 		return R43_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR43_AMOUNT_DEMAND_NOSTRO(Double r43_AMOUNT_DEMAND_NOSTRO) {
+	public void setR43_AMOUNT_DEMAND_NOSTRO(BigDecimal r43_AMOUNT_DEMAND_NOSTRO) {
 		R43_AMOUNT_DEMAND_NOSTRO = r43_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR43_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR43_AMOUNT_TIME_NOSTRO() {
 		return R43_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR43_AMOUNT_TIME_NOSTRO(Double r43_AMOUNT_TIME_NOSTRO) {
+	public void setR43_AMOUNT_TIME_NOSTRO(BigDecimal r43_AMOUNT_TIME_NOSTRO) {
 		R43_AMOUNT_TIME_NOSTRO = r43_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR43_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR43_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R43_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR43_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r43_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR43_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r43_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R43_RISK_WEIGHTED_AMOUNT_NOSTRO = r43_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5066,27 +5167,27 @@ public class BrrsMNosvosP1 {
 		R44_RISK_WEIGHT_NOSTRO = r44_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR44_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR44_AMOUNT_DEMAND_NOSTRO() {
 		return R44_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR44_AMOUNT_DEMAND_NOSTRO(Double r44_AMOUNT_DEMAND_NOSTRO) {
+	public void setR44_AMOUNT_DEMAND_NOSTRO(BigDecimal r44_AMOUNT_DEMAND_NOSTRO) {
 		R44_AMOUNT_DEMAND_NOSTRO = r44_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR44_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR44_AMOUNT_TIME_NOSTRO() {
 		return R44_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR44_AMOUNT_TIME_NOSTRO(Double r44_AMOUNT_TIME_NOSTRO) {
+	public void setR44_AMOUNT_TIME_NOSTRO(BigDecimal r44_AMOUNT_TIME_NOSTRO) {
 		R44_AMOUNT_TIME_NOSTRO = r44_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR44_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR44_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R44_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR44_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r44_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR44_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r44_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R44_RISK_WEIGHTED_AMOUNT_NOSTRO = r44_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5138,27 +5239,27 @@ public class BrrsMNosvosP1 {
 		R45_RISK_WEIGHT_NOSTRO = r45_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR45_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR45_AMOUNT_DEMAND_NOSTRO() {
 		return R45_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR45_AMOUNT_DEMAND_NOSTRO(Double r45_AMOUNT_DEMAND_NOSTRO) {
+	public void setR45_AMOUNT_DEMAND_NOSTRO(BigDecimal r45_AMOUNT_DEMAND_NOSTRO) {
 		R45_AMOUNT_DEMAND_NOSTRO = r45_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR45_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR45_AMOUNT_TIME_NOSTRO() {
 		return R45_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR45_AMOUNT_TIME_NOSTRO(Double r45_AMOUNT_TIME_NOSTRO) {
+	public void setR45_AMOUNT_TIME_NOSTRO(BigDecimal r45_AMOUNT_TIME_NOSTRO) {
 		R45_AMOUNT_TIME_NOSTRO = r45_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR45_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR45_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R45_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR45_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r45_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR45_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r45_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R45_RISK_WEIGHTED_AMOUNT_NOSTRO = r45_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5210,27 +5311,27 @@ public class BrrsMNosvosP1 {
 		R46_RISK_WEIGHT_NOSTRO = r46_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR46_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR46_AMOUNT_DEMAND_NOSTRO() {
 		return R46_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR46_AMOUNT_DEMAND_NOSTRO(Double r46_AMOUNT_DEMAND_NOSTRO) {
+	public void setR46_AMOUNT_DEMAND_NOSTRO(BigDecimal r46_AMOUNT_DEMAND_NOSTRO) {
 		R46_AMOUNT_DEMAND_NOSTRO = r46_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR46_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR46_AMOUNT_TIME_NOSTRO() {
 		return R46_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR46_AMOUNT_TIME_NOSTRO(Double r46_AMOUNT_TIME_NOSTRO) {
+	public void setR46_AMOUNT_TIME_NOSTRO(BigDecimal r46_AMOUNT_TIME_NOSTRO) {
 		R46_AMOUNT_TIME_NOSTRO = r46_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR46_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR46_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R46_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR46_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r46_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR46_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r46_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R46_RISK_WEIGHTED_AMOUNT_NOSTRO = r46_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5282,27 +5383,27 @@ public class BrrsMNosvosP1 {
 		R47_RISK_WEIGHT_NOSTRO = r47_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR47_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR47_AMOUNT_DEMAND_NOSTRO() {
 		return R47_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR47_AMOUNT_DEMAND_NOSTRO(Double r47_AMOUNT_DEMAND_NOSTRO) {
+	public void setR47_AMOUNT_DEMAND_NOSTRO(BigDecimal r47_AMOUNT_DEMAND_NOSTRO) {
 		R47_AMOUNT_DEMAND_NOSTRO = r47_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR47_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR47_AMOUNT_TIME_NOSTRO() {
 		return R47_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR47_AMOUNT_TIME_NOSTRO(Double r47_AMOUNT_TIME_NOSTRO) {
+	public void setR47_AMOUNT_TIME_NOSTRO(BigDecimal r47_AMOUNT_TIME_NOSTRO) {
 		R47_AMOUNT_TIME_NOSTRO = r47_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR47_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR47_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R47_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR47_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r47_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR47_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r47_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R47_RISK_WEIGHTED_AMOUNT_NOSTRO = r47_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5354,27 +5455,27 @@ public class BrrsMNosvosP1 {
 		R48_RISK_WEIGHT_NOSTRO = r48_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR48_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR48_AMOUNT_DEMAND_NOSTRO() {
 		return R48_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR48_AMOUNT_DEMAND_NOSTRO(Double r48_AMOUNT_DEMAND_NOSTRO) {
+	public void setR48_AMOUNT_DEMAND_NOSTRO(BigDecimal r48_AMOUNT_DEMAND_NOSTRO) {
 		R48_AMOUNT_DEMAND_NOSTRO = r48_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR48_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR48_AMOUNT_TIME_NOSTRO() {
 		return R48_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR48_AMOUNT_TIME_NOSTRO(Double r48_AMOUNT_TIME_NOSTRO) {
+	public void setR48_AMOUNT_TIME_NOSTRO(BigDecimal r48_AMOUNT_TIME_NOSTRO) {
 		R48_AMOUNT_TIME_NOSTRO = r48_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR48_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR48_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R48_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR48_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r48_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR48_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r48_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R48_RISK_WEIGHTED_AMOUNT_NOSTRO = r48_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5426,27 +5527,27 @@ public class BrrsMNosvosP1 {
 		R49_RISK_WEIGHT_NOSTRO = r49_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR49_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR49_AMOUNT_DEMAND_NOSTRO() {
 		return R49_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR49_AMOUNT_DEMAND_NOSTRO(Double r49_AMOUNT_DEMAND_NOSTRO) {
+	public void setR49_AMOUNT_DEMAND_NOSTRO(BigDecimal r49_AMOUNT_DEMAND_NOSTRO) {
 		R49_AMOUNT_DEMAND_NOSTRO = r49_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR49_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR49_AMOUNT_TIME_NOSTRO() {
 		return R49_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR49_AMOUNT_TIME_NOSTRO(Double r49_AMOUNT_TIME_NOSTRO) {
+	public void setR49_AMOUNT_TIME_NOSTRO(BigDecimal r49_AMOUNT_TIME_NOSTRO) {
 		R49_AMOUNT_TIME_NOSTRO = r49_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR49_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR49_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R49_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR49_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r49_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR49_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r49_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R49_RISK_WEIGHTED_AMOUNT_NOSTRO = r49_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5498,27 +5599,27 @@ public class BrrsMNosvosP1 {
 		R50_RISK_WEIGHT_NOSTRO = r50_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR50_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR50_AMOUNT_DEMAND_NOSTRO() {
 		return R50_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR50_AMOUNT_DEMAND_NOSTRO(Double r50_AMOUNT_DEMAND_NOSTRO) {
+	public void setR50_AMOUNT_DEMAND_NOSTRO(BigDecimal r50_AMOUNT_DEMAND_NOSTRO) {
 		R50_AMOUNT_DEMAND_NOSTRO = r50_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR50_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR50_AMOUNT_TIME_NOSTRO() {
 		return R50_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR50_AMOUNT_TIME_NOSTRO(Double r50_AMOUNT_TIME_NOSTRO) {
+	public void setR50_AMOUNT_TIME_NOSTRO(BigDecimal r50_AMOUNT_TIME_NOSTRO) {
 		R50_AMOUNT_TIME_NOSTRO = r50_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR50_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR50_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R50_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR50_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r50_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR50_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r50_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R50_RISK_WEIGHTED_AMOUNT_NOSTRO = r50_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5570,27 +5671,27 @@ public class BrrsMNosvosP1 {
 		R51_RISK_WEIGHT_NOSTRO = r51_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR51_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR51_AMOUNT_DEMAND_NOSTRO() {
 		return R51_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR51_AMOUNT_DEMAND_NOSTRO(Double r51_AMOUNT_DEMAND_NOSTRO) {
+	public void setR51_AMOUNT_DEMAND_NOSTRO(BigDecimal r51_AMOUNT_DEMAND_NOSTRO) {
 		R51_AMOUNT_DEMAND_NOSTRO = r51_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR51_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR51_AMOUNT_TIME_NOSTRO() {
 		return R51_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR51_AMOUNT_TIME_NOSTRO(Double r51_AMOUNT_TIME_NOSTRO) {
+	public void setR51_AMOUNT_TIME_NOSTRO(BigDecimal r51_AMOUNT_TIME_NOSTRO) {
 		R51_AMOUNT_TIME_NOSTRO = r51_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR51_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR51_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R51_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR51_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r51_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR51_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r51_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R51_RISK_WEIGHTED_AMOUNT_NOSTRO = r51_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5642,27 +5743,27 @@ public class BrrsMNosvosP1 {
 		R52_RISK_WEIGHT_NOSTRO = r52_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR52_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR52_AMOUNT_DEMAND_NOSTRO() {
 		return R52_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR52_AMOUNT_DEMAND_NOSTRO(Double r52_AMOUNT_DEMAND_NOSTRO) {
+	public void setR52_AMOUNT_DEMAND_NOSTRO(BigDecimal r52_AMOUNT_DEMAND_NOSTRO) {
 		R52_AMOUNT_DEMAND_NOSTRO = r52_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR52_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR52_AMOUNT_TIME_NOSTRO() {
 		return R52_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR52_AMOUNT_TIME_NOSTRO(Double r52_AMOUNT_TIME_NOSTRO) {
+	public void setR52_AMOUNT_TIME_NOSTRO(BigDecimal r52_AMOUNT_TIME_NOSTRO) {
 		R52_AMOUNT_TIME_NOSTRO = r52_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR52_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR52_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R52_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR52_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r52_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR52_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r52_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R52_RISK_WEIGHTED_AMOUNT_NOSTRO = r52_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5714,27 +5815,27 @@ public class BrrsMNosvosP1 {
 		R53_RISK_WEIGHT_NOSTRO = r53_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR53_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR53_AMOUNT_DEMAND_NOSTRO() {
 		return R53_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR53_AMOUNT_DEMAND_NOSTRO(Double r53_AMOUNT_DEMAND_NOSTRO) {
+	public void setR53_AMOUNT_DEMAND_NOSTRO(BigDecimal r53_AMOUNT_DEMAND_NOSTRO) {
 		R53_AMOUNT_DEMAND_NOSTRO = r53_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR53_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR53_AMOUNT_TIME_NOSTRO() {
 		return R53_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR53_AMOUNT_TIME_NOSTRO(Double r53_AMOUNT_TIME_NOSTRO) {
+	public void setR53_AMOUNT_TIME_NOSTRO(BigDecimal r53_AMOUNT_TIME_NOSTRO) {
 		R53_AMOUNT_TIME_NOSTRO = r53_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR53_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR53_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R53_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR53_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r53_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR53_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r53_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R53_RISK_WEIGHTED_AMOUNT_NOSTRO = r53_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5786,27 +5887,27 @@ public class BrrsMNosvosP1 {
 		R54_RISK_WEIGHT_NOSTRO = r54_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR54_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR54_AMOUNT_DEMAND_NOSTRO() {
 		return R54_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR54_AMOUNT_DEMAND_NOSTRO(Double r54_AMOUNT_DEMAND_NOSTRO) {
+	public void setR54_AMOUNT_DEMAND_NOSTRO(BigDecimal r54_AMOUNT_DEMAND_NOSTRO) {
 		R54_AMOUNT_DEMAND_NOSTRO = r54_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR54_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR54_AMOUNT_TIME_NOSTRO() {
 		return R54_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR54_AMOUNT_TIME_NOSTRO(Double r54_AMOUNT_TIME_NOSTRO) {
+	public void setR54_AMOUNT_TIME_NOSTRO(BigDecimal r54_AMOUNT_TIME_NOSTRO) {
 		R54_AMOUNT_TIME_NOSTRO = r54_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR54_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR54_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R54_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR54_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r54_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR54_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r54_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R54_RISK_WEIGHTED_AMOUNT_NOSTRO = r54_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5858,27 +5959,27 @@ public class BrrsMNosvosP1 {
 		R55_RISK_WEIGHT_NOSTRO = r55_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR55_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR55_AMOUNT_DEMAND_NOSTRO() {
 		return R55_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR55_AMOUNT_DEMAND_NOSTRO(Double r55_AMOUNT_DEMAND_NOSTRO) {
+	public void setR55_AMOUNT_DEMAND_NOSTRO(BigDecimal r55_AMOUNT_DEMAND_NOSTRO) {
 		R55_AMOUNT_DEMAND_NOSTRO = r55_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR55_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR55_AMOUNT_TIME_NOSTRO() {
 		return R55_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR55_AMOUNT_TIME_NOSTRO(Double r55_AMOUNT_TIME_NOSTRO) {
+	public void setR55_AMOUNT_TIME_NOSTRO(BigDecimal r55_AMOUNT_TIME_NOSTRO) {
 		R55_AMOUNT_TIME_NOSTRO = r55_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR55_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR55_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R55_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR55_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r55_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR55_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r55_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R55_RISK_WEIGHTED_AMOUNT_NOSTRO = r55_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -5930,27 +6031,27 @@ public class BrrsMNosvosP1 {
 		R56_RISK_WEIGHT_NOSTRO = r56_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR56_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR56_AMOUNT_DEMAND_NOSTRO() {
 		return R56_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR56_AMOUNT_DEMAND_NOSTRO(Double r56_AMOUNT_DEMAND_NOSTRO) {
+	public void setR56_AMOUNT_DEMAND_NOSTRO(BigDecimal r56_AMOUNT_DEMAND_NOSTRO) {
 		R56_AMOUNT_DEMAND_NOSTRO = r56_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR56_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR56_AMOUNT_TIME_NOSTRO() {
 		return R56_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR56_AMOUNT_TIME_NOSTRO(Double r56_AMOUNT_TIME_NOSTRO) {
+	public void setR56_AMOUNT_TIME_NOSTRO(BigDecimal r56_AMOUNT_TIME_NOSTRO) {
 		R56_AMOUNT_TIME_NOSTRO = r56_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR56_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR56_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R56_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR56_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r56_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR56_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r56_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R56_RISK_WEIGHTED_AMOUNT_NOSTRO = r56_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6002,27 +6103,27 @@ public class BrrsMNosvosP1 {
 		R57_RISK_WEIGHT_NOSTRO = r57_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR57_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR57_AMOUNT_DEMAND_NOSTRO() {
 		return R57_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR57_AMOUNT_DEMAND_NOSTRO(Double r57_AMOUNT_DEMAND_NOSTRO) {
+	public void setR57_AMOUNT_DEMAND_NOSTRO(BigDecimal r57_AMOUNT_DEMAND_NOSTRO) {
 		R57_AMOUNT_DEMAND_NOSTRO = r57_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR57_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR57_AMOUNT_TIME_NOSTRO() {
 		return R57_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR57_AMOUNT_TIME_NOSTRO(Double r57_AMOUNT_TIME_NOSTRO) {
+	public void setR57_AMOUNT_TIME_NOSTRO(BigDecimal r57_AMOUNT_TIME_NOSTRO) {
 		R57_AMOUNT_TIME_NOSTRO = r57_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR57_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR57_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R57_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR57_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r57_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR57_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r57_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R57_RISK_WEIGHTED_AMOUNT_NOSTRO = r57_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6074,27 +6175,27 @@ public class BrrsMNosvosP1 {
 		R58_RISK_WEIGHT_NOSTRO = r58_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR58_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR58_AMOUNT_DEMAND_NOSTRO() {
 		return R58_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR58_AMOUNT_DEMAND_NOSTRO(Double r58_AMOUNT_DEMAND_NOSTRO) {
+	public void setR58_AMOUNT_DEMAND_NOSTRO(BigDecimal r58_AMOUNT_DEMAND_NOSTRO) {
 		R58_AMOUNT_DEMAND_NOSTRO = r58_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR58_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR58_AMOUNT_TIME_NOSTRO() {
 		return R58_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR58_AMOUNT_TIME_NOSTRO(Double r58_AMOUNT_TIME_NOSTRO) {
+	public void setR58_AMOUNT_TIME_NOSTRO(BigDecimal r58_AMOUNT_TIME_NOSTRO) {
 		R58_AMOUNT_TIME_NOSTRO = r58_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR58_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR58_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R58_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR58_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r58_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR58_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r58_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R58_RISK_WEIGHTED_AMOUNT_NOSTRO = r58_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6146,27 +6247,27 @@ public class BrrsMNosvosP1 {
 		R59_RISK_WEIGHT_NOSTRO = r59_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR59_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR59_AMOUNT_DEMAND_NOSTRO() {
 		return R59_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR59_AMOUNT_DEMAND_NOSTRO(Double r59_AMOUNT_DEMAND_NOSTRO) {
+	public void setR59_AMOUNT_DEMAND_NOSTRO(BigDecimal r59_AMOUNT_DEMAND_NOSTRO) {
 		R59_AMOUNT_DEMAND_NOSTRO = r59_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR59_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR59_AMOUNT_TIME_NOSTRO() {
 		return R59_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR59_AMOUNT_TIME_NOSTRO(Double r59_AMOUNT_TIME_NOSTRO) {
+	public void setR59_AMOUNT_TIME_NOSTRO(BigDecimal r59_AMOUNT_TIME_NOSTRO) {
 		R59_AMOUNT_TIME_NOSTRO = r59_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR59_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR59_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R59_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR59_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r59_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR59_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r59_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R59_RISK_WEIGHTED_AMOUNT_NOSTRO = r59_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6218,27 +6319,27 @@ public class BrrsMNosvosP1 {
 		R60_RISK_WEIGHT_NOSTRO = r60_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR60_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR60_AMOUNT_DEMAND_NOSTRO() {
 		return R60_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR60_AMOUNT_DEMAND_NOSTRO(Double r60_AMOUNT_DEMAND_NOSTRO) {
+	public void setR60_AMOUNT_DEMAND_NOSTRO(BigDecimal r60_AMOUNT_DEMAND_NOSTRO) {
 		R60_AMOUNT_DEMAND_NOSTRO = r60_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR60_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR60_AMOUNT_TIME_NOSTRO() {
 		return R60_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR60_AMOUNT_TIME_NOSTRO(Double r60_AMOUNT_TIME_NOSTRO) {
+	public void setR60_AMOUNT_TIME_NOSTRO(BigDecimal r60_AMOUNT_TIME_NOSTRO) {
 		R60_AMOUNT_TIME_NOSTRO = r60_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR60_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR60_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R60_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR60_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r60_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR60_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r60_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R60_RISK_WEIGHTED_AMOUNT_NOSTRO = r60_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6290,27 +6391,27 @@ public class BrrsMNosvosP1 {
 		R61_RISK_WEIGHT_NOSTRO = r61_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR61_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR61_AMOUNT_DEMAND_NOSTRO() {
 		return R61_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR61_AMOUNT_DEMAND_NOSTRO(Double r61_AMOUNT_DEMAND_NOSTRO) {
+	public void setR61_AMOUNT_DEMAND_NOSTRO(BigDecimal r61_AMOUNT_DEMAND_NOSTRO) {
 		R61_AMOUNT_DEMAND_NOSTRO = r61_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR61_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR61_AMOUNT_TIME_NOSTRO() {
 		return R61_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR61_AMOUNT_TIME_NOSTRO(Double r61_AMOUNT_TIME_NOSTRO) {
+	public void setR61_AMOUNT_TIME_NOSTRO(BigDecimal r61_AMOUNT_TIME_NOSTRO) {
 		R61_AMOUNT_TIME_NOSTRO = r61_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR61_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR61_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R61_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR61_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r61_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR61_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r61_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R61_RISK_WEIGHTED_AMOUNT_NOSTRO = r61_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6362,27 +6463,27 @@ public class BrrsMNosvosP1 {
 		R62_RISK_WEIGHT_NOSTRO = r62_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR62_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR62_AMOUNT_DEMAND_NOSTRO() {
 		return R62_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR62_AMOUNT_DEMAND_NOSTRO(Double r62_AMOUNT_DEMAND_NOSTRO) {
+	public void setR62_AMOUNT_DEMAND_NOSTRO(BigDecimal r62_AMOUNT_DEMAND_NOSTRO) {
 		R62_AMOUNT_DEMAND_NOSTRO = r62_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR62_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR62_AMOUNT_TIME_NOSTRO() {
 		return R62_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR62_AMOUNT_TIME_NOSTRO(Double r62_AMOUNT_TIME_NOSTRO) {
+	public void setR62_AMOUNT_TIME_NOSTRO(BigDecimal r62_AMOUNT_TIME_NOSTRO) {
 		R62_AMOUNT_TIME_NOSTRO = r62_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR62_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR62_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R62_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR62_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r62_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR62_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r62_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R62_RISK_WEIGHTED_AMOUNT_NOSTRO = r62_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6434,27 +6535,27 @@ public class BrrsMNosvosP1 {
 		R63_RISK_WEIGHT_NOSTRO = r63_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR63_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR63_AMOUNT_DEMAND_NOSTRO() {
 		return R63_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR63_AMOUNT_DEMAND_NOSTRO(Double r63_AMOUNT_DEMAND_NOSTRO) {
+	public void setR63_AMOUNT_DEMAND_NOSTRO(BigDecimal r63_AMOUNT_DEMAND_NOSTRO) {
 		R63_AMOUNT_DEMAND_NOSTRO = r63_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR63_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR63_AMOUNT_TIME_NOSTRO() {
 		return R63_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR63_AMOUNT_TIME_NOSTRO(Double r63_AMOUNT_TIME_NOSTRO) {
+	public void setR63_AMOUNT_TIME_NOSTRO(BigDecimal r63_AMOUNT_TIME_NOSTRO) {
 		R63_AMOUNT_TIME_NOSTRO = r63_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR63_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR63_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R63_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR63_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r63_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR63_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r63_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R63_RISK_WEIGHTED_AMOUNT_NOSTRO = r63_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6506,27 +6607,27 @@ public class BrrsMNosvosP1 {
 		R64_RISK_WEIGHT_NOSTRO = r64_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR64_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR64_AMOUNT_DEMAND_NOSTRO() {
 		return R64_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR64_AMOUNT_DEMAND_NOSTRO(Double r64_AMOUNT_DEMAND_NOSTRO) {
+	public void setR64_AMOUNT_DEMAND_NOSTRO(BigDecimal r64_AMOUNT_DEMAND_NOSTRO) {
 		R64_AMOUNT_DEMAND_NOSTRO = r64_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR64_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR64_AMOUNT_TIME_NOSTRO() {
 		return R64_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR64_AMOUNT_TIME_NOSTRO(Double r64_AMOUNT_TIME_NOSTRO) {
+	public void setR64_AMOUNT_TIME_NOSTRO(BigDecimal r64_AMOUNT_TIME_NOSTRO) {
 		R64_AMOUNT_TIME_NOSTRO = r64_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR64_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR64_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R64_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR64_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r64_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR64_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r64_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R64_RISK_WEIGHTED_AMOUNT_NOSTRO = r64_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6578,27 +6679,27 @@ public class BrrsMNosvosP1 {
 		R65_RISK_WEIGHT_NOSTRO = r65_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR65_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR65_AMOUNT_DEMAND_NOSTRO() {
 		return R65_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR65_AMOUNT_DEMAND_NOSTRO(Double r65_AMOUNT_DEMAND_NOSTRO) {
+	public void setR65_AMOUNT_DEMAND_NOSTRO(BigDecimal r65_AMOUNT_DEMAND_NOSTRO) {
 		R65_AMOUNT_DEMAND_NOSTRO = r65_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR65_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR65_AMOUNT_TIME_NOSTRO() {
 		return R65_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR65_AMOUNT_TIME_NOSTRO(Double r65_AMOUNT_TIME_NOSTRO) {
+	public void setR65_AMOUNT_TIME_NOSTRO(BigDecimal r65_AMOUNT_TIME_NOSTRO) {
 		R65_AMOUNT_TIME_NOSTRO = r65_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR65_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR65_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R65_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR65_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r65_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR65_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r65_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R65_RISK_WEIGHTED_AMOUNT_NOSTRO = r65_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6650,27 +6751,27 @@ public class BrrsMNosvosP1 {
 		R66_RISK_WEIGHT_NOSTRO = r66_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR66_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR66_AMOUNT_DEMAND_NOSTRO() {
 		return R66_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR66_AMOUNT_DEMAND_NOSTRO(Double r66_AMOUNT_DEMAND_NOSTRO) {
+	public void setR66_AMOUNT_DEMAND_NOSTRO(BigDecimal r66_AMOUNT_DEMAND_NOSTRO) {
 		R66_AMOUNT_DEMAND_NOSTRO = r66_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR66_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR66_AMOUNT_TIME_NOSTRO() {
 		return R66_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR66_AMOUNT_TIME_NOSTRO(Double r66_AMOUNT_TIME_NOSTRO) {
+	public void setR66_AMOUNT_TIME_NOSTRO(BigDecimal r66_AMOUNT_TIME_NOSTRO) {
 		R66_AMOUNT_TIME_NOSTRO = r66_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR66_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR66_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R66_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR66_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r66_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR66_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r66_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R66_RISK_WEIGHTED_AMOUNT_NOSTRO = r66_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6722,27 +6823,27 @@ public class BrrsMNosvosP1 {
 		R67_RISK_WEIGHT_NOSTRO = r67_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR67_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR67_AMOUNT_DEMAND_NOSTRO() {
 		return R67_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR67_AMOUNT_DEMAND_NOSTRO(Double r67_AMOUNT_DEMAND_NOSTRO) {
+	public void setR67_AMOUNT_DEMAND_NOSTRO(BigDecimal r67_AMOUNT_DEMAND_NOSTRO) {
 		R67_AMOUNT_DEMAND_NOSTRO = r67_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR67_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR67_AMOUNT_TIME_NOSTRO() {
 		return R67_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR67_AMOUNT_TIME_NOSTRO(Double r67_AMOUNT_TIME_NOSTRO) {
+	public void setR67_AMOUNT_TIME_NOSTRO(BigDecimal r67_AMOUNT_TIME_NOSTRO) {
 		R67_AMOUNT_TIME_NOSTRO = r67_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR67_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR67_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R67_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR67_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r67_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR67_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r67_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R67_RISK_WEIGHTED_AMOUNT_NOSTRO = r67_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6794,27 +6895,27 @@ public class BrrsMNosvosP1 {
 		R68_RISK_WEIGHT_NOSTRO = r68_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR68_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR68_AMOUNT_DEMAND_NOSTRO() {
 		return R68_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR68_AMOUNT_DEMAND_NOSTRO(Double r68_AMOUNT_DEMAND_NOSTRO) {
+	public void setR68_AMOUNT_DEMAND_NOSTRO(BigDecimal r68_AMOUNT_DEMAND_NOSTRO) {
 		R68_AMOUNT_DEMAND_NOSTRO = r68_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR68_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR68_AMOUNT_TIME_NOSTRO() {
 		return R68_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR68_AMOUNT_TIME_NOSTRO(Double r68_AMOUNT_TIME_NOSTRO) {
+	public void setR68_AMOUNT_TIME_NOSTRO(BigDecimal r68_AMOUNT_TIME_NOSTRO) {
 		R68_AMOUNT_TIME_NOSTRO = r68_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR68_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR68_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R68_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR68_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r68_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR68_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r68_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R68_RISK_WEIGHTED_AMOUNT_NOSTRO = r68_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6866,27 +6967,27 @@ public class BrrsMNosvosP1 {
 		R69_RISK_WEIGHT_NOSTRO = r69_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR69_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR69_AMOUNT_DEMAND_NOSTRO() {
 		return R69_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR69_AMOUNT_DEMAND_NOSTRO(Double r69_AMOUNT_DEMAND_NOSTRO) {
+	public void setR69_AMOUNT_DEMAND_NOSTRO(BigDecimal r69_AMOUNT_DEMAND_NOSTRO) {
 		R69_AMOUNT_DEMAND_NOSTRO = r69_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR69_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR69_AMOUNT_TIME_NOSTRO() {
 		return R69_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR69_AMOUNT_TIME_NOSTRO(Double r69_AMOUNT_TIME_NOSTRO) {
+	public void setR69_AMOUNT_TIME_NOSTRO(BigDecimal r69_AMOUNT_TIME_NOSTRO) {
 		R69_AMOUNT_TIME_NOSTRO = r69_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR69_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR69_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R69_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR69_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r69_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR69_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r69_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R69_RISK_WEIGHTED_AMOUNT_NOSTRO = r69_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -6938,27 +7039,27 @@ public class BrrsMNosvosP1 {
 		R70_RISK_WEIGHT_NOSTRO = r70_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR70_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR70_AMOUNT_DEMAND_NOSTRO() {
 		return R70_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR70_AMOUNT_DEMAND_NOSTRO(Double r70_AMOUNT_DEMAND_NOSTRO) {
+	public void setR70_AMOUNT_DEMAND_NOSTRO(BigDecimal r70_AMOUNT_DEMAND_NOSTRO) {
 		R70_AMOUNT_DEMAND_NOSTRO = r70_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR70_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR70_AMOUNT_TIME_NOSTRO() {
 		return R70_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR70_AMOUNT_TIME_NOSTRO(Double r70_AMOUNT_TIME_NOSTRO) {
+	public void setR70_AMOUNT_TIME_NOSTRO(BigDecimal r70_AMOUNT_TIME_NOSTRO) {
 		R70_AMOUNT_TIME_NOSTRO = r70_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR70_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR70_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R70_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR70_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r70_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR70_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r70_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R70_RISK_WEIGHTED_AMOUNT_NOSTRO = r70_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7010,27 +7111,27 @@ public class BrrsMNosvosP1 {
 		R71_RISK_WEIGHT_NOSTRO = r71_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR71_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR71_AMOUNT_DEMAND_NOSTRO() {
 		return R71_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR71_AMOUNT_DEMAND_NOSTRO(Double r71_AMOUNT_DEMAND_NOSTRO) {
+	public void setR71_AMOUNT_DEMAND_NOSTRO(BigDecimal r71_AMOUNT_DEMAND_NOSTRO) {
 		R71_AMOUNT_DEMAND_NOSTRO = r71_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR71_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR71_AMOUNT_TIME_NOSTRO() {
 		return R71_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR71_AMOUNT_TIME_NOSTRO(Double r71_AMOUNT_TIME_NOSTRO) {
+	public void setR71_AMOUNT_TIME_NOSTRO(BigDecimal r71_AMOUNT_TIME_NOSTRO) {
 		R71_AMOUNT_TIME_NOSTRO = r71_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR71_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR71_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R71_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR71_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r71_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR71_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r71_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R71_RISK_WEIGHTED_AMOUNT_NOSTRO = r71_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7082,27 +7183,27 @@ public class BrrsMNosvosP1 {
 		R72_RISK_WEIGHT_NOSTRO = r72_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR72_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR72_AMOUNT_DEMAND_NOSTRO() {
 		return R72_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR72_AMOUNT_DEMAND_NOSTRO(Double r72_AMOUNT_DEMAND_NOSTRO) {
+	public void setR72_AMOUNT_DEMAND_NOSTRO(BigDecimal r72_AMOUNT_DEMAND_NOSTRO) {
 		R72_AMOUNT_DEMAND_NOSTRO = r72_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR72_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR72_AMOUNT_TIME_NOSTRO() {
 		return R72_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR72_AMOUNT_TIME_NOSTRO(Double r72_AMOUNT_TIME_NOSTRO) {
+	public void setR72_AMOUNT_TIME_NOSTRO(BigDecimal r72_AMOUNT_TIME_NOSTRO) {
 		R72_AMOUNT_TIME_NOSTRO = r72_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR72_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR72_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R72_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR72_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r72_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR72_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r72_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R72_RISK_WEIGHTED_AMOUNT_NOSTRO = r72_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7154,27 +7255,27 @@ public class BrrsMNosvosP1 {
 		R73_RISK_WEIGHT_NOSTRO = r73_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR73_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR73_AMOUNT_DEMAND_NOSTRO() {
 		return R73_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR73_AMOUNT_DEMAND_NOSTRO(Double r73_AMOUNT_DEMAND_NOSTRO) {
+	public void setR73_AMOUNT_DEMAND_NOSTRO(BigDecimal r73_AMOUNT_DEMAND_NOSTRO) {
 		R73_AMOUNT_DEMAND_NOSTRO = r73_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR73_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR73_AMOUNT_TIME_NOSTRO() {
 		return R73_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR73_AMOUNT_TIME_NOSTRO(Double r73_AMOUNT_TIME_NOSTRO) {
+	public void setR73_AMOUNT_TIME_NOSTRO(BigDecimal r73_AMOUNT_TIME_NOSTRO) {
 		R73_AMOUNT_TIME_NOSTRO = r73_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR73_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR73_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R73_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR73_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r73_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR73_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r73_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R73_RISK_WEIGHTED_AMOUNT_NOSTRO = r73_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7226,27 +7327,27 @@ public class BrrsMNosvosP1 {
 		R74_RISK_WEIGHT_NOSTRO = r74_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR74_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR74_AMOUNT_DEMAND_NOSTRO() {
 		return R74_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR74_AMOUNT_DEMAND_NOSTRO(Double r74_AMOUNT_DEMAND_NOSTRO) {
+	public void setR74_AMOUNT_DEMAND_NOSTRO(BigDecimal r74_AMOUNT_DEMAND_NOSTRO) {
 		R74_AMOUNT_DEMAND_NOSTRO = r74_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR74_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR74_AMOUNT_TIME_NOSTRO() {
 		return R74_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR74_AMOUNT_TIME_NOSTRO(Double r74_AMOUNT_TIME_NOSTRO) {
+	public void setR74_AMOUNT_TIME_NOSTRO(BigDecimal r74_AMOUNT_TIME_NOSTRO) {
 		R74_AMOUNT_TIME_NOSTRO = r74_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR74_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR74_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R74_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR74_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r74_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR74_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r74_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R74_RISK_WEIGHTED_AMOUNT_NOSTRO = r74_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7298,27 +7399,27 @@ public class BrrsMNosvosP1 {
 		R75_RISK_WEIGHT_NOSTRO = r75_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR75_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR75_AMOUNT_DEMAND_NOSTRO() {
 		return R75_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR75_AMOUNT_DEMAND_NOSTRO(Double r75_AMOUNT_DEMAND_NOSTRO) {
+	public void setR75_AMOUNT_DEMAND_NOSTRO(BigDecimal r75_AMOUNT_DEMAND_NOSTRO) {
 		R75_AMOUNT_DEMAND_NOSTRO = r75_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR75_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR75_AMOUNT_TIME_NOSTRO() {
 		return R75_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR75_AMOUNT_TIME_NOSTRO(Double r75_AMOUNT_TIME_NOSTRO) {
+	public void setR75_AMOUNT_TIME_NOSTRO(BigDecimal r75_AMOUNT_TIME_NOSTRO) {
 		R75_AMOUNT_TIME_NOSTRO = r75_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR75_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR75_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R75_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR75_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r75_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR75_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r75_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R75_RISK_WEIGHTED_AMOUNT_NOSTRO = r75_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7370,27 +7471,27 @@ public class BrrsMNosvosP1 {
 		R76_RISK_WEIGHT_NOSTRO = r76_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR76_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR76_AMOUNT_DEMAND_NOSTRO() {
 		return R76_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR76_AMOUNT_DEMAND_NOSTRO(Double r76_AMOUNT_DEMAND_NOSTRO) {
+	public void setR76_AMOUNT_DEMAND_NOSTRO(BigDecimal r76_AMOUNT_DEMAND_NOSTRO) {
 		R76_AMOUNT_DEMAND_NOSTRO = r76_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR76_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR76_AMOUNT_TIME_NOSTRO() {
 		return R76_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR76_AMOUNT_TIME_NOSTRO(Double r76_AMOUNT_TIME_NOSTRO) {
+	public void setR76_AMOUNT_TIME_NOSTRO(BigDecimal r76_AMOUNT_TIME_NOSTRO) {
 		R76_AMOUNT_TIME_NOSTRO = r76_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR76_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR76_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R76_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR76_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r76_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR76_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r76_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R76_RISK_WEIGHTED_AMOUNT_NOSTRO = r76_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7442,27 +7543,27 @@ public class BrrsMNosvosP1 {
 		R77_RISK_WEIGHT_NOSTRO = r77_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR77_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR77_AMOUNT_DEMAND_NOSTRO() {
 		return R77_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR77_AMOUNT_DEMAND_NOSTRO(Double r77_AMOUNT_DEMAND_NOSTRO) {
+	public void setR77_AMOUNT_DEMAND_NOSTRO(BigDecimal r77_AMOUNT_DEMAND_NOSTRO) {
 		R77_AMOUNT_DEMAND_NOSTRO = r77_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR77_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR77_AMOUNT_TIME_NOSTRO() {
 		return R77_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR77_AMOUNT_TIME_NOSTRO(Double r77_AMOUNT_TIME_NOSTRO) {
+	public void setR77_AMOUNT_TIME_NOSTRO(BigDecimal r77_AMOUNT_TIME_NOSTRO) {
 		R77_AMOUNT_TIME_NOSTRO = r77_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR77_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR77_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R77_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR77_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r77_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR77_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r77_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R77_RISK_WEIGHTED_AMOUNT_NOSTRO = r77_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7514,27 +7615,27 @@ public class BrrsMNosvosP1 {
 		R78_RISK_WEIGHT_NOSTRO = r78_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR78_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR78_AMOUNT_DEMAND_NOSTRO() {
 		return R78_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR78_AMOUNT_DEMAND_NOSTRO(Double r78_AMOUNT_DEMAND_NOSTRO) {
+	public void setR78_AMOUNT_DEMAND_NOSTRO(BigDecimal r78_AMOUNT_DEMAND_NOSTRO) {
 		R78_AMOUNT_DEMAND_NOSTRO = r78_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR78_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR78_AMOUNT_TIME_NOSTRO() {
 		return R78_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR78_AMOUNT_TIME_NOSTRO(Double r78_AMOUNT_TIME_NOSTRO) {
+	public void setR78_AMOUNT_TIME_NOSTRO(BigDecimal r78_AMOUNT_TIME_NOSTRO) {
 		R78_AMOUNT_TIME_NOSTRO = r78_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR78_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR78_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R78_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR78_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r78_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR78_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r78_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R78_RISK_WEIGHTED_AMOUNT_NOSTRO = r78_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7586,27 +7687,27 @@ public class BrrsMNosvosP1 {
 		R79_RISK_WEIGHT_NOSTRO = r79_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR79_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR79_AMOUNT_DEMAND_NOSTRO() {
 		return R79_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR79_AMOUNT_DEMAND_NOSTRO(Double r79_AMOUNT_DEMAND_NOSTRO) {
+	public void setR79_AMOUNT_DEMAND_NOSTRO(BigDecimal r79_AMOUNT_DEMAND_NOSTRO) {
 		R79_AMOUNT_DEMAND_NOSTRO = r79_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR79_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR79_AMOUNT_TIME_NOSTRO() {
 		return R79_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR79_AMOUNT_TIME_NOSTRO(Double r79_AMOUNT_TIME_NOSTRO) {
+	public void setR79_AMOUNT_TIME_NOSTRO(BigDecimal r79_AMOUNT_TIME_NOSTRO) {
 		R79_AMOUNT_TIME_NOSTRO = r79_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR79_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR79_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R79_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR79_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r79_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR79_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r79_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R79_RISK_WEIGHTED_AMOUNT_NOSTRO = r79_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7658,27 +7759,27 @@ public class BrrsMNosvosP1 {
 		R80_RISK_WEIGHT_NOSTRO = r80_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR80_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR80_AMOUNT_DEMAND_NOSTRO() {
 		return R80_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR80_AMOUNT_DEMAND_NOSTRO(Double r80_AMOUNT_DEMAND_NOSTRO) {
+	public void setR80_AMOUNT_DEMAND_NOSTRO(BigDecimal r80_AMOUNT_DEMAND_NOSTRO) {
 		R80_AMOUNT_DEMAND_NOSTRO = r80_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR80_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR80_AMOUNT_TIME_NOSTRO() {
 		return R80_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR80_AMOUNT_TIME_NOSTRO(Double r80_AMOUNT_TIME_NOSTRO) {
+	public void setR80_AMOUNT_TIME_NOSTRO(BigDecimal r80_AMOUNT_TIME_NOSTRO) {
 		R80_AMOUNT_TIME_NOSTRO = r80_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR80_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR80_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R80_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR80_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r80_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR80_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r80_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R80_RISK_WEIGHTED_AMOUNT_NOSTRO = r80_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7730,27 +7831,27 @@ public class BrrsMNosvosP1 {
 		R81_RISK_WEIGHT_NOSTRO = r81_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR81_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR81_AMOUNT_DEMAND_NOSTRO() {
 		return R81_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR81_AMOUNT_DEMAND_NOSTRO(Double r81_AMOUNT_DEMAND_NOSTRO) {
+	public void setR81_AMOUNT_DEMAND_NOSTRO(BigDecimal r81_AMOUNT_DEMAND_NOSTRO) {
 		R81_AMOUNT_DEMAND_NOSTRO = r81_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR81_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR81_AMOUNT_TIME_NOSTRO() {
 		return R81_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR81_AMOUNT_TIME_NOSTRO(Double r81_AMOUNT_TIME_NOSTRO) {
+	public void setR81_AMOUNT_TIME_NOSTRO(BigDecimal r81_AMOUNT_TIME_NOSTRO) {
 		R81_AMOUNT_TIME_NOSTRO = r81_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR81_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR81_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R81_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR81_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r81_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR81_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r81_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R81_RISK_WEIGHTED_AMOUNT_NOSTRO = r81_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7802,27 +7903,27 @@ public class BrrsMNosvosP1 {
 		R82_RISK_WEIGHT_NOSTRO = r82_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR82_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR82_AMOUNT_DEMAND_NOSTRO() {
 		return R82_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR82_AMOUNT_DEMAND_NOSTRO(Double r82_AMOUNT_DEMAND_NOSTRO) {
+	public void setR82_AMOUNT_DEMAND_NOSTRO(BigDecimal r82_AMOUNT_DEMAND_NOSTRO) {
 		R82_AMOUNT_DEMAND_NOSTRO = r82_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR82_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR82_AMOUNT_TIME_NOSTRO() {
 		return R82_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR82_AMOUNT_TIME_NOSTRO(Double r82_AMOUNT_TIME_NOSTRO) {
+	public void setR82_AMOUNT_TIME_NOSTRO(BigDecimal r82_AMOUNT_TIME_NOSTRO) {
 		R82_AMOUNT_TIME_NOSTRO = r82_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR82_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR82_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R82_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR82_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r82_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR82_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r82_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R82_RISK_WEIGHTED_AMOUNT_NOSTRO = r82_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7874,27 +7975,27 @@ public class BrrsMNosvosP1 {
 		R83_RISK_WEIGHT_NOSTRO = r83_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR83_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR83_AMOUNT_DEMAND_NOSTRO() {
 		return R83_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR83_AMOUNT_DEMAND_NOSTRO(Double r83_AMOUNT_DEMAND_NOSTRO) {
+	public void setR83_AMOUNT_DEMAND_NOSTRO(BigDecimal r83_AMOUNT_DEMAND_NOSTRO) {
 		R83_AMOUNT_DEMAND_NOSTRO = r83_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR83_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR83_AMOUNT_TIME_NOSTRO() {
 		return R83_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR83_AMOUNT_TIME_NOSTRO(Double r83_AMOUNT_TIME_NOSTRO) {
+	public void setR83_AMOUNT_TIME_NOSTRO(BigDecimal r83_AMOUNT_TIME_NOSTRO) {
 		R83_AMOUNT_TIME_NOSTRO = r83_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR83_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR83_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R83_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR83_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r83_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR83_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r83_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R83_RISK_WEIGHTED_AMOUNT_NOSTRO = r83_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -7946,27 +8047,27 @@ public class BrrsMNosvosP1 {
 		R84_RISK_WEIGHT_NOSTRO = r84_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR84_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR84_AMOUNT_DEMAND_NOSTRO() {
 		return R84_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR84_AMOUNT_DEMAND_NOSTRO(Double r84_AMOUNT_DEMAND_NOSTRO) {
+	public void setR84_AMOUNT_DEMAND_NOSTRO(BigDecimal r84_AMOUNT_DEMAND_NOSTRO) {
 		R84_AMOUNT_DEMAND_NOSTRO = r84_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR84_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR84_AMOUNT_TIME_NOSTRO() {
 		return R84_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR84_AMOUNT_TIME_NOSTRO(Double r84_AMOUNT_TIME_NOSTRO) {
+	public void setR84_AMOUNT_TIME_NOSTRO(BigDecimal r84_AMOUNT_TIME_NOSTRO) {
 		R84_AMOUNT_TIME_NOSTRO = r84_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR84_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR84_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R84_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR84_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r84_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR84_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r84_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R84_RISK_WEIGHTED_AMOUNT_NOSTRO = r84_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8018,27 +8119,27 @@ public class BrrsMNosvosP1 {
 		R85_RISK_WEIGHT_NOSTRO = r85_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR85_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR85_AMOUNT_DEMAND_NOSTRO() {
 		return R85_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR85_AMOUNT_DEMAND_NOSTRO(Double r85_AMOUNT_DEMAND_NOSTRO) {
+	public void setR85_AMOUNT_DEMAND_NOSTRO(BigDecimal r85_AMOUNT_DEMAND_NOSTRO) {
 		R85_AMOUNT_DEMAND_NOSTRO = r85_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR85_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR85_AMOUNT_TIME_NOSTRO() {
 		return R85_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR85_AMOUNT_TIME_NOSTRO(Double r85_AMOUNT_TIME_NOSTRO) {
+	public void setR85_AMOUNT_TIME_NOSTRO(BigDecimal r85_AMOUNT_TIME_NOSTRO) {
 		R85_AMOUNT_TIME_NOSTRO = r85_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR85_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR85_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R85_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR85_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r85_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR85_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r85_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R85_RISK_WEIGHTED_AMOUNT_NOSTRO = r85_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8090,27 +8191,27 @@ public class BrrsMNosvosP1 {
 		R86_RISK_WEIGHT_NOSTRO = r86_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR86_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR86_AMOUNT_DEMAND_NOSTRO() {
 		return R86_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR86_AMOUNT_DEMAND_NOSTRO(Double r86_AMOUNT_DEMAND_NOSTRO) {
+	public void setR86_AMOUNT_DEMAND_NOSTRO(BigDecimal r86_AMOUNT_DEMAND_NOSTRO) {
 		R86_AMOUNT_DEMAND_NOSTRO = r86_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR86_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR86_AMOUNT_TIME_NOSTRO() {
 		return R86_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR86_AMOUNT_TIME_NOSTRO(Double r86_AMOUNT_TIME_NOSTRO) {
+	public void setR86_AMOUNT_TIME_NOSTRO(BigDecimal r86_AMOUNT_TIME_NOSTRO) {
 		R86_AMOUNT_TIME_NOSTRO = r86_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR86_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR86_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R86_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR86_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r86_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR86_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r86_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R86_RISK_WEIGHTED_AMOUNT_NOSTRO = r86_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8162,27 +8263,27 @@ public class BrrsMNosvosP1 {
 		R87_RISK_WEIGHT_NOSTRO = r87_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR87_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR87_AMOUNT_DEMAND_NOSTRO() {
 		return R87_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR87_AMOUNT_DEMAND_NOSTRO(Double r87_AMOUNT_DEMAND_NOSTRO) {
+	public void setR87_AMOUNT_DEMAND_NOSTRO(BigDecimal r87_AMOUNT_DEMAND_NOSTRO) {
 		R87_AMOUNT_DEMAND_NOSTRO = r87_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR87_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR87_AMOUNT_TIME_NOSTRO() {
 		return R87_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR87_AMOUNT_TIME_NOSTRO(Double r87_AMOUNT_TIME_NOSTRO) {
+	public void setR87_AMOUNT_TIME_NOSTRO(BigDecimal r87_AMOUNT_TIME_NOSTRO) {
 		R87_AMOUNT_TIME_NOSTRO = r87_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR87_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR87_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R87_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR87_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r87_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR87_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r87_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R87_RISK_WEIGHTED_AMOUNT_NOSTRO = r87_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8234,27 +8335,27 @@ public class BrrsMNosvosP1 {
 		R88_RISK_WEIGHT_NOSTRO = r88_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR88_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR88_AMOUNT_DEMAND_NOSTRO() {
 		return R88_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR88_AMOUNT_DEMAND_NOSTRO(Double r88_AMOUNT_DEMAND_NOSTRO) {
+	public void setR88_AMOUNT_DEMAND_NOSTRO(BigDecimal r88_AMOUNT_DEMAND_NOSTRO) {
 		R88_AMOUNT_DEMAND_NOSTRO = r88_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR88_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR88_AMOUNT_TIME_NOSTRO() {
 		return R88_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR88_AMOUNT_TIME_NOSTRO(Double r88_AMOUNT_TIME_NOSTRO) {
+	public void setR88_AMOUNT_TIME_NOSTRO(BigDecimal r88_AMOUNT_TIME_NOSTRO) {
 		R88_AMOUNT_TIME_NOSTRO = r88_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR88_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR88_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R88_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR88_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r88_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR88_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r88_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R88_RISK_WEIGHTED_AMOUNT_NOSTRO = r88_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8306,27 +8407,27 @@ public class BrrsMNosvosP1 {
 		R89_RISK_WEIGHT_NOSTRO = r89_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR89_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR89_AMOUNT_DEMAND_NOSTRO() {
 		return R89_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR89_AMOUNT_DEMAND_NOSTRO(Double r89_AMOUNT_DEMAND_NOSTRO) {
+	public void setR89_AMOUNT_DEMAND_NOSTRO(BigDecimal r89_AMOUNT_DEMAND_NOSTRO) {
 		R89_AMOUNT_DEMAND_NOSTRO = r89_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR89_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR89_AMOUNT_TIME_NOSTRO() {
 		return R89_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR89_AMOUNT_TIME_NOSTRO(Double r89_AMOUNT_TIME_NOSTRO) {
+	public void setR89_AMOUNT_TIME_NOSTRO(BigDecimal r89_AMOUNT_TIME_NOSTRO) {
 		R89_AMOUNT_TIME_NOSTRO = r89_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR89_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR89_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R89_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR89_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r89_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR89_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r89_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R89_RISK_WEIGHTED_AMOUNT_NOSTRO = r89_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8378,27 +8479,27 @@ public class BrrsMNosvosP1 {
 		R90_RISK_WEIGHT_NOSTRO = r90_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR90_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR90_AMOUNT_DEMAND_NOSTRO() {
 		return R90_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR90_AMOUNT_DEMAND_NOSTRO(Double r90_AMOUNT_DEMAND_NOSTRO) {
+	public void setR90_AMOUNT_DEMAND_NOSTRO(BigDecimal r90_AMOUNT_DEMAND_NOSTRO) {
 		R90_AMOUNT_DEMAND_NOSTRO = r90_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR90_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR90_AMOUNT_TIME_NOSTRO() {
 		return R90_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR90_AMOUNT_TIME_NOSTRO(Double r90_AMOUNT_TIME_NOSTRO) {
+	public void setR90_AMOUNT_TIME_NOSTRO(BigDecimal r90_AMOUNT_TIME_NOSTRO) {
 		R90_AMOUNT_TIME_NOSTRO = r90_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR90_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR90_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R90_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR90_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r90_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR90_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r90_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R90_RISK_WEIGHTED_AMOUNT_NOSTRO = r90_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8450,27 +8551,27 @@ public class BrrsMNosvosP1 {
 		R91_RISK_WEIGHT_NOSTRO = r91_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR91_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR91_AMOUNT_DEMAND_NOSTRO() {
 		return R91_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR91_AMOUNT_DEMAND_NOSTRO(Double r91_AMOUNT_DEMAND_NOSTRO) {
+	public void setR91_AMOUNT_DEMAND_NOSTRO(BigDecimal r91_AMOUNT_DEMAND_NOSTRO) {
 		R91_AMOUNT_DEMAND_NOSTRO = r91_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR91_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR91_AMOUNT_TIME_NOSTRO() {
 		return R91_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR91_AMOUNT_TIME_NOSTRO(Double r91_AMOUNT_TIME_NOSTRO) {
+	public void setR91_AMOUNT_TIME_NOSTRO(BigDecimal r91_AMOUNT_TIME_NOSTRO) {
 		R91_AMOUNT_TIME_NOSTRO = r91_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR91_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR91_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R91_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR91_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r91_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR91_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r91_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R91_RISK_WEIGHTED_AMOUNT_NOSTRO = r91_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8522,27 +8623,27 @@ public class BrrsMNosvosP1 {
 		R92_RISK_WEIGHT_NOSTRO = r92_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR92_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR92_AMOUNT_DEMAND_NOSTRO() {
 		return R92_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR92_AMOUNT_DEMAND_NOSTRO(Double r92_AMOUNT_DEMAND_NOSTRO) {
+	public void setR92_AMOUNT_DEMAND_NOSTRO(BigDecimal r92_AMOUNT_DEMAND_NOSTRO) {
 		R92_AMOUNT_DEMAND_NOSTRO = r92_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR92_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR92_AMOUNT_TIME_NOSTRO() {
 		return R92_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR92_AMOUNT_TIME_NOSTRO(Double r92_AMOUNT_TIME_NOSTRO) {
+	public void setR92_AMOUNT_TIME_NOSTRO(BigDecimal r92_AMOUNT_TIME_NOSTRO) {
 		R92_AMOUNT_TIME_NOSTRO = r92_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR92_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR92_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R92_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR92_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r92_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR92_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r92_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R92_RISK_WEIGHTED_AMOUNT_NOSTRO = r92_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8594,27 +8695,27 @@ public class BrrsMNosvosP1 {
 		R93_RISK_WEIGHT_NOSTRO = r93_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR93_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR93_AMOUNT_DEMAND_NOSTRO() {
 		return R93_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR93_AMOUNT_DEMAND_NOSTRO(Double r93_AMOUNT_DEMAND_NOSTRO) {
+	public void setR93_AMOUNT_DEMAND_NOSTRO(BigDecimal r93_AMOUNT_DEMAND_NOSTRO) {
 		R93_AMOUNT_DEMAND_NOSTRO = r93_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR93_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR93_AMOUNT_TIME_NOSTRO() {
 		return R93_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR93_AMOUNT_TIME_NOSTRO(Double r93_AMOUNT_TIME_NOSTRO) {
+	public void setR93_AMOUNT_TIME_NOSTRO(BigDecimal r93_AMOUNT_TIME_NOSTRO) {
 		R93_AMOUNT_TIME_NOSTRO = r93_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR93_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR93_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R93_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR93_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r93_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR93_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r93_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R93_RISK_WEIGHTED_AMOUNT_NOSTRO = r93_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8666,27 +8767,27 @@ public class BrrsMNosvosP1 {
 		R94_RISK_WEIGHT_NOSTRO = r94_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR94_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR94_AMOUNT_DEMAND_NOSTRO() {
 		return R94_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR94_AMOUNT_DEMAND_NOSTRO(Double r94_AMOUNT_DEMAND_NOSTRO) {
+	public void setR94_AMOUNT_DEMAND_NOSTRO(BigDecimal r94_AMOUNT_DEMAND_NOSTRO) {
 		R94_AMOUNT_DEMAND_NOSTRO = r94_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR94_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR94_AMOUNT_TIME_NOSTRO() {
 		return R94_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR94_AMOUNT_TIME_NOSTRO(Double r94_AMOUNT_TIME_NOSTRO) {
+	public void setR94_AMOUNT_TIME_NOSTRO(BigDecimal r94_AMOUNT_TIME_NOSTRO) {
 		R94_AMOUNT_TIME_NOSTRO = r94_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR94_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR94_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R94_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR94_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r94_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR94_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r94_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R94_RISK_WEIGHTED_AMOUNT_NOSTRO = r94_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8738,27 +8839,27 @@ public class BrrsMNosvosP1 {
 		R95_RISK_WEIGHT_NOSTRO = r95_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR95_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR95_AMOUNT_DEMAND_NOSTRO() {
 		return R95_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR95_AMOUNT_DEMAND_NOSTRO(Double r95_AMOUNT_DEMAND_NOSTRO) {
+	public void setR95_AMOUNT_DEMAND_NOSTRO(BigDecimal r95_AMOUNT_DEMAND_NOSTRO) {
 		R95_AMOUNT_DEMAND_NOSTRO = r95_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR95_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR95_AMOUNT_TIME_NOSTRO() {
 		return R95_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR95_AMOUNT_TIME_NOSTRO(Double r95_AMOUNT_TIME_NOSTRO) {
+	public void setR95_AMOUNT_TIME_NOSTRO(BigDecimal r95_AMOUNT_TIME_NOSTRO) {
 		R95_AMOUNT_TIME_NOSTRO = r95_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR95_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR95_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R95_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR95_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r95_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR95_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r95_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R95_RISK_WEIGHTED_AMOUNT_NOSTRO = r95_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8810,27 +8911,27 @@ public class BrrsMNosvosP1 {
 		R96_RISK_WEIGHT_NOSTRO = r96_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR96_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR96_AMOUNT_DEMAND_NOSTRO() {
 		return R96_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR96_AMOUNT_DEMAND_NOSTRO(Double r96_AMOUNT_DEMAND_NOSTRO) {
+	public void setR96_AMOUNT_DEMAND_NOSTRO(BigDecimal r96_AMOUNT_DEMAND_NOSTRO) {
 		R96_AMOUNT_DEMAND_NOSTRO = r96_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR96_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR96_AMOUNT_TIME_NOSTRO() {
 		return R96_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR96_AMOUNT_TIME_NOSTRO(Double r96_AMOUNT_TIME_NOSTRO) {
+	public void setR96_AMOUNT_TIME_NOSTRO(BigDecimal r96_AMOUNT_TIME_NOSTRO) {
 		R96_AMOUNT_TIME_NOSTRO = r96_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR96_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR96_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R96_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR96_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r96_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR96_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r96_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R96_RISK_WEIGHTED_AMOUNT_NOSTRO = r96_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8882,27 +8983,27 @@ public class BrrsMNosvosP1 {
 		R97_RISK_WEIGHT_NOSTRO = r97_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR97_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR97_AMOUNT_DEMAND_NOSTRO() {
 		return R97_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR97_AMOUNT_DEMAND_NOSTRO(Double r97_AMOUNT_DEMAND_NOSTRO) {
+	public void setR97_AMOUNT_DEMAND_NOSTRO(BigDecimal r97_AMOUNT_DEMAND_NOSTRO) {
 		R97_AMOUNT_DEMAND_NOSTRO = r97_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR97_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR97_AMOUNT_TIME_NOSTRO() {
 		return R97_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR97_AMOUNT_TIME_NOSTRO(Double r97_AMOUNT_TIME_NOSTRO) {
+	public void setR97_AMOUNT_TIME_NOSTRO(BigDecimal r97_AMOUNT_TIME_NOSTRO) {
 		R97_AMOUNT_TIME_NOSTRO = r97_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR97_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR97_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R97_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR97_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r97_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR97_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r97_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R97_RISK_WEIGHTED_AMOUNT_NOSTRO = r97_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -8954,27 +9055,27 @@ public class BrrsMNosvosP1 {
 		R98_RISK_WEIGHT_NOSTRO = r98_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR98_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR98_AMOUNT_DEMAND_NOSTRO() {
 		return R98_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR98_AMOUNT_DEMAND_NOSTRO(Double r98_AMOUNT_DEMAND_NOSTRO) {
+	public void setR98_AMOUNT_DEMAND_NOSTRO(BigDecimal r98_AMOUNT_DEMAND_NOSTRO) {
 		R98_AMOUNT_DEMAND_NOSTRO = r98_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR98_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR98_AMOUNT_TIME_NOSTRO() {
 		return R98_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR98_AMOUNT_TIME_NOSTRO(Double r98_AMOUNT_TIME_NOSTRO) {
+	public void setR98_AMOUNT_TIME_NOSTRO(BigDecimal r98_AMOUNT_TIME_NOSTRO) {
 		R98_AMOUNT_TIME_NOSTRO = r98_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR98_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR98_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R98_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR98_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r98_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR98_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r98_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R98_RISK_WEIGHTED_AMOUNT_NOSTRO = r98_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -9026,27 +9127,27 @@ public class BrrsMNosvosP1 {
 		R99_RISK_WEIGHT_NOSTRO = r99_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR99_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR99_AMOUNT_DEMAND_NOSTRO() {
 		return R99_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR99_AMOUNT_DEMAND_NOSTRO(Double r99_AMOUNT_DEMAND_NOSTRO) {
+	public void setR99_AMOUNT_DEMAND_NOSTRO(BigDecimal r99_AMOUNT_DEMAND_NOSTRO) {
 		R99_AMOUNT_DEMAND_NOSTRO = r99_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR99_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR99_AMOUNT_TIME_NOSTRO() {
 		return R99_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR99_AMOUNT_TIME_NOSTRO(Double r99_AMOUNT_TIME_NOSTRO) {
+	public void setR99_AMOUNT_TIME_NOSTRO(BigDecimal r99_AMOUNT_TIME_NOSTRO) {
 		R99_AMOUNT_TIME_NOSTRO = r99_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR99_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR99_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R99_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR99_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r99_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR99_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r99_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R99_RISK_WEIGHTED_AMOUNT_NOSTRO = r99_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
@@ -9098,27 +9199,27 @@ public class BrrsMNosvosP1 {
 		R100_RISK_WEIGHT_NOSTRO = r100_RISK_WEIGHT_NOSTRO;
 	}
 
-	public Double getR100_AMOUNT_DEMAND_NOSTRO() {
+	public BigDecimal getR100_AMOUNT_DEMAND_NOSTRO() {
 		return R100_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public void setR100_AMOUNT_DEMAND_NOSTRO(Double r100_AMOUNT_DEMAND_NOSTRO) {
+	public void setR100_AMOUNT_DEMAND_NOSTRO(BigDecimal r100_AMOUNT_DEMAND_NOSTRO) {
 		R100_AMOUNT_DEMAND_NOSTRO = r100_AMOUNT_DEMAND_NOSTRO;
 	}
 
-	public Double getR100_AMOUNT_TIME_NOSTRO() {
+	public BigDecimal getR100_AMOUNT_TIME_NOSTRO() {
 		return R100_AMOUNT_TIME_NOSTRO;
 	}
 
-	public void setR100_AMOUNT_TIME_NOSTRO(Double r100_AMOUNT_TIME_NOSTRO) {
+	public void setR100_AMOUNT_TIME_NOSTRO(BigDecimal r100_AMOUNT_TIME_NOSTRO) {
 		R100_AMOUNT_TIME_NOSTRO = r100_AMOUNT_TIME_NOSTRO;
 	}
 
-	public Double getR100_RISK_WEIGHTED_AMOUNT_NOSTRO() {
+	public BigDecimal getR100_RISK_WEIGHTED_AMOUNT_NOSTRO() {
 		return R100_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
-	public void setR100_RISK_WEIGHTED_AMOUNT_NOSTRO(Double r100_RISK_WEIGHTED_AMOUNT_NOSTRO) {
+	public void setR100_RISK_WEIGHTED_AMOUNT_NOSTRO(BigDecimal r100_RISK_WEIGHTED_AMOUNT_NOSTRO) {
 		R100_RISK_WEIGHTED_AMOUNT_NOSTRO = r100_RISK_WEIGHTED_AMOUNT_NOSTRO;
 	}
 
