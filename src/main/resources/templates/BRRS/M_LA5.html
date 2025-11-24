@@ -514,6 +514,16 @@ PURPOSE		: BRFREPORT
 			$('#resultModal').modal('hide');
 
 		}
+		
+		function closemodels() {
+					    $("#resultModal").modal("hide");
+					    $('#loader').modal('hide');
+
+						// Reload the page after a short delay to ensure the modal animation completes smoothly.
+						    setTimeout(function () {
+						        location.reload();
+						    }, 300);
+					}
 
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -523,15 +533,37 @@ PURPOSE		: BRFREPORT
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
+		
+		function showResultModalDetail(title, message) {
+					// Set the text for the modal elements
+					$('#resultModalLabel1').text(title);
+					$('#resultModalBody1').text(message);
+
+					// Show the modal
+					$('#resultModal1').modal('show');
+				}
 
 	</script>
+	
+	<script th:inline="javascript">
+			/*<![CDATA[*/
+			const reportId = /*[[${reportid}]]*/ null;
+			/*]]>*/
+		</script>
 	<script>
-		function openDetail(elem, mode) {
-			const acctNo = elem.getAttribute("data-acctNo");
-			 const asondate = elem.getAttribute("data-asondate");
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
-		}
-	</script>
+				function openDetail(elem, mode) {
+					
+					var type = elem.getAttribute('data-type');   
+
+										        if (type === "ARCHIVAL") {
+										            showResultModal('BRRS',"Archived Data cannot be modified");
+										            return;
+										        }
+					const acctNo = elem.getAttribute("data-acctNo");
+					const asondate = elem.getAttribute("data-asondate");
+					location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+				}
+			</script>
 	<script>
 
 		function startReport(button) {
@@ -630,7 +662,7 @@ PURPOSE		: BRFREPORT
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal('Success', filename + ' downloaded successfully.');
+						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -659,48 +691,47 @@ PURPOSE		: BRFREPORT
 		  }
 		</style>
 		<style>
-			  .left-arrow-circle {
-			    background-color: white;
-			    color: #007bff;
-			    border-radius: 50%;
-			    padding: 8px;
-			    margin-right: 10px;
-			    cursor: pointer;
-			  }
-
-			  /* 🚌 Bus display style box */
-			  .boards {
-			    background-color: rgb(107, 122, 143);
-			    color: white;
-			    padding: 6px -1px;
-			    border-radius: 8px;
-			    overflow: hidden;
-			    white-space: nowrap;
-			    width: 450px; /* adjust width as needed */
-			    box-shadow: 0 0 10px rgb(107, 122, 143);
-			    position: relative;
-				transform: translateY(10px);
-			  }
-
-			  /* ✨ Scrolling animation */
-			  .scrolling-text {
-			    display: inline-block;
-			    font-family: "Courier New", monospace;
-			    font-weight: bold;
-			    letter-spacing: 1px;
-			    animation: scroll-left 10s linear infinite;
-			  }
-
-			  /* Animation keyframes */
-			  @keyframes scroll-left {
-			    0% {
-			      transform: translateX(100%);
-			    }
-			    100% {
-			      transform: translateX(-100%);
-			    }
-			  }
-			</style>
+					.left-arrow-circle {
+						background-color: white;
+						color: #007bff;
+						border-radius: 50%;
+						padding: 8px;
+						margin-right: 10px;
+						cursor: pointer;
+					}
+					/* 🚌 Bus display style box */
+								.boards {
+									transform: translateY(6px);
+								  background-color: rgb(107, 122, 143);
+								  color: white;
+								  padding: 5px 5px;
+								  border-radius: 8px;
+								  margin-left: 10px;
+								  overflow: hidden;
+								  white-space: nowrap;
+								  flex: 1; /* ✅ makes it take available space dynamically */
+								  min-width: 200px;
+								  box-shadow: 0 0 10px rgb(107, 122, 143);
+								  position: relative;
+								}
+					/* ✨ Scrolling animation */
+					.scrolling-text {
+						display: inline-block;
+						font-family: "Courier New", monospace;
+						font-weight: bold;
+						letter-spacing: 1px;
+						animation: scroll-left 10s linear infinite;
+					}
+					/* Animation keyframes */
+					@keyframes scroll-left {
+						0% {
+							transform: translateX(100%);
+						}
+						100% {
+							transform: translateX(-100%);
+						}
+					}
+				</style>
 	<script th:inline="javascript">
 			  $(document).ready(function () {
 			    $('#reportdetails').DataTable({
@@ -758,6 +789,59 @@ PURPOSE		: BRFREPORT
 			}
 		}
 	</script>
+	<script>
+				function submitUpdate() {
+					const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+
+					// ✅ Store the previous page URL
+					const previousUrl = document.referrer; // same as going back once in history
+
+					// Show loader while processing
+					$('#loader').modal('show');
+
+					$.ajax({
+						url: `/BRRS/Reports/${reportId}/update`,
+						type: 'POST',
+						data: formData,
+						success: function (response) {
+							$('#loader').modal('hide');
+
+							// Show message via modal
+							if (response && response.toLowerCase().includes('success')) {
+								showResultModalDetail('BRRS', response);
+							} else {
+								showResultModalDetail('Information', response || 'No data updated.');
+							}
+
+							// ✅ Redirect back to the previous page after short delay
+							setTimeout(() => {
+								if (previousUrl) {
+									window.location.href = previousUrl;
+								} else {
+									// fallback: just go back if referrer not found
+									window.history.back();
+								}
+							}, 1500);
+						},
+						error: function (xhr, status, error) {
+							$('#loader').modal('hide');
+							console.error("Update error:", error);
+
+							showResultModalDetail('Error', 'Failed to update record. Please try again.');
+
+							// ✅ On error also return to previous page after delay
+							setTimeout(() => {
+								if (previousUrl) {
+									window.location.href = previousUrl;
+								} else {
+									window.history.back();
+								}
+							}, 1500);
+						}
+					});
+				}
+
+			</script>
 
 
 
@@ -785,21 +869,20 @@ PURPOSE		: BRFREPORT
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							BANK OF BOTSWANA -  FOREIGN CURRENCY DENOMINATED LOANS AND ADVANCES </h5>
+							 (25) MONTHLY SCHEDULE: M-LA5: LOANS AND ADVANCES</h5>
 							<!-- Moving bus-board text -->
 											  <div class="boards">
-											    <p class="scrolling-text">(25) MONTHLY SCHEDULE: M-LA5: LOANS AND ADVANCES</p>
+											    <p class="scrolling-text">BANK OF BOTSWANA -  FOREIGN CURRENCY DENOMINATED LOANS AND ADVANCES</p>
 											  </div>
 
-					</div>
+					</div>   
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-						      style="color: white !important; font-size: 16px; margin-right: 20px;">
-						    Report Date:
-						    <span th:text="${asondate != null ? #dates.format(asondate, 'dd-MM-yyyy') : 'null'}">2025-07-04</span>
+													style="color: white !important; font-size: 16px; margin-right: 20px;">Report
+													Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 
 						<!-- Buttons -->
@@ -815,21 +898,23 @@ PURPOSE		: BRFREPORT
 		                     data-todate=${todate}, 
 		                     data-currency=${currency},  
 		                     data-dtltype=${dtltype}, 
-		                     data-filename='M-LA5.xls',
+		                     data-filename='M-LA5.xlsx',
 		                     data-type=${type},
 		                     data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-										    data-fromdate=${fromdate},
-										    data-todate=${todate},
-											data-currency=${currency},  
-														data-dtltype=${dtltype}, 
-										    data-filename='M_LA5Details',
-											data-type=${type},
-														data-version=${version}
-										  ">
+							th:if="${displaymode == 'Details'}" 
+							th:attr=" data-reportid=${reportid}, 
+									  data-asondate=${asondate},
+									  data-fromdate=${fromdate},
+									  data-todate=${todate},
+									  data-currency=${currency},  
+									  data-dtltype=${dtltype}, 
+									  data-filename='M_LA5Detail',
+									  data-type=${type},
+									  data-version=${version}"
+									  onclick="startReport(this);" >
 							<i class="fa fa-download"></i>
 						</button>
 					</div>
@@ -906,7 +991,7 @@ PURPOSE		: BRFREPORT
 
 										<!-- Row 7 (colored) -->
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r7_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r7_usd,1,'COMMA',0,'POINT')}">
@@ -1059,7 +1144,7 @@ PURPOSE		: BRFREPORT
 
 										<!-- Row 11 (colored) -->
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r11_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r11_usd,1,'COMMA',0,'POINT')}">
@@ -1132,7 +1217,7 @@ PURPOSE		: BRFREPORT
 
 										<!-- Row 13 (colored) -->
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r13_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r13_usd,1,'COMMA',0,'POINT')}">
@@ -1205,7 +1290,7 @@ PURPOSE		: BRFREPORT
 
 										<!-- Row 15 (colored) -->
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r15_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r15_usd,1,'COMMA',0,'POINT')}">
@@ -1278,7 +1363,7 @@ PURPOSE		: BRFREPORT
 
 										<!-- Row 17 (colored) -->
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r17_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r17_usd,1,'COMMA',0,'POINT')}">
@@ -1351,7 +1436,7 @@ PURPOSE		: BRFREPORT
 
 										<!-- Row 19 (colored) -->
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r19_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r19_usd,1,'COMMA',0,'POINT')}">
@@ -1576,7 +1661,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r25_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r25_usd,1,'COMMA',0,'POINT')}">
@@ -1916,7 +2001,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r34_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r34_usd,1,'COMMA',0,'POINT')}">
@@ -2025,7 +2110,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r37_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r37_usd,1,'COMMA',0,'POINT')}">
@@ -2134,7 +2219,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r40_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r40_usd,1,'COMMA',0,'POINT')}">
@@ -2320,7 +2405,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r45_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r45_usd,1,'COMMA',0,'POINT')}">
@@ -2467,7 +2552,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r49_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r49_usd,1,'COMMA',0,'POINT')}">
@@ -2615,7 +2700,7 @@ PURPOSE		: BRFREPORT
 											</td>
 										</tr>
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r53_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r53_usd,1,'COMMA',0,'POINT')}">
@@ -2880,7 +2965,7 @@ PURPOSE		: BRFREPORT
 
 
 										<tr>
-											<td style="text-align: left;background-color: rgb(107, 122, 143);color: white;"
+											<td style="text-align: left;"
 												th:text="${report.r60_product}"></td>
 											<td style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
 												th:text="${#numbers.formatDecimal(report.r60_usd,1,'COMMA',0,'POINT')}">
@@ -3021,7 +3106,7 @@ PURPOSE		: BRFREPORT
 															<th>CUST ID</th>
 															<th>ACCT NUMBER</th>
 															<th>ACCT NAME</th>
-															<th>ACCT BALANCE</th>
+															<th>ACCT BALANCE IN PULA</th>
 															<th>REPORT LABEL</th>
 															<th>REPORT ADDL CRITERIA 1</th>
 															<th>REPORT DATE</th>
@@ -3032,21 +3117,22 @@ PURPOSE		: BRFREPORT
 													<tbody style="font-family: Arial;">
 														<tr th:each="report, srlno : ${reportdetails}">
 															<td>
-																<a data-toggle="tooltip" class="editrec"
-																	title="Click to Edit this Record">
+																<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
 																	<i class="fas fa-edit" style="color: black; cursor:pointer;"
-																		th:attr="data-acctNo=${report.acct_number},
-																		data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')}"
-																		onclick="openDetail(this, 'edit')"></i>
-
-																</a>
-															</td>
+																	th:attr="data-acctNo=${report.acct_number},
+																	data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
+																	 data-type=${type}"
+																	 onclick="openDetail(this, 'edit')">
+																		 </i>
+																		 </a>
+																		</td>
+															
 															<td th:text="${srlno.index + 1}"></td>
 															<td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
 															<td th:text="${report.acct_number != null ? report.acct_number : '-'}"></td>
 															<td th:text="${report.acct_name != null ? report.acct_name : '-'}"></td>
-															<td align="right" th:text="${report.acct_balance_in_pula != null 
-																													? #numbers.formatDecimal(report.acct_balance_in_pula, 1, 2) : '0.00'}"></td>
+															
+															<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acct_balance_in_pula,1,'COMMA',0,'POINT')}"></td>														
 															<td th:text="${report.report_label != null ? report.report_label : '-'}">
 															</td>
 															<td
@@ -3071,8 +3157,69 @@ PURPOSE		: BRFREPORT
 									</div>
 								</div>
 
-			</div>
-
+			
+			<!-- M_la1 Detail Form Screen -->
+				<div th:if="${formmode == 'edit'}" class="card">
+				  <div class="card-body">
+				    <form th:object="${Data}" method="post" id="DetailForm">
+				      <!-- Row 1 -->
+				      <div class="row formline" style="margin-top:10px;">
+				        <label class="col-sm-2">Customer ID</label>
+				        <div class="col-sm-3">
+				          <input type="text" th:field="*{cust_id}" class="form-control form-control-sm" readonly />
+				        </div>
+				        <div class="col-sm-1"></div>
+				        <label class="col-sm-2">Account Number</label>
+				        <div class="col-sm-3">
+				          <input type="text" th:field="*{acct_number}" class="form-control form-control-sm" readonly />
+				        </div>
+				      </div>
+				      <!-- Row 2 -->
+				      <div class="row formline" style="margin-top:10px;">
+				        <label class="col-sm-2">Account Name</label>
+				        <div class="col-sm-3">
+				          <input type="text" th:field="*{acct_name}" class="form-control form-control-sm" readonly />
+				        </div>
+						
+				        <div class="col-sm-1"></div>
+				        <label class="col-sm-2">Acct Balance</label>
+				        <div class="col-sm-3">
+				          <input type="number" step="0.01" th:field="*{acct_balance_in_pula}" class="form-control form-control-sm" style="text-align:right;" />
+				        </div>
+				      </div>
+				      <!-- Row 3 -->
+				      <div class="row formline" style="margin-top:10px;">
+						<label class="col-sm-2">Report Label</label>
+						 <div class="col-sm-3">
+						<input type="text" th:field="*{report_label}" class="form-control form-control-sm"  readonly />
+						</div>
+						
+				        <div class="col-sm-1"></div>
+						<label class="col-sm-2">Report Addl Criteria 1</label>
+													        <div class="col-sm-3">
+													          <input type="text" th:field="*{report_addl_criteria_1}" class="form-control form-control-sm" readonly />
+													        </div>
+				      </div>
+				     
+				        
+					  <div class="row formline" style="margin-top:10px;">
+					      <label class="col-sm-2">Report Date</label>
+					      <div class="col-sm-3">
+					          <input type="date" name="report_date"  class="form-control form-control-sm" 
+							  th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}"readonly />
+					      </div>
+					  </div>
+				 
+					  
+					  
+				      <!-- Update Button -->
+				      <div style="text-align:center; margin-top:20px;">
+				        <button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
+						 onclick="submitUpdate()">Update</button>
+				      </div>
+				    </form>
+				  </div>
+				</div>
 
 
 		</div>
@@ -3112,11 +3259,33 @@ PURPOSE		: BRFREPORT
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodels()" data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
 	</div>
+	
+	<!-- For Edit in Detail page -->
+							<div class="modal fade" id="resultModal1">
+								<div class="modal-dialog modal-dialog-centered">
+									<div class="modal-content">
+										<!-- Your custom styled header -->
+										<div class="menu-title-header">
+											<div class="modal-title" id="resultModalLabel1"
+												style="text-align: center; color: white;">
+												<!-- Title will be set by JavaScript -->
+											</div>
+										</div>
+										<div class="modal-body"
+											style="text-align: center; font-size: 1.1rem;">
+											<p id="resultModalBody1"></p>
+											<!-- Your custom styled button -->
+											<button type="button" class="custom-tab-btn" onclick="closemodel()"
+												data-dismiss="modal">OK</button>
+										</div>
+									</div>
+								</div>
+							</div>
 
 	<!-- Custom Cellresult Modal -->
 	<div class="modal fade" id="cellresultModal">
