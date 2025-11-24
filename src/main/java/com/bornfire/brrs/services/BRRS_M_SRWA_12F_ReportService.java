@@ -937,17 +937,7 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-
-					// row37
-					// Column F
-					cell5 = row.createCell(5);
-					if (record.getR37_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record.getR37_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
+				
 
 				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
@@ -1663,18 +1653,6 @@ public class BRRS_M_SRWA_12F_ReportService {
 						cell5.setCellValue("");
 						cell5.setCellStyle(textStyle);
 					}
-
-					// row37
-					// Column F
-					cell5 = row.createCell(5);
-					if (record1.getR37_RISK_WEIGHT() != null) {
-						cell5.setCellValue(record1.getR37_RISK_WEIGHT().doubleValue());
-						cell5.setCellStyle(numberStyle);
-					} else {
-						cell5.setCellValue("");
-						cell5.setCellStyle(textStyle);
-					}
-
 				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {
@@ -2492,16 +2470,6 @@ if (!dataList1.isEmpty()) {
 			cell5.setCellStyle(textStyle);
 		}
 
-		// row37
-		// Column F
-		cell5 = row.createCell(5);
-		if (record1.getR37_RISK_WEIGHT() != null) {
-			cell5.setCellValue(record1.getR37_RISK_WEIGHT().doubleValue());
-			cell5.setCellStyle(numberStyle);
-		} else {
-			cell5.setCellValue("");
-			cell5.setCellStyle(textStyle);
-		}
 
 	}
 	workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
