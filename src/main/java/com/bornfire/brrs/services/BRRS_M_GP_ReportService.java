@@ -377,7 +377,7 @@ public class BRRS_M_GP_ReportService {
 		}
 		// R44 = R45 + R48
 		try {
-			int[] rowNumbers = { 45, 48 };
+			int[] rowNumbers = { 45, 46,47,48 };
 			String[] fields = {
 					"STAGE1_PROVISIONS",
 					"QUALIFY_STAGE2_PROVISIONS",
