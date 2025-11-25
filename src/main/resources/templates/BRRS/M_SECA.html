@@ -2723,7 +2723,7 @@ function fileuploads(btn) {
     $('#loader').modal('show');
 
     // Pre-calculations
-    calculateR36BOBCTotals();
+    //calculateR36BOBCTotals();
 calculateR14Totals();
 calculateR15Totals();
 calculateR16Totals();
@@ -3010,7 +3010,7 @@ calculateR13Last();
                         <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R13_BONDS != null ? #numbers.formatDecimal(report.R13_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R13_BONDS != null ? #numbers.formatDecimal(report.R13_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R13_BONDS" name="R13_BONDS"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -3018,7 +3018,7 @@ calculateR13Last();
                         <td id="R13" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R13_BOBC != null ? #numbers.formatDecimal(report.R13_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R13_BOBC != null ? #numbers.formatDecimal(report.R13_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R13_BOBC" name="R13_BOBC"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -3099,7 +3099,7 @@ calculateR13Last();
                         <td id="R14" style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
-	th:value="${report.R14_BONDS != null ? #numbers.formatDecimal(report.R14_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R14_BONDS != null ? #numbers.formatDecimal(report.R14_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R14_BONDS" name="R14_BONDS"
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -3107,7 +3107,7 @@ calculateR13Last();
                         <td id="R14" style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
-	th:value="${report.R14_BOBC != null ? #numbers.formatDecimal(report.R14_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R14_BOBC != null ? #numbers.formatDecimal(report.R14_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R14_BOBC" name="R14_BOBC"
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -3367,7 +3367,7 @@ calculateR13Last();
                         <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R17_BONDS != null ? #numbers.formatDecimal(report.R17_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R17_BONDS != null ? #numbers.formatDecimal(report.R17_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R17_BONDS" name="R17_BONDS"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -3375,7 +3375,7 @@ calculateR13Last();
                         <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R17_BOBC != null ? #numbers.formatDecimal(report.R17_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R17_BOBC != null ? #numbers.formatDecimal(report.R17_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R17_BOBC" name="R17_BOBC"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -4687,7 +4687,7 @@ calculateR13Last();
                         <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R32_BONDS != null ? #numbers.formatDecimal(report.R32_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R32_BONDS != null ? #numbers.formatDecimal(report.R32_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R32_BONDS" name="R32_BONDS"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -4695,7 +4695,7 @@ calculateR13Last();
                         <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R32_BOBC != null ? #numbers.formatDecimal(report.R32_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R32_BOBC != null ? #numbers.formatDecimal(report.R32_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R32_BOBC" name="R32_BOBC"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -4948,7 +4948,7 @@ calculateR13Last();
                         <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R35_BONDS != null ? #numbers.formatDecimal(report.R35_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R35_BONDS != null ? #numbers.formatDecimal(report.R35_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R35_BONDS" name="R35_BONDS"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -4956,7 +4956,7 @@ calculateR13Last();
                         <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R35_BOBC != null ? #numbers.formatDecimal(report.R35_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R35_BOBC != null ? #numbers.formatDecimal(report.R35_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R35_BOBC" name="R35_BOBC"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -5212,7 +5212,7 @@ calculateR13Last();
                         <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R38_BONDS != null ? #numbers.formatDecimal(report.R38_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R38_BONDS != null ? #numbers.formatDecimal(report.R38_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R38_BONDS" name="R38_BONDS"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -5220,7 +5220,7 @@ calculateR13Last();
                         <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R38_BOBC != null ? #numbers.formatDecimal(report.R38_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R38_BOBC != null ? #numbers.formatDecimal(report.R38_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R38_BOBC" name="R38_BOBC"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -5648,7 +5648,7 @@ calculateR13Last();
                         <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R43_BONDS != null ? #numbers.formatDecimal(report.R43_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R43_BONDS != null ? #numbers.formatDecimal(report.R43_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R43_BONDS" name="R43_BONDS"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -5656,7 +5656,7 @@ calculateR13Last();
                         <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R43_BOBC != null ? #numbers.formatDecimal(report.R43_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R43_BOBC != null ? #numbers.formatDecimal(report.R43_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R43_BOBC" name="R43_BOBC"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -5996,7 +5996,7 @@ calculateR13Last();
                         <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R47_BONDS != null ? #numbers.formatDecimal(report.R47_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R47_BONDS != null ? #numbers.formatDecimal(report.R47_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R47_BONDS" name="R47_BONDS"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -6004,7 +6004,7 @@ calculateR13Last();
                         <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R47_BOBC != null ? #numbers.formatDecimal(report.R47_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R47_BOBC != null ? #numbers.formatDecimal(report.R47_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R47_BOBC" name="R47_BOBC"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -6345,7 +6345,7 @@ calculateR13Last();
                         <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R51_BONDS != null ? #numbers.formatDecimal(report.R51_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R51_BONDS != null ? #numbers.formatDecimal(report.R51_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R51_BONDS" name="R51_BONDS"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -6353,7 +6353,7 @@ calculateR13Last();
                         <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R51_BOBC != null ? #numbers.formatDecimal(report.R51_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R51_BOBC != null ? #numbers.formatDecimal(report.R51_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R51_BOBC" name="R51_BOBC"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -6954,7 +6954,7 @@ calculateR13Last();
                         <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R58_BONDS != null ? #numbers.formatDecimal(report.R58_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R58_BONDS != null ? #numbers.formatDecimal(report.R58_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R58_BONDS" name="R58_BONDS"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
@@ -6962,7 +6962,7 @@ calculateR13Last();
                         <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
-	th:value="${report.R58_BOBC != null ? #numbers.formatDecimal(report.R58_EQUITY, 1, 'COMMA', 0, 'POINT') : '0'}"
+	th:value="${report.R58_BOBC != null ? #numbers.formatDecimal(report.R58_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R58_BOBC" name="R58_BOBC"
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
