@@ -24,10 +24,17 @@ public interface MCBL_Rep extends JpaRepository<MCBL_Entity, String> {
     List<Date> findDistinctReportDates();
 
 	
-	 @Query(value = "SELECT * FROM BRRS_MCBL " +
+/* WITHOUT SYNONYM	 @Query(value = "SELECT * FROM BRRS_MCBL " +
              "WHERE REPORT_DATE = TO_DATE(:reportDate, 'YYYY-MM-DD')", 
      nativeQuery = true)
 	 List<MCBL_Entity> findRecordsByReportDate(@Param("reportDate") String reportDate);
+*/
+	//With SYNONYM
+	@Query(value = "SELECT * FROM MCBL " +
+            "WHERE REPORT_DATE = TO_DATE(:reportDate, 'YYYY-MM-DD')", 
+    nativeQuery = true)
+	List<MCBL_Entity> findRecordsByReportDate(@Param("reportDate") String reportDate);
+
 
 	@Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END " +
             "FROM BRRS_MCBL " +

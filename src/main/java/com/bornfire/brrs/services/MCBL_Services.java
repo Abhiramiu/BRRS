@@ -8,8 +8,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -96,14 +98,11 @@ public class MCBL_Services {
 	@Transactional
 	public String addMCBL(MultipartFile file, String userid, String username, String reportDate) {
 	    long startTime = System.currentTimeMillis();
-
 	    if (file == null || file.isEmpty()) {
 	        return "Error: Uploaded file is empty!";
 	    }
-
 	    try (InputStream is = file.getInputStream();
 	         Connection conn = dataSource.getConnection()) {
-
 	        Workbook workbook;
 	        String fileName = file.getOriginalFilename();
 	        if (fileName != null && fileName.toLowerCase().endsWith(".xlsx")) {
@@ -113,12 +112,56 @@ public class MCBL_Services {
 	        } else {
 	            return "Error: Invalid file format! Please upload .xls or .xlsx file.";
 	        }
-
 	        conn.setAutoCommit(false);
-
 	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	        java.util.Date parsedDate = sdf.parse(reportDate);
 	        java.sql.Date sqlReportDate = new java.sql.Date(parsedDate.getTime());
+
+	        // ============= MARK PREVIOUS VERSIONS AS DELETED (Before Processing New Upload) =============
+	        String markDeletedMCBL = "UPDATE MCBL SET DEL_FLG = 'Y', MODIFY_TIME = SYSTIMESTAMP, MODIFY_USER = ? " +
+	                                 "WHERE REPORT_DATE = ? AND MCBL_HEAD_ACC_NO IN (SELECT DISTINCT MCBL_HEAD_ACC_NO FROM MCBL WHERE REPORT_DATE = ?) " +
+	                                 "AND DEL_FLG = 'N'";
+	        String markDeletedGeneral = "UPDATE GENERAL_MASTER_TABLE SET DEL_FLG = 'Y', MODIFY_TIME = SYSTIMESTAMP, MODIFY_USER = ? " +
+                    					"WHERE REPORT_CODE = 'MCBL' AND REPORT_DATE = ? AND ACCOUNT_NO IN (SELECT DISTINCT ACCOUNT_NO FROM GENERAL_MASTER_TABLE WHERE REPORT_CODE = 'MCBL' AND REPORT_DATE = ?) " +
+                    					"AND DEL_FLG = 'N'";
+	        
+	        // ============= COLLECT ACCOUNT NOS FROM EXCEL FIRST =============
+	        Sheet sheet = workbook.getSheet("MCBL");
+	        if (sheet == null) {
+	            return "Error: Sheet 'MCBL' not found!";
+	        }
+	        DataFormatter formatter = new DataFormatter();
+	        Set<String> excelAccountNumbers = new HashSet<>();
+
+	        // Quick scan to collect all valid account numbers
+	        for (int i = 0; i <= sheet.getLastRowNum(); i++) {
+	            Row row = sheet.getRow(i);
+	            if (row == null) continue;
+	            String headAccNo = formatter.formatCellValue(row.getCell(2)).trim();
+	            String glCode = formatter.formatCellValue(row.getCell(0)).trim();
+	            String glSubCode = formatter.formatCellValue(row.getCell(1)).trim();
+	            String currency = formatter.formatCellValue(row.getCell(5)).trim();
+	            
+	            if (!headAccNo.isEmpty() && !glCode.isEmpty() && !glSubCode.isEmpty() && !currency.isEmpty() &&
+	                glCode.matches("\\d+") && glSubCode.matches("\\d+")) {
+	                excelAccountNumbers.add(headAccNo);
+	            }
+	        }
+
+	        // Mark previous versions of accounts in current upload as deleted
+	        try (PreparedStatement ps = conn.prepareStatement(markDeletedMCBL)) {
+	            ps.setString(1, userid);
+	            ps.setDate(2, sqlReportDate);
+	            ps.setDate(3, sqlReportDate);
+	            ps.executeUpdate();
+	        }
+
+	        try (PreparedStatement ps = conn.prepareStatement(markDeletedGeneral)) {
+	            ps.setString(1, userid);
+	            ps.setDate(2, sqlReportDate);
+	            ps.setDate(3, sqlReportDate);
+	            ps.executeUpdate();
+	        }
 
 	        // ---------------- LAST MONTH DATA ----------------
 	        Calendar cal = Calendar.getInstance();
@@ -126,10 +169,9 @@ public class MCBL_Services {
 	        cal.set(Calendar.DAY_OF_MONTH, 1);
 	        cal.add(Calendar.DATE, -1);
 	        java.sql.Date lastMonthDate = new java.sql.Date(cal.getTimeInMillis());
-
 	        Set<String> lastMonthAccounts = new HashSet<>();
 	        try (PreparedStatement ps = conn.prepareStatement(
-	                "SELECT MCBL_HEAD_ACC_NO FROM BRRS_MCBL WHERE REPORT_DATE = ?")) {
+	                "SELECT MCBL_HEAD_ACC_NO FROM MCBL WHERE REPORT_DATE = ? AND DEL_FLG = 'N'")) {
 	            ps.setDate(1, lastMonthDate);
 	            ResultSet rs = ps.executeQuery();
 	            while (rs.next()) {
@@ -138,26 +180,20 @@ public class MCBL_Services {
 	        }
 
 	        // ---------------- SHEET VALIDATION ----------------
-	        Sheet sheet = workbook.getSheet("MCBL");
-	        if (sheet == null) {
-	            return "Error: Sheet 'MCBL' not found!";
-	        }
-
-	        DataFormatter formatter = new DataFormatter();
 	        Set<String> processedExcelKeys = new HashSet<>();
 	        Set<String> currentAccounts = new HashSet<>();
 
-	        // ---------------- PRE-FETCH EXISTING DB RECORDS ----------------
+	        // ============= PRE-FETCH EXISTING DB RECORDS =============
 	        Set<String> existingMCBLKeys = new HashSet<>();
 	        try (PreparedStatement ps = conn.prepareStatement(
 	                "SELECT MCBL_GL_CODE, MCBL_GL_SUB_CODE, MCBL_HEAD_ACC_NO, MCBL_CURRENCY, " +
-	                        "MCBL_DEBIT_BALANCE, MCBL_CREDIT_BALANCE, MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT " +
-	                        "FROM BRRS_MCBL WHERE REPORT_DATE = ?")) {
+	                "MCBL_DEBIT_BALANCE, MCBL_CREDIT_BALANCE, MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT " +
+	                "FROM MCBL WHERE REPORT_DATE = ? AND DEL_FLG = 'N'")) {
 	            ps.setDate(1, sqlReportDate);
 	            ResultSet rs = ps.executeQuery();
 	            while (rs.next()) {
-	                String key = rs.getString(1) + "|" + rs.getString(2) + "|" + rs.getString(3) + "|" +
-	                             rs.getString(4) + "|" + rs.getBigDecimal(5) + "|" + rs.getBigDecimal(6) + "|" +
+	                String key = rs.getString(1) + "|" + rs.getString(2) + "|" + rs.getString(3) + "|" + 
+	                             rs.getString(4) + "|" + rs.getBigDecimal(5) + "|" + rs.getBigDecimal(6) + "|" + 
 	                             rs.getBigDecimal(7) + "|" + rs.getBigDecimal(8);
 	                existingMCBLKeys.add(key);
 	            }
@@ -165,7 +201,7 @@ public class MCBL_Services {
 
 	        Set<String> existingGeneralKeys = new HashSet<>();
 	        try (PreparedStatement ps = conn.prepareStatement(
-	                "SELECT ACCOUNT_NO, REPORT_DATE FROM GENERAL_MASTER_TABLE WHERE REPORT_DATE = ?")) {
+	                "SELECT ACCOUNT_NO, REPORT_DATE FROM GENERAL_MASTER_TABLE WHERE REPORT_DATE = ? AND DEL_FLG = 'N'")) {
 	            ps.setDate(1, sqlReportDate);
 	            ResultSet rs = ps.executeQuery();
 	            while (rs.next()) {
@@ -173,17 +209,31 @@ public class MCBL_Services {
 	            }
 	        }
 
+	        // ============= PRE-FETCH VERSION MAP (By Report Date & Account No) =============
+	        Map<String, Integer> versionMap = new HashMap<>();
+	        try (PreparedStatement ps = conn.prepareStatement(
+	                "SELECT MCBL_HEAD_ACC_NO, MAX(VERSION) as MAX_VERSION FROM MCBL " +
+	                "WHERE REPORT_DATE = ? GROUP BY MCBL_HEAD_ACC_NO")) {
+	            ps.setDate(1, sqlReportDate);
+	            ResultSet rs = ps.executeQuery();
+	            while (rs.next()) {
+	                String accountNo = rs.getString(1);
+	                int maxVersion = rs.getInt(2);
+	                versionMap.put(accountNo, maxVersion + 1); // Next version
+	            }
+	        }
+
 	        // ---------------- SQL PREPARATION ----------------
-	        String insertMCBL = "INSERT INTO BRRS_MCBL (MCBL_GL_CODE, MCBL_GL_SUB_CODE, MCBL_HEAD_ACC_NO, " +
+	        String insertMCBL = "INSERT INTO MCBL (MCBL_GL_CODE, MCBL_GL_SUB_CODE, MCBL_HEAD_ACC_NO, " +
 	                "MCBL_DESCRIPTION, MCBL_CURRENCY, MCBL_DEBIT_BALANCE, MCBL_CREDIT_BALANCE, " +
-	                "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, ENTRY_USER, ENTRY_DATE, REPORT_DATE, " +
-	                "ID, CUST_FLG, ENTRY_FLG) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Y')";
+	                "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, REPORT_CODE, HOME_CURRENCY, DEL_FLG, VERSION, ENTRY_USER, ENTRY_TIME, REPORT_DATE, " +
+	                "CUST_FLG, MODIFY_TIME, VERIFY_TIME, MODIFY_USER, VERIFY_USER, ENTRY_FLG, MODIFY_FLG, VERIFY_FLG) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Y','N', 'N')";
 	        PreparedStatement insertStmt = conn.prepareStatement(insertMCBL);
 
 	        String insertGeneral = "INSERT INTO GENERAL_MASTER_TABLE (ID, MCBL_GL_CODE, GL_SUB_HEAD_CODE, " +
 	                "ACCOUNT_NO, MCBL_DESCRIPTION, CURRENCY, MCBL_DEBIT_BALANCE, MCBL_CREDIT_BALANCE, " +
-	                "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, ENTRY_USER, ENTRY_DATE, REPORT_DATE, MCBL_FLG) " +
-	                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	                "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, REPORT_CODE, DEL_FLG, VERSION, ENTRY_USER, ENTRY_TIME, REPORT_DATE, MCBL_FLG) " +
+	                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	        PreparedStatement insertGeneralStmt = conn.prepareStatement(insertGeneral);
 
 	        String insertTrack = "INSERT INTO BRRS_MCBL_ACCOUNT_TRACK " +
@@ -191,7 +241,7 @@ public class MCBL_Services {
 	                "VALUES (?, ?, ?, ?, ?, SYSTIMESTAMP, ?)";
 	        PreparedStatement insertTrackStmt = conn.prepareStatement(insertTrack);
 
-	        // ---------------- EXCEL PROCESSING ----------------
+	        // ============= ACTUAL EXCEL PROCESSING =============
 	        int batchSize = 500;
 	        int count = 0;
 	        int skippedExcelDupes = 0;
@@ -207,50 +257,58 @@ public class MCBL_Services {
 	            String description = formatter.formatCellValue(row.getCell(3)).trim();
 	            String currency = formatter.formatCellValue(row.getCell(5)).trim();
 
-	            if (glCode.isEmpty() || glSubCode.isEmpty() || headAccNo.isEmpty() || currency.isEmpty())
-	                continue;
-
-	            if (!glCode.matches("\\d+") || !glSubCode.matches("\\d+"))
-	                continue;
+	            if (glCode.isEmpty() || glSubCode.isEmpty() || headAccNo.isEmpty() || currency.isEmpty()) continue;
+	            if (!glCode.matches("\\d+") || !glSubCode.matches("\\d+")) continue;
 
 	            BigDecimal debitBal = getCellDecimal(row.getCell(6));
 	            BigDecimal creditBal = getCellDecimal(row.getCell(7));
 	            BigDecimal debitEq = getCellDecimal(row.getCell(8));
 	            BigDecimal creditEq = getCellDecimal(row.getCell(9));
+
+	            String ReportCode = "MCBL";
 	            String custFlg = isNumeric(headAccNo) ? "N" : "Y";
 
-	            // ✅ Improved Excel duplicate check (includes balances + description)
-	            String excelKey = glCode + "|" + glSubCode + "|" + headAccNo + "|" + currency + "|" +
-	                              description + "|" + debitBal + "|" + creditBal + "|" + debitEq + "|" + creditEq;
-
+	            // Excel duplicate check
+	            String excelKey = glCode + "|" + glSubCode + "|" + headAccNo + "|" + currency + "|" + 
+	                            description + "|" + debitBal + "|" + creditBal + "|" + debitEq + "|" + creditEq;
 	            if (!processedExcelKeys.add(excelKey)) {
 	                skippedExcelDupes++;
 	                continue;
 	            }
 
-	            // ✅ DB duplicate check — includes balance values to ensure exact match
-	            String dbKey = glCode + "|" + glSubCode + "|" + headAccNo + "|" + currency + "|" +
-	                           debitBal + "|" + creditBal + "|" + debitEq + "|" + creditEq;
+	            // DB duplicate check
+	            String dbKey = glCode + "|" + glSubCode + "|" + headAccNo + "|" + currency + "|" + 
+	                          debitBal + "|" + creditBal + "|" + debitEq + "|" + creditEq;
 	            if (existingMCBLKeys.contains(dbKey)) {
 	                skippedExistingDupes++;
 	                continue;
 	            }
 
-	            // --- Insert BRRS_MCBL ---
+	            int version = versionMap.getOrDefault(headAccNo, 1);
+
+	            // --- Insert MCBL ---
 	            insertStmt.setString(1, glCode);
 	            insertStmt.setString(2, glSubCode);
 	            insertStmt.setString(3, headAccNo);
 	            insertStmt.setString(4, description);
-	            insertStmt.setString(5, currency);
+	            insertStmt.setString(5, "BWP");
 	            insertStmt.setBigDecimal(6, debitBal);
 	            insertStmt.setBigDecimal(7, creditBal);
 	            insertStmt.setBigDecimal(8, debitEq);
 	            insertStmt.setBigDecimal(9, creditEq);
-	            insertStmt.setString(10, userid);
-	            insertStmt.setDate(11, new java.sql.Date(System.currentTimeMillis()));
-	            insertStmt.setDate(12, sqlReportDate);
-	            insertStmt.setString(13, sequence.generateRequestUUId());
-	            insertStmt.setString(14, custFlg);
+	            insertStmt.setString(10, ReportCode);
+	            insertStmt.setString(11, currency);
+	            insertStmt.setString(12, "N");
+	            insertStmt.setInt(13, version); // VERSION
+	            insertStmt.setString(14, userid);
+	            insertStmt.setDate(15, new java.sql.Date(System.currentTimeMillis()));
+	            insertStmt.setDate(16, sqlReportDate);
+	            insertStmt.setString(17, custFlg);
+	            insertStmt.setDate(18, sqlReportDate);
+	            insertStmt.setDate(19, sqlReportDate);
+	            insertStmt.setString(20, userid);
+	            insertStmt.setString(21, userid);
+	            
 	            insertStmt.addBatch();
 
 	            // --- Insert GENERAL_MASTER_TABLE (if numeric) ---
@@ -267,10 +325,14 @@ public class MCBL_Services {
 	                    insertGeneralStmt.setBigDecimal(8, creditBal);
 	                    insertGeneralStmt.setBigDecimal(9, debitEq);
 	                    insertGeneralStmt.setBigDecimal(10, creditEq);
-	                    insertGeneralStmt.setString(11, userid);
-	                    insertGeneralStmt.setDate(12, new java.sql.Date(System.currentTimeMillis()));
-	                    insertGeneralStmt.setDate(13, sqlReportDate);
-	                    insertGeneralStmt.setString(14, "Y");
+	                    insertGeneralStmt.setString(11, "MCBL");
+	                    insertGeneralStmt.setString(12, "N");
+	                    insertGeneralStmt.setInt(13, version); // VERSION
+	                    insertGeneralStmt.setString(14, userid);
+	                    insertGeneralStmt.setDate(15, new java.sql.Date(System.currentTimeMillis()));
+	                    insertGeneralStmt.setDate(16, sqlReportDate);
+	                    insertGeneralStmt.setString(17, "Y");
+	                    
 	                    insertGeneralStmt.addBatch();
 	                    existingGeneralKeys.add(generalKey);
 	                } else {
@@ -280,7 +342,6 @@ public class MCBL_Services {
 
 	            currentAccounts.add(headAccNo);
 	            count++;
-
 	            if (count % batchSize == 0) {
 	                insertStmt.executeBatch();
 	                insertGeneralStmt.executeBatch();
@@ -291,7 +352,7 @@ public class MCBL_Services {
 	        insertStmt.executeBatch();
 	        insertGeneralStmt.executeBatch();
 
-	        // ---------------- ACCOUNT TRACKING ----------------
+	        // ============= ACCOUNT TRACKING =============
 	        Set<String> newAccounts = new HashSet<>(currentAccounts);
 	        newAccounts.removeAll(lastMonthAccounts);
 	        Set<String> missingAccounts = new HashSet<>(lastMonthAccounts);
@@ -306,6 +367,7 @@ public class MCBL_Services {
 	            insertTrackStmt.setString(6, "New Account Detected");
 	            insertTrackStmt.addBatch();
 	        }
+
 	        for (String acc : missingAccounts) {
 	            insertTrackStmt.setString(1, sequence.generateRequestUUId());
 	            insertTrackStmt.setDate(2, sqlReportDate);
@@ -321,16 +383,14 @@ public class MCBL_Services {
 
 	        long duration = System.currentTimeMillis() - startTime;
 	        return "✅ MCBL upload completed in " + duration + " ms. " +
-	                "Inserted: " + count + ", Skipped Excel duplicates: " + skippedExcelDupes +
-	                ", Skipped existing DB duplicates: " + skippedExistingDupes;
+	               "Inserted: " + count + ", Skipped Excel duplicates: " + skippedExcelDupes + 
+	               ", Skipped existing DB duplicates: " + skippedExistingDupes;
 
 	    } catch (Exception e) {
 	        logger.error("Error while processing MCBL Excel: {}", e.getMessage(), e);
 	        return "Error occurred while reading Excel: " + e.getMessage();
 	    }
-	}
-
-	
+}	
 	private boolean isNumeric(String s) {
 	    if (s == null) return false;
 	    s = s.trim();
