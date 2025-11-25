@@ -709,6 +709,24 @@ function showmodify(btn) {
     var readonlyIds = [
 
 	"R11_PRODUCT","R11_STAGE1_PROVISIONS","R11_QUALIFY_STAGE2_PROVISIONS","R11_TOTAL_GENERAL_PROVISIONS",
+	"R12_TOTAL_GENERAL_PROVISIONS",	"R13_TOTAL_GENERAL_PROVISIONS","R14_TOTAL_GENERAL_PROVISIONS",
+	"R16_TOTAL_GENERAL_PROVISIONS",	"R17_TOTAL_GENERAL_PROVISIONS","R18_TOTAL_GENERAL_PROVISIONS",
+	"R19_TOTAL_GENERAL_PROVISIONS",	"R20_TOTAL_GENERAL_PROVISIONS","R21_TOTAL_GENERAL_PROVISIONS",
+	"R22_TOTAL_GENERAL_PROVISIONS",	"R22_TOTAL_GENERAL_PROVISIONS","R23_TOTAL_GENERAL_PROVISIONS",
+	"R24_TOTAL_GENERAL_PROVISIONS",	"R25_TOTAL_GENERAL_PROVISIONS","R26_TOTAL_GENERAL_PROVISIONS",
+	"R27_TOTAL_GENERAL_PROVISIONS",	"R28_TOTAL_GENERAL_PROVISIONS","R30_TOTAL_GENERAL_PROVISIONS",
+	"R31_TOTAL_GENERAL_PROVISIONS",	"R32_TOTAL_GENERAL_PROVISIONS","R33_TOTAL_GENERAL_PROVISIONS",
+	"R34_TOTAL_GENERAL_PROVISIONS",	"R35_TOTAL_GENERAL_PROVISIONS","R36_TOTAL_GENERAL_PROVISIONS",
+	"R37_TOTAL_GENERAL_PROVISIONS","R39_TOTAL_GENERAL_PROVISIONS",
+	"R40_TOTAL_GENERAL_PROVISIONS",	"R42_TOTAL_GENERAL_PROVISIONS",
+	"R43_TOTAL_GENERAL_PROVISIONS","R45_TOTAL_GENERAL_PROVISIONS",
+	"R46_TOTAL_GENERAL_PROVISIONS","R47_TOTAL_GENERAL_PROVISIONS",
+	"R48_TOTAL_GENERAL_PROVISIONS",	"R50_TOTAL_GENERAL_PROVISIONS","R51_TOTAL_GENERAL_PROVISIONS",
+	"R52_TOTAL_GENERAL_PROVISIONS","R54_TOTAL_GENERAL_PROVISIONS",
+	"R55_TOTAL_GENERAL_PROVISIONS","R56_TOTAL_GENERAL_PROVISIONS","R58_TOTAL_GENERAL_PROVISIONS",
+	"R59_TOTAL_GENERAL_PROVISIONS","R60_TOTAL_GENERAL_PROVISIONS",
+	"R61_TOTAL_GENERAL_PROVISIONS",	"R62_TOTAL_GENERAL_PROVISIONS",
+	"R63_TOTAL_GENERAL_PROVISIONS",
 	    "R15_PRODUCT","R15_STAGE1_PROVISIONS","R15_QUALIFY_STAGE2_PROVISIONS","R15_TOTAL_GENERAL_PROVISIONS",
 		"R29_PRODUCT","R29_STAGE1_PROVISIONS","R29_QUALIFY_STAGE2_PROVISIONS","R29_TOTAL_GENERAL_PROVISIONS",
 		"R38_PRODUCT","R38_STAGE1_PROVISIONS","R38_QUALIFY_STAGE2_PROVISIONS","R38_TOTAL_GENERAL_PROVISIONS",
@@ -751,6 +769,12 @@ function formatNumber(num) {
 }
 function parseNumber(val) {
     return parseFloat(val.replace(/,/g, "")) || 0;
+}
+// Update TOTAL_GENERAL_PROVISIONS for a single row
+function updateRowTotal(row) {
+    let stage1 = parseNumber($("#R" + row + "_STAGE1_PROVISIONS").val());
+    let stage2 = parseNumber($("#R" + row + "_QUALIFY_STAGE2_PROVISIONS").val());
+    $("#R" + row + "_TOTAL_GENERAL_PROVISIONS").val(formatNumber(stage1 + stage2));
 }
 
 //  R11 = R12 + R13 + R14 + R15 + R29 + R38
@@ -954,6 +978,7 @@ $(document).ready(function() {
             .on("blur", function() {
                 $(this).val(formatNumber(parseNumber($(this).val())));
             });
+			
     });
 
     //  Watch for R16–R28 changes - update R15 (and R11 through R15)
@@ -1029,7 +1054,33 @@ $(document).ready(function() {
 		                     $(this).val(formatNumber(parseNumber($(this).val())));
 		                 });
 		         });
-		   	  
+
+				 //  Watch for R12, R13, R14, R15, R29, R38 changes - update R11
+				 [12, 13, 14, 15, 29, 38].forEach(i => {
+				     $("#R" + i + "_STAGE1_PROVISIONS, #R" + i + "_QUALIFY_STAGE2_PROVISIONS, #R" + i + "_TOTAL_GENERAL_PROVISIONS")
+				         .on("input", calculation_R11)
+				         .on("blur", function() {
+				             $(this).val(formatNumber(parseNumber($(this).val())));
+				         });
+				 		// List of all child rows
+				 		const childRows = [
+						12,13,14,16,17,18,19,20,21,22,23,24,25,26,27,28,
+						  30,31,32,33,34,35,36,37,39,40,42,43,
+						  45,46,47,48,50,51,52,54,55,56,58,59,60,61,62,63
+				 		];
+
+				 		childRows.forEach(i => {
+				 		    $("#R" + i + "_STAGE1_PROVISIONS, #R" + i + "_QUALIFY_STAGE2_PROVISIONS")
+				 		        .on("input", function() {
+				 		            updateRowTotal(i); // update the row total
+				 		        })
+				 		        .on("blur", function() {
+				 		            updateRowTotal(i); // update on blur
+				 		            $(this).val(formatNumber(parseNumber($(this).val())));
+				 		        });
+				 		});
+
+				 });
     $("#submitButton, #cancelRecord").hide();
 });
 </script>
@@ -1315,7 +1366,7 @@ $.ajax({
                      data-todate=${todate}, 
                      data-currency=${currency},  
                      data-dtltype=${dtltype}, 
-                     data-filename='M-GP.xlsx',
+                     data-filename='M_GP.xlsx',
                      data-type=${type},
                      data-version=${version}"
                      
@@ -1457,14 +1508,14 @@ $.ajax({
 					 						  </td>
 										  <td style="text-align: center; 
 										           vertical-align: middle; 
-										           background-color:rgb(255, 255, 255);
+										           background-color:rgb(107, 122, 143);
 										           font-weight: normal;">
 										      <input class="display-input show_input"
 										             type="text"
 										             th:value="${report.R12_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R12_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 										             id="R12_TOTAL_GENERAL_PROVISIONS"
 										             name="R12_TOTAL_GENERAL_PROVISIONS"
-										             style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+										             style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 										             readonly />
 										    </td>
 
@@ -1511,14 +1562,14 @@ $.ajax({
 					 						  </td>
 										  <td style="text-align: center; 
 										           vertical-align: middle; 
-										           background-color:rgb(255, 255, 255);
+										           background-color:rgb(107, 122, 143);
 										           font-weight: normal;">
 										      <input class="display-input show_input"
 										             type="text"
 										             th:value="${report.R13_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R13_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 										             id="R13_TOTAL_GENERAL_PROVISIONS"
 										             name="R13_TOTAL_GENERAL_PROVISIONS"
-										             style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+										             style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 										             readonly />
 										    </td>
 
@@ -1565,14 +1616,14 @@ $.ajax({
 												  </td>
 											  <td style="text-align: center; 
 													   vertical-align: middle; 
-													   background-color:rgb(255, 255, 255);
+													   background-color:rgb(107, 122, 143);
 													   font-weight: normal;">
 												  <input class="display-input show_input"
 														 type="text"
 														 th:value="${report.R14_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R14_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														 id="R14_TOTAL_GENERAL_PROVISIONS"
 														 name="R14_TOTAL_GENERAL_PROVISIONS"
-														 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 														 readonly />
 												</td>
 
@@ -1588,7 +1639,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: bold; padding-left: 1%;
+													  font-weight: bold; padding-left: 1.5%;
 													"
 													th:title="${report.R15_PRODUCT}"
 													th:text="${report.R15_PRODUCT}">
@@ -1642,7 +1693,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal; padding-left: 1%;
+													  font-weight: normal; padding-left: 2.5%;
 													"
 													th:title="${report.R16_PRODUCT}"
 													th:text="${report.R16_PRODUCT}">
@@ -1673,14 +1724,14 @@ $.ajax({
 													  </td>
 												  <td style="text-align: center; 
 														   vertical-align: middle; 
-														   background-color:rgb(255, 255, 255);
+														   background-color:rgb(107, 122, 143);
 														   font-weight: normal;">
 													  <input class="display-input show_input"
 															 type="text"
 															 th:value="${report.R16_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R16_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R16_TOTAL_GENERAL_PROVISIONS"
 															 name="R16_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -1696,7 +1747,7 @@ $.ajax({
 												  line-height: 1.2;
 												  text-align: left;
 												  vertical-align: middle;
-												  font-weight: normal; padding-left: 1%;
+												  font-weight: normal; padding-left:2.5%;
 												"
 												th:title="${report.R17_PRODUCT}"
 												th:text="${report.R17_PRODUCT}">
@@ -1727,14 +1778,14 @@ $.ajax({
 												  </td>
 											  <td style="text-align: center; 
 													   vertical-align: middle; 
-													   background-color:rgb(255, 255, 255);
+													   background-color:rgb(107, 122, 143);
 													   font-weight: normal;">
 												  <input class="display-input show_input"
 														 type="text"
 														 th:value="${report.R17_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R17_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														 id="R17_TOTAL_GENERAL_PROVISIONS"
 														 name="R17_TOTAL_GENERAL_PROVISIONS"
-														 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 														 readonly />
 												</td>
 
@@ -1750,7 +1801,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal; padding-left: 1%;
+													  font-weight: normal; padding-left: 2.5%;
 													"
 													th:title="${report.R18_PRODUCT}"
 													th:text="${report.R18_PRODUCT}">
@@ -1781,14 +1832,14 @@ $.ajax({
 													  </td>
 												  <td style="text-align: center; 
 														   vertical-align: middle; 
-														   background-color:rgb(255, 255, 255);
+														   background-color:rgb(107, 122, 143);
 														   font-weight: normal;">
 													  <input class="display-input show_input"
 															 type="text"
 															 th:value="${report.R18_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R18_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R18_TOTAL_GENERAL_PROVISIONS"
 															 name="R18_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -1804,7 +1855,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal; padding-left: 1%;
+													  font-weight: normal; padding-left: 2.5%;
 													"
 													th:title="${report.R19_PRODUCT}"
 													th:text="${report.R19_PRODUCT}">
@@ -1835,14 +1886,14 @@ $.ajax({
 													  </td>
 												  <td style="text-align: center; 
 														   vertical-align: middle; 
-														   background-color:rgb(255, 255, 255);
+														   background-color:rgb(107, 122, 143);
 														   font-weight: normal;">
 													  <input class="display-input show_input"
 															 type="text"
 															 th:value="${report.R19_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R19_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R19_TOTAL_GENERAL_PROVISIONS"
 															 name="R19_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -1858,7 +1909,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal; padding-left: 1%;
+													  font-weight: normal; padding-left:2.5%;
 													"
 													th:title="${report.R20_PRODUCT}"
 													th:text="${report.R20_PRODUCT}">
@@ -1889,14 +1940,14 @@ $.ajax({
 													  </td>
 												  <td style="text-align: center; 
 														   vertical-align: middle; 
-														   background-color:rgb(255, 255, 255);
+														   background-color:rgb(107, 122, 143);
 														   font-weight: normal;">
 													  <input class="display-input show_input"
 															 type="text"
 															 th:value="${report.R20_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R20_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R20_TOTAL_GENERAL_PROVISIONS"
 															 name="R20_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -1912,7 +1963,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal; padding-left: 1%;
+													  font-weight: normal; padding-left: 2.5%;
 													"
 													th:title="${report.R21_PRODUCT}"
 													th:text="${report.R21_PRODUCT}">
@@ -1943,14 +1994,14 @@ $.ajax({
 													  </td>
 												  <td style="text-align: center; 
 														   vertical-align: middle; 
-														   background-color:rgb(255, 255, 255);
+														   background-color:rgb(107, 122, 143);
 														   font-weight: normal;">
 													  <input class="display-input show_input"
 															 type="text"
 															 th:value="${report.R21_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R21_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R21_TOTAL_GENERAL_PROVISIONS"
 															 name="R21_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -1966,7 +2017,7 @@ $.ajax({
 														  line-height: 1.2;
 														  text-align: left;
 														  vertical-align: middle;
-														  font-weight: normal; padding-left: 1%;
+														  font-weight: normal; padding-left: 2.5%;
 														"
 														th:title="${report.R22_PRODUCT}"
 														th:text="${report.R22_PRODUCT}">
@@ -1997,14 +2048,14 @@ $.ajax({
 														  </td>
 													  <td style="text-align: center; 
 															   vertical-align: middle; 
-															   background-color:rgb(255, 255, 255);
+															   background-color:rgb(107, 122, 143);
 															   font-weight: normal;">
 														  <input class="display-input show_input"
 																 type="text"
 																 th:value="${report.R22_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R22_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																 id="R22_TOTAL_GENERAL_PROVISIONS"
 																 name="R22_TOTAL_GENERAL_PROVISIONS"
-																 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																 readonly />
 														</td>
 
@@ -2020,7 +2071,7 @@ $.ajax({
 												  line-height: 1.2;
 												  text-align: left;
 												  vertical-align: middle;
-												  font-weight: normal; padding-left: 1%;
+												  font-weight: normal; padding-left: 2.5%;
 												"
 												th:title="${report.R23_PRODUCT}"
 												th:text="${report.R23_PRODUCT}">
@@ -2051,14 +2102,14 @@ $.ajax({
 												  </td>
 											  <td style="text-align: center; 
 													   vertical-align: middle; 
-													   background-color:rgb(255, 255, 255);
+													   background-color:rgb(107, 122, 143);
 													   font-weight: normal;">
 												  <input class="display-input show_input"
 														 type="text"
 														 th:value="${report.R23_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R23_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														 id="R23_TOTAL_GENERAL_PROVISIONS"
 														 name="R23_TOTAL_GENERAL_PROVISIONS"
-														 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 														 readonly />
 												</td>
 
@@ -2074,7 +2125,7 @@ $.ajax({
 												  line-height: 1.2;
 												  text-align: left;
 												  vertical-align: middle;
-												  font-weight: normal; padding-left: 1%;
+												  font-weight: normal; padding-left: 2.5%;
 												"
 												th:title="${report.R24_PRODUCT}"
 												th:text="${report.R24_PRODUCT}">
@@ -2105,14 +2156,14 @@ $.ajax({
 												  </td>
 											  <td style="text-align: center; 
 													   vertical-align: middle; 
-													   background-color:rgb(255, 255, 255);
+													   background-color:rgb(107, 122, 143);
 													   font-weight: normal;">
 												  <input class="display-input show_input"
 														 type="text"
 														 th:value="${report.R24_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R24_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														 id="R24_TOTAL_GENERAL_PROVISIONS"
 														 name="R24_TOTAL_GENERAL_PROVISIONS"
-														 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 														 readonly />
 												</td>
 
@@ -2128,7 +2179,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal; padding-left: 1%;
+													  font-weight: normal; padding-left: 2.5%;
 													"
 													th:title="${report.R25_PRODUCT}"
 													th:text="${report.R25_PRODUCT}">
@@ -2159,14 +2210,14 @@ $.ajax({
 													  </td>
 												  <td style="text-align: center; 
 														   vertical-align: middle; 
-														   background-color:rgb(255, 255, 255);
+														   background-color:rgb(107, 122, 143);
 														   font-weight: normal;">
 													  <input class="display-input show_input"
 															 type="text"
 															 th:value="${report.R25_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R25_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R25_TOTAL_GENERAL_PROVISIONS"
 															 name="R25_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -2182,7 +2233,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal; padding-left: 1%;
+													  font-weight: normal; padding-left: 2.5%;
 													"
 													th:title="${report.R26_PRODUCT}"
 													th:text="${report.R26_PRODUCT}">
@@ -2213,14 +2264,14 @@ $.ajax({
 													  </td>
 												  <td style="text-align: center; 
 														   vertical-align: middle; 
-														   background-color:rgb(255, 255, 255);
+														   background-color:rgb(107, 122, 143);
 														   font-weight: normal;">
 													  <input class="display-input show_input"
 															 type="text"
 															 th:value="${report.R26_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R26_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R26_TOTAL_GENERAL_PROVISIONS"
 															 name="R26_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -2236,7 +2287,7 @@ $.ajax({
 													  line-height: 1.2;
 													  text-align: left;
 													  vertical-align: middle;
-													  font-weight: normal; padding-left: 1%;
+													  font-weight: normal; padding-left: 2.5%;
 													"
 													th:title="${report.R27_PRODUCT}"
 													th:text="${report.R27_PRODUCT}">
@@ -2267,14 +2318,14 @@ $.ajax({
 													  </td>
 												  <td style="text-align: center; 
 														   vertical-align: middle; 
-														   background-color:rgb(255, 255, 255);
+														   background-color:rgb(107, 122, 143);
 														   font-weight: normal;">
 													  <input class="display-input show_input"
 															 type="text"
 															 th:value="${report.R27_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R27_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R27_TOTAL_GENERAL_PROVISIONS"
 															 name="R27_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -2290,7 +2341,7 @@ $.ajax({
 														  line-height: 1.2;
 														  text-align: left;
 														  vertical-align: middle;
-														  font-weight: normal; padding-left: 1%;
+														  font-weight: normal; padding-left: 2.5%;
 														"
 														th:title="${report.R28_PRODUCT}"
 														th:text="${report.R28_PRODUCT}">
@@ -2321,14 +2372,14 @@ $.ajax({
 														  </td>
 													  <td style="text-align: center; 
 															   vertical-align: middle; 
-															   background-color:rgb(255, 255, 255);
+															   background-color:rgb(107, 122, 143);
 															   font-weight: normal;">
 														  <input class="display-input show_input"
 																 type="text"
 																 th:value="${report.R28_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R28_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																 id="R28_TOTAL_GENERAL_PROVISIONS"
 																 name="R28_TOTAL_GENERAL_PROVISIONS"
-																 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																 readonly />
 														</td>
 
@@ -2344,7 +2395,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: bold; padding-left: 1%;
+															  font-weight: bold; padding-left: 2%;
 															"
 															th:title="${report.R29_PRODUCT}"
 															th:text="${report.R29_PRODUCT}">
@@ -2398,7 +2449,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: normal; padding-left: 1%;
+															  font-weight: normal; padding-left: 2.5%;
 															"
 															th:title="${report.R30_PRODUCT}"
 															th:text="${report.R30_PRODUCT}">
@@ -2429,14 +2480,14 @@ $.ajax({
 															  </td>
 														  <td style="text-align: center; 
 																   vertical-align: middle; 
-																   background-color:rgb(255, 255, 255);
+																   background-color:rgb(107, 122, 143);
 																   font-weight: normal;">
 															  <input class="display-input show_input"
 																	 type="text"
 																	 th:value="${report.R30_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R30_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R30_TOTAL_GENERAL_PROVISIONS"
 																	 name="R30_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2452,7 +2503,7 @@ $.ajax({
 														  line-height: 1.2;
 														  text-align: left;
 														  vertical-align: middle;
-														  font-weight: normal; padding-left: 1%;
+														  font-weight: normal; padding-left: 2.5%;
 														"
 														th:title="${report.R31_PRODUCT}"
 														th:text="${report.R31_PRODUCT}">
@@ -2483,14 +2534,14 @@ $.ajax({
 														  </td>
 													  <td style="text-align: center; 
 															   vertical-align: middle; 
-															   background-color:rgb(255, 255, 255);
+															   background-color:rgb(107, 122, 143);
 															   font-weight: normal;">
 														  <input class="display-input show_input"
 																 type="text"
 																 th:value="${report.R31_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R31_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																 id="R31_TOTAL_GENERAL_PROVISIONS"
 																 name="R31_TOTAL_GENERAL_PROVISIONS"
-																 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																 readonly />
 														</td>
 
@@ -2506,7 +2557,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: normal; padding-left: 1%;
+															  font-weight: normal; padding-left: 2.5%;
 															"
 															th:title="${report.R32_PRODUCT}"
 															th:text="${report.R32_PRODUCT}">
@@ -2537,14 +2588,14 @@ $.ajax({
 															  </td>
 														  <td style="text-align: center; 
 																   vertical-align: middle; 
-																   background-color:rgb(255, 255, 255);
+																   background-color:rgb(107, 122, 143);
 																   font-weight: normal;">
 															  <input class="display-input show_input"
 																	 type="text"
 																	 th:value="${report.R32_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R32_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R32_TOTAL_GENERAL_PROVISIONS"
 																	 name="R32_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2560,7 +2611,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: normal; padding-left: 1%;
+															  font-weight: normal; padding-left: 2.5%;
 															"
 															th:title="${report.R33_PRODUCT}"
 															th:text="${report.R33_PRODUCT}">
@@ -2591,14 +2642,14 @@ $.ajax({
 															  </td>
 														  <td style="text-align: center; 
 																   vertical-align: middle; 
-																   background-color:rgb(255, 255, 255);
+																   background-color:rgb(107, 122, 143);
 																   font-weight: normal;">
 															  <input class="display-input show_input"
 																	 type="text"
 																	 th:value="${report.R33_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R33_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R33_TOTAL_GENERAL_PROVISIONS"
 																	 name="R33_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2614,7 +2665,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: normal; padding-left: 1%;
+															  font-weight: normal; padding-left: 2.5%;
 															"
 															th:title="${report.R34_PRODUCT}"
 															th:text="${report.R34_PRODUCT}">
@@ -2645,14 +2696,14 @@ $.ajax({
 															  </td>
 														  <td style="text-align: center; 
 																   vertical-align: middle; 
-																   background-color:rgb(255, 255, 255);
+																   background-color:rgb(107, 122, 143);
 																   font-weight: normal;">
 															  <input class="display-input show_input"
 																	 type="text"
 																	 th:value="${report.R34_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R34_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R34_TOTAL_GENERAL_PROVISIONS"
 																	 name="R34_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2668,7 +2719,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: normal; padding-left: 1%;
+															  font-weight: normal; padding-left:2.5%;
 															"
 															th:title="${report.R35_PRODUCT}"
 															th:text="${report.R35_PRODUCT}">
@@ -2699,14 +2750,14 @@ $.ajax({
 															  </td>
 														  <td style="text-align: center; 
 																   vertical-align: middle; 
-																   background-color:rgb(255, 255, 255);
+																   background-color:rgb(107, 122, 143);
 																   font-weight: normal;">
 															  <input class="display-input show_input"
 																	 type="text"
 																	 th:value="${report.R35_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R35_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R35_TOTAL_GENERAL_PROVISIONS"
 																	 name="R35_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2722,7 +2773,7 @@ $.ajax({
 																  line-height: 1.2;
 																  text-align: left;
 																  vertical-align: middle;
-																  font-weight: normal; padding-left: 1%;
+																  font-weight: normal; padding-left: 2.5%;
 																"
 																th:title="${report.R36_PRODUCT}"
 																th:text="${report.R36_PRODUCT}">
@@ -2753,14 +2804,14 @@ $.ajax({
 																  </td>
 															  <td style="text-align: center; 
 																	   vertical-align: middle; 
-																	   background-color:rgb(255, 255, 255);
+																	   background-color:rgb(107, 122, 143);
 																	   font-weight: normal;">
 																  <input class="display-input show_input"
 																		 type="text"
 																		 th:value="${report.R36_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R36_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		 id="R36_TOTAL_GENERAL_PROVISIONS"
 																		 name="R36_TOTAL_GENERAL_PROVISIONS"
-																		 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																		 readonly />
 																</td>
 
@@ -2776,7 +2827,7 @@ $.ajax({
 														  line-height: 1.2;
 														  text-align: left;
 														  vertical-align: middle;
-														  font-weight: normal; padding-left: 1%;
+														  font-weight: normal; padding-left: 2.5%;
 														"
 														th:title="${report.R37_PRODUCT}"
 														th:text="${report.R37_PRODUCT}">
@@ -2807,14 +2858,14 @@ $.ajax({
 														  </td>
 													  <td style="text-align: center; 
 															   vertical-align: middle; 
-															   background-color:rgb(255, 255, 255);
+															   background-color:rgb(107, 122, 143);
 															   font-weight: normal;">
 														  <input class="display-input show_input"
 																 type="text"
 																 th:value="${report.R37_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R37_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																 id="R37_TOTAL_GENERAL_PROVISIONS"
 																 name="R37_TOTAL_GENERAL_PROVISIONS"
-																 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																 readonly />
 														</td>
 
@@ -2830,7 +2881,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: bold; padding-left: 1%;
+															  font-weight: bold; padding-left: 2%;
 															"
 															th:title="${report.R38_PRODUCT}"
 															th:text="${report.R38_PRODUCT}">
@@ -2884,7 +2935,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: normal; padding-left: 1%;
+															  font-weight: normal; padding-left: 2.5%;
 															"
 															th:title="${report.R39_PRODUCT}"
 															th:text="${report.R39_PRODUCT}">
@@ -2915,14 +2966,14 @@ $.ajax({
 															  </td>
 														  <td style="text-align: center; 
 																   vertical-align: middle; 
-																   background-color:rgb(255, 255, 255);
+																   background-color:rgb(107, 122, 143);
 																   font-weight: normal;">
 															  <input class="display-input show_input"
 																	 type="text"
 																	 th:value="${report.R39_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R39_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R39_TOTAL_GENERAL_PROVISIONS"
 																	 name="R39_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2938,7 +2989,7 @@ $.ajax({
 														  line-height: 1.2;
 														  text-align: left;
 														  vertical-align: middle;
-														  font-weight: normal; padding-left: 1%;
+														  font-weight: normal; padding-left: 2.5%;
 														"
 														th:title="${report.R40_PRODUCT}"
 														th:text="${report.R40_PRODUCT}">
@@ -2969,14 +3020,14 @@ $.ajax({
 														  </td>
 													  <td style="text-align: center; 
 															   vertical-align: middle; 
-															   background-color:rgb(255, 255, 255);
+															   background-color:rgb(107, 122, 143);
 															   font-weight: normal;">
 														  <input class="display-input show_input"
 																 type="text"
 																 th:value="${report.R40_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R40_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																 id="R40_TOTAL_GENERAL_PROVISIONS"
 																 name="R40_TOTAL_GENERAL_PROVISIONS"
-																 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																 readonly />
 														</td>
 
@@ -3078,14 +3129,14 @@ $.ajax({
 																  </td>
 																  <td style="text-align: center; 
 																		   vertical-align: middle; 
-																		   background-color:rgb(255, 255, 255);
+																		   background-color:rgb(107, 122, 143);
 																		   font-weight: normal;">
 																	  <input class="display-input show_input"
 																			 type="text"
 																			 th:value="${report.R42_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R42_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			 id="R42_TOTAL_GENERAL_PROVISIONS"
 																			 name="R42_TOTAL_GENERAL_PROVISIONS"
-																			 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																			 readonly />
 																	</td>
 
@@ -3132,14 +3183,14 @@ $.ajax({
 																	  </td>
 																  <td style="text-align: center; 
 																		   vertical-align: middle; 
-																		   background-color:rgb(255, 255, 255);
+																		   background-color:rgb(107, 122, 143);
 																		   font-weight: normal;">
 																	  <input class="display-input show_input"
 																			 type="text"
 																			 th:value="${report.R43_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R43_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			 id="R43_TOTAL_GENERAL_PROVISIONS"
 																			 name="R43_TOTAL_GENERAL_PROVISIONS"
-																			 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																			 readonly />
 																	</td>
 
@@ -3241,14 +3292,14 @@ $.ajax({
 																  </td>
 																  <td style="text-align: center; 
 																		   vertical-align: middle; 
-																		   background-color:rgb(255, 255, 255);
+																		   background-color:rgb(107, 122, 143);
 																		   font-weight: normal;">
 																	  <input class="display-input show_input"
 																			 type="text"
 																			 th:value="${report.R45_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R45_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			 id="R45_TOTAL_GENERAL_PROVISIONS"
 																			 name="R45_TOTAL_GENERAL_PROVISIONS"
-																			 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																			 readonly />
 																	</td>
 
@@ -3295,14 +3346,14 @@ $.ajax({
 																	  </td>
 																  <td style="text-align: center; 
 																		   vertical-align: middle; 
-																		   background-color:rgb(255, 255, 255);
+																		   background-color:rgb(107, 122, 143);
 																		   font-weight: normal;">
 																	  <input class="display-input show_input"
 																			 type="text"
 																			 th:value="${report.R46_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R46_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			 id="R46_TOTAL_GENERAL_PROVISIONS"
 																			 name="R46_TOTAL_GENERAL_PROVISIONS"
-																			 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																			 readonly />
 																	</td>
 
@@ -3349,14 +3400,14 @@ $.ajax({
 																  </td>
 															  <td style="text-align: center; 
 																	   vertical-align: middle; 
-																	   background-color:rgb(255, 255, 255);
+																	   background-color:rgb(107, 122, 143);
 																	   font-weight: normal;">
 																  <input class="display-input show_input"
 																		 type="text"
 																		 th:value="${report.R47_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R47_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		 id="R47_TOTAL_GENERAL_PROVISIONS"
 																		 name="R47_TOTAL_GENERAL_PROVISIONS"
-																		 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																		 readonly />
 																</td>
 
@@ -3404,14 +3455,14 @@ $.ajax({
 																	  </td>
 																  <td style="text-align: center; 
 																		   vertical-align: middle; 
-																		   background-color:rgb(255, 255, 255);
+																		   background-color:rgb(107, 122, 143);
 																		   font-weight: normal;">
 																	  <input class="display-input show_input"
 																			 type="text"
 																			 th:value="${report.R48_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R48_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			 id="R48_TOTAL_GENERAL_PROVISIONS"
 																			 name="R48_TOTAL_GENERAL_PROVISIONS"
-																			 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																			 readonly />
 																	</td>
 
@@ -3428,7 +3479,7 @@ $.ajax({
 																		  line-height: 1.2;
 																		  text-align: left;
 																		  vertical-align: middle;
-																		  font-weight: bold;padding-left: 2%;
+																		  font-weight: bold;padding-left: 1.5%;
 																		"
 																		th:title="${report.R49_PRODUCT}"
 																		th:text="${report.R49_PRODUCT}">
@@ -3513,14 +3564,14 @@ $.ajax({
 																		  </td>
 																	  <td style="text-align: center; 
 																			   vertical-align: middle; 
-																			   background-color:rgb(255, 255, 255);
+																			   background-color:rgb(107, 122, 143);
 																			   font-weight: normal;">
 																		  <input class="display-input show_input"
 																				 type="text"
 																				 th:value="${report.R50_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R50_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				 id="R50_TOTAL_GENERAL_PROVISIONS"
 																				 name="R50_TOTAL_GENERAL_PROVISIONS"
-																				 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																				 readonly />
 																		</td>
 
@@ -3567,14 +3618,14 @@ $.ajax({
 																	  </td>
 																  <td style="text-align: center; 
 																		   vertical-align: middle; 
-																		   background-color:rgb(255, 255, 255);
+																		   background-color:rgb(107, 122, 143);
 																		   font-weight: normal;">
 																	  <input class="display-input show_input"
 																			 type="text"
 																			 th:value="${report.R51_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R51_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			 id="R51_TOTAL_GENERAL_PROVISIONS"
 																			 name="R51_TOTAL_GENERAL_PROVISIONS"
-																			 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																			 readonly />
 																	</td>
 
@@ -3622,14 +3673,14 @@ $.ajax({
 																		  </td>
 																	  <td style="text-align: center; 
 																			   vertical-align: middle; 
-																			   background-color:rgb(255, 255, 255);
+																			   background-color:rgb(107, 122, 143);
 																			   font-weight: normal;">
 																		  <input class="display-input show_input"
 																				 type="text"
 																				 th:value="${report.R52_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R52_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				 id="R52_TOTAL_GENERAL_PROVISIONS"
 																				 name="R52_TOTAL_GENERAL_PROVISIONS"
-																				 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																				 readonly />
 																		</td>
 
@@ -3732,14 +3783,14 @@ $.ajax({
 																			  </td>
 																		  <td style="text-align: center; 
 																				   vertical-align: middle; 
-																				   background-color:rgb(255, 255, 255);
+																				   background-color:rgb(107, 122, 143);
 																				   font-weight: normal;">
 																			  <input class="display-input show_input"
 																					 type="text"
 																					 th:value="${report.R54_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R54_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																					 id="R54_TOTAL_GENERAL_PROVISIONS"
 																					 name="R54_TOTAL_GENERAL_PROVISIONS"
-																					 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																					 readonly />
 																			</td>
 
@@ -3786,14 +3837,14 @@ $.ajax({
 																		  </td>
 																	  <td style="text-align: center; 
 																			   vertical-align: middle; 
-																			   background-color:rgb(255, 255, 255);
+																			   background-color:rgb(107, 122, 143);
 																			   font-weight: normal;">
 																		  <input class="display-input show_input"
 																				 type="text"
 																				 th:value="${report.R55_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R55_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				 id="R55_TOTAL_GENERAL_PROVISIONS"
 																				 name="R55_TOTAL_GENERAL_PROVISIONS"
-																				 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																				 readonly />
 																		</td>
 
@@ -3841,14 +3892,14 @@ $.ajax({
 																			  </td>
 																		  <td style="text-align: center; 
 																				   vertical-align: middle; 
-																				   background-color:rgb(255, 255, 255);
+																				   background-color:rgb(107, 122, 143);
 																				   font-weight: normal;">
 																			  <input class="display-input show_input"
 																					 type="text"
 																					 th:value="${report.R56_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R56_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																					 id="R56_TOTAL_GENERAL_PROVISIONS"
 																					 name="R56_TOTAL_GENERAL_PROVISIONS"
-																					 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																					 readonly />
 																			</td>
 
@@ -3951,14 +4002,14 @@ $.ajax({
 																				  </td>
 																			  <td style="text-align: center; 
 																					   vertical-align: middle; 
-																					   background-color:rgb(259, 259, 259);
+																					   background-color:rgb(107, 122, 143);
 																					   font-weight: normal;">
 																				  <input class="display-input show_input"
 																						 type="text"
 																						 th:value="${report.R58_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R58_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																						 id="R58_TOTAL_GENERAL_PROVISIONS"
 																						 name="R58_TOTAL_GENERAL_PROVISIONS"
-																						 style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																						 readonly />
 																				</td>
 
@@ -4005,14 +4056,14 @@ $.ajax({
 																			  </td>
 																		  <td style="text-align: center; 
 																				   vertical-align: middle; 
-																				   background-color:rgb(259, 259, 259);
+																				   background-color:rgb(107, 122, 143);
 																				   font-weight: normal;">
 																			  <input class="display-input show_input"
 																					 type="text"
 																					 th:value="${report.R59_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R59_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																					 id="R59_TOTAL_GENERAL_PROVISIONS"
 																					 name="R59_TOTAL_GENERAL_PROVISIONS"
-																					 style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																					 readonly />
 																			</td>
 
@@ -4060,14 +4111,14 @@ $.ajax({
 																				  </td>
 																			  <td style="text-align: center; 
 																					   vertical-align: middle; 
-																					   background-color:rgb(259, 259, 259);
+																					   background-color:rgb(107, 122, 143);
 																					   font-weight: normal;">
 																				  <input class="display-input show_input"
 																						 type="text"
 																						 th:value="${report.R60_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R60_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																						 id="R60_TOTAL_GENERAL_PROVISIONS"
 																						 name="R60_TOTAL_GENERAL_PROVISIONS"
-																						 style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																						 readonly />
 																				</td>
 
@@ -4114,14 +4165,14 @@ $.ajax({
 																					  </td>
 																				  <td style="text-align: center; 
 																						   vertical-align: middle; 
-																						   background-color:rgb(262, 262, 262);
+																						   background-color:rgb(107, 122, 143);
 																						   font-weight: normal;">
 																					  <input class="display-input show_input"
 																							 type="text"
 																							 th:value="${report.R61_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R61_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																							 id="R61_TOTAL_GENERAL_PROVISIONS"
 																							 name="R61_TOTAL_GENERAL_PROVISIONS"
-																							 style="background-color:rgb(262, 262, 262);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																							 readonly />
 																					</td>
 
@@ -4168,14 +4219,14 @@ $.ajax({
 																				  </td>
 																			  <td style="text-align: center; 
 																					   vertical-align: middle; 
-																					   background-color:rgb(262, 262, 262);
+																					   background-color:rgb(107, 122, 143);
 																					   font-weight: normal;">
 																				  <input class="display-input show_input"
 																						 type="text"
 																						 th:value="${report.R62_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R62_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																						 id="R62_TOTAL_GENERAL_PROVISIONS"
 																						 name="R62_TOTAL_GENERAL_PROVISIONS"
-																						 style="background-color:rgb(262, 262, 262);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																						 readonly />
 																				</td>
 
@@ -4223,14 +4274,14 @@ $.ajax({
 																					  </td>
 																				  <td style="text-align: center; 
 																						   vertical-align: middle; 
-																						   background-color:rgb(255, 255, 255);
+																						   background-color:rgb(107, 122, 143);
 																						   font-weight: normal;">
 																					  <input class="display-input show_input"
 																							 type="text"
 																							 th:value="${report.R63_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R63_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																							 id="R63_TOTAL_GENERAL_PROVISIONS"
 																							 name="R63_TOTAL_GENERAL_PROVISIONS"
-																							 style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
 																							 readonly />
 																					</td>
 
@@ -4247,7 +4298,7 @@ $.ajax({
 																						  line-height: 1.2;
 																						  text-align: left;
 																						  vertical-align: middle;
-																						  font-weight: normal;
+																						  font-weight: bold;
 																						"
 																						th:title="${report.R64_PRODUCT}"
 																						th:text="${report.R64_PRODUCT}">
