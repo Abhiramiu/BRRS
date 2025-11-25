@@ -365,7 +365,7 @@ public class BRRS_M_SEC_ReportService {
 			}
 
 			// 2️⃣ Handle R31 totals
-			String[] totalFields = { "O_1Y_FT", "O_1Y_HTM", "O_1Y_TOTAL", "1_5Y_FT", "1_5Y_HTM", "1_5Y_TOTAL",
+			String[] totalFields = { "0_1Y_FT", "0_1Y_HTM", "0_1Y_TOTAL", "1_5Y_FT", "1_5Y_HTM", "1_5Y_TOTAL",
 					"O5Y_FT", "O5Y_HTM", "O5Y_TOTAL", "T_FT", "T_HTM", "T_TOTAL" };
 
 			for (String field : totalFields) {

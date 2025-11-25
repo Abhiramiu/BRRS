@@ -1242,7 +1242,7 @@ public class BRRS_ReportsController {
 
 	@RequestMapping(value = "/SECupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> updateLA4(
+	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
 			@ModelAttribute BRRS_M_SEC_Summary_Entity1 request1,
