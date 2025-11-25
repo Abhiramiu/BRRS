@@ -668,7 +668,7 @@ function parseNumber(val) {
 function showmodify(btn) {
     for (let i = 11; i <= 450; i++) {
         [
-          "_NAME_INSIDER_BORROWER", "_DESCRIPTION", "_APPROVED_LIMIT",
+          "_NAME_INSIDER_BORROWER", "_TYPE_FACILITY","_LOAN_CLASSIFICATION","_DESCRIPTION", "_APPROVED_LIMIT","_INTEREST_RATE",
           "_OUTSTANDING_AMOUNT", "_EXCESS_OVER_CEILING",
           "_CURRENT_PROVISIONS", "_VALUE"
         ].forEach(suffix => {
@@ -8477,7 +8477,14 @@ function fileuploads(btn) {
 
 																		<!-- ================= R115 ================= -->
 																		<tr>
-																		 
+
+																			<td id="ROW115">
+																			<input class="display-input show_input" type="text"
+																				   th:value="${#strings.defaultString(report3.R115_NAME_INSIDER_BORROWER, 'N/A')}"
+																				   id="R115_NAME_INSIDER_BORROWER" name="R115_NAME_INSIDER_BORROWER"
+																				   style="background-color:#FFFFFF; width: 200px; height: 28px;
+																						  border-color: transparent; text-align: left;" readonly />
+																			</td>
 																		  <td id="ROW115" style="padding-left: 10px; font-weight: bold;">
 																			<input class="display-input Show_input" type="text"
 																				   th:value="${report3.R115_TYPE_FACILITY != null ? #numbers.formatDecimal(report3.R115_TYPE_FACILITY, 1, 0, 'POINT') : '0'}"
@@ -22940,73 +22947,6 @@ function fileuploads(btn) {
 	 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
 	 	  </td>
 	 	</tr>
-	 	
-	 	<!-- ================= R331 ================= -->
-	 	<tr>
-	 	
-	 	  <td id="ROW330">
-	 		<input class="display-input show_input" type="text"
-	 			   th:value="${#strings.defaultString(report7.R331_NAME_INSIDER_BORROWER, 'N/A')}"
-	 			   id="R331_NAME_INSIDER_BORROWER" name="R331_NAME_INSIDER_BORROWER"
-	 			   style="background-color:#FFFFFF; width: 200px; height: 28px;
-	 					  border-color: transparent; text-align: left;" readonly />
-	 	  </td>
-	 	  <td id="ROW330" style="padding-left: 10px; font-weight: bold;">
-	 		<input class="display-input Show_input" type="text"
-	 			   th:value="${report7.R331_TYPE_FACILITY != null ? #numbers.formatDecimal(report7.R331_TYPE_FACILITY, 1, 0, 'POINT') : '0'}"
-	 			   id="R331_TYPE_FACILITY" name="R331_TYPE_FACILITY"
-	 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
-	 	  </td>
-	 	  <td id="ROW330" style="padding-left: 10px; font-weight: bold;">
-	 		<input class="display-input Show_input" type="text"
-	 			   th:value="${report7.R331_APPROVED_LIMIT != null ? #numbers.formatDecimal(report7.R331_APPROVED_LIMIT, 1, 0, 'POINT') : '0'}"
-	 			   id="R331_APPROVED_LIMIT" name="R331_APPROVED_LIMIT"
-	 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
-	 	  </td>
-	 	  <td id="ROW330" style="padding-left: 10px; font-weight: bold;">
-	 		<input class="display-input Show_input" type="text"
-	 			   th:value="${report7.R331_OUTSTANDING_AMOUNT != null ? #numbers.formatDecimal(report7.R331_OUTSTANDING_AMOUNT, 1, 0, 'POINT') : '0'}"
-	 			   id="R331_OUTSTANDING_AMOUNT" name="R331_OUTSTANDING_AMOUNT"
-	 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
-	 	  </td>
-	 	  <td id="ROW330" style="padding-left: 10px; font-weight: bold;">
-	 		<input class="display-input Show_input" type="text"
-	 			   th:value="${report7.R331_EXCESS_OVER_CEILING != null ? #numbers.formatDecimal(report7.R331_EXCESS_OVER_CEILING, 1, 0, 'POINT') : '0'}"
-	 			   id="R331_EXCESS_OVER_CEILING" name="R331_EXCESS_OVER_CEILING"
-	 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
-	 	  </td>
-	 	  <td id="ROW330" style="padding-left: 10px; font-weight: bold;">
-	 		<input class="display-input Show_input" type="text"
-	 			   th:value="${report7.R331_LOAN_CLASSIFICATION != null ? #numbers.formatDecimal(report7.R331_LOAN_CLASSIFICATION, 1, 0, 'POINT') : '0'}"
-	 			   id="R331_LOAN_CLASSIFICATION" name="R331_LOAN_CLASSIFICATION"
-	 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
-	 	  </td>
-	 	  <td id="ROW330" style="padding-left: 10px; font-weight: bold;">
-	 		<input class="display-input Show_input" type="text"
-	 			   th:value="${report7.R331_CURRENT_PROVISIONS != null ? #numbers.formatDecimal(report7.R331_CURRENT_PROVISIONS, 1, 0, 'POINT') : '0'}"
-	 			   id="R331_CURRENT_PROVISIONS" name="R331_CURRENT_PROVISIONS"
-	 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
-	 	  </td>
-	 	  <td id="ROW330">
-	 		<input class="display-input show_input" type="text"
-	 			   th:value="${#strings.defaultString(report7.R331_DESCRIPTION, 'N/A')}"
-	 			   id="R331_DESCRIPTION" name="R331_DESCRIPTION"
-	 			   style="background-color:#FFFFFF; width: 200px; height: 28px;
-	 					  border-color: transparent; text-align: left;" readonly />
-	 	  </td>
-	 	  <td id="ROW330" style="padding-left: 10px; font-weight: bold;">
-	 		<input class="display-input Show_input" type="text"
-	 			   th:value="${report7.R331_VALUE != null ? #numbers.formatDecimal(report7.R331_VALUE, 1, 0, 'POINT') : '0'}"
-	 			   id="R331_VALUE" name="R331_VALUE"
-	 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
-	 	  </td>
-	 	  <td id="ROW330" style="padding-left: 10px; font-weight: bold;">
-	 		<input class="display-input Show_input" type="text"
-	 			   th:value="${report7.R331_INTEREST_RATE != null ? #numbers.formatDecimal(report7.R331_INTEREST_RATE, 1, 0, 'POINT') : '0'}"
-	 			   id="R331_INTEREST_RATE" name="R331_INTEREST_RATE"
-	 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
-	 	  </td>
-	 	</tr>
 	 	<!-- ================= R331 ================= -->
 	 	<tr>
 	 	  
@@ -24335,149 +24275,184 @@ function fileuploads(btn) {
 	 	  </td>
 	 	</tr>
 	 </tbody>		
-  <tbody th:each="report8 : ${reportsummary8}">
-  <!-- ================= R351 ================= -->
- 	<tr>
-		<td id="ROW351" rowspan="50"
-		style="text-align: center;
-					vertical-align: middle;">
-		 		<input class="display-input show_input" type="text"
-		 			   th:value="${#strings.defaultString(report8.R351_PRODUCT, 'N/A')}"
-		 			   id="R351_PRODUCT" name="R351_PRODUCT"
-		 			   style="background-color:#FFFFFF; width: 200px; height: 28px;
-		 					  border-color: transparent; text-align: center;" readonly />
-		 	  </td>
- 	  <td id="ROW351">
- 		<input class="display-input show_input" type="text"
- 			   th:value="${#strings.defaultString(report8.R351_NAME_INSIDER_BORROWER, 'N/A')}"
- 			   id="R351_NAME_INSIDER_BORROWER" name="R351_NAME_INSIDER_BORROWER"
- 			   style="background-color:#FFFFFF; width: 200px; height: 28px;
- 					  border-color: transparent; text-align: left;" readonly />
- 	  </td>
- 	  <td id="ROW351" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R351_TYPE_FACILITY != null ? #numbers.formatDecimal(report8.R351_TYPE_FACILITY, 1, 0, 'POINT') : '0'}"
- 			   id="R351_TYPE_FACILITY" name="R351_TYPE_FACILITY"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW351" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R351_APPROVED_LIMIT != null ? #numbers.formatDecimal(report8.R351_APPROVED_LIMIT, 1, 0, 'POINT') : '0'}"
- 			   id="R351_APPROVED_LIMIT" name="R351_APPROVED_LIMIT"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW351" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R351_OUTSTANDING_AMOUNT != null ? #numbers.formatDecimal(report8.R351_OUTSTANDING_AMOUNT, 1, 0, 'POINT') : '0'}"
- 			   id="R351_OUTSTANDING_AMOUNT" name="R351_OUTSTANDING_AMOUNT"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW351" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R351_EXCESS_OVER_CEILING != null ? #numbers.formatDecimal(report8.R351_EXCESS_OVER_CEILING, 1, 0, 'POINT') : '0'}"
- 			   id="R351_EXCESS_OVER_CEILING" name="R351_EXCESS_OVER_CEILING"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW351" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R351_LOAN_CLASSIFICATION != null ? #numbers.formatDecimal(report8.R351_LOAN_CLASSIFICATION, 1, 0, 'POINT') : '0'}"
- 			   id="R351_LOAN_CLASSIFICATION" name="R351_LOAN_CLASSIFICATION"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW351" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R351_CURRENT_PROVISIONS != null ? #numbers.formatDecimal(report8.R351_CURRENT_PROVISIONS, 1, 0, 'POINT') : '0'}"
- 			   id="R351_CURRENT_PROVISIONS" name="R351_CURRENT_PROVISIONS"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW351">
- 		<input class="display-input show_input" type="text"
- 			   th:value="${#strings.defaultString(report8.R351_DESCRIPTION, 'N/A')}"
- 			   id="R351_DESCRIPTION" name="R351_DESCRIPTION"
- 			   style="background-color:#FFFFFF; width: 200px; height: 28px;
- 					  border-color: transparent; text-align: left;" readonly />
- 	  </td>
- 	  <td id="ROW351" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R351_VALUE != null ? #numbers.formatDecimal(report8.R351_VALUE, 1, 0, 'POINT') : '0'}"
- 			   id="R351_VALUE" name="R351_VALUE"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW351" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R351_INTEREST_RATE != null ? #numbers.formatDecimal(report8.R351_INTEREST_RATE, 1, 0, 'POINT') : '0'}"
- 			   id="R351_INTEREST_RATE" name="R351_INTEREST_RATE"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	<!-- ================= R352 ================= -->
- 	<tr>
- 	</tr>
- 					
- 	 
- 	  <td id="ROW352">
- 		<input class="display-input show_input" type="text"
- 			   th:value="${#strings.defaultString(report8.R352_NAME_INSIDER_BORROWER, 'N/A')}"
- 			   id="R352_NAME_INSIDER_BORROWER" name="R352_NAME_INSIDER_BORROWER"
- 			   style="background-color:#FFFFFF; width: 200px; height: 28px;
- 					  border-color: transparent; text-align: left;" readonly />
- 	  </td>
- 	  <td id="ROW352" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R352_TYPE_FACILITY != null ? #numbers.formatDecimal(report8.R352_TYPE_FACILITY, 1, 0, 'POINT') : '0'}"
- 			   id="R352_TYPE_FACILITY" name="R352_TYPE_FACILITY"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW352" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R352_APPROVED_LIMIT != null ? #numbers.formatDecimal(report8.R352_APPROVED_LIMIT, 1, 0, 'POINT') : '0'}"
- 			   id="R352_APPROVED_LIMIT" name="R352_APPROVED_LIMIT"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW352" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R352_OUTSTANDING_AMOUNT != null ? #numbers.formatDecimal(report8.R352_OUTSTANDING_AMOUNT, 1, 0, 'POINT') : '0'}"
- 			   id="R352_OUTSTANDING_AMOUNT" name="R352_OUTSTANDING_AMOUNT"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW352" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R352_EXCESS_OVER_CEILING != null ? #numbers.formatDecimal(report8.R352_EXCESS_OVER_CEILING, 1, 0, 'POINT') : '0'}"
- 			   id="R352_EXCESS_OVER_CEILING" name="R352_EXCESS_OVER_CEILING"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW352" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R352_LOAN_CLASSIFICATION != null ? #numbers.formatDecimal(report8.R352_LOAN_CLASSIFICATION, 1, 0, 'POINT') : '0'}"
- 			   id="R352_LOAN_CLASSIFICATION" name="R352_LOAN_CLASSIFICATION"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW352" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R352_CURRENT_PROVISIONS != null ? #numbers.formatDecimal(report8.R352_CURRENT_PROVISIONS, 1, 0, 'POINT') : '0'}"
- 			   id="R352_CURRENT_PROVISIONS" name="R352_CURRENT_PROVISIONS"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW352">
- 		<input class="display-input show_input" type="text"
- 			   th:value="${#strings.defaultString(report8.R352_DESCRIPTION, 'N/A')}"
- 			   id="R352_DESCRIPTION" name="R352_DESCRIPTION"
- 			   style="background-color:#FFFFFF; width: 200px; height: 28px;
- 					  border-color: transparent; text-align: left;" readonly />
- 	  </td>
- 	  <td id="ROW352" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R352_VALUE != null ? #numbers.formatDecimal(report8.R352_VALUE, 1, 0, 'POINT') : '0'}"
- 			   id="R352_VALUE" name="R352_VALUE"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW352" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R352_INTEREST_RATE != null ? #numbers.formatDecimal(report8.R352_INTEREST_RATE, 1, 0, 'POINT') : '0'}"
- 			   id="R352_INTEREST_RATE" name="R352_INTEREST_RATE"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	</tr>
- 	
+	 <tbody th:each="report8 : ${reportsummary8}">
+
+	     <!-- ================= R351 ================= -->
+	     <tr>
+	         <td id="ROW351_PRODUCT" rowspan="50"
+	             style="text-align:center; vertical-align: middle;">
+	             <input class="display-input show_input" type="text"
+	                    th:value="${#strings.defaultString(report8.R351_PRODUCT, 'N/A')}"
+	                    id="R351_PRODUCT" name="R351_PRODUCT"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:center;" readonly />
+	         </td>
+
+	         <td>
+	             <input class="display-input show_input" type="text"
+	                    th:value="${#strings.defaultString(report8.R351_NAME_INSIDER_BORROWER, 'N/A')}"
+	                    id="R351_NAME_INSIDER_BORROWER" name="R351_NAME_INSIDER_BORROWER"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:left;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R351_TYPE_FACILITY != null ? #numbers.formatDecimal(report8.R351_TYPE_FACILITY, 1, 0, 'POINT') : '0'}"
+	                    id="R351_TYPE_FACILITY" name="R351_TYPE_FACILITY"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R351_APPROVED_LIMIT != null ? #numbers.formatDecimal(report8.R351_APPROVED_LIMIT, 1, 0, 'POINT') : '0'}"
+	                    id="R351_APPROVED_LIMIT" name="R351_APPROVED_LIMIT"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R351_OUTSTANDING_AMOUNT != null ? #numbers.formatDecimal(report8.R351_OUTSTANDING_AMOUNT, 1, 0, 'POINT') : '0'}"
+	                    id="R351_OUTSTANDING_AMOUNT" name="R351_OUTSTANDING_AMOUNT"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R351_EXCESS_OVER_CEILING != null ? #numbers.formatDecimal(report8.R351_EXCESS_OVER_CEILING, 1, 0, 'POINT') : '0'}"
+	                    id="R351_EXCESS_OVER_CEILING" name="R351_EXCESS_OVER_CEILING"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R351_LOAN_CLASSIFICATION != null ? #numbers.formatDecimal(report8.R351_LOAN_CLASSIFICATION, 1, 0, 'POINT') : '0'}"
+	                    id="R351_LOAN_CLASSIFICATION" name="R351_LOAN_CLASSIFICATION"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R351_CURRENT_PROVISIONS != null ? #numbers.formatDecimal(report8.R351_CURRENT_PROVISIONS, 1, 0, 'POINT') : '0'}"
+	                    id="R351_CURRENT_PROVISIONS" name="R351_CURRENT_PROVISIONS"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td>
+	             <input class="display-input show_input" type="text"
+	                    th:value="${#strings.defaultString(report8.R351_DESCRIPTION, 'N/A')}"
+	                    id="R351_DESCRIPTION" name="R351_DESCRIPTION"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:left;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R351_VALUE != null ? #numbers.formatDecimal(report8.R351_VALUE, 1, 0, 'POINT') : '0'}"
+	                    id="R351_VALUE" name="R351_VALUE"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R351_INTEREST_RATE != null ? #numbers.formatDecimal(report8.R351_INTEREST_RATE, 1, 0, 'POINT') : '0'}"
+	                    id="R351_INTEREST_RATE" name="R351_INTEREST_RATE"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+	     </tr>
+
+
+	     <!-- ================= R352 ================= -->
+	     <tr>
+	         <td>
+	             <input class="display-input show_input" type="text"
+	                    th:value="${#strings.defaultString(report8.R352_NAME_INSIDER_BORROWER, 'N/A')}"
+	                    id="R352_NAME_INSIDER_BORROWER" name="R352_NAME_INSIDER_BORROWER"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:left;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R352_TYPE_FACILITY != null ? #numbers.formatDecimal(report8.R352_TYPE_FACILITY, 1, 0, 'POINT') : '0'}"
+	                    id="R352_TYPE_FACILITY" name="R352_TYPE_FACILITY"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R352_APPROVED_LIMIT != null ? #numbers.formatDecimal(report8.R352_APPROVED_LIMIT, 1, 0, 'POINT') : '0'}"
+	                    id="R352_APPROVED_LIMIT" name="R352_APPROVED_LIMIT"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R352_OUTSTANDING_AMOUNT != null ? #numbers.formatDecimal(report8.R352_OUTSTANDING_AMOUNT, 1, 0, 'POINT') : '0'}"
+	                    id="R352_OUTSTANDING_AMOUNT" name="R352_OUTSTANDING_AMOUNT"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R352_EXCESS_OVER_CEILING != null ? #numbers.formatDecimal(report8.R352_EXCESS_OVER_CEILING, 1, 0, 'POINT') : '0'}"
+	                    id="R352_EXCESS_OVER_CEILING" name="R352_EXCESS_OVER_CEILING"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R352_LOAN_CLASSIFICATION != null ? #numbers.formatDecimal(report8.R352_LOAN_CLASSIFICATION, 1, 0, 'POINT') : '0'}"
+	                    id="R352_LOAN_CLASSIFICATION" name="R352_LOAN_CLASSIFICATION"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R352_CURRENT_PROVISIONS != null ? #numbers.formatDecimal(report8.R352_CURRENT_PROVISIONS, 1, 0, 'POINT') : '0'}"
+	                    id="R352_CURRENT_PROVISIONS" name="R352_CURRENT_PROVISIONS"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td>
+	             <input class="display-input show_input" type="text"
+	                    th:value="${#strings.defaultString(report8.R352_DESCRIPTION, 'N/A')}"
+	                    id="R352_DESCRIPTION" name="R352_DESCRIPTION"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:left;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R352_VALUE != null ? #numbers.formatDecimal(report8.R352_VALUE, 1, 0, 'POINT') : '0'}"
+	                    id="R352_VALUE" name="R352_VALUE"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+
+	         <td style="padding-left:10px; font-weight:bold;">
+	             <input class="display-input Show_input" type="text"
+	                    th:value="${report8.R352_INTEREST_RATE != null ? #numbers.formatDecimal(report8.R352_INTEREST_RATE, 1, 0, 'POINT') : '0'}"
+	                    id="R352_INTEREST_RATE" name="R352_INTEREST_RATE"
+	                    style="background-color:#FFFFFF; width:200px; height:28px;
+	                           border-color:transparent; text-align:right;" readonly />
+	         </td>
+	     </tr>
+
 
  			<!-- ================= R353 ================= -->
  			<tr>
@@ -25353,79 +25328,80 @@ function fileuploads(btn) {
  			   id="R365_VALUE" name="R365_VALUE"
  			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
  	  </td>
- 	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
+ 	  <td id="ROW365" style="padding-left: 10px; font-weight: bold;">
  		<input class="display-input Show_input" type="text"
  			   th:value="${report8.R365_INTEREST_RATE != null ? #numbers.formatDecimal(report8.R365_INTEREST_RATE, 1, 0, 'POINT') : '0'}"
  			   id="R365_INTEREST_RATE" name="R365_INTEREST_RATE"
  			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
  	  </td>
  	</tr>
- 	<!-- ================= R366 ================= -->
- 	<tr>
- 	
- 	  <td id="ROW366">
- 		<input class="display-input show_input" type="text"
- 			   th:value="${#strings.defaultString(report8.R366_NAME_INSIDER_BORROWER, 'N/A')}"
- 			   id="R366_NAME_INSIDER_BORROWER" name="R366_NAME_INSIDER_BORROWER"
- 			   style="background-color:#FFFFFF; width: 200px; height: 28px;
- 					  border-color: transparent; text-align: left;" readonly />
- 	  </td>
- 	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R366_TYPE_FACILITY != null ? #numbers.formatDecimal(report8.R366_TYPE_FACILITY, 1, 0, 'POINT') : '0'}"
- 			   id="R366_TYPE_FACILITY" name="R366_TYPE_FACILITY"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R366_APPROVED_LIMIT != null ? #numbers.formatDecimal(report8.R366_APPROVED_LIMIT, 1, 0, 'POINT') : '0'}"
- 			   id="R366_APPROVED_LIMIT" name="R366_APPROVED_LIMIT"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R366_OUTSTANDING_AMOUNT != null ? #numbers.formatDecimal(report8.R366_OUTSTANDING_AMOUNT, 1, 0, 'POINT') : '0'}"
- 			   id="R366_OUTSTANDING_AMOUNT" name="R366_OUTSTANDING_AMOUNT"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R366_EXCESS_OVER_CEILING != null ? #numbers.formatDecimal(report8.R366_EXCESS_OVER_CEILING, 1, 0, 'POINT') : '0'}"
- 			   id="R366_EXCESS_OVER_CEILING" name="R366_EXCESS_OVER_CEILING"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R366_LOAN_CLASSIFICATION != null ? #numbers.formatDecimal(report8.R366_LOAN_CLASSIFICATION, 1, 0, 'POINT') : '0'}"
- 			   id="R366_LOAN_CLASSIFICATION" name="R366_LOAN_CLASSIFICATION"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R366_CURRENT_PROVISIONS != null ? #numbers.formatDecimal(report8.R366_CURRENT_PROVISIONS, 1, 0, 'POINT') : '0'}"
- 			   id="R366_CURRENT_PROVISIONS" name="R366_CURRENT_PROVISIONS"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW366">
- 		<input class="display-input show_input" type="text"
- 			   th:value="${#strings.defaultString(report8.R366_DESCRIPTION, 'N/A')}"
- 			   id="R366_DESCRIPTION" name="R366_DESCRIPTION"
- 			   style="background-color:#FFFFFF; width: 200px; height: 28px;
- 					  border-color: transparent; text-align: left;" readonly />
- 	  </td>
- 	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R366_VALUE != null ? #numbers.formatDecimal(report8.R366_VALUE, 1, 0, 'POINT') : '0'}"
- 			   id="R366_VALUE" name="R366_VALUE"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
- 		<input class="display-input Show_input" type="text"
- 			   th:value="${report8.R366_INTEREST_RATE != null ? #numbers.formatDecimal(report8.R366_INTEREST_RATE, 1, 0, 'POINT') : '0'}"
- 			   id="R366_INTEREST_RATE" name="R366_INTEREST_RATE"
- 			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
- 	  </td>
- 	</tr>
+
+	<!-- ================= R366 ================= -->
+	<tr>
+
+	  <td id="ROW366">
+		<input class="display-input show_input" type="text"
+			   th:value="${#strings.defaultString(report8.R366_NAME_INSIDER_BORROWER, 'N/A')}"
+			   id="R366_NAME_INSIDER_BORROWER" name="R366_NAME_INSIDER_BORROWER"
+			   style="background-color:#FFFFFF; width: 200px; height: 28px;
+					  border-color: transparent; text-align: left;" readonly />
+	  </td>
+	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
+		<input class="display-input Show_input" type="text"
+			   th:value="${report8.R366_TYPE_FACILITY != null ? #numbers.formatDecimal(report8.R366_TYPE_FACILITY, 1, 0, 'POINT') : '0'}"
+			   id="R366_TYPE_FACILITY" name="R366_TYPE_FACILITY"
+			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+	  </td>
+	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
+		<input class="display-input Show_input" type="text"
+			   th:value="${report8.R366_APPROVED_LIMIT != null ? #numbers.formatDecimal(report8.R366_APPROVED_LIMIT, 1, 0, 'POINT') : '0'}"
+			   id="R366_APPROVED_LIMIT" name="R366_APPROVED_LIMIT"
+			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+	  </td>
+	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
+		<input class="display-input Show_input" type="text"
+			   th:value="${report8.R366_OUTSTANDING_AMOUNT != null ? #numbers.formatDecimal(report8.R366_OUTSTANDING_AMOUNT, 1, 0, 'POINT') : '0'}"
+			   id="R366_OUTSTANDING_AMOUNT" name="R366_OUTSTANDING_AMOUNT"
+			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+	  </td>
+	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
+		<input class="display-input Show_input" type="text"
+			   th:value="${report8.R366_EXCESS_OVER_CEILING != null ? #numbers.formatDecimal(report8.R366_EXCESS_OVER_CEILING, 1, 0, 'POINT') : '0'}"
+			   id="R366_EXCESS_OVER_CEILING" name="R366_EXCESS_OVER_CEILING"
+			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+	  </td>
+	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
+		<input class="display-input Show_input" type="text"
+			   th:value="${report8.R366_LOAN_CLASSIFICATION != null ? #numbers.formatDecimal(report8.R366_LOAN_CLASSIFICATION, 1, 0, 'POINT') : '0'}"
+			   id="R366_LOAN_CLASSIFICATION" name="R366_LOAN_CLASSIFICATION"
+			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+	  </td>
+	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
+		<input class="display-input Show_input" type="text"
+			   th:value="${report8.R366_CURRENT_PROVISIONS != null ? #numbers.formatDecimal(report8.R366_CURRENT_PROVISIONS, 1, 0, 'POINT') : '0'}"
+			   id="R366_CURRENT_PROVISIONS" name="R366_CURRENT_PROVISIONS"
+			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+	  </td>
+	  <td id="ROW366">
+		<input class="display-input show_input" type="text"
+			   th:value="${#strings.defaultString(report8.R366_DESCRIPTION, 'N/A')}"
+			   id="R366_DESCRIPTION" name="R366_DESCRIPTION"
+			   style="background-color:#FFFFFF; width: 200px; height: 28px;
+					  border-color: transparent; text-align: left;" readonly />
+	  </td>
+	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
+		<input class="display-input Show_input" type="text"
+			   th:value="${report8.R366_VALUE != null ? #numbers.formatDecimal(report8.R366_VALUE, 1, 0, 'POINT') : '0'}"
+			   id="R366_VALUE" name="R366_VALUE"
+			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+	  </td>
+	  <td id="ROW366" style="padding-left: 10px; font-weight: bold;">
+		<input class="display-input Show_input" type="text"
+			   th:value="${report8.R366_INTEREST_RATE != null ? #numbers.formatDecimal(report8.R366_INTEREST_RATE, 1, 0, 'POINT') : '0'}"
+			   id="R366_INTEREST_RATE" name="R366_INTEREST_RATE"
+			   style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+	  </td>
+	</tr>
  	<!-- ================= R367 ================= -->
  	<tr>
  	 
@@ -31054,19 +31030,19 @@ function fileuploads(btn) {
  		<input class="display-input Show_input" type="text"
  			   th:value="${report9.R451_APPROVED_LIMIT != null ? #numbers.formatDecimal(report9.R451_APPROVED_LIMIT, 1, 0, 'POINT') : '0'}"
  			   id="R451_APPROVED_LIMIT" name="R451_APPROVED_LIMIT"
- 			   style="background-color:rgb(107, 122, 143); width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+ 			   style="background-color:rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
  	  </td>
  	  <td id="ROW451" style="padding-left: 10px; font-weight: bold;background-color:rgb(107, 122, 143);">
  		<input class="display-input Show_input" type="text"
  			   th:value="${report9.R451_OUTSTANDING_AMOUNT != null ? #numbers.formatDecimal(report9.R451_OUTSTANDING_AMOUNT, 1, 0, 'POINT') : '0'}"
  			   id="R451_OUTSTANDING_AMOUNT" name="R451_OUTSTANDING_AMOUNT"
- 			   style="background-color:rgb(107, 122, 143); width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+ 			   style="background-color:rgb(107, 122, 143); color: white;width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
  	  </td>
  	  <td id="ROW451" style="padding-left: 10px; font-weight: bold;background-color:rgb(107, 122, 143);">
  		<input class="display-input Show_input" type="text"
  			   th:value="${report9.R451_EXCESS_OVER_CEILING != null ? #numbers.formatDecimal(report9.R451_EXCESS_OVER_CEILING, 1, 0, 'POINT') : '0'}"
  			   id="R451_EXCESS_OVER_CEILING" name="R451_EXCESS_OVER_CEILING"
- 			   style="background-color:rgb(107, 122, 143);width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+ 			   style="background-color:rgb(107, 122, 143);color: white;width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
  	  </td>
  	  <td  style="background-color: black;">
  		  </td>
@@ -31074,7 +31050,7 @@ function fileuploads(btn) {
  		<input class="display-input Show_input" type="text"
  			   th:value="${report9.R451_CURRENT_PROVISIONS != null ? #numbers.formatDecimal(report9.R451_CURRENT_PROVISIONS, 1, 0, 'POINT') : '0'}"
  			   id="R451_CURRENT_PROVISIONS" name="R451_CURRENT_PROVISIONS"
- 			   style="background-color:rgb(107, 122, 143); width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+ 			   style="background-color:rgb(107, 122, 143);color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
  	  </td>
  	  <td  style="background-color: black;">
  			  </td>
@@ -31082,7 +31058,7 @@ function fileuploads(btn) {
  		<input class="display-input Show_input" type="text"
  			   th:value="${report9.R451_VALUE != null ? #numbers.formatDecimal(report9.R451_VALUE, 1, 0, 'POINT') : '0'}"
  			   id="R451_VALUE" name="R451_VALUE"
- 			   style="background-color:rgb(107, 122, 143);width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
+ 			   style="background-color:rgb(107, 122, 143);color: white;width: 200px; height: 28px; border-color: transparent; text-align: right;" readonly />
  	  </td>
  	  <td  style="background-color: black;">
  			  </td>

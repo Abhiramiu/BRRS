@@ -765,7 +765,7 @@ function cancelModify() {
 <script>
 function formatNumber(num) {
     if (isNaN(num)) return "";
-    return num.toLocaleString('en-IN');
+    return num.toLocaleString('en-US');
 }
 function parseNumber(val) {
     return parseFloat(val.replace(/,/g, "")) || 0;

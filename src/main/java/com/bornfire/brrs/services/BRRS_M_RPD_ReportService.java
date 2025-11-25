@@ -273,6 +273,8 @@ public void updateReport1(M_RPD_Summary_Entity1 entity1) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
+            		"NAME_INSIDER_BORROWER",
+            	    "DESCRIPTION",
                 "APPROVED_LIMIT",
                 "OUTSTANDING_AMOUNT",
                 "EXCESS_OVER_CEILING",
@@ -315,6 +317,8 @@ public void updateReport2(M_RPD_Summary_Entity2 entity2) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
+            		"NAME_INSIDER_BORROWER",
+            	    "DESCRIPTION",
             		  "APPROVED_LIMIT",
                       "OUTSTANDING_AMOUNT",
                       "EXCESS_OVER_CEILING",
@@ -356,11 +360,16 @@ public void updateReport3(M_RPD_Summary_Entity3 entity3) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
+            		"NAME_INSIDER_BORROWER",
+            	    "DESCRIPTION",
             		  "APPROVED_LIMIT",
                       "OUTSTANDING_AMOUNT",
                       "EXCESS_OVER_CEILING",
                       "CURRENT_PROVISIONS",
-                      "VALUE"
+                      "VALUE",
+                      "TYPE_FACILITY",         
+                      "LOAN_CLASSIFICATION",   
+                      "INTEREST_RATE"    
             };
 
             for (String field : fields) {
@@ -397,11 +406,16 @@ public void updateReport4(M_RPD_Summary_Entity4 entity4) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
+            		"NAME_INSIDER_BORROWER",
+            	    "DESCRIPTION",
             		  "APPROVED_LIMIT",
                       "OUTSTANDING_AMOUNT",
                       "EXCESS_OVER_CEILING",
                       "CURRENT_PROVISIONS",
-                      "VALUE"
+                      "VALUE",
+                      "TYPE_FACILITY",         
+                      "LOAN_CLASSIFICATION",   
+                      "INTEREST_RATE" 
             };
 
             for (String field : fields) {
@@ -438,11 +452,16 @@ public void updateReport5(M_RPD_Summary_Entity5 entity5) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
+            		"NAME_INSIDER_BORROWER",
+            	    "DESCRIPTION",
             		  "APPROVED_LIMIT",
                       "OUTSTANDING_AMOUNT",
                       "EXCESS_OVER_CEILING",
                       "CURRENT_PROVISIONS",
-                      "VALUE"
+                      "VALUE",
+                      "TYPE_FACILITY",         
+                      "LOAN_CLASSIFICATION",   
+                      "INTEREST_RATE" 
             };
 
             for (String field : fields) {
@@ -479,11 +498,16 @@ public void updateReport6(M_RPD_Summary_Entity6 entity6) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
+            		"NAME_INSIDER_BORROWER",
+            	    "DESCRIPTION",
             		  "APPROVED_LIMIT",
                       "OUTSTANDING_AMOUNT",
                       "EXCESS_OVER_CEILING",
                       "CURRENT_PROVISIONS",
-                      "VALUE"
+                      "VALUE",
+                      "TYPE_FACILITY",         
+                      "LOAN_CLASSIFICATION",   
+                      "INTEREST_RATE" 
             };
 
             for (String field : fields) {
@@ -520,11 +544,16 @@ public void updateReport7(M_RPD_Summary_Entity7 entity7) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
+            		"NAME_INSIDER_BORROWER",
+            	    "DESCRIPTION",
             		  "APPROVED_LIMIT",
                       "OUTSTANDING_AMOUNT",
                       "EXCESS_OVER_CEILING",
                       "CURRENT_PROVISIONS",
-                      "VALUE"
+                      "VALUE",
+                      "TYPE_FACILITY",         
+                      "LOAN_CLASSIFICATION",   
+                      "INTEREST_RATE" 
             };
 
             for (String field : fields) {
@@ -561,11 +590,16 @@ public void updateReport8(M_RPD_Summary_Entity8 entity8) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
+            		"NAME_INSIDER_BORROWER",
+            	    "DESCRIPTION",
             		  "APPROVED_LIMIT",
                       "OUTSTANDING_AMOUNT",
                       "EXCESS_OVER_CEILING",
                       "CURRENT_PROVISIONS",
-                      "VALUE"
+                      "VALUE",
+                      "TYPE_FACILITY",         
+                      "LOAN_CLASSIFICATION",   
+                      "INTEREST_RATE" 
             };
 
             for (String field : fields) {
@@ -602,11 +636,16 @@ public void updateReport9(M_RPD_Summary_Entity9 entity9) {
             String prefix = "R" + i + "_";
             // You can add more fields here if needed later
             String[] fields = {
+            		"NAME_INSIDER_BORROWER",
+            	    "DESCRIPTION",
             		  "APPROVED_LIMIT",
                       "OUTSTANDING_AMOUNT",
                       "EXCESS_OVER_CEILING",
                       "CURRENT_PROVISIONS",
-                      "VALUE"
+                      "VALUE",
+                      "TYPE_FACILITY",         
+                      "LOAN_CLASSIFICATION",   
+                      "INTEREST_RATE" 
             };
 
             for (String field : fields) {
