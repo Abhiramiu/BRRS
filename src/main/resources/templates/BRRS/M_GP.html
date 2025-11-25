@@ -1436,7 +1436,7 @@ $.ajax({
 						           th:value="${report.R11_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R11_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 						           id="R11_STAGE1_PROVISIONS"
 						           name="R11_STAGE1_PROVISIONS"
-						           style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+						           style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 						           readonly />
 						  </td>
 						  <td style="text-align: center; 
@@ -1448,7 +1448,7 @@ $.ajax({
   						           th:value="${report.R11_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R11_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
   						           id="R11_QUALIFY_STAGE2_PROVISIONS"
   						           name="R11_QUALIFY_STAGE2_PROVISIONS"
-  						           style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+  						           style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
   						           readonly />
   						  </td>
 						  <td style="text-align: center; 
@@ -1460,7 +1460,7 @@ $.ajax({
 						             th:value="${report.R11_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R11_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 						             id="R11_TOTAL_GENERAL_PROVISIONS"
 						             name="R11_TOTAL_GENERAL_PROVISIONS"
-						             style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+						             style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 						             readonly />
 						    </td>
 
@@ -1481,7 +1481,7 @@ $.ajax({
 										    th:title="${report.R12_PRODUCT}"
 										    th:text="${report.R12_PRODUCT}">
 										</td>
-										<td style="text-align: center; 
+										<td style="text-align: right; 
 										         vertical-align: middle; 
 										         background-color:rgb(255, 255, 255);
 										         font-weight: normal;
@@ -1491,10 +1491,10 @@ $.ajax({
 										           th:value="${report.R12_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R12_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 										           id="R12_STAGE1_PROVISIONS"
 										           name="R12_STAGE1_PROVISIONS"
-										           style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+										           style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 										           readonly />
 										  </td>
-										  <td style="text-align: center; 
+										  <td style="text-align: right; 
 					 						         vertical-align: middle; 
 					 						         background-color:rgb(255, 255, 255);
 					 						         font-weight: normal;">
@@ -1503,7 +1503,7 @@ $.ajax({
 					 						           th:value="${report.R12_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R12_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 					 						           id="R12_QUALIFY_STAGE2_PROVISIONS"
 					 						           name="R12_QUALIFY_STAGE2_PROVISIONS"
-					 						           style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+					 						           style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 					 						           readonly />
 					 						  </td>
 										  <td style="text-align: center; 
@@ -1515,7 +1515,7 @@ $.ajax({
 										             th:value="${report.R12_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R12_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 										             id="R12_TOTAL_GENERAL_PROVISIONS"
 										             name="R12_TOTAL_GENERAL_PROVISIONS"
-										             style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+										             style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 										             readonly />
 										    </td>
 
@@ -1536,19 +1536,20 @@ $.ajax({
 										    th:title="${report.R13_PRODUCT}"
 										    th:text="${report.R13_PRODUCT}">
 										</td>
-										<td style="text-align: center; 
+										<td style="text-align: right; 
 										         vertical-align: middle; 
 										         background-color:rgb(255, 255, 255);
-										         font-weight: normal;">
+										         font-weight: normal;
+												">
 										    <input class="display-input show_input"
 										           type="text"
 										           th:value="${report.R13_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R13_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 										           id="R13_STAGE1_PROVISIONS"
 										           name="R13_STAGE1_PROVISIONS"
-										           style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+										           style=" background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 										           readonly />
 										  </td>
-										  <td style="text-align: center; 
+										  <td style="text-align: right; 
 					 						         vertical-align: middle; 
 					 						         background-color:rgb(255, 255, 255);
 					 						         font-weight: normal;">
@@ -1557,7 +1558,7 @@ $.ajax({
 					 						           th:value="${report.R13_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R13_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 					 						           id="R13_QUALIFY_STAGE2_PROVISIONS"
 					 						           name="R13_QUALIFY_STAGE2_PROVISIONS"
-					 						           style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+					 						           style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 					 						           readonly />
 					 						  </td>
 										  <td style="text-align: center; 
@@ -1569,7 +1570,7 @@ $.ajax({
 										             th:value="${report.R13_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R13_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 										             id="R13_TOTAL_GENERAL_PROVISIONS"
 										             name="R13_TOTAL_GENERAL_PROVISIONS"
-										             style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+										             style="background-color:rgb(107, 122, 143);color: white; width:400px;height:28px;border-color:transparent;text-align:right;"
 										             readonly />
 										    </td>
 
@@ -1590,7 +1591,7 @@ $.ajax({
 												th:title="${report.R14_PRODUCT}"
 												th:text="${report.R14_PRODUCT}">
 											</td>
-											<td style="text-align: center; 
+											<td style="text-align: right; 
 													 vertical-align: middle; 
 													 background-color:rgb(255, 255, 255);
 													 font-weight: normal;">
@@ -1599,10 +1600,10 @@ $.ajax({
 													   th:value="${report.R14_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R14_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 													   id="R14_STAGE1_PROVISIONS"
 													   name="R14_STAGE1_PROVISIONS"
-													   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+													   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 													   readonly />
 											  </td>
-											  <td style="text-align: center; 
+											  <td style="text-align: right; 
 														 vertical-align: middle; 
 														 background-color:rgb(255, 255, 255);
 														 font-weight: normal;">
@@ -1611,10 +1612,10 @@ $.ajax({
 														   th:value="${report.R14_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R14_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R14_QUALIFY_STAGE2_PROVISIONS"
 														   name="R14_QUALIFY_STAGE2_PROVISIONS"
-														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
-											  <td style="text-align: center; 
+											  <td style="text-align: right; 
 													   vertical-align: middle; 
 													   background-color:rgb(107, 122, 143);
 													   font-weight: normal;">
@@ -1623,7 +1624,7 @@ $.ajax({
 														 th:value="${report.R14_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R14_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														 id="R14_TOTAL_GENERAL_PROVISIONS"
 														 name="R14_TOTAL_GENERAL_PROVISIONS"
-														 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+														 style="background-color:rgb(107, 122, 143);color: white;width:380px;height:28px;border-color:transparent;text-align:right;"
 														 readonly />
 												</td>
 
@@ -1653,7 +1654,7 @@ $.ajax({
 														   th:value="${report.R15_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R15_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R15_STAGE1_PROVISIONS"
 														   name="R15_STAGE1_PROVISIONS"
-														   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
 												  <td style="text-align: center; 
@@ -1665,7 +1666,7 @@ $.ajax({
 														   th:value="${report.R15_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R15_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R15_QUALIFY_STAGE2_PROVISIONS"
 														   name="R15_QUALIFY_STAGE2_PROVISIONS"
-														   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
 												  <td style="text-align: center; 
@@ -1677,7 +1678,7 @@ $.ajax({
 															 th:value="${report.R15_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R15_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R15_TOTAL_GENERAL_PROVISIONS"
 															 name="R15_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -1698,7 +1699,7 @@ $.ajax({
 													th:title="${report.R16_PRODUCT}"
 													th:text="${report.R16_PRODUCT}">
 												</td>
-												<td style="text-align: center; 
+												<td style="text-align: right; 
 														 vertical-align: middle; 
 														 background-color:rgb(255, 255, 255);
 														 font-weight: normal;">
@@ -1707,10 +1708,10 @@ $.ajax({
 														   th:value="${report.R16_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R16_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R16_STAGE1_PROVISIONS"
 														   name="R16_STAGE1_PROVISIONS"
-														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
-												  <td style="text-align: center; 
+												  <td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -1719,7 +1720,7 @@ $.ajax({
 															   th:value="${report.R16_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R16_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R16_QUALIFY_STAGE2_PROVISIONS"
 															   name="R16_QUALIFY_STAGE2_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
 												  <td style="text-align: center; 
@@ -1731,7 +1732,7 @@ $.ajax({
 															 th:value="${report.R16_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R16_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R16_TOTAL_GENERAL_PROVISIONS"
 															 name="R16_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -1752,7 +1753,7 @@ $.ajax({
 												th:title="${report.R17_PRODUCT}"
 												th:text="${report.R17_PRODUCT}">
 											</td>
-											<td style="text-align: center; 
+											<td style="text-align: right; 
 													 vertical-align: middle; 
 													 background-color:rgb(255, 255, 255);
 													 font-weight: normal;">
@@ -1761,10 +1762,10 @@ $.ajax({
 													   th:value="${report.R17_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R17_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 													   id="R17_STAGE1_PROVISIONS"
 													   name="R17_STAGE1_PROVISIONS"
-													   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+													   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 													   readonly />
 											  </td>
-											  <td style="text-align: center; 
+											  <td style="text-align: right; 
 														 vertical-align: middle; 
 														 background-color:rgb(255, 255, 255);
 														 font-weight: normal;">
@@ -1773,7 +1774,7 @@ $.ajax({
 														   th:value="${report.R17_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R17_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R17_QUALIFY_STAGE2_PROVISIONS"
 														   name="R17_QUALIFY_STAGE2_PROVISIONS"
-														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
 											  <td style="text-align: center; 
@@ -1785,7 +1786,7 @@ $.ajax({
 														 th:value="${report.R17_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R17_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														 id="R17_TOTAL_GENERAL_PROVISIONS"
 														 name="R17_TOTAL_GENERAL_PROVISIONS"
-														 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+														 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 														 readonly />
 												</td>
 
@@ -1806,7 +1807,7 @@ $.ajax({
 													th:title="${report.R18_PRODUCT}"
 													th:text="${report.R18_PRODUCT}">
 												</td>
-												<td style="text-align: center; 
+												<td style="text-align: right; 
 														 vertical-align: middle; 
 														 background-color:rgb(255, 255, 255);
 														 font-weight: normal;">
@@ -1815,10 +1816,10 @@ $.ajax({
 														   th:value="${report.R18_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R18_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R18_STAGE1_PROVISIONS"
 														   name="R18_STAGE1_PROVISIONS"
-														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
-												  <td style="text-align: center; 
+												  <td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -1827,7 +1828,7 @@ $.ajax({
 															   th:value="${report.R18_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R18_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R18_QUALIFY_STAGE2_PROVISIONS"
 															   name="R18_QUALIFY_STAGE2_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
 												  <td style="text-align: center; 
@@ -1839,7 +1840,7 @@ $.ajax({
 															 th:value="${report.R18_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R18_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R18_TOTAL_GENERAL_PROVISIONS"
 															 name="R18_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -1860,7 +1861,7 @@ $.ajax({
 													th:title="${report.R19_PRODUCT}"
 													th:text="${report.R19_PRODUCT}">
 												</td>
-												<td style="text-align: center; 
+												<td style="text-align: right; 
 														 vertical-align: middle; 
 														 background-color:rgb(255, 255, 255);
 														 font-weight: normal;">
@@ -1869,10 +1870,10 @@ $.ajax({
 														   th:value="${report.R19_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R19_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R19_STAGE1_PROVISIONS"
 														   name="R19_STAGE1_PROVISIONS"
-														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
-												  <td style="text-align: center; 
+												  <td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -1881,7 +1882,7 @@ $.ajax({
 															   th:value="${report.R19_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R19_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R19_QUALIFY_STAGE2_PROVISIONS"
 															   name="R19_QUALIFY_STAGE2_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
 												  <td style="text-align: center; 
@@ -1893,7 +1894,7 @@ $.ajax({
 															 th:value="${report.R19_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R19_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R19_TOTAL_GENERAL_PROVISIONS"
 															 name="R19_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -1914,7 +1915,7 @@ $.ajax({
 													th:title="${report.R20_PRODUCT}"
 													th:text="${report.R20_PRODUCT}">
 												</td>
-												<td style="text-align: center; 
+												<td style="text-align: right; 
 														 vertical-align: middle; 
 														 background-color:rgb(255, 255, 255);
 														 font-weight: normal;">
@@ -1923,10 +1924,10 @@ $.ajax({
 														   th:value="${report.R20_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R20_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R20_STAGE1_PROVISIONS"
 														   name="R20_STAGE1_PROVISIONS"
-														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
-												  <td style="text-align: center; 
+												  <td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -1935,7 +1936,7 @@ $.ajax({
 															   th:value="${report.R20_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R20_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R20_QUALIFY_STAGE2_PROVISIONS"
 															   name="R20_QUALIFY_STAGE2_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
 												  <td style="text-align: center; 
@@ -1947,7 +1948,7 @@ $.ajax({
 															 th:value="${report.R20_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R20_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R20_TOTAL_GENERAL_PROVISIONS"
 															 name="R20_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -1968,7 +1969,7 @@ $.ajax({
 													th:title="${report.R21_PRODUCT}"
 													th:text="${report.R21_PRODUCT}">
 												</td>
-												<td style="text-align: center; 
+												<td style="text-align: right; 
 														 vertical-align: middle; 
 														 background-color:rgb(255, 255, 255);
 														 font-weight: normal;">
@@ -1977,10 +1978,10 @@ $.ajax({
 														   th:value="${report.R21_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R21_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R21_STAGE1_PROVISIONS"
 														   name="R21_STAGE1_PROVISIONS"
-														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
-												  <td style="text-align: center; 
+												  <td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -1989,7 +1990,7 @@ $.ajax({
 															   th:value="${report.R21_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R21_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R21_QUALIFY_STAGE2_PROVISIONS"
 															   name="R21_QUALIFY_STAGE2_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
 												  <td style="text-align: center; 
@@ -2001,7 +2002,7 @@ $.ajax({
 															 th:value="${report.R21_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R21_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R21_TOTAL_GENERAL_PROVISIONS"
 															 name="R21_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -2022,7 +2023,7 @@ $.ajax({
 														th:title="${report.R22_PRODUCT}"
 														th:text="${report.R22_PRODUCT}">
 													</td>
-													<td style="text-align: center; 
+													<td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -2031,10 +2032,10 @@ $.ajax({
 															   th:value="${report.R22_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R22_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R22_STAGE1_PROVISIONS"
 															   name="R22_STAGE1_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
-													  <td style="text-align: center; 
+													  <td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(255, 255, 255);
 																 font-weight: normal;">
@@ -2043,7 +2044,7 @@ $.ajax({
 																   th:value="${report.R22_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R22_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R22_QUALIFY_STAGE2_PROVISIONS"
 																   name="R22_QUALIFY_STAGE2_PROVISIONS"
-																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
 													  <td style="text-align: center; 
@@ -2055,7 +2056,7 @@ $.ajax({
 																 th:value="${report.R22_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R22_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																 id="R22_TOTAL_GENERAL_PROVISIONS"
 																 name="R22_TOTAL_GENERAL_PROVISIONS"
-																 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																 readonly />
 														</td>
 
@@ -2076,7 +2077,7 @@ $.ajax({
 												th:title="${report.R23_PRODUCT}"
 												th:text="${report.R23_PRODUCT}">
 											</td>
-											<td style="text-align: center; 
+											<td style="text-align: right; 
 													 vertical-align: middle; 
 													 background-color:rgb(255, 255, 255);
 													 font-weight: normal;">
@@ -2085,10 +2086,10 @@ $.ajax({
 													   th:value="${report.R23_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R23_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 													   id="R23_STAGE1_PROVISIONS"
 													   name="R23_STAGE1_PROVISIONS"
-													   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+													   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 													   readonly />
 											  </td>
-											  <td style="text-align: center; 
+											  <td style="text-align: right; 
 														 vertical-align: middle; 
 														 background-color:rgb(255, 255, 255);
 														 font-weight: normal;">
@@ -2097,7 +2098,7 @@ $.ajax({
 														   th:value="${report.R23_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R23_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R23_QUALIFY_STAGE2_PROVISIONS"
 														   name="R23_QUALIFY_STAGE2_PROVISIONS"
-														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
 											  <td style="text-align: center; 
@@ -2109,7 +2110,7 @@ $.ajax({
 														 th:value="${report.R23_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R23_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														 id="R23_TOTAL_GENERAL_PROVISIONS"
 														 name="R23_TOTAL_GENERAL_PROVISIONS"
-														 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+														 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 														 readonly />
 												</td>
 
@@ -2130,7 +2131,7 @@ $.ajax({
 												th:title="${report.R24_PRODUCT}"
 												th:text="${report.R24_PRODUCT}">
 											</td>
-											<td style="text-align: center; 
+											<td style="text-align: right; 
 													 vertical-align: middle; 
 													 background-color:rgb(255, 255, 255);
 													 font-weight: normal;">
@@ -2139,10 +2140,10 @@ $.ajax({
 													   th:value="${report.R24_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R24_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 													   id="R24_STAGE1_PROVISIONS"
 													   name="R24_STAGE1_PROVISIONS"
-													   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+													   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 													   readonly />
 											  </td>
-											  <td style="text-align: center; 
+											  <td style="text-align: right; 
 														 vertical-align: middle; 
 														 background-color:rgb(255, 255, 255);
 														 font-weight: normal;">
@@ -2151,7 +2152,7 @@ $.ajax({
 														   th:value="${report.R24_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R24_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R24_QUALIFY_STAGE2_PROVISIONS"
 														   name="R24_QUALIFY_STAGE2_PROVISIONS"
-														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
 											  <td style="text-align: center; 
@@ -2163,7 +2164,7 @@ $.ajax({
 														 th:value="${report.R24_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R24_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														 id="R24_TOTAL_GENERAL_PROVISIONS"
 														 name="R24_TOTAL_GENERAL_PROVISIONS"
-														 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+														 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 														 readonly />
 												</td>
 
@@ -2184,7 +2185,7 @@ $.ajax({
 													th:title="${report.R25_PRODUCT}"
 													th:text="${report.R25_PRODUCT}">
 												</td>
-												<td style="text-align: center; 
+												<td style="text-align: right; 
 														 vertical-align: middle; 
 														 background-color:rgb(255, 255, 255);
 														 font-weight: normal;">
@@ -2193,10 +2194,10 @@ $.ajax({
 														   th:value="${report.R25_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R25_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R25_STAGE1_PROVISIONS"
 														   name="R25_STAGE1_PROVISIONS"
-														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
-												  <td style="text-align: center; 
+												  <td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -2205,7 +2206,7 @@ $.ajax({
 															   th:value="${report.R25_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R25_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R25_QUALIFY_STAGE2_PROVISIONS"
 															   name="R25_QUALIFY_STAGE2_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
 												  <td style="text-align: center; 
@@ -2217,7 +2218,7 @@ $.ajax({
 															 th:value="${report.R25_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R25_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R25_TOTAL_GENERAL_PROVISIONS"
 															 name="R25_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -2238,7 +2239,7 @@ $.ajax({
 													th:title="${report.R26_PRODUCT}"
 													th:text="${report.R26_PRODUCT}">
 												</td>
-												<td style="text-align: center; 
+												<td style="text-align: right; 
 														 vertical-align: middle; 
 														 background-color:rgb(255, 255, 255);
 														 font-weight: normal;">
@@ -2247,10 +2248,10 @@ $.ajax({
 														   th:value="${report.R26_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R26_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R26_STAGE1_PROVISIONS"
 														   name="R26_STAGE1_PROVISIONS"
-														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
-												  <td style="text-align: center; 
+												  <td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -2259,7 +2260,7 @@ $.ajax({
 															   th:value="${report.R26_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R26_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R26_QUALIFY_STAGE2_PROVISIONS"
 															   name="R26_QUALIFY_STAGE2_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
 												  <td style="text-align: center; 
@@ -2271,7 +2272,7 @@ $.ajax({
 															 th:value="${report.R26_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R26_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R26_TOTAL_GENERAL_PROVISIONS"
 															 name="R26_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -2292,7 +2293,7 @@ $.ajax({
 													th:title="${report.R27_PRODUCT}"
 													th:text="${report.R27_PRODUCT}">
 												</td>
-												<td style="text-align: center; 
+												<td style="text-align: right; 
 														 vertical-align: middle; 
 														 background-color:rgb(255, 255, 255);
 														 font-weight: normal;">
@@ -2301,10 +2302,10 @@ $.ajax({
 														   th:value="${report.R27_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R27_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 														   id="R27_STAGE1_PROVISIONS"
 														   name="R27_STAGE1_PROVISIONS"
-														   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+														   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 														   readonly />
 												  </td>
-												  <td style="text-align: center; 
+												  <td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -2313,7 +2314,7 @@ $.ajax({
 															   th:value="${report.R27_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R27_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R27_QUALIFY_STAGE2_PROVISIONS"
 															   name="R27_QUALIFY_STAGE2_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
 												  <td style="text-align: center; 
@@ -2325,7 +2326,7 @@ $.ajax({
 															 th:value="${report.R27_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R27_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															 id="R27_TOTAL_GENERAL_PROVISIONS"
 															 name="R27_TOTAL_GENERAL_PROVISIONS"
-															 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+															 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 															 readonly />
 													</td>
 
@@ -2346,7 +2347,7 @@ $.ajax({
 														th:title="${report.R28_PRODUCT}"
 														th:text="${report.R28_PRODUCT}">
 													</td>
-													<td style="text-align: center; 
+													<td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -2355,10 +2356,10 @@ $.ajax({
 															   th:value="${report.R28_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R28_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R28_STAGE1_PROVISIONS"
 															   name="R28_STAGE1_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
-													  <td style="text-align: center; 
+													  <td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(255, 255, 255);
 																 font-weight: normal;">
@@ -2367,10 +2368,10 @@ $.ajax({
 																   th:value="${report.R28_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R28_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R28_QUALIFY_STAGE2_PROVISIONS"
 																   name="R28_QUALIFY_STAGE2_PROVISIONS"
-																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
-													  <td style="text-align: center; 
+													  <td style="text-align: right; 
 															   vertical-align: middle; 
 															   background-color:rgb(107, 122, 143);
 															   font-weight: normal;">
@@ -2379,7 +2380,7 @@ $.ajax({
 																 th:value="${report.R28_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R28_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																 id="R28_TOTAL_GENERAL_PROVISIONS"
 																 name="R28_TOTAL_GENERAL_PROVISIONS"
-																 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																 readonly />
 														</td>
 
@@ -2400,7 +2401,7 @@ $.ajax({
 															th:title="${report.R29_PRODUCT}"
 															th:text="${report.R29_PRODUCT}">
 														</td>
-														<td style="text-align: center; 
+														<td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(107, 122, 143);
 																 font-weight: normal;">
@@ -2409,10 +2410,10 @@ $.ajax({
 																   th:value="${report.R29_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R29_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R29_STAGE1_PROVISIONS"
 																   name="R29_STAGE1_PROVISIONS"
-																   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(107, 122, 143);color: white;width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
-														  <td style="text-align: center; 
+														  <td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(107, 122, 143);
 																 font-weight: normal;">
@@ -2421,10 +2422,10 @@ $.ajax({
 																   th:value="${report.R29_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R29_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R29_QUALIFY_STAGE2_PROVISIONS"
 																   name="R29_QUALIFY_STAGE2_PROVISIONS"
-																   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(107, 122, 143);color: white;width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
-														  <td style="text-align: center; 
+														  <td style="text-align: right; 
 																   vertical-align: middle; 
 																   background-color:rgb(107, 122, 143);
 																   font-weight: normal;">
@@ -2433,7 +2434,7 @@ $.ajax({
 																	 th:value="${report.R29_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R29_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R29_TOTAL_GENERAL_PROVISIONS"
 																	 name="R29_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143);color: white;width:380px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2454,7 +2455,7 @@ $.ajax({
 															th:title="${report.R30_PRODUCT}"
 															th:text="${report.R30_PRODUCT}">
 														</td>
-														<td style="text-align: center; 
+														<td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(255, 255, 255);
 																 font-weight: normal;">
@@ -2463,10 +2464,10 @@ $.ajax({
 																   th:value="${report.R30_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R30_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R30_STAGE1_PROVISIONS"
 																   name="R30_STAGE1_PROVISIONS"
-																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
-														  <td style="text-align: center; 
+														  <td style="text-align: right; 
 																	 vertical-align: middle; 
 																	 background-color:rgb(255, 255, 255);
 																	 font-weight: normal;">
@@ -2475,7 +2476,7 @@ $.ajax({
 																	   th:value="${report.R30_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R30_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	   id="R30_QUALIFY_STAGE2_PROVISIONS"
 																	   name="R30_QUALIFY_STAGE2_PROVISIONS"
-																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																	   readonly />
 															  </td>
 														  <td style="text-align: center; 
@@ -2487,7 +2488,7 @@ $.ajax({
 																	 th:value="${report.R30_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R30_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R30_TOTAL_GENERAL_PROVISIONS"
 																	 name="R30_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2508,7 +2509,7 @@ $.ajax({
 														th:title="${report.R31_PRODUCT}"
 														th:text="${report.R31_PRODUCT}">
 													</td>
-													<td style="text-align: center; 
+													<td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -2517,10 +2518,10 @@ $.ajax({
 															   th:value="${report.R31_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R31_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R31_STAGE1_PROVISIONS"
 															   name="R31_STAGE1_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
-													  <td style="text-align: center; 
+													  <td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(255, 255, 255);
 																 font-weight: normal;">
@@ -2529,7 +2530,7 @@ $.ajax({
 																   th:value="${report.R31_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R31_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R31_QUALIFY_STAGE2_PROVISIONS"
 																   name="R31_QUALIFY_STAGE2_PROVISIONS"
-																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
 													  <td style="text-align: center; 
@@ -2541,7 +2542,7 @@ $.ajax({
 																 th:value="${report.R31_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R31_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																 id="R31_TOTAL_GENERAL_PROVISIONS"
 																 name="R31_TOTAL_GENERAL_PROVISIONS"
-																 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																 readonly />
 														</td>
 
@@ -2562,7 +2563,7 @@ $.ajax({
 															th:title="${report.R32_PRODUCT}"
 															th:text="${report.R32_PRODUCT}">
 														</td>
-														<td style="text-align: center; 
+														<td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(255, 255, 255);
 																 font-weight: normal;">
@@ -2571,10 +2572,10 @@ $.ajax({
 																   th:value="${report.R32_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R32_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R32_STAGE1_PROVISIONS"
 																   name="R32_STAGE1_PROVISIONS"
-																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
-														  <td style="text-align: center; 
+														  <td style="text-align: right; 
 																	 vertical-align: middle; 
 																	 background-color:rgb(255, 255, 255);
 																	 font-weight: normal;">
@@ -2583,7 +2584,7 @@ $.ajax({
 																	   th:value="${report.R32_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R32_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	   id="R32_QUALIFY_STAGE2_PROVISIONS"
 																	   name="R32_QUALIFY_STAGE2_PROVISIONS"
-																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																	   readonly />
 															  </td>
 														  <td style="text-align: center; 
@@ -2595,7 +2596,7 @@ $.ajax({
 																	 th:value="${report.R32_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R32_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R32_TOTAL_GENERAL_PROVISIONS"
 																	 name="R32_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2616,7 +2617,7 @@ $.ajax({
 															th:title="${report.R33_PRODUCT}"
 															th:text="${report.R33_PRODUCT}">
 														</td>
-														<td style="text-align: center; 
+														<td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(255, 255, 255);
 																 font-weight: normal;">
@@ -2625,10 +2626,10 @@ $.ajax({
 																   th:value="${report.R33_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R33_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R33_STAGE1_PROVISIONS"
 																   name="R33_STAGE1_PROVISIONS"
-																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
-														  <td style="text-align: center; 
+														  <td style="text-align: right; 
 																	 vertical-align: middle; 
 																	 background-color:rgb(255, 255, 255);
 																	 font-weight: normal;">
@@ -2637,7 +2638,7 @@ $.ajax({
 																	   th:value="${report.R33_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R33_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	   id="R33_QUALIFY_STAGE2_PROVISIONS"
 																	   name="R33_QUALIFY_STAGE2_PROVISIONS"
-																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																	   readonly />
 															  </td>
 														  <td style="text-align: center; 
@@ -2649,7 +2650,7 @@ $.ajax({
 																	 th:value="${report.R33_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R33_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R33_TOTAL_GENERAL_PROVISIONS"
 																	 name="R33_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2670,7 +2671,7 @@ $.ajax({
 															th:title="${report.R34_PRODUCT}"
 															th:text="${report.R34_PRODUCT}">
 														</td>
-														<td style="text-align: center; 
+														<td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(255, 255, 255);
 																 font-weight: normal;">
@@ -2679,10 +2680,10 @@ $.ajax({
 																   th:value="${report.R34_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R34_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R34_STAGE1_PROVISIONS"
 																   name="R34_STAGE1_PROVISIONS"
-																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
-														  <td style="text-align: center; 
+														  <td style="text-align: right; 
 																	 vertical-align: middle; 
 																	 background-color:rgb(255, 255, 255);
 																	 font-weight: normal;">
@@ -2691,7 +2692,7 @@ $.ajax({
 																	   th:value="${report.R34_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R34_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	   id="R34_QUALIFY_STAGE2_PROVISIONS"
 																	   name="R34_QUALIFY_STAGE2_PROVISIONS"
-																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																	   readonly />
 															  </td>
 														  <td style="text-align: center; 
@@ -2703,7 +2704,7 @@ $.ajax({
 																	 th:value="${report.R34_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R34_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R34_TOTAL_GENERAL_PROVISIONS"
 																	 name="R34_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2724,7 +2725,7 @@ $.ajax({
 															th:title="${report.R35_PRODUCT}"
 															th:text="${report.R35_PRODUCT}">
 														</td>
-														<td style="text-align: center; 
+														<td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(255, 255, 255);
 																 font-weight: normal;">
@@ -2733,10 +2734,10 @@ $.ajax({
 																   th:value="${report.R35_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R35_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R35_STAGE1_PROVISIONS"
 																   name="R35_STAGE1_PROVISIONS"
-																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
-														  <td style="text-align: center; 
+														  <td style="text-align: right; 
 																	 vertical-align: middle; 
 																	 background-color:rgb(255, 255, 255);
 																	 font-weight: normal;">
@@ -2745,7 +2746,7 @@ $.ajax({
 																	   th:value="${report.R35_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R35_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	   id="R35_QUALIFY_STAGE2_PROVISIONS"
 																	   name="R35_QUALIFY_STAGE2_PROVISIONS"
-																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																	   readonly />
 															  </td>
 														  <td style="text-align: center; 
@@ -2757,7 +2758,7 @@ $.ajax({
 																	 th:value="${report.R35_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R35_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R35_TOTAL_GENERAL_PROVISIONS"
 																	 name="R35_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2778,7 +2779,7 @@ $.ajax({
 																th:title="${report.R36_PRODUCT}"
 																th:text="${report.R36_PRODUCT}">
 															</td>
-															<td style="text-align: center; 
+															<td style="text-align: right; 
 																	 vertical-align: middle; 
 																	 background-color:rgb(255, 255, 255);
 																	 font-weight: normal;">
@@ -2787,10 +2788,10 @@ $.ajax({
 																	   th:value="${report.R36_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R36_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	   id="R36_STAGE1_PROVISIONS"
 																	   name="R36_STAGE1_PROVISIONS"
-																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																	   readonly />
 															  </td>
-															  <td style="text-align: center; 
+															  <td style="text-align: right; 
 																		 vertical-align: middle; 
 																		 background-color:rgb(255, 255, 255);
 																		 font-weight: normal;">
@@ -2799,7 +2800,7 @@ $.ajax({
 																		   th:value="${report.R36_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R36_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		   id="R36_QUALIFY_STAGE2_PROVISIONS"
 																		   name="R36_QUALIFY_STAGE2_PROVISIONS"
-																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																		   readonly />
 																  </td>
 															  <td style="text-align: center; 
@@ -2811,7 +2812,7 @@ $.ajax({
 																		 th:value="${report.R36_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R36_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		 id="R36_TOTAL_GENERAL_PROVISIONS"
 																		 name="R36_TOTAL_GENERAL_PROVISIONS"
-																		 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		 style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																		 readonly />
 																</td>
 
@@ -2832,7 +2833,7 @@ $.ajax({
 														th:title="${report.R37_PRODUCT}"
 														th:text="${report.R37_PRODUCT}">
 													</td>
-													<td style="text-align: center; 
+													<td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -2841,10 +2842,10 @@ $.ajax({
 															   th:value="${report.R37_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R37_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R37_STAGE1_PROVISIONS"
 															   name="R37_STAGE1_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
-													  <td style="text-align: center; 
+													  <td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(255, 255, 255);
 																 font-weight: normal;">
@@ -2853,7 +2854,7 @@ $.ajax({
 																   th:value="${report.R37_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R37_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R37_QUALIFY_STAGE2_PROVISIONS"
 																   name="R37_QUALIFY_STAGE2_PROVISIONS"
-																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
 													  <td style="text-align: center; 
@@ -2865,7 +2866,7 @@ $.ajax({
 																 th:value="${report.R37_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R37_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																 id="R37_TOTAL_GENERAL_PROVISIONS"
 																 name="R37_TOTAL_GENERAL_PROVISIONS"
-																 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																 readonly />
 														</td>
 
@@ -2881,7 +2882,7 @@ $.ajax({
 															  line-height: 1.2;
 															  text-align: left;
 															  vertical-align: middle;
-															  font-weight: bold; padding-left: 2%;
+															  font-weight:normal; padding-left: 2%;
 															"
 															th:title="${report.R38_PRODUCT}"
 															th:text="${report.R38_PRODUCT}">
@@ -2895,7 +2896,7 @@ $.ajax({
 																   th:value="${report.R38_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R38_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R38_STAGE1_PROVISIONS"
 																   name="R38_STAGE1_PROVISIONS"
-																   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
 														  <td style="text-align: center; 
@@ -2907,7 +2908,7 @@ $.ajax({
 																   th:value="${report.R38_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R38_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R38_QUALIFY_STAGE2_PROVISIONS"
 																   name="R38_QUALIFY_STAGE2_PROVISIONS"
-																   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
 														  <td style="text-align: center; 
@@ -2919,7 +2920,7 @@ $.ajax({
 																	 th:value="${report.R38_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R38_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R38_TOTAL_GENERAL_PROVISIONS"
 																	 name="R38_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2940,7 +2941,7 @@ $.ajax({
 															th:title="${report.R39_PRODUCT}"
 															th:text="${report.R39_PRODUCT}">
 														</td>
-														<td style="text-align: center; 
+														<td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(255, 255, 255);
 																 font-weight: normal;">
@@ -2949,10 +2950,10 @@ $.ajax({
 																   th:value="${report.R39_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R39_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R39_STAGE1_PROVISIONS"
 																   name="R39_STAGE1_PROVISIONS"
-																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
-														  <td style="text-align: center; 
+														  <td style="text-align: right; 
 																	 vertical-align: middle; 
 																	 background-color:rgb(255, 255, 255);
 																	 font-weight: normal;">
@@ -2961,7 +2962,7 @@ $.ajax({
 																	   th:value="${report.R39_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R39_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	   id="R39_QUALIFY_STAGE2_PROVISIONS"
 																	   name="R39_QUALIFY_STAGE2_PROVISIONS"
-																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																	   readonly />
 															  </td>
 														  <td style="text-align: center; 
@@ -2973,7 +2974,7 @@ $.ajax({
 																	 th:value="${report.R39_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R39_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	 id="R39_TOTAL_GENERAL_PROVISIONS"
 																	 name="R39_TOTAL_GENERAL_PROVISIONS"
-																	 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	 style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																	 readonly />
 															</td>
 
@@ -2994,7 +2995,7 @@ $.ajax({
 														th:title="${report.R40_PRODUCT}"
 														th:text="${report.R40_PRODUCT}">
 													</td>
-													<td style="text-align: center; 
+													<td style="text-align: right; 
 															 vertical-align: middle; 
 															 background-color:rgb(255, 255, 255);
 															 font-weight: normal;">
@@ -3003,10 +3004,10 @@ $.ajax({
 															   th:value="${report.R40_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R40_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 															   id="R40_STAGE1_PROVISIONS"
 															   name="R40_STAGE1_PROVISIONS"
-															   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+															   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 															   readonly />
 													  </td>
-													  <td style="text-align: center; 
+													  <td style="text-align: right; 
 																 vertical-align: middle; 
 																 background-color:rgb(255, 255, 255);
 																 font-weight: normal;">
@@ -3015,7 +3016,7 @@ $.ajax({
 																   th:value="${report.R40_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R40_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																   id="R40_QUALIFY_STAGE2_PROVISIONS"
 																   name="R40_QUALIFY_STAGE2_PROVISIONS"
-																   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																   readonly />
 														  </td>
 													  <td style="text-align: center; 
@@ -3027,7 +3028,7 @@ $.ajax({
 																 th:value="${report.R40_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R40_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																 id="R40_TOTAL_GENERAL_PROVISIONS"
 																 name="R40_TOTAL_GENERAL_PROVISIONS"
-																 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																 readonly />
 														</td>
 
@@ -3057,7 +3058,7 @@ $.ajax({
 																	   th:value="${report.R41_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R41_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	   id="R41_STAGE1_PROVISIONS"
 																	   name="R41_STAGE1_PROVISIONS"
-																	   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																	   readonly />
 															  </td>
 															  <td style="text-align: center; 
@@ -3069,7 +3070,7 @@ $.ajax({
 																	   th:value="${report.R41_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R41_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	   id="R41_QUALIFY_STAGE2_PROVISIONS"
 																	   name="R41_QUALIFY_STAGE2_PROVISIONS"
-																	   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																	   readonly />
 															  </td>
 															  <td style="text-align: center; 
@@ -3081,7 +3082,7 @@ $.ajax({
 																		 th:value="${report.R41_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R41_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		 id="R41_TOTAL_GENERAL_PROVISIONS"
 																		 name="R41_TOTAL_GENERAL_PROVISIONS"
-																		 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																		 readonly />
 																</td>
 
@@ -3103,7 +3104,7 @@ $.ajax({
 																	th:title="${report.R42_PRODUCT}"
 																	th:text="${report.R42_PRODUCT}">
 																</td>
-																<td style="text-align: center; 
+																<td style="text-align: right; 
 																		 vertical-align: middle; 
 																		 background-color:rgb(255, 255, 255);
 																		 font-weight: normal;">
@@ -3112,10 +3113,10 @@ $.ajax({
 																		   th:value="${report.R42_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R42_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		   id="R42_STAGE1_PROVISIONS"
 																		   name="R42_STAGE1_PROVISIONS"
-																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																		   readonly />
 																  </td>
-																  <td style="text-align: center; 
+																  <td style="text-align: right; 
 																		 vertical-align: middle; 
 																		 background-color:rgb(255, 255, 255);
 																		 font-weight: normal;">
@@ -3124,7 +3125,7 @@ $.ajax({
 																		   th:value="${report.R42_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R42_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		   id="R42_QUALIFY_STAGE2_PROVISIONS"
 																		   name="R42_QUALIFY_STAGE2_PROVISIONS"
-																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																		   readonly />
 																  </td>
 																  <td style="text-align: center; 
@@ -3136,7 +3137,7 @@ $.ajax({
 																			 th:value="${report.R42_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R42_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			 id="R42_TOTAL_GENERAL_PROVISIONS"
 																			 name="R42_TOTAL_GENERAL_PROVISIONS"
-																			 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																			 readonly />
 																	</td>
 
@@ -3157,7 +3158,7 @@ $.ajax({
 																	th:title="${report.R43_PRODUCT}"
 																	th:text="${report.R43_PRODUCT}">
 																</td>
-																<td style="text-align: center; 
+																<td style="text-align: right; 
 																		 vertical-align: middle; 
 																		 background-color:rgb(255, 255, 255);
 																		 font-weight: normal;">
@@ -3166,10 +3167,10 @@ $.ajax({
 																		   th:value="${report.R43_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R43_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		   id="R43_STAGE1_PROVISIONS"
 																		   name="R43_STAGE1_PROVISIONS"
-																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																		   readonly />
 																  </td>
-																  <td style="text-align: center; 
+																  <td style="text-align: right; 
 																			 vertical-align: middle; 
 																			 background-color:rgb(255, 255, 255);
 																			 font-weight: normal;">
@@ -3178,7 +3179,7 @@ $.ajax({
 																			   th:value="${report.R43_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R43_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			   id="R43_QUALIFY_STAGE2_PROVISIONS"
 																			   name="R43_QUALIFY_STAGE2_PROVISIONS"
-																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																			   readonly />
 																	  </td>
 																  <td style="text-align: center; 
@@ -3190,7 +3191,7 @@ $.ajax({
 																			 th:value="${report.R43_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R43_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			 id="R43_TOTAL_GENERAL_PROVISIONS"
 																			 name="R43_TOTAL_GENERAL_PROVISIONS"
-																			 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																			 readonly />
 																	</td>
 
@@ -3206,12 +3207,12 @@ $.ajax({
 																  line-height: 1.2;
 																  text-align: left;
 																  vertical-align: middle;
-																  font-weight: normal; padding-left: 1%;
+																   padding-left: 1%;
 																"
 																th:title="${report.R44_PRODUCT}"
 																th:text="${report.R44_PRODUCT}">
 															</td>
-															<td style="text-align: center; 
+															<td style="text-align: right; 
 																	 vertical-align: middle; 
 																	 background-color:rgb(107, 122, 143);
 																	 font-weight: normal;">
@@ -3220,7 +3221,7 @@ $.ajax({
 																	   th:value="${report.R44_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R44_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	   id="R44_STAGE1_PROVISIONS"
 																	   name="R44_STAGE1_PROVISIONS"
-																	   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   style="background-color:rgb(107, 122, 143);color: white;width:380px;height:28px;border-color:transparent;text-align:right;"
 																	   readonly />
 															  </td>
 															  <td style="text-align: center; 
@@ -3232,7 +3233,7 @@ $.ajax({
 																		   th:value="${report.R44_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R44_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		   id="R44_QUALIFY_STAGE2_PROVISIONS"
 																		   name="R44_QUALIFY_STAGE2_PROVISIONS"
-																		   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																		   readonly />
 																  </td>
 															  <td style="text-align: center; 
@@ -3244,7 +3245,7 @@ $.ajax({
 																		 th:value="${report.R44_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R44_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		 id="R44_TOTAL_GENERAL_PROVISIONS"
 																		 name="R44_TOTAL_GENERAL_PROVISIONS"
-																		 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																		 readonly />
 																</td>
 
@@ -3266,7 +3267,7 @@ $.ajax({
 																	th:title="${report.R45_PRODUCT}"
 																	th:text="${report.R45_PRODUCT}">
 																</td>
-																<td style="text-align: center; 
+																<td style="text-align: right; 
 																		 vertical-align: middle; 
 																		 background-color:rgb(255, 255, 255);
 																		 font-weight: normal;">
@@ -3275,10 +3276,10 @@ $.ajax({
 																		   th:value="${report.R45_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R45_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		   id="R45_STAGE1_PROVISIONS"
 																		   name="R45_STAGE1_PROVISIONS"
-																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																		   readonly />
 																  </td>
-																  <td style="text-align: center; 
+																  <td style="text-align: right; 
 																		 vertical-align: middle; 
 																		 background-color:rgb(255, 255, 255);
 																		 font-weight: normal;">
@@ -3287,7 +3288,7 @@ $.ajax({
 																		   th:value="${report.R45_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R45_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		   id="R45_QUALIFY_STAGE2_PROVISIONS"
 																		   name="R45_QUALIFY_STAGE2_PROVISIONS"
-																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																		   readonly />
 																  </td>
 																  <td style="text-align: center; 
@@ -3299,7 +3300,7 @@ $.ajax({
 																			 th:value="${report.R45_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R45_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			 id="R45_TOTAL_GENERAL_PROVISIONS"
 																			 name="R45_TOTAL_GENERAL_PROVISIONS"
-																			 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																			 readonly />
 																	</td>
 
@@ -3320,7 +3321,7 @@ $.ajax({
 																	th:title="${report.R46_PRODUCT}"
 																	th:text="${report.R46_PRODUCT}">
 																</td>
-																<td style="text-align: center; 
+																<td style="text-align: right; 
 																		 vertical-align: middle; 
 																		 background-color:rgb(255, 255, 255);
 																		 font-weight: normal;">
@@ -3329,10 +3330,10 @@ $.ajax({
 																		   th:value="${report.R46_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R46_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		   id="R46_STAGE1_PROVISIONS"
 																		   name="R46_STAGE1_PROVISIONS"
-																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																		   readonly />
 																  </td>
-																  <td style="text-align: center; 
+																  <td style="text-align: right; 
 																			 vertical-align: middle; 
 																			 background-color:rgb(255, 255, 255);
 																			 font-weight: normal;">
@@ -3341,7 +3342,7 @@ $.ajax({
 																			   th:value="${report.R46_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R46_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			   id="R46_QUALIFY_STAGE2_PROVISIONS"
 																			   name="R46_QUALIFY_STAGE2_PROVISIONS"
-																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																			   readonly />
 																	  </td>
 																  <td style="text-align: center; 
@@ -3353,7 +3354,7 @@ $.ajax({
 																			 th:value="${report.R46_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R46_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			 id="R46_TOTAL_GENERAL_PROVISIONS"
 																			 name="R46_TOTAL_GENERAL_PROVISIONS"
-																			 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																			 readonly />
 																	</td>
 
@@ -3374,7 +3375,7 @@ $.ajax({
 																th:title="${report.R47_PRODUCT}"
 																th:text="${report.R47_PRODUCT}">
 															</td>
-															<td style="text-align: center; 
+															<td style="text-align: right; 
 																	 vertical-align: middle; 
 																	 background-color:rgb(255, 255, 255);
 																	 font-weight: normal;">
@@ -3383,10 +3384,10 @@ $.ajax({
 																	   th:value="${report.R47_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R47_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																	   id="R47_STAGE1_PROVISIONS"
 																	   name="R47_STAGE1_PROVISIONS"
-																	   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																	   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																	   readonly />
 															  </td>
-															  <td style="text-align: center; 
+															  <td style="text-align: right; 
 																		 vertical-align: middle; 
 																		 background-color:rgb(255, 255, 255);
 																		 font-weight: normal;">
@@ -3395,7 +3396,7 @@ $.ajax({
 																		   th:value="${report.R47_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R47_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		   id="R47_QUALIFY_STAGE2_PROVISIONS"
 																		   name="R47_QUALIFY_STAGE2_PROVISIONS"
-																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																		   readonly />
 																  </td>
 															  <td style="text-align: center; 
@@ -3407,7 +3408,7 @@ $.ajax({
 																		 th:value="${report.R47_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R47_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		 id="R47_TOTAL_GENERAL_PROVISIONS"
 																		 name="R47_TOTAL_GENERAL_PROVISIONS"
-																		 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																		 readonly />
 																</td>
 
@@ -3429,7 +3430,7 @@ $.ajax({
 																	th:title="${report.R48_PRODUCT}"
 																	th:text="${report.R48_PRODUCT}">
 																</td>
-																<td style="text-align: center; 
+																<td style="text-align: right; 
 																		 vertical-align: middle; 
 																		 background-color:rgb(255, 255, 255);
 																		 font-weight: normal;">
@@ -3438,10 +3439,10 @@ $.ajax({
 																		   th:value="${report.R48_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R48_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		   id="R48_STAGE1_PROVISIONS"
 																		   name="R48_STAGE1_PROVISIONS"
-																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																		   readonly />
 																  </td>
-																  <td style="text-align: center; 
+																  <td style="text-align: right; 
 																			 vertical-align: middle; 
 																			 background-color:rgb(255, 255, 255);
 																			 font-weight: normal;">
@@ -3450,7 +3451,7 @@ $.ajax({
 																			   th:value="${report.R48_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R48_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			   id="R48_QUALIFY_STAGE2_PROVISIONS"
 																			   name="R48_QUALIFY_STAGE2_PROVISIONS"
-																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																			   readonly />
 																	  </td>
 																  <td style="text-align: center; 
@@ -3462,7 +3463,7 @@ $.ajax({
 																			 th:value="${report.R48_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R48_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			 id="R48_TOTAL_GENERAL_PROVISIONS"
 																			 name="R48_TOTAL_GENERAL_PROVISIONS"
-																			 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																			 readonly />
 																	</td>
 
@@ -3493,7 +3494,7 @@ $.ajax({
 																			   th:value="${report.R49_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R49_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			   id="R49_STAGE1_PROVISIONS"
 																			   name="R49_STAGE1_PROVISIONS"
-																			   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																			   readonly />
 																	  </td>
 																	  <td style="text-align: center; 
@@ -3505,7 +3506,7 @@ $.ajax({
 																			   th:value="${report.R49_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R49_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			   id="R49_QUALIFY_STAGE2_PROVISIONS"
 																			   name="R49_QUALIFY_STAGE2_PROVISIONS"
-																			   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																			   readonly />
 																	  </td>
 																	  <td style="text-align: center; 
@@ -3517,7 +3518,7 @@ $.ajax({
 																				 th:value="${report.R49_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R49_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				 id="R49_TOTAL_GENERAL_PROVISIONS"
 																				 name="R49_TOTAL_GENERAL_PROVISIONS"
-																				 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																				 readonly />
 																		</td>
 
@@ -3538,7 +3539,7 @@ $.ajax({
 																		th:title="${report.R50_PRODUCT}"
 																		th:text="${report.R50_PRODUCT}">
 																	</td>
-																	<td style="text-align: center; 
+																	<td style="text-align: right; 
 																			 vertical-align: middle; 
 																			 background-color:rgb(255, 255, 255);
 																			 font-weight: normal;">
@@ -3547,10 +3548,10 @@ $.ajax({
 																			   th:value="${report.R50_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R50_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			   id="R50_STAGE1_PROVISIONS"
 																			   name="R50_STAGE1_PROVISIONS"
-																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																			   readonly />
 																	  </td>
-																	  <td style="text-align: center; 
+																	  <td style="text-align: right; 
 																				 vertical-align: middle; 
 																				 background-color:rgb(255, 255, 255);
 																				 font-weight: normal;">
@@ -3559,7 +3560,7 @@ $.ajax({
 																				   th:value="${report.R50_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R50_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				   id="R50_QUALIFY_STAGE2_PROVISIONS"
 																				   name="R50_QUALIFY_STAGE2_PROVISIONS"
-																				   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																				   readonly />
 																		  </td>
 																	  <td style="text-align: center; 
@@ -3571,7 +3572,7 @@ $.ajax({
 																				 th:value="${report.R50_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R50_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				 id="R50_TOTAL_GENERAL_PROVISIONS"
 																				 name="R50_TOTAL_GENERAL_PROVISIONS"
-																				 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																				 readonly />
 																		</td>
 
@@ -3592,7 +3593,7 @@ $.ajax({
 																	th:title="${report.R51_PRODUCT}"
 																	th:text="${report.R51_PRODUCT}">
 																</td>
-																<td style="text-align: center; 
+																<td style="text-align: right; 
 																		 vertical-align: middle; 
 																		 background-color:rgb(255, 255, 255);
 																		 font-weight: normal;">
@@ -3601,10 +3602,10 @@ $.ajax({
 																		   th:value="${report.R51_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R51_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																		   id="R51_STAGE1_PROVISIONS"
 																		   name="R51_STAGE1_PROVISIONS"
-																		   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																		   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																		   readonly />
 																  </td>
-																  <td style="text-align: center; 
+																  <td style="text-align: right; 
 																			 vertical-align: middle; 
 																			 background-color:rgb(255, 255, 255);
 																			 font-weight: normal;">
@@ -3613,7 +3614,7 @@ $.ajax({
 																			   th:value="${report.R51_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R51_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			   id="R51_QUALIFY_STAGE2_PROVISIONS"
 																			   name="R51_QUALIFY_STAGE2_PROVISIONS"
-																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																			   readonly />
 																	  </td>
 																  <td style="text-align: center; 
@@ -3625,7 +3626,7 @@ $.ajax({
 																			 th:value="${report.R51_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R51_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			 id="R51_TOTAL_GENERAL_PROVISIONS"
 																			 name="R51_TOTAL_GENERAL_PROVISIONS"
-																			 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			 style="background-color:rgb(107, 122, 143);color: white; width:400px;height:28px;border-color:transparent;text-align:right;"
 																			 readonly />
 																	</td>
 
@@ -3647,7 +3648,7 @@ $.ajax({
 																		th:title="${report.R52_PRODUCT}"
 																		th:text="${report.R52_PRODUCT}">
 																	</td>
-																	<td style="text-align: center; 
+																	<td style="text-align: right; 
 																			 vertical-align: middle; 
 																			 background-color:rgb(255, 255, 255);
 																			 font-weight: normal;">
@@ -3656,10 +3657,10 @@ $.ajax({
 																			   th:value="${report.R52_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R52_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			   id="R52_STAGE1_PROVISIONS"
 																			   name="R52_STAGE1_PROVISIONS"
-																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																			   readonly />
 																	  </td>
-																	  <td style="text-align: center; 
+																	  <td style="text-align: right; 
 																				 vertical-align: middle; 
 																				 background-color:rgb(255, 255, 255);
 																				 font-weight: normal;">
@@ -3668,7 +3669,7 @@ $.ajax({
 																				   th:value="${report.R52_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R52_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				   id="R52_QUALIFY_STAGE2_PROVISIONS"
 																				   name="R52_QUALIFY_STAGE2_PROVISIONS"
-																				   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																				   readonly />
 																		  </td>
 																	  <td style="text-align: center; 
@@ -3680,7 +3681,7 @@ $.ajax({
 																				 th:value="${report.R52_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R52_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				 id="R52_TOTAL_GENERAL_PROVISIONS"
 																				 name="R52_TOTAL_GENERAL_PROVISIONS"
-																				 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				 style="background-color:rgb(107, 122, 143);color: white; width:400px;height:28px;border-color:transparent;text-align:right;"
 																				 readonly />
 																		</td>
 
@@ -3712,7 +3713,7 @@ $.ajax({
 																							   th:value="${report.R53_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R53_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																							   id="R53_STAGE1_PROVISIONS"
 																							   name="R53_STAGE1_PROVISIONS"
-																							   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							   style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																							   readonly />
 																					  </td>
 																					  <td style="text-align: center; 
@@ -3724,7 +3725,7 @@ $.ajax({
 																							   th:value="${report.R53_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R53_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																							   id="R53_QUALIFY_STAGE2_PROVISIONS"
 																							   name="R53_QUALIFY_STAGE2_PROVISIONS"
-																							   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							   style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																							   readonly />
 																					  </td>
 																					  <td style="text-align: center; 
@@ -3736,7 +3737,7 @@ $.ajax({
 																								 th:value="${report.R53_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R53_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																								 id="R53_TOTAL_GENERAL_PROVISIONS"
 																								 name="R53_TOTAL_GENERAL_PROVISIONS"
-																								 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																								 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																								 readonly />
 																						</td>
 
@@ -3752,12 +3753,12 @@ $.ajax({
 																			  line-height: 1.2;
 																			  text-align: left;
 																			  vertical-align: middle;
-																			  font-weight: normal;padding-left: 3%;
+																			  font-weight: normal;padding-left: 3.5%;
 																			"
 																			th:title="${report.R54_PRODUCT}"
 																			th:text="${report.R54_PRODUCT}">
 																		</td>
-																		<td style="text-align: center; 
+																		<td style="text-align: right; 
 																				 vertical-align: middle; 
 																				 background-color:rgb(255, 255, 255);
 																				 font-weight: normal;">
@@ -3766,10 +3767,10 @@ $.ajax({
 																				   th:value="${report.R54_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R54_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				   id="R54_STAGE1_PROVISIONS"
 																				   name="R54_STAGE1_PROVISIONS"
-																				   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																				   readonly />
 																		  </td>
-																		  <td style="text-align: center; 
+																		  <td style="text-align: right; 
 																					 vertical-align: middle; 
 																					 background-color:rgb(255, 255, 255);
 																					 font-weight: normal;">
@@ -3778,7 +3779,7 @@ $.ajax({
 																					   th:value="${report.R54_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R54_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																					   id="R54_QUALIFY_STAGE2_PROVISIONS"
 																					   name="R54_QUALIFY_STAGE2_PROVISIONS"
-																					   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																					   readonly />
 																			  </td>
 																		  <td style="text-align: center; 
@@ -3790,7 +3791,7 @@ $.ajax({
 																					 th:value="${report.R54_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R54_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																					 id="R54_TOTAL_GENERAL_PROVISIONS"
 																					 name="R54_TOTAL_GENERAL_PROVISIONS"
-																					 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																					 readonly />
 																			</td>
 
@@ -3806,12 +3807,12 @@ $.ajax({
 																		  line-height: 1.2;
 																		  text-align: left;
 																		  vertical-align: middle;
-																		  font-weight: normal;padding-left: 3%;
+																		  font-weight: normal;padding-left:  3.5%;
 																		"
 																		th:title="${report.R55_PRODUCT}"
 																		th:text="${report.R55_PRODUCT}">
 																	</td>
-																	<td style="text-align: center; 
+																	<td style="text-align: right; 
 																			 vertical-align: middle; 
 																			 background-color:rgb(255, 255, 255);
 																			 font-weight: normal;">
@@ -3820,10 +3821,10 @@ $.ajax({
 																			   th:value="${report.R55_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R55_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																			   id="R55_STAGE1_PROVISIONS"
 																			   name="R55_STAGE1_PROVISIONS"
-																			   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																			   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																			   readonly />
 																	  </td>
-																	  <td style="text-align: center; 
+																	  <td style="text-align: right; 
 																				 vertical-align: middle; 
 																				 background-color:rgb(255, 255, 255);
 																				 font-weight: normal;">
@@ -3832,7 +3833,7 @@ $.ajax({
 																				   th:value="${report.R55_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R55_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				   id="R55_QUALIFY_STAGE2_PROVISIONS"
 																				   name="R55_QUALIFY_STAGE2_PROVISIONS"
-																				   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																				   readonly />
 																		  </td>
 																	  <td style="text-align: center; 
@@ -3844,7 +3845,7 @@ $.ajax({
 																				 th:value="${report.R55_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R55_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				 id="R55_TOTAL_GENERAL_PROVISIONS"
 																				 name="R55_TOTAL_GENERAL_PROVISIONS"
-																				 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																				 readonly />
 																		</td>
 
@@ -3861,12 +3862,12 @@ $.ajax({
 																			  line-height: 1.2;
 																			  text-align: left;
 																			  vertical-align: middle;
-																			  font-weight: normal;padding-left: 3%;
+																			  font-weight: normal;padding-left:  3.5%;
 																			"
 																			th:title="${report.R56_PRODUCT}"
 																			th:text="${report.R56_PRODUCT}">
 																		</td>
-																		<td style="text-align: center; 
+																		<td style="text-align: right; 
 																				 vertical-align: middle; 
 																				 background-color:rgb(255, 255, 255);
 																				 font-weight: normal;">
@@ -3875,10 +3876,10 @@ $.ajax({
 																				   th:value="${report.R56_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R56_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				   id="R56_STAGE1_PROVISIONS"
 																				   name="R56_STAGE1_PROVISIONS"
-																				   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																				   readonly />
 																		  </td>
-																		  <td style="text-align: center; 
+																		  <td style="text-align: right; 
 																					 vertical-align: middle; 
 																					 background-color:rgb(255, 255, 255);
 																					 font-weight: normal;">
@@ -3887,7 +3888,7 @@ $.ajax({
 																					   th:value="${report.R56_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R56_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																					   id="R56_QUALIFY_STAGE2_PROVISIONS"
 																					   name="R56_QUALIFY_STAGE2_PROVISIONS"
-																					   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																					   readonly />
 																			  </td>
 																		  <td style="text-align: center; 
@@ -3899,7 +3900,7 @@ $.ajax({
 																					 th:value="${report.R56_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R56_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																					 id="R56_TOTAL_GENERAL_PROVISIONS"
 																					 name="R56_TOTAL_GENERAL_PROVISIONS"
-																					 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					 style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																					 readonly />
 																			</td>
 
@@ -3931,7 +3932,7 @@ $.ajax({
 																								   th:value="${report.R57_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R57_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																								   id="R57_STAGE1_PROVISIONS"
 																								   name="R57_STAGE1_PROVISIONS"
-																								   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																								   style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																								   readonly />
 																						  </td>
 																						  <td style="text-align: center; 
@@ -3943,7 +3944,7 @@ $.ajax({
 																								   th:value="${report.R57_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R57_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																								   id="R57_QUALIFY_STAGE2_PROVISIONS"
 																								   name="R57_QUALIFY_STAGE2_PROVISIONS"
-																								   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																								   style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																								   readonly />
 																						  </td>
 																						  <td style="text-align: center; 
@@ -3955,7 +3956,7 @@ $.ajax({
 																									 th:value="${report.R57_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R57_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																									 id="R57_TOTAL_GENERAL_PROVISIONS"
 																									 name="R57_TOTAL_GENERAL_PROVISIONS"
-																									 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																									 style="background-color:rgb(107, 122, 143); color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																									 readonly />
 																							</td>
 
@@ -3971,12 +3972,12 @@ $.ajax({
 																				  line-height: 1.2;
 																				  text-align: left;
 																				  vertical-align: middle;
-																				  font-weight: normal;padding-left: 3%;
+																				  font-weight: normal;padding-left: 3.5%;
 																				"
 																				th:title="${report.R58_PRODUCT}"
 																				th:text="${report.R58_PRODUCT}">
 																			</td>
-																			<td style="text-align: center; 
+																			<td style="text-align: right; 
 																					 vertical-align: middle; 
 																					 background-color:rgb(259, 259, 259);
 																					 font-weight: normal;">
@@ -3985,10 +3986,10 @@ $.ajax({
 																					   th:value="${report.R58_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R58_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																					   id="R58_STAGE1_PROVISIONS"
 																					   name="R58_STAGE1_PROVISIONS"
-																					   style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					   style="background-color:rgb(259, 259, 259); width:380px;height:28px;border-color:transparent;text-align:right;"
 																					   readonly />
 																			  </td>
-																			  <td style="text-align: center; 
+																			  <td style="text-align: right; 
 																						 vertical-align: middle; 
 																						 background-color:rgb(259, 259, 259);
 																						 font-weight: normal;">
@@ -3997,7 +3998,7 @@ $.ajax({
 																						   th:value="${report.R58_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R58_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																						   id="R58_QUALIFY_STAGE2_PROVISIONS"
 																						   name="R58_QUALIFY_STAGE2_PROVISIONS"
-																						   style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						   style="background-color:rgb(259, 259, 259);  width:380px;height:28px;border-color:transparent;text-align:right;"
 																						   readonly />
 																				  </td>
 																			  <td style="text-align: center; 
@@ -4009,7 +4010,7 @@ $.ajax({
 																						 th:value="${report.R58_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R58_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																						 id="R58_TOTAL_GENERAL_PROVISIONS"
 																						 name="R58_TOTAL_GENERAL_PROVISIONS"
-																						 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																						 readonly />
 																				</td>
 
@@ -4025,12 +4026,12 @@ $.ajax({
 																			  line-height: 1.2;
 																			  text-align: left;
 																			  vertical-align: middle;
-																			  font-weight: normal;padding-left: 3%;
+																			  font-weight: normal;padding-left: 3.5%;
 																			"
 																			th:title="${report.R59_PRODUCT}"
 																			th:text="${report.R59_PRODUCT}">
 																		</td>
-																		<td style="text-align: center; 
+																		<td style="text-align: right; 
 																				 vertical-align: middle; 
 																				 background-color:rgb(259, 259, 259);
 																				 font-weight: normal;">
@@ -4039,10 +4040,10 @@ $.ajax({
 																				   th:value="${report.R59_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R59_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																				   id="R59_STAGE1_PROVISIONS"
 																				   name="R59_STAGE1_PROVISIONS"
-																				   style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																				   style="background-color:rgb(259, 259, 259);width:380px;height:28px;border-color:transparent;text-align:right;"
 																				   readonly />
 																		  </td>
-																		  <td style="text-align: center; 
+																		  <td style="text-align: right; 
 																					 vertical-align: middle; 
 																					 background-color:rgb(259, 259, 259);
 																					 font-weight: normal;">
@@ -4051,7 +4052,7 @@ $.ajax({
 																					   th:value="${report.R59_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R59_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																					   id="R59_QUALIFY_STAGE2_PROVISIONS"
 																					   name="R59_QUALIFY_STAGE2_PROVISIONS"
-																					   style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					   style="background-color:rgb(259, 259, 259);width:380px;height:28px;border-color:transparent;text-align:right;"
 																					   readonly />
 																			  </td>
 																		  <td style="text-align: center; 
@@ -4063,7 +4064,7 @@ $.ajax({
 																					 th:value="${report.R59_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R59_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																					 id="R59_TOTAL_GENERAL_PROVISIONS"
 																					 name="R59_TOTAL_GENERAL_PROVISIONS"
-																					 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																					 readonly />
 																			</td>
 
@@ -4080,12 +4081,12 @@ $.ajax({
 																				  line-height: 1.2;
 																				  text-align: left;
 																				  vertical-align: middle;
-																				  font-weight: normal;padding-left: 3%;
+																				  font-weight: normal;padding-left: 3.5%;
 																				"
 																				th:title="${report.R60_PRODUCT}"
 																				th:text="${report.R60_PRODUCT}">
 																			</td>
-																			<td style="text-align: center; 
+																			<td style="text-align: right; 
 																					 vertical-align: middle; 
 																					 background-color:rgb(259, 259, 259);
 																					 font-weight: normal;">
@@ -4094,10 +4095,10 @@ $.ajax({
 																					   th:value="${report.R60_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R60_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																					   id="R60_STAGE1_PROVISIONS"
 																					   name="R60_STAGE1_PROVISIONS"
-																					   style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					   style="background-color:rgb(259, 259, 259);width:380px;height:28px;border-color:transparent;text-align:right;"
 																					   readonly />
 																			  </td>
-																			  <td style="text-align: center; 
+																			  <td style="text-align: right; 
 																						 vertical-align: middle; 
 																						 background-color:rgb(259, 259, 259);
 																						 font-weight: normal;">
@@ -4106,7 +4107,7 @@ $.ajax({
 																						   th:value="${report.R60_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R60_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																						   id="R60_QUALIFY_STAGE2_PROVISIONS"
 																						   name="R60_QUALIFY_STAGE2_PROVISIONS"
-																						   style="background-color:rgb(259, 259, 259);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						   style="background-color:rgb(259, 259, 259);width:380px;height:28px;border-color:transparent;text-align:right;"
 																						   readonly />
 																				  </td>
 																			  <td style="text-align: center; 
@@ -4118,7 +4119,7 @@ $.ajax({
 																						 th:value="${report.R60_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R60_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																						 id="R60_TOTAL_GENERAL_PROVISIONS"
 																						 name="R60_TOTAL_GENERAL_PROVISIONS"
-																						 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																						 readonly />
 																				</td>
 
@@ -4134,12 +4135,12 @@ $.ajax({
 																					  line-height: 1.2;
 																					  text-align: left;
 																					  vertical-align: middle;
-																					  font-weight: normal;padding-left: 3%;
+																					  font-weight: normal;padding-left: 3.5%;
 																					"
 																					th:title="${report.R61_PRODUCT}"
 																					th:text="${report.R61_PRODUCT}">
 																				</td>
-																				<td style="text-align: center; 
+																				<td style="text-align: right; 
 																						 vertical-align: middle; 
 																						 background-color:rgb(262, 262, 262);
 																						 font-weight: normal;">
@@ -4148,10 +4149,10 @@ $.ajax({
 																						   th:value="${report.R61_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R61_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																						   id="R61_STAGE1_PROVISIONS"
 																						   name="R61_STAGE1_PROVISIONS"
-																						   style="background-color:rgb(262, 262, 262);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						   style="background-color:rgb(262, 262, 262);width:380px;height:28px;border-color:transparent;text-align:right;"
 																						   readonly />
 																				  </td>
-																				  <td style="text-align: center; 
+																				  <td style="text-align: right; 
 																							 vertical-align: middle; 
 																							 background-color:rgb(262, 262, 262);
 																							 font-weight: normal;">
@@ -4160,7 +4161,7 @@ $.ajax({
 																							   th:value="${report.R61_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R61_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																							   id="R61_QUALIFY_STAGE2_PROVISIONS"
 																							   name="R61_QUALIFY_STAGE2_PROVISIONS"
-																							   style="background-color:rgb(262, 262, 262);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							   style="background-color:rgb(262, 262, 262);width:380px;height:28px;border-color:transparent;text-align:right;"
 																							   readonly />
 																					  </td>
 																				  <td style="text-align: center; 
@@ -4172,7 +4173,7 @@ $.ajax({
 																							 th:value="${report.R61_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R61_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																							 id="R61_TOTAL_GENERAL_PROVISIONS"
 																							 name="R61_TOTAL_GENERAL_PROVISIONS"
-																							 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																							 readonly />
 																					</td>
 
@@ -4188,12 +4189,12 @@ $.ajax({
 																				  line-height: 1.2;
 																				  text-align: left;
 																				  vertical-align: middle;
-																				  font-weight: normal;padding-left: 3%;
+																				  font-weight: normal;padding-left: 3.5%;
 																				"
 																				th:title="${report.R62_PRODUCT}"
 																				th:text="${report.R62_PRODUCT}">
 																			</td>
-																			<td style="text-align: center; 
+																			<td style="text-align: right; 
 																					 vertical-align: middle; 
 																					 background-color:rgb(262, 262, 262);
 																					 font-weight: normal;">
@@ -4202,10 +4203,10 @@ $.ajax({
 																					   th:value="${report.R62_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R62_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																					   id="R62_STAGE1_PROVISIONS"
 																					   name="R62_STAGE1_PROVISIONS"
-																					   style="background-color:rgb(262, 262, 262);width:400px;height:28px;border-color:transparent;text-align:right;"
+																					   style="background-color:rgb(262, 262, 262);width:380px;height:28px;border-color:transparent;text-align:right;"
 																					   readonly />
 																			  </td>
-																			  <td style="text-align: center; 
+																			  <td style="text-align: right; 
 																						 vertical-align: middle; 
 																						 background-color:rgb(262, 262, 262);
 																						 font-weight: normal;">
@@ -4214,10 +4215,10 @@ $.ajax({
 																						   th:value="${report.R62_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R62_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																						   id="R62_QUALIFY_STAGE2_PROVISIONS"
 																						   name="R62_QUALIFY_STAGE2_PROVISIONS"
-																						   style="background-color:rgb(262, 262, 262);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						   style="background-color:rgb(262, 262, 262);width:380px;height:28px;border-color:transparent;text-align:right;"
 																						   readonly />
 																				  </td>
-																			  <td style="text-align: center; 
+																			  <td style="text-align: right; 
 																					   vertical-align: middle; 
 																					   background-color:rgb(107, 122, 143);
 																					   font-weight: normal;">
@@ -4226,7 +4227,7 @@ $.ajax({
 																						 th:value="${report.R62_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R62_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																						 id="R62_TOTAL_GENERAL_PROVISIONS"
 																						 name="R62_TOTAL_GENERAL_PROVISIONS"
-																						 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																						 readonly />
 																				</td>
 
@@ -4248,7 +4249,7 @@ $.ajax({
 																					th:title="${report.R63_PRODUCT}"
 																					th:text="${report.R63_PRODUCT}">
 																				</td>
-																				<td style="text-align: center; 
+																				<td style="text-align: right; 
 																						 vertical-align: middle; 
 																						 background-color:rgb(255, 255, 255);
 																						 font-weight: normal;">
@@ -4257,10 +4258,10 @@ $.ajax({
 																						   th:value="${report.R63_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R63_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																						   id="R63_STAGE1_PROVISIONS"
 																						   name="R63_STAGE1_PROVISIONS"
-																						   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																						   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																						   readonly />
 																				  </td>
-																				  <td style="text-align: center; 
+																				  <td style="text-align: right; 
 																							 vertical-align: middle; 
 																							 background-color:rgb(255, 255, 255);
 																							 font-weight: normal;">
@@ -4269,7 +4270,7 @@ $.ajax({
 																							   th:value="${report.R63_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R63_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																							   id="R63_QUALIFY_STAGE2_PROVISIONS"
 																							   name="R63_QUALIFY_STAGE2_PROVISIONS"
-																							   style="background-color:rgb(255, 255, 255);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							   style="background-color:rgb(255, 255, 255);width:380px;height:28px;border-color:transparent;text-align:right;"
 																							   readonly />
 																					  </td>
 																				  <td style="text-align: center; 
@@ -4281,7 +4282,7 @@ $.ajax({
 																							 th:value="${report.R63_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R63_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																							 id="R63_TOTAL_GENERAL_PROVISIONS"
 																							 name="R63_TOTAL_GENERAL_PROVISIONS"
-																							 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																							 readonly />
 																					</td>
 
@@ -4312,7 +4313,7 @@ $.ajax({
 																							   th:value="${report.R64_STAGE1_PROVISIONS != null ? #numbers.formatDecimal(report.R64_STAGE1_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																							   id="R64_STAGE1_PROVISIONS"
 																							   name="R64_STAGE1_PROVISIONS"
-																							   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																							   style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																							   readonly />
 																					  </td>
 																					  <td style="text-align: center; 
@@ -4324,7 +4325,7 @@ $.ajax({
 																								   th:value="${report.R64_QUALIFY_STAGE2_PROVISIONS != null ? #numbers.formatDecimal(report.R64_QUALIFY_STAGE2_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																								   id="R64_QUALIFY_STAGE2_PROVISIONS"
 																								   name="R64_QUALIFY_STAGE2_PROVISIONS"
-																								   style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																								   style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																								   readonly />
 																						  </td>
 																					  <td style="text-align: center; 
@@ -4336,7 +4337,7 @@ $.ajax({
 																								 th:value="${report.R64_TOTAL_GENERAL_PROVISIONS != null ? #numbers.formatDecimal(report.R64_TOTAL_GENERAL_PROVISIONS,0,'COMMA',0,'POINT'):'0'}"
 																								 id="R64_TOTAL_GENERAL_PROVISIONS"
 																								 name="R64_TOTAL_GENERAL_PROVISIONS"
-																								 style="background-color:rgb(107, 122, 143);width:400px;height:28px;border-color:transparent;text-align:right;"
+																								 style="background-color:rgb(107, 122, 143);color: white;width:400px;height:28px;border-color:transparent;text-align:right;"
 																								 readonly />
 																						</td>
 
