@@ -492,6 +492,7 @@ Date reportDate = dateformat.parse(todate);
 			greenStyle.setFillForegroundColor(green);
 			greenStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+greenStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 			CellStyle percentStyle = workbook.createCellStyle();
 			percentStyle.cloneStyleFrom(numberStyle);
 			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
@@ -511,70 +512,68 @@ Date reportDate = dateformat.parse(todate);
 					//row11
 					// Column C 
 					row=sheet.getRow(11);
-					Cell cell1=row.getCell(1);
-					if(record.getR12_product() != null) {
-						cell1.setCellValue(record.getR12_product());
-						
-					}else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-						
-					}
+				
 					
-					 cell1 = row.getCell(2);
-					if (record.getR12_amt_6m() != null) {
-						cell1.setCellValue(record.getR12_amt_6m().doubleValue());
-					
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+					Cell cell1 = row.createCell(2);
+						if (record.getR12_amt_6m() != null) {
+							cell1.setCellValue(record.getR12_amt_6m().doubleValue());
+							cell1.setCellStyle(greenStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
 					//row11
 					// Column E 
-					 cell1 = row.getCell(4);
+					 cell1 = row.createCell(4);
 					if (record.getR12_capital_6m() != null) {
 						cell1.setCellValue(record.getR12_capital_6m().doubleValue());
-						
+						cell1.setCellStyle(greenStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
 					}
 					//row11
 					// Column F 
-					 cell1 = row.getCell(5);
-					if (record.getR12_amt_6to24m() != null) {
-						cell1.setCellValue(record.getR12_amt_6to24m().doubleValue());
-						
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}					
+					
+
+
+						cell1 = row.createCell(5);
+						if (record.getR12_amt_6to24m() != null) {
+							cell1.setCellValue(record.getR12_amt_6to24m().doubleValue());
+							cell1.setCellStyle(greenStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
 					//row11
 					// Column H
-					 cell1 = row.getCell(7);
+					 cell1 = row.createCell(7);
 					if (record.getR12_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR12_capital_6to24m().doubleValue());
-						
+						cell1.setCellStyle(greenStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
 					}					
 					//row11
 					// Column I 
-					 cell1 = row.getCell(8);
+				
+
+					cell1 = row.createCell(8);
 					if (record.getR12_amt_gt24m() != null) {
 						cell1.setCellValue(record.getR12_amt_gt24m().doubleValue());
-						
+						cell1.setCellStyle(greenStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
-					}												
+					}
+					
 					//row11
 					// Column K
-					 cell1 = row.getCell(10);
+					 cell1 = row.createCell(10);
 					if (record.getR12_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR12_capital_gt24m().doubleValue());
-						
+						cell1.setCellStyle(greenStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -584,15 +583,7 @@ Date reportDate = dateformat.parse(todate);
 					//row12
 					// Column b
 					row=sheet.getRow(12);
-					cell1=row.getCell(1);
-					if(record.getR13_product() != null) {
-						cell1.setCellValue(record.getR13_product());
-						
-					}else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-						
-					}
+					
 					//row12
 					// Column C 
 					
@@ -655,15 +646,7 @@ Date reportDate = dateformat.parse(todate);
 						//row13
 						// Column b
 						row=sheet.getRow(13);
-						cell1=row.getCell(1);
-						if(record.getR14_product() != null) {
-							cell1.setCellValue(record.getR14_product());
-							
-						}else {
-							cell1.setCellValue("");
-							cell1.setCellStyle(textStyle);
-							
-						}
+						
 						//row12
 						// Column C 
 						
@@ -726,15 +709,7 @@ Date reportDate = dateformat.parse(todate);
 							//row14
 							// Column b
 							row=sheet.getRow(14);
-							cell1=row.getCell(1);
-							if(record.getR15_product() != null) {
-								cell1.setCellValue(record.getR15_product());
-								
-							}else {
-								cell1.setCellValue("");
-								cell1.setCellStyle(textStyle);
-								
-							}
+							
 							//row12
 							// Column C 
 							
@@ -796,12 +771,7 @@ Date reportDate = dateformat.parse(todate);
 								// Column B
 								row = sheet.getRow(15);
 								cell1 = row.getCell(1);
-								if (record.getR16_product() != null) {
-								    cell1.setCellValue(record.getR16_product());
-								} else {
-								    cell1.setCellValue("");
-								    cell1.setCellStyle(textStyle);
-								}
+								
 
 								// Column C 
 								cell1 = row.getCell(2);
@@ -863,10 +833,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(16);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR17_product() != null) cell1.setCellValue(record.getR17_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR17_amt_6m() != null) cell1.setCellValue(record.getR17_amt_6m().doubleValue());
@@ -906,15 +873,17 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(17);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR18_product() != null) cell1.setCellValue(record.getR18_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
-								cell1 = row.getCell(2);
-								if (record.getR18_amt_6m() != null) cell1.setCellValue(record.getR18_amt_6m().doubleValue());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
+								 cell1 = row.createCell(2);
+								if (record.getR18_amt_6m() != null) {
+									cell1.setCellValue(record.getR18_amt_6m().doubleValue());
+									 cell1.setCellStyle(greenStyle);
+								} else {
+									cell1.setCellValue("");
+									cell1.setCellStyle(textStyle);
+								}
 								// Column E
 								cell1 = row.createCell(4);
 								if (record.getR18_capital_6m() != null) {
@@ -923,10 +892,15 @@ Date reportDate = dateformat.parse(todate);
 								} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
 
 								// Column F
-								cell1 = row.getCell(5);
-								if (record.getR18_amt_6to24m() != null) cell1.setCellValue(record.getR18_amt_6to24m().doubleValue());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
+								 cell1 = row.createCell(5);
+									if (record.getR18_amt_6to24m() != null) {
+										cell1.setCellValue(record.getR18_amt_6to24m().doubleValue());
+										 cell1.setCellStyle(greenStyle);
+									} else {
+										cell1.setCellValue("");
+										cell1.setCellStyle(textStyle);
+									}
 								// Column H
 								cell1 = row.createCell(7);
 								if (record.getR18_capital_6to24m() != null) {
@@ -935,10 +909,15 @@ Date reportDate = dateformat.parse(todate);
 								} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
 
 								// Column I
-								cell1 = row.getCell(8);
-								if (record.getR18_amt_gt24m() != null) cell1.setCellValue(record.getR18_amt_gt24m().doubleValue());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
+								 cell1 = row.createCell(8);
+									if (record.getR18_amt_gt24m() != null) {
+										cell1.setCellValue(record.getR18_amt_gt24m().doubleValue());
+										 cell1.setCellStyle(greenStyle);
+									} else {
+										cell1.setCellValue("");
+										cell1.setCellStyle(textStyle);
+									}
 								// Column K
 								cell1 = row.createCell(10);
 								if (record.getR18_capital_gt24m() != null) {
@@ -949,10 +928,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(18);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR19_product() != null) cell1.setCellValue(record.getR19_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR19_amt_6m() != null) cell1.setCellValue(record.getR19_amt_6m().doubleValue());
@@ -992,10 +968,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(19);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR20_product() != null) cell1.setCellValue(record.getR20_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR20_amt_6m() != null) cell1.setCellValue(record.getR20_amt_6m().doubleValue());
@@ -1035,10 +1008,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(20);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR21_product() != null) cell1.setCellValue(record.getR21_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+							
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR21_amt_6m() != null) cell1.setCellValue(record.getR21_amt_6m().doubleValue());
@@ -1078,10 +1048,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(21);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR22_product() != null) cell1.setCellValue(record.getR22_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR22_amt_6m() != null) cell1.setCellValue(record.getR22_amt_6m().doubleValue());
@@ -1121,10 +1088,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(22);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR23_product() != null) cell1.setCellValue(record.getR23_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR23_amt_6m() != null) cell1.setCellValue(record.getR23_amt_6m().doubleValue());
@@ -1164,10 +1128,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(23);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR24_product() != null) cell1.setCellValue(record.getR24_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR24_amt_6m() != null) cell1.setCellValue(record.getR24_amt_6m().doubleValue());
@@ -1206,11 +1167,7 @@ Date reportDate = dateformat.parse(todate);
 								//row24  (R25)
 								row = sheet.getRow(24);
 
-								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR25_product() != null) cell1.setCellValue(record.getR25_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR25_amt_6m() != null) cell1.setCellValue(record.getR25_amt_6m().doubleValue());
@@ -1250,10 +1207,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(25);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR26_product() != null) cell1.setCellValue(record.getR26_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR26_amt_6m() != null) cell1.setCellValue(record.getR26_amt_6m().doubleValue());
@@ -1293,15 +1247,17 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(26);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR27_product() != null) cell1.setCellValue(record.getR27_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
-								cell1 = row.getCell(2);
-								if (record.getR27_amt_6m() != null) cell1.setCellValue(record.getR27_amt_6m().doubleValue());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
+								 cell1 = row.createCell(2);
+									if (record.getR27_amt_6m() != null) {
+										cell1.setCellValue(record.getR27_amt_6m().doubleValue());
+										 cell1.setCellStyle(greenStyle);
+									} else {
+										cell1.setCellValue("");
+										cell1.setCellStyle(textStyle);
+									}
 								// Column E
 								cell1 = row.createCell(4);
 								if (record.getR27_capital_6m() != null) {
@@ -1310,10 +1266,15 @@ Date reportDate = dateformat.parse(todate);
 								} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
 
 								// Column F
-								cell1 = row.getCell(5);
-								if (record.getR27_amt_6to24m() != null) cell1.setCellValue(record.getR27_amt_6to24m().doubleValue());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
+								 cell1 = row.createCell(5);
+									if (record.getR27_amt_6to24m() != null) {
+										cell1.setCellValue(record.getR27_amt_6to24m().doubleValue());
+										 cell1.setCellStyle(greenStyle);
+									} else {
+										cell1.setCellValue("");
+										cell1.setCellStyle(textStyle);
+									}
 								// Column H
 								cell1 = row.createCell(7);
 								if (record.getR27_capital_6to24m() != null) {
@@ -1322,10 +1283,16 @@ Date reportDate = dateformat.parse(todate);
 								} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
 
 								// Column I
-								cell1 = row.getCell(8);
-								if (record.getR27_amt_gt24m() != null) cell1.setCellValue(record.getR27_amt_gt24m().doubleValue());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
+								
+								 cell1 = row.createCell(8);
+									if (record.getR27_amt_gt24m() != null) {
+										cell1.setCellValue(record.getR27_amt_gt24m().doubleValue());
+										 cell1.setCellStyle(greenStyle);
+									} else {
+										cell1.setCellValue("");
+										cell1.setCellStyle(textStyle);
+									}
 								// Column K
 								cell1 = row.createCell(10);
 								if (record.getR27_capital_gt24m() != null) {
@@ -1336,10 +1303,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(27);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR28_product() != null) cell1.setCellValue(record.getR28_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+							
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR28_amt_6m() != null) cell1.setCellValue(record.getR28_amt_6m().doubleValue());
@@ -1379,10 +1343,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(28);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR29_product() != null) cell1.setCellValue(record.getR29_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR29_amt_6m() != null) cell1.setCellValue(record.getR29_amt_6m().doubleValue());
@@ -1422,10 +1383,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(29);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR30_product() != null) cell1.setCellValue(record.getR30_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR30_amt_6m() != null) cell1.setCellValue(record.getR30_amt_6m().doubleValue());
@@ -1465,10 +1423,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(30);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR31_product() != null) cell1.setCellValue(record.getR31_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR31_amt_6m() != null) cell1.setCellValue(record.getR31_amt_6m().doubleValue());
@@ -1508,10 +1463,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(31);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR32_product() != null) cell1.setCellValue(record.getR32_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR32_amt_6m() != null) cell1.setCellValue(record.getR32_amt_6m().doubleValue());
@@ -1551,10 +1503,7 @@ Date reportDate = dateformat.parse(todate);
 								row = sheet.getRow(32);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR33_product() != null) cell1.setCellValue(record.getR33_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 							
 								// Column E
 								cell1 = row.createCell(4);
@@ -1585,7 +1534,8 @@ Date reportDate = dateformat.parse(todate);
 								row=sheet.getRow(34);
 								cell1 = row.createCell(4);
 								if (record.getR35_tot_spec_risk_ch() != null) {
-								cell1.setCellValue(record.getR35_tot_spec_risk_ch().doubleValue());} else {
+								cell1.setCellValue(record.getR35_tot_spec_risk_ch().doubleValue());
+								cell1.setCellStyle(greenStyle);} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
 								}
@@ -1686,6 +1636,7 @@ System.out.println("excel archival......"+filename);
 			greenStyle.setFillForegroundColor(green);
 			greenStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+greenStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 			CellStyle percentStyle = workbook.createCellStyle();
 			percentStyle.cloneStyleFrom(numberStyle);
 			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
@@ -1701,74 +1652,71 @@ System.out.println("excel archival......"+filename);
 						row = sheet.createRow(startRow + i);
 					}
 //----------
-					
 					//row11
 					// Column C 
 					row=sheet.getRow(11);
-					Cell cell1=row.getCell(1);
-					if(record.getR12_product() != null) {
-						cell1.setCellValue(record.getR12_product());
-						
-					}else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-						
-					}
+				
 					
-					 cell1 = row.getCell(2);
-					if (record.getR12_amt_6m() != null) {
-						cell1.setCellValue(record.getR12_amt_6m().doubleValue());
-					
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+					Cell cell1 = row.createCell(2);
+						if (record.getR12_amt_6m() != null) {
+							cell1.setCellValue(record.getR12_amt_6m().doubleValue());
+							cell1.setCellStyle(greenStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
 					//row11
 					// Column E 
-					 cell1 = row.getCell(4);
+					 cell1 = row.createCell(4);
 					if (record.getR12_capital_6m() != null) {
 						cell1.setCellValue(record.getR12_capital_6m().doubleValue());
-						
+						cell1.setCellStyle(greenStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
 					}
 					//row11
 					// Column F 
-					 cell1 = row.getCell(5);
-					if (record.getR12_amt_6to24m() != null) {
-						cell1.setCellValue(record.getR12_amt_6to24m().doubleValue());
-						
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}					
+					
+
+
+						cell1 = row.createCell(5);
+						if (record.getR12_amt_6to24m() != null) {
+							cell1.setCellValue(record.getR12_amt_6to24m().doubleValue());
+							cell1.setCellStyle(greenStyle);
+						} else {
+							cell1.setCellValue("");
+							cell1.setCellStyle(textStyle);
+						}
 					//row11
 					// Column H
-					 cell1 = row.getCell(7);
+					 cell1 = row.createCell(7);
 					if (record.getR12_capital_6to24m() != null) {
 						cell1.setCellValue(record.getR12_capital_6to24m().doubleValue());
-						
+						cell1.setCellStyle(greenStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
 					}					
 					//row11
 					// Column I 
-					 cell1 = row.getCell(8);
+				
+
+					cell1 = row.createCell(8);
 					if (record.getR12_amt_gt24m() != null) {
 						cell1.setCellValue(record.getR12_amt_gt24m().doubleValue());
-						
+						cell1.setCellStyle(greenStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
-					}												
+					}
+					
 					//row11
 					// Column K
-					 cell1 = row.getCell(10);
+					 cell1 = row.createCell(10);
 					if (record.getR12_capital_gt24m() != null) {
 						cell1.setCellValue(record.getR12_capital_gt24m().doubleValue());
-						
+						cell1.setCellStyle(greenStyle);
 					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
@@ -1778,15 +1726,7 @@ System.out.println("excel archival......"+filename);
 					//row12
 					// Column b
 					row=sheet.getRow(12);
-					cell1=row.getCell(1);
-					if(record.getR13_product() != null) {
-						cell1.setCellValue(record.getR13_product());
-						
-					}else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-						
-					}
+					
 					//row12
 					// Column C 
 					
@@ -1849,15 +1789,7 @@ System.out.println("excel archival......"+filename);
 						//row13
 						// Column b
 						row=sheet.getRow(13);
-						cell1=row.getCell(1);
-						if(record.getR14_product() != null) {
-							cell1.setCellValue(record.getR14_product());
-							
-						}else {
-							cell1.setCellValue("");
-							cell1.setCellStyle(textStyle);
-							
-						}
+						
 						//row12
 						// Column C 
 						
@@ -1920,15 +1852,7 @@ System.out.println("excel archival......"+filename);
 							//row14
 							// Column b
 							row=sheet.getRow(14);
-							cell1=row.getCell(1);
-							if(record.getR15_product() != null) {
-								cell1.setCellValue(record.getR15_product());
-								
-							}else {
-								cell1.setCellValue("");
-								cell1.setCellStyle(textStyle);
-								
-							}
+							
 							//row12
 							// Column C 
 							
@@ -1990,12 +1914,7 @@ System.out.println("excel archival......"+filename);
 								// Column B
 								row = sheet.getRow(15);
 								cell1 = row.getCell(1);
-								if (record.getR16_product() != null) {
-								    cell1.setCellValue(record.getR16_product());
-								} else {
-								    cell1.setCellValue("");
-								    cell1.setCellStyle(textStyle);
-								}
+								
 
 								// Column C 
 								cell1 = row.getCell(2);
@@ -2057,10 +1976,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(16);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR17_product() != null) cell1.setCellValue(record.getR17_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR17_amt_6m() != null) cell1.setCellValue(record.getR17_amt_6m().doubleValue());
@@ -2100,15 +2016,17 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(17);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR18_product() != null) cell1.setCellValue(record.getR18_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
-								cell1 = row.getCell(2);
-								if (record.getR18_amt_6m() != null) cell1.setCellValue(record.getR18_amt_6m().doubleValue());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
+								 cell1 = row.createCell(2);
+								if (record.getR18_amt_6m() != null) {
+									cell1.setCellValue(record.getR18_amt_6m().doubleValue());
+									 cell1.setCellStyle(greenStyle);
+								} else {
+									cell1.setCellValue("");
+									cell1.setCellStyle(textStyle);
+								}
 								// Column E
 								cell1 = row.createCell(4);
 								if (record.getR18_capital_6m() != null) {
@@ -2117,10 +2035,15 @@ System.out.println("excel archival......"+filename);
 								} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
 
 								// Column F
-								cell1 = row.getCell(5);
-								if (record.getR18_amt_6to24m() != null) cell1.setCellValue(record.getR18_amt_6to24m().doubleValue());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
+								 cell1 = row.createCell(5);
+									if (record.getR18_amt_6to24m() != null) {
+										cell1.setCellValue(record.getR18_amt_6to24m().doubleValue());
+										 cell1.setCellStyle(greenStyle);
+									} else {
+										cell1.setCellValue("");
+										cell1.setCellStyle(textStyle);
+									}
 								// Column H
 								cell1 = row.createCell(7);
 								if (record.getR18_capital_6to24m() != null) {
@@ -2129,10 +2052,15 @@ System.out.println("excel archival......"+filename);
 								} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
 
 								// Column I
-								cell1 = row.getCell(8);
-								if (record.getR18_amt_gt24m() != null) cell1.setCellValue(record.getR18_amt_gt24m().doubleValue());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
+								 cell1 = row.createCell(8);
+									if (record.getR18_amt_gt24m() != null) {
+										cell1.setCellValue(record.getR18_amt_gt24m().doubleValue());
+										 cell1.setCellStyle(greenStyle);
+									} else {
+										cell1.setCellValue("");
+										cell1.setCellStyle(textStyle);
+									}
 								// Column K
 								cell1 = row.createCell(10);
 								if (record.getR18_capital_gt24m() != null) {
@@ -2143,10 +2071,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(18);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR19_product() != null) cell1.setCellValue(record.getR19_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR19_amt_6m() != null) cell1.setCellValue(record.getR19_amt_6m().doubleValue());
@@ -2186,10 +2111,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(19);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR20_product() != null) cell1.setCellValue(record.getR20_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR20_amt_6m() != null) cell1.setCellValue(record.getR20_amt_6m().doubleValue());
@@ -2229,10 +2151,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(20);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR21_product() != null) cell1.setCellValue(record.getR21_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+							
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR21_amt_6m() != null) cell1.setCellValue(record.getR21_amt_6m().doubleValue());
@@ -2272,10 +2191,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(21);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR22_product() != null) cell1.setCellValue(record.getR22_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR22_amt_6m() != null) cell1.setCellValue(record.getR22_amt_6m().doubleValue());
@@ -2315,10 +2231,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(22);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR23_product() != null) cell1.setCellValue(record.getR23_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR23_amt_6m() != null) cell1.setCellValue(record.getR23_amt_6m().doubleValue());
@@ -2358,10 +2271,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(23);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR24_product() != null) cell1.setCellValue(record.getR24_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR24_amt_6m() != null) cell1.setCellValue(record.getR24_amt_6m().doubleValue());
@@ -2400,11 +2310,7 @@ System.out.println("excel archival......"+filename);
 								//row24  (R25)
 								row = sheet.getRow(24);
 
-								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR25_product() != null) cell1.setCellValue(record.getR25_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR25_amt_6m() != null) cell1.setCellValue(record.getR25_amt_6m().doubleValue());
@@ -2444,10 +2350,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(25);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR26_product() != null) cell1.setCellValue(record.getR26_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR26_amt_6m() != null) cell1.setCellValue(record.getR26_amt_6m().doubleValue());
@@ -2487,15 +2390,17 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(26);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR27_product() != null) cell1.setCellValue(record.getR27_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
-								cell1 = row.getCell(2);
-								if (record.getR27_amt_6m() != null) cell1.setCellValue(record.getR27_amt_6m().doubleValue());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
+								 cell1 = row.createCell(2);
+									if (record.getR27_amt_6m() != null) {
+										cell1.setCellValue(record.getR27_amt_6m().doubleValue());
+										 cell1.setCellStyle(greenStyle);
+									} else {
+										cell1.setCellValue("");
+										cell1.setCellStyle(textStyle);
+									}
 								// Column E
 								cell1 = row.createCell(4);
 								if (record.getR27_capital_6m() != null) {
@@ -2504,10 +2409,15 @@ System.out.println("excel archival......"+filename);
 								} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
 
 								// Column F
-								cell1 = row.getCell(5);
-								if (record.getR27_amt_6to24m() != null) cell1.setCellValue(record.getR27_amt_6to24m().doubleValue());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
+								 cell1 = row.createCell(5);
+									if (record.getR27_amt_6to24m() != null) {
+										cell1.setCellValue(record.getR27_amt_6to24m().doubleValue());
+										 cell1.setCellStyle(greenStyle);
+									} else {
+										cell1.setCellValue("");
+										cell1.setCellStyle(textStyle);
+									}
 								// Column H
 								cell1 = row.createCell(7);
 								if (record.getR27_capital_6to24m() != null) {
@@ -2516,10 +2426,16 @@ System.out.println("excel archival......"+filename);
 								} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
 
 								// Column I
-								cell1 = row.getCell(8);
-								if (record.getR27_amt_gt24m() != null) cell1.setCellValue(record.getR27_amt_gt24m().doubleValue());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
+								
+								 cell1 = row.createCell(8);
+									if (record.getR27_amt_gt24m() != null) {
+										cell1.setCellValue(record.getR27_amt_gt24m().doubleValue());
+										 cell1.setCellStyle(greenStyle);
+									} else {
+										cell1.setCellValue("");
+										cell1.setCellStyle(textStyle);
+									}
 								// Column K
 								cell1 = row.createCell(10);
 								if (record.getR27_capital_gt24m() != null) {
@@ -2530,10 +2446,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(27);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR28_product() != null) cell1.setCellValue(record.getR28_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+							
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR28_amt_6m() != null) cell1.setCellValue(record.getR28_amt_6m().doubleValue());
@@ -2573,10 +2486,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(28);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR29_product() != null) cell1.setCellValue(record.getR29_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR29_amt_6m() != null) cell1.setCellValue(record.getR29_amt_6m().doubleValue());
@@ -2616,10 +2526,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(29);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR30_product() != null) cell1.setCellValue(record.getR30_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR30_amt_6m() != null) cell1.setCellValue(record.getR30_amt_6m().doubleValue());
@@ -2659,10 +2566,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(30);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR31_product() != null) cell1.setCellValue(record.getR31_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR31_amt_6m() != null) cell1.setCellValue(record.getR31_amt_6m().doubleValue());
@@ -2702,10 +2606,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(31);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR32_product() != null) cell1.setCellValue(record.getR32_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 								// Column C
 								cell1 = row.getCell(2);
 								if (record.getR32_amt_6m() != null) cell1.setCellValue(record.getR32_amt_6m().doubleValue());
@@ -2745,10 +2646,7 @@ System.out.println("excel archival......"+filename);
 								row = sheet.getRow(32);
 
 								// Column B
-								cell1 = row.getCell(1);
-								if (record.getR33_product() != null) cell1.setCellValue(record.getR33_product());
-								else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+								
 							
 								// Column E
 								cell1 = row.createCell(4);
@@ -2779,7 +2677,8 @@ System.out.println("excel archival......"+filename);
 								row=sheet.getRow(34);
 								cell1 = row.createCell(4);
 								if (record.getR35_tot_spec_risk_ch() != null) {
-								cell1.setCellValue(record.getR35_tot_spec_risk_ch().doubleValue());} else {
+								cell1.setCellValue(record.getR35_tot_spec_risk_ch().doubleValue());
+								cell1.setCellStyle(greenStyle);} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
 								}
@@ -2800,7 +2699,6 @@ System.out.println("excel archival......"+filename);
 
 				return out.toByteArray();
 				}
-
 }
 
 
@@ -3004,6 +2902,7 @@ System.out.println("excel archival......"+filename);
 					greenStyle.setFillForegroundColor(green);
 					greenStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+greenStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 					CellStyle percentStyle = workbook.createCellStyle();
 					percentStyle.cloneStyleFrom(numberStyle);
 					percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
@@ -3023,70 +2922,68 @@ System.out.println("excel archival......"+filename);
 							//row11
 							// Column C 
 							row=sheet.getRow(11);
-							Cell cell1=row.getCell(1);
-							if(record.getR12_product() != null) {
-								cell1.setCellValue(record.getR12_product());
-								
-							}else {
-								cell1.setCellValue("");
-								cell1.setCellStyle(textStyle);
-								
-							}
+						
 							
-							 cell1 = row.getCell(2);
-							if (record.getR12_amt_6m() != null) {
-								cell1.setCellValue(record.getR12_amt_6m().doubleValue());
-							
-							} else {
-								cell1.setCellValue("");
-								cell1.setCellStyle(textStyle);
-							}
+							Cell cell1 = row.createCell(2);
+								if (record.getR12_amt_6m() != null) {
+									cell1.setCellValue(record.getR12_amt_6m().doubleValue());
+									cell1.setCellStyle(greenStyle);
+								} else {
+									cell1.setCellValue("");
+									cell1.setCellStyle(textStyle);
+								}
 							//row11
 							// Column E 
-							 cell1 = row.getCell(4);
+							 cell1 = row.createCell(4);
 							if (record.getR12_capital_6m() != null) {
 								cell1.setCellValue(record.getR12_capital_6m().doubleValue());
-								
+								cell1.setCellStyle(greenStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
 							}
 							//row11
 							// Column F 
-							 cell1 = row.getCell(5);
-							if (record.getR12_amt_6to24m() != null) {
-								cell1.setCellValue(record.getR12_amt_6to24m().doubleValue());
-								
-							} else {
-								cell1.setCellValue("");
-								cell1.setCellStyle(textStyle);
-							}					
+							
+
+
+								cell1 = row.createCell(5);
+								if (record.getR12_amt_6to24m() != null) {
+									cell1.setCellValue(record.getR12_amt_6to24m().doubleValue());
+									cell1.setCellStyle(greenStyle);
+								} else {
+									cell1.setCellValue("");
+									cell1.setCellStyle(textStyle);
+								}
 							//row11
 							// Column H
-							 cell1 = row.getCell(7);
+							 cell1 = row.createCell(7);
 							if (record.getR12_capital_6to24m() != null) {
 								cell1.setCellValue(record.getR12_capital_6to24m().doubleValue());
-								
+								cell1.setCellStyle(greenStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
 							}					
 							//row11
 							// Column I 
-							 cell1 = row.getCell(8);
+						
+
+							cell1 = row.createCell(8);
 							if (record.getR12_amt_gt24m() != null) {
 								cell1.setCellValue(record.getR12_amt_gt24m().doubleValue());
-								
+								cell1.setCellStyle(greenStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
-							}												
+							}
+							
 							//row11
 							// Column K
-							 cell1 = row.getCell(10);
+							 cell1 = row.createCell(10);
 							if (record.getR12_capital_gt24m() != null) {
 								cell1.setCellValue(record.getR12_capital_gt24m().doubleValue());
-								
+								cell1.setCellStyle(greenStyle);
 							} else {
 								cell1.setCellValue("");
 								cell1.setCellStyle(textStyle);
@@ -3096,15 +2993,7 @@ System.out.println("excel archival......"+filename);
 							//row12
 							// Column b
 							row=sheet.getRow(12);
-							cell1=row.getCell(1);
-							if(record.getR13_product() != null) {
-								cell1.setCellValue(record.getR13_product());
-								
-							}else {
-								cell1.setCellValue("");
-								cell1.setCellStyle(textStyle);
-								
-							}
+							
 							//row12
 							// Column C 
 							
@@ -3167,15 +3056,7 @@ System.out.println("excel archival......"+filename);
 								//row13
 								// Column b
 								row=sheet.getRow(13);
-								cell1=row.getCell(1);
-								if(record.getR14_product() != null) {
-									cell1.setCellValue(record.getR14_product());
-									
-								}else {
-									cell1.setCellValue("");
-									cell1.setCellStyle(textStyle);
-									
-								}
+								
 								//row12
 								// Column C 
 								
@@ -3238,15 +3119,7 @@ System.out.println("excel archival......"+filename);
 									//row14
 									// Column b
 									row=sheet.getRow(14);
-									cell1=row.getCell(1);
-									if(record.getR15_product() != null) {
-										cell1.setCellValue(record.getR15_product());
-										
-									}else {
-										cell1.setCellValue("");
-										cell1.setCellStyle(textStyle);
-										
-									}
+									
 									//row12
 									// Column C 
 									
@@ -3308,12 +3181,7 @@ System.out.println("excel archival......"+filename);
 										// Column B
 										row = sheet.getRow(15);
 										cell1 = row.getCell(1);
-										if (record.getR16_product() != null) {
-										    cell1.setCellValue(record.getR16_product());
-										} else {
-										    cell1.setCellValue("");
-										    cell1.setCellStyle(textStyle);
-										}
+										
 
 										// Column C 
 										cell1 = row.getCell(2);
@@ -3375,10 +3243,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(16);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR17_product() != null) cell1.setCellValue(record.getR17_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR17_amt_6m() != null) cell1.setCellValue(record.getR17_amt_6m().doubleValue());
@@ -3418,15 +3283,17 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(17);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR18_product() != null) cell1.setCellValue(record.getR18_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
-										cell1 = row.getCell(2);
-										if (record.getR18_amt_6m() != null) cell1.setCellValue(record.getR18_amt_6m().doubleValue());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
+										 cell1 = row.createCell(2);
+										if (record.getR18_amt_6m() != null) {
+											cell1.setCellValue(record.getR18_amt_6m().doubleValue());
+											 cell1.setCellStyle(greenStyle);
+										} else {
+											cell1.setCellValue("");
+											cell1.setCellStyle(textStyle);
+										}
 										// Column E
 										cell1 = row.createCell(4);
 										if (record.getR18_capital_6m() != null) {
@@ -3435,10 +3302,15 @@ System.out.println("excel archival......"+filename);
 										} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
 
 										// Column F
-										cell1 = row.getCell(5);
-										if (record.getR18_amt_6to24m() != null) cell1.setCellValue(record.getR18_amt_6to24m().doubleValue());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
+										 cell1 = row.createCell(5);
+											if (record.getR18_amt_6to24m() != null) {
+												cell1.setCellValue(record.getR18_amt_6to24m().doubleValue());
+												 cell1.setCellStyle(greenStyle);
+											} else {
+												cell1.setCellValue("");
+												cell1.setCellStyle(textStyle);
+											}
 										// Column H
 										cell1 = row.createCell(7);
 										if (record.getR18_capital_6to24m() != null) {
@@ -3447,10 +3319,15 @@ System.out.println("excel archival......"+filename);
 										} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
 
 										// Column I
-										cell1 = row.getCell(8);
-										if (record.getR18_amt_gt24m() != null) cell1.setCellValue(record.getR18_amt_gt24m().doubleValue());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
+										 cell1 = row.createCell(8);
+											if (record.getR18_amt_gt24m() != null) {
+												cell1.setCellValue(record.getR18_amt_gt24m().doubleValue());
+												 cell1.setCellStyle(greenStyle);
+											} else {
+												cell1.setCellValue("");
+												cell1.setCellStyle(textStyle);
+											}
 										// Column K
 										cell1 = row.createCell(10);
 										if (record.getR18_capital_gt24m() != null) {
@@ -3461,10 +3338,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(18);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR19_product() != null) cell1.setCellValue(record.getR19_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR19_amt_6m() != null) cell1.setCellValue(record.getR19_amt_6m().doubleValue());
@@ -3504,10 +3378,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(19);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR20_product() != null) cell1.setCellValue(record.getR20_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR20_amt_6m() != null) cell1.setCellValue(record.getR20_amt_6m().doubleValue());
@@ -3547,10 +3418,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(20);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR21_product() != null) cell1.setCellValue(record.getR21_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+									
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR21_amt_6m() != null) cell1.setCellValue(record.getR21_amt_6m().doubleValue());
@@ -3590,10 +3458,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(21);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR22_product() != null) cell1.setCellValue(record.getR22_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR22_amt_6m() != null) cell1.setCellValue(record.getR22_amt_6m().doubleValue());
@@ -3633,10 +3498,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(22);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR23_product() != null) cell1.setCellValue(record.getR23_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR23_amt_6m() != null) cell1.setCellValue(record.getR23_amt_6m().doubleValue());
@@ -3676,10 +3538,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(23);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR24_product() != null) cell1.setCellValue(record.getR24_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR24_amt_6m() != null) cell1.setCellValue(record.getR24_amt_6m().doubleValue());
@@ -3718,11 +3577,7 @@ System.out.println("excel archival......"+filename);
 										//row24  (R25)
 										row = sheet.getRow(24);
 
-										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR25_product() != null) cell1.setCellValue(record.getR25_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR25_amt_6m() != null) cell1.setCellValue(record.getR25_amt_6m().doubleValue());
@@ -3762,10 +3617,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(25);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR26_product() != null) cell1.setCellValue(record.getR26_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR26_amt_6m() != null) cell1.setCellValue(record.getR26_amt_6m().doubleValue());
@@ -3805,15 +3657,17 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(26);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR27_product() != null) cell1.setCellValue(record.getR27_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
-										cell1 = row.getCell(2);
-										if (record.getR27_amt_6m() != null) cell1.setCellValue(record.getR27_amt_6m().doubleValue());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
+										 cell1 = row.createCell(2);
+											if (record.getR27_amt_6m() != null) {
+												cell1.setCellValue(record.getR27_amt_6m().doubleValue());
+												 cell1.setCellStyle(greenStyle);
+											} else {
+												cell1.setCellValue("");
+												cell1.setCellStyle(textStyle);
+											}
 										// Column E
 										cell1 = row.createCell(4);
 										if (record.getR27_capital_6m() != null) {
@@ -3822,10 +3676,15 @@ System.out.println("excel archival......"+filename);
 										} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
 
 										// Column F
-										cell1 = row.getCell(5);
-										if (record.getR27_amt_6to24m() != null) cell1.setCellValue(record.getR27_amt_6to24m().doubleValue());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
+										 cell1 = row.createCell(5);
+											if (record.getR27_amt_6to24m() != null) {
+												cell1.setCellValue(record.getR27_amt_6to24m().doubleValue());
+												 cell1.setCellStyle(greenStyle);
+											} else {
+												cell1.setCellValue("");
+												cell1.setCellStyle(textStyle);
+											}
 										// Column H
 										cell1 = row.createCell(7);
 										if (record.getR27_capital_6to24m() != null) {
@@ -3834,10 +3693,16 @@ System.out.println("excel archival......"+filename);
 										} else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
 
 										// Column I
-										cell1 = row.getCell(8);
-										if (record.getR27_amt_gt24m() != null) cell1.setCellValue(record.getR27_amt_gt24m().doubleValue());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
+										
+										 cell1 = row.createCell(8);
+											if (record.getR27_amt_gt24m() != null) {
+												cell1.setCellValue(record.getR27_amt_gt24m().doubleValue());
+												 cell1.setCellStyle(greenStyle);
+											} else {
+												cell1.setCellValue("");
+												cell1.setCellStyle(textStyle);
+											}
 										// Column K
 										cell1 = row.createCell(10);
 										if (record.getR27_capital_gt24m() != null) {
@@ -3848,10 +3713,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(27);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR28_product() != null) cell1.setCellValue(record.getR28_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+									
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR28_amt_6m() != null) cell1.setCellValue(record.getR28_amt_6m().doubleValue());
@@ -3891,10 +3753,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(28);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR29_product() != null) cell1.setCellValue(record.getR29_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR29_amt_6m() != null) cell1.setCellValue(record.getR29_amt_6m().doubleValue());
@@ -3934,10 +3793,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(29);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR30_product() != null) cell1.setCellValue(record.getR30_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR30_amt_6m() != null) cell1.setCellValue(record.getR30_amt_6m().doubleValue());
@@ -3977,10 +3833,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(30);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR31_product() != null) cell1.setCellValue(record.getR31_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR31_amt_6m() != null) cell1.setCellValue(record.getR31_amt_6m().doubleValue());
@@ -4020,10 +3873,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(31);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR32_product() != null) cell1.setCellValue(record.getR32_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 										// Column C
 										cell1 = row.getCell(2);
 										if (record.getR32_amt_6m() != null) cell1.setCellValue(record.getR32_amt_6m().doubleValue());
@@ -4063,10 +3913,7 @@ System.out.println("excel archival......"+filename);
 										row = sheet.getRow(32);
 
 										// Column B
-										cell1 = row.getCell(1);
-										if (record.getR33_product() != null) cell1.setCellValue(record.getR33_product());
-										else { cell1.setCellValue(""); cell1.setCellStyle(textStyle); }
-
+										
 									
 										// Column E
 										cell1 = row.createCell(4);
@@ -4097,7 +3944,8 @@ System.out.println("excel archival......"+filename);
 										row=sheet.getRow(34);
 										cell1 = row.createCell(4);
 										if (record.getR35_tot_spec_risk_ch() != null) {
-										cell1.setCellValue(record.getR35_tot_spec_risk_ch().doubleValue());} else {
+										cell1.setCellValue(record.getR35_tot_spec_risk_ch().doubleValue());
+										cell1.setCellStyle(greenStyle);} else {
 										cell1.setCellValue("");
 										cell1.setCellStyle(textStyle);
 										}
@@ -4118,9 +3966,7 @@ System.out.println("excel archival......"+filename);
 
 						return out.toByteArray();
 						}
-
 		}
-
 					
 	}
 	
