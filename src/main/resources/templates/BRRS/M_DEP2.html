@@ -53,6 +53,7 @@ PURPOSE		: BRFREPORT
 
 
 
+
 	<style>
 		.btns {
 			float: right;
@@ -324,6 +325,7 @@ PURPOSE		: BRFREPORT
 			border-collapse: collapse;
 		}
 	</style>
+
 
 
 
@@ -741,73 +743,6 @@ PURPOSE		: BRFREPORT
 				location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
 			}
 		</script>
-		
-		<script>
-    function submitUpdate() {
-        const formData = $('#DetailForm').serialize(); // Ensure correct form ID
-
-        // ✅ Store the previous page URL
-        const previousUrl = document.referrer; // same as going back once in history
-
-        // Show loader while processing
-        $('#loader').modal('show');
-
-        $.ajax({
-            url: `/BRRS/Reports/${reportId}/update`,
-            type: 'POST',
-            data: formData,
-            success: function (response) {
-                $('#loader').modal('hide');
-
-                // ✅ Handle SUCCESS & NON-SUCCESS (Information)
-                if (response && response.toLowerCase().includes('success')) {
-                	showResultModalDetail('BRRS', response);
-                } else {
-                	showResultModalDetail('Information', response || 'No data updated.');
-                }
-
-                // Redirect after 1.5 sec
-                setTimeout(() => {
-                    if (previousUrl) {
-                        window.location.href = previousUrl;
-                    } else {
-                        window.history.back(); // fallback
-                    }
-                }, 1500);
-            },
-
-            error: function (xhr, status, error) {
-                $('#loader').modal('hide');
-                console.error("Update error:", error);
-
-                // ✅ Handle ERROR
-                showResultModalDetail('Error', 'Failed to update record. Please try again.');
-
-                // Redirect back after delay even on error
-                setTimeout(() => {
-                    if (previousUrl) {
-                        window.location.href = previousUrl;
-                    } else {
-                        window.history.back();
-                    }
-                }, 1500);
-            }
-        });
-    }
-    
-	// This function is for closing the modal after an action is complete.
-	// It hides the result and loader modals and reloads the page.
-	function closemodels() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
-
-		// Reload the page after a short delay to ensure the modal animation completes smoothly.
-		    setTimeout(function () {
-		        location.reload();
-		    }, 300);
-	}
-
-</script>
 	
 
 		<style>
@@ -904,6 +839,73 @@ PURPOSE		: BRFREPORT
 				    }, 500);
 				  });
 				</script>
+		
+		<script>
+    function submitUpdate() {
+        const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+
+        // ✅ Store the previous page URL
+        const previousUrl = document.referrer; // same as going back once in history
+
+        // Show loader while processing
+        $('#loader').modal('show');
+
+        $.ajax({
+            url: `/BRRS/Reports/${reportId}/update`,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                $('#loader').modal('hide');
+
+                // ✅ Handle SUCCESS & NON-SUCCESS (Information)
+                if (response && response.toLowerCase().includes('success')) {
+                	showResultModalDetail('BRRS', response);
+                } else {
+                	showResultModalDetail('Information', response || 'No data updated.');
+                }
+
+                // Redirect after 1.5 sec
+                setTimeout(() => {
+                    if (previousUrl) {
+                        window.location.href = previousUrl;
+                    } else {
+                        window.history.back(); // fallback
+                    }
+                }, 1500);
+            },
+
+            error: function (xhr, status, error) {
+                $('#loader').modal('hide');
+                console.error("Update error:", error);
+
+                // ✅ Handle ERROR
+                showResultModalDetail('Error', 'Failed to update record. Please try again.');
+
+                // Redirect back after delay even on error
+                setTimeout(() => {
+                    if (previousUrl) {
+                        window.location.href = previousUrl;
+                    } else {
+                        window.history.back();
+                    }
+                }, 1500);
+            }
+        });
+    }
+    
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodels() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+		// Reload the page after a short delay to ensure the modal animation completes smoothly.
+		    setTimeout(function () {
+		        location.reload();
+		    }, 300);
+	}
+
+</script>
 
 
 
@@ -2036,7 +2038,7 @@ PURPOSE		: BRFREPORT
 					</div>
 				</div>
 
-				<div th:if="${displaymode == 'Details'}">
+				<!-- <div th:if="${displaymode == 'Details'}">
 									<div class="row">
 										<div class="col-sm-12">
 											<div class="table-container" style="border-right: 1px solid #dee2e6;">
@@ -2071,7 +2073,7 @@ PURPOSE		: BRFREPORT
 															<td th:text="${report.acctNumber}"></td>
 															<td th:text="${report.acctName}"></td>
 														<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
-														<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 2)}" style="text-align: right;"></td>
+														<!--  <td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 0)}" style="text-align: right;"></td>
 
 															<td style="text-align: left;" th:text="${report.reportLable}"></td>
 															<td th:text="${report.reportAddlCriteria1}"></td>
@@ -2089,6 +2091,73 @@ PURPOSE		: BRFREPORT
 						</div>
 					</div>
 				</div>
+
+			</div> -->
+				<!--  DETAIL -->
+												<div th:if="${displaymode == 'Details'}">
+													<div class="row">
+														<div class="col-sm-12" style="max-height:90vh; overflow-y: auto; ">
+															<div class="table-container" 
+																style="border-right: 1px solid #dee2e6; ">
+																<table class="table table-striped table-bordered table-hover"
+																	id="reportdetails">
+																	<thead class="thead-light">
+																		
+																		<tr>
+																			<th> </th>
+																			<th>S No</th>
+																			<th>CUST ID</th>
+																			<th>ACCT NUMBER</th>
+																			<th>ACCT NAME</th>
+																			<th>ACCT BALANCE IN PULA</th>
+																			
+																			<th>REPORT LABLE</th>
+																			<th>REPORT ADDL CRITERIA 1</th>
+																			<th>REPORT DATE</th>
+																		</tr>
+
+																	</thead>
+
+																	<tbody style="font-family: Arial;">
+																		<tr th:each="report, srlno : ${reportdetails}">
+																			<td>
+																				<a data-toggle="tooltip" class="editrec"
+																					title="Click to Edit this Record">
+																					<i class="fas fa-edit" style="color: black; cursor:pointer;"
+																						th:attr="data-acctNo=${report.acctNumber},
+																						data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
+																						onclick="openDetail(this, 'edit')"></i>
+
+																				</a>
+																			</td>
+																			<td th:text="${srlno.index + 1}"></td>
+																			<td th:text="${report.custId != null ? report.custId : '-'}"></td>
+																			<td th:text="${report.acctNumber != null ? report.acctNumber : '-'}"></td>
+																			<td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
+																			
+																			<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}"></td>
+																			
+																			<td th:text="${report.reportLable != null ? report.reportLable : '-'}">
+																			</td>
+																			<td
+																				th:text="${report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}">
+																			</td>
+																			<td th:text="${report.reportDate != null ? #dates.format(report.reportDate, 'dd-MM-yyyy') : '-'}"></td>
+																		</tr>
+																	</tbody>
+																</table>
+
+															</div>
+
+															<!-- Submit Button -->
+															<div style="text-align: center; margin-top: 15px; background-color: white;">
+																<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+																	onclick="updateform();" style="display: none;">
+																	Submit
+																</button>
+															</div>
+														</div>
+													</div>
 
 			</div>
 
@@ -2153,7 +2222,8 @@ PURPOSE		: BRFREPORT
 
 							      <!-- Update Button -->
 							      <div style="text-align:center; margin-top:20px;">
-							        <button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}" onclick="submitUpdate()">Update</button>
+							        <button type="button" class="custom-tab-btn" 
+							        th:if="${formmode == 'edit'}" onclick="submitUpdate()">Update</button>
 							      </div>
 							    </form>
 							  </div>
@@ -2364,6 +2434,7 @@ PURPOSE		: BRFREPORT
 		width: auto;
 	}
 </style>
+
 
 
 
