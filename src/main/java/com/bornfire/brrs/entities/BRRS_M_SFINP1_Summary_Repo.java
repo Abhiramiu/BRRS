@@ -14,6 +14,11 @@ public interface BRRS_M_SFINP1_Summary_Repo extends JpaRepository<M_SFINP1_Summa
 
     @Query(value = "SELECT * FROM BRRS_M_SFINP1_SUMMARYTABLE WHERE REPORT_DATE = :reportDate", nativeQuery = true)
     List<M_SFINP1_Summary_Entity> getdatabydateList(@Param("reportDate") Date reportDate);
+    
+    @Query(value = "SELECT * "+
+    		"FROM BRRS_M_SFINP1_SUMMARYTABLE "+
+    		"WHERE TRUNC(REPORT_DATE) = TO_DATE(?1, 'DD-MON-YYYY')", nativeQuery = true)
+    List<M_SFINP1_Summary_Entity> getdatabydateList1(String reportDate);
 
     
 }
