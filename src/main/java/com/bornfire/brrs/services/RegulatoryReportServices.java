@@ -221,6 +221,12 @@ public class RegulatoryReportServices {
 			
 	@Autowired
     BRRS_M_GMIRT_ReportService brrs_m_gmirt_reportservice;
+	
+	@Autowired	
+	BRRS_M_GALOR_ReportService BRRS_m_galor_ReportService;	
+	
+	
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -534,6 +540,11 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 				break;
 			
+		  case "M_GALOR":
+				
+				repsummary = BRRS_m_galor_ReportService.getM_GALORView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
 			
 			
 			
@@ -674,6 +685,12 @@ public class RegulatoryReportServices {
 				
 				repdetail = brrs_m_gmirt_reportservice. getM_GMIRTcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
+				break;
+				
+		  case "M_GALOR":
+
+				repdetail = BRRS_m_galor_ReportService.getM_GALORcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype, pageable, Filter, type, version);
 				break;
 
 		}
@@ -1271,6 +1288,17 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+		case "M_GALOR":
+			try {
+				
+				repfile = BRRS_m_galor_ReportService.getM_GALORExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		case "M_NOSVOS":
 			try {
 				repfile = BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(filename, reportId, fromdate, todate, currency,
@@ -1672,6 +1700,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "M_GALOR":
+			try {
+				archivalData = BRRS_m_galor_ReportService.getM_GALORArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		/*
 		 * case "M_SRWA_12C": try { archivalData =
@@ -2051,6 +2088,13 @@ public class RegulatoryReportServices {
 		else if ("M_GMIRT_Detail".equals(filename)) {
 		       
 	        fileData = brrs_m_gmirt_reportservice.getM_GMIRTDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);   
+	    }
+		
+		
+		else if ("M_GALOR_Detail".equals(filename)) {
+		       
+	        fileData = BRRS_m_galor_ReportService.getM_GALORDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);   
 	    }
 		else if ("M_LIQ".equals(filename)) {
