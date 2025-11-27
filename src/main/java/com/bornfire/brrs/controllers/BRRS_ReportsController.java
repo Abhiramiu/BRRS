@@ -41,104 +41,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.dto.ReportLineItemDTO;
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity1;
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity2;
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity3;
-import com.bornfire.brrs.entities.BRRS_M_AIDP_Summary_Entity4;
-import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity1;
-import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity2;
-import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity3;
-import com.bornfire.brrs.entities.BRRS_M_SEC_Summary_Entity4;
-import com.bornfire.brrs.entities.BrrsMNosvosP1;
-import com.bornfire.brrs.entities.BrrsMNosvosP2;
-import com.bornfire.brrs.entities.BrrsMNosvosP3;
-import com.bornfire.brrs.entities.BrrsMNosvosP4;
-import com.bornfire.brrs.entities.M_BOP_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA3_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA5_Summary_Entity1;
-import com.bornfire.brrs.entities.M_CA5_Summary_Entity2;
-import com.bornfire.brrs.entities.M_CA6_Summary_Entity1;
-import com.bornfire.brrs.entities.M_CA6_Summary_Entity2;
-import com.bornfire.brrs.entities.M_CA7_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA7_Summary_Entity;
-import com.bornfire.brrs.entities.M_CR_Summary_Entity;
-import com.bornfire.brrs.entities.M_EPR_Summary_Entity;
-import com.bornfire.brrs.entities.M_FXR_Summary_Entity1;
-import com.bornfire.brrs.entities.M_FXR_Summary_Entity2;
-import com.bornfire.brrs.entities.M_FXR_Summary_Entity3;
-import com.bornfire.brrs.entities.M_GALOR_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_GMIRT_Summary_Entity;
-import com.bornfire.brrs.entities.M_GP_Summary_Entity;
-import com.bornfire.brrs.entities.M_INT_RATES_FCA_Summary_Entity;
-import com.bornfire.brrs.entities.M_INT_RATES_Summary_Entity;
-import com.bornfire.brrs.entities.M_IS_Summary_Entity1;
-import com.bornfire.brrs.entities.M_IS_Summary_Entity2;
-import com.bornfire.brrs.entities.M_LA2_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
-import com.bornfire.brrs.entities.M_LA3_Summary_Entity2;
-import com.bornfire.brrs.entities.M_LA4_Summary_Entity2;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity1;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity3;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity4;
-import com.bornfire.brrs.entities.M_LARADV_Summary_Entity5;
-import com.bornfire.brrs.entities.M_LIQ_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_OB_Summary_Entity;
-import com.bornfire.brrs.entities.M_OPTR_Summary_Entity;
-import com.bornfire.brrs.entities.M_OR2_Summary_Entity;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity1;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity2;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity3;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity4;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity5;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity6;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity7;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity8;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity9;
-import com.bornfire.brrs.entities.M_SECA_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_SECL_Summary_Entity;
-import com.bornfire.brrs.entities.M_SFINP1_Summary_Manual_Entity;
-import com.bornfire.brrs.entities.M_SIR_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SIR_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity1;
-import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity2;
-import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity3;
-import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity4;
-import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity5;
-import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity6;
-import com.bornfire.brrs.entities.M_SRWA_12A_Summary_Entity7;
-import com.bornfire.brrs.entities.M_SRWA_12B_Summary_Entity1;
-import com.bornfire.brrs.entities.M_SRWA_12B_Summary_Entity2;
-import com.bornfire.brrs.entities.M_SRWA_12B_Summary_Entity3;
-import com.bornfire.brrs.entities.M_SRWA_12B_Summary_Entity4;
-import com.bornfire.brrs.entities.M_SRWA_12B_Summary_Entity5;
-import com.bornfire.brrs.entities.M_SRWA_12B_Summary_Entity6;
-import com.bornfire.brrs.entities.M_SRWA_12B_Summary_Entity7;
-import com.bornfire.brrs.entities.M_SRWA_12C_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12F_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12G_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12H_Summary_Entity;
-import com.bornfire.brrs.entities.M_TBS_Summary_Entity;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity3;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity4;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity1;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity2;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity3;
-import com.bornfire.brrs.entities.M_UNCONS_INVEST_Summary_Entity4;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity2;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity3;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity4;
-import com.bornfire.brrs.entities.Q_RLFA1_Summary_Entity;
-import com.bornfire.brrs.entities.Q_RLFA2_Summary_Entity;
-import com.bornfire.brrs.entities.Q_SMME_DEP_Summary_Entity;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity1;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity2;
-import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity3;
+import com.bornfire.brrs.entities.*;
 import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_BOP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA2_ReportService;
@@ -2638,7 +2541,56 @@ public ResponseEntity<String> updateReportReSubAll(
 				.body("M_FXR Resubmission Update Failed: " + e.getMessage());
 	}
 }
+@Autowired
+			private com.bornfire.brrs.services.BRRS_M_SRWA_12E_ReportService BRRS_M_SRWA_12E_ReportService;
+			@RequestMapping(value = "/updateSRWA12EAll", method = { RequestMethod.GET, RequestMethod.POST })
+			@ResponseBody
+			public ResponseEntity<String> updateAllSRWA12EReports(
+					@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute BRRS_M_SRWA_12E_LTV_Summary_Entity request1) {
+				try {
+					System.out.println("Came to single controller");
+					// set date into all 4 entities
+					request1.setReportDate(asondate);
+					// call services
+					BRRS_M_SRWA_12E_ReportService.updateReport(request1);
+				
+					return ResponseEntity.ok(" Updated Successfully");
+				} catch (Exception e) {
+					e.printStackTrace();
+					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+				}
+			}
+			
+@RequestMapping(value = "/UpdateM_SRWA_12E_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute BRRS_M_SRWA_12E_LTV_Summary_Entity request,
+			HttpServletRequest req) {
 
+		try {
+			System.out.println("Came to Resub Controller");
+
+			if (asondate != null) {
+				// Set the asondate into the entity
+				request.setReportDate(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+			}
+
+			// Call service to create a new versioned row
+			BRRS_M_SRWA_12E_ReportService.updateReportReSub(request);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
+	}
 @RequestMapping(value = "/UpdateM_CA6_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 @ResponseBody
 public ResponseEntity<String> updateReportReSub(

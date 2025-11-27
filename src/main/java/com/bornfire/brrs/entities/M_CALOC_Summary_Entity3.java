@@ -476,7 +476,7 @@ public class M_CALOC_Summary_Entity3 {
 	private BigDecimal	r112_othercurrencies_v;
 	private BigDecimal	r112_othercurrencies_w;
 	private String	r113_product;
-	// private BigDecimal	r113_pula;
+	private BigDecimal	r113_pula;
 	private BigDecimal	r113_usd;
 	private BigDecimal	r113_zar;
 	private BigDecimal	r113_gbp;
@@ -499,7 +499,7 @@ public class M_CALOC_Summary_Entity3 {
 	private BigDecimal	r113_othercurrencies_v;
 	private BigDecimal	r113_othercurrencies_w;
 	private String	r114_product;
-	// private BigDecimal	r114_pula;
+	private BigDecimal	r114_pula;
 	private BigDecimal	r114_usd;
 	private BigDecimal	r114_zar;
 	private BigDecimal	r114_gbp;
@@ -522,7 +522,7 @@ public class M_CALOC_Summary_Entity3 {
 	private BigDecimal	r114_othercurrencies_v;
 	private BigDecimal	r114_othercurrencies_w;
 	private String	r115_product;
-	// private BigDecimal	r115_pula;
+	private BigDecimal	r115_pula;
 	private BigDecimal	r115_usd;
 	private BigDecimal	r115_zar;
 	private BigDecimal	r115_gbp;
@@ -545,7 +545,7 @@ public class M_CALOC_Summary_Entity3 {
 	private BigDecimal	r115_othercurrencies_v;
 	private BigDecimal	r115_othercurrencies_w;
 	private String	r116_product;
-	// private BigDecimal	r116_pula;
+	private BigDecimal	r116_pula;
 	private BigDecimal	r116_usd;
 	private BigDecimal	r116_zar;
 	private BigDecimal	r116_gbp;
@@ -3345,12 +3345,12 @@ public class M_CALOC_Summary_Entity3 {
 	public void setR113_product(String r113_product) {
 		this.r113_product = r113_product;
 	}
-	// public BigDecimal getR113_pula() {
-	// 	return r113_pula;
-	// }
-	// public void setR113_pula(BigDecimal r113_pula) {
-	// 	this.r113_pula = r113_pula;
-	// }
+	public BigDecimal getR113_pula() {
+		return r113_pula;
+	}
+	public void setR113_pula(BigDecimal r113_pula) {
+		this.r113_pula = r113_pula;
+	}
 	public BigDecimal getR113_usd() {
 		return r113_usd;
 	}
@@ -3483,12 +3483,12 @@ public class M_CALOC_Summary_Entity3 {
 	public void setR114_product(String r114_product) {
 		this.r114_product = r114_product;
 	}
-	// public BigDecimal getR114_pula() {
-	// 	return r114_pula;
-	// }
-	// public void setR114_pula(BigDecimal r114_pula) {
-	// 	this.r114_pula = r114_pula;
-	// }
+	public BigDecimal getR114_pula() {
+		return r114_pula;
+	}
+	public void setR114_pula(BigDecimal r114_pula) {
+		this.r114_pula = r114_pula;
+	}
 	public BigDecimal getR114_usd() {
 		return r114_usd;
 	}
@@ -3621,12 +3621,12 @@ public class M_CALOC_Summary_Entity3 {
 	public void setR115_product(String r115_product) {
 		this.r115_product = r115_product;
 	}
-	// public BigDecimal getR115_pula() {
-	// 	return r115_pula;
-	// }
-	// public void setR115_pula(BigDecimal r115_pula) {
-	// 	this.r115_pula = r115_pula;
-	// }
+	public BigDecimal getR115_pula() {
+		return r115_pula;
+	}
+	public void setR115_pula(BigDecimal r115_pula) {
+		this.r115_pula = r115_pula;
+	}
 	public BigDecimal getR115_usd() {
 		return r115_usd;
 	}
@@ -3759,12 +3759,12 @@ public class M_CALOC_Summary_Entity3 {
 	public void setR116_product(String r116_product) {
 		this.r116_product = r116_product;
 	}
-	// public BigDecimal getR116_pula() {
-	// 	return r116_pula;
-	// }
-	// public void setR116_pula(BigDecimal r116_pula) {
-	// 	this.r116_pula = r116_pula;
-	// }
+	public BigDecimal getR116_pula() {
+		return r116_pula;
+	}
+	public void setR116_pula(BigDecimal r116_pula) {
+		this.r116_pula = r116_pula;
+	}
 	public BigDecimal getR116_usd() {
 		return r116_usd;
 	}

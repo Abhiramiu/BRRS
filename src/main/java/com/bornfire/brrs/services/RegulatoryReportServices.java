@@ -38,7 +38,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 
 @Component
@@ -71,7 +70,7 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_CA6_ReportService BRRS_M_CA6_reportservice;
-	
+
 	@Autowired
 	BRRS_M_CR_ReportService BRRS_M_CR_reportservice;
 
@@ -155,7 +154,7 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_SECL_ReportService brrs_m_secl_reportservice;
-	
+
 	@Autowired
 	BRRS_M_SEC_ReportService brrs_m_sec_reportservice;
 
@@ -188,45 +187,43 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_OPTR_ReportService BRRS_M_OPTR_ReportService;
-	
+
 	@Autowired
 	BRRS_M_INT_RATES_FCA_ReportService brrs_m_int_rates_fca_reportservice;
-	
+
 	@Autowired
 	BRRS_M_LARADV_ReportService brrs_m_laradv_reportservice;
-	
-	
+
 	@Autowired
 	BRRS_M_OR2_ReportService brrs_m_or2_reportservice;
-	
+
 	@Autowired
 	BRRS_Q_SMME_DEP_ReportService BRRS_Q_SMME_DEP_ReportService;
-	
+
 	@Autowired
 	BRRS_M_BOP_ReportService BRRS_M_BOP_ReportService;
-	
+
 	@Autowired
 	BRRS_M_SECA_ReportService BRRS_M_SECA_ReportService;
-	
+
 	@Autowired
 	BRRS_M_GP_ReportService BRRS_M_GP_ReportService;
-	@Autowired	
+	@Autowired
 	BRRS_M_TBS_ReportService BRRS_M_TBS_ReportService;
-	
+
 	@Autowired
 	BRRS_M_NOSVOS_ReportService BRRS_M_NOSVOS_reportservice;
-			@Autowired
-	BRRS_M_CALOC_ReportService BRRS_M_CALOC_reportService;
-			
-			
 	@Autowired
-    BRRS_M_GMIRT_ReportService brrs_m_gmirt_reportservice;
-	
-	@Autowired	
-	BRRS_M_GALOR_ReportService BRRS_m_galor_ReportService;	
-	
-	
-	
+	BRRS_M_CALOC_ReportService BRRS_M_CALOC_reportService;
+
+	@Autowired
+	BRRS_M_GMIRT_ReportService brrs_m_gmirt_reportservice;
+
+	@Autowired
+	BRRS_M_GALOR_ReportService BRRS_m_galor_ReportService;
+
+	@Autowired
+	BRRS_M_SRWA_12E_ReportService BRRS_M_SRWA_12E_ReportService;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -239,318 +236,350 @@ public class RegulatoryReportServices {
 		logger.info("Getting View for the Report :" + reportId);
 		switch (reportId) {
 
-		case "M_SFINP2":
-			repsummary = BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "M_SFINP2":
+				repsummary = BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
 
-		case "M_SFINP1":
-			repsummary = BRRS_M_SFINP1_reportservice.getM_SFINP1View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "M_SFINP1":
+				repsummary = BRRS_M_SFINP1_reportservice.getM_SFINP1View(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
 
-		case "M_LA4":
-			repsummary = BRRS_M_LA4_reportservice.getM_LA4View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_LA4":
+				repsummary = BRRS_M_LA4_reportservice.getM_LA4View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_IS":
-			repsummary = BRRS_M_IS_reportservice.getM_ISView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_IS":
+				repsummary = BRRS_M_IS_reportservice.getM_ISView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_CA4":
-			repsummary = BRRS_M_CA4_reportservice.getBRRS_M_CA4View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "M_CA4":
+				repsummary = BRRS_M_CA4_reportservice.getBRRS_M_CA4View(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
 
-		case "M_CA2":
-			repsummary = BRRS_M_CA2_reportservice.getM_CA2View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_CA2":
+				repsummary = BRRS_M_CA2_reportservice.getM_CA2View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_CA6":
-			repsummary = BRRS_M_CA6_reportservice.getM_CA6View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
-				case "M_CALOC":
+			case "M_CA6":
+				repsummary = BRRS_M_CA6_reportservice.getM_CA6View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
+			case "M_CALOC":
 				repsummary = BRRS_M_CALOC_reportService.getBRRS_M_CALOCview(reportId, fromdate, todate, currency,
 						dtltype, pageable, type, version);
 				break;
 
+			case "M_CA5":
+				repsummary = BRRS_M_CA5_reportservice.getM_CA5View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_CA5":
-			repsummary = BRRS_M_CA5_reportservice.getM_CA5View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
-			
-		case "M_CR":
-			repsummary = BRRS_M_CR_reportservice.getM_CRView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_CR":
+				repsummary = BRRS_M_CR_reportservice.getM_CRView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_SRWA_12F":
-			repsummary = BRRS_M_SRWA_12F_reportservice.getM_SRWA12FView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "M_SRWA_12F":
+				repsummary = BRRS_M_SRWA_12F_reportservice.getM_SRWA12FView(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+				break;
 
-		case "M_SRWA_12C":
-			repsummary = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version);
-			break;
+			case "M_SRWA_12C":
+				repsummary = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CView(reportId, fromdate, todate, currency,
+						dtltype, pageable, type, version);
+				break;
 
-		case "M_SRWA_12G":
-			repsummary = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "M_SRWA_12G":
+				repsummary = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GView(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+				break;
 
-		case "M_SRWA_12H":
-			repsummary = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "M_SRWA_12H":
+				repsummary = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HView(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+				break;
 
-		case "M_MRC":
-			repsummary = BRRS_M_MRC_reportservice.getM_MRCView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_MRC":
+				repsummary = BRRS_M_MRC_reportservice.getM_MRCView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_CA1":
-			repsummary = BRRS_M_CA1_reportservice.getM_CA1View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_CA1":
+				repsummary = BRRS_M_CA1_reportservice.getM_CA1View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_CA3":
-			repsummary = BRRS_M_CA3_reportservice.getM_CA3View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_CA3":
+				repsummary = BRRS_M_CA3_reportservice.getM_CA3View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_CA7":
-			repsummary = BRRS_M_CA7_reportservice.getM_CA7View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
-			
-		case "M_OR2":
-			repsummary = brrs_m_or2_reportservice.getM_OR2View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_CA7":
+				repsummary = BRRS_M_CA7_reportservice.getM_CA7View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_SP":
-			repsummary = BRRS_M_SP_reportservice.getM_SPView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_OR2":
+				repsummary = brrs_m_or2_reportservice.getM_OR2View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_PI":
-			repsummary = BRRS_M_PI_reportservice.getM_PIView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_SP":
+				repsummary = BRRS_M_SP_reportservice.getM_SPView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_LA1":
-			repsummary = BRRS_M_LA1_reportservice.getM_LA1View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_PI":
+				repsummary = BRRS_M_PI_reportservice.getM_PIView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_AIDP":
-			repsummary = BRRS_M_AIDP_ReportService.getM_AIDPView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "M_LA1":
+				repsummary = BRRS_M_LA1_reportservice.getM_LA1View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_DEP1":
-			repsummary = BRRS_M_DEP1_reportservice.getM_DEP1View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "M_AIDP":
+				repsummary = BRRS_M_AIDP_ReportService.getM_AIDPView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
 
-		case "M_UNCONS_INVEST":
-			repsummary = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version);
-			break;
+			case "M_DEP1":
+				repsummary = BRRS_M_DEP1_reportservice.getM_DEP1View(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
 
-		case "M_LA2":
-			repsummary = BRRS_M_LA2_reportservice.getM_LA2View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_UNCONS_INVEST":
+				repsummary = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTView(reportId, fromdate, todate,
+						currency,
+						dtltype, pageable, type, version);
+				break;
 
-		case "M_LA3":
-			repsummary = BRRS_M_LA3_reportservice.getM_LA3View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_LA2":
+				repsummary = BRRS_M_LA2_reportservice.getM_LA2View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_LA5":
-			repsummary = BRRS_M_LA5_reportservice.getM_LA5View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_LA3":
+				repsummary = BRRS_M_LA3_reportservice.getM_LA3View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_DEP2":
-			repsummary = BRRS_M_DEP2_reportservice.getM_DEP2View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "M_LA5":
+				repsummary = BRRS_M_LA5_reportservice.getM_LA5View(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_PLL":
-			repsummary = BRRS_M_PLL_reportservice.getM_PLLView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_DEP2":
+				repsummary = BRRS_M_DEP2_reportservice.getM_DEP2View(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
 
-		case "M_DEP3":
-			repsummary = BRRS_M_DEP3_reportservice.getM_DEP3View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "M_PLL":
+				repsummary = BRRS_M_PLL_reportservice.getM_PLLView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_IRB":
-			repsummary = brrs_m_irb_reportService.getM_IRBView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_DEP3":
+				repsummary = BRRS_M_DEP3_reportservice.getM_DEP3View(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
 
-		case "M_LIQ":
-			repsummary = BRRS_M_LIQ_reportservice.getM_LIQView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
-			
+			case "M_IRB":
+				repsummary = brrs_m_irb_reportService.getM_IRBView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
+
+			case "M_LIQ":
+				repsummary = BRRS_M_LIQ_reportservice.getM_LIQView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
 			case "Q_STAFF":
 				repsummary = BRRS_Q_STAFF_report_service.getQ_STAFFView(reportId, fromdate, todate, currency, dtltype,
 						pageable, type, version);
 				break;
 
-		case "Q_BRANCHNET":
-			repsummary = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version);
-			break;
+			case "Q_BRANCHNET":
+				repsummary = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate, currency,
+						dtltype, pageable, type, version);
+				break;
 
-		case "M_FXR":
-			repsummary = BRRS_M_FXR_reportservice.getM_FXRView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_FXR":
+				repsummary = BRRS_M_FXR_reportservice.getM_FXRView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-		case "M_SRWA_12B":
+			case "M_SRWA_12B":
 
-			repsummary = brrs_m_srwa_12b_reportservice.getM_SRWA_12BView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+				repsummary = brrs_m_srwa_12b_reportservice.getM_SRWA_12BView(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+				break;
 
-		case "M_SECL":
-			repsummary = brrs_m_secl_reportservice.getM_SECLView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "M_SECL":
+				repsummary = brrs_m_secl_reportservice.getM_SECLView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
 
-		case "M_INT_RATES":
-			repsummary = brrs_m_int_rates_reportservice.getM_INTRATESView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
-			
-		case "M_LARADV":
-			repsummary = brrs_m_laradv_reportservice.getM_LARADVView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
-			break;
+			case "M_INT_RATES":
+				repsummary = brrs_m_int_rates_reportservice.getM_INTRATESView(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+				break;
 
-		case "Q_SMME":
+			case "M_LARADV":
+				repsummary = brrs_m_laradv_reportservice.getM_LARADVView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
 
-			repsummary = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate,
-					currency, dtltype, pageable, type, version);
-			break;
+			case "Q_SMME":
 
-		case "M_SIR":
+				repsummary = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate,
+						currency, dtltype, pageable, type, version);
+				break;
 
-			repsummary = BRRS_M_SIR_ReportService.getM_SIRView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_SIR":
 
-		case "M_EPR":
+				repsummary = BRRS_M_SIR_ReportService.getM_SIRView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-			repsummary = brrs_m_epr_reportservice.getM_EPRView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "M_EPR":
 
-		case "M_SRWA_12A":
+				repsummary = brrs_m_epr_reportservice.getM_EPRView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-			repsummary = brrs_m_srwa_12a_reportservice.getM_SRWA_12AView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "M_SRWA_12A":
 
-		case "M_OB":
-			repsummary = BRRS_M_OB_ReportService.getM_OBview(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+				repsummary = brrs_m_srwa_12a_reportservice.getM_SRWA_12AView(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+				break;
 
-		case "Q_RLFA1":
+			case "M_OB":
+				repsummary = BRRS_M_OB_ReportService.getM_OBview(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-			repsummary = brrs_q_rlfa1_reportservice.getQ_RLFA1View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
+			case "Q_RLFA1":
 
-		case "Q_RLFA2":
+				repsummary = brrs_q_rlfa1_reportservice.getQ_RLFA1View(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
 
-			repsummary = brrs_q_rlfa2_reportservice.getQ_RLFA2View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
-		case "M_RPD":
-			repsummary = BRRS_M_RPD_ReportService.getM_RPDView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
-			break;
+			case "Q_RLFA2":
 
-		case "M_OPTR":
-			repsummary = BRRS_M_OPTR_ReportService.getM_OPTRView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
-			break;
-			
-		case "M_INT_RATES_FCA":
-			repsummary = brrs_m_int_rates_fca_reportservice.getM_INTRATESFCAView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
-			break;
-			
-		case "M_SEC":
-			repsummary = brrs_m_sec_reportservice.getM_SECView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
-			break;
-			
-			
-		case "Q_SMME_DEP":
-  			
-  			repsummary = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPview(reportId, fromdate, todate, currency, dtltype,
-  					pageable, type, version);
-  			break;
-  			
-	 case "M_BOP":
-  			
-  			repsummary = BRRS_M_BOP_ReportService.getBRRS_M_BOPview(reportId, fromdate, todate, currency, dtltype,
-  					pageable, type, version);
-  			break;
-  			
-			
-		case "M_SECA":
-			repsummary = BRRS_M_SECA_ReportService.getM_SECAview(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
-			break;
-			
-		
-		case "M_GP":
-			repsummary = BRRS_M_GP_ReportService.getM_GPView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
-			break;
+				repsummary = brrs_q_rlfa2_reportservice.getQ_RLFA2View(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
+			case "M_RPD":
+				repsummary = BRRS_M_RPD_ReportService.getM_RPDView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
-	
-		case "M_TBS":
-			repsummary = BRRS_M_TBS_ReportService.getM_TBSView(reportId, fromdate, todate, currency, dtltype, pageable, type, version);
-			break;
-		
-		case "M_NOSVOS":
+			case "M_OPTR":
+				repsummary = BRRS_M_OPTR_ReportService.getM_OPTRView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
+
+			case "M_INT_RATES_FCA":
+				repsummary = brrs_m_int_rates_fca_reportservice.getM_INTRATESFCAView(reportId, fromdate, todate,
+						currency, dtltype, pageable, type, version);
+				break;
+
+			case "M_SEC":
+				repsummary = brrs_m_sec_reportservice.getM_SECView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
+
+			case "Q_SMME_DEP":
+
+				repsummary = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPview(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+				break;
+
+			case "M_BOP":
+
+				repsummary = BRRS_M_BOP_ReportService.getBRRS_M_BOPview(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
+
+			case "M_SECA":
+				repsummary = BRRS_M_SECA_ReportService.getM_SECAview(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
+
+			case "M_GP":
+				repsummary = BRRS_M_GP_ReportService.getM_GPView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
+
+			case "M_TBS":
+				repsummary = BRRS_M_TBS_ReportService.getM_TBSView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+				break;
+
+			case "M_NOSVOS":
 				repsummary = BRRS_M_NOSVOS_reportservice.getM_NOSVOSView(reportId, fromdate, todate, currency, dtltype,
 						pageable, type, version);
-			break;
-			
-			
-			
-			
-		  case "M_GMIRT":
-				
+				break;
+
+			case "M_GMIRT":
+
 				repsummary = brrs_m_gmirt_reportservice.getM_GMIRTView(reportId, fromdate, todate, currency, dtltype,
 						pageable, type, version);
 				break;
-			
-		  case "M_GALOR":
-				
+
+			case "M_GALOR":
+
 				repsummary = BRRS_m_galor_ReportService.getM_GALORView(reportId, fromdate, todate, currency, dtltype,
 						pageable, type, version);
 				break;
-			
-			
-			
-			
-			
-			
+
+			case "M_SRWA_12E":
+				repsummary = BRRS_M_SRWA_12E_ReportService.getM_SRWA_12EView(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+
+				break;
+
 		}
 
 		return repsummary;
@@ -565,129 +594,134 @@ public class RegulatoryReportServices {
 
 		switch (reportId) {
 
-		case "M_SFINP2":
-			repdetail = BRRS_M_SFINP2_reportservice.getM_SFINP2currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
+			case "M_SFINP2":
+				repdetail = BRRS_M_SFINP2_reportservice.getM_SFINP2currentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
 
-		case "M_SFINP1":
-			repdetail = BRRS_M_SFINP1_reportservice.getM_SFINP1currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
+			case "M_SFINP1":
+				repdetail = BRRS_M_SFINP1_reportservice.getM_SFINP1currentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
 
-		case "M_LA4":
-			repdetail = BRRS_M_LA4_reportservice.getM_LA4currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-							case "M_CALOC":
+			case "M_LA4":
+				repdetail = BRRS_M_LA4_reportservice.getM_LA4currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+			case "M_CALOC":
 
 				repdetail = BRRS_M_CALOC_reportService.getM_CALOCcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype, pageable, Filter, type, version);
 				break;
 
-		case "M_IS":
-			repdetail = BRRS_M_IS_reportservice.getM_IScurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		case "M_CA2":
-			repdetail = BRRS_M_CA2_reportservice.getM_CA2currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		/*
-		 * case "M_CA5": repdetail =
-		 * BRRS_M_CA5_reportservice.getM_CA5currentDtl(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, Filter, type, version); break;
-		 */
-
-		case "M_SP":
-			repdetail = BRRS_M_SP_reportservice.getM_SPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		// case "M_SRWA_12H":
-		// 	repdetail = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HcurrentDtl(reportId, fromdate, todate, currency,
-		// 			dtltype, pageable, Filter, type, version);
-		// 	break;
-
-		case "M_MRC":
-			repdetail = BRRS_M_MRC_reportservice.getM_MRCcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		case "M_CA1":
-			repdetail = BRRS_M_CA1_reportservice.getM_CA1currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter);
-			break;
-
-		case "M_PI":
-			repdetail = BRRS_M_PI_reportservice.getM_PIcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		case "M_LA1":
-			repdetail = BRRS_M_LA1_reportservice.getM_LA1currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		case "M_DEP1":
-			repdetail = BRRS_M_DEP1_reportservice.getM_DEP1currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		case "M_LA3":
-			repdetail = BRRS_M_LA3_reportservice.getM_LA3currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		case "M_LA5":
-			repdetail = BRRS_M_LA5_reportservice.getM_LA5currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		case "M_DEP2":
-			repdetail = BRRS_M_DEP2_reportservice.getM_DEP2currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		case "M_PLL":
-			repdetail = BRRS_M_PLL_reportservice.getM_PLLcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		case "M_DEP3":
-			repdetail = BRRS_M_DEP3_reportservice.getM_DEP3currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		case "M_LIQ":
-			repdetail = BRRS_M_LIQ_reportservice.getM_LIQcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-			break;
-
-		case "Q_SMME":
-			repdetail = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate, todate,
-					currency, dtltype, pageable, Filter, type, version);
-			break;
-
-		case "M_IRB":
-			repdetail = brrs_m_irb_reportService.getM_IRBcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
-
-		case "M_SRWA_12A":
-
-			repdetail = brrs_m_srwa_12a_reportservice.getM_SRWA_12AcurrentDtl(reportId, fromdate, todate, currency,
-					dtltype, pageable, Filter, type, version);
-			break;
-			
-		  case "M_GMIRT":
-				
-				repdetail = brrs_m_gmirt_reportservice. getM_GMIRTcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+			case "M_IS":
+				repdetail = BRRS_M_IS_reportservice.getM_IScurrentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
-				
-		  case "M_GALOR":
+
+			case "M_CA2":
+				repdetail = BRRS_M_CA2_reportservice.getM_CA2currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			/*
+			 * case "M_CA5": repdetail =
+			 * BRRS_M_CA5_reportservice.getM_CA5currentDtl(reportId, fromdate, todate,
+			 * currency, dtltype, pageable, Filter, type, version); break;
+			 */
+
+			case "M_SP":
+				repdetail = BRRS_M_SP_reportservice.getM_SPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			// case "M_SRWA_12H":
+			// repdetail = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HcurrentDtl(reportId,
+			// fromdate, todate, currency,
+			// dtltype, pageable, Filter, type, version);
+			// break;
+
+			case "M_MRC":
+				repdetail = BRRS_M_MRC_reportservice.getM_MRCcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			case "M_CA1":
+				repdetail = BRRS_M_CA1_reportservice.getM_CA1currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter);
+				break;
+
+			case "M_PI":
+				repdetail = BRRS_M_PI_reportservice.getM_PIcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			case "M_LA1":
+				repdetail = BRRS_M_LA1_reportservice.getM_LA1currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			case "M_DEP1":
+				repdetail = BRRS_M_DEP1_reportservice.getM_DEP1currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			case "M_LA3":
+				repdetail = BRRS_M_LA3_reportservice.getM_LA3currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			case "M_LA5":
+				repdetail = BRRS_M_LA5_reportservice.getM_LA5currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			case "M_DEP2":
+				repdetail = BRRS_M_DEP2_reportservice.getM_DEP2currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			case "M_PLL":
+				repdetail = BRRS_M_PLL_reportservice.getM_PLLcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			case "M_DEP3":
+				repdetail = BRRS_M_DEP3_reportservice.getM_DEP3currentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			case "M_LIQ":
+				repdetail = BRRS_M_LIQ_reportservice.getM_LIQcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			case "Q_SMME":
+				repdetail = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate,
+						todate,
+						currency, dtltype, pageable, Filter, type, version);
+				break;
+
+			case "M_IRB":
+				repdetail = brrs_m_irb_reportService.getM_IRBcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+
+			case "M_SRWA_12A":
+
+				repdetail = brrs_m_srwa_12a_reportservice.getM_SRWA_12AcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype, pageable, Filter, type, version);
+				break;
+
+			case "M_GMIRT":
+
+				repdetail = brrs_m_gmirt_reportservice.getM_GMIRTcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+
+			case "M_GALOR":
 
 				repdetail = BRRS_m_galor_ReportService.getM_GALORcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype, pageable, Filter, type, version);
@@ -705,155 +739,161 @@ public class RegulatoryReportServices {
 
 		switch (reportId) {
 
-		case "M_SFINP2":
-			try {
-				repfile = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_SFINP2":
+				try {
+					repfile = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate, todate,
+							currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_SFINP1":
-			try {
-				repfile = BRRS_M_SFINP1_reportservice.getM_SFINP1Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_SFINP1":
+				try {
+					repfile = BRRS_M_SFINP1_reportservice.getM_SFINP1Excel(filename, reportId, fromdate, todate,
+							currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_LA4":
-			try {
-				repfile = BRRS_M_LA4_reportservice.BRRS_M_LA4Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_LA4":
+				try {
+					repfile = BRRS_M_LA4_reportservice.BRRS_M_LA4Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_IS":
-			try {
-				repfile = BRRS_M_IS_reportservice.BRRS_M_ISExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_IS":
+				try {
+					repfile = BRRS_M_IS_reportservice.BRRS_M_ISExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_CA2":
-			try {
-				repfile = BRRS_M_CA2_reportservice.getM_CA2Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_CA2":
+				try {
+					repfile = BRRS_M_CA2_reportservice.getM_CA2Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_CA4":
-			try {
-				repfile = BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_CR":
-			try {
-				repfile = BRRS_M_CR_reportservice.BRRS_M_CRExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_SEC":
-			try {
-				repfile = brrs_m_sec_reportservice.getM_SECExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_INT_RATES_FCA":
-			try {
-				repfile = brrs_m_int_rates_fca_reportservice.getM_INTRATESFCAExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_CA4":
+				try {
+					repfile = BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate, todate,
+							currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_CA5":
-			try {
-				repfile = BRRS_M_CA5_reportservice.getM_CA5Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_CR":
+				try {
+					repfile = BRRS_M_CR_reportservice.BRRS_M_CRExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_CA6":
-			try {
-				repfile = BRRS_M_CA6_reportservice.getM_CA6Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_SEC":
+				try {
+					repfile = brrs_m_sec_reportservice.getM_SECExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_CA7":
-			try {
-				repfile = BRRS_M_CA7_reportservice.getM_CA7Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_INT_RATES_FCA":
+				try {
+					repfile = brrs_m_int_rates_fca_reportservice.getM_INTRATESFCAExcel(filename, reportId, fromdate,
+							todate, currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_SP":
-			try {
-				repfile = BRRS_M_SP_reportservice.getM_SPExcel(filename, reportId, fromdate, todate, currency, dtltype,
-						type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_CA5":
+				try {
+					repfile = BRRS_M_CA5_reportservice.getM_CA5Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_SRWA_12F":
-			try {
-				repfile = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_CA6":
+				try {
+					repfile = BRRS_M_CA6_reportservice.getM_CA6Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_SRWA_12B":
-			try {
-				repfile = brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_CA7":
+				try {
+					repfile = BRRS_M_CA7_reportservice.getM_CA7Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-					case "M_CALOC":
+			case "M_SP":
+				try {
+					repfile = BRRS_M_SP_reportservice.getM_SPExcel(filename, reportId, fromdate, todate, currency,
+							dtltype,
+							type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_SRWA_12F":
+				try {
+					repfile = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_SRWA_12B":
+				try {
+					repfile = brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_CALOC":
 				try {
 					repfile = BRRS_M_CALOC_reportService.getBRRS_M_CALOCExcel(filename, reportId, fromdate, todate,
 							currency,
@@ -864,195 +904,196 @@ public class RegulatoryReportServices {
 				}
 				break;
 
-		case "M_SRWA_12C":
-			try {
-				repfile = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_SRWA_12C":
+				try {
+					repfile = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel(filename, reportId, fromdate,
+							todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_SRWA_12G":
-			try {
-				repfile = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_SRWA_12G":
+				try {
+					repfile = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_SRWA_12H":
-			try {
-				repfile = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_SRWA_12H":
+				try {
+					repfile = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_MRC":
-			try {
-				repfile = BRRS_M_MRC_reportservice.BRRS_M_MRCExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_MRC":
+				try {
+					repfile = BRRS_M_MRC_reportservice.BRRS_M_MRCExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_CA1":
-			try {
-				repfile = BRRS_M_CA1_reportservice.BRRS_M_CA1Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_CA1":
+				try {
+					repfile = BRRS_M_CA1_reportservice.BRRS_M_CA1Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_CA3":
-			try {
-				repfile = BRRS_M_CA3_reportservice.BRRS_M_CA3Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_CA3":
+				try {
+					repfile = BRRS_M_CA3_reportservice.BRRS_M_CA3Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_PI":
-			try {
-				repfile = BRRS_M_PI_reportservice.BRRS_M_PIExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_PI":
+				try {
+					repfile = BRRS_M_PI_reportservice.BRRS_M_PIExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_LA1":
-			try {
-				repfile = BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_LA1":
+				try {
+					repfile = BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_LA2":
-			try {
-				repfile = BRRS_M_LA2_reportservice.BRRS_M_LA2Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_LA2":
+				try {
+					repfile = BRRS_M_LA2_reportservice.BRRS_M_LA2Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_LA3":
-			try {
-				repfile = BRRS_M_LA3_reportservice.BRRS_M_LA3Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_LA3":
+				try {
+					repfile = BRRS_M_LA3_reportservice.BRRS_M_LA3Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_LA5":
-			try {
-				repfile = BRRS_M_LA5_reportservice.BRRS_M_LA5Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_LA5":
+				try {
+					repfile = BRRS_M_LA5_reportservice.BRRS_M_LA5Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_DEP1":
-			try {
-				repfile = BRRS_M_DEP1_reportservice.BRRS_M_DEP1Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_DEP1":
+				try {
+					repfile = BRRS_M_DEP1_reportservice.BRRS_M_DEP1Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_UNCONS_INVEST":
-			try {
-				repfile = BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_UNCONS_INVEST":
+				try {
+					repfile = BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTExcel(filename, reportId, fromdate,
+							todate, currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_DEP2":
-			try {
-				repfile = BRRS_M_DEP2_reportservice.BRRS_M_DEP2Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_DEP2":
+				try {
+					repfile = BRRS_M_DEP2_reportservice.BRRS_M_DEP2Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_PLL":
-			try {
-				repfile = BRRS_M_PLL_reportservice.getM_PLLExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_PLL":
+				try {
+					repfile = BRRS_M_PLL_reportservice.getM_PLLExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_DEP3":
-			try {
-				repfile = BRRS_M_DEP3_reportservice.BRRS_M_DEP3Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_DEP3":
+				try {
+					repfile = BRRS_M_DEP3_reportservice.BRRS_M_DEP3Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_AIDP":
-			try {
-				repfile = BRRS_M_AIDP_ReportService.getM_AIDPExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_AIDP":
+				try {
+					repfile = BRRS_M_AIDP_ReportService.getM_AIDPExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_IRB":
-			try {
-				repfile = brrs_m_irb_reportService.BRRS_M_PIExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_IRB":
+				try {
+					repfile = brrs_m_irb_reportService.BRRS_M_PIExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_LIQ":
-			try {
-				repfile = BRRS_M_LIQ_reportservice.getM_LIQExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_LIQ":
+				try {
+					repfile = BRRS_M_LIQ_reportservice.getM_LIQExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "Q_STAFF":
 				try {
@@ -1064,452 +1105,442 @@ public class RegulatoryReportServices {
 				}
 				break;
 
-		case "Q_BRANCHNET":
-			try {
-				repfile = BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "Q_BRANCHNET":
+				try {
+					repfile = BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_SECL":
-			try {
-				repfile = brrs_m_secl_reportservice.getM_SECLExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_SECL":
+				try {
+					repfile = brrs_m_secl_reportservice.getM_SECLExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_INT_RATES":
-			try {
-				repfile = brrs_m_int_rates_reportservice.getM_INTRATESExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_LARADV":
-			try {
-				repfile = brrs_m_laradv_reportservice.getM_LARADVExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_OR2":
-			try {
-				repfile = brrs_m_or2_reportservice.getM_OR2Excel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_INT_RATES":
+				try {
+					repfile = brrs_m_int_rates_reportservice.getM_INTRATESExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_FXR":
-			try {
-				repfile = BRRS_M_FXR_reportservice.getM_FXRExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_LARADV":
+				try {
+					repfile = brrs_m_laradv_reportservice.getM_LARADVExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "Q_SMME":
-			try {
-				repfile = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-		case "M_SIR":
-			try {
-				repfile = BRRS_M_SIR_ReportService.getM_SIRExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_OR2":
+				try {
+					repfile = brrs_m_or2_reportservice.getM_OR2Excel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_EPR":
-			try {
+			case "M_FXR":
+				try {
+					repfile = BRRS_M_FXR_reportservice.getM_FXRExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-				repfile = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+			case "Q_SMME":
+				try {
+					repfile = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel(filename, reportId, fromdate,
+							todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			case "M_SIR":
+				try {
+					repfile = BRRS_M_SIR_ReportService.getM_SIRExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_EPR":
+				try {
 
-		case "M_SRWA_12A":
-			try {
+					repfile = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
 
-				repfile = brrs_m_srwa_12a_reportservice.getM_SRWA_12AExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_OB":
-			try {
-				repfile = BRRS_M_OB_ReportService.getM_OBExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_SRWA_12A":
+				try {
 
-		case "Q_RLFA1":
-			try {
+					repfile = brrs_m_srwa_12a_reportservice.getM_SRWA_12AExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-				repfile = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_OB":
+				try {
+					repfile = BRRS_M_OB_ReportService.getM_OBExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "Q_RLFA2":
-			try {
+			case "Q_RLFA1":
+				try {
 
-				repfile = brrs_q_rlfa2_reportservice.getQ_RLFA2Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+					repfile = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "Q_RLFA2":
+				try {
 
-		case "M_RPD":
-			try {
-				repfile = BRRS_M_RPD_ReportService.getM_RPDExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+					repfile = brrs_q_rlfa2_reportservice.getQ_RLFA2Excel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
 
-		case "M_OPTR":
-			try {
-				repfile = BRRS_M_OPTR_ReportService.getM_OPTRExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-			
-			
-			
-			
-		case "Q_SMME_DEP":
-			try {
-				
-				repfile = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_BOP":
-			try {
-				
-				repfile = BRRS_M_BOP_ReportService.getBRRS_M_BOPExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+			case "M_RPD":
+				try {
+					repfile = BRRS_M_RPD_ReportService.getM_RPDExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_SECA":
-			try {
-				
-				repfile = BRRS_M_SECA_ReportService.BRRS_M_SECAExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+			case "M_OPTR":
+				try {
+					repfile = BRRS_M_OPTR_ReportService.getM_OPTRExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-		case "M_GP":
-			try {
-				
-				repfile = BRRS_M_GP_ReportService.getM_GPExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+			case "Q_SMME_DEP":
+				try {
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_TBS":
-			try {
-				
-				repfile = BRRS_M_TBS_ReportService.getM_TBSExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+					repfile = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_GMIRT":
-			try {
-				
-				repfile = brrs_m_gmirt_reportservice.getM_GMIRTExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_GALOR":
-			try {
-				
-				repfile = BRRS_m_galor_ReportService.getM_GALORExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
+			case "M_BOP":
+				try {
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_NOSVOS":
-			try {
-				repfile = BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
+					repfile = BRRS_M_BOP_ReportService.getBRRS_M_BOPExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_SECA":
+				try {
+
+					repfile = BRRS_M_SECA_ReportService.BRRS_M_SECAExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			case "M_GP":
+				try {
+
+					repfile = BRRS_M_GP_ReportService.getM_GPExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_TBS":
+				try {
+
+					repfile = BRRS_M_TBS_ReportService.getM_TBSExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_GMIRT":
+				try {
+
+					repfile = brrs_m_gmirt_reportservice.getM_GMIRTExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_GALOR":
+				try {
+
+					repfile = BRRS_m_galor_ReportService.getM_GALORExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_NOSVOS":
+				try {
+					repfile = BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(filename, reportId, fromdate, todate,
+							currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_SRWA_12E":
+				try {
+					repfile = BRRS_M_SRWA_12E_ReportService.BRRS_M_SRWA_12EExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
 		}
 		return repfile;
 	}
 
-	public byte[] getDownloadDetailFile(String filename, String fromdate, String todate, 
-            String currency, String dtltype, String type, String version) {
+	public byte[] getDownloadDetailFile(String filename, String fromdate, String todate,
+			String currency, String dtltype, String type, String version) {
 
-			System.out.println("came to common service");
-			
-			if ("MSFinP2Detail".equals(filename)) {
+		System.out.println("came to common service");
+
+		if ("MSFinP2Detail".equals(filename)) {
 			return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2DetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("MSFinP1Detail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("MSFinP1Detail".equals(filename)) {
 			return BRRS_M_SFINP1_reportservice.getM_SFINP1DetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("MLA4Detail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("MLA4Detail".equals(filename)) {
 			return BRRS_M_LA4_reportservice.BRRS_M_LA4DetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("MISDetail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("MISDetail".equals(filename)) {
 			return BRRS_M_IS_reportservice.BRRS_M_ISDetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("MCA2Detail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("MCA2Detail".equals(filename)) {
 			return BRRS_M_CA2_reportservice.getM_CA2DetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_SPDetail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_SPDetail".equals(filename)) {
 			return BRRS_M_SP_reportservice.getM_SPDetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_MRCDetail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_MRCDetail".equals(filename)) {
 			return BRRS_M_MRC_reportservice.BRRS_M_MRCDetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_CA1Detail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_CA1Detail".equals(filename)) {
 			return BRRS_M_CA1_reportservice.BRRS_M_CA1DetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_PIDetail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_PIDetail".equals(filename)) {
 			return BRRS_M_PI_reportservice.BRRS_M_PIDetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_LA1Detail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_LA1Detail".equals(filename)) {
 			return BRRS_M_LA1_reportservice.BRRS_M_LA1DetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_DEP1Detail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_DEP1Detail".equals(filename)) {
 			return BRRS_M_DEP1_reportservice.BRRS_M_DEP1DetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_LA3Detail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_LA3Detail".equals(filename)) {
 			return BRRS_M_LA3_reportservice.BRRS_M_LA3DetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_LA5Detail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_LA5Detail".equals(filename)) {
 			return BRRS_M_LA5_reportservice.BRRS_M_LA5DetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_DEP2Detail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_DEP2Detail".equals(filename)) {
 			return BRRS_M_DEP2_reportservice.BRRS_M_DEP2DetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_PLLDetail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_PLLDetail".equals(filename)) {
 			return BRRS_M_PLL_reportservice.getM_PLLDetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_DEP3Detail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_DEP3Detail".equals(filename)) {
 			return BRRS_M_DEP3_reportservice.BRRS_M_DEP3DetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_IRBDetail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_IRBDetail".equals(filename)) {
 			return brrs_m_irb_reportService.BRRS_M_IRBDetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_LIQDetail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_LIQDetail".equals(filename)) {
 			return BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("Q_SUMMEDetail".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("Q_SUMMEDetail".equals(filename)) {
 			return BRRS_Q_SMME_Intrest_Income_ReportService.BRRS_Q_SMMEDetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			} 
-			else if ("M_LIQ".equals(filename)) {
+					filename, fromdate, todate, currency, dtltype, type, version);
+		} else if ("M_LIQ".equals(filename)) {
 			return BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(
-			filename, fromdate, todate, currency, dtltype, type, version);
-			}
-			
-			return new byte[0];
-			}
+					filename, fromdate, todate, currency, dtltype, type, version);
+		}
 
+		return new byte[0];
+	}
 
 	public List<Object> getArchival(String rptcode) {
 
 		List<Object> archivalData = new ArrayList<>();
 		switch (rptcode) {
-		case "M_SFINP2":
-			try {
-				archivalData = BRRS_M_SFINP2_reportservice.getM_SFINP2Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_SFINP2":
+				try {
+					archivalData = BRRS_M_SFINP2_reportservice.getM_SFINP2Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_SFINP1":
-			try {
-				archivalData = BRRS_M_SFINP1_reportservice.getM_SFINP1Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_SFINP1":
+				try {
+					archivalData = BRRS_M_SFINP1_reportservice.getM_SFINP1Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_LA4":
-			try {
-				archivalData = BRRS_M_LA4_reportservice.getM_LA4Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_LA4":
+				try {
+					archivalData = BRRS_M_LA4_reportservice.getM_LA4Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		// case "M_IS":
-		// 	try {
-		// 		archivalData = BRRS_M_IS_reportservice.getM_ISArchival();
-		// 	} catch (Exception e) {
-		// 		// TODO Auto-generated catch block
-		// 		e.printStackTrace();
-		// 	}
-		// 	break;
+			// case "M_IS":
+			// try {
+			// archivalData = BRRS_M_IS_reportservice.getM_ISArchival();
+			// } catch (Exception e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// break;
 
-		case "M_CA2":
-			try {
-				archivalData = BRRS_M_CA2_reportservice.getM_CA2Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_CA2":
+				try {
+					archivalData = BRRS_M_CA2_reportservice.getM_CA2Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-	
-			
-		case "M_CR":
-			try {
-				archivalData = BRRS_M_CR_reportservice.getM_CRArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_CR":
+				try {
+					archivalData = BRRS_M_CR_reportservice.getM_CRArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
+			case "M_SP":
+				try {
+					archivalData = BRRS_M_SP_reportservice.getM_SPArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
+			/*
+			 * case "M_SRWA_12C": try { archivalData =
+			 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
+			 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
+			 */
 
-		case "M_SP":
-			try {
-				archivalData = BRRS_M_SP_reportservice.getM_SPArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			// case "M_SRWA_12H":
+			// try {
+			// archivalData = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
+			// } catch (Exception e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// break;
 
-		/*
-		 * case "M_SRWA_12C": try { archivalData =
-		 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
-		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 */
+			case "M_PI":
+				try {
+					archivalData = BRRS_M_PI_reportservice.getM_PIArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		
+			case "M_LA1":
+				try {
+					archivalData = BRRS_M_LA1_reportservice.getM_LA1Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		// case "M_SRWA_12H":
-		// 	try {
-		// 		archivalData = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
-		// 	} catch (Exception e) {
-		// 		// TODO Auto-generated catch block
-		// 		e.printStackTrace();
-		// 	}
-		// 	break;
-
-		case "M_PI":
-			try {
-				archivalData = BRRS_M_PI_reportservice.getM_PIArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-
-		case "M_LA1":
-			try {
-				archivalData = BRRS_M_LA1_reportservice.getM_LA1Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-
-									case "M_CALOC":
+			case "M_CALOC":
 				try {
 					archivalData = BRRS_M_CALOC_reportService.getM_CALOCArchival();
 				} catch (Exception e) {
@@ -1517,145 +1548,142 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-		case "M_DEP1":
-			try {
-				archivalData = BRRS_M_DEP1_reportservice.getM_DEP1Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_DEP1":
+				try {
+					archivalData = BRRS_M_DEP1_reportservice.getM_DEP1Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
+			case "M_FXR":
+				List<Object[]> fxrList = BRRS_M_FXR_reportservice.getM_FXRArchival();
+				archivalData.addAll(fxrList);
+				System.out.println("Fetched M_SRWA_12H archival data: " + fxrList.size());
+				break;
 
-		case "M_FXR":
-			List<Object[]> fxrList = BRRS_M_FXR_reportservice.getM_FXRArchival();
-			archivalData.addAll(fxrList);
-			System.out.println("Fetched M_SRWA_12H archival data: " + fxrList.size());
-			break;
+			case "M_UNCONS_INVEST":
+				try {
+					archivalData = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_UNCONS_INVEST":
-			try {
-				archivalData = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_LA2":
+				try {
+					archivalData = BRRS_M_LA2_reportservice.getM_LA2Archival();
 
-		case "M_LA2":
-			try {
-				archivalData = BRRS_M_LA2_reportservice.getM_LA2Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_LA3":
+				try {
+					archivalData = BRRS_M_LA3_reportservice.getM_LA3Archival();
 
-		case "M_LA3":
-			try {
-				archivalData = BRRS_M_LA3_reportservice.getM_LA3Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_LA5":
+				try {
+					archivalData = BRRS_M_LA5_reportservice.getM_LA5Archival();
 
-		case "M_LA5":
-			try {
-				archivalData = BRRS_M_LA5_reportservice.getM_LA5Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_DEP2":
+				try {
+					archivalData = BRRS_M_DEP2_reportservice.getM_DEP2Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_DEP2":
-			try {
-				archivalData = BRRS_M_DEP2_reportservice.getM_DEP2Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			/*
+			 * case "M_CA3": try { archivalData =
+			 * BRRS_M_CA3_reportservice.getM_CA3Archival(); } catch (Exception e) { // TODO
+			 * Auto-generated catch block e.printStackTrace(); } break;
+			 */
 
-		/*
-		 * case "M_CA3": try { archivalData =
-		 * BRRS_M_CA3_reportservice.getM_CA3Archival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 */
+			case "M_AIDP":
+				try {
+					archivalData = BRRS_M_AIDP_ReportService.getM_AIDPArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_AIDP":
-			try {
-				archivalData = BRRS_M_AIDP_ReportService.getM_AIDPArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_PLL":
+				try {
+					archivalData = BRRS_M_PLL_reportservice.getM_PLLArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_PLL":
-			try {
-				archivalData = BRRS_M_PLL_reportservice.getM_PLLArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_DEP3":
+				try {
+					archivalData = BRRS_M_DEP3_reportservice.getM_DEP3Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_DEP3":
-			try {
-				archivalData = BRRS_M_DEP3_reportservice.getM_DEP3Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_IRB":
+				try {
+					archivalData = brrs_m_irb_reportService.getM_IRBArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_IRB":
-			try {
-				archivalData = brrs_m_irb_reportService.getM_IRBArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_LIQ":
+				try {
+					archivalData = BRRS_M_LIQ_reportservice.getM_LIQArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		case "M_LIQ":
-			try {
-				archivalData = BRRS_M_LIQ_reportservice.getM_LIQArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-			
-		// case "M_LARADV":
-		// 	try {
-		// 		archivalData = brrs_m_laradv_reportservice.getM_LARADVArchival();
-		// 	} catch (Exception e) {
-		// 		// TODO Auto-generated catch block
-		// 		e.printStackTrace();
-		// 	}
-		// 	break;
-			
-		 case "M_INT_RATES_FCA":
-             List<Object[]> intratesfcaList = brrs_m_int_rates_fca_reportservice.getM_INT_RATES_FCAArchival();
-             archivalData.addAll(intratesfcaList);
-             System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcaList.size());
-             break;
-			
+			// case "M_LARADV":
+			// try {
+			// archivalData = brrs_m_laradv_reportservice.getM_LARADVArchival();
+			// } catch (Exception e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// break;
 
-		// case "Q_STAFF":
-		// 	try {
-		// 		archivalData = BRRS_Q_STAFF_reportservice.getQ_STAFFArchival();
-		// 	} catch (Exception e) {
-		// 		// TODO Auto-generated catch block
-		// 		e.printStackTrace();
-		// 	}
+			case "M_INT_RATES_FCA":
+				List<Object[]> intratesfcaList = brrs_m_int_rates_fca_reportservice.getM_INT_RATES_FCAArchival();
+				archivalData.addAll(intratesfcaList);
+				System.out.println("Fetched M_INT_RATES_FCA archival data: " + intratesfcaList.size());
+				break;
+
+			// case "Q_STAFF":
+			// try {
+			// archivalData = BRRS_Q_STAFF_reportservice.getQ_STAFFArchival();
+			// } catch (Exception e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
 
 			case "M_SRWA_12B":
 				List<Object[]> srwabList = brrs_m_srwa_12b_reportservice.getM_SRWA_12BArchival();
@@ -1663,75 +1691,73 @@ public class RegulatoryReportServices {
 				System.out.println("Fetched M_SRWA_12B archival data: " + srwabList.size());
 				break;
 
-		// case "Q_BRANCHNET":
-		// 	try {
-		// 		archivalData = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
-		// 	} catch (Exception e) {
-		// 		// TODO Auto-generated catch block
-		// 		e.printStackTrace();
-		// 	}
-		// 	break;
+			// case "Q_BRANCHNET":
+			// try {
+			// archivalData = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
+			// } catch (Exception e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// break;
 
-		case "Q_SMME":
-			try {
-				archivalData = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-		/*
-		 * case "M_SIR": try { archivalData =
-		 * BRRS_M_SIR_ReportService.getM_SIRArchival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 */
+			case "Q_SMME":
+				try {
+					archivalData = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			/*
+			 * case "M_SIR": try { archivalData =
+			 * BRRS_M_SIR_ReportService.getM_SIRArchival(); } catch (Exception e) { // TODO
+			 * Auto-generated catch block e.printStackTrace(); } break;
+			 */
 
-		/*
-		 * case "M_EPR": try { archivalData =
-		 * brrs_m_epr_reportservice.getM_EPRArchival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 */
+			/*
+			 * case "M_EPR": try { archivalData =
+			 * brrs_m_epr_reportservice.getM_EPRArchival(); } catch (Exception e) { // TODO
+			 * Auto-generated catch block e.printStackTrace(); } break;
+			 */
 
-		case "M_SRWA_12A":
-			try {
-				archivalData = brrs_m_srwa_12a_reportservice.getM_SRWA_12AArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_GALOR":
-			try {
-				archivalData = BRRS_m_galor_ReportService.getM_GALORArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+			case "M_SRWA_12A":
+				try {
+					archivalData = brrs_m_srwa_12a_reportservice.getM_SRWA_12AArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-		/*
-		 * case "M_SRWA_12C": try { archivalData =
-		 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
-		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 */
+			case "M_GALOR":
+				try {
+					archivalData = BRRS_m_galor_ReportService.getM_GALORArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-//		case "M_OB":
-//			try {
-//				archivalData = BRRS_M_OB_ReportService.getM_OBArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-			
-			
-		 case "M_OB":
-             List<Object[]> obList = BRRS_M_OB_ReportService.getM_OBArchival();
-             archivalData.addAll(obList);
-             System.out.println("Fetched M_OB archival data: " + obList.size());
-             break;
+			/*
+			 * case "M_SRWA_12C": try { archivalData =
+			 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
+			 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
+			 */
 
+			// case "M_OB":
+			// try {
+			// archivalData = BRRS_M_OB_ReportService.getM_OBArchival();
+			// } catch (Exception e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// break;
+
+			case "M_OB":
+				List<Object[]> obList = BRRS_M_OB_ReportService.getM_OBArchival();
+				archivalData.addAll(obList);
+				System.out.println("Fetched M_OB archival data: " + obList.size());
+				break;
 
 			/*
 			 * case "Q_RLFA1": try { archivalData =
@@ -1739,23 +1765,21 @@ public class RegulatoryReportServices {
 			 * TODO Auto-generated catch block e.printStackTrace(); } break;
 			 */
 
-	
-//		case "M_OPTR":
-//			try {
-//				archivalData = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-			
-		 case "M_OPTR":
-             List<Object[]> optrList = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
-             archivalData.addAll(optrList);
-             System.out.println("Fetched M_OPTR archival data: " + optrList.size());
-             break;
-             
-			
+			// case "M_OPTR":
+			// try {
+			// archivalData = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
+			// } catch (Exception e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// break;
+
+			case "M_OPTR":
+				List<Object[]> optrList = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
+				archivalData.addAll(optrList);
+				System.out.println("Fetched M_OPTR archival data: " + optrList.size());
+				break;
+
 			/*
 			 * case "Q_SMME_DEP": try { archivalData =
 			 * BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival(); } catch (Exception e)
@@ -1765,39 +1789,44 @@ public class RegulatoryReportServices {
 			 * BRRS_M_BOP_ReportService.getM_BOPArchival(); } catch (Exception e) { // TODO
 			 * Auto-generated catch block e.printStackTrace(); } break;
 			 */
-		
-		case "M_SECA":
-			try {
-				archivalData = BRRS_M_SECA_ReportService.getM_SECAArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		case "M_GMIRT":
-			try {
-				archivalData = brrs_m_gmirt_reportservice.getM_GMIRTArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
-			
-		
-	//New Archival 
-				case "M_SRWA_12H":
+
+			case "M_SECA":
+				try {
+					archivalData = BRRS_M_SECA_ReportService.getM_SECAArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_GMIRT":
+				try {
+					archivalData = brrs_m_gmirt_reportservice.getM_GMIRTArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
+			// New Archival
+			case "M_SRWA_12H":
 				List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
 				archivalData.addAll(srwaList1);
 				System.out.println("Fetched M_SRWA_12H archival data: " + srwaList1.size());
 				break;
-					case "M_LARADV":
+
+			case "M_SRWA_12E":
+				List<Object[]> srweList1 = BRRS_M_SRWA_12E_ReportService.getM_SRWA_12EArchival();
+				archivalData.addAll(srweList1);
+				System.out.println("Fetched M_SRWA_12E archival data: " + srweList1.size());
+				break;
+			case "M_LARADV":
 				List<Object[]> LAList = brrs_m_laradv_reportservice.getM_LARADVArchival();
 				archivalData.addAll(LAList);
 				System.out.println("Fetched M_LARADV archival data: " + LAList.size());
 				break;
-				
-				case "M_GP":
+
+			case "M_GP":
 				List<Object[]> GPList = BRRS_M_GP_ReportService.getM_GPArchival();
 				archivalData.addAll(GPList);
 				System.out.println("Fetched M_SRWA_12H archival data: " + GPList.size());
@@ -1808,190 +1837,168 @@ public class RegulatoryReportServices {
 				archivalData.addAll(QSList);
 				System.out.println("Fetched M_SRWA_12H archival data: " + QSList.size());
 				break;
-								case "M_IS":
+			case "M_IS":
 				List<Object[]> MISList = BRRS_M_IS_reportservice.getM_ISArchival();
 				archivalData.addAll(MISList);
 				System.out.println("Fetched M_IS archival data: " + MISList.size());
 				break;
 
-					case "Q_BRANCHNET":
+			case "Q_BRANCHNET":
 				List<Object[]> QBList = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
 				archivalData.addAll(QBList);
 				System.out.println("Fetched M_SRWA_12H archival data: " + QBList.size());
 				break;
-				
-				
+
 			case "M_CA4":
 				List<Object[]> ca4List = BRRS_M_CA4_reportservice.getM_CA4Archival();
 				archivalData.addAll(ca4List);
 				System.out.println("Fetched M_CA4 archival data: " + ca4List.size());
 				break;
-				
-				
+
 			case "Q_RLFA2":
 				List<Object[]> rlfa2List = brrs_q_rlfa2_reportservice.getQ_RLFA2Archival();
 				archivalData.addAll(rlfa2List);
 				System.out.println("Fetched M_CA4 archival data: " + rlfa2List.size());
 				break;
-				
-			
-			 case "M_EPR":
-		          List<Object[]> eprList = brrs_m_epr_reportservice.getM_EPRArchival();
-		          archivalData.addAll(eprList);
-		          System.out.println("Fetched M_EPR archival data: " + eprList.size());
-		          break;
 
-				
-			 case "M_SRWA_12G":
-	              List<Object[]> srwagList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GArchival();
-	              archivalData.addAll(srwagList);
-	              System.out.println("Fetched M_SRWA_12G archival data: " + srwagList.size());
-	              break;
+			case "M_EPR":
+				List<Object[]> eprList = brrs_m_epr_reportservice.getM_EPRArchival();
+				archivalData.addAll(eprList);
+				System.out.println("Fetched M_EPR archival data: " + eprList.size());
+				break;
 
-	              
-			 case "M_SRWA_12F":
-		            List<Object[]> srwafList = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
-		            archivalData.addAll(srwafList);
-		            System.out.println("Fetched M_SRWA_12F archival data: " + srwafList.size());
-		            break;
-		            
-			 case "M_SECL":
-		            List<Object[]> seclList = brrs_m_secl_reportservice.getM_SECLArchival();
-		            archivalData.addAll(seclList);
-		            System.out.println("Fetched M_SECL archival data: " + seclList.size());
-		            break;
-		            
-			 case "M_OR2":
-		            List<Object[]> or2List = brrs_m_or2_reportservice.getM_OR2Archival();
-		            archivalData.addAll(or2List);
-		            System.out.println("Fetched M_OR2 archival data: " + or2List.size());
-		            break;
-		            
-			 case "M_SEC":
-		            List<Object[]> secList = brrs_m_sec_reportservice.getM_SECArchival();
-		            archivalData.addAll(secList);
-		            System.out.println("Fetched M_SECL archival data: " + secList.size());
-		            break;
+			case "M_SRWA_12G":
+				List<Object[]> srwagList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GArchival();
+				archivalData.addAll(srwagList);
+				System.out.println("Fetched M_SRWA_12G archival data: " + srwagList.size());
+				break;
 
-			 case "M_CA5":
-		            List<Object[]> ca5List = BRRS_M_CA5_reportservice.getM_CA5Archival();
-		            archivalData.addAll(ca5List);
-		            System.out.println("Fetched M_CA6 archival data: " + ca5List.size());
-		            break;
-		            
-			 case "M_CA7":
-		            List<Object[]> CA7List = BRRS_M_CA7_reportservice.getM_CA7Archival();
-		            archivalData.addAll(CA7List);
-		            System.out.println("Fetched M_CA6 archival data: " + CA7List.size());
-		            break;
-		            
-		            
-   			 case "M_CA6":
-   		            List<Object[]> CA6List = BRRS_M_CA6_reportservice.getM_CA6Archival();
-   		            archivalData.addAll(CA6List);
-   		            System.out.println("Fetched M_CA6 archival data: " + CA6List.size());
-   		            break;		     
-		
-   		            
-   		            
-   		            
-   			case "Q_RLFA1":
-	            List<Object[]> qrlfa1List = brrs_q_rlfa1_reportservice.getQ_RLFA1Archival();
-	            archivalData.addAll(qrlfa1List);
-	            System.out.println("Fetched Q_RLFA1 archival data: " + qrlfa1List.size());
-	            break;
-	       
-	            
-		 case "M_BOP":
-	            List<Object[]> BOPList = BRRS_M_BOP_ReportService.getM_BOPArchival();
-	            archivalData.addAll(BOPList);
-	            System.out.println("Fetched M_BOP archival data: " + BOPList.size());
-	            break;
-	            
-	            
-		 case "Q_SMME_DEP":
-	            List<Object[]> QSMMEDEPList = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival();
-	            archivalData.addAll(QSMMEDEPList);
-	            System.out.println("Fetched Q_SMME_DEP archival data: " + QSMMEDEPList.size());
-	            break;
-	            
-		 case "M_SRWA_12C":
-	            List<Object[]> MSRWA12CList = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival();
-	            archivalData.addAll(MSRWA12CList);
-	            System.out.println("Fetched Q_SMME_DEP archival data: " + MSRWA12CList.size());
-	            break;
+			case "M_SRWA_12F":
+				List<Object[]> srwafList = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FArchival();
+				archivalData.addAll(srwafList);
+				System.out.println("Fetched M_SRWA_12F archival data: " + srwafList.size());
+				break;
 
-		 case "M_SIR":
-	            List<Object[]> SIRList = BRRS_M_SIR_ReportService.getM_SIRArchival();
-	            archivalData.addAll(SIRList);
-	            System.out.println("Fetched M_SIR archival data: " + SIRList.size());
-	            break;
+			case "M_SECL":
+				List<Object[]> seclList = brrs_m_secl_reportservice.getM_SECLArchival();
+				archivalData.addAll(seclList);
+				System.out.println("Fetched M_SECL archival data: " + seclList.size());
+				break;
 
+			case "M_OR2":
+				List<Object[]> or2List = brrs_m_or2_reportservice.getM_OR2Archival();
+				archivalData.addAll(or2List);
+				System.out.println("Fetched M_OR2 archival data: " + or2List.size());
+				break;
+
+			case "M_SEC":
+				List<Object[]> secList = brrs_m_sec_reportservice.getM_SECArchival();
+				archivalData.addAll(secList);
+				System.out.println("Fetched M_SECL archival data: " + secList.size());
+				break;
+
+			case "M_CA5":
+				List<Object[]> ca5List = BRRS_M_CA5_reportservice.getM_CA5Archival();
+				archivalData.addAll(ca5List);
+				System.out.println("Fetched M_CA6 archival data: " + ca5List.size());
+				break;
+
+			case "M_CA7":
+				List<Object[]> CA7List = BRRS_M_CA7_reportservice.getM_CA7Archival();
+				archivalData.addAll(CA7List);
+				System.out.println("Fetched M_CA6 archival data: " + CA7List.size());
+				break;
+
+			case "M_CA6":
+				List<Object[]> CA6List = BRRS_M_CA6_reportservice.getM_CA6Archival();
+				archivalData.addAll(CA6List);
+				System.out.println("Fetched M_CA6 archival data: " + CA6List.size());
+				break;
+
+			case "Q_RLFA1":
+				List<Object[]> qrlfa1List = brrs_q_rlfa1_reportservice.getQ_RLFA1Archival();
+				archivalData.addAll(qrlfa1List);
+				System.out.println("Fetched Q_RLFA1 archival data: " + qrlfa1List.size());
+				break;
+
+			case "M_BOP":
+				List<Object[]> BOPList = BRRS_M_BOP_ReportService.getM_BOPArchival();
+				archivalData.addAll(BOPList);
+				System.out.println("Fetched M_BOP archival data: " + BOPList.size());
+				break;
+
+			case "Q_SMME_DEP":
+				List<Object[]> QSMMEDEPList = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival();
+				archivalData.addAll(QSMMEDEPList);
+				System.out.println("Fetched Q_SMME_DEP archival data: " + QSMMEDEPList.size());
+				break;
+
+			case "M_SRWA_12C":
+				List<Object[]> MSRWA12CList = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival();
+				archivalData.addAll(MSRWA12CList);
+				System.out.println("Fetched Q_SMME_DEP archival data: " + MSRWA12CList.size());
+				break;
+
+			case "M_SIR":
+				List<Object[]> SIRList = BRRS_M_SIR_ReportService.getM_SIRArchival();
+				archivalData.addAll(SIRList);
+				System.out.println("Fetched M_SIR archival data: " + SIRList.size());
+				break;
 
 			// case "M_GP":
-			// 	try {
-			// 		archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
-			// 	} catch (Exception e) {
-			// 		// TODO Auto-generated catch block
-			// 		e.printStackTrace();
-			// 	}
-			// 	break;
+			// try {
+			// archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
+			// } catch (Exception e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+			// break;
 
+			case "M_INT_RATES":
+				List<Object[]> intratesList = brrs_m_int_rates_reportservice.getM_INTRATESArchival();
+				archivalData.addAll(intratesList);
+				System.out.println("Fetched M_INT_RATES archival data: " + intratesList.size());
+				break;
 
-		            
-			 case "M_INT_RATES":
-		            List<Object[]> intratesList = brrs_m_int_rates_reportservice.getM_INTRATESArchival();
-		            archivalData.addAll(intratesList);
-		            System.out.println("Fetched M_INT_RATES archival data: " + intratesList.size());
-		            break;
-		            
-			 case "M_RPD":
-		            List<Object[]> RPDList = BRRS_M_RPD_ReportService.getM_RPDArchival();
-		            archivalData.addAll(RPDList);
-		            System.out.println("Fetched M_SIR archival data: " + RPDList.size());
-		            break;
-		            
-		            
-			 case "M_TBS":
-		            List<Object[]> TBSList = BRRS_M_TBS_ReportService.getM_TBSArchival();
-		            archivalData.addAll(TBSList);
-		            System.out.println("Fetched TBS archival data: " + TBSList.size());
-		            break;
+			case "M_RPD":
+				List<Object[]> RPDList = BRRS_M_RPD_ReportService.getM_RPDArchival();
+				archivalData.addAll(RPDList);
+				System.out.println("Fetched M_SIR archival data: " + RPDList.size());
+				break;
 
-			
+			case "M_TBS":
+				List<Object[]> TBSList = BRRS_M_TBS_ReportService.getM_TBSArchival();
+				archivalData.addAll(TBSList);
+				System.out.println("Fetched TBS archival data: " + TBSList.size());
+				break;
 
-				
-			 case "M_CA3":
-		            List<Object[]> ca3List = BRRS_M_CA3_reportservice.getM_CA3Archival();
-		            archivalData.addAll(ca3List);
-		            System.out.println("Fetched TBS archival data: " + ca3List.size());
-		            break;
+			case "M_CA3":
+				List<Object[]> ca3List = BRRS_M_CA3_reportservice.getM_CA3Archival();
+				archivalData.addAll(ca3List);
+				System.out.println("Fetched TBS archival data: " + ca3List.size());
+				break;
 
-			 case "M_NOSVOS":
-					try {
-						archivalData = BRRS_M_NOSVOS_reportservice.getM_NOSVOSArchival();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					break;
-			 case "M_CA1":
-					try {
-						archivalData = BRRS_M_CA1_reportservice.getM_CA1Archival();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					break;
+			case "M_NOSVOS":
+				try {
+					archivalData = BRRS_M_NOSVOS_reportservice.getM_NOSVOSArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			case "M_CA1":
+				try {
+					archivalData = BRRS_M_CA1_reportservice.getM_CA1Archival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
-			
-	         default:
-	              System.out.println("No archival logic defined for report: " + rptcode);
-	              break;
+			default:
+				System.out.println("No archival logic defined for report: " + rptcode);
+				break;
 
-
-			
-		
 		}
 		return archivalData;
 	}
@@ -2017,9 +2024,10 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("M_ISDetail")) {
 			fileData = BRRS_M_IS_reportservice.BRRS_M_ISDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		// } else if (filename.equals("M_SRWA_12HDetail")) {
-		// 	fileData = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HDetailExcel(filename, fromdate, todate, currency,
-		// 			dtltype, type, version);
+			// } else if (filename.equals("M_SRWA_12HDetail")) {
+			// fileData = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HDetailExcel(filename,
+			// fromdate, todate, currency,
+			// dtltype, type, version);
 		} else if (filename.equals("M_MRCDetail")) {
 			fileData = BRRS_M_MRC_reportservice.BRRS_M_MRCDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
@@ -2064,7 +2072,7 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("M_SMMEDetail")) {
 			fileData = BRRS_Q_SMME_Intrest_Income_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
-		}else if (filename.equals("M_CA2Detail")) {
+		} else if (filename.equals("M_CA2Detail")) {
 			fileData = BRRS_M_CA2_reportservice.getM_CA2DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		} else if (filename.equals("M_SPDetail")) {
@@ -2077,27 +2085,24 @@ public class RegulatoryReportServices {
 
 		}
 
-
 		else if ("M_SRWA_12A".equals(filename)) {
 
 			fileData = brrs_m_srwa_12a_reportservice.getM_SRWA_12ADetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 
 		}
-		
+
 		else if ("M_GMIRT_Detail".equals(filename)) {
-		       
-	        fileData = brrs_m_gmirt_reportservice.getM_GMIRTDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);   
-	    }
-		
-		
+
+			fileData = brrs_m_gmirt_reportservice.getM_GMIRTDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+
 		else if ("M_GALOR_Detail".equals(filename)) {
-		       
-	        fileData = BRRS_m_galor_ReportService.getM_GALORDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);   
-	    }
-		else if ("M_LIQ".equals(filename)) {
+
+			fileData = BRRS_m_galor_ReportService.getM_GALORDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		} else if ("M_LIQ".equals(filename)) {
 
 			fileData = BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
@@ -2107,8 +2112,8 @@ public class RegulatoryReportServices {
 		if (fileData == null) {
 			// logger.warn("Excel generation failed or no data for jobId: {}", jobId);
 			// store error flag
-            jobStorage.put(jobId, new byte[0]);  
-            
+			jobStorage.put(jobId, new byte[0]);
+
 		} else {
 			jobStorage.put(jobId, fileData);
 		}
@@ -2131,22 +2136,22 @@ public class RegulatoryReportServices {
 		List<ReportLineItemDTO> reportData = new ArrayList<>();
 
 		switch (reportCode.toUpperCase()) {
-		case "M_LA1":
-			specificFilePath = baseExportPath + "M_LA1.xlsx";
-			System.out.println("Fetching M_LA1 data from: " + specificFilePath);
-			reportData = BRRS_M_LA1_reportservice.getReportData(specificFilePath);
-			break;
-		case "M_SFINP2":
-			System.out.println(reportCode);
-			specificFilePath = baseExportPath + "M_SFINP2.xlsx";
-			System.out.println("Fetching M_SFINP2 data from: " + specificFilePath);
-			reportData = BRRS_M_SFINP2_reportservice.getReportData(specificFilePath);
-			break;
+			case "M_LA1":
+				specificFilePath = baseExportPath + "M_LA1.xlsx";
+				System.out.println("Fetching M_LA1 data from: " + specificFilePath);
+				reportData = BRRS_M_LA1_reportservice.getReportData(specificFilePath);
+				break;
+			case "M_SFINP2":
+				System.out.println(reportCode);
+				specificFilePath = baseExportPath + "M_SFINP2.xlsx";
+				System.out.println("Fetching M_SFINP2 data from: " + specificFilePath);
+				reportData = BRRS_M_SFINP2_reportservice.getReportData(specificFilePath);
+				break;
 
-		default:
-			System.out.println("No handler found or file path configured for report code: " + reportCode);
+			default:
+				System.out.println("No handler found or file path configured for report code: " + reportCode);
 
-			break;
+				break;
 		}
 
 		return reportData;
@@ -2159,68 +2164,67 @@ public class RegulatoryReportServices {
 
 		try {
 			switch (reportId) {
-			case "M_PLL":
-				modelAndView = BRRS_M_PLL_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
-				break;
+				case "M_PLL":
+					modelAndView = BRRS_M_PLL_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 
-			
-			  case "M_LA1": modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(
-			  request.getParameter("acctNo"), request.getParameter("formmode") );
-			  break;
-			  
-			  case "M_LA3":
+				case "M_LA1":
+					modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(
+							request.getParameter("acctNo"), request.getParameter("formmode"));
+					break;
+
+				case "M_LA3":
 					modelAndView = BRRS_M_LA3_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
-			  case "M_LA4":
+
+				case "M_LA4":
 					modelAndView = BRRS_M_LA4_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
-			  case "M_LA5":
+
+				case "M_LA5":
 					modelAndView = BRRS_M_LA5_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
-			  case "M_CA2":
+
+				case "M_CA2":
 					modelAndView = BRRS_M_CA2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-			
-			  case "M_SP":
+
+				case "M_SP":
 					modelAndView = BRRS_M_SP_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-			 
-			  case "M_LIQ":
+
+				case "M_LIQ":
 					modelAndView = BRRS_M_LIQ_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
-			  case "M_DEP1":
+
+				case "M_DEP1":
 					modelAndView = BRRS_M_DEP1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
-			  case "M_DEP2":
+
+				case "M_DEP2":
 					modelAndView = BRRS_M_DEP2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-					
-			  case "M_SRWA_12A":
+
+				case "M_SRWA_12A":
 					modelAndView = brrs_m_srwa_12a_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
-			 
 
-			default:
-				logger.warn("No detail service found for reportId: {}", reportId);
-				modelAndView = new ModelAndView("error/report_not_found");
-				modelAndView.addObject("errorMessage",
-						"Details view for report '" + reportId + "' is not implemented.");
-				break;
+				default:
+					logger.warn("No detail service found for reportId: {}", reportId);
+					modelAndView = new ModelAndView("error/report_not_found");
+					modelAndView.addObject("errorMessage",
+							"Details view for report '" + reportId + "' is not implemented.");
+					break;
 			}
 		} catch (Exception e) {
 			logger.error("Error processing details for reportId: {}", reportId, e);
@@ -2239,62 +2243,55 @@ public class RegulatoryReportServices {
 
 		try {
 			switch (reportId) {
-			case "M_PLL":
-				response = BRRS_M_PLL_reportservice.updateDetailEdit(request);
-				break;
+				case "M_PLL":
+					response = BRRS_M_PLL_reportservice.updateDetailEdit(request);
+					break;
 
-			
-			  case "M_LA1": response = BRRS_M_LA1_reportservice.updateDetailEdit(request);
-			  break;
-			  
-			  case "M_LA3":
+				case "M_LA1":
+					response = BRRS_M_LA1_reportservice.updateDetailEdit(request);
+					break;
+
+				case "M_LA3":
 					response = BRRS_M_LA3_reportservice.updateDetailEdit(request);
 					break;
-					
-			  case "M_LA4":
+
+				case "M_LA4":
 					response = BRRS_M_LA4_reportservice.updateDetailEdit(request);
 					break;
-					
-			  case "M_LA5":
+
+				case "M_LA5":
 					response = BRRS_M_LA5_reportservice.updateDetailEdit(request);
 					break;
 
-					
-			  case "M_CA2":
+				case "M_CA2":
 					response = BRRS_M_CA2_reportservice.updateDetailEdit(request);
 					break;
-					
 
-			  case "M_SP":
+				case "M_SP":
 					response = BRRS_M_SP_reportservice.updateDetailEdit(request);
 					break;
 
-
-			  case "M_LIQ":
+				case "M_LIQ":
 					response = BRRS_M_LIQ_reportservice.updateDetailEdit(request);
 					break;
-					
-			  case "M_DEP1":
+
+				case "M_DEP1":
 					response = BRRS_M_DEP1_reportservice.updateDetailEdit(request);
 					break;
-					
-			  case "M_DEP2":
+
+				case "M_DEP2":
 					response = BRRS_M_DEP2_reportservice.updateDetailEdit(request);
 					break;
-					
-			  case "M_SRWA_12A":
+
+				case "M_SRWA_12A":
 					response = brrs_m_srwa_12a_reportservice.updateDetailEdit(request);
 					break;
 
-
-
-			 
-
-			default:
-				logger.warn("Unsupported report ID: {}", reportId);
-				response = ResponseEntity.badRequest()
-						.body("Update functionality is not implemented for this report ID: " + reportId);
-				break;
+				default:
+					logger.warn("Unsupported report ID: {}", reportId);
+					response = ResponseEntity.badRequest()
+							.body("Update functionality is not implemented for this report ID: " + reportId);
+					break;
 			}
 
 		} catch (Exception e) {
@@ -2305,15 +2302,9 @@ public class RegulatoryReportServices {
 
 		return response;
 	}
-	
-	
 
-	
-	
-	
-
-//Resubmission Add Ur Case Here
-public List<Object[]> getResub(String rptcode) {
+	// Resubmission Add Ur Case Here
+	public List<Object[]> getResub(String rptcode) {
 		List<Object[]> resubmissionData = new ArrayList<>();
 
 		switch (rptcode) {
@@ -2327,7 +2318,7 @@ public List<Object[]> getResub(String rptcode) {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "M_SRWA_12F":
 				try {
 					List<Object[]> resubList = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FResub();
@@ -2338,7 +2329,7 @@ public List<Object[]> getResub(String rptcode) {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "M_SECL":
 				try {
 					List<Object[]> resubList = brrs_m_secl_reportservice.getM_SECLResub();
@@ -2349,7 +2340,7 @@ public List<Object[]> getResub(String rptcode) {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "M_SEC":
 				try {
 					List<Object[]> resubList = brrs_m_sec_reportservice.getM_SECResub();
@@ -2360,7 +2351,7 @@ public List<Object[]> getResub(String rptcode) {
 					e.printStackTrace();
 				}
 				break;
-				
+
 			case "M_INT_RATES":
 				try {
 					List<Object[]> resubList = brrs_m_int_rates_reportservice.getM_INTRATESResub();
@@ -2372,7 +2363,7 @@ public List<Object[]> getResub(String rptcode) {
 				}
 				break;
 
-				case "Q_STAFF":
+			case "Q_STAFF":
 				try {
 					List<Object[]> resubList = BRRS_Q_STAFF_report_service.getQ_STAFFResub();
 					resubmissionData.addAll(resubList);
@@ -2383,7 +2374,7 @@ public List<Object[]> getResub(String rptcode) {
 				}
 				break;
 
-				case "Q_BRANCHNET":
+			case "Q_BRANCHNET":
 				try {
 					List<Object[]> resubList = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETResub();
 					resubmissionData.addAll(resubList);
@@ -2393,7 +2384,7 @@ public List<Object[]> getResub(String rptcode) {
 					e.printStackTrace();
 				}
 				break;
-							case "M_IS":
+			case "M_IS":
 				try {
 					List<Object[]> resubList = BRRS_M_IS_reportservice.getM_ISResub();
 					resubmissionData.addAll(resubList);
@@ -2403,7 +2394,7 @@ public List<Object[]> getResub(String rptcode) {
 					e.printStackTrace();
 				}
 				break;
-				case "M_GP":
+			case "M_GP":
 				try {
 					List<Object[]> resubList = BRRS_M_GP_ReportService.getM_GPResub();
 					resubmissionData.addAll(resubList);
@@ -2415,276 +2406,260 @@ public List<Object[]> getResub(String rptcode) {
 				break;
 
 			case "M_LARADV":
-			try {
-			List<Object[]> resubList = brrs_m_laradv_reportservice.getM_LARADVResub();
-			resubmissionData.addAll(resubList);
-			System.out.println("Resubmission data fetched for M_LARADV: " +
-			resubList.size());
-			} catch (Exception e) {
-			System.err.println("Error fetching resubmission data for M_LARADV: " +
-			e.getMessage());
-			e.printStackTrace();
-			}
-			break;
-				 case "M_SRWA_12G":
-			            try {
-			                List<Object[]> resubList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GResub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for M_SRWA_12G: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_SRWA_12G: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			         
-			            
-			            break;
-			            
+				try {
+					List<Object[]> resubList = brrs_m_laradv_reportservice.getM_LARADVResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_LARADV: " +
+							resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_LARADV: " +
+							e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+			case "M_SRWA_12G":
+				try {
+					List<Object[]> resubList = BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_SRWA_12G: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_SRWA_12G: " + e.getMessage());
+					e.printStackTrace();
+				}
 
-				 case "M_CA4":
-			            try {
-			                List<Object[]> resubList = BRRS_M_CA4_reportservice.getM_CA4Resub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for M_CA4: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_CA4: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			            break;
-			            
-			            
-				 case "Q_RLFA2":
-			            try {
-			                List<Object[]> resubList = brrs_q_rlfa2_reportservice.getQ_RLFA2Resub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for M_CA4: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_CA4: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			            break;
+				break;
 
-			            
+			case "M_CA4":
+				try {
+					List<Object[]> resubList = BRRS_M_CA4_reportservice.getM_CA4Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_CA4: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_CA4: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
 
-				  case "M_EPR":
-			            try {
-			                List<Object[]> resubList = brrs_m_epr_reportservice.getM_EPRResub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for M_EPR: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_EPR: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			            break;
+			case "Q_RLFA2":
+				try {
+					List<Object[]> resubList = brrs_q_rlfa2_reportservice.getQ_RLFA2Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_CA4: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_CA4: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
 
+			case "M_EPR":
+				try {
+					List<Object[]> resubList = brrs_m_epr_reportservice.getM_EPRResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_EPR: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_EPR: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
 
-				 case "M_OB":
-			            try {
-			                List<Object[]> resubList = BRRS_M_OB_ReportService.getM_OBResub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for M_OB: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_OB: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			            break;   
-			            
-				 case "M_OPTR":
-			            try {
-			                List<Object[]> resubList = BRRS_M_OPTR_ReportService.getM_OPTRResub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for M_OPTR: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_OPTR: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			            break; 
+			case "M_OB":
+				try {
+					List<Object[]> resubList = BRRS_M_OB_ReportService.getM_OBResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_OB: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_OB: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
 
-			            
-				 case "M_INT_RATES_FCA":
-			            try {
-			                List<Object[]> resubList = brrs_m_int_rates_fca_reportservice.getM_INT_RATES_FCAResub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_INT_RATES_FCA: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			            break; 
-			            
-				 case "M_CA5":
-			            try {
-			                List<Object[]> resubList = BRRS_M_CA5_reportservice.getM_CA5Resub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_INT_RATES_FCA: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			            break; 
-			            
-				 case "M_OR2":
-			            try {
-			                List<Object[]> resubList = brrs_m_or2_reportservice.getM_OR2Resub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for M_OR2: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_OR2: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			            break; 
-			            	
-			            
-					case "M_FXR":
-						try {
-							List<Object[]> resubList = BRRS_M_FXR_reportservice.getM_FXRResub();
-							resubmissionData.addAll(resubList);
-							System.out.println("Resubmission data fetched for M_SRWA_12H: " + resubList.size());
-						} catch (Exception e) {
-							System.err.println("Error fetching resubmission data for M_SRWA_12H: " + e.getMessage());
-							e.printStackTrace();
-						}
-						break;
+			case "M_OPTR":
+				try {
+					List<Object[]> resubList = BRRS_M_OPTR_ReportService.getM_OPTRResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_OPTR: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_OPTR: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
 
+			case "M_SRWA_12E":
+				try {
+					List<Object[]> resubList = BRRS_M_SRWA_12E_ReportService.getM_SRWA_12EResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_SRWA_12E: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_SRWA_12E: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+			case "M_INT_RATES_FCA":
+				try {
+					List<Object[]> resubList = brrs_m_int_rates_fca_reportservice.getM_INT_RATES_FCAResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_INT_RATES_FCA: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
 
-				 case "M_CA7":
-			            try {
-			                List<Object[]> resubList = BRRS_M_CA7_reportservice.getM_CA7Resub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for CA7: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_CA7: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			         
-			            
-			            break;
-				 case "M_CA6":
-			            try {
-			                List<Object[]> resubList = BRRS_M_CA6_reportservice.getM_CA6Resub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for CA6: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_CA6: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			         
-			            
-			            break;
-			            
-			            
-			            
-			            
-			            
-			            
-			            
-			            
-				 case "Q_RLFA1":
-			            try {
-			                List<Object[]> resubList = brrs_q_rlfa1_reportservice.getQ_RLFA1Resub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for Q_RLFA1: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for Q_RLFA1: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			            break;
-			            
-				  case "M_BOP":
-			            try {
-			                List<Object[]> resubList = BRRS_M_BOP_ReportService.getM_BOPResub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for M_BOP: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_BOP: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			            break;
-			            
-				  case "Q_SMME_DEP":
-			            try {
-			                List<Object[]> resubList = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPResub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for Q_SMME_DEP: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for Q_SMME_DEP: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			            break;
-			            
-			            
-				  case "M_SRWA_12C":
-			            try {
-			                List<Object[]> resubList = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CResub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for M_SRWA_12C: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_SRWA_12C: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			            break;
-			            
-			            
-				  case "M_SIR":
-			            try {
-			                List<Object[]> resubList = BRRS_M_SIR_ReportService.getM_SIRResub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for SIR: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_SIR: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			         
-			            
-			            break;
-				  case "M_RPD":
-			            try {
-			                List<Object[]> resubList = BRRS_M_RPD_ReportService.getM_RPDResub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for RPD: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_RPD: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			         
-			            
-			            break;
-			            
-			            
-				  case "M_TBS":
-			            try {
-			                List<Object[]> resubList = BRRS_M_TBS_ReportService.getM_TBSResub();
-			                resubmissionData.addAll(resubList);
-			                System.out.println("Resubmission data fetched for TBS: " + resubList.size());
-			            } catch (Exception e) {
-			                System.err.println("Error fetching resubmission data for M_TBS: " + e.getMessage());
-			                e.printStackTrace();
-			            }
-			         
-			            
-			            break;
-			            
-					case "M_SRWA_12B":
-						try {
-							List<Object[]> resubList = brrs_m_srwa_12b_reportservice.getM_SRWA_12BResub();
-							resubmissionData.addAll(resubList);
-							System.out.println("Resubmission data fetched for M_SRWA_12B: " + resubList.size());
-						} catch (Exception e) {
-							System.err.println("Error fetching resubmission data for M_SRWA_12B: " + e.getMessage());
-							e.printStackTrace();
-						}
-						break;
-					case "M_CA3":
-						try {
-							List<Object[]> resubList = BRRS_M_CA3_reportservice.getM_CA3Resub();
-							resubmissionData.addAll(resubList);
-							System.out.println("Resubmission data fetched for M_CA3: " + resubList.size());
-						} catch (Exception e) {
-							System.err.println("Error fetching resubmission data for M_CA3: " + e.getMessage());
-							e.printStackTrace();
-						}
-						break;
+			case "M_CA5":
+				try {
+					List<Object[]> resubList = BRRS_M_CA5_reportservice.getM_CA5Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_INT_RATES_FCA: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
 
+			case "M_OR2":
+				try {
+					List<Object[]> resubList = brrs_m_or2_reportservice.getM_OR2Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_OR2: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_OR2: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
 
+			case "M_FXR":
+				try {
+					List<Object[]> resubList = BRRS_M_FXR_reportservice.getM_FXRResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_SRWA_12H: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_SRWA_12H: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_CA7":
+				try {
+					List<Object[]> resubList = BRRS_M_CA7_reportservice.getM_CA7Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for CA7: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_CA7: " + e.getMessage());
+					e.printStackTrace();
+				}
+
+				break;
+			case "M_CA6":
+				try {
+					List<Object[]> resubList = BRRS_M_CA6_reportservice.getM_CA6Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for CA6: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_CA6: " + e.getMessage());
+					e.printStackTrace();
+				}
+
+				break;
+
+			case "Q_RLFA1":
+				try {
+					List<Object[]> resubList = brrs_q_rlfa1_reportservice.getQ_RLFA1Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for Q_RLFA1: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for Q_RLFA1: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_BOP":
+				try {
+					List<Object[]> resubList = BRRS_M_BOP_ReportService.getM_BOPResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_BOP: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_BOP: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+
+			case "Q_SMME_DEP":
+				try {
+					List<Object[]> resubList = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for Q_SMME_DEP: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for Q_SMME_DEP: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_SRWA_12C":
+				try {
+					List<Object[]> resubList = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_SRWA_12C: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_SRWA_12C: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+
+			case "M_SIR":
+				try {
+					List<Object[]> resubList = BRRS_M_SIR_ReportService.getM_SIRResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for SIR: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_SIR: " + e.getMessage());
+					e.printStackTrace();
+				}
+
+				break;
+			case "M_RPD":
+				try {
+					List<Object[]> resubList = BRRS_M_RPD_ReportService.getM_RPDResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for RPD: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_RPD: " + e.getMessage());
+					e.printStackTrace();
+				}
+
+				break;
+
+			case "M_TBS":
+				try {
+					List<Object[]> resubList = BRRS_M_TBS_ReportService.getM_TBSResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for TBS: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_TBS: " + e.getMessage());
+					e.printStackTrace();
+				}
+
+				break;
+
+			case "M_SRWA_12B":
+				try {
+					List<Object[]> resubList = brrs_m_srwa_12b_reportservice.getM_SRWA_12BResub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_SRWA_12B: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_SRWA_12B: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+			case "M_CA3":
+				try {
+					List<Object[]> resubList = BRRS_M_CA3_reportservice.getM_CA3Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_CA3: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_CA3: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
 
 			default:
 				System.out.println("Unsupported report code: " + rptcode);
@@ -2693,394 +2668,390 @@ public List<Object[]> getResub(String rptcode) {
 		return resubmissionData;
 	}
 
+	public byte[] getConsolidatedDownloadFile(String filename, String asondate, String fromdate, String todate,
+			String currency, String type, String version) throws ParseException {
 
+		// List of all reports you want to include
+		List<String> reportList = Arrays.asList("M_SFINP1", "M_SFINP2", "M_LA1", "M_LA2", "M_LA3", "M_LA4", "M_LA5",
+				"M_CA1", "M_CA3", "M_CA4", "M_CA5", "M_CA7", "M_SP", "M_PI", "M_MRC", "M_IRB", "M_DEP1", "M_DEP2",
+				"M_DEP3", "M_PLL", "M_UNCONS_INVEST", "M_SRWA_12F", "M_SRWA_12C", "M_SRWA_12H", "M_AIDP", "M_LIQ");
+		System.out.println(todate);
 
-public byte[] getConsolidatedDownloadFile(String filename, String asondate, String fromdate, String todate,
-		String currency, String type, String version) throws ParseException {
+		SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+		Date date = inputFormat.parse(todate);
 
+		// 2️⃣ Format to required pattern (Date → String)
+		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
+		String formattedDate = outputFormat.format(date);
+		// Workbook for consolidated report
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		Sheet errorSheet = workbook.createSheet("Status");
+		Row headerRow = errorSheet.createRow(0);
+		headerRow.createCell(0).setCellValue("Report Name");
+		headerRow.createCell(1).setCellValue("Status");
+		headerRow.createCell(2).setCellValue("Remarks");
 
-//List of all reports you want to include
-	List<String> reportList = Arrays.asList("M_SFINP1", "M_SFINP2", "M_LA1", "M_LA2", "M_LA3", "M_LA4", "M_LA5",
-			"M_CA1", "M_CA3", "M_CA4", "M_CA5", "M_CA7", "M_SP", "M_PI", "M_MRC", "M_IRB", "M_DEP1", "M_DEP2",
-			"M_DEP3", "M_PLL", "M_UNCONS_INVEST", "M_SRWA_12F", "M_SRWA_12C", "M_SRWA_12H", "M_AIDP", "M_LIQ");
-	System.out.println(todate);
+		int errorRowNum = 1;
 
-	SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
-	Date date = inputFormat.parse(todate);
+		for (String report : reportList) {
+			try {
+				byte[] fileData = generateReport(report, filename, asondate, fromdate, formattedDate, currency, type,
+						version);
 
-//2️⃣ Format to required pattern (Date → String)
-	SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
-	String formattedDate = outputFormat.format(date);
-//Workbook for consolidated report
-	XSSFWorkbook workbook = new XSSFWorkbook();
-	Sheet errorSheet = workbook.createSheet("Status");
-	Row headerRow = errorSheet.createRow(0);
-	headerRow.createCell(0).setCellValue("Report Name");
-	headerRow.createCell(1).setCellValue("Status");
-	headerRow.createCell(2).setCellValue("Remarks");
+				if (fileData != null && fileData.length > 0) {
+					try (Workbook reportWorkbook = new XSSFWorkbook(new java.io.ByteArrayInputStream(fileData))) {
+						// Copy first sheet from each report into consolidated workbook
+						for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
+							Sheet srcSheet = reportWorkbook.getSheetAt(i);
+							Sheet newSheet = workbook.createSheet(report + "_" + srcSheet.getSheetName());
+							copySheet(srcSheet, newSheet);
+						}
 
-	int errorRowNum = 1;
-
-	for (String report : reportList) {
-		try {
-			byte[] fileData = generateReport(report, filename, asondate, fromdate, formattedDate, currency, type,
-					version);
-
-			if (fileData != null && fileData.length > 0) {
-				try (Workbook reportWorkbook = new XSSFWorkbook(new java.io.ByteArrayInputStream(fileData))) {
-//Copy first sheet from each report into consolidated workbook
-					for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
-						Sheet srcSheet = reportWorkbook.getSheetAt(i);
-						Sheet newSheet = workbook.createSheet(report + "_" + srcSheet.getSheetName());
-						copySheet(srcSheet, newSheet);
+						// Log success
+						Row successRow = errorSheet.createRow(errorRowNum++);
+						successRow.createCell(0).setCellValue(report);
+						successRow.createCell(1).setCellValue("SUCCESS");
+						successRow.createCell(2).setCellValue("Report added successfully");
 					}
-
-//Log success
-					Row successRow = errorSheet.createRow(errorRowNum++);
-					successRow.createCell(0).setCellValue(report);
-					successRow.createCell(1).setCellValue("SUCCESS");
-					successRow.createCell(2).setCellValue("Report added successfully");
+				} else {
+					// Log missing data
+					Row failRow = errorSheet.createRow(errorRowNum++);
+					failRow.createCell(0).setCellValue(report);
+					failRow.createCell(1).setCellValue("FAILED");
+					failRow.createCell(2).setCellValue("No data found");
 				}
-			} else {
-//Log missing data
+
+			} catch (Exception e) {
 				Row failRow = errorSheet.createRow(errorRowNum++);
 				failRow.createCell(0).setCellValue(report);
 				failRow.createCell(1).setCellValue("FAILED");
-				failRow.createCell(2).setCellValue("No data found");
+				failRow.createCell(2).setCellValue("Error: " + e.getMessage());
+				e.printStackTrace();
 			}
+		}
 
+		// Finalize workbook
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+			workbook.write(bos);
+			workbook.close();
+			return bos.toByteArray();
 		} catch (Exception e) {
-			Row failRow = errorSheet.createRow(errorRowNum++);
-			failRow.createCell(0).setCellValue(report);
-			failRow.createCell(1).setCellValue("FAILED");
-			failRow.createCell(2).setCellValue("Error: " + e.getMessage());
 			e.printStackTrace();
 		}
+
+		return null;
 	}
 
-//Finalize workbook
-	try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-		workbook.write(bos);
-		workbook.close();
-		return bos.toByteArray();
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
+	private byte[] generateReport(String reportName, String filename, String asondate, String fromdate, String todate,
+			String currency, String type, String version) {
 
-	return null;
-}
+		try {
+			// ✅ Convert date formats if needed (example: 30/09/2025 → 30-Sep-2025)
+			SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+			SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
 
-private byte[] generateReport(String reportName, String filename, String asondate, String fromdate, String todate,
-		String currency, String type, String version) {
+			if (fromdate != null && !fromdate.isEmpty()) {
+				fromdate = outputFormat.format(inputFormat.parse(fromdate));
+			}
+			if (todate != null && !todate.isEmpty()) {
+				todate = outputFormat.format(inputFormat.parse(todate));
+			}
+			if (asondate != null && !asondate.isEmpty()) {
+				asondate = outputFormat.format(inputFormat.parse(asondate));
+			}
 
-	try {
-//✅ Convert date formats if needed (example: 30/09/2025 → 30-Sep-2025)
-		SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
-		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
+			System.out.println("Service: Generating report for " + reportName);
+			System.out.println("Converted Dates: From " + fromdate + " To " + todate + " Ason " + asondate);
 
-		if (fromdate != null && !fromdate.isEmpty()) {
-			fromdate = outputFormat.format(inputFormat.parse(fromdate));
-		}
-		if (todate != null && !todate.isEmpty()) {
-			todate = outputFormat.format(inputFormat.parse(todate));
-		}
-		if (asondate != null && !asondate.isEmpty()) {
-			asondate = outputFormat.format(inputFormat.parse(asondate));
-		}
+			// ✅ Switch case for all reports
+			switch (reportName) {
+				case "M_SFINP2":
+					return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportName, fromdate, todate,
+							currency,
+							"DETAIL", type, version);
 
-		System.out.println("Service: Generating report for " + reportName);
-		System.out.println("Converted Dates: From " + fromdate + " To " + todate + " Ason " + asondate);
+				case "M_SFINP1":
+					return BRRS_M_SFINP1_reportservice.getM_SFINP1Excel(filename, reportName, fromdate, todate,
+							currency,
+							"DETAIL", type, version);
 
-//✅ Switch case for all reports
-		switch (reportName) {
-		case "M_SFINP2":
-			return BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportName, fromdate, todate, currency,
-					"DETAIL", type, version);
+				case "M_LA1":
+					return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportName, fromdate, todate, currency,
+							"DETAIL", type, version);
 
-		case "M_SFINP1":
-			return BRRS_M_SFINP1_reportservice.getM_SFINP1Excel(filename, reportName, fromdate, todate, currency,
-					"DETAIL", type, version);
+				case "M_LA2":
+					return BRRS_M_LA2_reportservice.BRRS_M_LA2Excel(filename, reportName, fromdate, todate, currency,
+							"DETAIL", type, version);
 
-		case "M_LA1":
-			return BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportName, fromdate, todate, currency,
-					"DETAIL", type, version);
+				case "M_LA3":
+					return BRRS_M_LA3_reportservice.BRRS_M_LA3Excel(filename, reportName, fromdate, todate, currency,
+							"DETAIL", type, version);
 
-		case "M_LA2":
-			return BRRS_M_LA2_reportservice.BRRS_M_LA2Excel(filename, reportName, fromdate, todate, currency,
-					"DETAIL", type, version);
+				case "M_LA4":
+					return BRRS_M_LA4_reportservice.BRRS_M_LA4Excel(filename, reportName, fromdate, todate, currency,
+							"DETAIL", type, version);
 
-		case "M_LA3":
-			return BRRS_M_LA3_reportservice.BRRS_M_LA3Excel(filename, reportName, fromdate, todate, currency,
-					"DETAIL", type, version);
+				case "M_CA4":
+					return BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportName, fromdate, todate, currency,
+							"DETAIL", type, version);
 
-		case "M_LA4":
-			return BRRS_M_LA4_reportservice.BRRS_M_LA4Excel(filename, reportName, fromdate, todate, currency,
-					"DETAIL", type, version);
+				// 🟩 Add more report cases as needed...
+				// case "M_SOMETHING":
+				// return someService.someExcel(...);
 
-		case "M_CA4":
-			return BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportName, fromdate, todate, currency,
-					"DETAIL", type, version);
+				default:
+					System.out.println("Service: Unknown report name: " + reportName);
+					return null;
+			}
 
-//🟩 Add more report cases as needed...
-//case "M_SOMETHING":
-// return someService.someExcel(...);
+		} catch (ParseException pe) {
+			System.err.println("Date parse error: " + pe.getMessage());
+			pe.printStackTrace();
+			return null;
 
-		default:
-			System.out.println("Service: Unknown report name: " + reportName);
+		} catch (FileNotFoundException fe) {
+			System.err.println("Template file not found: " + fe.getMessage());
+			fe.printStackTrace();
+			return null;
+
+		} catch (Exception e) {
+			System.err.println("Error generating report: " + e.getMessage());
+			e.printStackTrace();
 			return null;
 		}
-
-	} catch (ParseException pe) {
-		System.err.println("Date parse error: " + pe.getMessage());
-		pe.printStackTrace();
-		return null;
-
-	} catch (FileNotFoundException fe) {
-		System.err.println("Template file not found: " + fe.getMessage());
-		fe.printStackTrace();
-		return null;
-
-	} catch (Exception e) {
-		System.err.println("Error generating report: " + e.getMessage());
-		e.printStackTrace();
-		return null;
 	}
-}
 
-private void copySheet(Sheet src, Sheet dest) {
-	if (src == null || dest == null)
-		return;
+	private void copySheet(Sheet src, Sheet dest) {
+		if (src == null || dest == null)
+			return;
 
-	int rowCount = 0;
-	for (Row srcRow : src) {
-		if (srcRow == null)
-			continue;
-		Row destRow = dest.createRow(rowCount++);
-		short lastCell = srcRow.getLastCellNum();
-		if (lastCell < 0)
-			continue; // no cells in this row
-
-		for (int i = 0; i < lastCell; i++) {
-			Cell srcCell = srcRow.getCell(i);
-			if (srcCell == null)
+		int rowCount = 0;
+		for (Row srcRow : src) {
+			if (srcRow == null)
 				continue;
+			Row destRow = dest.createRow(rowCount++);
+			short lastCell = srcRow.getLastCellNum();
+			if (lastCell < 0)
+				continue; // no cells in this row
 
-			Cell destCell = destRow.createCell(i);
+			for (int i = 0; i < lastCell; i++) {
+				Cell srcCell = srcRow.getCell(i);
+				if (srcCell == null)
+					continue;
 
-			// Copy cell type and value
-			CellType cellType = srcCell.getCellType();
-			if (cellType == null) {
-				destCell.setCellValue(""); // fallback
-				continue;
-			}
+				Cell destCell = destRow.createCell(i);
 
-			switch (cellType) {
-			case STRING:
-				destCell.setCellValue(srcCell.getStringCellValue());
-				break;
-			case NUMERIC:
-				if (DateUtil.isCellDateFormatted(srcCell)) {
-					destCell.setCellValue(srcCell.getDateCellValue());
-					// Optionally copy data format:
-					CellStyle newStyle = dest.getWorkbook().createCellStyle();
-					newStyle.cloneStyleFrom(srcCell.getCellStyle());
-					destCell.setCellStyle(newStyle);
-				} else {
-					destCell.setCellValue(srcCell.getNumericCellValue());
+				// Copy cell type and value
+				CellType cellType = srcCell.getCellType();
+				if (cellType == null) {
+					destCell.setCellValue(""); // fallback
+					continue;
 				}
-				break;
-			case BOOLEAN:
-				destCell.setCellValue(srcCell.getBooleanCellValue());
-				break;
-			case FORMULA:
-				// copy formula (note: formula may refer to sheet names that change)
-				destCell.setCellFormula(srcCell.getCellFormula());
-				break;
-			case BLANK:
-				destCell.setBlank();
-				break;
-			case ERROR:
-				destCell.setCellErrorValue(srcCell.getErrorCellValue());
-				break;
-			default:
-				// fallback to string representation
-				destCell.setCellValue(srcCell.toString());
-			}
 
-			// Optionally copy style (recommended if you want formatting preserved)
-			CellStyle srcStyle = srcCell.getCellStyle();
-			if (srcStyle != null) {
-				try {
-					CellStyle newStyle = dest.getWorkbook().createCellStyle();
-					newStyle.cloneStyleFrom(srcStyle);
-					destCell.setCellStyle(newStyle);
+				switch (cellType) {
+					case STRING:
+						destCell.setCellValue(srcCell.getStringCellValue());
+						break;
+					case NUMERIC:
+						if (DateUtil.isCellDateFormatted(srcCell)) {
+							destCell.setCellValue(srcCell.getDateCellValue());
+							// Optionally copy data format:
+							CellStyle newStyle = dest.getWorkbook().createCellStyle();
+							newStyle.cloneStyleFrom(srcCell.getCellStyle());
+							destCell.setCellStyle(newStyle);
+						} else {
+							destCell.setCellValue(srcCell.getNumericCellValue());
+						}
+						break;
+					case BOOLEAN:
+						destCell.setCellValue(srcCell.getBooleanCellValue());
+						break;
+					case FORMULA:
+						// copy formula (note: formula may refer to sheet names that change)
+						destCell.setCellFormula(srcCell.getCellFormula());
+						break;
+					case BLANK:
+						destCell.setBlank();
+						break;
+					case ERROR:
+						destCell.setCellErrorValue(srcCell.getErrorCellValue());
+						break;
+					default:
+						// fallback to string representation
+						destCell.setCellValue(srcCell.toString());
+				}
+
+				// Optionally copy style (recommended if you want formatting preserved)
+				CellStyle srcStyle = srcCell.getCellStyle();
+				if (srcStyle != null) {
+					try {
+						CellStyle newStyle = dest.getWorkbook().createCellStyle();
+						newStyle.cloneStyleFrom(srcStyle);
+						destCell.setCellStyle(newStyle);
+					} catch (Exception e) {
+						// If style cloning fails, ignore and continue
+					}
+				}
+
+				// Optionally copy comment
+				if (srcCell.getCellComment() != null) {
+					destCell.setCellComment(srcCell.getCellComment());
+				}
+			}
+		}
+
+		// Copy merged regions from src to dest
+		for (int i = 0; i < src.getNumMergedRegions(); i++) {
+			dest.addMergedRegion(src.getMergedRegion(i));
+		}
+
+		// Optionally copy column widths
+		int maxCol = 0;
+		for (Row row : src) {
+			if (row != null && row.getLastCellNum() > maxCol) {
+				maxCol = row.getLastCellNum();
+			}
+		}
+		for (int c = 0; c < maxCol; c++) {
+			dest.setColumnWidth(c, src.getColumnWidth(c));
+		}
+	}
+
+	public byte[] generateConsolidatedExcel(String asondate, String fromdate, String todate,
+			String currency, String type, String version) {
+		logger.info("Starting consolidated Excel generation for all 70 reports.");
+
+		// Create final workbook
+		try (Workbook consolidatedWorkbook = new XSSFWorkbook();
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			// List of all report names (update with all 70)
+			List<String> reportNames = Arrays.asList(
+					"M_LA1", "M_LA2", "M_LA3", "M_LA4",
+					"M_CA4", "M_PLL", "M_DEP3", "M_AIDP", "M_IRB", "M_LIQ"
+			// ... add all remaining report codes
+			);
+
+			for (String reportName : reportNames) {
+				logger.info("Processing report: {}", reportName);
+
+				// Generate individual report byte[]
+				byte[] reportBytes = generateReport(reportName, reportName, asondate, fromdate, todate, currency, type,
+						version);
+
+				if (reportBytes == null || reportBytes.length == 0) {
+					logger.warn("Skipping {} — no data found or generation failed.", reportName);
+					continue;
+				}
+
+				// Convert the byte[] to workbook
+				try (InputStream in = new ByteArrayInputStream(reportBytes);
+						Workbook tempWorkbook = WorkbookFactory.create(in)) {
+
+					// Get first sheet from this workbook
+					Sheet srcSheet = tempWorkbook.getSheetAt(0);
+
+					// Create new sheet in the main workbook
+					Sheet destSheet = consolidatedWorkbook.createSheet(reportName);
+
+					// Copy content
+					copySheetContent(srcSheet, destSheet);
 				} catch (Exception e) {
-					// If style cloning fails, ignore and continue
+					logger.error("Error processing report: {}", reportName, e);
 				}
 			}
 
-			// Optionally copy comment
-			if (srcCell.getCellComment() != null) {
-				destCell.setCellComment(srcCell.getCellComment());
-			}
-		}
-	}
+			// Write the final consolidated workbook
+			consolidatedWorkbook.write(out);
+			logger.info("All reports successfully consolidated into one Excel file.");
 
-	// Copy merged regions from src to dest
-	for (int i = 0; i < src.getNumMergedRegions(); i++) {
-		dest.addMergedRegion(src.getMergedRegion(i));
-	}
-
-	// Optionally copy column widths
-	int maxCol = 0;
-	for (Row row : src) {
-		if (row != null && row.getLastCellNum() > maxCol) {
-			maxCol = row.getLastCellNum();
-		}
-	}
-	for (int c = 0; c < maxCol; c++) {
-		dest.setColumnWidth(c, src.getColumnWidth(c));
-	}
-}
-
-
-
-
-public byte[] generateConsolidatedExcel(String asondate, String fromdate, String todate,
-        String currency, String type, String version) {
-logger.info("Starting consolidated Excel generation for all 70 reports.");
-
-//Create final workbook
-try (Workbook consolidatedWorkbook = new XSSFWorkbook();
-ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-
-//List of all report names (update with all 70)
-List<String> reportNames = Arrays.asList(
-"M_LA1", "M_LA2", "M_LA3", "M_LA4",
-"M_CA4", "M_PLL", "M_DEP3", "M_AIDP", "M_IRB", "M_LIQ"
-//... add all remaining report codes
-);
-
-for (String reportName : reportNames) {
-logger.info("Processing report: {}", reportName);
-
-//Generate individual report byte[]
-byte[] reportBytes = generateReport(reportName, reportName, asondate, fromdate, todate, currency, type, version);
-
-if (reportBytes == null || reportBytes.length == 0) {
-logger.warn("Skipping {} — no data found or generation failed.", reportName);
-continue;
-}
-
-//Convert the byte[] to workbook
-try (InputStream in = new ByteArrayInputStream(reportBytes);
-Workbook tempWorkbook = WorkbookFactory.create(in)) {
-
-//Get first sheet from this workbook
-Sheet srcSheet = tempWorkbook.getSheetAt(0);
-
-//Create new sheet in the main workbook
-Sheet destSheet = consolidatedWorkbook.createSheet(reportName);
-
-//Copy content
-copySheetContent(srcSheet, destSheet);
-} catch (Exception e) {
-logger.error("Error processing report: {}", reportName, e);
-}
-}
-
-//Write the final consolidated workbook
-consolidatedWorkbook.write(out);
-logger.info("All reports successfully consolidated into one Excel file.");
-
-return out.toByteArray();
-
-} catch (Exception e) {
-logger.error("Error generating consolidated Excel.", e);
-return null;
-}
-}
-
-
-
-private void copySheetContent(Sheet src, Sheet dest) {
-    int rowCount = 0;
-
-    for (Row srcRow : src) {
-        Row destRow = dest.createRow(rowCount++);
-
-        if (srcRow == null) continue;
-
-        for (int i = 0; i < srcRow.getLastCellNum(); i++) {
-            Cell srcCell = srcRow.getCell(i);
-            if (srcCell == null) continue;
-
-            Cell destCell = destRow.createCell(i);
-
-            // Copy style if needed
-            if (srcCell.getCellStyle() != null) {
-                destCell.setCellStyle(srcCell.getCellStyle());
-            }
-
-            // ✅ Safe switch for Apache POI 4.x / 5.x
-            switch (srcCell.getCellType()) {
-                case STRING:
-                    destCell.setCellValue(srcCell.getRichStringCellValue().getString());
-                    break;
-
-                case NUMERIC:
-                    if (DateUtil.isCellDateFormatted(srcCell)) {
-                        destCell.setCellValue(srcCell.getDateCellValue());
-                    } else {
-                        destCell.setCellValue(srcCell.getNumericCellValue());
-                    }
-                    break;
-
-                case BOOLEAN:
-                    destCell.setCellValue(srcCell.getBooleanCellValue());
-                    break;
-
-                case FORMULA:
-                    // Copy the formula text directly
-                    destCell.setCellFormula(srcCell.getCellFormula());
-                    break;
-
-                case BLANK:
-                    destCell.setBlank();
-                    break;
-
-                default:
-                    destCell.setCellValue("");
-                    break;
-            }
-        }
-    }
-}
-
-
-public byte[] getPdfDownloadFile(String reportId, String filename, String asondate, String fromdate, String todate,
-		String currency, String subreportid, String secid, String dtltype, String reportingTime,
-		String instancecode, String filter, String type, String version) {
-
-	byte[] pdffile = null;
-
-	switch (reportId) {
-
-	case "M_SFINP1":
-		try {
-			byte[] excelBytes = BRRS_M_SFINP1_reportservice.getM_SFINP1Excel(filename, reportId, fromdate, todate, currency,
-					dtltype, type, version);
-			
-			
-			pdffile = BRRS_M_SFINP1_reportservice.convertExcelBytesToPdf(excelBytes);
+			return out.toByteArray();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error generating consolidated Excel.", e);
+			return null;
 		}
-		break;
 	}
-	return pdffile;
-}
+
+	private void copySheetContent(Sheet src, Sheet dest) {
+		int rowCount = 0;
+
+		for (Row srcRow : src) {
+			Row destRow = dest.createRow(rowCount++);
+
+			if (srcRow == null)
+				continue;
+
+			for (int i = 0; i < srcRow.getLastCellNum(); i++) {
+				Cell srcCell = srcRow.getCell(i);
+				if (srcCell == null)
+					continue;
+
+				Cell destCell = destRow.createCell(i);
+
+				// Copy style if needed
+				if (srcCell.getCellStyle() != null) {
+					destCell.setCellStyle(srcCell.getCellStyle());
+				}
+
+				// ✅ Safe switch for Apache POI 4.x / 5.x
+				switch (srcCell.getCellType()) {
+					case STRING:
+						destCell.setCellValue(srcCell.getRichStringCellValue().getString());
+						break;
+
+					case NUMERIC:
+						if (DateUtil.isCellDateFormatted(srcCell)) {
+							destCell.setCellValue(srcCell.getDateCellValue());
+						} else {
+							destCell.setCellValue(srcCell.getNumericCellValue());
+						}
+						break;
+
+					case BOOLEAN:
+						destCell.setCellValue(srcCell.getBooleanCellValue());
+						break;
+
+					case FORMULA:
+						// Copy the formula text directly
+						destCell.setCellFormula(srcCell.getCellFormula());
+						break;
+
+					case BLANK:
+						destCell.setBlank();
+						break;
+
+					default:
+						destCell.setCellValue("");
+						break;
+				}
+			}
+		}
+	}
+
+	public byte[] getPdfDownloadFile(String reportId, String filename, String asondate, String fromdate, String todate,
+			String currency, String subreportid, String secid, String dtltype, String reportingTime,
+			String instancecode, String filter, String type, String version) {
+
+		byte[] pdffile = null;
+
+		switch (reportId) {
+
+			case "M_SFINP1":
+				try {
+					byte[] excelBytes = BRRS_M_SFINP1_reportservice.getM_SFINP1Excel(filename, reportId, fromdate,
+							todate, currency,
+							dtltype, type, version);
+
+					pdffile = BRRS_M_SFINP1_reportservice.convertExcelBytesToPdf(excelBytes);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+		}
+		return pdffile;
+	}
 
 }

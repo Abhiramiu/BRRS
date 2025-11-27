@@ -1,0 +1,1401 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<!--
+CREATED BY	: GOPIKA
+CREATED ON	: 26.11.2025
+PURPOSE		: BWRBRREPORT
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- CSS -->
+	
+	
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+	<!-- JavaScript -->
+	<!-- jQuery core (required first) -->
+	<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+	<!-- jQuery (required first) -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+	<!-- ✅ jQuery Validation -->
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	<!-- Bootstrap + Others -->
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
+
+		.list-body {
+			padding: 0px;
+		}
+
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+
+		.formline {
+			padding-bottom: 15px;
+		}
+
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
+
+		/* .btn-primary:not (:disabled):not (.disabled).active,
+		.btn-primary:not (:disabled):not (.disabled):active,
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc000000;
+			border-color: #161617;
+		} */
+
+		#finusertb {
+			width: 460px;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+	</style>
+	<style>
+		div span {
+			font-weight: bold;
+			color: white !important;
+		}
+
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
+
+		.card-header h5 {
+			font-size: 22px;
+			color: #fff;
+			font-weight: 600;
+		}
+
+		.nav-tabs .nav-link {
+			font-weight: 500;
+			border: 1px solid #dee2e6;
+			border-bottom: none;
+			border-radius: 4px 4px 0 0;
+			background-color: #f1f1f1;
+			margin-right: 5px;
+		}
+
+		.nav-tabs .nav-link.active {
+			background-color: #ffffff;
+			border-color: #dee2e6 #dee2e6 #ffffff;
+		}
+
+		.table-responsive {
+			border: 1px solid #dee2e6;
+			border-radius: 4px;
+		}
+
+		.table-hover tbody tr:hover {
+			background-color: #f3f6f9;
+		}
+
+		thead th {
+			position: sticky;
+			top: 0;
+			background-color: #e9ecf0;
+			z-index: 1;
+		}
+
+		.table td {
+			background-color: #FFFFFF;
+		}
+
+		.card-footer {
+			padding: 10px;
+			border-top: 1px solid #ccc;
+		}
+
+		.btn-xs {
+			padding: 4px 12px;
+			font-size: 14px;
+			border-radius: 4px;
+		}
+
+		#BRRSvalidation th,
+		#usertable td {
+			vertical-align: middle;
+			text-align: left;
+			font-size: 16px;
+			font-family: Arial;
+		}
+
+		.fa-edit:hover {
+			color: #28a745;
+			transform: scale(1.1);
+		}
+
+		td {
+			border: 1px solid rgb(0, 164, 166);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	</style>
+	<style>
+		.form-group {
+			position: relative;
+			margin-bottom: 1.5rem;
+		}
+
+		.form-control {
+			width: 100%;
+			border: 2px solid #ccc;
+			border-radius: 8px;
+			font-size: 1rem;
+			outline: none;
+			background: transparent;
+			transition: border-color 0.3s ease, padding-top 0.3s ease;
+		}
+
+		.error {
+			color: red;
+			padding-top: 15px;
+		}
+
+		.form-control:focus {
+			border-color: #007bff;
+		}
+
+		.form-legend {
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			font-size: 1rem;
+			color: #aaa;
+			background: white;
+			padding: 0 5px;
+			pointer-events: none;
+			transition: 0.3s ease;
+		}
+
+		/* When input or select is focused or has a value, move the label up */
+		/* .form-control:focus~.form-legend,
+		.form-control:not (:placeholder-shown)~.form-legend {
+			top: -8px;
+			font-size: 1rem;
+			color: #007bff;
+		} */
+
+		/* Hover effect when the input/select is focused 
+		.form-control:focus:hover~.form-legend {
+			color: #0056b3;
+			 Darker shade of blue on hover
+		} */
+
+		/* Ensure the label returns to the normal color after focus or hover is removed */
+		/* .form-control:not (:focus)~.form-legend {
+			color: #aaa; */
+			/* Normal label color */
+		/* } */
+	</style>
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
+
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
+
+		.underline {
+			text-decoration: underline;
+			color: #08a6f1;
+			cursor: pointer;
+		}
+
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
+
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
+
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
+
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+
+		.white-text span {
+			color: white !important;
+		}
+
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
+
+		.table-bordered td,
+		.table-bordered th {
+			border: 1px solid #000 !important;
+		}
+	</style>
+	<script th:inline="javascript">
+		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+		});
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
+			$('#loader').modal('hide');
+		});
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard'
+		}
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+
+		//to fetch summary from the database - called from the summary button
+		function showdetails() {
+			 alert("Details page not available for Manual Report");
+		}
+
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/			location.href = Callurl;
+		}
+
+
+	</script>
+	<script>
+		function activateTab(tabName) {
+			// Remove 'active' from all buttons
+			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			// Add 'active' to selected button
+			if (tabName === 'summary') {
+				document.getElementById('custom-tab-btnSummary').classList.add('active');
+			} else if (tabName === 'Details') {
+				document.getElementById('custom-tab-btnDetails').classList.add('active');
+			}
+		}
+		window.onload = function () {
+			/* setTimeout(function() {
+				var selectedTab = document.getElementById("selectedTab").value;
+				alert(selectedTab);
+				activateTab(selectedTab);
+			}, 10000); */ // 10,000 milliseconds = 10 seconds
+
+			var selectedTab = document.getElementById("selectedTab").value;
+			activateTab(selectedTab);
+		};
+		function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+
+			$('#loader').modal('show');
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&type=' + type +
+					'&version=' + version +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+
+		function editRecord() {
+			showResultModal('Alert', 'Development in progress');
+
+		}
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+	</script>
+	
+	
+		
+	
+	
+	
+	
+	
+	<script>
+	// Show Modify (enable inputs & dropdowns)
+function showmodify(btn) {
+    $(".Show_input").removeAttr("readonly").removeAttr("disabled");
+
+//     for (let i = 10; i <= 17; i++) {
+//         $("#R" + i + "_TOTAL_LONG_POS_TEXT").hide();
+//         $("#R" + i + "_TOTAL_SHORT_POS_TEXT").hide();
+//         $("#R" + i + "_GROSS_OPEN_POS_TEXT").hide();
+//         $("#R" + i + "_CHARGE_BASIS_RISK_TEXT").hide();
+//         $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK_TEXT").hide();
+//         $("#R" + i + "_NET_OPEN_POS_TEXT").hide();
+//         $("#R" + i + "_CHARGE_DIR_RISK_TEXT").hide();   
+//         $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK_TEXT").hide();
+//         $("#R" + i + "_TOTAL_CAPITAL_CHARGE_TEXT").hide();
+        
+//         $("#R" + i + "_TOTAL_LONG_POS").show();
+//         $("#R" + i + "_TOTAL_SHORT_POS").show();
+//         $("#R" + i + "_GROSS_OPEN_POS").show();
+//         $("#R" + i + "_CHARGE_BASIS_RISK").show();
+//         $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").show();
+//         $("#R" + i + "_NET_OPEN_POS").show();
+//         $("#R" + i + "_CHARGE_DIR_RISK").show();
+//         $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").show();
+//         $("#R" + i + "_TOTAL_CAPITAL_CHARGE").show();
+        
+//     }
+    
+    // Toggle buttons
+    $("#submitButton, #btnBack_edit").show();
+    $("#btnBack").hide();
+    
+    // Show Cancel button only when Modify is clicked
+    $("#cancelRecord").show();
+    
+    // Optionally hide the clicked Modify button
+    $(btn).hide();
+}
+
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+       //  for (let i = 11; i <= 50; i++) {
+       //      $("#R" + i + "_TOTAL_LONG_POS_TEXT").show();
+       //  $("#R" + i + "_TOTAL_SHORT_POS_TEXT").show();
+       //  $("#R" + i + "_GROSS_OPEN_POS_TEXT").show();
+       //  $("#R" + i + "_CHARGE_BASIS_RISK_TEXT").show();
+       //  $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK_TEXT").show();
+       //  $("#R" + i + "_NET_OPEN_POS_TEXT").show();
+       //  $("#R" + i + "_CHARGE_DIR_RISK_TEXT").show();   
+       //  $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK_TEXT").show();
+       //  $("#R" + i + "_TOTAL_CAPITAL_CHARGE_TEXT").show();
+        
+       //  $("#R" + i + "_TOTAL_LONG_POS").hide();
+       //  $("#R" + i + "_TOTAL_SHORT_POS").hide();
+       //  $("#R" + i + "_GROSS_OPEN_POS").hide();
+       //  $("#R" + i + "_CHARGE_BASIS_RISK").hide();
+       //  $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").hide();
+       //  $("#R" + i + "_NET_OPEN_POS").hide();
+       //  $("#R" + i + "_CHARGE_DIR_RISK").hide();
+       //  $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").hide();
+       //  $("#R" + i + "_TOTAL_CAPITAL_CHARGE").hide();
+       //  }
+
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
+
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+}
+
+
+	
+
+	</script>
+	
+	<SCRIPT>
+	
+	function calculateR19Totals() {
+	    let totalP = 0;
+	    let totalNP = 0;
+	    let totalSP = 0;
+	    
+
+	    for (let i = 13; i <= 18; i++) {
+	        // Get numeric values, remove commas
+	        let LVal = parseFloat($("#R" + i + "_PERFORMING_EXPOSURE").val().replace(/,/g, "")) || 0;
+	        let NPVal = parseFloat($("#R" + i + "_NON_PERFORMING").val().replace(/,/g, "")) || 0;
+	        let SPVal = parseFloat($("#R" + i + "_SPECIFIC_PROV").val().replace(/,/g, "")) || 0;
+	        
+
+	        totalP += LVal;
+	        totalNP += NPVal;
+	        totalSP += SPVal;
+	        
+	    }
+
+	    // Set totals with 2 decimal formatting
+	    $("#R19_PERFORMING_EXPOSURE").val(
+	        totalP.toLocaleString('en-IN')
+	    );
+	    $("#R19_NON_PERFORMING").val(
+	        totalNP.toLocaleString('en-IN')
+	    );
+	    $("#R19_SPECIFIC_PROV").val(
+	        totalSP.toLocaleString('en-IN')
+	    );
+	    
+	}
+
+	
+function calculateR13Totals() {
+	    let NPL = 0;
+	  
+	    for (let i = 13; i <= 17; i++) {
+
+	        // Get numeric values, remove commas
+	        let ProvVal = parseFloat($("#R" + i + "_SPECIFIC_PROV").val().replace(/,/g, "")) || 0;
+	        let NPVal = parseFloat($("#R" + i + "_NON_PERFORMING").val().replace(/,/g, "")) || 0;
+
+	        // NPL = ProvVal/NPVal * 100 || 0;
+            if(NPVal === 0){
+                NPL = 0;
+            }else{
+	            NPL = ProvVal/NPVal;
+            }
+
+			$("#R"+i+"_UNSECURED_PORTION_NPL").val(
+				NPL.toLocaleString('en-IN')
+			);
+
+			
+	    }
+
+
+            let ProvVal = parseFloat($("#R19_SPECIFIC_PROV").val().replace(/,/g, "")) || 0;
+	        let NPVal = parseFloat($("#R19_NON_PERFORMING").val().replace(/,/g, "")) || 0;
+
+            if(NPVal === 0){
+                NPL = 0;
+            }else{
+	            NPL = ProvVal/NPVal;
+            }
+
+			$("#R19_UNSECURED_PORTION_NPL").val(
+				NPL.toLocaleString('en-IN')
+			);
+
+
+
+	    
+	}
+
+
+
+
+	   
+
+	// Call on page load
+	$(document).ready(function() {
+	    calculateR19Totals();	
+        calculateR13Totals();
+		
+	    for (let i = 13; i <= 18; i++) {
+	        $("#R" + i + "_PERFORMING_EXPOSURE, " +
+			"#R" + i + "_NON_PERFORMING, " +
+			"#R" + i + "_SPECIFIC_PROV").on("input", function() {
+	            calculateR19Totals();
+                
+	        });
+	    }
+
+		 for (let i = 13; i <= 18; i++) {
+	        $("#R" + i + "_PERFORMING_EXPOSURE, " +
+			"#R" + i + "_NON_PERFORMING, " +
+			"#R" + i + "_SPECIFIC_PROV").on("input", function() {
+	            calculateR13Totals();
+	        });
+	    }
+	});
+
+
+</SCRIPT>
+
+
+	<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
+	    setTimeout(function () {
+	        location.reload();
+	    }, 300);
+	}
+
+
+
+	function fileuploads(btn) {
+
+    var asondate = btn.getAttribute("data-todate");
+
+    // Show Loader
+    $('#loader').modal('show');
+
+    // Recalculate totals
+    calculateR19Totals();
+    calculateR13Totals();
+
+    // Remove commas from text inputs
+    $("#fileupload input[type='text']").each(function () {
+        var val = $(this).val();
+        if (val && val.includes(",")) {
+            $(this).val(val.replace(/,/g, ''));
+        }
+    });
+
+    // Validate form
+    if (!$("#fileupload").valid()) {
+        $('#loader').modal('hide');
+        return;
+    }
+
+    // MAIN FormData collection
+    const formData = new FormData();
+    formData.append("asondate", asondate);
+
+    // Append all form fields
+    $("#fileupload")
+        .find(':input[name]')
+        .each(function () {
+            formData.append($(this).attr('name'), $(this).val());
+        });
+
+    // Detect type ("RESUB" or normal)
+    let type = btn.getAttribute("data-type");  // <-- Ensure button has data-type
+
+    // Decide API endpoint
+    let apiUrl = './updateSRWA12EAll';
+    if (type && type.toUpperCase() === 'RESUB') {
+        apiUrl = './UpdateM_SRWA_12E_ReSub';
+    }
+
+    // Send AJAX request
+    $.ajax({
+        url: apiUrl,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'text',
+
+        success: function (response) {
+            $("#resultModalLabel").text("BRRS");
+            $("#resultModalBody").text(response);
+            $("#resultModal").modal("show");
+
+            // Redirect for resubmission
+            if (response.includes("Resubmission Updated Successfully")) {
+                setTimeout(function () {
+                    if (document.referrer && document.referrer !== '') {
+                        window.location.href = document.referrer;
+                    } else {
+                        window.history.back();
+                    }
+                }, 2000);
+            }
+        },
+
+        error: function (jqXHR) {
+            $("#resultModalLabel").text("Error");
+            $("#resultModalBody").text("Update failed: " + jqXHR.responseText);
+            $("#resultModal").modal("show");
+        },
+
+        complete: function () {
+            $('#loader').modal('hide');
+        }
+    });
+}
+
+	</script>
+</head>
+<title>BRRS</title>
+
+<body>
+	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+			<div th:insert="HeaderMenu :: header"></div>
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
+							Monthly Schedule M-SRWA 12e - (LTV): Loan to Value Disclosure</h5>
+					</div>
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
+							Date: <span th:text="${asondate}">2025-07-04</span>
+						</span>
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+							
+						
+<!-- Modify button -->
+<!-- <button type="button" class="custom-tab-btn"
+        onclick="showmodify(this);"
+        title="Click to EDIT Records"
+        th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+        id="addRecord">Modify</button> -->
+
+			<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
+							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
+							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
+							id="addRecord">
+							Modify
+						</button>
+
+
+<!-- Cancel button (hidden initially) -->
+<button type="button" class="custom-tab-btn"
+        title="Cancel editing"
+        id="cancelRecord"
+        onclick="cancelModify();"
+        style="display: none;">Cancel</button>
+
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+                   				 data-asondate=${asondate},
+                   				 data-fromdate=${fromdate},
+                    				 data-todate=${todate},
+                    				 data-currency=${currency}, 
+                    				 data-dtltype=${dtltype},
+                    				 data-filename='M_SRWA12e.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+						
+						
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+									data-currency=${currency},  
+												data-dtltype=${dtltype}, 
+								    data-filename='M_SRWA_12EDetail',
+									data-type=${type},
+												data-version=${version}
+								  ">
+							<i class="fa fa-download"></i>
+						</button>
+
+
+					</div>
+					
+				</div>
+<div th:if="${displaymode == 'summary'}">
+       <div class="row">
+              <div class="col-sm-12">
+              <form action="#" method="POST" id="fileupload">
+                     <div class="table-wrapper table-responsive scrollable-table-container"
+                            style="border-right: 1px solid #000000; ">
+              <table
+                     class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+                     id="reports">
+              <thead class="thead-light">
+                    <tr style="background-color: #D8D8D8;">
+                            <th style="text-align: left; padding-left: 10px;background-color: #D8D8D8; " rowspan="2">Loan To Value (LTV)</th>
+                            <th style="text-align: center; padding-left: 20px;background-color: #D8D8D8;" colspan="4">Residential Mortgages</th>
+                    </tr>
+                    <tr style="background-color: #D8D8D8;">
+                            <th style="text-align: right;background-color: #D8D8D8;  ">Performing Exposure</th>
+                            <th style="text-align: right;background-color: #D8D8D8; ">Non-Performing Exposure</th>
+                            <th style="text-align: right;background-color: #D8D8D8;  ">Specific Provisions</th>
+                            <th style="text-align: right;background-color: #D8D8D8;">Specific Provisions to Unsecured Portion of NPL (%)**</th>
+                    </tr>
+
+                            
+              </thead>
+		<tbody id="entity" th:each="report: ${reportsummary}" style="font-family: Arial;">
+
+<!-- R13 ROW -->
+
+<tr>
+
+     <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+			   th:value="'<60%'"id="R13_PRODUCT"
+               name="R13_PRODUCT"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: center;"
+               readonly />
+    </td>
+
+    <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+			   th:value="${report.R13_PERFORMING_EXPOSURE != null ? #numbers.formatDecimal(report.R13_PERFORMING_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R13_PERFORMING_EXPOSURE"
+               name="R13_PERFORMING_EXPOSURE"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+			   th:value="${report.R13_NON_PERFORMING != null ? #numbers.formatDecimal(report.R13_NON_PERFORMING, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R13_NON_PERFORMING"
+               name="R13_NON_PERFORMING"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+			   th:value="${report.R13_SPECIFIC_PROV != null ? #numbers.formatDecimal(report.R13_SPECIFIC_PROV, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R13_SPECIFIC_PROV"
+               name="R13_SPECIFIC_PROV"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+    <input class="display-input Show_input"
+           type="text"
+           id="R13_UNSECURED_PORTION_NPL"
+           name="R13_UNSECURED_PORTION_NPL"
+           style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+</tr>
+
+
+<!-- R14 ROW -->
+<tr>
+         <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+			   th:value="'60%to<70%'"id="R14_PRODUCT"
+               name="R14_PRODUCT"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: center;"
+               readonly />
+    </td>
+
+    <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R14_PERFORMING_EXPOSURE != null ? #numbers.formatDecimal(report.R14_PERFORMING_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R14_PERFORMING_EXPOSURE"
+               name="R14_PERFORMING_EXPOSURE"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R14_NON_PERFORMING != null ? #numbers.formatDecimal(report.R14_NON_PERFORMING, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R14_NON_PERFORMING"
+               name="R14_NON_PERFORMING"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW14" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R14_SPECIFIC_PROV != null ? #numbers.formatDecimal(report.R14_SPECIFIC_PROV, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R14_SPECIFIC_PROV"
+               name="R14_SPECIFIC_PROV"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW14" style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               id="R14_UNSECURED_PORTION_NPL"
+               name="R14_UNSECURED_PORTION_NPL"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<!-- R15 ROW -->
+<tr>
+         <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+			   th:value="'70%to<80%'"id="R15_PRODUCT"
+               name="R15_PRODUCT"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: center;"
+               readonly />
+    </td>
+
+    <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R15_PERFORMING_EXPOSURE != null ? #numbers.formatDecimal(report.R15_PERFORMING_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R15_PERFORMING_EXPOSURE"
+               name="R15_PERFORMING_EXPOSURE"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R15_NON_PERFORMING != null ? #numbers.formatDecimal(report.R15_NON_PERFORMING, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R15_NON_PERFORMING"
+               name="R15_NON_PERFORMING"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW15" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R15_SPECIFIC_PROV != null ? #numbers.formatDecimal(report.R15_SPECIFIC_PROV, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R15_SPECIFIC_PROV"
+               name="R15_SPECIFIC_PROV"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW15" style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               id="R15_UNSECURED_PORTION_NPL"
+               name="R15_UNSECURED_PORTION_NPL"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<!-- R16 ROW -->
+<tr>
+         <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+			   th:value="'70%to<80%'"id="R13_PRODUCT"
+               name="R13_PRODUCT"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: center;"
+               readonly />
+    </td>
+
+    <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R16_PERFORMING_EXPOSURE != null ? #numbers.formatDecimal(report.R16_PERFORMING_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R16_PERFORMING_EXPOSURE"
+               name="R16_PERFORMING_EXPOSURE"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R16_NON_PERFORMING != null ? #numbers.formatDecimal(report.R16_NON_PERFORMING, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R16_NON_PERFORMING"
+               name="R16_NON_PERFORMING"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW16" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R16_SPECIFIC_PROV != null ? #numbers.formatDecimal(report.R16_SPECIFIC_PROV, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R16_SPECIFIC_PROV"
+               name="R16_SPECIFIC_PROV"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW16" style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               id="R16_UNSECURED_PORTION_NPL"
+               name="R16_UNSECURED_PORTION_NPL"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<!-- R17 ROW -->
+<tr>
+         <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+			   th:value="'above 90%'"id="R17_PRODUCT"
+               name="R17_PRODUCT"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: center;"
+               readonly />
+    </td>
+
+    <td id="ROW17" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R17_PERFORMING_EXPOSURE != null ? #numbers.formatDecimal(report.R17_PERFORMING_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R17_PERFORMING_EXPOSURE"
+               name="R17_PERFORMING_EXPOSURE"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW17" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R17_NON_PERFORMING != null ? #numbers.formatDecimal(report.R17_NON_PERFORMING, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R17_NON_PERFORMING"
+               name="R17_NON_PERFORMING"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW17" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R17_SPECIFIC_PROV != null ? #numbers.formatDecimal(report.R17_SPECIFIC_PROV, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R17_SPECIFIC_PROV"
+               name="R17_SPECIFIC_PROV"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW17" style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               id="R17_UNSECURED_PORTION_NPL"
+               name="R17_UNSECURED_PORTION_NPL"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<!-- R18 ROW -->
+<tr>
+    <td style="padding-left: 20px" th:text="${report.R18_PRODUCT}"></td>
+
+    <td id="ROW18" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R18_PERFORMING_EXPOSURE != null ? #numbers.formatDecimal(report.R18_PERFORMING_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R18_PERFORMING_EXPOSURE"
+               name="R18_PERFORMING_EXPOSURE"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW18" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R18_NON_PERFORMING != null ? #numbers.formatDecimal(report.R18_NON_PERFORMING, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R18_NON_PERFORMING"
+               name="R18_NON_PERFORMING"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW18" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               th:value="${report.R18_SPECIFIC_PROV != null ? #numbers.formatDecimal(report.R18_SPECIFIC_PROV, 1, 'COMMA', 0, 'POINT') : '0'}"
+               id="R18_SPECIFIC_PROV"
+               name="R18_SPECIFIC_PROV"
+               style="background-color: #FFFFFF; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW18" style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               id="R18_UNSECURED_PORTION_NPL"
+               name="R18_UNSECURED_PORTION_NPL"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+<!-- R19 ROW -->
+<tr>
+         <td id="ROW13" style="padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+			   th:value="'Total '"id="R19_PRODUCT"
+               name="R19_PRODUCT"
+               style="background-color: #FFFFFF;font-weight: bold; width: 350px; height: 28px; border-color: transparent; text-align: center;"
+               readonly />
+    </td>
+
+    <td id="ROW19" style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               id="R19_PERFORMING_EXPOSURE"
+               name="R19_PERFORMING_EXPOSURE"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW19" style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               id="R19_NON_PERFORMING"
+               name="R19_NON_PERFORMING"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW19" style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               id="R19_SPECIFIC_PROV"
+               name="R19_SPECIFIC_PROV"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+
+    <td id="ROW19" style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
+        <input class="display-input Show_input"
+               type="text"
+               id="R19_UNSECURED_PORTION_NPL"
+               name="R19_UNSECURED_PORTION_NPL"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               readonly />
+    </td>
+</tr>
+
+
+	</tbody>
+	</table>
+								
+
+
+</div>
+<div style="text-align: center; margin-top: 10px;">
+								
+	<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+										form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
+										onclick="fileuploads(this);" style="display: none;">
+										Submit
+									</button>
+</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	
+	<!-- Custom Cellresult Modal -->
+		<div class="modal fade" id="cellresultModal">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content">
+		      
+		      <!-- Custom header -->
+		      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+		        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+		          Do you want to open the report?
+		        </div>
+		      </div>
+
+		      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+		        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+		          Cancel
+		        </button>
+		        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+		          Yes
+		        </button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+	
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+<!-- <script>
+															  $(document).ready(function () {
+															    $('#BRRSvalidation').DataTable({
+															      "paging": true,
+															      "info": false,       // turn off "Showing x of y"
+															      "searching": false,  // turn off search
+															      "ordering": false,   // turn off ordering
+															      "lengthChange": false // hide "Show x entries"
+															    });
+															  });
+	
+														</script> -->
+														
+														<style>
+														  #BRFdet td {
+														    border: 1px solid #000000;
+														    padding: 8px;
+														  }
+
+														  #BRFdet {
+														    border-collapse: collapse;
+														    width: 100%;
+														  }
+														</style>
+														
+<style>
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 590px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #000000;
+	}
+
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
+
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
+
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
+
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
+
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
+</style>
+<style>
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
+
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
+
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
+
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
+
+	.pagination {
+		margin: 0;
+	}
+
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
+
+	.page-link {
+		color: #386276;
+	}
+
+	.page-link:hover {
+		color: #2a4a5c;
+	}
+
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
+</style>
+
+</html>
