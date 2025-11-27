@@ -291,7 +291,80 @@ PURPOSE		: BWRBRREPORT
 			  border-spacing: 0; /* or any spacing value you like */
 		}
 	</style>
+	
+	<style>
+				.header-bar {
+				  display: flex;
+				  align-items: center;
+				  flex-wrap: wrap; /* ✅ allows wrapping on smaller screens */
+				  gap: 10px; /* spacing between elements */
+				  cursor: pointer;
+				}
+
+				/* 🔘 Circular arrow */
+				.left-arrow-circle {
+				  width: 35px;
+				  height: 35px;
+				  border-radius: 50%;
+				  background-color: white;
+				  color: #1f3a93;
+				  display: flex;
+				  align-items: center;
+				  justify-content: center;
+				  margin-right: 10px;
+				}
+
+				.left-arrow-circle i {
+				  font-size: 18px;
+				}
+
+				/* 🏷️ Title */
+				.header-title {
+				  font-family: Arial, sans-serif;
+				  font-size: 20px;
+				  font-weight: bold;
+				  color: white;
+				  margin: 0;
+				  flex-shrink: 0;
+				}
+
+				/* 🚌 Bus display style box */
+				.boards {
+					transform: translateY(6px);
+				  background-color: rgb(107, 122, 143);
+				  color: white;
+				  padding: 5px 45px;
+				  border-radius: 8px;
+				  overflow: hidden;
+				  white-space: nowrap;
+				  flex: 1; /* ✅ makes it take available space dynamically */
+				  min-width: 200px;
+				  box-shadow: 0 0 10px rgb(107, 122, 143);
+				  position: relative;
+				}
+
+				/* ✨ Scrolling animation */
+				.scrolling-text {
+				  display: inline-block;
+				  font-family: "Courier New", monospace;
+				  font-weight: bold;
+				  letter-spacing: 1px;
+				  animation: scroll-left 10s linear infinite;
+				}
+
+				@keyframes scroll-left {
+				  0% {
+				    transform: translateX(100%);
+				  }
+				  100% {
+				    transform: translateX(-100%);
+				  }
+				}
+
+				</style>
+				
 	<script th:inline="javascript">
+	let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -348,6 +421,7 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+			isDetailsModal = true;
 			showResultModal('BRRS', ' Details page not available for Manual Report');
 		}
 
@@ -660,10 +734,10 @@ PURPOSE		: BWRBRREPORT
 			}
 
 			// Set totals with 2 decimal formatting
-			$("#R51_TOT_AMT_LESS_184_DAYS").val(totalLess.toLocaleString('en-IN', {maximumFractionDigits: 0}))
+			$("#R51_TOT_AMT_LESS_184_DAYS").val(totalLess.toLocaleString('en-US', {maximumFractionDigits: 0}))
 
 			$("#R51_TOT_AMT_MORE_184_DAYS").val(
-				totalMore.toLocaleString('en-IN', {maximumFractionDigits: 0}))
+				totalMore.toLocaleString('en-US', {maximumFractionDigits: 0}))
 
 		}
 
@@ -696,10 +770,10 @@ PURPOSE		: BWRBRREPORT
 
 			// Set totals with 2 decimal formatting
 			$("#R96_TOT_AMT_LESS_184_DAYS").val(
-				totalLess.toLocaleString('en-IN', {maximumFractionDigits: 0}))
+				totalLess.toLocaleString('en-US', {maximumFractionDigits: 0}))
 
 			$("#R96_TOT_AMT_MORE_184_DAYS").val(
-				totalMore.toLocaleString('en-IN', {maximumFractionDigits: 0}))
+				totalMore.toLocaleString('en-US', {maximumFractionDigits: 0}))
 
 		}
 
@@ -732,10 +806,10 @@ PURPOSE		: BWRBRREPORT
 
 			// Set totals with 2 decimal formatting
 			$("#R142_TOT_AMT_DEMAND").val(
-				totalLess.toLocaleString('en-IN', {maximumFractionDigits: 0}))
+				totalLess.toLocaleString('en-US', {maximumFractionDigits: 0}))
 
 			$("#R142_TOT_AMT_TIME").val(
-				totalMore.toLocaleString('en-IN', {maximumFractionDigits: 0}))
+				totalMore.toLocaleString('en-US', {maximumFractionDigits: 0}))
 
 		}
 
@@ -768,10 +842,10 @@ PURPOSE		: BWRBRREPORT
 
 			// Set totals with 2 decimal formatting
 			$("#R194_TOT_AMT_DEMAND").val(
-				totalLess.toLocaleString('en-IN', {maximumFractionDigits: 0}))
+				totalLess.toLocaleString('en-US', {maximumFractionDigits: 0}))
 
 			$("#R194_TOT_AMT_TIME").val(
-				totalMore.toLocaleString('en-IN', {maximumFractionDigits: 0}))
+				totalMore.toLocaleString('en-US', {maximumFractionDigits: 0}))
 
 		}
 
@@ -795,13 +869,26 @@ PURPOSE		: BWRBRREPORT
 		// This function is for closing the modal after an action is complete.
 		// It hides the result and loader modals and reloads the page.
 		function closemodel() {
-			$("#resultModal").modal("hide");
+			/* $("#resultModal").modal("hide");
 			$('#loader').modal('hide');
 
 			// Reload the page after a short delay to ensure the modal animation completes smoothly.
 			setTimeout(function () {
 				location.reload();
-			}, 300);
+			}, 300); */
+			
+			$("#resultModal").modal("hide");
+	        $('#loader').modal('hide');
+
+	        // Only reload if not from Details modal
+	        if (!isDetailsModal) {
+	            setTimeout(function () {
+	                location.reload();
+	            }, 300);
+	        } else {
+	            // reset flag for next modal usage
+	            isDetailsModal = false;
+	        }
 		}
 
 		function fileuploads(btn) {
@@ -884,14 +971,18 @@ PURPOSE		: BWRBRREPORT
 						</div>
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							M-AIDP: ANALYSIS OF INTERBANK DOMESTIC POSITIONS</h5>
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; margin-right: 5px; color: white;">
+							(36) MONTHLY SCHEDULE: M-AIDP: ANALYSIS OF INTERBANK <br> DOMESTIC POSITIONS </h5>
+							
+							<div class="boards">
+								    <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+								  </div>
 					</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
+							style="color: white !important; font-size: 16px; margin-right: 20px; margin-left: 8px;">Report
 							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 						<!-- Buttons -->
@@ -919,7 +1010,7 @@ PURPOSE		: BWRBRREPORT
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${dtltype},
-                    				 data-filename='M-AIDP.xls',
+                    				 data-filename='M-AIDP.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>

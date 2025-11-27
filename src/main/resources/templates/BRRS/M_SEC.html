@@ -588,7 +588,7 @@ function cancelModify() {
 
 
 			// 2. Format the rounded number with the 'en-IN' locale (e.g., 1,00,000)
-			$("#R19_TCA").val(roundedTotal.toLocaleString('en-IN'));
+			$("#R19_TCA").val(roundedTotal.toLocaleString('en-US'));
 			// Removed the problematic line: $("#r19_TCA").val(Math.round(TCA));
 		}
 
@@ -618,7 +618,7 @@ function cancelModify() {
 
 			let roundedTotal2 = Math.round(grandTotal2);
 
-			$("#R16_TCA2").val(grandTotal2.toLocaleString('en-IN'));
+			$("#R16_TCA2").val(grandTotal2.toLocaleString('en-US'));
 		}
 
 		$(document).ready(function () {
@@ -670,7 +670,7 @@ function cancelModify() {
 
         // Round and format with Indian commas
         let roundedTotal3 = Math.round(grandTotal3);
-        $("#R31_0_1Y_FT").val(roundedTotal3.toLocaleString('en-IN'));
+        $("#R31_0_1Y_FT").val(roundedTotal3.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -697,7 +697,7 @@ function cancelModify() {
 
         // Round and format with Indian commas
         let roundedTotal4 = Math.round(grandTotal4);
-        $("#R31_0_1Y_HTM").val(roundedTotal4.toLocaleString('en-IN'));
+        $("#R31_0_1Y_HTM").val(roundedTotal4.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -723,7 +723,7 @@ function cancelModify() {
 
         // Round and format with Indian commas
         let roundedTotal5 = Math.round(grandTotal5);
-        $("#R31_1_5Y_FT").val(roundedTotal5.toLocaleString('en-IN'));
+        $("#R31_1_5Y_FT").val(roundedTotal5.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -749,7 +749,7 @@ function cancelModify() {
 
         // Round and format with Indian commas
         let roundedTotal6 = Math.round(grandTotal6);
-        $("#R31_1_5Y_HTM").val(roundedTotal6.toLocaleString('en-IN'));
+        $("#R31_1_5Y_HTM").val(roundedTotal6.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -775,7 +775,7 @@ function cancelModify() {
 
         // Round and format with Indian commas
         let roundedTotal7 = Math.round(grandTotal7);
-        $("#R31_O5Y_FT").val(roundedTotal7.toLocaleString('en-IN'));
+        $("#R31_O5Y_FT").val(roundedTotal7.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -801,7 +801,7 @@ function cancelModify() {
 
         // Round and format with Indian commas
         let roundedTotal8 = Math.round(grandTotal8);
-        $("#R31_O5Y_HTM").val(roundedTotal8.toLocaleString('en-IN'));
+        $("#R31_O5Y_HTM").val(roundedTotal8.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -827,7 +827,7 @@ function cancelModify() {
 
         // Round and format with Indian commas
         let roundedTotal9 = Math.round(grandTotal9);
-        $("#R31_T_FT").val(roundedTotal9.toLocaleString('en-IN'));
+        $("#R31_T_FT").val(roundedTotal9.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -853,7 +853,7 @@ function cancelModify() {
 
         // Round and format with Indian commas
         let roundedTotal10 = Math.round(grandTotal10);
-        $("#R31_T_HTM").val(roundedTotal10.toLocaleString('en-IN'));
+        $("#R31_T_HTM").val(roundedTotal10.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -879,7 +879,7 @@ function cancelModify() {
 
         let total = ft + htm;
 
-        $("#R26_0_1Y_TOTAL").val(total.toLocaleString('en-IN'));
+        $("#R26_0_1Y_TOTAL").val(total.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -898,7 +898,7 @@ function cancelModify() {
 
         let total1 = ft1 + htm1;
 
-        $("#R27_0_1Y_TOTAL").val(total1.toLocaleString('en-IN'));
+        $("#R27_0_1Y_TOTAL").val(total1.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -917,7 +917,7 @@ function cancelModify() {
 
         let total2 = ft2 + htm2;
 
-        $("#R28_0_1Y_TOTAL").val(total2.toLocaleString('en-IN'));
+        $("#R28_0_1Y_TOTAL").val(total2.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -936,7 +936,7 @@ function cancelModify() {
 
         let total3 = ft3 + htm3;
 
-        $("#R29_0_1Y_TOTAL").val(total3.toLocaleString('en-IN'));
+        $("#R29_0_1Y_TOTAL").val(total3.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -955,7 +955,7 @@ function cancelModify() {
 
         let total4 = ft4 + htm4;
 
-        $("#R30_0_1Y_TOTAL").val(total4.toLocaleString('en-IN'));
+        $("#R30_0_1Y_TOTAL").val(total4.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -975,7 +975,7 @@ function cancelModify() {
 
         let total5 = ft5 + htm5;
 
-        $("#R31_0_1Y_TOTAL").val(total5.toLocaleString('en-IN'));
+        $("#R31_0_1Y_TOTAL").val(total5.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -994,7 +994,7 @@ function cancelModify() {
 
         let total11 = ft11 + htm11;
 
-        $("#R26_1_5Y_TOTAL").val(total11.toLocaleString('en-IN'));
+        $("#R26_1_5Y_TOTAL").val(total11.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1013,7 +1013,7 @@ function cancelModify() {
 
         let total12 = ft12 + htm12;
 
-        $("#R27_1_5Y_TOTAL").val(total12.toLocaleString('en-IN'));
+        $("#R27_1_5Y_TOTAL").val(total12.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1032,7 +1032,7 @@ function cancelModify() {
 
         let total13 = ft13 + htm13;
 
-        $("#R28_1_5Y_TOTAL").val(total13.toLocaleString('en-IN'));
+        $("#R28_1_5Y_TOTAL").val(total13.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1051,7 +1051,7 @@ function cancelModify() {
 
         let total14 = ft14 + htm14;
 
-        $("#R29_1_5Y_TOTAL").val(total14.toLocaleString('en-IN'));
+        $("#R29_1_5Y_TOTAL").val(total14.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1070,7 +1070,7 @@ function cancelModify() {
 
         let total15 = ft15 + htm15;
 
-        $("#R30_1_5Y_TOTAL").val(total15.toLocaleString('en-IN'));
+        $("#R30_1_5Y_TOTAL").val(total15.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1118,9 +1118,9 @@ function cancelModify() {
         let total = sumFT + sumHTM;
 
         // Update R31 values
-        $("#R31_1_5Y_FT").val(sumFT.toLocaleString('en-IN'));
-        $("#R31_1_5Y_HTM").val(sumHTM.toLocaleString('en-IN'));
-        $("#R31_1_5Y_TOTAL").val(total.toLocaleString('en-IN'));
+        $("#R31_1_5Y_FT").val(sumFT.toLocaleString('en-US'));
+        $("#R31_1_5Y_HTM").val(sumHTM.toLocaleString('en-US'));
+        $("#R31_1_5Y_TOTAL").val(total.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1145,7 +1145,7 @@ function cancelModify() {
 
         let total21 = ft21 + htm21;
 
-        $("#R26_O5Y_TOTAL").val(total21.toLocaleString('en-IN'));
+        $("#R26_O5Y_TOTAL").val(total21.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1164,7 +1164,7 @@ function cancelModify() {
 
         let total22 = ft22 + htm22;
 
-        $("#R27_O5Y_TOTAL").val(total22.toLocaleString('en-IN'));
+        $("#R27_O5Y_TOTAL").val(total22.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1183,7 +1183,7 @@ function cancelModify() {
 
         let total23 = ft23 + htm23;
 
-        $("#R28_O5Y_TOTAL").val(total23.toLocaleString('en-IN'));
+        $("#R28_O5Y_TOTAL").val(total23.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1202,7 +1202,7 @@ function cancelModify() {
 
         let total24 = ft24 + htm24;
 
-        $("#R29_O5Y_TOTAL").val(total24.toLocaleString('en-IN'));
+        $("#R29_O5Y_TOTAL").val(total24.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1221,7 +1221,7 @@ function cancelModify() {
 
         let total25 = ft25 + htm25;
 
-        $("#R30_O5Y_TOTAL").val(total25.toLocaleString('en-IN'));
+        $("#R30_O5Y_TOTAL").val(total25.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1250,9 +1250,9 @@ function cancelModify() {
         let total = sumFT + sumHTM;
 
         // Update R31 values
-        $("#R31_O5Y_FT").val(sumFT.toLocaleString('en-IN'));
-        $("#R31_O5Y_HTM").val(sumHTM.toLocaleString('en-IN'));
-        $("#R31_O5Y_TOTAL").val(total.toLocaleString('en-IN'));
+        $("#R31_O5Y_FT").val(sumFT.toLocaleString('en-US'));
+        $("#R31_O5Y_HTM").val(sumHTM.toLocaleString('en-US'));
+        $("#R31_O5Y_TOTAL").val(total.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1361,9 +1361,9 @@ function calculateRowTotals(row) {
     let total = sumFT + sumHTM;
 
     // Update fields
-    $("#R" + row + "_T_FT").val(sumFT.toLocaleString('en-IN'));
-    $("#R" + row + "_T_HTM").val(sumHTM.toLocaleString('en-IN'));
-    $("#R" + row + "_T_TOTAL").val(total.toLocaleString('en-IN'));
+    $("#R" + row + "_T_FT").val(sumFT.toLocaleString('en-US'));
+    $("#R" + row + "_T_HTM").val(sumHTM.toLocaleString('en-US'));
+    $("#R" + row + "_T_TOTAL").val(total.toLocaleString('en-US'));
 }
 
 // Special function for R31 → sums up R26–R30 totals
@@ -1377,9 +1377,9 @@ function calculateR31Totals() {
 
     let total = sumFT + sumHTM;
 
-    $("#R31_T_FT").val(sumFT.toLocaleString('en-IN'));
-    $("#R31_T_HTM").val(sumHTM.toLocaleString('en-IN'));
-    $("#R31_T_TOTAL").val(total.toLocaleString('en-IN'));
+    $("#R31_T_FT").val(sumFT.toLocaleString('en-US'));
+    $("#R31_T_HTM").val(sumHTM.toLocaleString('en-US'));
+    $("#R31_T_TOTAL").val(total.toLocaleString('en-US'));
 }
 
 $(document).ready(function () {
@@ -1415,7 +1415,7 @@ $(document).ready(function () {
 
         // Round and format with Indian commas
         let roundedTotal7 = Math.round(grandTotal7);
-        $("#R43_0_1Y_FT").val(roundedTotal7.toLocaleString('en-IN'));
+        $("#R43_0_1Y_FT").val(roundedTotal7.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1441,7 +1441,7 @@ $(document).ready(function () {
 
         // Round and format with Indian commas
         let roundedTotal8 = Math.round(grandTotal8);
-        $("#R43_0_1Y_HTM").val(roundedTotal8.toLocaleString('en-IN'));
+        $("#R43_0_1Y_HTM").val(roundedTotal8.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1468,7 +1468,7 @@ $(document).ready(function () {
 
         // Round and format with Indian commas
         let roundedTotal9 = Math.round(grandTotal9);
-        $("#R43_1_5Y_FT").val(roundedTotal9.toLocaleString('en-IN'));
+        $("#R43_1_5Y_FT").val(roundedTotal9.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1495,7 +1495,7 @@ $(document).ready(function () {
 
         // Round and format with Indian commas
         let roundedTotal10 = Math.round(grandTotal10);
-        $("#R43_1_5Y_HTM").val(roundedTotal10.toLocaleString('en-IN'));
+        $("#R43_1_5Y_HTM").val(roundedTotal10.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1522,7 +1522,7 @@ $(document).ready(function () {
 
         // Round and format with Indian commas
         let roundedTotal11 = Math.round(grandTotal11);
-        $("#R43_O5Y_FT").val(roundedTotal11.toLocaleString('en-IN'));
+        $("#R43_O5Y_FT").val(roundedTotal11.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1548,7 +1548,7 @@ $(document).ready(function () {
 
         // Round and format with Indian commas
         let roundedTotal12 = Math.round(grandTotal12);
-        $("#R43_O5Y_HTM").val(roundedTotal12.toLocaleString('en-IN'));
+        $("#R43_O5Y_HTM").val(roundedTotal12.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1570,7 +1570,7 @@ $(document).ready(function () {
 
         let totalv1 = ftv1 + htmv1;
 
-        $("#R36_0_1Y_TOTAL").val(totalv1.toLocaleString('en-IN'));
+        $("#R36_0_1Y_TOTAL").val(totalv1.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1589,7 +1589,7 @@ $(document).ready(function () {
 
         let totalv2 = ftv2 + htmv2;
 
-        $("#R37_0_1Y_TOTAL").val(totalv2.toLocaleString('en-IN'));
+        $("#R37_0_1Y_TOTAL").val(totalv2.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1608,7 +1608,7 @@ $(document).ready(function () {
 
         let totalv3 = ftv3 + htmv3;
 
-        $("#R38_0_1Y_TOTAL").val(totalv3.toLocaleString('en-IN'));
+        $("#R38_0_1Y_TOTAL").val(totalv3.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1627,7 +1627,7 @@ $(document).ready(function () {
 
         let totalv4 = ftv4 + htmv4;
 
-        $("#R39_0_1Y_TOTAL").val(totalv4.toLocaleString('en-IN'));
+        $("#R39_0_1Y_TOTAL").val(totalv4.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1646,7 +1646,7 @@ $(document).ready(function () {
 
         let totalv5 = ftv5 + htmv5;
 
-        $("#R40_0_1Y_TOTAL").val(totalv5.toLocaleString('en-IN'));
+        $("#R40_0_1Y_TOTAL").val(totalv5.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1666,7 +1666,7 @@ $(document).ready(function () {
 
         let totalv6 = ftv6 + htmv6;
 
-        $("#R41_0_1Y_TOTAL").val(totalv6.toLocaleString('en-IN'));
+        $("#R41_0_1Y_TOTAL").val(totalv6.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1685,7 +1685,7 @@ $(document).ready(function () {
 
         let totalv7 = ftv7 + htmv7;
 
-        $("#R42_0_1Y_TOTAL").val(totalv7.toLocaleString('en-IN'));
+        $("#R42_0_1Y_TOTAL").val(totalv7.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1709,7 +1709,7 @@ $(document).ready(function () {
         }
 
         // Set the grand total for R43
-        $("#R43_0_1Y_TOTAL").val(total_01Y.toLocaleString('en-IN'));
+        $("#R43_0_1Y_TOTAL").val(total_01Y.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1732,7 +1732,7 @@ $(document).ready(function () {
         let ftv1 = parseFloat($("#R36_1_5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv1 = parseFloat($("#R36_1_5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv1 = ftv1 + htmv1;
-        $("#R36_1_5Y_TOTAL").val(totalv1.toLocaleString('en-IN'));
+        $("#R36_1_5Y_TOTAL").val(totalv1.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1746,7 +1746,7 @@ $(document).ready(function () {
         let ftv2 = parseFloat($("#R37_1_5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv2 = parseFloat($("#R37_1_5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv2 = ftv2 + htmv2;
-        $("#R37_1_5Y_TOTAL").val(totalv2.toLocaleString('en-IN'));
+        $("#R37_1_5Y_TOTAL").val(totalv2.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1760,7 +1760,7 @@ $(document).ready(function () {
         let ftv3 = parseFloat($("#R38_1_5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv3 = parseFloat($("#R38_1_5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv3 = ftv3 + htmv3;
-        $("#R38_1_5Y_TOTAL").val(totalv3.toLocaleString('en-IN'));
+        $("#R38_1_5Y_TOTAL").val(totalv3.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1774,7 +1774,7 @@ $(document).ready(function () {
         let ftv4 = parseFloat($("#R39_1_5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv4 = parseFloat($("#R39_1_5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv4 = ftv4 + htmv4;
-        $("#R39_1_5Y_TOTAL").val(totalv4.toLocaleString('en-IN'));
+        $("#R39_1_5Y_TOTAL").val(totalv4.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1788,7 +1788,7 @@ $(document).ready(function () {
         let ftv5 = parseFloat($("#R40_1_5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv5 = parseFloat($("#R40_1_5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv5 = ftv5 + htmv5;
-        $("#R40_1_5Y_TOTAL").val(totalv5.toLocaleString('en-IN'));
+        $("#R40_1_5Y_TOTAL").val(totalv5.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1802,7 +1802,7 @@ $(document).ready(function () {
         let ftv6 = parseFloat($("#R41_1_5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv6 = parseFloat($("#R41_1_5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv6 = ftv6 + htmv6;
-        $("#R41_1_5Y_TOTAL").val(totalv6.toLocaleString('en-IN'));
+        $("#R41_1_5Y_TOTAL").val(totalv6.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1816,7 +1816,7 @@ $(document).ready(function () {
         let ftv7 = parseFloat($("#R42_1_5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv7 = parseFloat($("#R42_1_5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv7 = ftv7 + htmv7;
-        $("#R42_1_5Y_TOTAL").val(totalv7.toLocaleString('en-IN'));
+        $("#R42_1_5Y_TOTAL").val(totalv7.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1836,7 +1836,7 @@ $(document).ready(function () {
         }
 
         // Set the grand total for R43
-        $("#R43_1_5Y_TOTAL").val(total_15Y.toLocaleString('en-IN'));
+        $("#R43_1_5Y_TOTAL").val(total_15Y.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1858,49 +1858,49 @@ $(document).ready(function () {
         let ftv11 = parseFloat($("#R36_O5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv11 = parseFloat($("#R36_O5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv11 = ftv11 + htmv11;
-        $("#R36_O5Y_TOTAL").val(totalv11.toLocaleString('en-IN'));
+        $("#R36_O5Y_TOTAL").val(totalv11.toLocaleString('en-US'));
     }
 
     function calculate_R37_O5Y_TOTAL() {
         let ftv12 = parseFloat($("#R37_O5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv12 = parseFloat($("#R37_O5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv12 = ftv12 + htmv12;
-        $("#R37_O5Y_TOTAL").val(totalv12.toLocaleString('en-IN'));
+        $("#R37_O5Y_TOTAL").val(totalv12.toLocaleString('en-US'));
     }
 
     function calculate_R38_O5Y_TOTAL() {
         let ftv13 = parseFloat($("#R38_O5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv13 = parseFloat($("#R38_O5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv13 = ftv13 + htmv13;
-        $("#R38_O5Y_TOTAL").val(totalv13.toLocaleString('en-IN'));
+        $("#R38_O5Y_TOTAL").val(totalv13.toLocaleString('en-US'));
     }
 
     function calculate_R39_O5Y_TOTAL() {
         let ftv14 = parseFloat($("#R39_O5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv14 = parseFloat($("#R39_O5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv14 = ftv14 + htmv14;
-        $("#R39_O5Y_TOTAL").val(totalv14.toLocaleString('en-IN'));
+        $("#R39_O5Y_TOTAL").val(totalv14.toLocaleString('en-US'));
     }
 
     function calculate_R40_O5Y_TOTAL() {
         let ftv15 = parseFloat($("#R40_O5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv15 = parseFloat($("#R40_O5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv15 = ftv15 + htmv15;
-        $("#R40_O5Y_TOTAL").val(totalv15.toLocaleString('en-IN'));
+        $("#R40_O5Y_TOTAL").val(totalv15.toLocaleString('en-US'));
     }
 
     function calculate_R41_O5Y_TOTAL() {
         let ftv16 = parseFloat($("#R41_O5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv16 = parseFloat($("#R41_O5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv16 = ftv16 + htmv16;
-        $("#R41_O5Y_TOTAL").val(totalv16.toLocaleString('en-IN'));
+        $("#R41_O5Y_TOTAL").val(totalv16.toLocaleString('en-US'));
     }
 
     function calculate_R42_O5Y_TOTAL() {
         let ftv17 = parseFloat($("#R42_O5Y_FT").val().replace(/,/g, "")) || 0;
         let htmv17 = parseFloat($("#R42_O5Y_HTM").val().replace(/,/g, "")) || 0;
         let totalv17 = ftv17 + htmv17;
-        $("#R42_O5Y_TOTAL").val(totalv17.toLocaleString('en-IN'));
+        $("#R42_O5Y_TOTAL").val(totalv17.toLocaleString('en-US'));
     }
 
     function calculate_R43_O5Y_TOTAL() {
@@ -1909,7 +1909,7 @@ $(document).ready(function () {
             let rowTotal = parseFloat($("#R" + i + "_O5Y_TOTAL").val().replace(/,/g, "")) || 0;
             total_O5Y += rowTotal;
         }
-        $("#R43_O5Y_TOTAL").val(total_O5Y.toLocaleString('en-IN'));
+        $("#R43_O5Y_TOTAL").val(total_O5Y.toLocaleString('en-US'));
     }
 
     $(document).ready(function () {
@@ -1962,9 +1962,9 @@ function calculateRowTotals(row) {
     let total = sumFT + sumHTM;
 
     // Update fields
-    $("#R" + row + "_T_FT").val(sumFT.toLocaleString('en-IN'));
-    $("#R" + row + "_T_HTM").val(sumHTM.toLocaleString('en-IN'));
-    $("#R" + row + "_T_TOTAL").val(total.toLocaleString('en-IN'));
+    $("#R" + row + "_T_FT").val(sumFT.toLocaleString('en-US'));
+    $("#R" + row + "_T_HTM").val(sumHTM.toLocaleString('en-US'));
+    $("#R" + row + "_T_TOTAL").val(total.toLocaleString('en-US'));
 }
 
 // Special function for R43 → sums up R36–R42 totals
@@ -1978,9 +1978,9 @@ function calculateR43Totals() {
 
     let total = sumFT + sumHTM;
 
-    $("#R43_T_FT").val(sumFT.toLocaleString('en-IN'));
-    $("#R43_T_HTM").val(sumHTM.toLocaleString('en-IN'));
-    $("#R43_T_TOTAL").val(total.toLocaleString('en-IN'));
+    $("#R43_T_FT").val(sumFT.toLocaleString('en-US'));
+    $("#R43_T_HTM").val(sumHTM.toLocaleString('en-US'));
+    $("#R43_T_TOTAL").val(total.toLocaleString('en-US'));
 }
 
 $(document).ready(function () {
