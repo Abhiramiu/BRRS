@@ -100,6 +100,9 @@ public class Q_SMME_Intrest_Income_Archival_Detail_Entity {
     @Column(name = "INTEREST_JULY_2025", precision = 24, scale = 2)
     private BigDecimal interestJuly2025;
 
+    @Column(name = "MONTHLY_INTEREST", precision = 24, scale = 2)
+private BigDecimal monthlyInterest;
+
     public String getCustId() {
         return custId;
     }
@@ -317,7 +320,13 @@ public class Q_SMME_Intrest_Income_Archival_Detail_Entity {
     public void setInterestJuly2025(BigDecimal interestJuly2025) {
         this.interestJuly2025 = interestJuly2025;
     }
+public BigDecimal getMonthlyInterest() {
+    return monthlyInterest;
+}
 
+public void setMonthlyInterest(BigDecimal monthlyInterest) {
+    this.monthlyInterest = monthlyInterest;
+}
     public Q_SMME_Intrest_Income_Archival_Detail_Entity() {
         super();
     }

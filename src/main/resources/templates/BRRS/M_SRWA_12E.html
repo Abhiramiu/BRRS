@@ -285,7 +285,54 @@ PURPOSE		: BWRBRREPORT
 			border: 1px solid #000 !important;
 		}
 	</style>
+	<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 80px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
 	<script th:inline="javascript">
+				let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -309,9 +356,10 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		//to fetch summary from the database - called from the summary button
-		function showdetails() {
-			 alert("Details page not available for Manual Report");
-		}
+function showdetails() {
+    isDetailsModal = true; // mark that this modal is from Details
+    showResultModal('BRRS', 'Details page not available for Manual Report');
+}
 
 		function showsummary() {
 			$('#loader').modal('show');
@@ -403,11 +451,20 @@ PURPOSE		: BWRBRREPORT
 			showResultModal('Alert', 'Development in progress');
 
 		}
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
+function closemodel() {
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
 
-		}
+    // Only reload if not from Details modal
+    if (!isDetailsModal) {
+        setTimeout(function () {
+            location.reload();
+        }, 300);
+    } else {
+        // reset flag for next modal usage
+        isDetailsModal = false;
+    }
+}
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -426,43 +483,49 @@ PURPOSE		: BWRBRREPORT
 	
 	<script>
 	// Show Modify (enable inputs & dropdowns)
-function showmodify(btn) {
-    $(".Show_input").removeAttr("readonly").removeAttr("disabled");
+	function showmodify(btn) {
+    // ✅ List of IDs that should ALWAYS remain readonly
+    var readonlyIds = [
+		"R19_UNSECURED_PORTION_NPL", "R19_PERFORMING_EXPOSURE", "R19_NON_PERFORMING", "R19_SPECIFIC_PROV",
+		 "R13_UNSECURED_PORTION_NPL", "R14_UNSECURED_PORTION_NPL",  "R15_UNSECURED_PORTION_NPL", "R16_UNSECURED_PORTION_NPL", 
+		  "R17_UNSECURED_PORTION_NPL", "R18_UNSECURED_PORTION_NPL", "R13_PRODUCT","R14_PRODUCT", "R15_PRODUCT","R16_PRODUCT",
+		   "R17_PRODUCT","R18_PRODUCT", "R19_PRODUCT"
+    ];
+//"R33_INTEREST_RATE", "R34_INTEREST_RATE", "RR35_INTEREST_RATE35_STAFF_LOANS", "R36_INTEREST_RATE", "R37_INTEREST_RATE", "R38_INTEREST_RATE",
+		
+    // ✅ Make all .Show_input editable except the ones in readonlyIds
+    $(".Show_input").each(function () {
+        if (!readonlyIds.includes(this.id)) {
+            $(this).prop("readonly", false).prop("disabled", false);
+        }
+    });
 
-//     for (let i = 10; i <= 17; i++) {
-//         $("#R" + i + "_TOTAL_LONG_POS_TEXT").hide();
-//         $("#R" + i + "_TOTAL_SHORT_POS_TEXT").hide();
-//         $("#R" + i + "_GROSS_OPEN_POS_TEXT").hide();
-//         $("#R" + i + "_CHARGE_BASIS_RISK_TEXT").hide();
-//         $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK_TEXT").hide();
-//         $("#R" + i + "_NET_OPEN_POS_TEXT").hide();
-//         $("#R" + i + "_CHARGE_DIR_RISK_TEXT").hide();   
-//         $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK_TEXT").hide();
-//         $("#R" + i + "_TOTAL_CAPITAL_CHARGE_TEXT").hide();
-        
-//         $("#R" + i + "_TOTAL_LONG_POS").show();
-//         $("#R" + i + "_TOTAL_SHORT_POS").show();
-//         $("#R" + i + "_GROSS_OPEN_POS").show();
-//         $("#R" + i + "_CHARGE_BASIS_RISK").show();
-//         $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").show();
-//         $("#R" + i + "_NET_OPEN_POS").show();
-//         $("#R" + i + "_CHARGE_DIR_RISK").show();
-//         $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").show();
-//         $("#R" + i + "_TOTAL_CAPITAL_CHARGE").show();
-        
-//     }
-    
-    // Toggle buttons
-    $("#submitButton, #btnBack_edit").show();
-    $("#btnBack").hide();
-    
-    // Show Cancel button only when Modify is clicked
+
+		  for (let i = 13; i <= 18; i++) {
+        let fields = [
+            // "_LOCAL",
+            // "_EXPARIATES",
+		
+            "_PERFORMING_EXPOSURE",
+            "_NON_PERFORMING",
+            "_SPECIFIC_PROV"
+        ];
+		
+
+        fields.forEach(field => {
+            let selector = `#R${i}${field}`;
+            if ($(selector).length) {
+                $(selector).css("background-color", "#d3d3d3");
+            }
+        });
+
+
+    // ✅ Toggle buttons visibility
+    $("#submitButton").show();
     $("#cancelRecord").show();
-    
-    // Optionally hide the clicked Modify button
-    $(btn).hide();
+    $(btn).hide(); // hide the clicked Modify button
 }
-
+	}
 //Cancel / Reset function
 function cancelModify() {
     if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
@@ -470,28 +533,6 @@ function cancelModify() {
         location.reload();
         
         $(".Show_input").attr("readonly", true).attr("disabled", true);
-
-       //  for (let i = 11; i <= 50; i++) {
-       //      $("#R" + i + "_TOTAL_LONG_POS_TEXT").show();
-       //  $("#R" + i + "_TOTAL_SHORT_POS_TEXT").show();
-       //  $("#R" + i + "_GROSS_OPEN_POS_TEXT").show();
-       //  $("#R" + i + "_CHARGE_BASIS_RISK_TEXT").show();
-       //  $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK_TEXT").show();
-       //  $("#R" + i + "_NET_OPEN_POS_TEXT").show();
-       //  $("#R" + i + "_CHARGE_DIR_RISK_TEXT").show();   
-       //  $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK_TEXT").show();
-       //  $("#R" + i + "_TOTAL_CAPITAL_CHARGE_TEXT").show();
-        
-       //  $("#R" + i + "_TOTAL_LONG_POS").hide();
-       //  $("#R" + i + "_TOTAL_SHORT_POS").hide();
-       //  $("#R" + i + "_GROSS_OPEN_POS").hide();
-       //  $("#R" + i + "_CHARGE_BASIS_RISK").hide();
-       //  $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").hide();
-       //  $("#R" + i + "_NET_OPEN_POS").hide();
-       //  $("#R" + i + "_CHARGE_DIR_RISK").hide();
-       //  $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").hide();
-       //  $("#R" + i + "_TOTAL_CAPITAL_CHARGE").hide();
-       //  }
 
         $("#submitButton, #btnBack_edit").hide();
         $("#btnBack").show();
@@ -546,58 +587,66 @@ function cancelModify() {
 
 	
 function calculateR13Totals() {
-	    let NPL = 0;
-	  
-	    for (let i = 13; i <= 17; i++) {
+    let NPL = 0;
 
-	        // Get numeric values, remove commas
-	        let ProvVal = parseFloat($("#R" + i + "_SPECIFIC_PROV").val().replace(/,/g, "")) || 0;
-	        let NPVal = parseFloat($("#R" + i + "_NON_PERFORMING").val().replace(/,/g, "")) || 0;
+for (let i = 13; i <= 19; i++) {
 
-	        // NPL = ProvVal/NPVal * 100 || 0;
-            if(NPVal === 0){
-                NPL = 0;
-            }else{
-	            NPL = ProvVal/NPVal;
-            }
+    let ProvVal = parseFloat($("#R" + i + "_SPECIFIC_PROV").val().replace(/,/g, "")) || 0;
+    let NPVal   = parseFloat($("#R" + i + "_NON_PERFORMING").val().replace(/,/g, "")) || 0;
 
-			$("#R"+i+"_UNSECURED_PORTION_NPL").val(
-				NPL.toLocaleString('en-IN')
-			);
+    if (NPVal === 0) {
+        NPL = 0;
+    } else {
 
-			
-	    }
+        if (i === 15) {
+            // ❌ R15 → NO percentage calculation
+            NPL = ProvVal / NPVal;
+        } else {
+            // ✔ Others → percentage rounded
+            NPL = Math.round((ProvVal / NPVal) * 100);
+        }
+    }
 
+    // ----------- DISPLAY LOGIC ------------
+if (i === 15 || i === 18) {
+    // NO % for R15 and R18
+    $("#R" + i + "_UNSECURED_PORTION_NPL").val(
+        NPL.toLocaleString('en-US')
+    );
+} else {
+    // Add % for all others
+    $("#R" + i + "_UNSECURED_PORTION_NPL").val(
+        NPL.toLocaleString('en-US') + " %"
+    );
+}
 
-            let ProvVal = parseFloat($("#R19_SPECIFIC_PROV").val().replace(/,/g, "")) || 0;
-	        let NPVal = parseFloat($("#R19_NON_PERFORMING").val().replace(/,/g, "")) || 0;
-
-            if(NPVal === 0){
-                NPL = 0;
-            }else{
-	            NPL = ProvVal/NPVal;
-            }
-
-			$("#R19_UNSECURED_PORTION_NPL").val(
-				NPL.toLocaleString('en-IN')
-			);
-
-
-
-	    
-	}
+}
 
 
 
+    // R19 Logic
+    let ProvVal = parseFloat($("#R19_SPECIFIC_PROV").val().replace(/,/g, "")) || 0;
+    let NPVal   = parseFloat($("#R19_NON_PERFORMING").val().replace(/,/g, "")) || 0;
 
-	   
+    if (NPVal === 0) {
+        NPL = 0;
+    } else {
+       NPL = Math.round((ProvVal / NPVal) * 100);
+
+    }
+
+    $("#R19_UNSECURED_PORTION_NPL").val(
+         NPL.toLocaleString('en-US') + " %"
+    );
+}
+ 
 
 	// Call on page load
 	$(document).ready(function() {
 	    calculateR19Totals();	
         calculateR13Totals();
 		
-	    for (let i = 13; i <= 18; i++) {
+	    for (let i = 13; i <= 19; i++) {
 	        $("#R" + i + "_PERFORMING_EXPOSURE, " +
 			"#R" + i + "_NON_PERFORMING, " +
 			"#R" + i + "_SPECIFIC_PROV").on("input", function() {
@@ -606,7 +655,7 @@ function calculateR13Totals() {
 	        });
 	    }
 
-		 for (let i = 13; i <= 18; i++) {
+		 for (let i = 13; i <= 19; i++) {
 	        $("#R" + i + "_PERFORMING_EXPOSURE, " +
 			"#R" + i + "_NON_PERFORMING, " +
 			"#R" + i + "_SPECIFIC_PROV").on("input", function() {
@@ -624,15 +673,20 @@ function calculateR13Totals() {
 
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
-	    $("#resultModal").modal("hide");
-	    $('#loader').modal('hide');
+function closemodel() {
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
 
-	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
-	    setTimeout(function () {
-	        location.reload();
-	    }, 300);
-	}
+    // Only reload if not from Details modal
+    if (!isDetailsModal) {
+        setTimeout(function () {
+            location.reload();
+        }, 300);
+    } else {
+        // reset flag for next modal usage
+        isDetailsModal = false;
+    }
+}
 
 
 
@@ -730,22 +784,29 @@ function calculateR13Totals() {
 			<div class="card">
 				<div class="card-header"
 					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
-					<div style="display: flex; align-items: center;" onclick="back();">
+		
+
+							<div style="display: flex; align-items: center;" onclick="back();">
 						<!-- ⬅️ Left circular arrow -->
 						<div class="left-arrow-circle">
 							<i class="fa fa-arrow-left"></i>
 						</div>
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							Monthly Schedule M-SRWA 12e - (LTV): Loan to Value Disclosure</h5>
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							
+							  Monthly Schedule M-SRWA 12e - (LTV): Loan to Value Disclosure </h5>
+
+							   	<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+						</div>
 					</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${asondate}">2025-07-04</span>
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -884,7 +945,7 @@ function calculateR13Totals() {
            type="text"
            id="R13_UNSECURED_PORTION_NPL"
            name="R13_UNSECURED_PORTION_NPL"
-           style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+           style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width:390px; height: 28px; border-color: transparent; text-align: right;"
            readonly />
     </td>
 
@@ -937,7 +998,7 @@ function calculateR13Totals() {
                type="text"
                id="R14_UNSECURED_PORTION_NPL"
                name="R14_UNSECURED_PORTION_NPL"
-               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 </tr>
@@ -988,7 +1049,7 @@ function calculateR13Totals() {
                type="text"
                id="R15_UNSECURED_PORTION_NPL"
                name="R15_UNSECURED_PORTION_NPL"
-               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 </tr>
@@ -1039,7 +1100,7 @@ function calculateR13Totals() {
                type="text"
                id="R16_UNSECURED_PORTION_NPL"
                name="R16_UNSECURED_PORTION_NPL"
-               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 </tr>
@@ -1090,7 +1151,7 @@ function calculateR13Totals() {
                type="text"
                id="R17_UNSECURED_PORTION_NPL"
                name="R17_UNSECURED_PORTION_NPL"
-               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 </tr>
@@ -1133,8 +1194,8 @@ function calculateR13Totals() {
         <input class="display-input Show_input"
                type="text"
                id="R18_UNSECURED_PORTION_NPL"
-               name="R18_UNSECURED_PORTION_NPL"
-               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               name="R18_UNSECURED_PORTION_NPL"th:value="'0'"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 </tr>
@@ -1182,7 +1243,7 @@ function calculateR13Totals() {
                type="text"
                id="R19_UNSECURED_PORTION_NPL"
                name="R19_UNSECURED_PORTION_NPL"
-               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 350px; height: 28px; border-color: transparent; text-align: right;"
+               style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 390px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
 </tr>
@@ -1302,7 +1363,7 @@ function calculateR13Totals() {
 		max-height: 590px;
 		/* Or a suitable height like 80vh for responsive design */
 		overflow-y: auto;
-		border: 1px solid #000000;
+		/* border: 1px solid #000000; */
 	}
 
 	/* Your existing sticky header CSS, targeting the tr elements within the thead */

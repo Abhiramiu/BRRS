@@ -299,7 +299,7 @@ PURPOSE		: BRRSREPORT
 			border: 1px solid #000 !important;
 		}
 	</style>
-<style>
+	<style>
 		.left-arrow-circle {
 			background-color: white;
 			color: #007bff;
@@ -311,19 +311,20 @@ PURPOSE		: BRRSREPORT
 
 		/* 🚌 Bus display style box */
 		/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 80px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 80px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			/* ✅ makes it take available space dynamically */
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
 
 		/* ✨ Scrolling animation */
 		.scrolling-text {
@@ -363,38 +364,38 @@ PURPOSE		: BRRSREPORT
 		});
 
 
-		
-		
-		
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
+
+
+
+		$(document).ready(function () {
+			Maker_Checker_Function();
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",    
+				url: "/BRRS/getUserRole",
 				type: "GET",
-				success: function(roleId) {
+				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
-				
+
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
 
 				},
-				error: function(err) {
+				error: function (err) {
 					console.error("Error fetching role:", err);
-		     }
-		    });
+				}
+			});
 		}
-		
+
 
 
 		function home() {
@@ -439,7 +440,7 @@ PURPOSE		: BRRSREPORT
 		}
 
 		function showsummary() {
-			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
+			var loader = new bootstrap.Modal(document.getElementById('loader'), { backdrop: 'static', keyboard: false });
 			loader.show();
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
 				location.href = Callurl;
@@ -571,74 +572,79 @@ PURPOSE		: BRRSREPORT
 	</script>
 
 	<script>
+
 		function startReport(button) {
 			const alertMsg = document.getElementById("alertMessage");
-			const filename = button.getAttribute("data-filename");
-			const fromdate = button.getAttribute("data-fromdate");
-			const todate = button.getAttribute("data-todate");
-			const currency = button.getAttribute("data-currency");
-			const dtltype = button.getAttribute("data-dtltype");
-			const type = button.getAttribute("data-type");
-			const version = button.getAttribute("data-version");
+
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+
 			const sessionfilename = sessionStorage.getItem("filename");
 
-			if (sessionfilename == filename) {
-				alertMsg.innerHTML = "Download request already Processing...";
+			if (sessionfilename === filename) {
+				alertMsg.innerHTML = 'Download request already processing...';
 				showAlert();
 				return;
 			}
 
-			alertMsg.innerHTML = "Download request Processing...";
+			alertMsg.innerHTML = 'Download request started...';
 			showAlert();
 
-			const baseUrl = "/BCDRS/Reports/startreport";
-			const downloadUrl =
-				baseUrl +
-				"?filename=" +
-				encodeURIComponent(filename) +
-				"&fromdate=" +
-				encodeURIComponent(fromdate) +
-				"&todate=" +
-				encodeURIComponent(todate) +
-				"&currency=" +
-				encodeURIComponent(currency) +
-				"&dtltype=" +
-				encodeURIComponent(dtltype) +
-				"&type=" +
-				encodeURIComponent(type) +
-				"&version=" +
-				encodeURIComponent(version);
-			fetch(downloadUrl) // ✅ no invalid characters now
-				.then((res) => res.text())
-				.then((jobId) => {
-					alertMsg.innerHTML = "Download request received..." + jobId;
+			const downloadUrl = '/BRRS/Reports/startreport'
+				+ '?filename=' + encodeURIComponent(filename)
+				+ '&fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate)
+				+ '&currency=' + encodeURIComponent(currency)
+				+ '&dtltype=' + encodeURIComponent(dtltype)
+				+ '&type=' + encodeURIComponent(type)
+				+ '&version=' + encodeURIComponent(version);
+
+			fetch(downloadUrl)
+				.then(res => res.text())
+				.then(jobId => {
+
+					alertMsg.innerHTML = 'Request received. Job ID: ' + jobId;
 					showAlert();
+
 					sessionStorage.setItem("jobId", jobId);
 					sessionStorage.setItem("filename", filename);
+
 					checkReport(jobId);
 				});
 		}
 
 		function checkReport(jobId) {
 			const alertMsg = document.getElementById("alertMessage");
-			fetch("/BCDRS/Reports/checkreport?jobId=" + encodeURIComponent(jobId))
-				.then((res) => res.text())
-				.then((status) => {
+
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+
 					if (status === "READY") {
-						alertMsg.innerHTML = "Report is ready! Downloading…";
+						alertMsg.innerHTML = 'Report ready! Downloading...';
 						showAlert();
+
 						const filename = sessionStorage.getItem("filename");
-						downloadDetailfile(jobId, filename);
+						downloadDetailfile(jobId, filename + ".xlsx");
+
 						sessionStorage.removeItem("jobId");
 						sessionStorage.removeItem("filename");
+
 					} else if (status === "PROCESSING") {
-						alertMsg.innerHTML = "Download Is Processing…";
+						alertMsg.innerHTML = 'Report processing...';
 						showAlert();
-						setTimeout(() => checkReport(jobId), 5000);
+
+						setTimeout(() => checkReport(jobId), 4000);
+
 					} else if (status === "ERROR") {
-						alertMsg.innerHTML =
-							"No data was available to create a download.";
+						alertMsg.innerHTML = 'No data available to download.';
 						showAlert();
+
 						sessionStorage.removeItem("jobId");
 						sessionStorage.removeItem("filename");
 					}
@@ -646,71 +652,50 @@ PURPOSE		: BRRSREPORT
 		}
 
 		function downloadDetailfile(jobId, filename) {
-			//$('#loader').modal('show');
 
 			$.ajax({
-				url:
-					"/BCDRS/Reports/downloaddetailExcel?jobId=" +
-					jobId +
-					"&filename=" +
-					filename,
-				type: "GET",
-				xhrFields: {
-					responseType: "blob",
-				},
-				success: function (data) {
-					$("#loader").modal("hide");
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId + '&filename=' + filename,
+				type: 'GET',
+				xhrFields: { responseType: 'blob' },
 
+				success: function (data) {
 					if (data && data.size > 100) {
-						const blob = new Blob([data], {
-							type: "application/vnd.ms-excel",
-						});
+						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
 						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement("a");
-						a.style.display = "none";
+
+						const a = document.createElement('a');
 						a.href = url;
 						a.download = filename;
 						document.body.appendChild(a);
 						a.click();
+
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
 
-						showResultModal(
-							"BRRS",
-							filename + " downloaded successfully."
-						);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
 					} else {
-						showResultModal(
-							"Information",
-							"No data was available to create a download."
-						);
+						showResultModal('Information', 'No data found to download.');
 					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$("#loader").modal("hide");
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal(
-						"Error",
-						"An error occurred while downloading the file. Please try again."
-					);
-				},
+				}
 			});
 		}
+
 	</script>
+
 
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
-			var reportLabel = a.getAttribute("reportLabel");
-			var reportAddlCriteria1 = a.getAttribute("reportAddlCriteria1");
+			var RowId = a.getAttribute("RowId");
+			var ColumnId = a.getAttribute("ColumnId");
 			var cellValue = a.textContent || a.innerText;
 
 			if (cellValue !== "0") {
 				// Set dynamic message in modal (instead of confirm)
 				document.getElementById("cellresultModalLabel").innerText =
 					"Do you want to open details for Row: " +
-					reportLabel +
+					RowId +
 					" and Column: " +
-					reportAddlCriteria1 +
+					ColumnId +
 					"?";
 
 				// Show custom Bootstrap modal
@@ -733,7 +718,7 @@ PURPOSE		: BRRSREPORT
 					// Build dynamic URL
 					var Callurl =
               /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
-					Callurl += "&filter=" + encodeURIComponent(reportLabel + "," + reportAddlCriteria1);
+					Callurl += "&filter=" + encodeURIComponent(RowId + "," + ColumnId);
 
 					location.href = Callurl;
 				};
@@ -769,11 +754,12 @@ PURPOSE		: BRRSREPORT
 						</div>
 
 						<!-- Title -->
-						<h5 style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
-							(5) QUARTERLY SCHEDULE: Q-SMME INT : SMME INTEREST INCOME 
+						<h5
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							(5) QUARTERLY SCHEDULE: Q-SMME INT : SMME INTEREST INCOME
 						</h5>
 
-							<!-- Moving bus-board text -->
+						<!-- Moving bus-board text -->
 						<div class="boards">
 							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
 						</div>
@@ -809,7 +795,7 @@ PURPOSE		: BRRSREPORT
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+						<!-- <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
@@ -817,19 +803,21 @@ PURPOSE		: BRRSREPORT
                 data-type=${type},
 		            data-version=${version}">
 							<i class="fa fa-download"></i>
-						</button>
-						<!---	<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
-							th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='BRF2_18'",
-							onclick="editRecord();">
-							<i class="fa fa-download"></i>
 						</button> -->
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" th:attr="
+        data-reportid=${reportid}, 
+        data-asondate=${asondate}, 
+        data-fromdate=${fromdate}, 
+        data-todate=${todate}, 
+        data-currency=${currency},  
+        data-dtltype=${dtltype}, 
+        data-filename='Q_SMMEDetail',
+        data-type=${type},
+        data-version=${version}" onclick="startReport(this)">
+							<i class="fa fa-download"></i>
+						</button>
+
 					</div>
 				</div>
 
@@ -857,23 +845,23 @@ PURPOSE		: BRRSREPORT
 											<td th:text="${reportsummary.r15_caoin}"></td>
 											<td th:text="${reportsummary.r15_res_carry_amt != null  ? #numbers.formatDecimal(reportsummary.r15_res_carry_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
 												style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
-												th:attr="reportLabel='R15', reportAddlCriteria1='C2'"></td>
+												th:attr="RowId='R15', ColumnId='C2'"></td>
 											<td th:text="${reportsummary.r15_non_res_carry_amt != null ? #numbers.formatDecimal(reportsummary.r15_non_res_carry_amt, 1, 'COMMA', 0, 'POINT')  : '0'}"
 												style="text-align: right;background-color: rgb(107, 122, 143);color: white;"
-												th:attr="reportLabel='R15', reportAddlCriteria1='C3'"></td>
+												th:attr="RowId='R15', ColumnId='C3'"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R16_caoin}" style="padding-left: 50px"></td>
 
 											<td th:text="${reportsummary.R16_res_carry_amt != null 
                 ? #numbers.formatDecimal(reportsummary.R16_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-                : '0'}" style="text-align: right" th:attr="reportLabel='R16', reportAddlCriteria1='C2'"
+                : '0'}" style="text-align: right" th:attr="RowId='R16', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)">
 											</td>
 
 											<td th:text="${reportsummary.r16_non_res_carry_amt != null 
                 ? #numbers.formatDecimal(reportsummary.r16_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-                : '0'}" style="text-align: right" th:attr="reportLabel='R16', reportAddlCriteria1='C3'"
+                : '0'}" style="text-align: right" th:attr="RowId='R16', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)">
 											</td>
 										</tr>
@@ -883,13 +871,13 @@ PURPOSE		: BRRSREPORT
 
 											<td th:text="${reportsummary.R17_res_carry_amt != null 
                 ? #numbers.formatDecimal(reportsummary.R17_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-                : '0'}" style="text-align: right" th:attr="reportLabel='R17', reportAddlCriteria1='C2'"
+                : '0'}" style="text-align: right" th:attr="RowId='R17', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)">
 											</td>
 
 											<td th:text="${reportsummary.r17_non_res_carry_amt != null 
                 ? #numbers.formatDecimal(reportsummary.r17_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-                : '0'}" style="text-align: right" th:attr="reportLabel='R17', reportAddlCriteria1='C3'"
+                : '0'}" style="text-align: right" th:attr="RowId='R17', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)">
 											</td>
 										</tr>
@@ -899,13 +887,13 @@ PURPOSE		: BRRSREPORT
 
 											<td th:text="${reportsummary.R18_res_carry_amt != null 
                 ? #numbers.formatDecimal(reportsummary.R18_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-                : '0'}" style="text-align: right" th:attr="reportLabel='R18', reportAddlCriteria1='C2'"
+                : '0'}" style="text-align: right" th:attr="RowId='R18', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)">
 											</td>
 
 											<td th:text="${reportsummary.R18_non_res_carry_amt != null 
                 ? #numbers.formatDecimal(reportsummary.R18_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-                : '0'}" style="text-align: right" th:attr="reportLabel='R18', reportAddlCriteria1='C3'"
+                : '0'}" style="text-align: right" th:attr="RowId='R18', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)">
 											</td>
 										</tr>
@@ -915,13 +903,13 @@ PURPOSE		: BRRSREPORT
 
 											<td th:text="${reportsummary.R19_res_carry_amt != null 
                 ? #numbers.formatDecimal(reportsummary.R19_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-                : '0'}" style="text-align: right" th:attr="reportLabel='R19', reportAddlCriteria1='C2'"
+                : '0'}" style="text-align: right" th:attr="RowId='R19', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)">
 											</td>
 
 											<td th:text="${reportsummary.R19_non_res_carry_amt != null 
                 ? #numbers.formatDecimal(reportsummary.R19_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-                : '0'}" style="text-align: right" th:attr="reportLabel='R19', reportAddlCriteria1='C3'"
+                : '0'}" style="text-align: right" th:attr="RowId='R19', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)">
 											</td>
 										</tr>
@@ -931,13 +919,13 @@ PURPOSE		: BRRSREPORT
 
 											<td th:text="${reportsummary.R20_res_carry_amt != null 
                 ? #numbers.formatDecimal(reportsummary.R20_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-                : '0'}" style="text-align: right" th:attr="reportLabel='R20', reportAddlCriteria1='C2'"
+                : '0'}" style="text-align: right" th:attr="RowId='R20', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)">
 											</td>
 
 											<td th:text="${reportsummary.R20_non_res_carry_amt != null 
                 ? #numbers.formatDecimal(reportsummary.R20_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-                : '0'}" style="text-align: right" th:attr="reportLabel='R20', reportAddlCriteria1='C3'"
+                : '0'}" style="text-align: right" th:attr="RowId='R20', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)">
 											</td>
 										</tr>
@@ -945,88 +933,72 @@ PURPOSE		: BRRSREPORT
 										<tr>
 											<td th:text="${reportsummary.R21_caoin}" style="padding-left: 50px"></td>
 											<td th:text="${reportsummary.R21_res_carry_amt != null ? #numbers.formatDecimal(reportsummary.R21_res_carry_amt, 1, 'COMMA', 0, 'POINT') : '0'}"
-												style="text-align: right"
-												th:attr="reportLabel='R21', reportAddlCriteria1='C2'"
+												style="text-align: right" th:attr="RowId='R21', ColumnId='C2'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R21_non_res_carry_amt != null ? #numbers.formatDecimal(reportsummary.R21_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R21', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R21', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R22_caoin}" style="padding-left: 50px"></td>
 											<td th:text="${reportsummary.R22_res_carry_amt != null ? #numbers.formatDecimal(reportsummary.R22_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R22', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R22', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R22_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R22_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R22', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R22', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R23_caoin}" style="padding-left: 50px"></td>
 											<td th:text="${reportsummary.R23_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R23_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R23', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R23', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R23_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R23_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R23', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R23', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R24_caoin}" style="padding-left: 50px"></td>
 											<td th:text="${reportsummary.R24_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R24_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R24', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R24', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R24_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R24_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R24', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R24', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R25_caoin}" style="padding-left: 50px"></td>
 											<td th:text="${reportsummary.R25_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R25_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R25', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R25', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R25_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R25_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R25', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R25', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R26_caoin}" style="padding-left: 50px"></td>
 											<td th:text="${reportsummary.R26_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R26_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R26', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R26', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R26_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R26_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
- : '0'}" style="text-align: right" th:attr="reportLabel='R26', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+ : '0'}" style="text-align: right" th:attr="RowId='R26', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R27_caoin}" style="padding-left: 50px"></td>
 											<td th:text="${reportsummary.R27_res_carry_amt != null 
  ? #numbers.formatDecimal(reportsummary.R27_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R27', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R27', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R27_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R27_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R27', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R27', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R28_caoin}" style="padding-left: 50px"></td>
 											<td th:text="${reportsummary.R28_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R28_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
- : '0'}" style="text-align: right" th:attr="reportLabel='R28', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+ : '0'}" style="text-align: right" th:attr="RowId='R28', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R28_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R28_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R28', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R28', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R29_caoin}"></td>
@@ -1041,34 +1013,28 @@ PURPOSE		: BRRSREPORT
 											<td th:text="${reportsummary.R30_caoin}" style="padding-left: 50px"></td>
 											<td th:text="${reportsummary.R30_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R30_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R30', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R30', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R30_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R30_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R30', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R30', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R31_caoin}" style="padding-left: 50px"></td>
 											<td th:text="${reportsummary.R31_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R31_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R31', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R31', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R31_non_res_carry_amt != null 
                             ? #numbers.formatDecimal(reportsummary.R31_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R31', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R31', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R32_caoin}" style="padding-left: 50px"></td>
 											<td th:text="${reportsummary.R32_res_carry_amt != null 
  ? #numbers.formatDecimal(reportsummary.R32_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R32', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R32', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R32_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R32_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
- : '0'}" style="text-align: right" th:attr="reportLabel='R32', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+ : '0'}" style="text-align: right" th:attr="RowId='R32', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R33_caoin}" style="padding-left: 50px"></td>
@@ -1083,34 +1049,28 @@ PURPOSE		: BRRSREPORT
 											<td th:text="${reportsummary.R34_caoin}" style="padding-left: 80px"></td>
 											<td th:text="${reportsummary.R34_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R34_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R34', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R34', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R34_non_res_carry_amt != null 
  ? #numbers.formatDecimal(reportsummary.R34_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R34', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R34', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R35_caoin}" style="padding-left: 80px"></td>
 											<td th:text="${reportsummary.R35_res_carry_amt != null 
  ? #numbers.formatDecimal(reportsummary.R35_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R35', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R35', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R35_non_res_carry_amt != null 
  ? #numbers.formatDecimal(reportsummary.R35_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
- : '0'}" style="text-align: right" th:attr="reportLabel='R35', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+ : '0'}" style="text-align: right" th:attr="RowId='R35', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R36_caoin}" style="padding-left: 80px"></td>
 											<td th:text="${reportsummary.R36_res_carry_amt != null 
  ? #numbers.formatDecimal(reportsummary.R36_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R36', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R36', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R36_non_res_carry_amt != null 
  ? #numbers.formatDecimal(reportsummary.R36_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
- : '0'}" style="text-align: right" th:attr="reportLabel='R36', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+ : '0'}" style="text-align: right" th:attr="RowId='R36', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R37_caoin}" style="padding-left: 50px"></td>
@@ -1125,67 +1085,55 @@ PURPOSE		: BRRSREPORT
 											<td th:text="${reportsummary.R38_caoin}" style="padding-left: 80px"></td>
 											<td th:text="${reportsummary.R38_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R38_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R38', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R38', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R38_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R38_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R38', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R38', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R39_caoin}" style="padding-left: 80px"></td>
 											<td th:text="${reportsummary.R39_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R39_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R39', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R39', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R39_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R39_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R39', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R39', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R40_caoin}" style="padding-left: 80px"></td>
 											<td th:text="${reportsummary.R40_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R40_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R40', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R40', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R40_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R40_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R40', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R40', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R41_caoin}" style="padding-left: 80px"></td>
 											<td th:text="${reportsummary.R41_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R41_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R41', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R41', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R41_non_res_carry_amt != null 
  ? #numbers.formatDecimal(reportsummary.R41_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R41', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R41', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R42_caoin}" style="padding-left: 80px"></td>
 											<td th:text="${reportsummary.R42_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R42_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
-: '0'}" style="text-align: right" th:attr="reportLabel='R42', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+: '0'}" style="text-align: right" th:attr="RowId='R42', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R42_non_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R42_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
- : '0'}" style="text-align: right" th:attr="reportLabel='R42', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+ : '0'}" style="text-align: right" th:attr="RowId='R42', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R43_caoin}" style="padding-left: 50px"></td>
 											<td th:text="${reportsummary.R43_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R43_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
- : '0'}" style="text-align: right" th:attr="reportLabel='R43', reportAddlCriteria1='C2'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+ : '0'}" style="text-align: right" th:attr="RowId='R43', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
 											<td th:text="${reportsummary.R43_non_res_carry_amt != null 
  ? #numbers.formatDecimal(reportsummary.R43_non_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
- : '0'}" style="text-align: right" th:attr="reportLabel='R43', reportAddlCriteria1='C3'"
-												onclick="showdetailsbyRowAndColumn(this)"></td>
+ : '0'}" style="text-align: right" th:attr="RowId='R43', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
 											<td th:text="${reportsummary.R44_caoin}"></td>
@@ -1217,9 +1165,9 @@ PURPOSE		: BRRSREPORT
 											<th>ACCT NO</th>
 											<th>ACCT NAME</th>
 											<th style="text-align: right">ACCT BALANCE</th>
-											<th style="text-align: left">reportLabel</th>
-											<th>reportAddlCriteria1</th>
-											<th>REPORT_DATE</th>
+											<th style="text-align: left">REPORT LABEL</th>
+											<th>REPORT LABEL</th>
+											<th>REPORT ADDL CRITERIA 1</th>
 										</tr>
 
 									</thead>
@@ -1238,7 +1186,7 @@ PURPOSE		: BRRSREPORT
 
 
 											<td style="text-align: right;"
-												th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3, 'POINT')}">
+												th:text="${#numbers.formatDecimal(report.monthlyInterest, 1, 3, 'POINT')}">
 											</td>
 
 											<td th:text="${report.reportLabel}"></td>

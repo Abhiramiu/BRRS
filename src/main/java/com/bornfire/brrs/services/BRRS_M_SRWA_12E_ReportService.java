@@ -406,7 +406,35 @@ public class BRRS_M_SRWA_12E_ReportService {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+										row = sheet.getRow(17);
+
+					// ====================== R18 ======================
+					cell2 = row.createCell(2);
+					if (record.getR18_PERFORMING_EXPOSURE() != null) {
+						cell2.setCellValue(record.getR18_PERFORMING_EXPOSURE().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR18_NON_PERFORMING() != null) {
+						cell3.setCellValue(record.getR18_NON_PERFORMING().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR18_SPECIFIC_PROV() != null) {
+						cell4.setCellValue(record.getR18_SPECIFIC_PROV().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 					
 					
 										
@@ -659,7 +687,35 @@ public class BRRS_M_SRWA_12E_ReportService {
 						cell4.setCellValue("");
 						cell4.setCellStyle(textStyle);
 					}
-					
+										row = sheet.getRow(17);
+
+					// ====================== R18 ======================
+					cell2 = row.createCell(2);
+					if (record.getR18_PERFORMING_EXPOSURE() != null) {
+						cell2.setCellValue(record.getR18_PERFORMING_EXPOSURE().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR18_NON_PERFORMING() != null) {
+						cell3.setCellValue(record.getR18_NON_PERFORMING().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR18_SPECIFIC_PROV() != null) {
+						cell4.setCellValue(record.getR18_SPECIFIC_PROV().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
 					
 					
 					

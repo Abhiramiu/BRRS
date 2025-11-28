@@ -163,7 +163,7 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService<BBRS_Q_SMME_Detail_Repo> {
 				mv.addObject("reportmaster12", T1Dt1);
 				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 			} else {
-				System.out.println("Praveen");
+				
 				// 🔹 Current branch
 				List<Q_SMME_Intrest_Income_Detail_Entity> T1Dt1;
 				if (reportLabel != null && reportAddlCriteria1 != null) {
@@ -881,8 +881,8 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService<BBRS_Q_SMME_Detail_Repo> {
 					row.createCell(2).setCellValue(item.getAcctName());
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					if (item.getAcctBalanceInPula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}

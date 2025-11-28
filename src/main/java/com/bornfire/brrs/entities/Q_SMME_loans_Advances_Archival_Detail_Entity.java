@@ -7,8 +7,8 @@ import javax.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_Q_SMME_INTREST_INCOME_DETAILTABLE")
-public class Q_SMME_Intrest_Income_Detail_Entity {
+@Table(name = "BRRS_Q_SMME_LOANS_ADVANCES_ARCHIVAL_DETAILTABLE")
+public class Q_SMME_loans_Advances_Archival_Detail_Entity {
 
     @Id
     @Column(name = "CUST_ID")
@@ -99,7 +99,7 @@ public class Q_SMME_Intrest_Income_Detail_Entity {
     @Column(name = "DEL_FLG")
     private String delFlg;
 
-    public Q_SMME_Intrest_Income_Detail_Entity() {
+    public Q_SMME_loans_Advances_Archival_Detail_Entity() {
         super();
     }
 
