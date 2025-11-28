@@ -1421,7 +1421,7 @@ public class RegulatoryReportServices {
 			return BRRS_M_PLL_reportservice.getM_PLLDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("M_DEP3Detail".equals(filename)) {
-			return BRRS_M_DEP3_reportservice.BRRS_M_DEP3DetailExcel(
+			return BRRS_M_DEP3_reportservice.getM_DEP3DetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("M_IRBDetail".equals(filename)) {
 			return brrs_m_irb_reportService.BRRS_M_IRBDetailExcel(
@@ -2061,7 +2061,7 @@ public class RegulatoryReportServices {
 			fileData = BRRS_M_PLL_reportservice.getM_PLLDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		} else if (filename.equals("M_DEP3Detail")) {
-			fileData = BRRS_M_DEP3_reportservice.BRRS_M_DEP3DetailExcel(filename, fromdate, todate, currency, dtltype,
+			fileData = BRRS_M_DEP3_reportservice.getM_DEP3DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		} else if (filename.equals("M_IRBDetail")) {
 			fileData = brrs_m_irb_reportService.BRRS_M_IRBDetailExcel(filename, fromdate, todate, currency, dtltype,
@@ -2218,6 +2218,11 @@ public class RegulatoryReportServices {
 					modelAndView = brrs_m_srwa_12a_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+				  case "M_DEP3":
+						modelAndView = BRRS_M_DEP3_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+								request.getParameter("formmode"));
+						break;	
 
 				default:
 					logger.warn("No detail service found for reportId: {}", reportId);
@@ -2286,6 +2291,10 @@ public class RegulatoryReportServices {
 				case "M_SRWA_12A":
 					response = brrs_m_srwa_12a_reportservice.updateDetailEdit(request);
 					break;
+					
+				  case "M_DEP3":
+						response = BRRS_M_DEP3_reportservice.updateDetailEdit(request);
+						break;
 
 				default:
 					logger.warn("Unsupported report ID: {}", reportId);

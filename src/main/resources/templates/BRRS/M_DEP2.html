@@ -54,277 +54,264 @@ PURPOSE		: BRFREPORT
 
 
 
-	<style>
-		.btns {
-			float: right;
-			margin: 5px;
-		}
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
 
-		.col-sm-5 {
-			padding-bottom: 15px;
-		}
+.col-sm-5 {
+	padding-bottom: 15px;
+}
 
-		.list-body {
-			padding: 0px;
-		}
+.list-body {
+	padding: 0px;
+}
 
-		.error {
-			color: red;
-			padding-left: 10px;
-		}
+.error {
+	color: red;
+	padding-left: 10px;
+}
 
-		.formline {
-			padding-bottom: 15px;
-		}
+.formline {
+	padding-bottom: 15px;
+}
 
-		.btn-primary {
-			background-color: #E77400;
-			border-color: #0c0c0c;
-		}
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
 
-		.btn-primary:not(:disabled):not(.disabled).active,
-		.btn-primary:not(:disabled):not(.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
-			color: #fff;
-			background-color: #cc0000;
-			/* fixed from #cc000000 (too many zeros) */
-			border-color: #161617;
-		}
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
 
-		#finusertb {
-			width: 460px;
-		}
+#finusertb {
+	width: 460px;
+}
 
-		.dataTables_wrapper .dataTables_paginate .paginate_button {
-			padding: 0px;
-		}
-	</style>
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+ 
+  
+ 
+ 
+ <style>
+ 	div span {
+    font-weight: bold;
+    color: white !important;
+	}
+  .card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
 
+  .card-header h5 {
+    font-size: 20px;
+    color: #fff;
+    font-weight: 600;
+  }
 
+  .nav-tabs .nav-link {
+    font-weight: 500;
+    border: 1px solid #dee2e6;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    background-color: #f1f1f1;
+    margin-right: 5px;
+  }
 
+  .nav-tabs .nav-link.active {
+    background-color: #ffffff;
+    border-color: #dee2e6 #dee2e6 #ffffff;
+  }
 
-	<style>
-		div span {
-			font-weight: bold;
-			color: white !important;
-		}
+  .table-responsive {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+  }
 
-		.card {
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-			border-radius: 8px;
-		}
+  .table-hover tbody tr:hover {
+    background-color: #f3f6f9;
+  }
 
-		.card-header h5 {
-			font-size: 22px;
-			color: #fff;
-			font-weight: 600;
-		}
+  thead th {
+    position: sticky;
+    top: 0;
+    background-color: #e9ecf0;
+    z-index: 1;
+  }
+  
+.table td{
+	background-color: #FFFFFF;
 
-		.nav-tabs .nav-link {
-			font-weight: 500;
-			border: 1px solid #dee2e6;
-			border-bottom: none;
-			border-radius: 4px 4px 0 0;
-			background-color: #f1f1f1;
-			margin-right: 5px;
-		}
+}
+  
+  
 
-		.nav-tabs .nav-link.active {
-			background-color: #ffffff;
-			border-color: #dee2e6 #dee2e6 #ffffff;
-		}
+  .card-footer {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+  }
 
-		.table-responsive {
-			border: 1px solid #dee2e6;
-			border-radius: 4px;
-		}
+  .btn-xs {
+    padding: 4px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+  }
 
-		.table-hover tbody tr:hover {
-			background-color: #f3f6f9;
-		}
+  #BRFvalidation th, #usertable td {
+    vertical-align: middle;
+    text-align:left;
+    font-size: 16px;
+    font-family: Arial;
+  }
 
-		thead th {
-			position: sticky;
-			top: 0;
-			background-color: #e9ecf0;
-			z-index: 1;
-		}
-
-		.table td {
-			background-color: #FFFFFF;
-
-		}
-
-
-
-		.card-footer {
-			padding: 10px;
-			border-top: 1px solid #ccc;
-		}
-
-		.btn-xs {
-			padding: 4px 12px;
-			font-size: 14px;
-			border-radius: 4px;
-		}
-
-		#BRFvalidation th,
-		#usertable td {
-			vertical-align: middle;
-			text-align: left;
-			font-size: 16px;
-			font-family: Arial;
-		}
-
-		.fa-edit:hover {
-			color: #28a745;
-			transform: scale(1.1);
-		}
+  .fa-edit:hover {
+    color: #28a745;
+    transform: scale(1.1);
+  }
 
 
 
-		td {
-			border: 1px solid rgb(0, 164, 166);
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-		}
-	</style>
+td {
+  border: 1px solid rgb(0,164,166);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+</style>
+ 
+
+<style>
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            background: transparent;
+            transition: border-color 0.3s ease, padding-top 0.3s ease;
+        }
+        .error {
+    		color: red;
+    		padding-top: 15px;
+			}
+        
+        
+
+        .form-control:focus {
+            border-color: #007bff;
+        }
+
+        .form-legend {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: #aaa;
+            background: white;
+            padding: 0 5px;
+            pointer-events: none;
+            transition: 0.3s ease;
+        }
+
+        /* When input or select is focused or has a value, move the label up */
+        .form-control:focus ~ .form-legend,
+        .form-control:not(:placeholder-shown) ~ .form-legend {
+            top: -8px;
+            font-size: 1rem;
+            color: #007bff;
+        }
+
+        /* Hover effect when the input/select is focused */
+        .form-control:focus:hover ~ .form-legend {
+            color: #0056b3; /* Darker shade of blue on hover */
+        }
+
+        /* Ensure the label returns to the normal color after focus or hover is removed */
+        .form-control:not(:focus) ~ .form-legend {
+            color: #aaa; /* Normal label color */
+        }
+    </style>
+   
+    <style>
+/* Red border for invalid inputs */
+input.error, select.error {
+  border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+  color: red;
+  font-size: 0.85em;
+  margin-top: 5px;
+  display: block;
+}
+.underline {
+    text-decoration: underline;
+    color: #08a6f1;
+    cursor: pointer;
+}
+.left-arrow-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+    color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+    background-color: rgb(107, 122, 143);
+    cursor: pointer;
+    transform: scale(1.05);
+    border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+    color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
 
 
-	<style>
-		.form-group {
-			position: relative;
-			margin-bottom: 1.5rem;
-		}
 
-		.form-control {
-			width: 100%;
-			border: 2px solid #ccc;
-			border-radius: 8px;
-			font-size: 1rem;
-			outline: none;
-			background: transparent;
-			transition: border-color 0.3s ease, padding-top 0.3s ease;
-		}
+</style>
+<style>
+  #reports, 
+  #reports th, 
+  #reports td {
+    border: 1px solid black !important;
+  }
 
-		.error {
-			color: red;
-			padding-top: 15px;
-		}
-
-
-
-		.form-control:focus {
-			border-color: #007bff;
-		}
-
-		.form-legend {
-			position: absolute;
-			top: 50%;
-			left: 15px;
-			transform: translateY(-50%);
-			font-size: 1rem;
-			color: #aaa;
-			background: white;
-			padding: 0 5px;
-			pointer-events: none;
-			transition: 0.3s ease;
-		}
-
-		/* When input or select is focused or has a value, move the label up */
-		.form-control:focus~.form-legend,
-		.form-control:not(:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
-
-		/* Hover effect when the input/select is focused */
-		.form-control:focus:hover~.form-legend {
-			color: #0056b3;
-			/* Darker shade of blue on hover */
-		}
-
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not(:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
-		}
-	</style>
-
-	<style>
-		/* Red border for invalid inputs */
-		input.error,
-		select.error {
-			border: 2px solid red !important;
-		}
-
-		/* Error message style */
-		label.error {
-			color: red;
-			font-size: 0.85em;
-			margin-top: 5px;
-			display: block;
-		}
-
-		.underline {
-			text-decoration: underline;
-			color: #08a6f1;
-			cursor: pointer;
-		}
-
-		.left-arrow-circle {
-			width: 35px;
-			height: 35px;
-			border-radius: 50%;
-			background-color: white;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-right: 10px;
-			transition: background-color 0.3s, transform 0.2s;
-		}
-
-		.left-arrow-circle i {
-			color: rgb(107, 122, 143);
-		}
-
-		.left-arrow-circle:hover {
-			background-color: rgb(107, 122, 143);
-			cursor: pointer;
-			transform: scale(1.05);
-			border: 2px solid white;
-		}
-
-		.left-arrow-circle:hover i {
-			color: white;
-		}
-
-		.white-text span {
-			color: white !important;
-		}
-
-		.table-cell tbody td:hover {
-			background-color: #f0f0f0;
-			/* Hover color for cell */
-			cursor: pointer;
-			/* Optional: pointer cursor */
-		}
-
-		
-	</style>
-	<style>
-		#reports,
-		#reports th,
-		#reports td {
-			border: 1px solid black !important;
-		}
-
-		#reports {
-			border-collapse: collapse;
-		}
-	</style>
+  #reports {
+    border-collapse: collapse;
+  }
+</style>
+    
 
 
 
@@ -745,100 +732,95 @@ PURPOSE		: BRFREPORT
 		</script>
 	
 
+
 		<style>
-					/* Keep the header fixed and aligned */
-					.dataTables_scrollHeadInner,
-					.dataTables_scrollBody table {
-					  width: 100% !important;
-					}
 
-					/* Prevent thead shrinking at zoom */
-					.dataTables_scrollHeadInner table {
-					  width: 100% !important;
-					  min-width: 100% !important;
-					}
 
-					#reportdetails {
-					  width: 100% !important;
-					  table-layout: fixed !important;
-					}
+			
+				/* Keep the header fixed and aligned */
+				.dataTables_scrollHeadInner,
+				.dataTables_scrollBody table {
+				  width: 100% !important;
+				}
 
-					#reportdetails th, 
-					#reportdetails td {
-					  white-space: nowrap;
+				/* Prevent thead shrinking at zoom */
+				.dataTables_scrollHeadInner table {
+				  width: 100% !important;
+				  min-width: 100% !important;
+				}
+
+				#reportdetails {
+				  width: 100% !important;
+				  table-layout: fixed !important;
+				}
+
+				#reportdetails th, 
+				#reportdetails td {
+				  white-space: nowrap;
+				}
+				table.dataTable th.dt-type-numeric,
+					table.dataTable th.dt-type-date,
+					table.dataTable td.dt-type-numeric,
+					table.dataTable td.dt-type-date {
+					    text-align: left !important;
 					}
-					table.dataTable th.dt-type-numeric,
-						table.dataTable th.dt-type-date,
-						table.dataTable td.dt-type-numeric,
-						table.dataTable td.dt-type-date {
-						    text-align: left !important;
-						}
+							
+					/* Right-align header (6th column = ACCT BALANCE) */
+														table.dataTable th.dt-type-numeric:nth-child(6) {
+														  text-align: right !important;
+														}
+														
+										
+														
+														/* Right-align data (6th column = ACCT BALANCE) */
+																								#reportdetails td:nth-child(6),
+																								.dataTables_scrollHeadInner table th:nth-child(6) {
+																								 text-align: right !important;
+																								 padding-right: 10px !important;
+																									}
+																									
 						
-						/* Right-align header (6th column = ACCT BALANCE) */
-															table.dataTable th.dt-type-numeric:nth-child(6) {
-															  text-align: right !important;
-															}
-															
-															
-						/* Right-align header (6th column = ACCT BALANCE) */
-															table.dataTable th.dt-type-numeric:nth-child(7) {
-															 text-align: right !important;
-															}
-															
-															/* Right-align data (6th column = ACCT BALANCE) */
-																									#reportdetails td:nth-child(6),
-																									.dataTables_scrollHeadInner table th:nth-child(6) {
-																									 text-align: right !important;
-																									 padding-right: 10px !important;
-																										}
-															/* Right-align data (6th column = ACCT BALANCE) */
-																									#reportdetails td:nth-child(7),
-																									.dataTables_scrollHeadInner table th:nth-child(6) {
-																									 text-align: right !important;
-																									 padding-right: 10px !important;
-																																					}
-						
-				
+
+					  
+					</style>
+			<script th:inline="javascript">
+			  $(document).ready(function () {
+			    var table = $('#reportdetails').DataTable({
+			      scrollY: "550px",
+			      scrollX: true,
+			      scrollCollapse: false,
+			      autoWidth: false,
+			      paging: true,
+			      searching: true,
+			      lengthChange: false,
+			      ordering: true,
+			      pageLength: 100,
+			      fixedHeader: true, // ✅ You can simply set it to true
+				  // ✅ Column width settings
+				   columnDefs: [
+				     { width: "60px", targets: 0 },   // Edit icon column
+				     { width: "80px", targets: 1 }  ,  // S No column
+					 { width: "250px", targets: 7 }    
+					 //{ width: "150px", targets: 8 } 
+					 //{ width: "150px", targets: 9 } 
+				   ],
+
+			      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			    });
+
+			    // ✅ Fix alignment on resize / zoom
+			    $(window).on('resize', function () {
+			      table.columns.adjust().draw(false);
+			    });
+
+			    // ✅ Fix initial misalignment if loaded at non-100% zoom
+			    setTimeout(function () {
+			      table.columns.adjust().draw(false);
+			    }, 500);
+			  });
+			</script>
 
 
-
-						  
-						</style>
-				<script th:inline="javascript">
-				  $(document).ready(function () {
-				    var table = $('#reportdetails').DataTable({
-				      scrollY: "550px",
-				      scrollX: true,
-				      scrollCollapse: true,
-				      autoWidth: false,
-				      paging: true,
-				      searching: true,
-				      lengthChange: false,
-				      ordering: true,
-				      pageLength: 100,
-				      fixedHeader: true, // ✅ You can simply set it to true
-					  // ✅ Column width settings
-					   columnDefs: [
-					     { width: "60px", targets: 0 },   // Edit icon column
-					     { width: "100px", targets: 1 }  ,  // S No column
-						 { width: "113px", targets: 7 }    // S No column
-						
-					   ],
-
-				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-				    });
-
-				    // ✅ Fix alignment on resize / zoom
-				    $(window).on('resize', function () {
-				      table.columns.adjust().draw(false);
-				    });
-
-				    // ✅ Fix initial misalignment if loaded at non-100% zoom
-				    setTimeout(function () {
-				      table.columns.adjust().draw(false);
-				    }, 500);
-				  });
-				</script>
 		
 		<script>
     function submitUpdate() {
@@ -859,9 +841,9 @@ PURPOSE		: BRFREPORT
 
                 // ✅ Handle SUCCESS & NON-SUCCESS (Information)
                 if (response && response.toLowerCase().includes('success')) {
-                	showResultModalDetail('BRRS', response);
+                	showResultModal('BRRS', response);
                 } else {
-                	showResultModalDetail('Information', response || 'No data updated.');
+                	showResultModal('Information', response || 'No data updated.');
                 }
 
                 // Redirect after 1.5 sec
@@ -879,7 +861,7 @@ PURPOSE		: BRFREPORT
                 console.error("Update error:", error);
 
                 // ✅ Handle ERROR
-                showResultModalDetail('Error', 'Failed to update record. Please try again.');
+                showResultModal('Error', 'Failed to update record. Please try again.');
 
                 // Redirect back after delay even on error
                 setTimeout(() => {
@@ -895,7 +877,7 @@ PURPOSE		: BRFREPORT
     
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
-	function closemodels() {
+/*	function closemodels() {
 	    $("#resultModal").modal("hide");
 	    $('#loader').modal('hide');
 
@@ -903,7 +885,7 @@ PURPOSE		: BRFREPORT
 		    setTimeout(function () {
 		        location.reload();
 		    }, 300);
-	}
+	}*/
 
 </script>
 
@@ -2111,7 +2093,7 @@ PURPOSE		: BRFREPORT
 																			<th>ACCT NAME</th>
 																			<th>ACCT BALANCE IN PULA</th>
 																			
-																			<th>REPORT LABLE</th>
+																			<th style="text-align:left;">REPORT LABLE</th>
 																			<th>REPORT ADDL CRITERIA 1</th>
 																			<th>REPORT DATE</th>
 																		</tr>
@@ -2137,7 +2119,7 @@ PURPOSE		: BRFREPORT
 																			
 																			<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT')}"></td>
 																			
-																			<td th:text="${report.reportLable != null ? report.reportLable : '-'}">
+																			<td style="text-align:left;" th:text="${report.reportLable != null ? report.reportLable : '-'}">
 																			</td>
 																			<td
 																				th:text="${report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}">
@@ -2270,33 +2252,33 @@ PURPOSE		: BRFREPORT
 					style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodels()"
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
 						data-dismiss="modal">ok</button>
 				</div>
 			</div>
 		</div>
 	</div>
 	<!-- For Edit in Detail page -->
-	<div class="modal fade" id="resultModal1">
+	<!-- <div class="modal fade" id="resultModal1">
 		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
+			<div class="modal-content"> -->
 				<!-- Your custom styled header -->
-				<div class="menu-title-header">
+				<!-- <div class="menu-title-header">
 					<div class="modal-title" id="resultModalLabel1"
-						style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
+						style="text-align: center; color: white;"> -->
+						<!-- Title will be set by JavaScript 
 					</div>
 				</div>
 				<div class="modal-body"
 					style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody1"></p>
-					<!-- Your custom styled button -->
+					<!-- Your custom styled button 
 					<button type="button" class="custom-tab-btn" onclick="closemodel()"
 						data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
-	</div>
+	</div> -->
 	
 <!-- Custom Cellresult Modal -->
 		<div class="modal fade" id="cellresultModal">
@@ -2324,118 +2306,113 @@ PURPOSE		: BRFREPORT
 
 </body>								
 
+
+
 <style>
-	.dataTables_scrollHeadInner,
-	table.dataTable {
-		width: 100% !important;
-	}
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 620px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
 
-	/* Your existing CSS - this is the correct approach */
-	.scrollable-table-container {
-		/* This is the key: it creates the scroll context */
-		max-height: 700px;
-		/* Or a suitable height like 80vh for responsive design */
-		overflow-y: auto;
-		overflow-x: auto;
-		border: 1px solid #ccc;
-	}
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
 
-	/* Your existing sticky header CSS, targeting the tr elements within the thead */
-	.scrollable-table-container thead tr:nth-child(1) {
-		position: sticky;
-		top: 0;
-		background-color: #b3b6b9;
-		z-index: 5;
-	}
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
 
-	.scrollable-table-container thead tr:nth-child(2) {
-		position: sticky;
-		top: 36px;
-		/* adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 4;
-	}
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
 
-	.scrollable-table-container thead tr:nth-child(3) {
-		position: sticky;
-		top: 72px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 3;
-	}
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
 
-	.scrollable-table-container thead tr:nth-child(4) {
-		position: sticky;
-		top: 100px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 2;
-	}
-
-	.scrollable-table-container thead tr:nth-child(5) {
-		position: sticky;
-		top: 135px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 1;
-	}
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
 </style>
 
 
 <style>
-	.inner {
-		max-height: 600px;
-		/* Adjust height as needed */
-		overflow: auto;
-		border: 1px solid #dee2e6;
-	}
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
 
-	/* Sticky thead */
-	#reports thead th {
-		position: sticky;
-		top: 0;
-		background-color: #f8f9fa;
-		/* Match Bootstrap thead-light */
-		z-index: 2;
-	}
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #D8D8D8; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
 
-	div.dataTables_wrapper div.dataTables_paginate {
-		text-align: right !important;
-		float: right !important;
-		width: auto;
-		margin-top: 10px;
-	}
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
 
-	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-	div.dataTables_wrapper div.dataTables_info {
-		float: left !important;
-		margin-top: 10px;
-	}
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
 
-	.pagination {
-		margin: 0;
-	}
+.pagination {
+	margin: 0;
+}
 
-	.page-item.active .page-link {
-		background-color: #386276;
-		border-color: #386276;
-	}
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
 
-	.page-link {
-		color: #386276;
-	}
+.page-link {
+	color: #386276;
+}
 
-	.page-link:hover {
-		color: #2a4a5c;
-	}
+.page-link:hover {
+	color: #2a4a5c;
+}
 
-	.form-select {
-		display: inline-block;
-		width: auto;
-	}
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+
+.scrollable-table-container thead tr:nth-child(1),
+.scrollable-table-container thead tr:nth-child(2),
+.scrollable-table-container thead tr:nth-child(3),
+.scrollable-table-container thead tr:nth-child(4),
+.scrollable-table-container thead tr:nth-child(5) {
+    background-color: #D8D8D8; /* set header color */
+}
 </style>
-
-
-
 
 </html>
