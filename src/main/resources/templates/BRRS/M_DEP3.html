@@ -1950,7 +1950,7 @@ function cancelModify() {
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	        <td id="r11_fix_depo_19to24" th:text="${#numbers.formatDecimal(reportsummary.r11_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='R11', reportAddlCriteria1='C15'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td id="r11_fix_depo_over24" th:text="${#numbers.formatDecimal(reportsummary.r11_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='R11', reportAddlCriteria1='C15'"
+	        <td id="r11_fix_depo_over24" th:text="${#numbers.formatDecimal(reportsummary.r11_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='R11', reportAddlCriteria1='C16'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td>
 			<td th:each="report: ${reportsummary1}" id="R11" style="text-align: right; width: 200px; padding-left:10px; ">
     	<input
@@ -1962,7 +1962,7 @@ function cancelModify() {
 	         <!-- <td  th:text="${#numbers.formatDecimal(reportsummary.r11_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C17'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td> -->
 	        <td id="r11_total" th:text="${#numbers.formatDecimal(reportsummary.r11_total,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px; background-color: rgb(107, 122, 143);color: white;" ></td>
-	        <td id="r11_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r11_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='R11', reportAddlCriteria1='C9'"
+	        <td id="r11_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r11_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='R11', reportAddlCriteria1='C19'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	        <td id="r11_avg_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r11_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;" th:attr="reportLable='R11', reportAddlCriteria1='C20'"
 													></td>
@@ -2031,7 +2031,7 @@ function cancelModify() {
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	        <td id="r12_fix_depo_19to24" th:text="${#numbers.formatDecimal(reportsummary.r12_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r12', reportAddlCriteria1='C15'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td id="r12_fix_depo_over24" th:text="${#numbers.formatDecimal(reportsummary.r12_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r12', reportAddlCriteria1='C15'"
+	        <td id="r12_fix_depo_over24" th:text="${#numbers.formatDecimal(reportsummary.r12_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r12', reportAddlCriteria1='C16'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td>
 			<td th:each="report: ${reportsummary1}" id="r12" style="text-align: right; width: 200px; padding-left:10px; ">
     	<input
@@ -2043,7 +2043,7 @@ function cancelModify() {
 	         <!-- <td  th:text="${#numbers.formatDecimal(reportsummary.r12_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='r12', reportAddlCriteria1='C17'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td> -->
 	        <td id="r12_total" th:text="${#numbers.formatDecimal(reportsummary.r12_total,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px; background-color: rgb(107, 122, 143);color: white;" ></td>
-	        <td id="r12_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r12_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r12', reportAddlCriteria1='C9'"
+	        <td id="r12_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r12_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r12', reportAddlCriteria1='C19'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	        <td id="r12_avg_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r12_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;background-color: rgb(107, 122, 143);color: white;" th:attr="reportLable='r12', reportAddlCriteria1='C20'"
 													></td>
@@ -2112,7 +2112,7 @@ function cancelModify() {
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	        <td id="r13_fix_depo_19to24" th:text="${#numbers.formatDecimal(reportsummary.r13_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r13', reportAddlCriteria1='C15'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td id="r13_fix_depo_over24" th:text="${#numbers.formatDecimal(reportsummary.r13_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r13', reportAddlCriteria1='C15'"
+	        <td id="r13_fix_depo_over24" th:text="${#numbers.formatDecimal(reportsummary.r13_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r13', reportAddlCriteria1='C16'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td>
 			<td th:each="report: ${reportsummary1}" id="r13" style="text-align: right; width: 200px; padding-left:10px; ">
     	<input
@@ -2124,7 +2124,7 @@ function cancelModify() {
 	         <!-- <td  th:text="${#numbers.formatDecimal(reportsummary.r13_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='r13', reportAddlCriteria1='C17'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td> -->
 	        <td id="r13_total" th:text="${#numbers.formatDecimal(reportsummary.r13_total,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px; background-color: rgb(107, 122, 143);color: white;" ></td>
-	        <td id="r13_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r13_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r13', reportAddlCriteria1='C9'"
+	        <td id="r13_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r13_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r13', reportAddlCriteria1='C19'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	        <td id="r13_avg_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r13_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;" th:attr="reportLable='r13', reportAddlCriteria1='C20'"
 													></td>
@@ -2193,7 +2193,7 @@ function cancelModify() {
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	        <td id="r14_fix_depo_19to24" th:text="${#numbers.formatDecimal(reportsummary.r14_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r14', reportAddlCriteria1='C15'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td id="r14_fix_depo_over24" th:text="${#numbers.formatDecimal(reportsummary.r14_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r14', reportAddlCriteria1='C15'"
+	        <td id="r14_fix_depo_over24" th:text="${#numbers.formatDecimal(reportsummary.r14_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r14', reportAddlCriteria1='C16'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td>
 			<td th:each="report: ${reportsummary1}" id="r14" style="text-align: right; width: 200px; padding-left:10px; ">
     	<input
@@ -2205,7 +2205,7 @@ function cancelModify() {
 	         <!-- <td  th:text="${#numbers.formatDecimal(reportsummary.r14_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='r14', reportAddlCriteria1='C17'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td> -->
 	        <td id="r14_total" th:text="${#numbers.formatDecimal(reportsummary.r14_total,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px; background-color: rgb(107, 122, 143);color: white;" ></td>
-	        <td id="r14_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r14_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r14', reportAddlCriteria1='C9'"
+	        <td id="r14_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r14_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r14', reportAddlCriteria1='C19'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	        <td id="r14_avg_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r14_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;background-color: rgb(107, 122, 143);color: white; width: 200px;" th:attr="reportLable='r14', reportAddlCriteria1='C20'"
 													></td>
@@ -2274,7 +2274,7 @@ function cancelModify() {
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	        <td id="r15_fix_depo_19to24" th:text="${#numbers.formatDecimal(reportsummary.r15_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r15', reportAddlCriteria1='C15'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td id="r15_fix_depo_over24" th:text="${#numbers.formatDecimal(reportsummary.r15_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r15', reportAddlCriteria1='C15'"
+	        <td id="r15_fix_depo_over24" th:text="${#numbers.formatDecimal(reportsummary.r15_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r15', reportAddlCriteria1='C16'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td>
 			<td th:each="report: ${reportsummary1}" id="r15" style="text-align: right; width: 200px; padding-left:10px; ">
     	<input
@@ -2286,7 +2286,7 @@ function cancelModify() {
 	         <!-- <td  th:text="${#numbers.formatDecimal(reportsummary.r15_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='r15', reportAddlCriteria1='C17'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td> -->
 	        <td id="r15_total" th:text="${#numbers.formatDecimal(reportsummary.r15_total,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px; background-color: rgb(107, 122, 143);color: white;" ></td>
-	        <td id="r15_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r15_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r15', reportAddlCriteria1='C9'"
+	        <td id="r15_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r15_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r15', reportAddlCriteria1='C19'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	        <td id="r15_avg_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r15_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; background-color: rgb(107, 122, 143);color: white;width: 200px;" th:attr="reportLable='r15', reportAddlCriteria1='C20'"
 													></td>
@@ -2355,7 +2355,7 @@ function cancelModify() {
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	        <td id="r16_fix_depo_19to24" th:text="${#numbers.formatDecimal(reportsummary.r16_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r16', reportAddlCriteria1='C15'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td id="r16_fix_depo_over24" th:text="${#numbers.formatDecimal(reportsummary.r16_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r16', reportAddlCriteria1='C15'"
+	        <td id="r16_fix_depo_over24" th:text="${#numbers.formatDecimal(reportsummary.r16_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r16', reportAddlCriteria1='C16'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td>
 			<td th:each="report: ${reportsummary1}" id="r16" style="text-align: right; width: 200px; padding-left:10px; ">
     	<input
@@ -2367,7 +2367,7 @@ function cancelModify() {
 	         <!-- <td  th:text="${#numbers.formatDecimal(reportsummary.r16_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='r16', reportAddlCriteria1='C17'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td> -->
 	        <td id="r16_total" th:text="${#numbers.formatDecimal(reportsummary.r16_total,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px; background-color: rgb(107, 122, 143);color: white;" ></td>
-	        <td id="r16_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r16_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r16', reportAddlCriteria1='C9'"
+	        <td id="r16_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r16_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;" th:attr="reportLable='r16', reportAddlCriteria1='C19'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	        <td id="r16_avg_pula_equivalent" th:text="${#numbers.formatDecimal(reportsummary.r16_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right; width: 200px;background-color: rgb(107, 122, 143);color: white;" th:attr="reportLable='r16', reportAddlCriteria1='C20'"
 													></td>
@@ -2490,9 +2490,9 @@ function cancelModify() {
 			id="r18_ex_rate_buy" name="r18_ex_rate_buy"
 			style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right; "
 		readonly /></td> -->
-	      <td  th:text="${#numbers.formatDecimal(reportsummary.r18_ex_rate_buy,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C2'"
+	      <td  th:text="${#numbers.formatDecimal(reportsummary.r18_ex_rate_buy,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"></td> 
-	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_ex_rate_mid,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C3'"
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_ex_rate_mid,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 			<!-- <td th:each="report: ${reportsummary1}" id="R11" style="text-align: right; width: 200px; padding-left:10px; ">
     	<input
@@ -2501,13 +2501,13 @@ function cancelModify() {
 			id="r18_ex_rate_sell" name="r18_ex_rate_sell"
 			style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right; "
 		readonly /></td> -->
-	       <td  th:text="${#numbers.formatDecimal(reportsummary.r18_ex_rate_sell,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C4'"
+	       <td  th:text="${#numbers.formatDecimal(reportsummary.r18_ex_rate_sell,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_current,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C5'"
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_current,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C5'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_call,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C6'"
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_call,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C6'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	         <td  th:text="${#numbers.formatDecimal(reportsummary.r18_savings,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C7'"
+	         <td  th:text="${#numbers.formatDecimal(reportsummary.r18_savings,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C7'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td>
 			<td th:each="report: ${reportsummary1}" id="R11" style="text-align: right; width: 200px; padding-left:10px; ">
     	<input
@@ -2527,19 +2527,19 @@ function cancelModify() {
 		readonly /></td>
 	        <!-- <td  th:text="${#numbers.formatDecimal(reportsummary.r18_notice_32to88,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C9'"
 													onclick="showdetailsbyRowAndColumn(this)"></td> -->
-	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_91_day_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C10'"
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_91_day_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C10'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_1to2,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C11'"
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_1to2,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C11'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_4to6,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C12'"
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_4to6,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C12'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_7to12,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C13'"
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_7to12,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C13'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_13to18,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C14'"
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_13to18,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C14'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C15'"
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_19to24,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C15'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C15'"
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_fix_depo_over24,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C16'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td>
 			<td th:each="report: ${reportsummary1}" id="R11" style="text-align: right; width: 200px; padding-left:10px; ">
     	<input
@@ -2551,9 +2551,9 @@ function cancelModify() {
 	         <!-- <td  th:text="${#numbers.formatDecimal(reportsummary.r18_cer_of_depo,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C17'"
 													onclick="showdetailsbyRowAndColumn(this)" ></td> -->
 	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_total,1,'COMMA',0,'POINT')}" style="text-align: right;" ></td>
-	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C9'"
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C19'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C20'"
+	        <td  th:text="${#numbers.formatDecimal(reportsummary.r18_avg_pula_equivalent,1,'COMMA',0,'POINT')}" style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C20'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 	    </tr>
 	    </tbody>

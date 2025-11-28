@@ -673,50 +673,45 @@ function cancelModify() {
 	}
 
 	
-function calculateR10Totals() {
+	function calculateR10Totals() {
 	    let Capital = 0;
 	    let Net = 0;
 	    let Dir_Risk = 0;
 	    let Commodity = 0;
-	    
+
 	    for (let i = 10; i <= 16; i++) {
 
-	        // Get numeric values, remove commas
 	        let GrossVal = parseFloat($("#R" + i + "_GROSS_OPEN_POS").val().replace(/,/g, "")) || 0;
-	        let ChargeVal = parseFloat($("#R" + i + "_CHARGE_BASIS_RISK").val().replace(/,/g, "")) || 0;
-	        Capital = GrossVal * ChargeVal;
-			$("#R"+i+"_CAPITAL_CHARGE_BASIS_RISK").val(
-				Capital.toLocaleString('en-US')
-			);
+	        let ChargeVal = 0.03;
+	        Capital = Math.round(GrossVal * ChargeVal);
 
-			let LongVal = parseFloat($("#R" + i + "_TOTAL_LONG_POS").val().replace(/,/g, "")) || 0;
+	        $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").val(
+	            Capital.toLocaleString('en-US')
+	        );
+
+	        let LongVal = parseFloat($("#R" + i + "_TOTAL_LONG_POS").val().replace(/,/g, "")) || 0;
 	        let ShortVal = parseFloat($("#R" + i + "_TOTAL_SHORT_POS").val().replace(/,/g, "")) || 0;
-			Net = LongVal - ShortVal;
 
-			$("#R"+i+"_NET_OPEN_POS").val(
-				Net.toLocaleString('en-US')
-			);
+	        Net = Math.round(LongVal - ShortVal);
 
-			let NetVal = parseFloat($("#R" + i + "_NET_OPEN_POS").val().replace(/,/g, "")) || 0;
-	        let RiskVal = parseFloat($("#R" + i + "_CHARGE_DIR_RISK").val().replace(/,/g, "")) || 0;
-			Dir_Risk= Net * RiskVal;
-			$("#R"+i+"_CAPITAL_CHARGE_DIR_RISK").val(
-				Dir_Risk.toLocaleString('en-US')
-			);
+	        $("#R" + i + "_NET_OPEN_POS").val(
+	            Net.toLocaleString('en-US')
+	        );
 
-			let CapVal1 = parseFloat($("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").val().replace(/,/g, "")) || 0;
-	        let CapVal2 = parseFloat($("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").val().replace(/,/g, "")) || 0;
-			Commodity = CapVal1 + Capital;
-			$("#R"+i+"_TOTAL_CAPITAL_CHARGE").val(
-				Commodity.toLocaleString('en-US')
-			);
+	        let RiskVal = 0.15;
+	        Dir_Risk = Math.round(Net * RiskVal);
+
+	        $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").val(
+	            Dir_Risk.toLocaleString('en-US')
+	        );
+
+	        Commodity = Math.round(Dir_Risk + Capital);
+
+	        $("#R" + i + "_TOTAL_CAPITAL_CHARGE").val(
+	            Commodity.toLocaleString('en-US')
+	        );
 	    }
-
-	    
 	}
-
-
-
 
 	   
 
@@ -1062,7 +1057,7 @@ function calculateR10Totals() {
                readonly />
     </td>
 
-    <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
         <input 
                type="text"
                th:value="0.03"
@@ -1070,10 +1065,12 @@ function calculateR10Totals() {
                name="R10_CHARGE_BASIS_RISK"
                style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
                readonly />
-    </td>
+    </td> -->
+    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
 
     <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
     <input type="text"
+    th:value="${report.R10_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R10_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
            id="R10_CAPITAL_CHARGE_BASIS_RISK"
            name="R10_CAPITAL_CHARGE_BASIS_RISK"
            style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1082,23 +1079,27 @@ function calculateR10Totals() {
 
     <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
     <input type="text"
+    th:value="${report.R10_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R10_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
            id="R10_NET_OPEN_POS"
            name="R10_NET_OPEN_POS"
            style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
            readonly />
     </td>
 
-    <td id="ROW10" style="padding-left: 20px;  background-color: #808080;">
-        <input type="text"
-               th:value="0.15"
-               id="R10_CHARGE_DIR_RISK"
-               name="R10_CHARGE_DIR_RISK"
+ <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
+               th:value="0.03"
+               id="R10_CHARGE_BASIS_RISK"
+               name="R10_CHARGE_BASIS_RISK"
                style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
                readonly />
-    </td>
+    </td> -->
+    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
 
     <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
     <input type="text"
+    th:value="${report.R10_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R10_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
            id="R10_CAPITAL_CHARGE_DIR_RISK"
            name="R10_CAPITAL_CHARGE_DIR_RISK"
            style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1107,6 +1108,7 @@ function calculateR10Totals() {
 
     <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
     <input type="text"
+    th:value="${report.R10_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R10_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
            id="R10_TOTAL_CAPITAL_CHARGE"
            name="R10_TOTAL_CAPITAL_CHARGE"
            style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1155,54 +1157,62 @@ function calculateR10Totals() {
                readonly />
     </td>
 
-    <td id="ROW11" style="padding-left: 20px; background-color: #808080;">
-        <input type="text"
+<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
+               th:value="0.03"
+               id="R10_CHARGE_BASIS_RISK"
+               name="R10_CHARGE_BASIS_RISK"
+               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+               readonly />
+    </td> -->
+       <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R11_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R11_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R11_CAPITAL_CHARGE_BASIS_RISK"
+           name="R11_CAPITAL_CHARGE_BASIS_RISK"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R11_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R11_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R11_NET_OPEN_POS"
+           name="R11_NET_OPEN_POS"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+ <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
                th:value="0.03"
                id="R11_CHARGE_BASIS_RISK"
                name="R11_CHARGE_BASIS_RISK"
                style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
                readonly />
+    </td> -->
+    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R11_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R11_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R11_CAPITAL_CHARGE_DIR_RISK"
+           name="R11_CAPITAL_CHARGE_DIR_RISK"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
     </td>
 
-    <td id="ROW11" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R11_CAPITAL_CHARGE_BASIS_RISK"
-               name="R11_CAPITAL_CHARGE_BASIS_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW11" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R11_NET_OPEN_POS"
-               name="R11_NET_OPEN_POS"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW11" style="padding-left: 20px; background-color: #808080;">
-        <input type="text"
-               th:value="0.15"
-               id="R11_CHARGE_DIR_RISK"
-               name="R11_CHARGE_DIR_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td>
-
-    <td id="ROW11" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R11_CAPITAL_CHARGE_DIR_RISK"
-               name="R11_CAPITAL_CHARGE_DIR_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW11" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R11_TOTAL_CAPITAL_CHARGE"
-               name="R11_TOTAL_CAPITAL_CHARGE"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R11_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R11_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R11_TOTAL_CAPITAL_CHARGE"
+           name="R11_TOTAL_CAPITAL_CHARGE"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
     </td>
 </tr>
 
@@ -1248,54 +1258,62 @@ function calculateR10Totals() {
                readonly />
     </td>
 
-    <td id="ROW12" style="padding-left: 20px; background-color: #808080;">
-        <input type="text"
+    <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
+               th:value="0.03"
+               id="R10_CHARGE_BASIS_RISK"
+               name="R10_CHARGE_BASIS_RISK"
+               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+               readonly />
+    </td> -->
+       <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R12_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R12_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R12_CAPITAL_CHARGE_BASIS_RISK"
+           name="R12_CAPITAL_CHARGE_BASIS_RISK"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R12_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R12_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R12_NET_OPEN_POS"
+           name="R12_NET_OPEN_POS"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+ <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
                th:value="0.03"
                id="R12_CHARGE_BASIS_RISK"
                name="R12_CHARGE_BASIS_RISK"
                style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
                readonly />
+    </td> -->
+    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R12_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R12_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R12_CAPITAL_CHARGE_DIR_RISK"
+           name="R12_CAPITAL_CHARGE_DIR_RISK"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
     </td>
 
-    <td id="ROW12" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R12_CAPITAL_CHARGE_BASIS_RISK"
-               name="R12_CAPITAL_CHARGE_BASIS_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW12" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R12_NET_OPEN_POS"
-               name="R12_NET_OPEN_POS"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW12" style="padding-left: 20px; background-color: #808080;">
-        <input type="text"
-               th:value="0.15"
-               id="R12_CHARGE_DIR_RISK"
-               name="R12_CHARGE_DIR_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td>
-
-    <td id="ROW12" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R12_CAPITAL_CHARGE_DIR_RISK"
-               name="R12_CAPITAL_CHARGE_DIR_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW12" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R12_TOTAL_CAPITAL_CHARGE"
-               name="R12_TOTAL_CAPITAL_CHARGE"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R12_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R12_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R12_TOTAL_CAPITAL_CHARGE"
+           name="R12_TOTAL_CAPITAL_CHARGE"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
     </td>
 </tr>
 
@@ -1341,54 +1359,62 @@ function calculateR10Totals() {
                readonly />
     </td>
 
-    <td id="ROW13" style="padding-left: 20px; background-color: #808080;">
-        <input type="text"
+<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
+               th:value="0.03"
+               id="R10_CHARGE_BASIS_RISK"
+               name="R10_CHARGE_BASIS_RISK"
+               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+               readonly />
+    </td> -->
+        <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R13_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R13_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R13_CAPITAL_CHARGE_BASIS_RISK"
+           name="R13_CAPITAL_CHARGE_BASIS_RISK"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R13_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R13_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R13_NET_OPEN_POS"
+           name="R13_NET_OPEN_POS"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+ <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
                th:value="0.03"
                id="R13_CHARGE_BASIS_RISK"
                name="R13_CHARGE_BASIS_RISK"
                style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
                readonly />
+    </td> -->
+    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R13_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R13_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R13_CAPITAL_CHARGE_DIR_RISK"
+           name="R13_CAPITAL_CHARGE_DIR_RISK"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
     </td>
 
-    <td id="ROW13" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R13_CAPITAL_CHARGE_BASIS_RISK"
-               name="R13_CAPITAL_CHARGE_BASIS_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW13" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R13_NET_OPEN_POS"
-               name="R13_NET_OPEN_POS"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW13" style="padding-left: 20px; background-color: #808080;">
-        <input type="text"
-               th:value="0.15"
-               id="R13_CHARGE_DIR_RISK"
-               name="R13_CHARGE_DIR_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td>
-
-    <td id="ROW13" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R13_CAPITAL_CHARGE_DIR_RISK"
-               name="R13_CAPITAL_CHARGE_DIR_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW13" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R13_TOTAL_CAPITAL_CHARGE"
-               name="R13_TOTAL_CAPITAL_CHARGE"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R13_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R13_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R13_TOTAL_CAPITAL_CHARGE"
+           name="R13_TOTAL_CAPITAL_CHARGE"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
     </td>
 </tr>
 
@@ -1434,54 +1460,62 @@ function calculateR10Totals() {
                readonly />
     </td>
 
-    <td id="ROW14" style="padding-left: 20px;  background-color: #808080;">
-        <input type="text"
+<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
+               th:value="0.03"
+               id="R10_CHARGE_BASIS_RISK"
+               name="R10_CHARGE_BASIS_RISK"
+               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+               readonly />
+    </td> -->
+      <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R14_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R14_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R14_CAPITAL_CHARGE_BASIS_RISK"
+           name="R14_CAPITAL_CHARGE_BASIS_RISK"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R14_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R14_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R14_NET_OPEN_POS"
+           name="R14_NET_OPEN_POS"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+ <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
                th:value="0.03"
                id="R14_CHARGE_BASIS_RISK"
                name="R14_CHARGE_BASIS_RISK"
                style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
                readonly />
+    </td> -->
+    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R14_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R14_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R14_CAPITAL_CHARGE_DIR_RISK"
+           name="R14_CAPITAL_CHARGE_DIR_RISK"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
     </td>
 
-    <td id="ROW14" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R14_CAPITAL_CHARGE_BASIS_RISK"
-               name="R14_CAPITAL_CHARGE_BASIS_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW14" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R14_NET_OPEN_POS"
-               name="R14_NET_OPEN_POS"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW14" style="padding-left: 20px; background-color: #808080;">
-        <input type="text"
-               th:value="0.15"
-               id="R14_CHARGE_DIR_RISK"
-               name="R14_CHARGE_DIR_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td>
-
-    <td id="ROW14" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R14_CAPITAL_CHARGE_DIR_RISK"
-               name="R14_CAPITAL_CHARGE_DIR_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW14" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R14_TOTAL_CAPITAL_CHARGE"
-               name="R14_TOTAL_CAPITAL_CHARGE"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R14_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R14_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R14_TOTAL_CAPITAL_CHARGE"
+           name="R14_TOTAL_CAPITAL_CHARGE"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
     </td>
 </tr>
 
@@ -1527,54 +1561,62 @@ function calculateR10Totals() {
                readonly />
     </td>
 
-    <td id="ROW15" style="padding-left: 20px; background-color: #808080;">
-        <input type="text"
+<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
+               th:value="0.03"
+               id="R10_CHARGE_BASIS_RISK"
+               name="R10_CHARGE_BASIS_RISK"
+               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+               readonly />
+    </td> -->
+      <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R15_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R15_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R15_CAPITAL_CHARGE_BASIS_RISK"
+           name="R15_CAPITAL_CHARGE_BASIS_RISK"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R15_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R15_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R15_NET_OPEN_POS"
+           name="R15_NET_OPEN_POS"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+ <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
                th:value="0.03"
                id="R15_CHARGE_BASIS_RISK"
                name="R15_CHARGE_BASIS_RISK"
                style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
                readonly />
+    </td> -->
+    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R15_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R15_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R15_CAPITAL_CHARGE_DIR_RISK"
+           name="R15_CAPITAL_CHARGE_DIR_RISK"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
     </td>
 
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R15_CAPITAL_CHARGE_BASIS_RISK"
-               name="R15_CAPITAL_CHARGE_BASIS_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R15_NET_OPEN_POS"
-               name="R15_NET_OPEN_POS"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW15" style="padding-left: 20px; background-color: #808080;">
-        <input type="text"
-               th:value="0.15"
-               id="R15_CHARGE_DIR_RISK"
-               name="R15_CHARGE_DIR_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td>
-
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R15_CAPITAL_CHARGE_DIR_RISK"
-               name="R15_CAPITAL_CHARGE_DIR_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R15_TOTAL_CAPITAL_CHARGE"
-               name="R15_TOTAL_CAPITAL_CHARGE"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R15_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R15_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R15_TOTAL_CAPITAL_CHARGE"
+           name="R15_TOTAL_CAPITAL_CHARGE"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
     </td>
 </tr>
 
@@ -1620,54 +1662,62 @@ function calculateR10Totals() {
                readonly />
     </td>
 
-    <td id="ROW16" style="padding-left: 20px; background-color: #808080;">
-        <input type="text"
+<!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
+               th:value="0.03"
+               id="R10_CHARGE_BASIS_RISK"
+               name="R10_CHARGE_BASIS_RISK"
+               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+               readonly />
+    </td> -->
+     <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.03</td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R16_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R16_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R16_CAPITAL_CHARGE_BASIS_RISK"
+           name="R16_CAPITAL_CHARGE_BASIS_RISK"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R16_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R16_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R16_NET_OPEN_POS"
+           name="R16_NET_OPEN_POS"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+    </td>
+
+ <!--     <td id="ROW10" style="padding-left: 20px; background-color: #808080;">
+        <input 
+               type="text"
                th:value="0.03"
                id="R16_CHARGE_BASIS_RISK"
                name="R16_CHARGE_BASIS_RISK"
                style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
                readonly />
+    </td> -->
+    <td style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;">0.15</td>
+
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R16_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R16_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R16_CAPITAL_CHARGE_DIR_RISK"
+           name="R16_CAPITAL_CHARGE_DIR_RISK"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
     </td>
 
-    <td id="ROW16" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R16_CAPITAL_CHARGE_BASIS_RISK"
-               name="R16_CAPITAL_CHARGE_BASIS_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW16" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R16_NET_OPEN_POS"
-               name="R16_NET_OPEN_POS"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW16" style="padding-left: 20px; background-color: #808080;">
-        <input type="text"
-               th:value="0.15"
-               id="R16_CHARGE_DIR_RISK"
-               name="R16_CHARGE_DIR_RISK"
-               style="background-color: #808080; width: 200px; height: 28px; border-color: transparent; text-align: center;"
-               readonly />
-    </td>
-
-    <td id="ROW16" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R16_CAPITAL_CHARGE_DIR_RISK"
-               name="R16_CAPITAL_CHARGE_DIR_RISK"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>
-
-    <td id="ROW16" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
-        <input type="text"
-               id="R16_TOTAL_CAPITAL_CHARGE"
-               name="R16_TOTAL_CAPITAL_CHARGE"
-               style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
+    <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
+    <input type="text"
+    th:value="${report.R16_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R16_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="R16_TOTAL_CAPITAL_CHARGE"
+           name="R16_TOTAL_CAPITAL_CHARGE"
+           style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
     </td>
 </tr>
 
@@ -1685,6 +1735,7 @@ function calculateR10Totals() {
 
 	<td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
         <input type="text"
+        		th:value="${report.R17_TOTAL_LONG_POS != null ? #numbers.formatDecimal(report.R17_TOTAL_LONG_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R17_TOTAL_LONG_POS"
                name="R17_TOTAL_LONG_POS"
                style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1693,6 +1744,7 @@ function calculateR10Totals() {
 
 	<td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
         <input type="text"
+        th:value="${report.R17_TOTAL_SHORT_POS != null ? #numbers.formatDecimal(report.R17_TOTAL_SHORT_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R17_TOTAL_SHORT_POS"
                name="R17_TOTAL_SHORT_POS"
                style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1701,6 +1753,7 @@ function calculateR10Totals() {
 
 	<td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
         <input type="text"
+        th:value="${report.R17_GROSS_OPEN_POS != null ? #numbers.formatDecimal(report.R17_GROSS_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R17_GROSS_OPEN_POS"
                name="R17_GROSS_OPEN_POS"
                style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1718,6 +1771,7 @@ function calculateR10Totals() {
 
     <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
         <input type="text"
+        th:value="${report.R17_CAPITAL_CHARGE_BASIS_RISK != null ? #numbers.formatDecimal(report.R17_CAPITAL_CHARGE_BASIS_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R17_CAPITAL_CHARGE_BASIS_RISK"
                name="R17_CAPITAL_CHARGE_BASIS_RISK"
                style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1726,6 +1780,7 @@ function calculateR10Totals() {
 
     <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
         <input type="text"
+        th:value="${report.R17_NET_OPEN_POS != null ? #numbers.formatDecimal(report.R17_NET_OPEN_POS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R17_NET_OPEN_POS"
                name="R17_NET_OPEN_POS"
                style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1743,6 +1798,7 @@ function calculateR10Totals() {
 
     <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
         <input type="text"
+        th:value="${report.R17_CAPITAL_CHARGE_DIR_RISK != null ? #numbers.formatDecimal(report.R17_CAPITAL_CHARGE_DIR_RISK, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R17_CAPITAL_CHARGE_DIR_RISK"
                name="R17_CAPITAL_CHARGE_DIR_RISK"
                style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1751,6 +1807,7 @@ function calculateR10Totals() {
 
     <td id="ROW17" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
         <input type="text"
+        th:value="${report.R17_TOTAL_CAPITAL_CHARGE != null ? #numbers.formatDecimal(report.R17_TOTAL_CAPITAL_CHARGE, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R17_TOTAL_CAPITAL_CHARGE"
                name="R17_TOTAL_CAPITAL_CHARGE"
                style="background-color: rgb(107, 122, 143); color: white;  width: 200px; height: 28px; border-color: transparent; text-align: right;"
