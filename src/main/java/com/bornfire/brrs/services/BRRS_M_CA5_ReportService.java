@@ -981,11 +981,11 @@ public class BRRS_M_CA5_ReportService {
 //			 --- End of Style Definitions ---
 			
 			if (!dataList1.isEmpty()) {
-			    populateEntity1Data(sheet, dataList1.get(0), textStyle, numberStyle, numberStyle); // only 2 styles
+				populateEntity1Data(sheet, dataList1.get(0), textStyle, numberStyle, dateStyle); // only 2 styles
 			}
 
 			if (!dataList2.isEmpty()) {
-			    populateEntity2Data(sheet, dataList2.get(0), textStyle, numberStyle, numberStyle); // only 2 styles
+				populateEntity2Data(sheet, dataList2.get(0), textStyle, numberStyle, dateStyle); // only 2 styles
 			}
 
 

@@ -638,7 +638,7 @@ public class BRRS_M_SEC_ReportService {
     // ARCHIVAL check
     if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
         logger.info("Service: Generating ARCHIVAL report for version {}", version);
-        return BRRS_M_SECResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+        return getExcelM_SECARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
     }
     // RESUB check
     else if ("RESUB".equalsIgnoreCase(type) && version != null && !version.trim().isEmpty()) {
@@ -1626,94 +1626,73 @@ if (!dataList1.isEmpty()) {
 	}
 
 	public byte[] getExcelM_SECARCHIVAL(String filename, String reportId, String fromdate,
-			String todate,
-			String currency, String dtltype, String type, String version) throws Exception {
-		logger.info("Service: Starting Excel generation process in memory.");
-		if ("ARCHIVAL".equals(type) && version != null) {
-		}
-			List<BRRS_M_SEC_Archival_Summary_Entity1> dataList1 = archivalSummaryRepo1
-					.getdatabydateListarchival(dateformat.parse(todate), version);
-			List<BRRS_M_SEC_Archival_Summary_Entity2> dataList2 = archivalSummaryRepo2
-					.getdatabydateListarchival(dateformat.parse(todate), version);
-			List<BRRS_M_SEC_Archival_Summary_Entity3> dataList3 = archivalSummaryRepo3
-					.getdatabydateListarchival(dateformat.parse(todate), version);
-			List<BRRS_M_SEC_Archival_Summary_Entity4> dataList4 = archivalSummaryRepo4
-					.getdatabydateListarchival(dateformat.parse(todate), version);
-		
+            String todate, String currency, String dtltype,
+            String type, String version) throws Exception {
 
-			
-		
-		if (dataList1.isEmpty()) {
-			logger.warn("Service: No data found for M_SRWA_12G report. Returning empty result.");
-			return new byte[0];
-		}
-		
-		if (dataList2.isEmpty()) {
-			logger.warn("Service: No data found for M_SRWA_12G report. Returning empty result.");
-			return new byte[0];
-		}
-		
-		if (dataList3.isEmpty()) {
-			logger.warn("Service: No data found for M_SRWA_12G report. Returning empty result.");
-			return new byte[0];
-		}
-		
-		if (dataList4.isEmpty()) {
-			logger.warn("Service: No data found for M_SRWA_12G report. Returning empty result.");
-			return new byte[0];
-		}
+logger.info("Service: Starting Excel generation process in memory.");
 
-		String templateDir = env.getProperty("output.exportpathtemp");
-		String templateFileName = filename;
-		System.out.println(filename);
-		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
+// --- LOAD ARCHIVAL DATA ---
+List<BRRS_M_SEC_Archival_Summary_Entity1> dataList1 =
+archivalSummaryRepo1.getdatabydateListarchival(dateformat.parse(todate), version);
+List<BRRS_M_SEC_Archival_Summary_Entity2> dataList2 =
+archivalSummaryRepo2.getdatabydateListarchival(dateformat.parse(todate), version);
+List<BRRS_M_SEC_Archival_Summary_Entity3> dataList3 =
+archivalSummaryRepo3.getdatabydateListarchival(dateformat.parse(todate), version);
+List<BRRS_M_SEC_Archival_Summary_Entity4> dataList4 =
+archivalSummaryRepo4.getdatabydateListarchival(dateformat.parse(todate), version);
 
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+// --- LOG IF EMPTY BUT DO NOT CANCEL DOWNLOAD ---
+if (dataList1.isEmpty()) logger.warn("ARCHIVAL List1 is empty (continuing).");
+if (dataList2.isEmpty()) logger.warn("ARCHIVAL List2 is empty (continuing).");
+if (dataList3.isEmpty()) logger.warn("ARCHIVAL List3 is empty (continuing).");
+if (dataList4.isEmpty()) logger.warn("ARCHIVAL List4 is empty (continuing).");
 
-		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-		}
-		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-		}
+// --- LOAD TEMPLATE ---
+String templateDir = env.getProperty("output.exportpathtemp");
+Path templatePath = Paths.get(templateDir, filename);
 
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
-				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-			Sheet sheet = workbook.getSheetAt(0);
+logger.info("Service: Loading template → {}", templatePath.toAbsolutePath());
 
-			// --- Style Definitions ---
-			CreationHelper createHelper = workbook.getCreationHelper();
+if (!Files.exists(templatePath)) {
+throw new FileNotFoundException("Template file not found: " + templatePath.toAbsolutePath());
+}
+if (!Files.isReadable(templatePath)) {
+throw new SecurityException("Template file exists but not readable: " + templatePath.toAbsolutePath());
+}
 
-			CellStyle dateStyle = workbook.createCellStyle();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-			dateStyle.setBorderBottom(BorderStyle.THIN);
-			dateStyle.setBorderTop(BorderStyle.THIN);
-			dateStyle.setBorderLeft(BorderStyle.THIN);
-			dateStyle.setBorderRight(BorderStyle.THIN);
-			CellStyle textStyle = workbook.createCellStyle();
-			textStyle.setBorderBottom(BorderStyle.THIN);
-			textStyle.setBorderTop(BorderStyle.THIN);
-			textStyle.setBorderLeft(BorderStyle.THIN);
-			textStyle.setBorderRight(BorderStyle.THIN);
+// --- PROCESS EXCEL ---
+try (InputStream templateInputStream = Files.newInputStream(templatePath);
+Workbook workbook = WorkbookFactory.create(templateInputStream);
+ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-			// Create the font
-			Font font = workbook.createFont();
-			font.setFontHeightInPoints((short) 8); // size 8
-			font.setFontName("Arial");
-			CellStyle numberStyle = workbook.createCellStyle();
-			// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-			numberStyle.setBorderBottom(BorderStyle.THIN);
-			numberStyle.setBorderTop(BorderStyle.THIN);
-			numberStyle.setBorderLeft(BorderStyle.THIN);
-			numberStyle.setBorderRight(BorderStyle.THIN);
-			numberStyle.setFont(font);
+Sheet sheet = workbook.getSheetAt(0);
+
+// --- STYLE DEFINITIONS ---
+CreationHelper createHelper = workbook.getCreationHelper();
+
+CellStyle dateStyle = workbook.createCellStyle();
+dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+dateStyle.setBorderBottom(BorderStyle.THIN);
+dateStyle.setBorderTop(BorderStyle.THIN);
+dateStyle.setBorderLeft(BorderStyle.THIN);
+dateStyle.setBorderRight(BorderStyle.THIN);
+
+CellStyle textStyle = workbook.createCellStyle();
+textStyle.setBorderBottom(BorderStyle.THIN);
+textStyle.setBorderTop(BorderStyle.THIN);
+textStyle.setBorderLeft(BorderStyle.THIN);
+textStyle.setBorderRight(BorderStyle.THIN);
+
+Font font = workbook.createFont();
+font.setFontHeightInPoints((short) 8);
+font.setFontName("Arial");
+
+CellStyle numberStyle = workbook.createCellStyle();
+numberStyle.setBorderBottom(BorderStyle.THIN);
+numberStyle.setBorderTop(BorderStyle.THIN);
+numberStyle.setBorderLeft(BorderStyle.THIN);
+numberStyle.setBorderRight(BorderStyle.THIN);
+numberStyle.setFont(font);
 			// --- End of Style Definitions ---	
 			
 			int startRow = 10;
