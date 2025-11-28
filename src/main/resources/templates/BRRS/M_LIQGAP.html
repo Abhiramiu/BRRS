@@ -1,0 +1,3402 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: HARIHARAN M V 
+CREATED ON	: 04.08.2025
+PURPOSE		: BRRS_M_CA2REPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+	<!-- JavaScript -->
+	<!-- jQuery core (required first) -->
+	
+
+	<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+	
+	<!-- jQuery (required first) -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	
+	<!-- Bootstrap + Others -->
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+ 
+  
+ 
+ 
+ <style>
+ 	div span {
+    font-weight: bold;
+    color: white !important;
+	}
+  .card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+
+  .card-header h5 {
+    font-size: 22px;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .nav-tabs .nav-link {
+    font-weight: 500;
+    border: 1px solid #dee2e6;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    background-color: #f1f1f1;
+    margin-right: 5px;
+  }
+
+  .nav-tabs .nav-link.active {
+    background-color: #ffffff;
+    border-color: #dee2e6 #dee2e6 #ffffff;
+  }
+
+  .table-responsive {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #f3f6f9;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background-color: #e9ecf0;
+    z-index: 1;
+  }
+  
+.table td{
+	background-color: #FFFFFF;
+
+}
+  
+  
+
+  .card-footer {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+  }
+
+  .btn-xs {
+    padding: 4px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+
+  #BRFvalidation th, #usertable td {
+    vertical-align: middle;
+    text-align: left;
+    font-size: 16px;
+    font-family: Arial;
+  }
+
+  .fa-edit:hover {
+    color: #28a745;
+    transform: scale(1.1);
+  }
+
+
+
+td {
+  border: 1px solid rgb(0,164,166);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+</style>
+ 
+
+<style>
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            background: transparent;
+            transition: border-color 0.3s ease, padding-top 0.3s ease;
+        }
+        .error {
+    		color: red;
+    		padding-top: 15px;
+			}
+        
+        
+
+        .form-control:focus {
+            border-color: #007bff;
+        }
+
+        .form-legend {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: #aaa;
+            background: white;
+            padding: 0 5px;
+            pointer-events: none;
+            transition: 0.3s ease;
+        }
+
+        /* When input or select is focused or has a value, move the label up */
+        .form-control:focus ~ .form-legend,
+        .form-control:not(:placeholder-shown) ~ .form-legend {
+            top: -8px;
+            font-size: 1rem;
+            color: #007bff;
+        }
+
+        /* Hover effect when the input/select is focused */
+        .form-control:focus:hover ~ .form-legend {
+            color: #0056b3; /* Darker shade of blue on hover */
+        }
+
+        /* Ensure the label returns to the normal color after focus or hover is removed */
+        .form-control:not(:focus) ~ .form-legend {
+            color: #aaa; /* Normal label color */
+        }
+    </style>
+   
+    <style>
+/* Red border for invalid inputs */
+input.error, select.error {
+  border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+  color: red;
+  font-size: 0.85em;
+  margin-top: 5px;
+  display: block;
+}
+.underline {
+    text-decoration: underline;
+    color: #08a6f1;
+    cursor: pointer;
+}
+.left-arrow-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+    color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+    background-color: rgb(107, 122, 143);
+    cursor: pointer;
+    transform: scale(1.05);
+    border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+    color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+.table-cell tbody td:hover {
+	background-color: #f0f0f0;
+	/* Hover color for cell */
+	cursor: pointer;
+	/* Optional: pointer cursor */
+}
+
+
+
+</style>
+<style>
+  #reports, 
+  #reports th, 
+  #reports td {
+    border: 1px solid black !important;
+  }
+
+  #reports {
+    border-collapse: collapse;
+  }
+</style>
+
+<style>
+			.header-bar {
+			  display: flex;
+			  align-items: center;
+			  flex-wrap: wrap; /* ✅ allows wrapping on smaller screens */
+			  gap: 10px; /* spacing between elements */
+			  cursor: pointer;
+			}
+
+			/* 🔘 Circular arrow */
+			.left-arrow-circle {
+			  width: 35px;
+			  height: 35px;
+			  border-radius: 50%;
+			  background-color: white;
+			  color: #1f3a93;
+			  display: flex;
+			  align-items: center;
+			  justify-content: center;
+			  margin-right: 10px;
+			}
+
+			.left-arrow-circle i {
+			  font-size: 18px;
+			}
+
+			/* 🏷️ Title */
+			.header-title {
+			  font-family: Arial, sans-serif;
+			  font-size: 20px;
+			  font-weight: bold;
+			  color: white;
+			  margin: 0;
+			  flex-shrink: 0;
+			}
+
+			/* 🚌 Bus display style box */
+			.boards {
+				margin-left: 20px;
+				transform: translateY(6px);
+			  background-color: rgb(107, 122, 143);
+			  color: white;
+			  padding: 5px 5px;
+			  border-radius: 8px;
+			  overflow: hidden;
+			  white-space: nowrap;
+			  flex: 1; /* ✅ makes it take available space dynamically */
+			  min-width: 200px;
+			  box-shadow: 0 0 10px rgb(107, 122, 143);
+			  position: relative;
+			}
+
+			/* ✨ Scrolling animation */
+			.scrolling-text {
+			  display: inline-block;
+			  font-family: "Courier New", monospace;
+			  font-weight: bold;
+			  letter-spacing: 1px;
+			  animation: scroll-left 10s linear infinite;
+			}
+
+			@keyframes scroll-left {
+			  0% {
+			    transform: translateX(100%);
+			  }
+			  100% {
+			    transform: translateX(-100%);
+			  }
+			}
+
+			</style>
+			
+			<style>
+								/* Keep the header fixed and aligned */
+								.dataTables_scrollHeadInner,
+								.dataTables_scrollBody table {
+								  width: 100% !important;
+								}
+
+								/* Prevent thead shrinking at zoom */
+								.dataTables_scrollHeadInner table {
+								  width: 100% !important;
+								  min-width: 100% !important;
+								}
+
+								#reportdetails {
+								  width: 100% !important;
+								  table-layout: fixed !important;
+								}
+
+								#reportdetails th, 
+								#reportdetails td {
+								  white-space: nowrap;
+								}
+								table.dataTable th.dt-type-numeric,
+									table.dataTable th.dt-type-date,
+									table.dataTable td.dt-type-numeric,
+									table.dataTable td.dt-type-date {
+									    text-align: left !important;
+									}
+									/* Right-align header (6th column = ACCT BALANCE) */
+									table.dataTable th.dt-type-numeric:nth-child(6) {
+									  text-align: right !important;
+									}
+
+									
+
+
+									  
+									</style>
+									
+							<script th:inline="javascript">
+							  $(document).ready(function () {
+							    var table = $('#reportdetails').DataTable({
+							      scrollY: "550px",
+							      scrollX: true,
+							      scrollCollapse: true,
+							      autoWidth: false,
+							      paging: true,
+							      searching: true,
+							      lengthChange: false,
+							      ordering: true,
+							      pageLength: 100,
+							      fixedHeader: true, // ✅ You can simply set it to true
+								  // ✅ Column width settings
+								   columnDefs: [
+								     { width: "60px", targets: 0 },   // Edit icon column
+								     { width: "150px", targets: 1 }  ,  // S No column
+									 { width: "300px", targets: 7 }    // S No column
+								   ],
+
+							      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+							    });
+
+							    // ✅ Fix alignment on resize / zoom
+							    $(window).on('resize', function () {
+							      table.columns.adjust().draw(false);
+							    });
+
+							    // ✅ Fix initial misalignment if loaded at non-100% zoom
+							    setTimeout(function () {
+							      table.columns.adjust().draw(false);
+							    }, 500);
+							  });
+							</script>
+    
+
+<script th:inline="javascript">
+
+$(document).ready(function() {
+    // hide loader on normal load
+    $('#loader').modal('hide');
+});
+
+$(window).on('pageshow', function() {
+    // hide loader on back/forward nav
+    $('#loader').modal('hide');
+});
+
+$(window).on('beforeunload', function() {
+    // hide loader on leaving page
+    $('#loader').modal('hide');
+});
+
+	
+				
+		$(document).ready(function() {
+			Maker_Checker_Function(); 
+		});
+
+		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",    
+				type: "GET",
+				success: function(roleId) {
+					// console.log("User Role ID:", roleId);
+				
+					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
+						const modifyBtn = document.getElementById("addRecord");
+						if (modifyBtn) modifyBtn.style.display = "none";
+					}
+
+					if (roleId === "ADM-M" || roleId === "USR-M") {
+								const button = document.getElementById("custom-tab-btnAdd");
+								if (button) button.style.display = "none";
+							}
+
+				},
+				error: function(err) {
+					console.error("Error fetching role:", err);
+		     }
+		    });
+		}
+
+
+
+	function home() {
+        $("#loader").modal("toggle");
+		location.href = 'Dashboard'
+	}
+
+	function back() {
+        $("#loader").modal("toggle");
+
+		window.history.back();
+	}
+	
+	//to fetch summary from the database - called from the summary button
+	function showdetails() {
+    
+    var Callurl;
+    	$('#loader').modal('show');
+        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/ 
+        location.href = Callurl;
+        	console.log(Callurl);
+			
+   /*  $.ajax({
+        type: 'get',
+        url: Callurl,
+        beforeSend: function () {
+            $('#loader').modal('show'); // 🔄 Show loader
+        },
+        success: function (data) {
+            $('.content').html(data);
+            //$("#detailsbtn").addClass("active");
+            //tablepagination();
+        },
+        complete: function () {
+            $('#loader').modal('hide'); 
+        },
+        error: function () {
+        	  $('#loader').modal('hide');
+            alert("Something went wrong. Please try again.");
+          
+        }
+    }); */
+}
+	
+	function showsummary() {
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/;								
+		location.href = Callurl;
+
+	}
+    </script>
+  
+  
+<script>
+
+	function startReport(button){
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+			
+			if(sessionfilename==filename){
+				alertMsg.innerHTML ='Download request already Processing...';
+	       	 	showAlert();
+				return;
+			}
+			
+			alertMsg.innerHTML ='Download request Processing...';
+	   	 	showAlert();
+
+	   	 	
+			const baseUrl = '/BRRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+		    fetch(downloadUrl)  // ✅ no invalid characters now
+		        .then(res => res.text())
+		        .then(jobId => {
+
+		        	alertMsg.innerHTML ='Download request received...'+jobId;
+		       	 	showAlert();
+		            sessionStorage.setItem("jobId", jobId);
+		            sessionStorage.setItem("filename", filename);
+		            checkReport(jobId);
+		        });
+		    console.log("Report params:", {
+		        filename, fromdate, todate, currency, dtltype, type, version
+		    });
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+		    fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+		        .then(res => res.text())
+		        .then(status => {
+		            if (status === "READY") {
+		            	alertMsg.innerHTML ='Report is ready! Downloded…';
+		           	 	showAlert();
+		                const filename = sessionStorage.getItem("filename");
+		                downloadDetailfile(jobId,filename)
+		                sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");                
+		                
+		            } else if(status ==="PROCESSING") {
+		                alertMsg.innerHTML ='Download Is Processing…';
+		            	showAlert();
+		                setTimeout(() => checkReport(jobId), 5000);
+		            }
+		            else if(status ==="ERROR") {
+		                alertMsg.innerHTML ='No data was available to create a download.';
+		            	showAlert();
+		            	sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");  
+		            }
+		        });
+		}
+
+
+
+		function downloadDetailfile(jobId,filename) {
+			
+			//$('#loader').modal('show');
+			
+			$.ajax({
+				url: '/BRRS/Reports/downloaddetailExcel?jobId='+ jobId +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+
+</script>
+
+
+<script th:inline="javascript">
+function showdetailsbyRowAndColumn(a) { 
+    var reportLable = a.getAttribute('reportLable');
+    var reportAddlCriteria1 = a.getAttribute('reportAddlCriteria1');
+    var cellValue = a.textContent || a.innerText;
+
+    if (cellValue !== '0') {
+        // Set dynamic message in modal (instead of confirm)
+        document.getElementById("cellresultModalLabel").innerText = 
+            "Do you want to open details for Row: " + reportLable + " and Column: " + reportAddlCriteria1 + "?";
+
+        // Show custom Bootstrap modal
+        $('#cellresultModal').modal('show');
+
+        // Handle Yes button
+        document.querySelector('.yes-btn').onclick = function() {
+            $('#cellresultModal').modal('hide');
+
+            // Show loader
+            const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            $('#loader').modal('show');
+
+            // Build dynamic URL
+            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+            Callurl += "&filter=" + encodeURIComponent(reportLable + "," + reportAddlCriteria1);
+
+            location.href = Callurl;
+        };
+    } else {
+        // Use your custom alert modal instead of window.alert
+        showResultModal("Alert", "No Records available for this selected cell.");
+    }
+}
+</script>
+  
+<script>
+
+function activateTab(tabName) {
+    // Remove 'active' from all buttons
+    document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Add 'active' to selected button
+    if (tabName === 'summary') {
+        document.getElementById('custom-tab-btnSummary').classList.add('active');
+    } else if (tabName === 'Details') {
+        document.getElementById('custom-tab-btnDetails').classList.add('active');
+    }
+}
+
+window.onload = function() {
+    /* setTimeout(function() {
+        var selectedTab = document.getElementById("selectedTab").value;
+        alert(selectedTab);
+        activateTab(selectedTab);
+    }, 10000); */ // 10,000 milliseconds = 10 seconds
+    
+	var selectedTab = document.getElementById("selectedTab").value;
+    activateTab(selectedTab);
+};
+
+
+function downloadfile(button) {
+	var reportid = button.getAttribute('data-reportid');
+	var asondate = button.getAttribute('data-asondate');
+	var fromdate = button.getAttribute('data-fromdate');
+	var todate = button.getAttribute('data-todate');
+	var currency = button.getAttribute('data-currency');
+	var subreportid = button.getAttribute('data-subreportid');
+	var secid = button.getAttribute('data-secid');
+	var dtltype = button.getAttribute('data-dtltype');
+	var filename = button.getAttribute('data-filename');
+	var type = button.getAttribute('data-type');
+	var version = button.getAttribute('data-version');
+	
+
+	$('#loader').modal('show');
+
+	$.ajax({
+		url: './downloadExcel?reportid=' + reportid +
+			'&fromdate=' + fromdate +
+			'&asondate=' + asondate +
+			'&todate=' + todate +
+			'&currency=' + currency +
+			'&subreportid=' + subreportid +
+			'&secid=' + secid +
+			'&filename=' + filename +
+			'&type=' + type +
+			'&version=' + version,
+		type: 'GET',
+		xhrFields: {
+			responseType: 'blob'
+		},
+		success: function (data) {
+			$('#loader').modal('hide');
+
+			if (data && data.size > 100) {
+				const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.style.display = 'none';
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild(a);
+				a.click();
+				window.URL.revokeObjectURL(url);
+				document.body.removeChild(a);
+
+
+				showResultModal('BRRS', 'M_LIQGAP downloaded successfully.');
+			} else {
+				showResultModal('Information', 'No data was available to create a download.');
+			}
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			$('#loader').modal('hide');
+			console.error("Download failed:", textStatus, errorThrown);
+			showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+		}
+	});
+}
+
+
+function closemodel(){
+	$('#alert').modal('hide');
+	$('#resultModal').modal('hide');
+		
+}
+
+function showResultModal(title, message) {
+	// Set the text for the modal elements
+	$('#resultModalLabel').text(title);
+	$('#resultModalBody').text(message);
+
+	// Show the modal
+	$('#resultModal').modal('show');
+}
+
+function showResultModalDetail(title, message) {
+	// Set the text for the modal elements
+	$('#resultModalLabel1').text(title);
+	$('#resultModalBody1').text(message);
+
+	// Show the modal
+	$('#resultModal1').modal('show');
+}
+
+
+</script>  
+
+ 
+	
+<script>
+function showmodify(btn) {
+    // ✅ Enable all editable fields except those marked as nonEditable
+    $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+
+    // ✅ Highlight gray background for specific rows
+    const amount1Rows = [13, 14, 15, 16, 18, 19, 21];
+    const amount2Rows = [11, 32, 42, 43, 44, 46];
+
+    // Gray background for amount_1
+    amount1Rows.forEach(i => {
+        let selector = `#r${i}_amount_1`;
+        if ($(selector).length) $(selector).css("background-color", "#d3d3d3");
+    });
+
+    // Gray background for amount_2
+    amount2Rows.forEach(i => {
+        let selector = `#r${i}_amount_2`;
+        if ($(selector).length) $(selector).css("background-color", "#d3d3d3");
+    });
+
+    // ✅ Show action buttons
+    $("#submitButton").show();
+    $("#cancelRecord").show();
+
+    // ✅ Hide Modify button that was clicked
+    $(btn).hide();
+}
+
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
+
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+}
+
+</script>
+
+
+<script>
+
+function calculateCumulativeTotals() {
+
+    // -------------------
+    //   R21 CUMULATIVE
+    // -------------------
+    let R21_NIB = parseFloat($("#r21_non_interest_bearing").is("input")
+        ? $("#r21_non_interest_bearing").val().replace(/,/g, "")
+        : $("#r21_non_interest_bearing").text().replace(/,/g, "")) || 0;
+
+    let R21_Cumulative = R21_NIB;
+
+    $("#r21_cumulative_total").text(R21_Cumulative.toLocaleString('en-US'));
+
+    // -------------------
+    //   R33 CUMULATIVE
+    // -------------------
+    let R33_THIRD = parseFloat($("#r33_third_month").val().replace(/,/g, "")) || 0;
+    let R33_LAST = parseFloat($("#r33_last_month").val().replace(/,/g, "")) || 0;
+    let R33_FIRST_YEAR = parseFloat($("#r33_first_year").val().replace(/,/g, "")) || 0;
+    let R33_FIFTH_YEAR = parseFloat($("#r33_fifth_year").val().replace(/,/g, "")) || 0;
+    let R33_NIB = parseFloat($("#r33_non_interest_bearing").val().replace(/,/g, "")) || 0;
+
+    let R33_Cumulative = R33_THIRD + R33_LAST + R33_FIRST_YEAR + R33_FIFTH_YEAR + R33_NIB;
+
+    $("#r33_cumulative_total").text(R33_Cumulative.toLocaleString('en-US'));
+
+    // -------------------
+    //   R34 CUMULATIVE
+    // -------------------
+    let R34_FIRST = parseFloat($("#r34_first_month").is("input")
+        ? $("#r34_first_month").val().replace(/,/g, "")
+        : $("#r34_first_month").text().replace(/,/g, "")) || 0;
+
+    let R34_Cumulative = R34_FIRST;
+
+    $("#r34_cumulative_total").text(R34_Cumulative.toLocaleString('en-US'));
+}
+$(document).ready(function() {
+
+    calculateCumulativeTotals();
+
+    // Recalculate whenever relevant fields change
+    $("#r21_non_interest_bearing, #r33_third_month, #r33_last_month, #r33_first_year, #r33_fifth_year, #r33_non_interest_bearing, #r34_first_month")
+        .on("input", function() {
+            calculateCumulativeTotals();
+        });
+});
+</script>
+
+
+<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodels() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+		// Reload the page after a short delay to ensure the modal animation completes smoothly.
+		    setTimeout(function () {
+		        location.reload();
+		    }, 300);
+	}
+
+	
+	function fileuploads(btn) {
+	    const asondate = btn.getAttribute("data-todate");
+	    const type = btn.getAttribute("data-type");
+
+	    // Show loader
+	    $('#loader').modal('show');
+
+	    try {
+	        // ✅ Step 1: Calculate totals
+	        calculateCumulativeTotals();
+
+	        // ✅ Step 2: Remove commas from all text inputs
+	        $("#fileupload input[type='text']").each(function () {
+	            $(this).val($(this).val().replace(/,/g, ''));
+	        });
+
+	        // ✅ Step 3: Validate form
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
+	        }
+
+	        // ✅ Step 4: Build FormData
+	        const formData = new FormData();
+	        formData.append("asondate", asondate);
+	        formData.append("type", type);
+
+	        $('#fileupload').find(':input').each(function () {
+	            const name = $(this).attr('name');
+	            if (name) {
+	                formData.append(name, $(this).val());
+	            }
+	        });
+
+	        // ✅ Step 5: AJAX submission
+	        $.ajax({
+	            url: './LIQGAPupdateAll',
+	            type: 'POST',
+	            data: formData,
+	            processData: false,
+	            contentType: false,
+	            dataType: 'text',
+	            success: function () {
+	                $("#resultModalLabel").text("BRRS");
+	                $("#resultModalBody").text(" Updated Successfully.");
+	                $("#resultModal").modal("show");
+	            },
+	            error: function (jqXHR) {
+	                console.error("Error response:", jqXHR.responseText);
+	                $("#resultModalLabel").text("Error");
+	                $("#resultModalBody").text("Update failed. Check console for details.");
+	                $("#resultModal").modal("show");
+	            },
+	            complete: function () {
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+	        console.error("Error in fileuploads function:", error);
+	        $('#loader').modal('hide');
+	        $("#resultModalLabel").text("Error");
+	        $("#resultModalBody").text("Unexpected error occurred. Check console.");
+	        $("#resultModal").modal("show");
+	    }
+	}
+	</script>
+	
+			<script th:inline="javascript">
+			    /*<![CDATA[*/
+			    const reportId = /*[[${reportid}]]*/ null;
+			    /*]]>*/
+			</script>
+
+		<script>
+			function openDetail(elem, mode) {
+				
+				var type = elem.getAttribute('data-type');   
+
+							        if (type === "ARCHIVAL") {
+							            showResultModal('BRRS',"Archived Data cannot be modified");
+							            return;
+							        }	
+				const acctNo = elem.getAttribute("data-acctNo");
+				 const asondate = elem.getAttribute("data-asondate");
+				location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+			}
+		</script>
+		
+		<script>
+    function submitUpdate() {
+        const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+
+        // ✅ Store the previous page URL
+        const previousUrl = document.referrer; // same as going back once in history
+
+        // Show loader while processing
+        $('#loader').modal('show');
+
+        $.ajax({
+            url: `/BRRS/Reports/${reportId}/update`,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                $('#loader').modal('hide');
+
+                // ✅ Handle SUCCESS & NON-SUCCESS (Information)
+                if (response && response.toLowerCase().includes('success')) {
+                	showResultModalDetail('BRRS', response);
+                } else {
+                	showResultModalDetail('Information', response || 'No data updated.');
+                }
+
+                // Redirect after 1.5 sec
+                setTimeout(() => {
+                    if (previousUrl) {
+                        window.location.href = previousUrl;
+                    } else {
+                        window.history.back(); // fallback
+                    }
+                }, 1500);
+            },
+
+            error: function (xhr, status, error) {
+                $('#loader').modal('hide');
+                console.error("Update error:", error);
+
+                // ✅ Handle ERROR
+                showResultModalDetail('Error', 'Failed to update record. Please try again.');
+
+                // Redirect back after delay even on error
+                setTimeout(() => {
+                    if (previousUrl) {
+                        window.location.href = previousUrl;
+                    } else {
+                        window.history.back();
+                    }
+                }, 1500);
+            }
+        });
+    }
+</script>
+
+
+		
+
+ 
+
+
+
+
+  
+</head>
+
+
+<title>BRRS</title>
+<body> 
+<div class="container-fluid" style="padding-left:0px; padding-right:0px;">
+		<div class="row">
+		
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card"  >
+				<div class="card-header"
+     style="background-color: rgb(107, 122, 143); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: nowrap;
+            padding: 10px;">
+
+    <!-- LEFT SECTION -->
+    <div style="display: flex; align-items: center; gap: 15px; min-width: 0;">
+
+        <!-- Back Button -->
+        <div class="left-arrow-circle" onclick="back();">
+            <i class="fa fa-arrow-left"></i>
+        </div>
+
+        <!-- Title -->
+						<h5 style="font-family: arial; font-size: 18px; font-weight: bold; color: white; margin: 0; white-space: nowrap;">
+            (34) MONTHLY SCEHDULE: M-LIQGAP: LIQUIDITY GAP ANALYSIS			
+        </h5>
+
+        <!-- Bus Scrolling Text -->
+        <div class="boards" style="min-width: 250px;">
+            <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+        </div>
+    </div>
+
+    <!-- RIGHT SECTION -->
+    <div class="nav-buttons" 
+         style="display: flex; align-items: center; gap: 12px; flex-shrink: 0; white-space: nowrap;">
+
+        <!-- REPORT DATE -->
+        <span style="color:#fff !important; font-size:16px; font-weight:600; white-space: nowrap;">
+    Report Date:
+    <span style="color:#fff !important;"
+          th:text="${#strings.replace(asondate, '/', '-')}"
+    >2025-08-04</span>
+</span>
+         <!-- Summary / Details -->
+        <button class="custom-tab-btn" th:if="${displaymode == 'Details'}" onclick="showsummary();">
+            Summary
+        </button>
+
+        <button class="custom-tab-btn" th:if="${displaymode == 'summary'}" onclick="showdetails();">
+            Details
+        </button>
+
+        <!-- Modify -->
+        <button class="custom-tab-btn"
+                onclick="showmodify(this);"
+                title="Click to EDIT Records"
+                th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+                th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+                id="addRecord">Modify</button>
+
+        <!-- Cancel -->
+        <button class="custom-tab-btn"
+                style="display:none;"
+                title="Cancel editing"
+                id="cancelRecord"
+                onclick="cancelModify();">
+            Cancel
+        </button>
+
+        <!-- Download button - Summary -->
+        <button type="button" class="custom-tab-btn"
+            th:if="${displaymode == 'summary'}"
+            th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='M_LIQGAP.xlsx',
+                     data-type=${type},
+                     data-version=${version}"
+            onclick="downloadfile(this);">
+            <i class="fa fa-download"></i>
+        </button>
+
+        <!-- Download button - Details -->
+        <button type="button" class="custom-tab-btn"
+            th:if="${displaymode == 'Details'}"
+            th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='M_LIQGAPDetail',
+                     data-type=${type},
+                     data-version=${version}"
+            onclick="startReport(this)">
+            <i class="fa fa-download"></i>
+        </button>
+
+    </div>
+</div>
+
+</div>
+
+
+<div th:if="${displaymode == 'summary'}" >
+					<div class="row" >
+						<div class="col-sm-12">
+						<form action="#" method="POST" id="fileupload">
+						<!--  <h5 style = "font-weight:bold;color:black;">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT<br>(7) MONTHLY SCHEDULE: M-CA2: COMPOSITION OF CAPITAL<br> </h5> -->
+							<div
+								class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;max-height:90vh; overflow-y: auto;">
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light" style=" top: 0;border:2px solid black; background-color: #b3b6b9; z-index: 1;">
+										<tr  style="background-color: black; ">
+	<thead class="thead-light">
+  			<tr style="background-color: #b3b6b9 ">
+									
+						<th rowspan="1" style="text-align: left;"></th>
+						<th style="text-align: center;">up to 1 month</th>
+						<th style="text-align: center;">>1 to 3 months </th>
+						<th style="text-align: center;">>3-12 months</th>
+						<th style="text-align: center;">>1-5 years</th>
+						<th style="text-align: center;"> over 5 years </th>
+						<th style="text-align: center;">Non-interest Bearing</th>
+						<th style="text-align: center;">Cumulative Total</th>
+						
+						
+            </tr>
+	</thead>
+	
+	<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+	
+<tr>
+	<td style="text-align: left;" th:attr="reportLable='R10', reportAddlCriteria1='C1'"  th:text="${report.r10_product}"></td>
+	<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
+    th:attr="reportLable='R10', reportAddlCriteria1='C2'"
+    th:text="${report.r10_first_month != null ? #numbers.formatDecimal(report.r10_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+</td>
+
+<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
+    th:attr="reportLable='R10', reportAddlCriteria1='C3'"
+    th:text="${report.r10_third_month != null ? #numbers.formatDecimal(report.r10_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+</td>
+
+<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
+    th:attr="reportLable='R10', reportAddlCriteria1='C4'"
+    th:text="${report.r10_last_month != null ? #numbers.formatDecimal(report.r10_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+</td>
+
+<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
+    th:attr="reportLable='R10', reportAddlCriteria1='C5'"
+    th:text="${report.r10_first_year != null ? #numbers.formatDecimal(report.r10_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+</td>
+
+<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
+    th:attr="reportLable='R10', reportAddlCriteria1='C6'"
+    th:text="${report.r10_fifth_year != null ? #numbers.formatDecimal(report.r10_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+</td>
+
+<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
+    th:attr="reportLable='R10', reportAddlCriteria1='C7'" 
+    th:text="${report.r10_non_interest_bearing != null ? #numbers.formatDecimal(report.r10_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+</td>
+
+<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
+    th:attr="reportLable='R10', reportAddlCriteria1='C8'"
+    th:text="${report.r10_cumulative_total != null ? #numbers.formatDecimal(report.r10_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+</td>
+
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R11', reportAddlCriteria1='C1'" 
+        th:text="${report.r11_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r11_first_month != null ? #numbers.formatDecimal(report.r11_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r11_third_month != null ? #numbers.formatDecimal(report.r11_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r11_last_month != null ? #numbers.formatDecimal(report.r11_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r11_first_year != null ? #numbers.formatDecimal(report.r11_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r11_fifth_year != null ? #numbers.formatDecimal(report.r11_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R11', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r11_non_interest_bearing != null ? #numbers.formatDecimal(report.r11_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R11', reportAddlCriteria1='C8'"
+        th:text="${report.r11_cumulative_total != null ? #numbers.formatDecimal(report.r11_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R12', reportAddlCriteria1='C1'" 
+        th:text="${report.r12_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R12', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r12_first_month != null ? #numbers.formatDecimal(report.r12_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R12', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r12_third_month != null ? #numbers.formatDecimal(report.r12_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R12', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r12_last_month != null ? #numbers.formatDecimal(report.r12_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R12', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r12_first_year != null ? #numbers.formatDecimal(report.r12_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R12', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r12_fifth_year != null ? #numbers.formatDecimal(report.r12_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R12', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r12_non_interest_bearing != null ? #numbers.formatDecimal(report.r12_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R12', reportAddlCriteria1='C8'"
+        th:text="${report.r12_cumulative_total != null ? #numbers.formatDecimal(report.r12_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R13', reportAddlCriteria1='C1'" 
+        th:text="${report.r13_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R13', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r13_first_month != null ? #numbers.formatDecimal(report.r13_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R13', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r13_third_month != null ? #numbers.formatDecimal(report.r13_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R13', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r13_last_month != null ? #numbers.formatDecimal(report.r13_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R13', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r13_first_year != null ? #numbers.formatDecimal(report.r13_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R13', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r13_fifth_year != null ? #numbers.formatDecimal(report.r13_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R13', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r13_non_interest_bearing != null ? #numbers.formatDecimal(report.r13_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R13', reportAddlCriteria1='C8'"
+        th:text="${report.r13_cumulative_total != null ? #numbers.formatDecimal(report.r13_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R14', reportAddlCriteria1='C1'" 
+        th:text="${report.r14_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R14', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r14_first_month != null ? #numbers.formatDecimal(report.r14_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R14', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r14_third_month != null ? #numbers.formatDecimal(report.r14_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R14', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r14_last_month != null ? #numbers.formatDecimal(report.r14_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R14', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r14_first_year != null ? #numbers.formatDecimal(report.r14_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R14', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r14_fifth_year != null ? #numbers.formatDecimal(report.r14_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R14', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r14_non_interest_bearing != null ? #numbers.formatDecimal(report.r14_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R14', reportAddlCriteria1='C8'"
+        th:text="${report.r14_cumulative_total != null ? #numbers.formatDecimal(report.r14_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R15', reportAddlCriteria1='C1'" 
+        th:text="${report.r15_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R15', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r15_first_month != null ? #numbers.formatDecimal(report.r15_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R15', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r15_third_month != null ? #numbers.formatDecimal(report.r15_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R15', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r15_last_month != null ? #numbers.formatDecimal(report.r15_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R15', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r15_first_year != null ? #numbers.formatDecimal(report.r15_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R15', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r15_fifth_year != null ? #numbers.formatDecimal(report.r15_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R15', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r15_non_interest_bearing != null ? #numbers.formatDecimal(report.r15_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R15', reportAddlCriteria1='C8'"
+        th:text="${report.r15_cumulative_total != null ? #numbers.formatDecimal(report.r15_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R16', reportAddlCriteria1='C1'" 
+        th:text="${report.r16_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R16', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r16_first_month != null ? #numbers.formatDecimal(report.r16_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R16', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r16_third_month != null ? #numbers.formatDecimal(report.r16_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R16', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r16_last_month != null ? #numbers.formatDecimal(report.r16_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R16', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r16_first_year != null ? #numbers.formatDecimal(report.r16_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R16', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r16_fifth_year != null ? #numbers.formatDecimal(report.r16_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R16', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r16_non_interest_bearing != null ? #numbers.formatDecimal(report.r16_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R16', reportAddlCriteria1='C8'"
+        th:text="${report.r16_cumulative_total != null ? #numbers.formatDecimal(report.r16_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R17', reportAddlCriteria1='C1'" 
+        th:text="${report.r17_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R17', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r17_first_month != null ? #numbers.formatDecimal(report.r17_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R17', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r17_third_month != null ? #numbers.formatDecimal(report.r17_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R17', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r17_last_month != null ? #numbers.formatDecimal(report.r17_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R17', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r17_first_year != null ? #numbers.formatDecimal(report.r17_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R17', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r17_fifth_year != null ? #numbers.formatDecimal(report.r17_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R17', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r17_non_interest_bearing != null ? #numbers.formatDecimal(report.r17_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R17', reportAddlCriteria1='C8'"
+        th:text="${report.r17_cumulative_total != null ? #numbers.formatDecimal(report.r17_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R18', reportAddlCriteria1='C1'" 
+        th:text="${report.r18_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r18_first_month != null ? #numbers.formatDecimal(report.r18_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r18_third_month != null ? #numbers.formatDecimal(report.r18_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r18_last_month != null ? #numbers.formatDecimal(report.r18_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r18_first_year != null ? #numbers.formatDecimal(report.r18_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r18_fifth_year != null ? #numbers.formatDecimal(report.r18_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R18', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r18_non_interest_bearing != null ? #numbers.formatDecimal(report.r18_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R18', reportAddlCriteria1='C8'"
+        th:text="${report.r18_cumulative_total != null ? #numbers.formatDecimal(report.r18_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R19', reportAddlCriteria1='C1'" 
+        th:text="${report.r19_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R19', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r19_first_month != null ? #numbers.formatDecimal(report.r19_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R19', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r19_third_month != null ? #numbers.formatDecimal(report.r19_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R19', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r19_last_month != null ? #numbers.formatDecimal(report.r19_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R19', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r19_first_year != null ? #numbers.formatDecimal(report.r19_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R19', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r19_fifth_year != null ? #numbers.formatDecimal(report.r19_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R19', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r19_non_interest_bearing != null ? #numbers.formatDecimal(report.r19_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R19', reportAddlCriteria1='C8'"
+        th:text="${report.r19_cumulative_total != null ? #numbers.formatDecimal(report.r19_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R20', reportAddlCriteria1='C1'" 
+        th:text="${report.r20_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R20', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r20_first_month != null ? #numbers.formatDecimal(report.r20_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R20', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r20_third_month != null ? #numbers.formatDecimal(report.r20_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R20', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r20_last_month != null ? #numbers.formatDecimal(report.r20_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R20', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r20_first_year != null ? #numbers.formatDecimal(report.r20_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R20', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r20_fifth_year != null ? #numbers.formatDecimal(report.r20_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R20', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r20_non_interest_bearing != null ? #numbers.formatDecimal(report.r20_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R20', reportAddlCriteria1='C8'"
+        th:text="${report.r20_cumulative_total != null ? #numbers.formatDecimal(report.r20_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R21', reportAddlCriteria1='C1'" 
+        th:text="${report.r21_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R21', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r21_first_month != null ? #numbers.formatDecimal(report.r21_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R21', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r21_third_month != null ? #numbers.formatDecimal(report.r21_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R21', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r21_last_month != null ? #numbers.formatDecimal(report.r21_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R21', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r21_first_year != null ? #numbers.formatDecimal(report.r21_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R21', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r21_fifth_year != null ? #numbers.formatDecimal(report.r21_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+	<td th:each="report: ${reportsummary1}"
+    th:attr="reportLable='R21', reportAddlCriteria1='C7'"
+    style="text-align: right;  padding-left:10px; background-color:white;">
+
+    <input class="display-input Show_input"
+           type="text"
+           th:value="${report.r21_non_interest_bearing != null ? #numbers.formatDecimal(report.r21_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r21_non_interest_bearing"
+           name="r21_non_interest_bearing"
+           style="background-color:#FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right;"
+           readonly />
+           <td th:attr="reportLable='R21', reportAddlCriteria1='C7'" style="text-align: right;background-color:white;"></td>
+
+
+
+	<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R21', reportAddlCriteria1='C8'"
+        th:text="${report.r21_cumulative_total != null ? #numbers.formatDecimal(report.r21_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R22', reportAddlCriteria1='C1'" 
+        th:text="${report.r22_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R22', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r22_first_month != null ? #numbers.formatDecimal(report.r22_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R22', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r22_third_month != null ? #numbers.formatDecimal(report.r22_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R22', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r22_last_month != null ? #numbers.formatDecimal(report.r22_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R22', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r22_first_year != null ? #numbers.formatDecimal(report.r22_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R22', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r22_fifth_year != null ? #numbers.formatDecimal(report.r22_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R22', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r22_non_interest_bearing != null ? #numbers.formatDecimal(report.r22_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R22', reportAddlCriteria1='C8'"
+        th:text="${report.r22_cumulative_total != null ? #numbers.formatDecimal(report.r22_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R23', reportAddlCriteria1='C1'" 
+        th:text="${report.r23_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R23', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r23_first_month != null ? #numbers.formatDecimal(report.r23_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R23', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r23_third_month != null ? #numbers.formatDecimal(report.r23_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R23', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r23_last_month != null ? #numbers.formatDecimal(report.r23_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R23', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r23_first_year != null ? #numbers.formatDecimal(report.r23_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R23', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r23_fifth_year != null ? #numbers.formatDecimal(report.r23_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R23', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r23_non_interest_bearing != null ? #numbers.formatDecimal(report.r23_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R23', reportAddlCriteria1='C8'"
+        th:text="${report.r23_cumulative_total != null ? #numbers.formatDecimal(report.r23_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R24', reportAddlCriteria1='C1'" 
+        th:text="${report.r24_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R24', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r24_first_month != null ? #numbers.formatDecimal(report.r24_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R24', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r24_third_month != null ? #numbers.formatDecimal(report.r24_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R24', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r24_last_month != null ? #numbers.formatDecimal(report.r24_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R24', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r24_first_year != null ? #numbers.formatDecimal(report.r24_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R24', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r24_fifth_year != null ? #numbers.formatDecimal(report.r24_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R24', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r24_non_interest_bearing != null ? #numbers.formatDecimal(report.r24_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R24', reportAddlCriteria1='C8'"
+        th:text="${report.r24_cumulative_total != null ? #numbers.formatDecimal(report.r24_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R25', reportAddlCriteria1='C1'" 
+        th:text="${report.r25_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R25', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r25_first_month != null ? #numbers.formatDecimal(report.r25_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R25', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r25_third_month != null ? #numbers.formatDecimal(report.r25_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R25', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r25_last_month != null ? #numbers.formatDecimal(report.r25_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R25', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r25_first_year != null ? #numbers.formatDecimal(report.r25_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R25', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r25_fifth_year != null ? #numbers.formatDecimal(report.r25_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R25', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r25_non_interest_bearing != null ? #numbers.formatDecimal(report.r25_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R25', reportAddlCriteria1='C8'"
+        th:text="${report.r25_cumulative_total != null ? #numbers.formatDecimal(report.r25_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R26', reportAddlCriteria1='C1'" 
+        th:text="${report.r26_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R26', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r26_first_month != null ? #numbers.formatDecimal(report.r26_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R26', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r26_third_month != null ? #numbers.formatDecimal(report.r26_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R26', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r26_last_month != null ? #numbers.formatDecimal(report.r26_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R26', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r26_first_year != null ? #numbers.formatDecimal(report.r26_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R26', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r26_fifth_year != null ? #numbers.formatDecimal(report.r26_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R26', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r26_non_interest_bearing != null ? #numbers.formatDecimal(report.r26_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R26', reportAddlCriteria1='C8'"
+        th:text="${report.r26_cumulative_total != null ? #numbers.formatDecimal(report.r26_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R27', reportAddlCriteria1='C1'" 
+        th:text="${report.r27_product}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white;text-align: right;" th:attr="reportLable='R27', reportAddlCriteria1='C2'" 
+        th:text="${report.r27_first_month != null ? #numbers.formatDecimal(report.r27_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white;text-align: right;" th:attr="reportLable='R27', reportAddlCriteria1='C3'"
+        th:text="${report.r27_third_month != null ? #numbers.formatDecimal(report.r27_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white;text-align: right;" th:attr="reportLable='R27', reportAddlCriteria1='C4'"  
+        th:text="${report.r27_last_month != null ? #numbers.formatDecimal(report.r27_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white;text-align: right;" th:attr="reportLable='R27', reportAddlCriteria1='C5'"
+        th:text="${report.r27_first_year != null ? #numbers.formatDecimal(report.r27_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white;text-align: right;" th:attr="reportLable='R27', reportAddlCriteria1='C6'"
+        th:text="${report.r27_fifth_year != null ? #numbers.formatDecimal(report.r27_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white;text-align: right;" th:attr="reportLable='R27', reportAddlCriteria1='C7'"
+        th:text="${report.r27_non_interest_bearing != null ? #numbers.formatDecimal(report.r27_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R27', reportAddlCriteria1='C8'"
+        th:text="${report.r27_cumulative_total != null ? #numbers.formatDecimal(report.r27_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R28', reportAddlCriteria1='C1'" 
+        th:text="${report.r28_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R28', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r28_first_month != null ? #numbers.formatDecimal(report.r28_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R28', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r28_third_month != null ? #numbers.formatDecimal(report.r28_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R28', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r28_last_month != null ? #numbers.formatDecimal(report.r28_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R28', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r28_first_year != null ? #numbers.formatDecimal(report.r28_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R28', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r28_fifth_year != null ? #numbers.formatDecimal(report.r28_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R28', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r28_non_interest_bearing != null ? #numbers.formatDecimal(report.r28_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R28', reportAddlCriteria1='C8'"
+        th:text="${report.r28_cumulative_total != null ? #numbers.formatDecimal(report.r28_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R29', reportAddlCriteria1='C1'" 
+        th:text="${report.r29_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R29', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r29_first_month != null ? #numbers.formatDecimal(report.r29_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R29', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r29_third_month != null ? #numbers.formatDecimal(report.r29_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R29', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r29_last_month != null ? #numbers.formatDecimal(report.r29_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R29', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r29_first_year != null ? #numbers.formatDecimal(report.r29_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R29', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r29_fifth_year != null ? #numbers.formatDecimal(report.r29_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R29', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r29_non_interest_bearing != null ? #numbers.formatDecimal(report.r29_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R29', reportAddlCriteria1='C8'"
+        th:text="${report.r29_cumulative_total != null ? #numbers.formatDecimal(report.r29_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R30', reportAddlCriteria1='C1'" 
+        th:text="${report.r30_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R30', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r30_first_month != null ? #numbers.formatDecimal(report.r30_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R30', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r30_third_month != null ? #numbers.formatDecimal(report.r30_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R30', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r30_last_month != null ? #numbers.formatDecimal(report.r30_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R30', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r30_first_year != null ? #numbers.formatDecimal(report.r30_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R30', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r30_fifth_year != null ? #numbers.formatDecimal(report.r30_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R30', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r30_non_interest_bearing != null ? #numbers.formatDecimal(report.r30_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R30', reportAddlCriteria1='C8'"
+        th:text="${report.r30_cumulative_total != null ? #numbers.formatDecimal(report.r30_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R31', reportAddlCriteria1='C1'" 
+        th:text="${report.r31_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R31', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r31_first_month != null ? #numbers.formatDecimal(report.r31_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R31', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r31_third_month != null ? #numbers.formatDecimal(report.r31_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R31', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r31_last_month != null ? #numbers.formatDecimal(report.r31_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R31', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r31_first_year != null ? #numbers.formatDecimal(report.r31_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R31', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r31_fifth_year != null ? #numbers.formatDecimal(report.r31_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+	<td th:each="report: ${reportsummary1}" id="R31" style="text-align: right; padding-left:10px; ">
+    <input class="display-input Show_input"
+           type="text"
+           th:value="${report.r31_non_interest_bearing != null ? #numbers.formatDecimal(report.r31_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r31_non_interest_bearing"
+           name="r31_non_interest_bearing"
+           style="background-color:#FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
+             readonly/>
+<td th:attr="reportLable='R32', reportAddlCriteria1='C7'" style="text-align: right;background-color:white;"></td>
+
+	<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R31', reportAddlCriteria1='C8'"
+        th:text="${report.r31_cumulative_total != null ? #numbers.formatDecimal(report.r31_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R32', reportAddlCriteria1='C1'" 
+        th:text="${report.r32_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R32', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r32_first_month != null ? #numbers.formatDecimal(report.r32_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R32', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r32_third_month != null ? #numbers.formatDecimal(report.r32_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R32', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r32_last_month != null ? #numbers.formatDecimal(report.r32_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R32', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r32_first_year != null ? #numbers.formatDecimal(report.r32_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R32', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r32_fifth_year != null ? #numbers.formatDecimal(report.r32_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+
+<td th:each="report: ${reportsummary1}" id="R32" style="text-align:right; padding-left:10px;">
+    <input class="display-input Show_input"
+           type="text"
+           th:value="${report.r32_non_interest_bearing != null ?
+                      #numbers.formatDecimal(report.r32_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r32_non_interest_bearing"
+           name="r32_non_interest_bearing"
+           style="background-color:#FFFFFF; width:250px; height:28px; border-color:transparent; text-align:right;"
+           readonly />
+</td>
+
+
+<td th:attr="reportLable='R32', reportAddlCriteria1='C7'"
+    style="text-align: right; background-color:white;">
+</td>
+
+    
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R32', reportAddlCriteria1='C8'"
+        th:text="${report.r32_cumulative_total != null ? #numbers.formatDecimal(report.r32_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R33', reportAddlCriteria1='C1'" 
+        th:text="${report.r33_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R33', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r33_first_month != null ? #numbers.formatDecimal(report.r33_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right;  padding-left:10px; ">
+    <input class="display-input Show_input"
+           type="text"
+           th:value="${report.r33_third_month != null ? #numbers.formatDecimal(report.r33_third_month, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r33_third_month"
+           name="r33_third_month"
+           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
+            readonly/>
+<td th:attr="reportLable='R33', reportAddlCriteria1='C3'" style="text-align: right;background-color:white;"></td>
+	
+	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; padding-left:10px; ">
+    <input class="display-input Show_input"
+           type="text"
+           th:value="${report.r33_last_month != null ? #numbers.formatDecimal(report.r33_last_month, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r33_last_month"
+           name="r33_last_month"
+           style="background-color:#FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
+            readonly />
+<td th:attr="reportLable='R33', reportAddlCriteria1='C4'" style="text-align: right;background-color:white;"></td>
+	
+	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; width: 250px;  padding-left:10px; ">
+    <input class="display-input Show_input"
+           type="text"
+           th:value="${report.r33_first_year != null ? #numbers.formatDecimal(report.r33_first_year, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r33_first_year"
+           name="r33_first_year"
+           style="background-color:#FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
+            readonly />
+<td th:attr="reportLable='R33', reportAddlCriteria1='C5'" style="text-align: right;background-color:white;"></td>
+	
+	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; padding-left:10px; ">
+    <input class="display-input Show_input"
+           type="text"
+           th:value="${report.r33_fifth_year != null ? #numbers.formatDecimal(report.r33_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r33_fifth_year"
+           name="r33_fifth_year"
+           style="background-color:#FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
+            readonly />
+<td th:attr="reportLable='R33', reportAddlCriteria1='C6'" style="text-align: right;background-color:white;"></td>
+	
+	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; padding-left:10px; ">
+    <input class="display-input Show_input"
+           type="text"
+           th:value="${report.r33_non_interest_bearing != null ? #numbers.formatDecimal(report.r33_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r33_non_interest_bearing"
+           name="r33_non_interest_bearing"
+           style="background-color:#FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
+            readonly />
+<td th:attr="reportLable='R33', reportAddlCriteria1='C7'" style="text-align: right;background-color:white;"></td>
+	
+	<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R33', reportAddlCriteria1='C8'"
+        th:text="${report.r33_cumulative_total != null ? #numbers.formatDecimal(report.r33_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+
+<tr>
+	<td style="text-align: left;" th:attr="reportLable='R34', reportAddlCriteria1='C1'" th:text="${report.r34_product}"></td>
+	<td th:each="report: ${reportsummary1}" id="R34" style="text-align: right; padding-left:10px; ">
+    <input class="display-input Show_input"
+           type="text"
+           th:value="${report.r34_first_month != null ? #numbers.formatDecimal(report.r34_first_month, 1, 'COMMA', 0, 'POINT') : '0'}"
+           id="r34_first_month"
+           name="r34_first_month"
+           style="background-color:#FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
+            readonly />
+<td th:attr="reportLable='R34', reportAddlCriteria1='C2'" style="text-align: right;background-color:white;"></td>
+
+	 <td style="text-align: right;" th:attr="reportLable='R34', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r34_third_month != null ? #numbers.formatDecimal(report.r34_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R34', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r34_last_month != null ? #numbers.formatDecimal(report.r34_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R34', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r34_first_year != null ? #numbers.formatDecimal(report.r34_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R34', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r34_fifth_year != null ? #numbers.formatDecimal(report.r34_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R34', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r34_non_interest_bearing != null ? #numbers.formatDecimal(report.r34_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R34', reportAddlCriteria1='C8'"
+        th:text="${report.r34_cumulative_total != null ? #numbers.formatDecimal(report.r34_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R35', reportAddlCriteria1='C1'" 
+        th:text="${report.r35_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R35', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r35_first_month != null ? #numbers.formatDecimal(report.r35_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R35', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r35_third_month != null ? #numbers.formatDecimal(report.r35_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R35', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r35_last_month != null ? #numbers.formatDecimal(report.r35_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R35', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r35_first_year != null ? #numbers.formatDecimal(report.r35_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R35', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r35_fifth_year != null ? #numbers.formatDecimal(report.r35_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R35', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r35_non_interest_bearing != null ? #numbers.formatDecimal(report.r35_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R35', reportAddlCriteria1='C8'"
+        th:text="${report.r35_cumulative_total != null ? #numbers.formatDecimal(report.r35_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R36', reportAddlCriteria1='C1'" 
+        th:text="${report.r36_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R36', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r36_first_month != null ? #numbers.formatDecimal(report.r36_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R36', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r36_third_month != null ? #numbers.formatDecimal(report.r36_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R36', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r36_last_month != null ? #numbers.formatDecimal(report.r36_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R36', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r36_first_year != null ? #numbers.formatDecimal(report.r36_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R36', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r36_fifth_year != null ? #numbers.formatDecimal(report.r36_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R36', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r36_non_interest_bearing != null ? #numbers.formatDecimal(report.r36_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R36', reportAddlCriteria1='C8'"
+        th:text="${report.r36_cumulative_total != null ? #numbers.formatDecimal(report.r36_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R37', reportAddlCriteria1='C1'" 
+        th:text="${report.r37_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R37', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r37_first_month != null ? #numbers.formatDecimal(report.r37_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R37', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r37_third_month != null ? #numbers.formatDecimal(report.r37_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R37', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r37_last_month != null ? #numbers.formatDecimal(report.r37_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R37', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r37_first_year != null ? #numbers.formatDecimal(report.r37_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R37', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r37_fifth_year != null ? #numbers.formatDecimal(report.r37_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R37', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r37_non_interest_bearing != null ? #numbers.formatDecimal(report.r37_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R37', reportAddlCriteria1='C8'"
+        th:text="${report.r37_cumulative_total != null ? #numbers.formatDecimal(report.r37_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R38', reportAddlCriteria1='C1'" 
+        th:text="${report.r38_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R38', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r38_first_month != null ? #numbers.formatDecimal(report.r38_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R38', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r38_third_month != null ? #numbers.formatDecimal(report.r38_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R38', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r38_last_month != null ? #numbers.formatDecimal(report.r38_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R38', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r38_first_year != null ? #numbers.formatDecimal(report.r38_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R38', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r38_fifth_year != null ? #numbers.formatDecimal(report.r38_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R38', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r38_non_interest_bearing != null ? #numbers.formatDecimal(report.r38_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R38', reportAddlCriteria1='C8'"
+        th:text="${report.r38_cumulative_total != null ? #numbers.formatDecimal(report.r38_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R39', reportAddlCriteria1='C1'" 
+        th:text="${report.r39_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R39', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r39_first_month != null ? #numbers.formatDecimal(report.r39_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R39', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r39_third_month != null ? #numbers.formatDecimal(report.r39_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R39', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r39_last_month != null ? #numbers.formatDecimal(report.r39_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R39', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r39_first_year != null ? #numbers.formatDecimal(report.r39_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R39', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r39_fifth_year != null ? #numbers.formatDecimal(report.r39_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R39', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r39_non_interest_bearing != null ? #numbers.formatDecimal(report.r39_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R39', reportAddlCriteria1='C8'"
+        th:text="${report.r39_cumulative_total != null ? #numbers.formatDecimal(report.r39_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R40', reportAddlCriteria1='C1'" 
+        th:text="${report.r40_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R40', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r40_first_month != null ? #numbers.formatDecimal(report.r40_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R40', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r40_third_month != null ? #numbers.formatDecimal(report.r40_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R40', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r40_last_month != null ? #numbers.formatDecimal(report.r40_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R40', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r40_first_year != null ? #numbers.formatDecimal(report.r40_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R40', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r40_fifth_year != null ? #numbers.formatDecimal(report.r40_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R40', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r40_non_interest_bearing != null ? #numbers.formatDecimal(report.r40_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R40', reportAddlCriteria1='C8'"
+        th:text="${report.r40_cumulative_total != null ? #numbers.formatDecimal(report.r40_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R41', reportAddlCriteria1='C1'" 
+        th:text="${report.r41_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R41', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r41_first_month != null ? #numbers.formatDecimal(report.r41_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R41', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r41_third_month != null ? #numbers.formatDecimal(report.r41_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R41', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r41_last_month != null ? #numbers.formatDecimal(report.r41_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R41', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r41_first_year != null ? #numbers.formatDecimal(report.r41_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R41', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r41_fifth_year != null ? #numbers.formatDecimal(report.r41_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R41', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r41_non_interest_bearing != null ? #numbers.formatDecimal(report.r41_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R41', reportAddlCriteria1='C8'"
+        th:text="${report.r41_cumulative_total != null ? #numbers.formatDecimal(report.r41_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R42', reportAddlCriteria1='C1'" 
+        th:text="${report.r42_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R42', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r42_first_month != null ? #numbers.formatDecimal(report.r42_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R42', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r42_third_month != null ? #numbers.formatDecimal(report.r42_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R42', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r42_last_month != null ? #numbers.formatDecimal(report.r42_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R42', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r42_first_year != null ? #numbers.formatDecimal(report.r42_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R42', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r42_fifth_year != null ? #numbers.formatDecimal(report.r42_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R42', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r42_non_interest_bearing != null ? #numbers.formatDecimal(report.r42_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R42', reportAddlCriteria1='C8'"
+        th:text="${report.r42_cumulative_total != null ? #numbers.formatDecimal(report.r42_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R43', reportAddlCriteria1='C1'" 
+        th:text="${report.r43_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R43', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r43_first_month != null ? #numbers.formatDecimal(report.r43_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R43', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r43_third_month != null ? #numbers.formatDecimal(report.r43_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R43', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r43_last_month != null ? #numbers.formatDecimal(report.r43_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R43', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r43_first_year != null ? #numbers.formatDecimal(report.r43_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R43', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r43_fifth_year != null ? #numbers.formatDecimal(report.r43_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R43', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r43_non_interest_bearing != null ? #numbers.formatDecimal(report.r43_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R43', reportAddlCriteria1='C8'"
+        th:text="${report.r43_cumulative_total != null ? #numbers.formatDecimal(report.r43_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R44', reportAddlCriteria1='C1'" 
+        th:text="${report.r44_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R44', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r44_first_month != null ? #numbers.formatDecimal(report.r44_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R44', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r44_third_month != null ? #numbers.formatDecimal(report.r44_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R44', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r44_last_month != null ? #numbers.formatDecimal(report.r44_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R44', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r44_first_year != null ? #numbers.formatDecimal(report.r44_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R44', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r44_fifth_year != null ? #numbers.formatDecimal(report.r44_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R44', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r44_non_interest_bearing != null ? #numbers.formatDecimal(report.r44_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R44', reportAddlCriteria1='C8'"
+        th:text="${report.r44_cumulative_total != null ? #numbers.formatDecimal(report.r44_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R45', reportAddlCriteria1='C1'" 
+        th:text="${report.r45_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R45', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r45_first_month != null ? #numbers.formatDecimal(report.r45_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R45', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r45_third_month != null ? #numbers.formatDecimal(report.r45_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R45', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r45_last_month != null ? #numbers.formatDecimal(report.r45_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R45', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r45_first_year != null ? #numbers.formatDecimal(report.r45_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R45', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r45_fifth_year != null ? #numbers.formatDecimal(report.r45_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R45', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r45_non_interest_bearing != null ? #numbers.formatDecimal(report.r45_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R45', reportAddlCriteria1='C8'"
+        th:text="${report.r45_cumulative_total != null ? #numbers.formatDecimal(report.r45_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R46', reportAddlCriteria1='C1'" 
+        th:text="${report.r46_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R46', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r46_first_month != null ? #numbers.formatDecimal(report.r46_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R46', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r46_third_month != null ? #numbers.formatDecimal(report.r46_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R46', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r46_last_month != null ? #numbers.formatDecimal(report.r46_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R46', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r46_first_year != null ? #numbers.formatDecimal(report.r46_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R46', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r46_fifth_year != null ? #numbers.formatDecimal(report.r46_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R46', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r46_non_interest_bearing != null ? #numbers.formatDecimal(report.r46_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R46', reportAddlCriteria1='C8'"
+        th:text="${report.r46_cumulative_total != null ? #numbers.formatDecimal(report.r46_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R47', reportAddlCriteria1='C1'" 
+        th:text="${report.r47_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R47', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r47_first_month != null ? #numbers.formatDecimal(report.r47_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R47', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r47_third_month != null ? #numbers.formatDecimal(report.r47_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R47', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r47_last_month != null ? #numbers.formatDecimal(report.r47_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R47', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r47_first_year != null ? #numbers.formatDecimal(report.r47_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R47', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r47_fifth_year != null ? #numbers.formatDecimal(report.r47_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R47', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r47_non_interest_bearing != null ? #numbers.formatDecimal(report.r47_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R47', reportAddlCriteria1='C8'"
+        th:text="${report.r47_cumulative_total != null ? #numbers.formatDecimal(report.r47_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R48', reportAddlCriteria1='C1'" 
+        th:text="${report.r48_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R48', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r48_first_month != null ? #numbers.formatDecimal(report.r48_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R48', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r48_third_month != null ? #numbers.formatDecimal(report.r48_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R48', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r48_last_month != null ? #numbers.formatDecimal(report.r48_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R48', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r48_first_year != null ? #numbers.formatDecimal(report.r48_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R48', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r48_fifth_year != null ? #numbers.formatDecimal(report.r48_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R48', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r48_non_interest_bearing != null ? #numbers.formatDecimal(report.r48_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R48', reportAddlCriteria1='C8'"
+        th:text="${report.r48_cumulative_total != null ? #numbers.formatDecimal(report.r48_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R49', reportAddlCriteria1='C1'" 
+        th:text="${report.r49_product}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R49', reportAddlCriteria1='C2'" 
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r49_first_month != null ? #numbers.formatDecimal(report.r49_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R49', reportAddlCriteria1='C3'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r49_third_month != null ? #numbers.formatDecimal(report.r49_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R49', reportAddlCriteria1='C4'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r49_last_month != null ? #numbers.formatDecimal(report.r49_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R49', reportAddlCriteria1='C5'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r49_first_year != null ? #numbers.formatDecimal(report.r49_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R49', reportAddlCriteria1='C6'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r49_fifth_year != null ? #numbers.formatDecimal(report.r49_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="text-align: right;" th:attr="reportLable='R49', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r49_non_interest_bearing != null ? #numbers.formatDecimal(report.r49_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R49', reportAddlCriteria1='C8'"
+        th:text="${report.r49_cumulative_total != null ? #numbers.formatDecimal(report.r49_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+
+<tr>
+    <td style="text-align: left;" 
+        th:attr="reportLable='R50', reportAddlCriteria1='C1'" 
+        th:text="${report.r50_product}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white;text-align: right;" th:attr="reportLable='R50', reportAddlCriteria1='C2'" 
+        th:text="${report.r50_first_month != null ? #numbers.formatDecimal(report.r50_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white;text-align: right;" th:attr="reportLable='R50', reportAddlCriteria1='C3'"
+        th:text="${report.r50_third_month != null ? #numbers.formatDecimal(report.r50_third_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white;text-align: right;" th:attr="reportLable='R50', reportAddlCriteria1='C4'"
+        th:text="${report.r50_last_month != null ? #numbers.formatDecimal(report.r50_last_month, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white;text-align: right;" th:attr="reportLable='R50', reportAddlCriteria1='C5'"
+        th:text="${report.r50_first_year != null ? #numbers.formatDecimal(report.r50_first_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white;text-align: right;" th:attr="reportLable='R50', reportAddlCriteria1='C6'"
+        th:text="${report.r50_fifth_year != null ? #numbers.formatDecimal(report.r50_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white;text-align: right;" th:attr="reportLable='R50', reportAddlCriteria1='C7'"
+        th:text="${report.r50_non_interest_bearing != null ? #numbers.formatDecimal(report.r50_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+
+    <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
+        th:attr="reportLable='R50', reportAddlCriteria1='C8'"
+        th:text="${report.r50_cumulative_total != null ? #numbers.formatDecimal(report.r50_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+</tr>
+	
+	
+
+</tbody>
+
+
+								</table>
+ <div style="text-align: center;  background-color: white">
+
+								<button id="submitButton" type="button"
+									class="custom-tab-btn Show_input" form="fileupload"
+									th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+									style="display: none;">Submit</button>
+							</div>
+						</form>
+
+
+						</div>
+					</div>
+				</div>
+
+				<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="table table-striped table-bordered table-hover"
+									id="reportdetails">
+									<thead class="thead-light">
+										<tr>
+											<th></th>
+											<th>S No</th>
+											<th>CUST ID</th>
+											<th style="text-align:left;">ACCT NO</th>
+											<th>ACCT NAME</th>
+											<th style="text-align: right;">ACCT BALANCE</th>
+											<th style="text-align: left;">REPORT LABLE</th>
+											<th>REPORT ADDL CRITERIA 1</th>
+											<th>REPORT DATE</th>
+										</tr>
+
+									</thead>
+
+									<tbody style="font-family: Arial;">
+										<tr th:each="report, srlno : ${reportdetails}">
+											<td><a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+                        <i class="fas fa-edit" style="color: black; cursor:pointer;"
+                            th:attr="data-acctNo=${report.acctNumber},
+                            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+                            data-type=${type}"
+                            onclick="openDetail(this, 'edit')"></i>
+                    </a></td>
+                                            <td th:text="${srlno.index + 1}"></td>
+											<td th:text="${report.custId}"></td>
+											<td th:text="${report.acctNumber}"></td>
+											<td th:text="${report.acctName}"></td>
+											<!---	<td th:text="${report.acctBalanceInpula} "></td> -->
+											<td th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 2)}"
+												style="text-align: right;"></td>
+
+											<td style="text-align: left;" th:text="${report.reportLable}"></td>
+											<td th:text="${report.reportAddlCriteria1}"></td>
+											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+
+										</tr>
+									</tbody>
+
+								 </table>
+</div>
+
+							
+							
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- M_DEP1 Detail Form Screen -->
+			<div th:if="${formmode == 'edit'}" class="card">
+			  <div class="card-body">
+			    <form th:object="${Data}" method="post" id="DetailForm">
+
+			      <!-- Row 1 -->
+			      <div class="row formline" style="margin-top:10px;">
+			        <label class="col-sm-2">Customer ID</label>
+			        <div class="col-sm-3">
+			          <input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+			        </div>
+
+			        <div class="col-sm-1"></div>
+
+			        <label class="col-sm-2">Account Number</label>
+			        <div class="col-sm-3">
+			          <input type="text" th:field="*{acctNumber}" class="form-control form-control-sm" readonly />
+			        </div>
+			      </div>
+
+			      <!-- Row 2 -->
+			      <div class="row formline" style="margin-top:10px;">
+			        <label class="col-sm-2">Account Name</label>
+			        <div class="col-sm-3">
+			          <input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
+			        </div>
+
+			        <div class="col-sm-1"></div>
+
+			        <label class="col-sm-2">Acct Balance</label>
+			        <div class="col-sm-3">
+			          <input type="number" step="0.01" th:field="*{acctBalanceInpula}" class="form-control form-control-sm" style="text-align:right;" />
+			        </div>
+			      </div>
+
+			      <!-- Row 3 -->
+			      <div class="row formline" style="margin-top:10px;">
+			        <label class="col-sm-2">Report Lable</label>
+			        <div class="col-sm-3">
+			          <input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
+			        </div>
+
+			        <div class="col-sm-1"></div>
+
+			        <label class="col-sm-2">Report Addl Criteria 1</label>
+			        <div class="col-sm-3">
+			          <input type="text" th:field="*{reportAddlCriteria1}" class="form-control form-control-sm" readonly />
+			        </div>
+			      </div>
+
+			      <!-- Row 4 -->
+			      <div class="row formline" style="margin-top:10px;">
+			        <label class="col-sm-2">Report Date</label>
+			        <div class="col-sm-3">
+			          <input type="date" name="reportDate" class="form-control form-control-sm"
+			                 th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" readonly/>
+			        </div>
+			      </div>
+
+							      <!-- Update Button -->
+							      <div style="text-align:center; margin-top:20px;">
+							        <button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}" onclick="submitUpdate()">Update</button>
+							      </div>
+							    </form>
+							  </div>
+							</div>
+
+		</div>
+
+
+
+	</div>
+
+
+
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodels()"
+						data-dismiss="modal">ok</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- For Edit in Detail page -->
+	<div class="modal fade" id="resultModal1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel1"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody1"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+<!-- Custom Cellresult Modal -->
+		<div class="modal fade" id="cellresultModal">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content">
+		      
+		      <!-- Custom header -->
+		      <div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+		        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+		          Do you want to open the report?
+		        </div>
+		      </div>
+
+		      <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+		        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"  style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+		          Cancel
+		        </button>
+		        <button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+		          Yes
+		        </button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+</body>
+
+<!-- <script>
+															  $(document).ready(function () {
+															    $('#BRFvalidation').DataTable({
+															      "paging": true,
+															      "pageLength": 10,
+															      "lengthChange": false,
+															      "searching": true,
+															      "ordering": true,
+															      "autoWidth": false,
+															      "language": {
+															        "search": "Search:"
+															      }
+															    });
+															  });
+															</script> 
+															<script>
+															  $(document).ready(function () {
+															    $('#BRFvalidation').DataTable({
+															      "paging": true,
+															      "info": false,       // turn off "Showing x of y"
+															      "searching": false,  // turn off search
+															      "ordering": false,   // turn off ordering
+															      "lengthChange": false // hide "Show x entries"
+															    });
+															  });
+															</script> 
+ -->
+
+
+<style>
+	.dataTables_scrollHeadInner,
+	table.dataTable {
+		width: 100% !important;
+	}
+
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 700px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		overflow-x: auto;
+		border: 1px solid #ccc;
+	}
+
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
+
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
+
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
+
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
+
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
+</style>
+
+
+<style>
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
+
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
+
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
+
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
+
+	.pagination {
+		margin: 0;
+	}
+
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
+
+	.page-link {
+		color: #386276;
+	}
+
+	.page-link:hover {
+		color: #2a4a5c;
+	}
+
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
+</style>
+
+
+
+
+</html>

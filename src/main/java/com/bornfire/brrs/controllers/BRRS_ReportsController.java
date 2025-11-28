@@ -64,10 +64,12 @@ import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LARADV_ReportService;
+import com.bornfire.brrs.services.BRRS_M_LIQGAP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
 import com.bornfire.brrs.services.BRRS_M_NOSVOS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OB_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OPTR_ReportService;
+import com.bornfire.brrs.services.BRRS_M_OR1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OR2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_PLL_ReportService;
 import com.bornfire.brrs.services.BRRS_M_RPD_ReportService;
@@ -495,6 +497,37 @@ public class BRRS_ReportsController {
 	}
 
 	@Autowired
+	private BRRS_M_LIQGAP_ReportService brrs_m_liqgap_reportservice;
+
+	@RequestMapping(value = "/LIQGAPupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute M_LIQGAP_Manual_Summary_Entity request1
+
+	) {
+		try {
+			System.out.println("Came to single controller");
+
+			// set date into entities
+			request1.setReport_date(asondate);
+
+			// call services
+			brrs_m_liqgap_reportservice.updateReport(request1);
+
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	
+	
+
+	
+	@Autowired
 	BRRS_M_CA6_ReportService BRRS_M_CA6_ReportService;
 
 	@RequestMapping(value = "/MCA6updateAll", method = { RequestMethod.GET, RequestMethod.POST })
@@ -702,6 +735,36 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+	
+	
+	
+	@Autowired
+	private BRRS_M_OR1_ReportService brrs_m_or1_reportservice;
+
+	@RequestMapping(value = "/OR1updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute M_OR1_Summary_Entity request1
+
+	) {
+		try {
+			System.out.println("Came to single controller");
+
+			// set date into entities
+			request1.setReport_date(asondate);
+
+			// call services
+			brrs_m_or1_reportservice.updateReport(request1);
+
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
 
 	@Autowired
 	private BRRS_M_CA4_ReportService brrs_m_ca4_reportservice;
@@ -2444,7 +2507,7 @@ private BRRS_M_LARADV_ReportService LARADVreportService;
 
 @RequestMapping(value = "/LARADVupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 @ResponseBody
-public ResponseEntity<String> updateLA4(
+public ResponseEntity<String> updateAllReports(
 	@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
 	@ModelAttribute M_LARADV_Summary_Entity1 request1,
@@ -2506,7 +2569,7 @@ try {
 } catch (Exception e) {
 	e.printStackTrace();
 	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-			.body("Q_BRANCHNET Resubmission Update Failed: " + e.getMessage());
+			.body("Q_LARADV Resubmission Update Failed: " + e.getMessage());
 }
 }
 
