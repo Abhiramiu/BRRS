@@ -51,6 +51,7 @@ import com.bornfire.brrs.services.BRRS_M_CA5_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA6_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CR_ReportService;
+import com.bornfire.brrs.services.BRRS_M_DEP3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GALOR_ReportService;
@@ -73,6 +74,7 @@ import com.bornfire.brrs.services.BRRS_M_OR1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OR2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_PLL_ReportService;
 import com.bornfire.brrs.services.BRRS_M_RPD_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SCI_E_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SECA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SECL_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SEC_ReportService;
@@ -91,7 +93,6 @@ import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
-import com.bornfire.brrs.services.BRRS_M_DEP3_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
 
@@ -737,7 +738,32 @@ public class BRRS_ReportsController {
 		}
 	}
 	
-	
+	  @Autowired
+	 	BRRS_M_SCI_E_ReportService brrs_m_sci_e_reportservice;
+
+	 
+@RequestMapping(value = "/M_SCI_EupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateReport(
+@RequestParam(required = false) 
+@DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+@ModelAttribute M_SCI_E_Manual_Summary_Entity request
+) {
+try {
+System.out.println("came to single controller");
+       
+// ✅ set the asondate into entity
+request.setReport_date(asondate);
+// call services
+brrs_m_sci_e_reportservice.updateReport(request);
+	         
+return ResponseEntity.ok(" Updated Successfully");
+} catch (Exception e) {
+e.printStackTrace();
+return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                     .body("Update Failed: " + e.getMessage());
+}
+}
 	
 	@Autowired
 	private BRRS_M_OR1_ReportService brrs_m_or1_reportservice;

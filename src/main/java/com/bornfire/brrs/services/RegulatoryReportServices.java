@@ -230,6 +230,10 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_SRWA_12E_ReportService BRRS_M_SRWA_12E_ReportService;
+	
+	
+	@Autowired
+	BRRS_M_SCI_E_ReportService brrs_m_sci_e_reportservice;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -597,6 +601,13 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+				
+			case "M_SCI_E":
+					
+					repsummary = brrs_m_sci_e_reportservice.getM_SCI_EView(reportId, fromdate, todate, currency, dtltype,
+							pageable, type, version);
+					break;
 
 		}
 
@@ -755,6 +766,14 @@ public class RegulatoryReportServices {
 				repdetail = BRRS_m_galor_ReportService.getM_GALORcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype, pageable, Filter, type, version);
 				break;
+				
+             case "M_SCI_E":
+				
+				
+				repdetail = brrs_m_sci_e_reportservice.getM_SCI_EcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+				
 
 		}
 		return repdetail;
@@ -1398,6 +1417,17 @@ public class RegulatoryReportServices {
 					repfile = BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(filename, reportId, fromdate, todate,
 							currency,
 							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+			case "M_SCI_E":
+				try {
+					
+					
+					repfile = brrs_m_sci_e_reportservice.getM_SCI_EExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -2069,6 +2099,15 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "M_SCI_E":
+				try {
+					archivalData = brrs_m_sci_e_reportservice.getM_SCI_EArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
@@ -2189,6 +2228,13 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 
 		}
+		
+else if ("M_SCI_E".equals(filename)) {
+	        
+	        
+	        fileData = brrs_m_sci_e_reportservice.getM_SCI_EDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+	    }
 
 		if (fileData == null) {
 			// logger.warn("Excel generation failed or no data for jobId: {}", jobId);
