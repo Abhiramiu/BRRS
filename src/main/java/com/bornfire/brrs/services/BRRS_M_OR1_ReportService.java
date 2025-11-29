@@ -250,8 +250,8 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 
 	    try {
 	    	// Loop from R11 to R50 and copy fields
-	    	int[] rows = new int[40];
-	    	for (int k = 0, r = 11; r <= 50; r++, k++) {
+	    	int[] rows = new int[56];
+	    	for (int k = 0, r = 10; r <= 22; r++, k++) {
 	    	    rows[k] = r;
 	    	}
 
@@ -339,7 +339,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 
 	        int[] Rows = {22,35,48};
 	        for (int i : Rows) {
-	            String prefix = "r" + i + "_";
+	            String prefix = "R" + i + "_";
 	            String[] fields = {"gross_income" };
 
 	            for (String field : fields) {
@@ -362,7 +362,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 	        
 	        int[] Rows1 = {50,52,54};
 	        for (int i : Rows1) {
-	            String prefix = "r" + i + "_";
+	            String prefix = "R" + i + "_";
 	            String[] fields = {"aggregate_gross_income" };
 
 	            for (String field : fields) {
@@ -385,7 +385,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 
 	        int[] Rows2 = {56};
 	        for (int i : Rows2) {
-	            String prefix = "r" + i + "_";
+	            String prefix = "R" + i + "_";
 	            String[] fields = {"risk_weight_factor" };
 
 	            for (String field : fields) {
