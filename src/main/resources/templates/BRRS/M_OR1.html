@@ -1110,46 +1110,88 @@ $(document).ready(function () {
     // Recalculate when inputs change
     $("#r50_aggregate_gross_income, #r51_aggregate_gross_income")
         .on("input", calculateR52_AggregateGrossIncome);
-});
+}); 
 
 
 
 function calculateR54_AggregateGrossIncome() {
-
     function getVal(id) {
         let el = $("#" + id);
-
         if (el.length === 0) {
             console.warn("Missing element:", id);
             return 0;
         }
 
-        let val = el.val() || el.text() || "0";
-
-        // Clean commas & non-numeric except dot and minus
-        val = val.replace(/,/g, "").replace(/[^0-9.\-]/g, "");
-
-        return parseFloat(val) || 0;
+        // read from input if input-like, otherwise from text
+        let raw = el.is(":input") ? (el.val() || "") : (el.text() || "");
+        raw = raw.toString().replace(/,/g, "").replace(/[^0-9.\-]/g, "");
+        return parseFloat(raw) || 0;
     }
 
     let r52 = getVal("r52_aggregate_gross_income");
-    let r53 = getVal("r53_aggregate_gross_income");  // e.g., 3.00
+    let r53 = getVal("r53_aggregate_gross_income");
 
-    let total = (r53 !== 0) ? (r52 / r53) : 0;
+    let total = 0;
+    if (r53 !== 0) {
+        total = r52 / r53;
+    }
 
-    $("#r54_aggregate_gross_income").val(
-        total.toLocaleString("en-US", { maximumFractionDigits: 2 })
-    );
+    // write result to input or text node depending on element type
+    let outEl = $("#r54_aggregate_gross_income");
+    if (outEl.length) {
+        let formatted = Number.isFinite(total)
+            ? total.toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 0 })
+            : "0";
+        if (outEl.is(":input")) outEl.val(formatted);
+        else outEl.text(formatted);
+    } else {
+        console.warn("Missing output element: r54_aggregate_gross_income");
+    }
+}
+
+function calculateR63_Total() {
+    function getVal(id) {
+        let el = $("#" + id);
+        if (el.length === 0) {
+            console.warn("❌ Missing element:", id);
+            return 0;
+        }
+        let raw = el.is(":input") ? (el.val() || "") : (el.text() || "");
+        raw = raw.toString().replace(/,/g, "").replace(/[^0-9.\-]/g, "");
+        return parseFloat(raw) || 0;
+    }
+
+    let r61 = getVal("r61_operational_risk_cap_charge");
+    let r62 = getVal("r62_operational_risk_cap_charge");
+
+    let result = 0;
+    if (r62 !== 0) {
+        result = r61 / r62;
+    }
+
+    let outEl = $("#r63_operational_risk_cap_charge");
+    if (outEl.length) {
+        let formatted = Number.isFinite(result)
+            ? result.toLocaleString("en-US", { maximumFractionDigits: 0, minimumFractionDigits: 0 })
+            : "0";
+        if (outEl.is(":input")) outEl.val(formatted);
+        else outEl.text(formatted);
+    } else {
+        console.warn("Missing output element: r63_operational_risk_cap_charge");
+    }
 }
 
 $(document).ready(function () {
+    // initial calculations
+    calculateR54_AggregateGrossIncome();
+    calculateR63_Total();
 
-    // Initial calculation
-    calculateR54_GrossIncome();
-
-    // Recalculate when inputs change
+    // re-calc on input changes
     $("#r52_aggregate_gross_income, #r53_aggregate_gross_income")
-        .on("input", calculateR54_AggregateGrossIncome);
+        .on("input change", calculateR54_AggregateGrossIncome);
+
+    $("#r61_operational_risk_cap_charge, #r62_operational_risk_cap_charge")
+        .on("input change", calculateR63_Total);
 });
 
 
@@ -1712,7 +1754,7 @@ for (let i = 10; i <= 56; i++) {
 </tr>
 
 <tr>
-    <td id="ROW23" rowspan="12" style="width:100px;vertical-align: bottom;vertical-align: middle; text-align:center;">
+    <td id="ROW23" rowspan="12" style="width:100px;vertical-align: bottom; text-align:center;">
     3
 </td>
 <td id="ROW23" rowspan="12" style="width:100px;vertical-align: middle; text-align:center;">
@@ -2121,8 +2163,8 @@ for (let i = 10; i <= 56; i++) {
            th:value="${report.r51_aggregate_gross_income != null and report.r51_aggregate_gross_income != 0 ?
                       #numbers.formatDecimal(report.r51_aggregate_gross_income, 1, 'COMMA', 2, 'POINT') :
                       '0.15'}"
-           id="r53_aggregate_gross_income"
-           name="r53_aggregate_gross_income"
+           id="r51_aggregate_gross_income"
+           name="r51_aggregate_gross_income"
            style="background-color:#BEBEBE; height:28px; border-color:transparent; text-align:right;"
            readonly />
 </td>
@@ -2184,8 +2226,8 @@ for (let i = 10; i <= 56; i++) {
    <td style="background-color:#BEBEBE; font-weight: bold;text-align:right;">
     <input class="display-input Show_inputnonEditable"
            type="text"
-           th:value="${report.r55_risk_weight_factor != null and report.r51_aggregate_gross_income != 0 ?
-                      #numbers.formatDecimal(report.r51_risk_weight_factor, 1, 'COMMA', 2, 'POINT') :
+           th:value="${report.r55_risk_weight_factor != null and report.r55_risk_weight_factor != 0 ?
+                      #numbers.formatDecimal(report.r55_risk_weight_factor, 1,'COMMA', 1, 'POINT') :
                       '6.7'}"
            id="r55_risk_weight_factor"
            name="r55_risk_weight_factor"
