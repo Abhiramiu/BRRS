@@ -38,6 +38,30 @@ PURPOSE		: BWRBRREPORT
 	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
 	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
 	<style>
+
+/* Style the INPUT */
+input[id^="R"][id$="_RISK_WEIGHTED_AMOUNT_NOSTRO"] {
+    background-color: rgb(107, 122, 143) !important;
+    color: white !important;
+}
+
+/* Style the TD containing that input */
+td:has(input[id^="R"][id$="_RISK_WEIGHTED_AMOUNT_NOSTRO"]) {
+    background-color: rgb(107, 122, 143) !important;
+}
+
+/* Style the INPUT */
+input[id^="R"][id$="_RISK_WEIGHTED_AMOUNT_NOSTRO1"] {
+    background-color: rgb(107, 122, 143) !important;
+    color: white !important;
+}
+
+/* Style the TD containing that input */
+td:has(input[id^="R"][id$="_RISK_WEIGHTED_AMOUNT_NOSTRO1"]) {
+    background-color: rgb(107, 122, 143) !important;
+}
+
+
 		.btns {
 			float: right;
 			margin: 5px;
@@ -787,14 +811,14 @@ function calculateR101Totals() {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							M-NOSVOS: ANALYSIS OF NOSTROS AND VOSTROS</h5>
+							M-NOSVOS: Analysis of Nostros and Vostros</h5>
 					</div>
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
 						<span class="white-text"
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
-							Date: <span th:text="${asondate}">2025-07-04</span>
+							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 						</span>
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -848,7 +872,7 @@ function calculateR101Totals() {
 				</div>
 				<div th:if="${displaymode == 'summary'}">
 					<div class="row">
-						<div class="col-sm-12">
+						<div class="col-lg-12">
 							<form action="#" method="POST" id="fileupload">
 								<div class="table-wrapper table-responsive scrollable-table-container"
 									style="border-right: 1px solid #dee2e6; ">
@@ -857,18 +881,18 @@ function calculateR101Totals() {
 										id="reports">
 										<thead class="thead-light">
 											<tr>
-												<th colspan="7"
+												<th colspan="12"
 													style="text-align: left; padding-left: 20px; width: 900px;">
 													DUE FROM OTHER (Non-Affliated) FOREIGN BANKS (NOSTRO) </th>
 											</tr>
 
-											<tr style="background-color: #b3b6b9;">
+											<tr style="background-color: #b3b6b9; height:80px;">
 												<th
 													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; padding-left: 20px; width: 900px;">
 													Name of Bank and Country
 												</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center; width: 200px;">
+													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center; width: 250px;">
 													Type of account</th>
 												<th
 													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center;width: 150px;">
@@ -877,16 +901,16 @@ function calculateR101Totals() {
 													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center; width: 150px;">
 													Currency</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left;vertical-align:center; width: 150px;">
-													Bank Rating, e.g, AAA, AA or A1</th>
+													style="background-color: #D8D8D8;vertical-align:middle;text-align: left;vertical-align:center; width: 180px;">
+													Sovereign Rating, e.g, AAA, AA or A1</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left;vertical-align:center; width: 150px;">
+													style="background-color: #D8D8D8;vertical-align:middle;text-align: left;vertical-align:center; width: 180px;">
 													Risk-Weight (one category less favouable than sovereign RW)</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 150px;">
+													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 120px;">
 													Amount (Demand)</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 150px;">
+													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 120px;">
 													Amount (Time)</th>
 												<th
 													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 150px;">
@@ -992,7 +1016,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R1_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R1_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R1_RISK_WEIGHT_NOSTRO) ? '0' : report.R1_RISK_WEIGHT_NOSTRO}" 
 														id="R1_RISK_WEIGHT_NOSTRO" name="R1_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -1116,7 +1140,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R2_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R2_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R2_RISK_WEIGHT_NOSTRO) ? '0' : report.R2_RISK_WEIGHT_NOSTRO}" 
 														id="R2_RISK_WEIGHT_NOSTRO" name="R2_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -1240,7 +1264,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R3_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R3_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R3_RISK_WEIGHT_NOSTRO) ? '0' : report.R3_RISK_WEIGHT_NOSTRO}" 
 														id="R3_RISK_WEIGHT_NOSTRO" name="R3_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -1364,7 +1388,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R4_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R4_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R4_RISK_WEIGHT_NOSTRO) ? '0' : report.R4_RISK_WEIGHT_NOSTRO}"
 														id="R4_RISK_WEIGHT_NOSTRO" name="R4_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -1488,7 +1512,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R5_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R5_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R5_RISK_WEIGHT_NOSTRO) ? '0' : report.R5_RISK_WEIGHT_NOSTRO}" 
 														id="R5_RISK_WEIGHT_NOSTRO" name="R5_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -1612,7 +1636,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R6_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R6_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R6_RISK_WEIGHT_NOSTRO) ? '0' : report.R6_RISK_WEIGHT_NOSTRO}" 
 														id="R6_RISK_WEIGHT_NOSTRO" name="R6_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -1736,7 +1760,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R7_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R7_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R7_RISK_WEIGHT_NOSTRO) ? '0' : report.R7_RISK_WEIGHT_NOSTRO}" 
 														id="R7_RISK_WEIGHT_NOSTRO" name="R7_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -1860,7 +1884,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R8_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R8_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R8_RISK_WEIGHT_NOSTRO) ? '0' : report.R8_RISK_WEIGHT_NOSTRO}" 
 														id="R8_RISK_WEIGHT_NOSTRO" name="R8_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -1984,7 +2008,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R9_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R9_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R9_RISK_WEIGHT_NOSTRO) ? '0' : report.R9_RISK_WEIGHT_NOSTRO}" 
 														id="R9_RISK_WEIGHT_NOSTRO" name="R9_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -2109,7 +2133,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R10_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R10_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R10_RISK_WEIGHT_NOSTRO) ? '0' : report.R10_RISK_WEIGHT_NOSTRO}" 
 														id="R10_RISK_WEIGHT_NOSTRO" name="R10_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -2234,7 +2258,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R11_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R11_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R11_RISK_WEIGHT_NOSTRO) ? '0' : report.R11_RISK_WEIGHT_NOSTRO}" 
 														id="R11_RISK_WEIGHT_NOSTRO" name="R11_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -2359,7 +2383,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R12_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R12_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R12_RISK_WEIGHT_NOSTRO) ? '0' : report.R12_RISK_WEIGHT_NOSTRO}" 
 														id="R12_RISK_WEIGHT_NOSTRO" name="R12_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -2484,7 +2508,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R13_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R13_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R13_RISK_WEIGHT_NOSTRO) ? '0' : report.R13_RISK_WEIGHT_NOSTRO}" 
 														id="R13_RISK_WEIGHT_NOSTRO" name="R13_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -2609,7 +2633,7 @@ function calculateR101Totals() {
 												</td>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R14_RISK_WEIGHT_NOSTRO, 'N/A')}"
+														th:value="${#strings.equalsIgnoreCase(report.R14_RISK_WEIGHT_NOSTRO, 'N/A') || #strings.isEmpty(report.R14_RISK_WEIGHT_NOSTRO) ? '0' : report.R14_RISK_WEIGHT_NOSTRO}" 
 														id="R14_RISK_WEIGHT_NOSTRO" name="R14_RISK_WEIGHT_NOSTRO"
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: left;"
 														readonly />
@@ -13586,21 +13610,24 @@ function calculateR101Totals() {
 											</tr>
 
 										</tbody>
-
+										</table>
+<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
 										<thead class="thead-light">
 											<tr>
-												<th colspan="7"
+												<th colspan="12"
 													style="text-align: left; padding-left: 20px; width: 900px;">
 													DUE TO OTHER FOREIGN BANKS (VOSTRO)</th>
 											</tr>
 
-											<tr style="background-color: #b3b6b9;">
+											<tr style="background-color: #b3b6b9; height:80px;">
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; padding-left: 20px; width: 900px;">
+													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; padding-left: 20px; width: 250px;">
 													Name of Bank and Country
 												</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center; width: 200px;">
+													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center; width: 150px;">
 													Type of account</th>
 												<th
 													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center;width: 150px;">
@@ -13609,10 +13636,10 @@ function calculateR101Totals() {
 													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center; width: 150px;">
 													Currency</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 150px;">
+													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 120px;">
 													Amount (Demand)</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 150px;">
+													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 120px;">
 													Amount (Time)</th>
 
 											</tr>
@@ -23872,17 +23899,19 @@ function calculateR101Totals() {
 										</tbody>
 
 
-
-
+</table>
+<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
 
 										<thead class="thead-light">
 											<tr>
-												<th colspan="7"
+												<th colspan="12"
 													style="text-align: left; padding-left: 20px; width: 900px;">
 													DUE FROM RELATED FOREIGN BANKS </th>
 											</tr>
 
-											<tr style="background-color: #b3b6b9;">
+											<tr style="background-color: #b3b6b9; height:80px;">
 												<th
 													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; padding-left: 20px; width: 900px;">
 													Name of Bank
@@ -36216,15 +36245,18 @@ function calculateR101Totals() {
 
 										</tbody>
 
-
+</table>
+<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
 										<thead class="thead-light">
 											<tr>
-												<th colspan="8"
+												<th colspan="12"
 													style="text-align: left; padding-left: 20px; width: 900px;">
 													DUE TO RELATED FOREIGN BANKS</th>
 											</tr>
 
-											<tr style="background-color: #b3b6b9;">
+											<tr style="background-color: #b3b6b9;height:80px;">
 												<th
 													style="background-color: #D8D8D8;text-align: left;vertical-align:middle; padding-left: 20px; width: 900px;">
 													Name of Bank
