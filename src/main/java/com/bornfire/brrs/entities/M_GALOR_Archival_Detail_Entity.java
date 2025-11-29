@@ -91,213 +91,209 @@ public class M_GALOR_Archival_Detail_Entity {
    private Date verifyTime;
 
    @Column(name = "ENTITY_FLG")
-   private char entityFlg;
+   private String entityFlg;
 
    @Column(name = "MODIFY_FLG")
-   private char modifyFlg;
+   private String modifyFlg;
 
    @Column(name = "DEL_FLG")
-   private char delFlg;
+   private String delFlg;
 
-	public String getCustId() {
-		return custId;
-	}
+   public String getCustId() {
+	return custId;
+   }
 
-	public void setCustId(String custId) {
-		this.custId = custId;
-	}
+   public void setCustId(String custId) {
+	this.custId = custId;
+   }
 
-	public String getAcctNumber() {
-		return acctNumber;
-	}
+   public String getAcctNumber() {
+	return acctNumber;
+   }
 
-	public void setAcctNumber(String acctNumber) {
-		this.acctNumber = acctNumber;
-	}
+   public void setAcctNumber(String acctNumber) {
+	this.acctNumber = acctNumber;
+   }
 
-	public String getAcctName() {
-		return acctName;
-	}
+   public String getAcctName() {
+	return acctName;
+   }
 
-	public void setAcctName(String acctName) {
-		this.acctName = acctName;
-	}
+   public void setAcctName(String acctName) {
+	this.acctName = acctName;
+   }
 
-	public String getDataType() {
-		return dataType;
-	}
+   public String getDataType() {
+	return dataType;
+   }
 
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
-	}
+   public void setDataType(String dataType) {
+	this.dataType = dataType;
+   }
 
-	public String getReportName() {
-		return reportName;
-	}
+   public String getReportName() {
+	return reportName;
+   }
 
-	public void setReportName(String reportName) {
-		this.reportName = reportName;
-	}
+   public void setReportName(String reportName) {
+	this.reportName = reportName;
+   }
 
-	public String getReportLable() {
-		return reportLable;
-	}
+   public String getReportLable() {
+	return reportLable;
+   }
 
-	public void setReportLable(String reportLable) {
-		this.reportLable = reportLable;
-	}
+   public void setReportLable(String reportLable) {
+	this.reportLable = reportLable;
+   }
 
-	public String getReportAddlCriteria_1() {
-		return reportAddlCriteria_1;
-	}
+   public String getReportAddlCriteria_1() {
+	return reportAddlCriteria_1;
+   }
 
-	public void setReportAddlCriteria_1(String reportAddlCriteria_1) {
-		this.reportAddlCriteria_1 = reportAddlCriteria_1;
-	}
+   public void setReportAddlCriteria_1(String reportAddlCriteria_1) {
+	this.reportAddlCriteria_1 = reportAddlCriteria_1;
+   }
 
-	public String getReportAddlCriteria_2() {
-		return reportAddlCriteria_2;
-	}
+   public String getReportAddlCriteria_2() {
+	return reportAddlCriteria_2;
+   }
 
-	public void setReportAddlCriteria_2(String reportAddlCriteria_2) {
-		this.reportAddlCriteria_2 = reportAddlCriteria_2;
-	}
+   public void setReportAddlCriteria_2(String reportAddlCriteria_2) {
+	this.reportAddlCriteria_2 = reportAddlCriteria_2;
+   }
 
-	public String getReportAddlCriteria_3() {
-		return reportAddlCriteria_3;
-	}
+   public String getReportAddlCriteria_3() {
+	return reportAddlCriteria_3;
+   }
 
-	public void setReportAddlCriteria_3(String reportAddlCriteria_3) {
-		this.reportAddlCriteria_3 = reportAddlCriteria_3;
-	}
+   public void setReportAddlCriteria_3(String reportAddlCriteria_3) {
+	this.reportAddlCriteria_3 = reportAddlCriteria_3;
+   }
 
-	public String getReportRemarks() {
-		return reportRemarks;
-	}
+   public String getReportRemarks() {
+	return reportRemarks;
+   }
 
-	public void setReportRemarks(String reportRemarks) {
-		this.reportRemarks = reportRemarks;
-	}
+   public void setReportRemarks(String reportRemarks) {
+	this.reportRemarks = reportRemarks;
+   }
 
-	public String getSanctionLimit() {
-		return sanctionLimit;
-	}
+   public String getSanctionLimit() {
+	return sanctionLimit;
+   }
 
-	public void setSanctionLimit(String sanctionLimit) {
-		this.sanctionLimit = sanctionLimit;
-	}
+   public void setSanctionLimit(String sanctionLimit) {
+	this.sanctionLimit = sanctionLimit;
+   }
 
-	public String getModificationRemarks() {
-		return modificationRemarks;
-	}
+   public String getModificationRemarks() {
+	return modificationRemarks;
+   }
 
-	public void setModificationRemarks(String modificationRemarks) {
-		this.modificationRemarks = modificationRemarks;
-	}
+   public void setModificationRemarks(String modificationRemarks) {
+	this.modificationRemarks = modificationRemarks;
+   }
 
-	public String getDataEntryVersion() {
-		return dataEntryVersion;
-	}
+   public String getDataEntryVersion() {
+	return dataEntryVersion;
+   }
 
-	public void setDataEntryVersion(String dataEntryVersion) {
-		this.dataEntryVersion = dataEntryVersion;
-	}
+   public void setDataEntryVersion(String dataEntryVersion) {
+	this.dataEntryVersion = dataEntryVersion;
+   }
 
-	public BigDecimal getAcctBalanceInpula() {
-		return acctBalanceInpula;
-	}
+   public BigDecimal getAcctBalanceInpula() {
+	return acctBalanceInpula;
+   }
 
-	public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
-		this.acctBalanceInpula = acctBalanceInpula;
-	}
+   public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+	this.acctBalanceInpula = acctBalanceInpula;
+   }
 
-	public Date getReportDate() {
-		return reportDate;
-	}
+   public Date getReportDate() {
+	return reportDate;
+   }
 
-	public void setReportDate(Date reportDate) {
-		this.reportDate = reportDate;
-	}
+   public void setReportDate(Date reportDate) {
+	this.reportDate = reportDate;
+   }
 
-	public String getCreateUser() {
-		return createUser;
-	}
+   public String getCreateUser() {
+	return createUser;
+   }
 
-	public void setCreateUser(String createUser) {
-		this.createUser = createUser;
-	}
+   public void setCreateUser(String createUser) {
+	this.createUser = createUser;
+   }
 
-	public Date getCreateTime() {
-		return createTime;
-	}
+   public Date getCreateTime() {
+	return createTime;
+   }
 
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
+   public void setCreateTime(Date createTime) {
+	this.createTime = createTime;
+   }
 
-	public String getModifyUser() {
-		return modifyUser;
-	}
+   public String getModifyUser() {
+	return modifyUser;
+   }
 
-	public void setModifyUser(String modifyUser) {
-		this.modifyUser = modifyUser;
-	}
+   public void setModifyUser(String modifyUser) {
+	this.modifyUser = modifyUser;
+   }
 
-	public Date getModifyTime() {
-		return modifyTime;
-	}
+   public Date getModifyTime() {
+	return modifyTime;
+   }
 
-	public void setModifyTime(Date modifyTime) {
-		this.modifyTime = modifyTime;
-	}
+   public void setModifyTime(Date modifyTime) {
+	this.modifyTime = modifyTime;
+   }
 
-	public String getVerifyUser() {
-		return verifyUser;
-	}
+   public String getVerifyUser() {
+	return verifyUser;
+   }
 
-	public void setVerifyUser(String verifyUser) {
-		this.verifyUser = verifyUser;
-	}
+   public void setVerifyUser(String verifyUser) {
+	this.verifyUser = verifyUser;
+   }
 
-	public Date getVerifyTime() {
-		return verifyTime;
-	}
+   public Date getVerifyTime() {
+	return verifyTime;
+   }
 
-	public void setVerifyTime(Date verifyTime) {
-		this.verifyTime = verifyTime;
-	}
+   public void setVerifyTime(Date verifyTime) {
+	this.verifyTime = verifyTime;
+   }
 
-	public char getEntityFlg() {
-		return entityFlg;
-	}
+   public String getEntityFlg() {
+	return entityFlg;
+   }
 
-	public void setEntityFlg(char entityFlg) {
-		this.entityFlg = entityFlg;
-	}
+   public void setEntityFlg(String entityFlg) {
+	this.entityFlg = entityFlg;
+   }
 
-	public char getModifyFlg() {
-		return modifyFlg;
-	}
+   public String getModifyFlg() {
+	return modifyFlg;
+   }
 
-	public void setModifyFlg(char modifyFlg) {
-		this.modifyFlg = modifyFlg;
-	}
+   public void setModifyFlg(String modifyFlg) {
+	this.modifyFlg = modifyFlg;
+   }
 
-	public char getDelFlg() {
-		return delFlg;
-	}
+   public String getDelFlg() {
+	return delFlg;
+   }
 
-	public void setDelFlg(char delFlg) {
-		this.delFlg = delFlg;
-	}
-	public M_GALOR_Archival_Detail_Entity() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-    
-    
+   public void setDelFlg(String delFlg) {
+	this.delFlg = delFlg;
+   }
 
-	  
-    
-
+   public M_GALOR_Archival_Detail_Entity() {
+	super();
+	// TODO Auto-generated constructor stub
+   }
 }
+	
