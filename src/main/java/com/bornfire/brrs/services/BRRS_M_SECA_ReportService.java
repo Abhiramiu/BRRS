@@ -1,7 +1,6 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -12,8 +11,14 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -22,7 +27,6 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -34,6 +38,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +52,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.M_SECA_Archival_Detail_Entity;
@@ -68,6 +75,7 @@ import com.bornfire.brrs.entities.M_SECA_Detail_Entity;
 
 import java.math.BigDecimal;
 
+
 @Component
 @Service
 public class BRRS_M_SECA_ReportService {
@@ -79,7 +87,8 @@ public class BRRS_M_SECA_ReportService {
 	@Autowired
 	SessionFactory sessionFactory;
 
-
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	BRRS_M_SECA_Detail_Repo BRRS_M_SECA_Detail_Repo;
@@ -276,19 +285,50 @@ for (int i = 14; i <= 57; i++) {
                 } catch (NoSuchMethodException e) {
                     // Skip missing fields
                     continue;
-                }
-            }
-        }
+//                }
+//            }
+//        }
+//
+//}			
+//
+//	catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // 3️⃣ Save updated entity
+//	    BRRS_M_SECA_Manual_Summary_Repo.save(existing);
+//	}
+}
+}
+}
 
-}			
+// Metadata
+existing.setREPORT_VERSION(updatedEntity.getREPORT_VERSION());
+//existing.setREPORT_FREQUENCY(updatedEntity.getREPORT_FREQUENCY());
+existing.setREPORT_CODE(updatedEntity.getREPORT_CODE());
+existing.setREPORT_DESC(updatedEntity.getREPORT_DESC());
+existing.setENTITY_FLG(updatedEntity.getENTITY_FLG());
+existing.setMODIFY_FLG(updatedEntity.getMODIFY_FLG());
+existing.setDEL_FLG(updatedEntity.getDEL_FLG());
 
-	catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
+} catch (Exception e) {
+throw new RuntimeException("❌ Error while updating SECA Summary fields", e);
+}
 
-	    // 3️⃣ Save updated entity
-	    BRRS_M_SECA_Manual_Summary_Repo.save(existing);
-	}
+// FIRST COMMIT
+	    BRRS_M_SECA_Manual_Summary_Repo.saveAndFlush(existing);  // 🔴 IMPORTANT — forces immediate COMMIT
+System.out.println("✅ SECA Summary updated and COMMITTED");
+
+// NOW PROCEDURE CAN SEE UPDATED DATA
+String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
+.format(updatedEntity.getReport_date())
+.toUpperCase();
+
+String sql = "BEGIN BRRS.BRRS_M_SECA_SUMMARY_PROCEDURE('" + oracleDate + "'); END;";
+jdbcTemplate.execute(sql);
+
+System.out.println("Procedure executed for date: " + oracleDate);
+}
 
 	public ModelAndView getM_SECAcurrentDtl(String reportId, String fromdate, String todate, String currency,
 			  String dtltype, Pageable pageable, String Filter, String type, String version) {
@@ -9681,11 +9721,11 @@ balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 balanceCell.setCellValue(0);
 }
 
-// Create style with thousand separator and decimal point
-DataFormat format = workbook.createDataFormat();
+//// Create style with thousand separator and decimal point
+//DataFormat format = workbook.createDataFormat();
 
 // Format: 1,234,567
-balanceStyle.setDataFormat(format.getFormat("#,##0"));
+balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
 
 // Right alignment (optional)
 balanceStyle.setAlignment(HorizontalAlignment.RIGHT);

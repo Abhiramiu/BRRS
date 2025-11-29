@@ -988,36 +988,7 @@ function cancelModify() {
 	<SCRIPT>
 	// --- CALCULATION FUNCTIONS ---
 
-/*		// Calculate total for R14
-	function calculateR36BOBCTotals() {
-	    let total = 0;
-			
-			
-			let R36BOBC = parseFloat($("#R36_BOBC").is("input") ? $("#R36_BOBC").val().replace(/,/g, "") : $("#R36_BOBC").text().replace(/,/g, "")) || 0;
 
-	        let R36PLEDGEDASSET = parseFloat($("#R36_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
-	        
-	        total = R36BOBC - R36PLEDGEDASSET;
-
-	    // Put the totals into R14
-	    $("#R36_BOBC").text(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
-	
-	 // Reformat inputs if needed
-    if ($("#R36_BOBC").is("input")) $("#R36_BOBC").val(R36BOBC.toLocaleString('en-US'));
-    if ($("#R36_PLEDGED_ASSET").is("input")) $("#R36_PLEDGED_ASSET").val(R36PLEDGEDASSET.toLocaleString('en-US'));
-		
-		}
-	$(document).ready(function() {
-		calculateR36BOBCTotals();
-
-	    // Attach input listeners to any editable fields
-	    $("#R36_PLEDGED_ASSET").on("input", function() {
-	    	calculateR36BOBCTotals();
-	        
-	    });
-	});	
-	
-	*/
 	// Calculate total for R14
 	function calculateR14Totals() {
 	    let total = 0;
@@ -1398,7 +1369,36 @@ function cancelModify() {
 	    // Put the totals into R34
 	    $("#R34_TOTAL").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	}
+	
+/*	// Calculate total for R14
+	function calculateR36BOBCTotals() {
+	    let total = 0;
+			
+			
+			const R36BOBC = parseFloat($("#R36_BOBC").is("input") ? $("#R36_BOBC").val().replace(/,/g, "") : $("#R36_BOBC").text().replace(/,/g, "")) || 0;
 
+	        let R36PLEDGEDASSET = parseFloat($("#R36_PLEDGED_ASSET").val().replace(/,/g, "")) || 0;
+	        
+	        total = R36BOBC - R36PLEDGEDASSET;
+
+	    // Put the totals into R14
+	    $("#R36_BOBC").text(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
+	
+	 // Reformat inputs if needed
+    if ($("#R36_BOBC").is("input")) $("#R36_BOBC").val(R36BOBC.toLocaleString('en-US'));
+    if ($("#R36_PLEDGED_ASSET").is("input")) $("#R36_PLEDGED_ASSET").val(R36PLEDGEDASSET.toLocaleString('en-US'));
+		
+		}
+	$(document).ready(function() {
+		calculateR36BOBCTotals();
+
+	    // Attach input listeners to any editable fields
+	    $("#R36_PLEDGED_ASSET").on("input", function() {
+	    	calculateR36BOBCTotals();
+	        
+	    });
+	});	
+	*/
 	// Calculate total for R36
 	function calculateR36Totals() {
 	    let total = 0;
@@ -1422,6 +1422,8 @@ function cancelModify() {
 	    // Put the totals into R36
 	    $("#R36_TOTAL").val(total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }));
 	}
+
+	
 
 	// Calculate total for R37
 	function calculateR37Totals() {
@@ -2682,10 +2684,22 @@ function cancelModify() {
 
 	 // Recalculate whenever R14–R57 values change
 		for (let i = 14; i <= 57; i++) {
-			if ([17, 32, 38, 43, 47, 51].includes(i)) continue;
+			if ([17, 32, 36, 38, 43, 47, 51].includes(i)) continue;
 
 			// Attach the listener to all 9 columns for the current row
 			$("#R" + i + "_EQUITY, #R" + i + "_BONDS, #R" + i + "_BOBC, #R" + i + "_TRES_BILLS, #R"
+					+ i + "_REPURCHASE_AGREE, #R" + i + "_COM_PAPER, #R" + i + "_CERT_OF_DEP, #R"
+					+ i + "_PLEDGED_ASSET, #R" + i + "_OTHER").on("input", function() {
+				
+				calculateR58Totals();
+			
+			});
+		}
+		for (let i = 36; i <= 36; i++) {
+			//if ([38, 43, 47, 51].includes(i)) continue;
+
+			// Attach the listener to all 9 columns for the current row
+			$("#R" + i + "_EQUITY, #R" + i + "_TRES_BILLS, #R"
 					+ i + "_REPURCHASE_AGREE, #R" + i + "_COM_PAPER, #R" + i + "_CERT_OF_DEP, #R"
 					+ i + "_PLEDGED_ASSET, #R" + i + "_OTHER").on("input", function() {
 				
@@ -2723,7 +2737,7 @@ function fileuploads(btn) {
     $('#loader').modal('show');
 
     // Pre-calculations
-    //calculateR36BOBCTotals();
+ //calculateR36BOBCTotals();
 calculateR14Totals();
 calculateR15Totals();
 calculateR16Totals();

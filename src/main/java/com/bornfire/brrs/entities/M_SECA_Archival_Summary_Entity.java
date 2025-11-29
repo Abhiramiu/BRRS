@@ -31,6 +31,17 @@ public class M_SECA_Archival_Summary_Entity {
 	
 	private BigDecimal R36_BONDS;
 	private BigDecimal R36_BOBC;
+	private BigDecimal R36_PLEDGED_ASSET;
+	
+	
+	
+	
+	public BigDecimal getR36_PLEDGED_ASSET() {
+		return R36_PLEDGED_ASSET;
+	}
+	public void setR36_PLEDGED_ASSET(BigDecimal r36_PLEDGED_ASSET) {
+		R36_PLEDGED_ASSET = r36_PLEDGED_ASSET;
+	}
 	public Date getReport_date() {
 		return report_date;
 	}
