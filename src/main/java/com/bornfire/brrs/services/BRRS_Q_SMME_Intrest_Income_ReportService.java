@@ -3,6 +3,7 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -34,8 +37,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_Q_SMME_Intrest_Income_Archival_Detail_Repo;
@@ -45,7 +54,9 @@ import com.bornfire.brrs.entities.Q_SMME_Intrest_Income_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.Q_SMME_Intrest_Income_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Q_SMME_Intrest_Income_Detail_Entity;
 import com.bornfire.brrs.entities.Q_SMME_Intrest_Income_Summary_Entity;
+import com.bornfire.brrs.entities.Q_SMME_loans_Advances_Detail_Entity;
 import com.bornfire.brrs.entities.BRRS_Q_SMME_Intrest_Income_Summary_Repo;
+import com.bornfire.brrs.entities.M_SRWA_12A_Detail_Entity;
 
 
 @Component
@@ -1656,5 +1667,99 @@ public byte[] getDetailExcelARCHIVAL(String filename,
     }
 }
 
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+		ModelAndView mv = new ModelAndView("BRRS/M_SRWA_12A"); 
+
+		if (acctNo != null) {
+			Q_SMME_Intrest_Income_Detail_Entity q_smmeIi = q_SMME_Detail_Repo.findByAcctnumber(acctNo);
+			if (q_smmeIi != null && q_smmeIi.getReportDate() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(q_smmeIi.getReportDate());
+				mv.addObject("asondate", formattedDate);
+			}
+			mv.addObject("Q-SMMEIi aData", q_smmeIi);
+		}
+
+		mv.addObject("displaymode", "edit");
+		mv.addObject("formmode", formMode != null ? formMode : "edit");
+		return mv;
+	}
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+		try {
+			String acctNo = request.getParameter("acctNumber");
+			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+			String acctName = request.getParameter("acctName");
+			String reportDateStr = request.getParameter("reportDate");
+
+			logger.info("Received update for ACCT_NO: {}", acctNo);
+
+			Q_SMME_Intrest_Income_Detail_Entity existing = q_SMME_Detail_Repo.findByAcctnumber(acctNo);
+			if (existing == null) {
+				logger.warn("No record found for ACCT_NO: {}", acctNo);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+			}
+
+			boolean isChanged = false;
+
+			if (acctName != null && !acctName.isEmpty()) {
+				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+					existing.setAcctName(acctName);
+					isChanged = true;
+					logger.info("Account name updated to {}", acctName);
+				}
+			}
+
+			 if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+		            BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
+		            if (existing.getAcctBalanceInPula()  == null ||
+		                existing.getAcctBalanceInPula().compareTo(newacctBalanceInpula) != 0) {
+		            	 existing.setAcctBalanceInPula(newacctBalanceInpula);
+		                isChanged = true;
+		                logger.info("Balance updated to {}", newacctBalanceInpula);
+		            }
+		        }
+		        
+			if (isChanged) {
+				q_SMME_Detail_Repo.save(existing);
+				logger.info("Record updated successfully for account {}", acctNo);
+
+				// Format date for procedure
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+				// Run summary procedure after commit
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+					@Override
+					public void afterCommit() {
+						try {
+							logger.info("Transaction committed — calling BRRS_Q_SMME_INTREST_INCOME_SUMMARY_PROCEDURE({})",
+									formattedDate);
+							jdbcTemplate.update("BEGIN BRRS_Q_SMME_INTREST_INCOME_SUMMARY_PROCEDURE(?); END;", formattedDate);
+							logger.info("Procedure executed successfully after commit.");
+						} catch (Exception e) {
+							logger.error("Error executing procedure after commit", e);
+						}
+					}
+				});
+
+				return ResponseEntity.ok("Record updated successfully!");
+			} else {
+				logger.info("No changes detected for ACCT_NO: {}", acctNo);
+				return ResponseEntity.ok("No changes were made.");
+			}
+
+		} catch (Exception e) {
+			logger.error("Error updating Q_SMME_Ii record", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+		}
+	}
+
+	
+	
 
 }

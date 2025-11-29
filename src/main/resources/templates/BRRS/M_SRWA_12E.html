@@ -571,40 +571,50 @@ PURPOSE		: BWRBRREPORT
 			}
 
 			// Store totals ONLY in Row 19
-			$("#R19_PERFORMING_EXPOSURE").val(totalP.toLocaleString('en-IN'));
-			$("#R19_NON_PERFORMING").val(totalNP.toLocaleString('en-IN'));
-			$("#R19_SPECIFIC_PROV").val(totalSP.toLocaleString('en-IN'));
+			$("#R19_PERFORMING_EXPOSURE").val(totalP.toLocaleString('en-US'));
+			$("#R19_NON_PERFORMING").val(totalNP.toLocaleString('en-US'));
+			$("#R19_SPECIFIC_PROV").val(totalSP.toLocaleString('en-US'));
 		}
 
 
 		function calculateR13Totals() {
 
-			for (let i = 13; i <= 19; i++) {
+    for (let i = 13; i <= 19; i++) {
 
-				// R18 = default 0 → no calculation
-				if (i === 18) {
-					$("#R18_UNSECURED_PORTION_NPL").val("0");
-					continue;
-				}
+        // R18 = default 0 → no calculation + no %
+        if (i === 18) {
+            $("#R18_UNSECURED_PORTION_NPL").val("0");
+            continue;
+        }
 
-				let ProvVal = parseFloat($("#R" + i + "_SPECIFIC_PROV").val().replace(/,/g, "")) || 0;
-				let NPVal = parseFloat($("#R" + i + "_NON_PERFORMING").val().replace(/,/g, "")) || 0;
+        let ProvVal = parseFloat($("#R" + i + "_SPECIFIC_PROV").val().replace(/,/g, "")) || 0;
+        let NPVal = parseFloat($("#R" + i + "_NON_PERFORMING").val().replace(/,/g, "")) || 0;
 
-				let NPL = 0;
+        let NPL = 0;
 
-				if (NPVal !== 0) {
-					if (i === 15) {
-						NPL =Math.round( ProvVal / NPVal); // R15 value
-					} else {
-						NPL = Math.round((ProvVal / NPVal) * 100); // Others %
-					}
-				}
+        if (NPVal !== 0) {
+            if (i === 15) {
+                // R15 → NO PERCENT
+                NPL = Math.round(ProvVal / NPVal);
+            } else {
+                // All others except R18 → percent
+                NPL = Math.round((ProvVal / NPVal) * 100);
+            }
+        }
 
-				$("#R" + i + "_UNSECURED_PORTION_NPL").val(
-					NPL.toLocaleString('en-US')
-				);
-			}
-		}
+        // Apply formatting
+        if (i === 15) {
+            // R15 no %
+            $("#R15_UNSECURED_PORTION_NPL").val(NPL.toLocaleString('en-US'));
+        } 
+        else {
+            // R13, R14, R16, R19 → add %
+            $("#R" + i + "_UNSECURED_PORTION_NPL").val(
+                NPL.toLocaleString('en-US') + "%"
+            );
+        }
+    }
+}
 
 		$(document).ready(function () {
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface BRRS_Q_SMME_Intrest_Income_Detail_Repo extends JpaRepository<Q_SMME_Intrest_Income_Detail_Entity, String> {
   // Fetch all records for a given date
@@ -19,6 +20,10 @@ public interface BRRS_Q_SMME_Intrest_Income_Detail_Repo extends JpaRepository<Q_
  
 	@Query(value = "select * from BRRS_Q_SMME_INTREST_INCOME_DETAILTABLE where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3", nativeQuery = true)
 	List<Q_SMME_Intrest_Income_Detail_Entity> GetDataByRowIdAndColumnId(String reportLabel,String reportAddlCriteria1,Date reportdate);
+
+  	
+		@Query(value = "SELECT * FROM BRRS_Q_SMME_INTREST_INCOME_DETAILTABLE WHERE ACCT_NUMBER = :acctNumber", nativeQuery = true)
+		Q_SMME_Intrest_Income_Detail_Entity findByAcctnumber(@Param("acctNumber") String acctNumber);
 }
 
 

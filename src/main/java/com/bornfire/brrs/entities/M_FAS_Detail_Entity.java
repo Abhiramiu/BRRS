@@ -1,19 +1,26 @@
+
 package com.bornfire.brrs.entities;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import javax.persistence.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_Q_SMME_LOANS_ADVANCES_DETAILTABLE")
-public class Q_SMME_loans_Advances_Detail_Entity {
-  
+@Table(name = "BRRS_M_FAS_DETAILTABLE")
+public class M_FAS_Detail_Entity {
+
+    @Id
     @Column(name = "CUST_ID")
     private String custId;
-   @Id	
+
     @Column(name = "ACCT_NUMBER")
     private String acctNumber;
-
 
     @Column(name = "ACCT_NAME")
     private String acctName;
@@ -21,26 +28,14 @@ public class Q_SMME_loans_Advances_Detail_Entity {
     @Column(name = "DATA_TYPE")
     private String dataType;
 
-    @Column(name = "REPORT_NAME")
-    private String reportName;
+    @Column(name = "COLUMN_ID")
+    private String columnId;
 
-    @Column(name = "REPORT_LABEL")
-    private String reportLabel;
-
-    @Column(name = "REPORT_ADDL_CRITERIA_1")
-    private String reportAddlCriteria1;
-
-    @Column(name = "REPORT_ADDL_CRITERIA_2")
-    private String reportAddlCriteria2;
-
-    @Column(name = "REPORT_ADDL_CRITERIA_3")
-    private String reportAddlCriteria3;
+    @Column(name = "ROW_ID")
+    private String rowId;
 
     @Column(name = "REPORT_REMARKS")
     private String reportRemarks;
-
-    @Column(name = "SANCTION_LIMIT")
-    private BigDecimal sanctionLimit;
 
     @Column(name = "MODIFICATION_REMARKS")
     private String modificationRemarks;
@@ -48,51 +43,45 @@ public class Q_SMME_loans_Advances_Detail_Entity {
     @Column(name = "DATA_ENTRY_VERSION")
     private String dataEntryVersion;
 
-    @Column(name = "ACCT_BALANCE_IN_PULA")
-    private BigDecimal acctBalanceInPula;
-
-    @Column(name = "SEGMENT")
-    private String segment;
-
-    @Column(name = "CONSTITUTION_CODE")
-    private String constitutionCode;
-
-    @Column(name = "SMME")
-    private String smme;
+    @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+    private BigDecimal acctBalanceInpula;
 
     @Column(name = "REPORT_DATE")
-    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date reportDate;
+
+    @Column(name = "REPORT_NAME")
+    private String reportName;
 
     @Column(name = "CREATE_USER")
     private String createUser;
 
     @Column(name = "CREATE_TIME")
-    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date createTime;
 
     @Column(name = "MODIFY_USER")
     private String modifyUser;
 
     @Column(name = "MODIFY_TIME")
-    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date modifyTime;
 
     @Column(name = "VERIFY_USER")
     private String verifyUser;
 
     @Column(name = "VERIFY_TIME")
-    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date verifyTime;
 
     @Column(name = "ENTITY_FLG")
-    private String entityFlg;
+    private char entityFlg;
 
     @Column(name = "MODIFY_FLG")
-    private String modifyFlg;
+    private char modifyFlg;
 
     @Column(name = "DEL_FLG")
-    private String delFlg;
+    private char delFlg;
 
     public String getCustId() {
         return custId;
@@ -126,44 +115,20 @@ public class Q_SMME_loans_Advances_Detail_Entity {
         this.dataType = dataType;
     }
 
-    public String getReportName() {
-        return reportName;
+    public String getColumnId() {
+        return columnId;
     }
 
-    public void setReportName(String reportName) {
-        this.reportName = reportName;
+    public void setColumnId(String columnId) {
+        this.columnId = columnId;
     }
 
-    public String getReportLabel() {
-        return reportLabel;
+    public String getRowId() {
+        return rowId;
     }
 
-    public void setReportLabel(String reportLabel) {
-        this.reportLabel = reportLabel;
-    }
-
-    public String getReportAddlCriteria1() {
-        return reportAddlCriteria1;
-    }
-
-    public void setReportAddlCriteria1(String reportAddlCriteria1) {
-        this.reportAddlCriteria1 = reportAddlCriteria1;
-    }
-
-    public String getReportAddlCriteria2() {
-        return reportAddlCriteria2;
-    }
-
-    public void setReportAddlCriteria2(String reportAddlCriteria2) {
-        this.reportAddlCriteria2 = reportAddlCriteria2;
-    }
-
-    public String getReportAddlCriteria3() {
-        return reportAddlCriteria3;
-    }
-
-    public void setReportAddlCriteria3(String reportAddlCriteria3) {
-        this.reportAddlCriteria3 = reportAddlCriteria3;
+    public void setRowId(String rowId) {
+        this.rowId = rowId;
     }
 
     public String getReportRemarks() {
@@ -172,14 +137,6 @@ public class Q_SMME_loans_Advances_Detail_Entity {
 
     public void setReportRemarks(String reportRemarks) {
         this.reportRemarks = reportRemarks;
-    }
-
-    public BigDecimal getSanctionLimit() {
-        return sanctionLimit;
-    }
-
-    public void setSanctionLimit(BigDecimal sanctionLimit) {
-        this.sanctionLimit = sanctionLimit;
     }
 
     public String getModificationRemarks() {
@@ -198,36 +155,12 @@ public class Q_SMME_loans_Advances_Detail_Entity {
         this.dataEntryVersion = dataEntryVersion;
     }
 
-    public BigDecimal getAcctBalanceInPula() {
-        return acctBalanceInPula;
+    public BigDecimal getAcctBalanceInpula() {
+        return acctBalanceInpula;
     }
 
-    public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
-        this.acctBalanceInPula = acctBalanceInPula;
-    }
-
-    public String getSegment() {
-        return segment;
-    }
-
-    public void setSegment(String segment) {
-        this.segment = segment;
-    }
-
-    public String getConstitutionCode() {
-        return constitutionCode;
-    }
-
-    public void setConstitutionCode(String constitutionCode) {
-        this.constitutionCode = constitutionCode;
-    }
-
-    public String getSmme() {
-        return smme;
-    }
-
-    public void setSmme(String smme) {
-        this.smme = smme;
+    public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+        this.acctBalanceInpula = acctBalanceInpula;
     }
 
     public Date getReportDate() {
@@ -236,6 +169,14 @@ public class Q_SMME_loans_Advances_Detail_Entity {
 
     public void setReportDate(Date reportDate) {
         this.reportDate = reportDate;
+    }
+
+    public String getReportName() {
+        return reportName;
+    }
+
+    public void setReportName(String reportName) {
+        this.reportName = reportName;
     }
 
     public String getCreateUser() {
@@ -286,32 +227,33 @@ public class Q_SMME_loans_Advances_Detail_Entity {
         this.verifyTime = verifyTime;
     }
 
-    public String getEntityFlg() {
+    public char getEntityFlg() {
         return entityFlg;
     }
 
-    public void setEntityFlg(String entityFlg) {
+    public void setEntityFlg(char entityFlg) {
         this.entityFlg = entityFlg;
     }
 
-    public String getModifyFlg() {
+    public char getModifyFlg() {
         return modifyFlg;
     }
 
-    public void setModifyFlg(String modifyFlg) {
+    public void setModifyFlg(char modifyFlg) {
         this.modifyFlg = modifyFlg;
     }
 
-    public String getDelFlg() {
+    public char getDelFlg() {
         return delFlg;
     }
 
-    public void setDelFlg(String delFlg) {
+    public void setDelFlg(char delFlg) {
         this.delFlg = delFlg;
     }
 
-    public Q_SMME_loans_Advances_Detail_Entity() {
+    public M_FAS_Detail_Entity() {
         super();
+        // TODO Auto-generated constructor stub
     }
 
 }
