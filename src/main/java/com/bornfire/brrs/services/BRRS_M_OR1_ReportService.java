@@ -59,6 +59,7 @@ import com.bornfire.brrs.entities.M_DEP1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_DEP1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_DEP1_Detail_Entity;
 import com.bornfire.brrs.entities.M_DEP1_Summary_Entity;
+import com.bornfire.brrs.entities.M_DEP3_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_OR1_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_OR1_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_OR1_Detail_Entity;
@@ -248,119 +249,162 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
 	    try {
-	        // Loop from R11 to R50 and copy fields
-	        for (int i = 10; i <= 21; i++) {
-	            String prefix = "R" + i + "_";
-	            String[] fields = {"gross_income"};
+	    	// Loop from R11 to R50 and copy fields
+	    	int[] rows = new int[40];
+	    	for (int k = 0, r = 11; r <= 50; r++, k++) {
+	    	    rows[k] = r;
+	    	}
 
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
+	    	for (int i : rows) {
+	    	    String prefix = "R" + i + "_";   // Use capital R (same as your working code)
+	    	    String[] fields = {"gross_income"};
 
-	                try {
-	                    Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-	                    
+	    	    for (String field : fields) {
+	    	        try {
+	    	            String getterName = "get" + prefix + field;
+	    	            String setterName = "set" + prefix + field;
 
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }
+	    	            Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+	    	            Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	    	            Object newValue = getter.invoke(updatedEntity);
+	    	            setter.invoke(existing, newValue);
+
+	    	        } catch (NoSuchMethodException e) {
+	    	            // Skip missing getter/setter gracefully
+	    	            continue;
+	    	        }
+	    	    }
+	    	}
+
 
 	        // Loop from R17 to R30 and copy fields
-	        for (int i = 23; i <= 34; i++) {
-	            String prefix = "R" + i + "_";
-	            String[] fields = {"gross_income"};
+	    	// Loop from R23 to R34 and copy fields
+	    	int[] rows2 = new int[12];
+	    	for (int k = 0, r = 23; r <= 34; r++, k++) {
+	    	    rows2[k] = r;
+	    	}
+
+	    	for (int i : rows2) {
+	    	    String prefix = "R" + i + "_";   // FIX: Capital R (same as your working model)
+	    	    String[] fields = {"gross_income"};
+
+	    	    for (String field : fields) {
+	    	        try {
+	    	            String getterName = "get" + prefix + field;
+	    	            String setterName = "set" + prefix + field;
+
+	    	            Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+	    	            Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	    	            Object newValue = getter.invoke(updatedEntity);
+	    	            setter.invoke(existing, newValue);
+
+	    	        } catch (NoSuchMethodException e) {
+	    	            // Skip missing getter/setter gracefully
+	    	            continue;
+	    	        }
+	    	    }
+	    	}
+
+
+	    	// Loop from R36 to R46 and copy fields
+	    	int[] rows3 = new int[11];
+	    	for (int k = 0, r = 36; r <= 46; r++, k++) {
+	    	    rows3[k] = r;
+	    	}
+
+	    	for (int i : rows3) {
+	    	    String prefix = "R" + i + "_";   // FIXED: Capital 'R'
+	    	    String[] fields = {"gross_income"};
+
+	    	    for (String field : fields) {
+	    	        try {
+	    	            String getterName = "get" + prefix + field;
+	    	            String setterName = "set" + prefix + field;
+
+	    	            Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+	    	            Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	    	            Object newValue = getter.invoke(updatedEntity);
+	    	            setter.invoke(existing, newValue);
+
+	    	        } catch (NoSuchMethodException e) {
+	    	            // Skip missing getter/setter gracefully
+	    	            continue;
+	    	        }
+	    	    }
+	    	}
+
+
+	        int[] Rows = {22,35,48};
+	        for (int i : Rows) {
+	            String prefix = "r" + i + "_";
+	            String[] fields = {"gross_income" };
 
 	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
-
 	                try {
-	                    Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }
-
-	        // Loop from R32 to R33 and copy fields
-	        for (int i = 36; i <= 47; i++) {
-	            String prefix = "R" + i + "_";
-	            String[] fields = {"gross_income"};
-
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
-
-	                try {
-	                    Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }
-
-	        // Loop from R35 to R36 and copy fields
-	        for (int i = 50; i <= 56; i++) {
-	            String prefix = "R" + i + "_";
-	            String[] fields = {"aggregate_gross_income","risk_weight_factor"};
-
-	            for (String field : fields) {
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
-
-	                try {
-	                    Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }
-
-	            String[] totalFields = {"gross_income","aggregate_gross_income","risk_weight_factor"
-	            		
-	            };
-
-	            // Loop from R12 to R57 and copy fields
-	            for (int i = 10; i <= 56; i++) {
-	                String prefix = "R" + i + "_";
-
-	                for (String field : totalFields) {
 	                    String getterName = "get" + prefix + field;
 	                    String setterName = "set" + prefix + field;
 
-	                    try {
-	                        Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-	                        Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	                    Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-	                        Object newValue = getter.invoke(updatedEntity);
-	                        setter.invoke(existing, newValue);
-	                    } catch (NoSuchMethodException e) {
-	                        // Skip if field does not exist for this row/field
-	                        continue;
-	                    }
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing getter/setter gracefully
+	                    continue;
 	                }
 	            }
+	        }
+	        
+	        int[] Rows1 = {50,52,54};
+	        for (int i : Rows1) {
+	            String prefix = "r" + i + "_";
+	            String[] fields = {"aggregate_gross_income" };
+
+	            for (String field : fields) {
+	                try {
+	                    String getterName = "get" + prefix + field;
+	                    String setterName = "set" + prefix + field;
+
+	                    Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing getter/setter gracefully
+	                    continue;
+	                }
+	            }
+	        }
+
+	        int[] Rows2 = {56};
+	        for (int i : Rows2) {
+	            String prefix = "r" + i + "_";
+	            String[] fields = {"risk_weight_factor" };
+
+	            for (String field : fields) {
+	                try {
+	                    String getterName = "get" + prefix + field;
+	                    String setterName = "set" + prefix + field;
+
+	                    Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing getter/setter gracefully
+	                    continue;
+	                }
+	            }
+	        }
 	            
 	    } catch (Exception e) {
 	        throw new RuntimeException("Error while updating report fields", e);

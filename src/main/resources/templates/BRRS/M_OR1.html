@@ -924,33 +924,37 @@ function calculateR22_GrossIncome() {
 
     function getVal(id) {
         let el = $("#" + id);
-        if (el.length === 0) {
-            console.warn("Missing element:", id);
-            return 0;
-        }
-        let val = el.val() || el.text();
-        return parseFloat(val.replace(/,/g, "")) || 0;
+        if (el.length === 0) return 0;
+
+        let raw = el.is("input") ? el.val() : el.text();
+        raw = (raw || "").replace(/,/g, "").trim();
+
+        return parseFloat(raw) || 0;
     }
 
     let total = 0;
 
-    // Sum r10_gross_income to r21_gross_income
+    // Sum r10 → r21
     for (let i = 10; i <= 21; i++) {
         total += getVal("r" + i + "_gross_income");
     }
 
-    // Set value into r22_gross_income
-    $("#r22_gross_income").val(
-        total.toLocaleString("en-US", { maximumFractionDigits: 0 })
-    );
+    // Update r22
+    let target = $("#r22_gross_income");
+
+    if (target.is("input")) {
+        target.val(total.toLocaleString("en-US"));
+    } else {
+        target.text(total.toLocaleString("en-US"));
+    }
 }
+
 
 $(document).ready(function () {
 
-    // Initial calculation
     calculateR22_GrossIncome();
 
-    // Recalculate anytime any input changes
+    // Attach listeners to r10 → r21
     for (let i = 10; i <= 21; i++) {
         $("#r" + i + "_gross_income").on("input", calculateR22_GrossIncome);
     }
@@ -961,33 +965,34 @@ function calculateR35_GrossIncome() {
 
     function getVal(id) {
         let el = $("#" + id);
-        if (el.length === 0) {
-            console.warn("Missing element:", id);
-            return 0;
-        }
-        let val = el.val() || el.text();
-        return parseFloat(val.replace(/,/g, "")) || 0;
+        if (el.length === 0) return 0;
+
+        let raw = el.is("input") ? el.val() : el.text();
+        raw = raw.replace(/,/g, "").trim();
+
+        return parseFloat(raw) || 0;
     }
 
     let total = 0;
 
-    // Sum r10_gross_income to r21_gross_income
+    // r23 → r34
     for (let i = 23; i <= 34; i++) {
         total += getVal("r" + i + "_gross_income");
     }
 
-    // Set value into r22_gross_income
-    $("#r35_gross_income").val(
-        total.toLocaleString("en-US", { maximumFractionDigits: 0 })
-    );
+    // Update target (input or td)
+    let target = $("#r35_gross_income");
+
+    if (target.is("input")) {
+        target.val(total.toLocaleString("en-US"));
+    } else {
+        target.text(total.toLocaleString("en-US"));
+    }
 }
 
 $(document).ready(function () {
-
-    // Initial calculation
     calculateR35_GrossIncome();
 
-    // Recalculate anytime any input changes
     for (let i = 23; i <= 34; i++) {
         $("#r" + i + "_gross_income").on("input", calculateR35_GrossIncome);
     }
@@ -998,88 +1003,97 @@ function calculateR48_GrossIncome() {
 
     function getVal(id) {
         let el = $("#" + id);
-        if (el.length === 0) {
-            console.warn("Missing element:", id);
-            return 0;
-        }
-        let val = el.val() || el.text();
-        return parseFloat(val.replace(/,/g, "")) || 0;
+        if (el.length === 0) return 0;
+
+        let raw = el.is("input") ? el.val() : el.text();
+        raw = raw.replace(/,/g, "").trim();
+
+        return parseFloat(raw) || 0;
     }
 
     let total = 0;
 
-    // Sum r10_gross_income to r21_gross_income
-    for (let i = 36; i <= 47; i++) {
+    // r36 → r47
+    for (let i = 36; i <= 46; i++) {
         total += getVal("r" + i + "_gross_income");
     }
 
-    // Set value into r22_gross_income
-    $("#r48_gross_income").val(
-        total.toLocaleString("en-US", { maximumFractionDigits: 0 })
-    );
+    // Update target (input or td)
+    let target = $("#r48_gross_income");
+
+    if (target.is("input")) {
+        target.val(total.toLocaleString("en-US"));
+    } else {
+        target.text(total.toLocaleString("en-US"));
+    }
 }
 
 $(document).ready(function () {
-
-    // Initial calculation
     calculateR48_GrossIncome();
 
-    // Recalculate anytime any input changes
-    for (let i = 36; i <= 47; i++) {
+    for (let i = 36; i <= 46; i++) {
         $("#r" + i + "_gross_income").on("input", calculateR48_GrossIncome);
     }
 });
+
 
 function calculateR50_GrossIncome() {
 
     function getVal(id) {
         let el = $("#" + id);
-        if (el.length === 0) {
-            console.warn("Missing element:", id);
-            return 0;
-        }
-        let val = el.val() || el.text();
-        return parseFloat(val.replace(/,/g, "")) || 0;
+
+        if (el.length === 0) return 0;
+
+        let raw = el.is("input") ? el.val() : el.text();
+        raw = raw.replace(/,/g, "").trim();
+
+        return parseFloat(raw) || 0;
     }
 
-    // Get r22, r35, r48 values
     let r22 = getVal("r22_gross_income");
     let r35 = getVal("r35_gross_income");
     let r48 = getVal("r48_gross_income");
 
     let total = r22 + r35 + r48;
 
-    // Set into r50_gross_income
-    $("#r50_aggregate_gross_income").val(
-        total.toLocaleString("en-US", { maximumFractionDigits: 0 })
-    );
+    let target = $("#r50_aggregate_gross_income");   // <-- FIXED ID
+
+    if (target.is("input")) {
+        target.val(total.toLocaleString("en-US"));
+    } else {
+        target.text(total.toLocaleString("en-US"));
+    }
 }
 
 $(document).ready(function () {
 
-    // Initial calculation
     calculateR50_GrossIncome();
 
-    // Recalculate any time inputs change
     $("#r22_gross_income, #r35_gross_income, #r48_gross_income")
         .on("input", calculateR50_GrossIncome);
 });
 
 
-function calculateR52_GrossIncome() {
+function calculateR52_AggregateGrossIncome() {
 
     function getVal(id) {
         let el = $("#" + id);
+
         if (el.length === 0) {
             console.warn("Missing element:", id);
             return 0;
         }
-        let val = el.val() || el.text();
-        return parseFloat(val.replace(/,/g, "")) || 0;
+
+        let val = el.val() || el.text() || "0";
+
+        // Clean commas & non-numeric except dot and minus
+        val = val.replace(/,/g, "").replace(/[^0-9.\-]/g, "");
+
+        return parseFloat(val) || 0;
     }
 
     let r50 = getVal("r50_aggregate_gross_income");
-    let r51 = getVal("r51_aggregate_gross_income");  // value 0.15
+    let r51 = getVal("r51_aggregate_gross_income"); // e.g., 0.15
 
     let total = r50 * r51;
 
@@ -1090,33 +1104,38 @@ function calculateR52_GrossIncome() {
 
 $(document).ready(function () {
 
-    calculateR52_GrossIncome();
+    // Initial calculation
+    calculateR52_AggregateGrossIncome();
 
-    // Recalculate whenever r50 or r51 changes
+    // Recalculate when inputs change
     $("#r50_aggregate_gross_income, #r51_aggregate_gross_income")
-        .on("input", calculateR52_GrossIncome);
+        .on("input", calculateR52_AggregateGrossIncome);
 });
 
-function calculateR54_GrossIncome() {
+
+
+function calculateR54_AggregateGrossIncome() {
 
     function getVal(id) {
         let el = $("#" + id);
+
         if (el.length === 0) {
             console.warn("Missing element:", id);
             return 0;
         }
-        let val = el.val() || el.text();
-        return parseFloat(val.replace(/,/g, "")) || 0;
+
+        let val = el.val() || el.text() || "0";
+
+        // Clean commas & non-numeric except dot and minus
+        val = val.replace(/,/g, "").replace(/[^0-9.\-]/g, "");
+
+        return parseFloat(val) || 0;
     }
 
     let r52 = getVal("r52_aggregate_gross_income");
-    let r53 = getVal("r53_aggregate_gross_income");  // value 3.00
+    let r53 = getVal("r53_aggregate_gross_income");  // e.g., 3.00
 
-    let total = 0;
-
-    if (r53 !== 0) {
-        total = r52 / r53;
-    }
+    let total = (r53 !== 0) ? (r52 / r53) : 0;
 
     $("#r54_aggregate_gross_income").val(
         total.toLocaleString("en-US", { maximumFractionDigits: 2 })
@@ -1125,11 +1144,12 @@ function calculateR54_GrossIncome() {
 
 $(document).ready(function () {
 
+    // Initial calculation
     calculateR54_GrossIncome();
 
-    // Recalculate on change
+    // Recalculate when inputs change
     $("#r52_aggregate_gross_income, #r53_aggregate_gross_income")
-        .on("input", calculateR54_GrossIncome);
+        .on("input", calculateR54_AggregateGrossIncome);
 });
 
 
@@ -1137,12 +1157,18 @@ function calculateR56_AggregateGrossIncome() {
 
     function getVal(id) {
         let el = $("#" + id);
+
         if (el.length === 0) {
             console.warn("Missing element:", id);
             return 0;
         }
-        let val = el.val() || el.text();
-        return parseFloat(val.replace(/,/g, "")) || 0;
+
+        let val = el.val() || el.text() || "0";
+
+        // Clean commas & non-numeric except dot and minus
+        val = val.replace(/,/g, "").replace(/[^0-9.\-]/g, "");
+
+        return parseFloat(val) || 0;
     }
 
     let r54 = getVal("r54_aggregate_gross_income");
@@ -1157,9 +1183,10 @@ function calculateR56_AggregateGrossIncome() {
 
 $(document).ready(function () {
 
+    // Initial calculation
     calculateR56_AggregateGrossIncome();
 
-    // Recalculate when r54 changes
+    // Recalculate when inputs change
     $("#r54_aggregate_gross_income, #r55_risk_weight_factor")
         .on("input", calculateR56_AggregateGrossIncome);
 });
@@ -1200,8 +1227,8 @@ $(document).ready(function () {
 	        calculateR35_GrossIncome();
 	        calculateR48_GrossIncome();
 	        calculateR50_GrossIncome();
-	        calculateR52_GrossIncome();
-	        calculateR54_GrossIncome();
+	        calculateR52_AggregateGrossIncome();
+	        calculateR54_AggregateGrossIncome();
 	        calculateR56_AggregateGrossIncome();
 
 	     // Remove commas from numeric inputs
@@ -1229,14 +1256,15 @@ $(document).ready(function () {
 		    //console.log("Selected type:", selectedType);
 
 		    // --- Entity fields (R10-R17) ---
-		    for (let i = 10; i <= 56; i++) {
-		        ["gross_income","aggregate_gross_income","risk_weight_factor"].forEach(field => {
-		            const input = $("#R" + i + "_" + field);
-		            if (input.length) {
-		                formData.append(input.attr("name"), input.val());
-		            }
-		        });
-		    }console.log("✅ Entity executed successfully");
+		    // Save R10–R56 values correctly (lowercase IDs)
+for (let i = 10; i <= 56; i++) {
+    ["gross_income", "aggregate_gross_income", "risk_weight_factor"].forEach(field => {
+        const input = $("#r" + i + "_" + field); // FIXED to lowercase
+        if (input.length) {
+            formData.append(input.attr("name"), input.val());
+        }
+    });
+}
 		    
 		 // ✅ Step 5: AJAX submission
 	        $.ajax({
@@ -1379,7 +1407,7 @@ $(document).ready(function () {
 
         <!-- Title -->
 						<h5 style="font-family: arial; font-size: 18px; font-weight: bold; color: white; margin: 0; white-space: nowrap;">
-            (34) MONTHLY SCEHDULE: M-LIQGAP: LIQUIDITY GAP ANALYSIS			
+            (13) MONTHLY SCHEDLE: M-OR1: OPERATIONAL RISK		
         </h5>
 
         <!-- Bus Scrolling Text -->
@@ -1473,7 +1501,7 @@ $(document).ready(function () {
 										<tr>
     <th colspan="12"
         style="background-color: white; color: black; vertical-align: bottom; font-weight: bold; text-align: left; border: none !important;">
-        RISK-WEIGHTED ASSETS FOR OPERATIONAL RISK: THE STANDARDISED APPROACH
+        RISK-WEIGHTED ASSETS FOR OPERATIONAL RISK:  THE BASIC INDICATOR  APPROACH
     </th>
 </tr>
   			<tr style="background-color: #b3b6b9; font-weight: bold; ">
@@ -1491,7 +1519,7 @@ $(document).ready(function () {
 	
 	
 <tr>
-	<td style="text-align: center; background-color: white;" rowspan="12">1</td>
+	<td style="text-align: center;vertical-align: bottom; background-color: white;" rowspan="12">1</td>
 	<td id="ROW10" rowspan="12" style="width:100px;vertical-align: middle; text-align:center;">
     1
 </td>
@@ -1684,7 +1712,7 @@ $(document).ready(function () {
 </tr>
 
 <tr>
-    <td id="ROW23" rowspan="12" style="width:100px;vertical-align: middle; text-align:center;">
+    <td id="ROW23" rowspan="12" style="width:100px;vertical-align: bottom;vertical-align: middle; text-align:center;">
     3
 </td>
 <td id="ROW23" rowspan="12" style="width:100px;vertical-align: middle; text-align:center;">
@@ -1876,7 +1904,7 @@ $(document).ready(function () {
 
 
 <tr>
-    <td style="text-align: center; background-color: white;" rowspan="12">5</td>
+    <td style="text-align: center; vertical-align: bottom; background-color: white;" rowspan="12">5</td>
    <td id="ROW36" rowspan="12" style="width:100px;vertical-align: middle; text-align:center;">
     3
 </td>
@@ -2065,7 +2093,6 @@ $(document).ready(function () {
     <td style="background-color:#BEBEBE;text-align: right;"th:attr="RowId='R49', ColumnId='C3'" th:text="${report.r49_month}"></td>
     <td style="background-color:#BEBEBE;text-align: right;" th:attr="RowId='R49', ColumnId='C4'" th:text="${report.r49_gross_income}"></td>
     <td style="background-color:#BEBEBE;text-align: right;" th:attr="RowId='R49', ColumnId='C5'" th:text="${report.r49_aggregate_gross_income}"></td>
-    <td style="background-color:#BEBEBE;text-align: right;" th:attr="RowId='R49', ColumnId='C6'" th:text="${report.r49_risk_weight_factor}"></td>
  </tr> 
  
  <tr>
