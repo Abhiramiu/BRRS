@@ -716,7 +716,124 @@ function showResultModal(title, message) {
 
 </script>
 
+
 <script>
+
+		function startReport(button) {
+			const alertMsg = document.getElementById("alertMessage");
+
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+
+			const sessionfilename = sessionStorage.getItem("filename");
+
+			if (sessionfilename === filename) {
+				alertMsg.innerHTML = 'Download request already processing...';
+				showAlert();
+				return;
+			}
+
+			alertMsg.innerHTML = 'Download request started...';
+			showAlert();
+
+			const downloadUrl = '/BRRS/Reports/startreport'
+				+ '?filename=' + encodeURIComponent(filename)
+				+ '&fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate)
+				+ '&currency=' + encodeURIComponent(currency)
+				+ '&dtltype=' + encodeURIComponent(dtltype)
+				+ '&type=' + encodeURIComponent(type)
+				+ '&version=' + encodeURIComponent(version);
+
+			fetch(downloadUrl)
+				.then(res => res.text())
+				.then(jobId => {
+
+					alertMsg.innerHTML = 'Request received. Job ID: ' + jobId;
+					showAlert();
+
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+
+					checkReport(jobId);
+				});
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report ready! Downloading...';
+						showAlert();
+
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename + ".xlsx");
+
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+
+					} else if (status === "PROCESSING") {
+						alertMsg.innerHTML = 'Report processing...';
+						showAlert();
+
+						setTimeout(() => checkReport(jobId), 4000);
+
+					} else if (status === "ERROR") {
+						alertMsg.innerHTML = 'No data available to download.';
+						showAlert();
+
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					}
+				});
+		}
+
+		function downloadDetailfile(jobId, filename) {
+
+			$.ajax({
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId + '&filename=' + filename,
+				type: 'GET',
+				xhrFields: { responseType: 'blob' },
+
+				success: function (data) {
+					if (data && data.size > 100) {
+						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+						const url = window.URL.createObjectURL(blob);
+
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data found to download.');
+					}
+				}
+			});
+		}
+
+	</script>
+
+
+
+
+
+
+<!-- <script>
 
 	function startReport(button){
 			const alertMsg = document.getElementById("alertMessage");
@@ -828,7 +945,7 @@ function showResultModal(title, message) {
 		}
 
 
-</script>
+</script> -->
 
 <script th:inline="javascript">
 function showdetailsbyRowAndColumn(a) { 
@@ -1338,8 +1455,8 @@ ranges.forEach(range => {
 						<!-- Title -->
 						<h5
 								style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
-							(23) MONTHLY SCHEDULE: M-GALOR: GEOGRAPHICAL BREAKDOWN OF ASSETS <br>
-							AND LIABILITIES AND OFF-BALANCE SHEET ITEMS BY RESIDENCE 																								
+							(23) MONTHLY SCHEDULE: M-GALOR: <br>GEOGRAPHICAL BREAKDOWN OF ASSETS 
+							AND <br>LIABILITIES AND OFF-BALANCE SHEET ITEMS BY RESIDENCE 																								
 </h5>
 
 
@@ -1441,7 +1558,7 @@ ranges.forEach(range => {
 											<th colspan="6"
 												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;    "></th>
 											<th colspan="10"
-												style="text-align: center; font-weight: bold; background-color: #D8D8D8; padding: 10px;   ">REST OF THE WORLD (specify)</th>
+												style="text-align: left; font-weight: bold; background-color: #D8D8D8;   ">REST OF THE WORLD (specify)</th>
 											<th 
 												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   "></th>
 											
@@ -1456,40 +1573,40 @@ ranges.forEach(range => {
 										<th
 												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   "></th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   ">BOTSWANA</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;   ">BOTSWANA</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;  ">SOUTH AFRICA</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;   ">SOUTH AFRICA</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   ">SADC</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;    ">SADC</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;  ">USA</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;  ">USA</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">UK</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;  ">UK</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   ">EUROPE</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;    ">EUROPE</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;  ">India</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;   ">India</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;  ">Sydney</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;  ">Sydney</th>
 												
 													<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   ">Uganda</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;    ">Uganda</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   ">0</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;    ">0</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;  ">0</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;   ">0</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   ">0</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;    ">0</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;  ">0</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;  ">0</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px; ">0</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;  ">0</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   ">0</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;    ">0</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;  ">0</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;   ">0</th>
 											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;  ">Total</th>
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;   ">Total</th>
 										</tr>
 
 
@@ -10804,7 +10921,7 @@ style="font-weight:bold;text-align:right;padding-left:20px;">
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {
 	/* This is the key: it creates the scroll context */
-	max-height: 820px;
+	max-height:520px;
 	/* Or a suitable height like 80vh for responsive design */
 	overflow-y: auto;
 	border: 1px solid #ccc;

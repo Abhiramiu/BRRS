@@ -513,6 +513,16 @@ public class BRRS_M_CA4_ReportService {
 					}
 
 					
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR13_tot_amt() != null) {
+					    cellG.setCellValue(record.getR13_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
 					
 					
 					// row14
@@ -569,7 +579,16 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellStyle(textStyle);
 					}
 
-
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR14_tot_amt() != null) {
+					    cellG.setCellValue(record.getR14_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
 					
 					
 					// row17
@@ -625,7 +644,19 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellValue("");
 					    cellG.setCellStyle(textStyle);
 					}
+					//COLUMN TOTAL
+					cellG = row.getCell(7);
+					if (cellG == null) {
+					    cellG = row.createCell(7);
+					}
 
+					if (record.getR17_tot_amt() != null) {
+					    cellG.setCellValue(record.getR17_tot_amt().doubleValue());
+					} else {
+					    cellG.setCellValue("");
+					}
+					
+					
 					
 					// row18
 					row = sheet.getRow(17);
@@ -682,6 +713,16 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellStyle(textStyle);
 					}
 
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR18_tot_amt() != null) {
+					    cellG.setCellValue(record.getR18_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
 					
 
 
@@ -739,6 +780,18 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellValue("");
 					    cellG.setCellStyle(textStyle);
 					}
+					
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR19_tot_amt() != null) {
+					    cellG.setCellValue(record.getR19_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
+					
 
 					
 					// row22
@@ -794,6 +847,19 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellValue("");
 					    cellG.setCellStyle(textStyle);
 					}
+					
+					//COLUMN TOTAL
+					cellG = row.getCell(7);
+					if (cellG == null) {
+					    cellG = row.createCell(7);
+					}
+
+					if (record.getR22_tot_amt() != null) {
+					    cellG.setCellValue(record.getR22_tot_amt().doubleValue());
+					} else {
+					    cellG.setCellValue("");
+					}
+					
 
 					
 
@@ -853,6 +919,18 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellStyle(textStyle);
 					}
 
+					
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR23_tot_amt() != null) {
+					    cellG.setCellValue(record.getR23_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
+					
 				
 
 					// row24
@@ -909,6 +987,18 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellValue("");
 					    cellG.setCellStyle(textStyle);
 					}
+					
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR24_tot_amt() != null) {
+					    cellG.setCellValue(record.getR24_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
+					
 
 					
 					// row27
@@ -957,6 +1047,17 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellValue(record.getR27_amt_name_of_sub5().doubleValue());
 					} else {
 					    cellG.setCellValue(0);
+					}
+					//COLUMN TOTAL
+					cellG = row.getCell(7);
+					if (cellG == null) {
+					    cellG = row.createCell(7);
+					}
+
+					if (record.getR27_tot_amt() != null) {
+					    cellG.setCellValue(record.getR27_tot_amt().doubleValue());
+					} else {
+					    cellG.setCellValue("");
 					}
 					
 					
@@ -1014,6 +1115,16 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellStyle(textStyle);
 					}
 
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR28_tot_amt() != null) {
+					    cellG.setCellValue(record.getR28_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
 					
 					
 					// row29
@@ -1071,6 +1182,16 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellStyle(textStyle);
 					}
 
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR29_tot_amt() != null) {
+					    cellG.setCellValue(record.getR29_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
 					
 
 					// row32
@@ -1121,7 +1242,18 @@ public class BRRS_M_CA4_ReportService {
 					} else {
 					    cellG.setCellValue(0);
 					}
+					//COLUMN TOTAL
+					cellG = row.getCell(7);
+					if (cellG == null) {
+					    cellG = row.createCell(7);
+					}
 
+					if (record.getR32_tot_amt() != null) {
+					    cellG.setCellValue(record.getR32_tot_amt().doubleValue());
+					} else {
+					    cellG.setCellValue("");
+					}
+					
 					
 					
 					// row33
@@ -1179,60 +1311,52 @@ public class BRRS_M_CA4_ReportService {
 					}
 					
 					
-					// row33
-					row = sheet.getRow(32);
-					
-
-					// Column 2 - name of sub1
-					cellC = row.createCell(2);
-					if (record.getR33_amt_name_of_sub1() != null) {
-					    cellC.setCellValue(record.getR33_amt_name_of_sub1().doubleValue());
-					    cellC.setCellStyle(numberStyle);
-					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(textStyle);
-					}
-
-					// Column 3 - name of sub2
-					cellD = row.createCell(3);
-					if (record.getR33_amt_name_of_sub2() != null) {
-					    cellD.setCellValue(record.getR33_amt_name_of_sub2().doubleValue());
-					    cellD.setCellStyle(numberStyle);
-					} else {
-					    cellD.setCellValue("");
-					    cellD.setCellStyle(textStyle);
-					}
-
-					// Column 4 - name of sub3
-					cellE = row.createCell(4);
-					if (record.getR33_amt_name_of_sub3() != null) {
-					    cellE.setCellValue(record.getR33_amt_name_of_sub3().doubleValue());
-					    cellE.setCellStyle(numberStyle);
-					} else {
-					    cellE.setCellValue("");
-					    cellE.setCellStyle(textStyle);
-					}
-
-					// Column 5 - name of sub4
-					cellF = row.createCell(5);
-					if (record.getR33_amt_name_of_sub4() != null) {
-					    cellF.setCellValue(record.getR33_amt_name_of_sub4().doubleValue());
-					    cellF.setCellStyle(numberStyle);
-					} else {
-					    cellF.setCellValue("");
-					    cellF.setCellStyle(textStyle);
-					}
-
-					// Column 6 - name of sub5
-					cellG = row.createCell(6);
-					if (record.getR33_amt_name_of_sub5() != null) {
-					    cellG.setCellValue(record.getR33_amt_name_of_sub5().doubleValue());
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR33_tot_amt() != null) {
+					    cellG.setCellValue(record.getR33_tot_amt().doubleValue());
 					    cellG.setCellStyle(numberStyle);
 					} else {
 					    cellG.setCellValue("");
 					    cellG.setCellStyle(textStyle);
 					}
-
+					
+					
+					
+					/*
+					 * // row33 row = sheet.getRow(32);
+					 * 
+					 * 
+					 * // Column 2 - name of sub1 cellC = row.createCell(2); if
+					 * (record.getR33_amt_name_of_sub1() != null) {
+					 * cellC.setCellValue(record.getR33_amt_name_of_sub1().doubleValue());
+					 * cellC.setCellStyle(numberStyle); } else { cellC.setCellValue("");
+					 * cellC.setCellStyle(textStyle); }
+					 * 
+					 * // Column 3 - name of sub2 cellD = row.createCell(3); if
+					 * (record.getR33_amt_name_of_sub2() != null) {
+					 * cellD.setCellValue(record.getR33_amt_name_of_sub2().doubleValue());
+					 * cellD.setCellStyle(numberStyle); } else { cellD.setCellValue("");
+					 * cellD.setCellStyle(textStyle); }
+					 * 
+					 * // Column 4 - name of sub3 cellE = row.createCell(4); if
+					 * (record.getR33_amt_name_of_sub3() != null) {
+					 * cellE.setCellValue(record.getR33_amt_name_of_sub3().doubleValue());
+					 * cellE.setCellStyle(numberStyle); } else { cellE.setCellValue("");
+					 * cellE.setCellStyle(textStyle); }
+					 * 
+					 * // Column 5 - name of sub4 cellF = row.createCell(5); if
+					 * (record.getR33_amt_name_of_sub4() != null) {
+					 * cellF.setCellValue(record.getR33_amt_name_of_sub4().doubleValue());
+					 * cellF.setCellStyle(numberStyle); } else { cellF.setCellValue("");
+					 * cellF.setCellStyle(textStyle); }
+					 * 
+					 * // Column 6 - name of sub5 cellG = row.createCell(6); if
+					 * (record.getR33_amt_name_of_sub5() != null) {
+					 * cellG.setCellValue(record.getR33_amt_name_of_sub5().doubleValue());
+					 * cellG.setCellStyle(numberStyle); } else { cellG.setCellValue("");
+					 * cellG.setCellStyle(textStyle); }
+					 */
 			
 
 					
@@ -1290,6 +1414,16 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellStyle(textStyle);
 					}
 
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR34_tot_amt() != null) {
+					    cellG.setCellValue(record.getR34_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
 					
 
 					// ====================== R36 ======================
@@ -1398,7 +1532,17 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellStyle(textStyle);
 					}
 
-				
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR37_tot_amt() != null) {
+					    cellG.setCellValue(record.getR37_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
+					
 					
 					// ====================== R38 ======================
 					row = sheet.getRow(37);
@@ -1453,7 +1597,17 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellValue("");
 					    cellG.setCellStyle(textStyle);
 					}
-
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR38_tot_amt() != null) {
+					    cellG.setCellValue(record.getR38_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
+					
 					
 					// ====================== R39 ======================
 					// row39
@@ -1560,7 +1714,17 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellValue("");
 					    cellG.setCellStyle(textStyle);
 					}
-
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR40_tot_amt() != null) {
+					    cellG.setCellValue(record.getR40_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
+					
 					
 					
 					// =========================
@@ -1619,6 +1783,16 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellStyle(textStyle);
 					}
 
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR41_tot_amt() != null) {
+					    cellG.setCellValue(record.getR41_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
 					
 
 					// =========================
@@ -1676,7 +1850,17 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellValue("");
 					    cellG.setCellStyle(textStyle);
 					}
-
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR42_tot_amt() != null) {
+					    cellG.setCellValue(record.getR42_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
+					
 					
 
 					// =========================
@@ -1850,7 +2034,17 @@ public class BRRS_M_CA4_ReportService {
 					}
 
 					
-					  					 
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR45_tot_amt() != null) {
+					    cellG.setCellValue(record.getR45_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
+										 
 
 
 					// ================= R46 =================
@@ -2002,7 +2196,17 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellValue("");
 					    cellG.setCellStyle(textStyle);
 					}
-				
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR48_tot_amt() != null) {
+					    cellG.setCellValue(record.getR48_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
+					
 
 					// ================= R49 =================
 					// row49
@@ -2159,6 +2363,16 @@ public class BRRS_M_CA4_ReportService {
 					    cellG.setCellStyle(textStyle);
 					}
 
+					// Column 7 total
+					cellG = row.createCell(7);
+					if (record.getR51_tot_amt() != null) {
+					    cellG.setCellValue(record.getR51_tot_amt().doubleValue());
+					    cellG.setCellStyle(numberStyle);
+					} else {
+					    cellG.setCellValue("");
+					    cellG.setCellStyle(textStyle);
+					}
+					
 					
 
 					// ====================== R52 ======================
