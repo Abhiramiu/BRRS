@@ -594,7 +594,7 @@ PURPOSE		: BWRBRREPORT
 
 				if (NPVal !== 0) {
 					if (i === 15) {
-						NPL = ProvVal / NPVal; // R15 value
+						NPL =Math.round( ProvVal / NPVal); // R15 value
 					} else {
 						NPL = Math.round((ProvVal / NPVal) * 100); // Others %
 					}
@@ -842,7 +842,7 @@ PURPOSE		: BWRBRREPORT
 										id="reports">
 										<thead class="thead-light">
 											<tr style="background-color: #D8D8D8;">
-												<th style="text-align: center; padding-left: 10px;padding-bottom: 30px;background-color: #D8D8D8; "
+												<th style="text-align: center; padding-left: 10px;background-color: #D8D8D8; "
 													rowspan="2">Loan To Value (LTV)</th>
 												<th style="text-align: center; padding-left: 20px;background-color: #D8D8D8;"
 													colspan="4">Residential Mortgages</th>
