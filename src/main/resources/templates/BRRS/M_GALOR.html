@@ -777,7 +777,8 @@ PURPOSE		: BRRS REPORT
 							    $("#resultModal").modal("hide");
 							    $('#loader').modal('hide');
 
-<<<<<<< Updated upstream
+}
+</script>
 
 <script>
 
@@ -886,7 +887,7 @@ PURPOSE		: BRRS REPORT
 					}
 				}
 			});
-=======
+
 								// Reload the page after a short delay to ensure the modal animation completes smoothly.
 								    setTimeout(function () {
 								        location.reload();
@@ -910,12 +911,12 @@ PURPOSE		: BRRS REPORT
 
 			// Show the modal
 			$('#resultModal').modal('show');
->>>>>>> Stashed changes
+
 		}
 
 	</script>
 
-<<<<<<< Updated upstream
+
 
 
 
@@ -924,11 +925,7 @@ PURPOSE		: BRRS REPORT
 <!-- <script>
 
 	function startReport(button){
-=======
-	<script>
 
-		function startReport(button) {
->>>>>>> Stashed changes
 			const alertMsg = document.getElementById("alertMessage");
 			const filename = button.getAttribute('data-filename');
 			const fromdate = button.getAttribute('data-fromdate');
@@ -1038,7 +1035,7 @@ PURPOSE		: BRRS REPORT
 		}
 
 
-<<<<<<< Updated upstream
+
 </script> -->
 
 <script th:inline="javascript">
@@ -1293,7 +1290,7 @@ function getCellValue(selector) {
 	      });
 	      setCellValue("#r10_" + col, sum);
 	  });
-=======
+
 	</script>
 
 	<script th:inline="javascript">
@@ -1422,7 +1419,6 @@ function getCellValue(selector) {
 			cols.forEach(col => {
 				let v60 = getCellValue("#r60_" + col);
 				let v61 = getCellValue("#r61_" + col);
->>>>>>> Stashed changes
 
 				setCellValue("#r59_" + col, v60 + v61);
 
@@ -1876,17 +1872,11 @@ function getCellValue(selector) {
 
 						<!-- Title -->
 						<h5
-<<<<<<< Updated upstream
+
 								style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 							(23) MONTHLY SCHEDULE: M-GALOR: <br>GEOGRAPHICAL BREAKDOWN OF ASSETS 
 							AND <br>LIABILITIES AND OFF-BALANCE SHEET ITEMS BY RESIDENCE 																								
 </h5>
-=======
-							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
-							(23) MONTHLY SCHEDULE: M-GALOR: GEOGRAPHICAL BREAKDOWN OF ASSETS <br>
-							AND LIABILITIES AND OFF-BALANCE SHEET ITEMS BY RESIDENCE
-						</h5>
->>>>>>> Stashed changes
 
 
 						<!-- Moving bus-board text -->
@@ -1963,7 +1953,7 @@ function getCellValue(selector) {
 				<div th:if="${displaymode == 'summary'}">
 					<div class="row">
 						<div class="col-sm-12">
-<<<<<<< Updated upstream
+
 						<form action="#" method="POST" id="fileupload">
 							<div
 								class="table-wrapper table-responsive scrollable-table-container"
@@ -1972,91 +1962,8 @@ function getCellValue(selector) {
 									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
 									id="reports">
 									<thead class="thead-light">
-										<tr>
-
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   "></th>
-											<th colspan="6"
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;    "></th>
-											<th colspan="10"
-												style="text-align: left; font-weight: bold; background-color: #D8D8D8;   ">REST OF THE WORLD (specify)</th>
-											<th 
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   "></th>
-											
-
-
-										</tr>
-
-										<tr>
-
-
-
-										<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   "></th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;   ">BOTSWANA</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;   ">SOUTH AFRICA</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;    ">SADC</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;  ">USA</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;  ">UK</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;    ">EUROPE</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;   ">India</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;  ">Sydney</th>
-												
-													<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;    ">Uganda</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;    ">0</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;   ">0</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;    ">0</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;  ">0</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;  ">0</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;    ">0</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;   ">0</th>
-											<th
-												style="text-align: right; font-weight: bold; background-color: #D8D8D8;   ">Total</th>
-										</tr>
-
-
-									</thead>
-
-
-									<tbody th:each="report: ${reportsummary1}"
-										style="font-family: Arial;">
-                             
- <tr>
-										<td style="text-align: left; font-weight: bold;"
-												th:text="${report?.r10_product ?: ''}"></td>
-
 									
-												<td id="r10_botswana" style="text-align: right; padding-right:10px;" class="green-cell"
-    th:text="${report?.r10_botswana != null ? #numbers.formatDecimal(report.r10_botswana, 1, 'COMMA',0, 'POINT') : ''}">
-</td>
-
-<td id="r10_south_africa" style="text-align: right; padding-right:10px;"   class="green-cell"
-    th:text="${report?.r10_south_africa != null ? #numbers.formatDecimal(report.r10_south_africa, 1, 'COMMA',0, 'POINT') : ''}">
-</td>
-=======
-							<form action="#" method="POST" id="fileupload">
-								<div class="table-wrapper table-responsive scrollable-table-container"
-									style="border-right: 1px solid #dee2e6;">
-									<table
-										class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
-										id="reports">
-										<thead class="thead-light">
+								
 											<tr>
 
 												<th
@@ -2157,12 +2064,7 @@ function getCellValue(selector) {
 													class="green-cell"
 													th:text="${report?.r10_south_africa != null ? #numbers.formatDecimal(report.r10_south_africa, 1, 'COMMA',0, 'POINT') : ''}">
 												</td>
->>>>>>> Stashed changes
 
-
-
-
-<<<<<<< Updated upstream
 <td id="r10_sadc" style="text-align: right; padding-right:10px;"  class="green-cell" 
     th:text="${report?.r10_sadc != null ? #numbers.formatDecimal(report.r10_sadc, 1, 'COMMA',0, 'POINT') : ''}">
 </td>
@@ -2192,44 +2094,6 @@ function getCellValue(selector) {
 <td id="r10_uganda" style="text-align: right; padding-right:10px;"   class="green-cell"
     th:text="${report?.r10_uganda != null ? #numbers.formatDecimal(report.r10_uganda, 1, 'COMMA',0, 'POINT') : ''}">
 </td>
-=======
-												<td id="r10_sadc" style="text-align: right; padding-right:10px;"
-													class="green-cell"
-													th:text="${report?.r10_sadc != null ? #numbers.formatDecimal(report.r10_sadc, 1, 'COMMA',0, 'POINT') : ''}">
-												</td>
-
-												<td id="r10_usa" style="text-align: right; padding-right:10px;"
-													class="green-cell"
-													th:text="${report?.r10_usa != null ? #numbers.formatDecimal(report.r10_usa, 1, 'COMMA',0, 'POINT') : ''}">
-												</td>
-
-
-												<td id="r10_uk" style="text-align: right; padding-right:10px;"
-													class="green-cell"
-													th:text="${report?.r10_uk != null ? #numbers.formatDecimal(report.r10_uk, 1, 'COMMA',0, 'POINT') : ''}">
-												</td>
-
-
-												<td id="r10_europe" style="text-align: right; padding-right:10px;"
-													class="green-cell"
-													th:text="${report?.r10_europe != null ? #numbers.formatDecimal(report.r10_europe, 1, 'COMMA',0, 'POINT') : ''}">
-												</td>
-
-												<td id="r10_india" style="text-align: right; padding-right:10px;"
-													class="green-cell"
-													th:text="${report?.r10_india != null ? #numbers.formatDecimal(report.r10_india, 1, 'COMMA',0, 'POINT') : ''}">
-												</td>
-
-												<td id="r10_sydney" style="text-align: right; padding-right:10px;"
-													class="green-cell"
-													th:text="${report?.r10_sydney != null ? #numbers.formatDecimal(report.r10_sydney, 1, 'COMMA',0, 'POINT') : ''}">
-												</td>
-
-												<td id="r10_uganda" style="text-align: right; padding-right:10px;"
-													class="green-cell"
-													th:text="${report?.r10_uganda != null ? #numbers.formatDecimal(report.r10_uganda, 1, 'COMMA',0, 'POINT') : ''}">
-												</td>
-
 
 												<td id="r10_c10" style="text-align: right; padding-right:10px;"
 													class="green-cell"
@@ -2246,7 +2110,7 @@ function getCellValue(selector) {
 													class="green-cell"
 													th:text="${report?.r10_c12!= null ? #numbers.formatDecimal(report.r10_c12, 1, 'COMMA',0, 'POINT') : ''}">
 												</td>
->>>>>>> Stashed changes
+
 
 												<td id="r10_c13" style="text-align: right; padding-right:10px;"
 													class="green-cell"
@@ -13477,7 +13341,7 @@ function getCellValue(selector) {
 
 
 <style>
-<<<<<<< Updated upstream
+
 /* Your existing CSS - this is the correct approach */
 .scrollable-table-container {
 	/* This is the key: it creates the scroll context */
@@ -13486,16 +13350,8 @@ function getCellValue(selector) {
 	overflow-y: auto;
 	border: 1px solid #ccc;
 }
-=======
-	/* Your existing CSS - this is the correct approach */
-	.scrollable-table-container {
-		/* This is the key: it creates the scroll context */
-		max-height: 620px;
-		/* Or a suitable height like 80vh for responsive design */
-		overflow-y: auto;
-		border: 1px solid #ccc;
-	}
->>>>>>> Stashed changes
+
+	
 
 	/* Your existing sticky header CSS, targeting the tr elements within the thead */
 	.scrollable-table-container thead tr:nth-child(1) {
