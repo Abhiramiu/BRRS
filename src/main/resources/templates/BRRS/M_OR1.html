@@ -1097,8 +1097,9 @@ function calculateR52_AggregateGrossIncome() {
 
     let total = r50 * r51;
 
+    // Round to nearest integer and format with commas
     $("#r52_aggregate_gross_income").val(
-        total.toLocaleString("en-US", { maximumFractionDigits: 2 })
+        Math.round(total).toLocaleString("en-US", { maximumFractionDigits: 0 })
     );
 }
 
@@ -1110,20 +1111,15 @@ $(document).ready(function () {
     // Recalculate when inputs change
     $("#r50_aggregate_gross_income, #r51_aggregate_gross_income")
         .on("input", calculateR52_AggregateGrossIncome);
-}); 
+});
 
 
 
 function calculateR54_AggregateGrossIncome() {
     function getVal(id) {
         let el = $("#" + id);
-        if (el.length === 0) {
-            console.warn("Missing element:", id);
-            return 0;
-        }
-
-        // read from input if input-like, otherwise from text
-        let raw = el.is(":input") ? (el.val() || "") : (el.text() || "");
+        if (!el.length) return 0;
+        let raw = el.is(":input") ? el.val() : el.text();
         raw = raw.toString().replace(/,/g, "").replace(/[^0-9.\-]/g, "");
         return parseFloat(raw) || 0;
     }
@@ -1131,32 +1127,22 @@ function calculateR54_AggregateGrossIncome() {
     let r52 = getVal("r52_aggregate_gross_income");
     let r53 = getVal("r53_aggregate_gross_income");
 
-    let total = 0;
-    if (r53 !== 0) {
-        total = r52 / r53;
-    }
+    let total = r53 !== 0 ? r52 / r53 : 0;
 
-    // write result to input or text node depending on element type
     let outEl = $("#r54_aggregate_gross_income");
     if (outEl.length) {
         let formatted = Number.isFinite(total)
-            ? total.toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 0 })
+            ? Math.round(total).toLocaleString("en-US") // ✅ Rounded, no decimals
             : "0";
-        if (outEl.is(":input")) outEl.val(formatted);
-        else outEl.text(formatted);
-    } else {
-        console.warn("Missing output element: r54_aggregate_gross_income");
+        outEl.is(":input") ? outEl.val(formatted) : outEl.text(formatted);
     }
 }
 
 function calculateR63_Total() {
     function getVal(id) {
         let el = $("#" + id);
-        if (el.length === 0) {
-            console.warn("❌ Missing element:", id);
-            return 0;
-        }
-        let raw = el.is(":input") ? (el.val() || "") : (el.text() || "");
+        if (!el.length) return 0;
+        let raw = el.is(":input") ? el.val() : el.text();
         raw = raw.toString().replace(/,/g, "").replace(/[^0-9.\-]/g, "");
         return parseFloat(raw) || 0;
     }
@@ -1164,29 +1150,21 @@ function calculateR63_Total() {
     let r61 = getVal("r61_operational_risk_cap_charge");
     let r62 = getVal("r62_operational_risk_cap_charge");
 
-    let result = 0;
-    if (r62 !== 0) {
-        result = r61 / r62;
-    }
+    let result = r62 !== 0 ? r61 / r62 : 0;
 
     let outEl = $("#r63_operational_risk_cap_charge");
     if (outEl.length) {
         let formatted = Number.isFinite(result)
-            ? result.toLocaleString("en-US", { maximumFractionDigits: 0, minimumFractionDigits: 0 })
+            ? Math.round(result).toLocaleString("en-US") // ✅ Rounded, no decimals
             : "0";
-        if (outEl.is(":input")) outEl.val(formatted);
-        else outEl.text(formatted);
-    } else {
-        console.warn("Missing output element: r63_operational_risk_cap_charge");
+        outEl.is(":input") ? outEl.val(formatted) : outEl.text(formatted);
     }
 }
 
 $(document).ready(function () {
-    // initial calculations
     calculateR54_AggregateGrossIncome();
     calculateR63_Total();
 
-    // re-calc on input changes
     $("#r52_aggregate_gross_income, #r53_aggregate_gross_income")
         .on("input change", calculateR54_AggregateGrossIncome);
 
@@ -1219,7 +1197,7 @@ function calculateR56_AggregateGrossIncome() {
     let total = r54 * factor;
 
     $("#r56_risk_weight_factor").val(
-        total.toLocaleString("en-US", { maximumFractionDigits: 2 })
+        Math.round(total).toLocaleString("en-US") // ✅ Rounded, no decimals
     );
 }
 

@@ -1428,7 +1428,7 @@ function cancelModify() {
 	    let result = r63 * r64;
 
 	    $("#r65_risk_weight_factor").val(
-	        result.toLocaleString("en-US", { maximumFractionDigits: 2 })
+	        result.toLocaleString("en-US", { maximumFractionDigits: 0 }) // <-- remove decimals
 	    );
 	}
 
@@ -1439,7 +1439,7 @@ function cancelModify() {
 	    $("#r63_operational_risk_cap_charge, #r64_risk_weight_factor")
 	        .on("input", calculateR65_Total);
 	});
-	
+
 	
 
 </SCRIPT>
@@ -5615,7 +5615,7 @@ function fileuploads(btn) {
     <td style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold;">
         <input class="display-input Show_inputnonEditable"
                type="text"
-               th:value="${report.r65_risk_weight_factor != null ? #numbers.formatDecimal(report.r65_risk_weight_factor, 1, 0, 'POINT') : '0'}"
+               th:value="${report.r65_risk_weight_factor != null ? #numbers.formatDecimal(report.r65_risk_weight_factor, 1,'COMMA', 1, 'POINT') : '0'}"
                id="r65_risk_weight_factor"
                name="r65_risk_weight_factor"
                style="background-color: rgb(107, 122, 143); color: white; height:28px; border-color:transparent; text-align:right;"readonly />
