@@ -1,0 +1,2584 @@
+package com.bornfire.brrs.entities;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+@Entity
+@Table(name = "BRRS_M_DEP4_SUMMARYTABLE3")
+public class M_DEP4_Summary_Entity3 {
+	private String R101_PRODUCT;
+	private String R101_INSTITUTIONAL_SELECTOR;
+	private String R101_TYPE_OF_ACCOUNT;
+	private BigDecimal R101_INTREST_RATE;
+	private BigDecimal R101_AMOUNT;
+	private BigDecimal R101_TOTAL_DEPOSIT;
+	private BigDecimal R101_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R102_PRODUCT;
+	private String R102_INSTITUTIONAL_SELECTOR;
+	private String R102_TYPE_OF_ACCOUNT;
+	private BigDecimal R102_INTREST_RATE;
+	private BigDecimal R102_AMOUNT;
+	private BigDecimal R102_TOTAL_DEPOSIT;
+	private BigDecimal R102_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R103_PRODUCT;
+	private String R103_INSTITUTIONAL_SELECTOR;
+	private String R103_TYPE_OF_ACCOUNT;
+	private BigDecimal R103_INTREST_RATE;
+	private BigDecimal R103_AMOUNT;
+	private BigDecimal R103_TOTAL_DEPOSIT;
+	private BigDecimal R103_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R104_PRODUCT;
+	private String R104_INSTITUTIONAL_SELECTOR;
+	private String R104_TYPE_OF_ACCOUNT;
+	private BigDecimal R104_INTREST_RATE;
+	private BigDecimal R104_AMOUNT;
+	private BigDecimal R104_TOTAL_DEPOSIT;
+	private BigDecimal R104_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R105_PRODUCT;
+	private String R105_INSTITUTIONAL_SELECTOR;
+	private String R105_TYPE_OF_ACCOUNT;
+	private BigDecimal R105_INTREST_RATE;
+	private BigDecimal R105_AMOUNT;
+	private BigDecimal R105_TOTAL_DEPOSIT;
+	private BigDecimal R105_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R106_PRODUCT;
+	private String R106_INSTITUTIONAL_SELECTOR;
+	private String R106_TYPE_OF_ACCOUNT;
+	private BigDecimal R106_INTREST_RATE;
+	private BigDecimal R106_AMOUNT;
+	private BigDecimal R106_TOTAL_DEPOSIT;
+	private BigDecimal R106_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R107_PRODUCT;
+	private String R107_INSTITUTIONAL_SELECTOR;
+	private String R107_TYPE_OF_ACCOUNT;
+	private BigDecimal R107_INTREST_RATE;
+	private BigDecimal R107_AMOUNT;
+	private BigDecimal R107_TOTAL_DEPOSIT;
+	private BigDecimal R107_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R108_PRODUCT;
+	private String R108_INSTITUTIONAL_SELECTOR;
+	private String R108_TYPE_OF_ACCOUNT;
+	private BigDecimal R108_INTREST_RATE;
+	private BigDecimal R108_AMOUNT;
+	private BigDecimal R108_TOTAL_DEPOSIT;
+	private BigDecimal R108_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R109_PRODUCT;
+	private String R109_INSTITUTIONAL_SELECTOR;
+	private String R109_TYPE_OF_ACCOUNT;
+	private BigDecimal R109_INTREST_RATE;
+	private BigDecimal R109_AMOUNT;
+	private BigDecimal R109_TOTAL_DEPOSIT;
+	private BigDecimal R109_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R110_PRODUCT;
+	private String R110_INSTITUTIONAL_SELECTOR;
+	private String R110_TYPE_OF_ACCOUNT;
+	private BigDecimal R110_INTREST_RATE;
+	private BigDecimal R110_AMOUNT;
+	private BigDecimal R110_TOTAL_DEPOSIT;
+	private BigDecimal R110_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R111_PRODUCT;
+	private String R111_INSTITUTIONAL_SELECTOR;
+	private String R111_TYPE_OF_ACCOUNT;
+	private BigDecimal R111_INTREST_RATE;
+	private BigDecimal R111_AMOUNT;
+	private BigDecimal R111_TOTAL_DEPOSIT;
+	private BigDecimal R111_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R112_PRODUCT;
+	private String R112_INSTITUTIONAL_SELECTOR;
+	private String R112_TYPE_OF_ACCOUNT;
+	private BigDecimal R112_INTREST_RATE;
+	private BigDecimal R112_AMOUNT;
+	private BigDecimal R112_TOTAL_DEPOSIT;
+	private BigDecimal R112_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R113_PRODUCT;
+	private String R113_INSTITUTIONAL_SELECTOR;
+	private String R113_TYPE_OF_ACCOUNT;
+	private BigDecimal R113_INTREST_RATE;
+	private BigDecimal R113_AMOUNT;
+	private BigDecimal R113_TOTAL_DEPOSIT;
+	private BigDecimal R113_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R114_PRODUCT;
+	private String R114_INSTITUTIONAL_SELECTOR;
+	private String R114_TYPE_OF_ACCOUNT;
+	private BigDecimal R114_INTREST_RATE;
+	private BigDecimal R114_AMOUNT;
+	private BigDecimal R114_TOTAL_DEPOSIT;
+	private BigDecimal R114_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R115_PRODUCT;
+	private String R115_INSTITUTIONAL_SELECTOR;
+	private String R115_TYPE_OF_ACCOUNT;
+	private BigDecimal R115_INTREST_RATE;
+	private BigDecimal R115_AMOUNT;
+	private BigDecimal R115_TOTAL_DEPOSIT;
+	private BigDecimal R115_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R116_PRODUCT;
+	private String R116_INSTITUTIONAL_SELECTOR;
+	private String R116_TYPE_OF_ACCOUNT;
+	private BigDecimal R116_INTREST_RATE;
+	private BigDecimal R116_AMOUNT;
+	private BigDecimal R116_TOTAL_DEPOSIT;
+	private BigDecimal R116_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R117_PRODUCT;
+	private String R117_INSTITUTIONAL_SELECTOR;
+	private String R117_TYPE_OF_ACCOUNT;
+	private BigDecimal R117_INTREST_RATE;
+	private BigDecimal R117_AMOUNT;
+	private BigDecimal R117_TOTAL_DEPOSIT;
+	private BigDecimal R117_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R118_PRODUCT;
+	private String R118_INSTITUTIONAL_SELECTOR;
+	private String R118_TYPE_OF_ACCOUNT;
+	private BigDecimal R118_INTREST_RATE;
+	private BigDecimal R118_AMOUNT;
+	private BigDecimal R118_TOTAL_DEPOSIT;
+	private BigDecimal R118_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R119_PRODUCT;
+	private String R119_INSTITUTIONAL_SELECTOR;
+	private String R119_TYPE_OF_ACCOUNT;
+	private BigDecimal R119_INTREST_RATE;
+	private BigDecimal R119_AMOUNT;
+	private BigDecimal R119_TOTAL_DEPOSIT;
+	private BigDecimal R119_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R120_PRODUCT;
+	private String R120_INSTITUTIONAL_SELECTOR;
+	private String R120_TYPE_OF_ACCOUNT;
+	private BigDecimal R120_INTREST_RATE;
+	private BigDecimal R120_AMOUNT;
+	private BigDecimal R120_TOTAL_DEPOSIT;
+	private BigDecimal R120_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R121_PRODUCT;
+	private String R121_INSTITUTIONAL_SELECTOR;
+	private String R121_TYPE_OF_ACCOUNT;
+	private BigDecimal R121_INTREST_RATE;
+	private BigDecimal R121_AMOUNT;
+	private BigDecimal R121_TOTAL_DEPOSIT;
+	private BigDecimal R121_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R122_PRODUCT;
+	private String R122_INSTITUTIONAL_SELECTOR;
+	private String R122_TYPE_OF_ACCOUNT;
+	private BigDecimal R122_INTREST_RATE;
+	private BigDecimal R122_AMOUNT;
+	private BigDecimal R122_TOTAL_DEPOSIT;
+	private BigDecimal R122_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R123_PRODUCT;
+	private String R123_INSTITUTIONAL_SELECTOR;
+	private String R123_TYPE_OF_ACCOUNT;
+	private BigDecimal R123_INTREST_RATE;
+	private BigDecimal R123_AMOUNT;
+	private BigDecimal R123_TOTAL_DEPOSIT;
+	private BigDecimal R123_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R124_PRODUCT;
+	private String R124_INSTITUTIONAL_SELECTOR;
+	private String R124_TYPE_OF_ACCOUNT;
+	private BigDecimal R124_INTREST_RATE;
+	private BigDecimal R124_AMOUNT;
+	private BigDecimal R124_TOTAL_DEPOSIT;
+	private BigDecimal R124_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R125_PRODUCT;
+	private String R125_INSTITUTIONAL_SELECTOR;
+	private String R125_TYPE_OF_ACCOUNT;
+	private BigDecimal R125_INTREST_RATE;
+	private BigDecimal R125_AMOUNT;
+	private BigDecimal R125_TOTAL_DEPOSIT;
+	private BigDecimal R125_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R126_PRODUCT;
+	private String R126_INSTITUTIONAL_SELECTOR;
+	private String R126_TYPE_OF_ACCOUNT;
+	private BigDecimal R126_INTREST_RATE;
+	private BigDecimal R126_AMOUNT;
+	private BigDecimal R126_TOTAL_DEPOSIT;
+	private BigDecimal R126_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R127_PRODUCT;
+	private String R127_INSTITUTIONAL_SELECTOR;
+	private String R127_TYPE_OF_ACCOUNT;
+	private BigDecimal R127_INTREST_RATE;
+	private BigDecimal R127_AMOUNT;
+	private BigDecimal R127_TOTAL_DEPOSIT;
+	private BigDecimal R127_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R128_PRODUCT;
+	private String R128_INSTITUTIONAL_SELECTOR;
+	private String R128_TYPE_OF_ACCOUNT;
+	private BigDecimal R128_INTREST_RATE;
+	private BigDecimal R128_AMOUNT;
+	private BigDecimal R128_TOTAL_DEPOSIT;
+	private BigDecimal R128_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R129_PRODUCT;
+	private String R129_INSTITUTIONAL_SELECTOR;
+	private String R129_TYPE_OF_ACCOUNT;
+	private BigDecimal R129_INTREST_RATE;
+	private BigDecimal R129_AMOUNT;
+	private BigDecimal R129_TOTAL_DEPOSIT;
+	private BigDecimal R129_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R130_PRODUCT;
+	private String R130_INSTITUTIONAL_SELECTOR;
+	private String R130_TYPE_OF_ACCOUNT;
+	private BigDecimal R130_INTREST_RATE;
+	private BigDecimal R130_AMOUNT;
+	private BigDecimal R130_TOTAL_DEPOSIT;
+	private BigDecimal R130_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R131_PRODUCT;
+	private String R131_INSTITUTIONAL_SELECTOR;
+	private String R131_TYPE_OF_ACCOUNT;
+	private BigDecimal R131_INTREST_RATE;
+	private BigDecimal R131_AMOUNT;
+	private BigDecimal R131_TOTAL_DEPOSIT;
+	private BigDecimal R131_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R132_PRODUCT;
+	private String R132_INSTITUTIONAL_SELECTOR;
+	private String R132_TYPE_OF_ACCOUNT;
+	private BigDecimal R132_INTREST_RATE;
+	private BigDecimal R132_AMOUNT;
+	private BigDecimal R132_TOTAL_DEPOSIT;
+	private BigDecimal R132_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R133_PRODUCT;
+	private String R133_INSTITUTIONAL_SELECTOR;
+	private String R133_TYPE_OF_ACCOUNT;
+	private BigDecimal R133_INTREST_RATE;
+	private BigDecimal R133_AMOUNT;
+	private BigDecimal R133_TOTAL_DEPOSIT;
+	private BigDecimal R133_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R134_PRODUCT;
+	private String R134_INSTITUTIONAL_SELECTOR;
+	private String R134_TYPE_OF_ACCOUNT;
+	private BigDecimal R134_INTREST_RATE;
+	private BigDecimal R134_AMOUNT;
+	private BigDecimal R134_TOTAL_DEPOSIT;
+	private BigDecimal R134_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R135_PRODUCT;
+	private String R135_INSTITUTIONAL_SELECTOR;
+	private String R135_TYPE_OF_ACCOUNT;
+	private BigDecimal R135_INTREST_RATE;
+	private BigDecimal R135_AMOUNT;
+	private BigDecimal R135_TOTAL_DEPOSIT;
+	private BigDecimal R135_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R136_PRODUCT;
+	private String R136_INSTITUTIONAL_SELECTOR;
+	private String R136_TYPE_OF_ACCOUNT;
+	private BigDecimal R136_INTREST_RATE;
+	private BigDecimal R136_AMOUNT;
+	private BigDecimal R136_TOTAL_DEPOSIT;
+	private BigDecimal R136_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R137_PRODUCT;
+	private String R137_INSTITUTIONAL_SELECTOR;
+	private String R137_TYPE_OF_ACCOUNT;
+	private BigDecimal R137_INTREST_RATE;
+	private BigDecimal R137_AMOUNT;
+	private BigDecimal R137_TOTAL_DEPOSIT;
+	private BigDecimal R137_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R138_PRODUCT;
+	private String R138_INSTITUTIONAL_SELECTOR;
+	private String R138_TYPE_OF_ACCOUNT;
+	private BigDecimal R138_INTREST_RATE;
+	private BigDecimal R138_AMOUNT;
+	private BigDecimal R138_TOTAL_DEPOSIT;
+	private BigDecimal R138_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R139_PRODUCT;
+	private String R139_INSTITUTIONAL_SELECTOR;
+	private String R139_TYPE_OF_ACCOUNT;
+	private BigDecimal R139_INTREST_RATE;
+	private BigDecimal R139_AMOUNT;
+	private BigDecimal R139_TOTAL_DEPOSIT;
+	private BigDecimal R139_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R140_PRODUCT;
+	private String R140_INSTITUTIONAL_SELECTOR;
+	private String R140_TYPE_OF_ACCOUNT;
+	private BigDecimal R140_INTREST_RATE;
+	private BigDecimal R140_AMOUNT;
+	private BigDecimal R140_TOTAL_DEPOSIT;
+	private BigDecimal R140_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R141_PRODUCT;
+	private String R141_INSTITUTIONAL_SELECTOR;
+	private String R141_TYPE_OF_ACCOUNT;
+	private BigDecimal R141_INTREST_RATE;
+	private BigDecimal R141_AMOUNT;
+	private BigDecimal R141_TOTAL_DEPOSIT;
+	private BigDecimal R141_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R142_PRODUCT;
+	private String R142_INSTITUTIONAL_SELECTOR;
+	private String R142_TYPE_OF_ACCOUNT;
+	private BigDecimal R142_INTREST_RATE;
+	private BigDecimal R142_AMOUNT;
+	private BigDecimal R142_TOTAL_DEPOSIT;
+	private BigDecimal R142_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R143_PRODUCT;
+	private String R143_INSTITUTIONAL_SELECTOR;
+	private String R143_TYPE_OF_ACCOUNT;
+	private BigDecimal R143_INTREST_RATE;
+	private BigDecimal R143_AMOUNT;
+	private BigDecimal R143_TOTAL_DEPOSIT;
+	private BigDecimal R143_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R144_PRODUCT;
+	private String R144_INSTITUTIONAL_SELECTOR;
+	private String R144_TYPE_OF_ACCOUNT;
+	private BigDecimal R144_INTREST_RATE;
+	private BigDecimal R144_AMOUNT;
+	private BigDecimal R144_TOTAL_DEPOSIT;
+	private BigDecimal R144_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R145_PRODUCT;
+	private String R145_INSTITUTIONAL_SELECTOR;
+	private String R145_TYPE_OF_ACCOUNT;
+	private BigDecimal R145_INTREST_RATE;
+	private BigDecimal R145_AMOUNT;
+	private BigDecimal R145_TOTAL_DEPOSIT;
+	private BigDecimal R145_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R146_PRODUCT;
+	private String R146_INSTITUTIONAL_SELECTOR;
+	private String R146_TYPE_OF_ACCOUNT;
+	private BigDecimal R146_INTREST_RATE;
+	private BigDecimal R146_AMOUNT;
+	private BigDecimal R146_TOTAL_DEPOSIT;
+	private BigDecimal R146_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R147_PRODUCT;
+	private String R147_INSTITUTIONAL_SELECTOR;
+	private String R147_TYPE_OF_ACCOUNT;
+	private BigDecimal R147_INTREST_RATE;
+	private BigDecimal R147_AMOUNT;
+	private BigDecimal R147_TOTAL_DEPOSIT;
+	private BigDecimal R147_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R148_PRODUCT;
+	private String R148_INSTITUTIONAL_SELECTOR;
+	private String R148_TYPE_OF_ACCOUNT;
+	private BigDecimal R148_INTREST_RATE;
+	private BigDecimal R148_AMOUNT;
+	private BigDecimal R148_TOTAL_DEPOSIT;
+	private BigDecimal R148_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R149_PRODUCT;
+	private String R149_INSTITUTIONAL_SELECTOR;
+	private String R149_TYPE_OF_ACCOUNT;
+	private BigDecimal R149_INTREST_RATE;
+	private BigDecimal R149_AMOUNT;
+	private BigDecimal R149_TOTAL_DEPOSIT;
+	private BigDecimal R149_PERCENTAGE_TOTAL_DEPOSIT;
+
+	private String R150_PRODUCT;
+	private String R150_INSTITUTIONAL_SELECTOR;
+	private String R150_TYPE_OF_ACCOUNT;
+	private BigDecimal R150_INTREST_RATE;
+	private BigDecimal R150_AMOUNT;
+	private BigDecimal R150_TOTAL_DEPOSIT;
+	private BigDecimal R150_PERCENTAGE_TOTAL_DEPOSIT;
+
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Id
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+	@Column(name = "REPORT_VERSION")
+	private String reportVersion;
+    public String REPORT_FREQUENCY;
+    public String REPORT_CODE;
+    public String REPORT_DESC;
+    public String ENTITY_FLG;
+    public String MODIFY_FLG;
+    public String DEL_FLG;
+	public String getR101_PRODUCT() {
+		return R101_PRODUCT;
+	}
+	public void setR101_PRODUCT(String r101_PRODUCT) {
+		R101_PRODUCT = r101_PRODUCT;
+	}
+	public String getR101_INSTITUTIONAL_SELECTOR() {
+		return R101_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR101_INSTITUTIONAL_SELECTOR(String r101_INSTITUTIONAL_SELECTOR) {
+		R101_INSTITUTIONAL_SELECTOR = r101_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR101_TYPE_OF_ACCOUNT() {
+		return R101_TYPE_OF_ACCOUNT;
+	}
+	public void setR101_TYPE_OF_ACCOUNT(String r101_TYPE_OF_ACCOUNT) {
+		R101_TYPE_OF_ACCOUNT = r101_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR101_INTREST_RATE() {
+		return R101_INTREST_RATE;
+	}
+	public void setR101_INTREST_RATE(BigDecimal r101_INTREST_RATE) {
+		R101_INTREST_RATE = r101_INTREST_RATE;
+	}
+	public BigDecimal getR101_AMOUNT() {
+		return R101_AMOUNT;
+	}
+	public void setR101_AMOUNT(BigDecimal r101_AMOUNT) {
+		R101_AMOUNT = r101_AMOUNT;
+	}
+	public BigDecimal getR101_TOTAL_DEPOSIT() {
+		return R101_TOTAL_DEPOSIT;
+	}
+	public void setR101_TOTAL_DEPOSIT(BigDecimal r101_TOTAL_DEPOSIT) {
+		R101_TOTAL_DEPOSIT = r101_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR101_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R101_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR101_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r101_PERCENTAGE_TOTAL_DEPOSIT) {
+		R101_PERCENTAGE_TOTAL_DEPOSIT = r101_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR102_PRODUCT() {
+		return R102_PRODUCT;
+	}
+	public void setR102_PRODUCT(String r102_PRODUCT) {
+		R102_PRODUCT = r102_PRODUCT;
+	}
+	public String getR102_INSTITUTIONAL_SELECTOR() {
+		return R102_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR102_INSTITUTIONAL_SELECTOR(String r102_INSTITUTIONAL_SELECTOR) {
+		R102_INSTITUTIONAL_SELECTOR = r102_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR102_TYPE_OF_ACCOUNT() {
+		return R102_TYPE_OF_ACCOUNT;
+	}
+	public void setR102_TYPE_OF_ACCOUNT(String r102_TYPE_OF_ACCOUNT) {
+		R102_TYPE_OF_ACCOUNT = r102_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR102_INTREST_RATE() {
+		return R102_INTREST_RATE;
+	}
+	public void setR102_INTREST_RATE(BigDecimal r102_INTREST_RATE) {
+		R102_INTREST_RATE = r102_INTREST_RATE;
+	}
+	public BigDecimal getR102_AMOUNT() {
+		return R102_AMOUNT;
+	}
+	public void setR102_AMOUNT(BigDecimal r102_AMOUNT) {
+		R102_AMOUNT = r102_AMOUNT;
+	}
+	public BigDecimal getR102_TOTAL_DEPOSIT() {
+		return R102_TOTAL_DEPOSIT;
+	}
+	public void setR102_TOTAL_DEPOSIT(BigDecimal r102_TOTAL_DEPOSIT) {
+		R102_TOTAL_DEPOSIT = r102_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR102_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R102_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR102_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r102_PERCENTAGE_TOTAL_DEPOSIT) {
+		R102_PERCENTAGE_TOTAL_DEPOSIT = r102_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR103_PRODUCT() {
+		return R103_PRODUCT;
+	}
+	public void setR103_PRODUCT(String r103_PRODUCT) {
+		R103_PRODUCT = r103_PRODUCT;
+	}
+	public String getR103_INSTITUTIONAL_SELECTOR() {
+		return R103_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR103_INSTITUTIONAL_SELECTOR(String r103_INSTITUTIONAL_SELECTOR) {
+		R103_INSTITUTIONAL_SELECTOR = r103_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR103_TYPE_OF_ACCOUNT() {
+		return R103_TYPE_OF_ACCOUNT;
+	}
+	public void setR103_TYPE_OF_ACCOUNT(String r103_TYPE_OF_ACCOUNT) {
+		R103_TYPE_OF_ACCOUNT = r103_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR103_INTREST_RATE() {
+		return R103_INTREST_RATE;
+	}
+	public void setR103_INTREST_RATE(BigDecimal r103_INTREST_RATE) {
+		R103_INTREST_RATE = r103_INTREST_RATE;
+	}
+	public BigDecimal getR103_AMOUNT() {
+		return R103_AMOUNT;
+	}
+	public void setR103_AMOUNT(BigDecimal r103_AMOUNT) {
+		R103_AMOUNT = r103_AMOUNT;
+	}
+	public BigDecimal getR103_TOTAL_DEPOSIT() {
+		return R103_TOTAL_DEPOSIT;
+	}
+	public void setR103_TOTAL_DEPOSIT(BigDecimal r103_TOTAL_DEPOSIT) {
+		R103_TOTAL_DEPOSIT = r103_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR103_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R103_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR103_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r103_PERCENTAGE_TOTAL_DEPOSIT) {
+		R103_PERCENTAGE_TOTAL_DEPOSIT = r103_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR104_PRODUCT() {
+		return R104_PRODUCT;
+	}
+	public void setR104_PRODUCT(String r104_PRODUCT) {
+		R104_PRODUCT = r104_PRODUCT;
+	}
+	public String getR104_INSTITUTIONAL_SELECTOR() {
+		return R104_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR104_INSTITUTIONAL_SELECTOR(String r104_INSTITUTIONAL_SELECTOR) {
+		R104_INSTITUTIONAL_SELECTOR = r104_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR104_TYPE_OF_ACCOUNT() {
+		return R104_TYPE_OF_ACCOUNT;
+	}
+	public void setR104_TYPE_OF_ACCOUNT(String r104_TYPE_OF_ACCOUNT) {
+		R104_TYPE_OF_ACCOUNT = r104_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR104_INTREST_RATE() {
+		return R104_INTREST_RATE;
+	}
+	public void setR104_INTREST_RATE(BigDecimal r104_INTREST_RATE) {
+		R104_INTREST_RATE = r104_INTREST_RATE;
+	}
+	public BigDecimal getR104_AMOUNT() {
+		return R104_AMOUNT;
+	}
+	public void setR104_AMOUNT(BigDecimal r104_AMOUNT) {
+		R104_AMOUNT = r104_AMOUNT;
+	}
+	public BigDecimal getR104_TOTAL_DEPOSIT() {
+		return R104_TOTAL_DEPOSIT;
+	}
+	public void setR104_TOTAL_DEPOSIT(BigDecimal r104_TOTAL_DEPOSIT) {
+		R104_TOTAL_DEPOSIT = r104_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR104_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R104_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR104_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r104_PERCENTAGE_TOTAL_DEPOSIT) {
+		R104_PERCENTAGE_TOTAL_DEPOSIT = r104_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR105_PRODUCT() {
+		return R105_PRODUCT;
+	}
+	public void setR105_PRODUCT(String r105_PRODUCT) {
+		R105_PRODUCT = r105_PRODUCT;
+	}
+	public String getR105_INSTITUTIONAL_SELECTOR() {
+		return R105_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR105_INSTITUTIONAL_SELECTOR(String r105_INSTITUTIONAL_SELECTOR) {
+		R105_INSTITUTIONAL_SELECTOR = r105_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR105_TYPE_OF_ACCOUNT() {
+		return R105_TYPE_OF_ACCOUNT;
+	}
+	public void setR105_TYPE_OF_ACCOUNT(String r105_TYPE_OF_ACCOUNT) {
+		R105_TYPE_OF_ACCOUNT = r105_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR105_INTREST_RATE() {
+		return R105_INTREST_RATE;
+	}
+	public void setR105_INTREST_RATE(BigDecimal r105_INTREST_RATE) {
+		R105_INTREST_RATE = r105_INTREST_RATE;
+	}
+	public BigDecimal getR105_AMOUNT() {
+		return R105_AMOUNT;
+	}
+	public void setR105_AMOUNT(BigDecimal r105_AMOUNT) {
+		R105_AMOUNT = r105_AMOUNT;
+	}
+	public BigDecimal getR105_TOTAL_DEPOSIT() {
+		return R105_TOTAL_DEPOSIT;
+	}
+	public void setR105_TOTAL_DEPOSIT(BigDecimal r105_TOTAL_DEPOSIT) {
+		R105_TOTAL_DEPOSIT = r105_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR105_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R105_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR105_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r105_PERCENTAGE_TOTAL_DEPOSIT) {
+		R105_PERCENTAGE_TOTAL_DEPOSIT = r105_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR106_PRODUCT() {
+		return R106_PRODUCT;
+	}
+	public void setR106_PRODUCT(String r106_PRODUCT) {
+		R106_PRODUCT = r106_PRODUCT;
+	}
+	public String getR106_INSTITUTIONAL_SELECTOR() {
+		return R106_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR106_INSTITUTIONAL_SELECTOR(String r106_INSTITUTIONAL_SELECTOR) {
+		R106_INSTITUTIONAL_SELECTOR = r106_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR106_TYPE_OF_ACCOUNT() {
+		return R106_TYPE_OF_ACCOUNT;
+	}
+	public void setR106_TYPE_OF_ACCOUNT(String r106_TYPE_OF_ACCOUNT) {
+		R106_TYPE_OF_ACCOUNT = r106_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR106_INTREST_RATE() {
+		return R106_INTREST_RATE;
+	}
+	public void setR106_INTREST_RATE(BigDecimal r106_INTREST_RATE) {
+		R106_INTREST_RATE = r106_INTREST_RATE;
+	}
+	public BigDecimal getR106_AMOUNT() {
+		return R106_AMOUNT;
+	}
+	public void setR106_AMOUNT(BigDecimal r106_AMOUNT) {
+		R106_AMOUNT = r106_AMOUNT;
+	}
+	public BigDecimal getR106_TOTAL_DEPOSIT() {
+		return R106_TOTAL_DEPOSIT;
+	}
+	public void setR106_TOTAL_DEPOSIT(BigDecimal r106_TOTAL_DEPOSIT) {
+		R106_TOTAL_DEPOSIT = r106_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR106_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R106_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR106_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r106_PERCENTAGE_TOTAL_DEPOSIT) {
+		R106_PERCENTAGE_TOTAL_DEPOSIT = r106_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR107_PRODUCT() {
+		return R107_PRODUCT;
+	}
+	public void setR107_PRODUCT(String r107_PRODUCT) {
+		R107_PRODUCT = r107_PRODUCT;
+	}
+	public String getR107_INSTITUTIONAL_SELECTOR() {
+		return R107_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR107_INSTITUTIONAL_SELECTOR(String r107_INSTITUTIONAL_SELECTOR) {
+		R107_INSTITUTIONAL_SELECTOR = r107_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR107_TYPE_OF_ACCOUNT() {
+		return R107_TYPE_OF_ACCOUNT;
+	}
+	public void setR107_TYPE_OF_ACCOUNT(String r107_TYPE_OF_ACCOUNT) {
+		R107_TYPE_OF_ACCOUNT = r107_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR107_INTREST_RATE() {
+		return R107_INTREST_RATE;
+	}
+	public void setR107_INTREST_RATE(BigDecimal r107_INTREST_RATE) {
+		R107_INTREST_RATE = r107_INTREST_RATE;
+	}
+	public BigDecimal getR107_AMOUNT() {
+		return R107_AMOUNT;
+	}
+	public void setR107_AMOUNT(BigDecimal r107_AMOUNT) {
+		R107_AMOUNT = r107_AMOUNT;
+	}
+	public BigDecimal getR107_TOTAL_DEPOSIT() {
+		return R107_TOTAL_DEPOSIT;
+	}
+	public void setR107_TOTAL_DEPOSIT(BigDecimal r107_TOTAL_DEPOSIT) {
+		R107_TOTAL_DEPOSIT = r107_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR107_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R107_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR107_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r107_PERCENTAGE_TOTAL_DEPOSIT) {
+		R107_PERCENTAGE_TOTAL_DEPOSIT = r107_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR108_PRODUCT() {
+		return R108_PRODUCT;
+	}
+	public void setR108_PRODUCT(String r108_PRODUCT) {
+		R108_PRODUCT = r108_PRODUCT;
+	}
+	public String getR108_INSTITUTIONAL_SELECTOR() {
+		return R108_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR108_INSTITUTIONAL_SELECTOR(String r108_INSTITUTIONAL_SELECTOR) {
+		R108_INSTITUTIONAL_SELECTOR = r108_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR108_TYPE_OF_ACCOUNT() {
+		return R108_TYPE_OF_ACCOUNT;
+	}
+	public void setR108_TYPE_OF_ACCOUNT(String r108_TYPE_OF_ACCOUNT) {
+		R108_TYPE_OF_ACCOUNT = r108_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR108_INTREST_RATE() {
+		return R108_INTREST_RATE;
+	}
+	public void setR108_INTREST_RATE(BigDecimal r108_INTREST_RATE) {
+		R108_INTREST_RATE = r108_INTREST_RATE;
+	}
+	public BigDecimal getR108_AMOUNT() {
+		return R108_AMOUNT;
+	}
+	public void setR108_AMOUNT(BigDecimal r108_AMOUNT) {
+		R108_AMOUNT = r108_AMOUNT;
+	}
+	public BigDecimal getR108_TOTAL_DEPOSIT() {
+		return R108_TOTAL_DEPOSIT;
+	}
+	public void setR108_TOTAL_DEPOSIT(BigDecimal r108_TOTAL_DEPOSIT) {
+		R108_TOTAL_DEPOSIT = r108_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR108_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R108_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR108_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r108_PERCENTAGE_TOTAL_DEPOSIT) {
+		R108_PERCENTAGE_TOTAL_DEPOSIT = r108_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR109_PRODUCT() {
+		return R109_PRODUCT;
+	}
+	public void setR109_PRODUCT(String r109_PRODUCT) {
+		R109_PRODUCT = r109_PRODUCT;
+	}
+	public String getR109_INSTITUTIONAL_SELECTOR() {
+		return R109_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR109_INSTITUTIONAL_SELECTOR(String r109_INSTITUTIONAL_SELECTOR) {
+		R109_INSTITUTIONAL_SELECTOR = r109_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR109_TYPE_OF_ACCOUNT() {
+		return R109_TYPE_OF_ACCOUNT;
+	}
+	public void setR109_TYPE_OF_ACCOUNT(String r109_TYPE_OF_ACCOUNT) {
+		R109_TYPE_OF_ACCOUNT = r109_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR109_INTREST_RATE() {
+		return R109_INTREST_RATE;
+	}
+	public void setR109_INTREST_RATE(BigDecimal r109_INTREST_RATE) {
+		R109_INTREST_RATE = r109_INTREST_RATE;
+	}
+	public BigDecimal getR109_AMOUNT() {
+		return R109_AMOUNT;
+	}
+	public void setR109_AMOUNT(BigDecimal r109_AMOUNT) {
+		R109_AMOUNT = r109_AMOUNT;
+	}
+	public BigDecimal getR109_TOTAL_DEPOSIT() {
+		return R109_TOTAL_DEPOSIT;
+	}
+	public void setR109_TOTAL_DEPOSIT(BigDecimal r109_TOTAL_DEPOSIT) {
+		R109_TOTAL_DEPOSIT = r109_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR109_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R109_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR109_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r109_PERCENTAGE_TOTAL_DEPOSIT) {
+		R109_PERCENTAGE_TOTAL_DEPOSIT = r109_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR110_PRODUCT() {
+		return R110_PRODUCT;
+	}
+	public void setR110_PRODUCT(String r110_PRODUCT) {
+		R110_PRODUCT = r110_PRODUCT;
+	}
+	public String getR110_INSTITUTIONAL_SELECTOR() {
+		return R110_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR110_INSTITUTIONAL_SELECTOR(String r110_INSTITUTIONAL_SELECTOR) {
+		R110_INSTITUTIONAL_SELECTOR = r110_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR110_TYPE_OF_ACCOUNT() {
+		return R110_TYPE_OF_ACCOUNT;
+	}
+	public void setR110_TYPE_OF_ACCOUNT(String r110_TYPE_OF_ACCOUNT) {
+		R110_TYPE_OF_ACCOUNT = r110_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR110_INTREST_RATE() {
+		return R110_INTREST_RATE;
+	}
+	public void setR110_INTREST_RATE(BigDecimal r110_INTREST_RATE) {
+		R110_INTREST_RATE = r110_INTREST_RATE;
+	}
+	public BigDecimal getR110_AMOUNT() {
+		return R110_AMOUNT;
+	}
+	public void setR110_AMOUNT(BigDecimal r110_AMOUNT) {
+		R110_AMOUNT = r110_AMOUNT;
+	}
+	public BigDecimal getR110_TOTAL_DEPOSIT() {
+		return R110_TOTAL_DEPOSIT;
+	}
+	public void setR110_TOTAL_DEPOSIT(BigDecimal r110_TOTAL_DEPOSIT) {
+		R110_TOTAL_DEPOSIT = r110_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR110_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R110_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR110_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r110_PERCENTAGE_TOTAL_DEPOSIT) {
+		R110_PERCENTAGE_TOTAL_DEPOSIT = r110_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR111_PRODUCT() {
+		return R111_PRODUCT;
+	}
+	public void setR111_PRODUCT(String r111_PRODUCT) {
+		R111_PRODUCT = r111_PRODUCT;
+	}
+	public String getR111_INSTITUTIONAL_SELECTOR() {
+		return R111_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR111_INSTITUTIONAL_SELECTOR(String r111_INSTITUTIONAL_SELECTOR) {
+		R111_INSTITUTIONAL_SELECTOR = r111_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR111_TYPE_OF_ACCOUNT() {
+		return R111_TYPE_OF_ACCOUNT;
+	}
+	public void setR111_TYPE_OF_ACCOUNT(String r111_TYPE_OF_ACCOUNT) {
+		R111_TYPE_OF_ACCOUNT = r111_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR111_INTREST_RATE() {
+		return R111_INTREST_RATE;
+	}
+	public void setR111_INTREST_RATE(BigDecimal r111_INTREST_RATE) {
+		R111_INTREST_RATE = r111_INTREST_RATE;
+	}
+	public BigDecimal getR111_AMOUNT() {
+		return R111_AMOUNT;
+	}
+	public void setR111_AMOUNT(BigDecimal r111_AMOUNT) {
+		R111_AMOUNT = r111_AMOUNT;
+	}
+	public BigDecimal getR111_TOTAL_DEPOSIT() {
+		return R111_TOTAL_DEPOSIT;
+	}
+	public void setR111_TOTAL_DEPOSIT(BigDecimal r111_TOTAL_DEPOSIT) {
+		R111_TOTAL_DEPOSIT = r111_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR111_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R111_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR111_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r111_PERCENTAGE_TOTAL_DEPOSIT) {
+		R111_PERCENTAGE_TOTAL_DEPOSIT = r111_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR112_PRODUCT() {
+		return R112_PRODUCT;
+	}
+	public void setR112_PRODUCT(String r112_PRODUCT) {
+		R112_PRODUCT = r112_PRODUCT;
+	}
+	public String getR112_INSTITUTIONAL_SELECTOR() {
+		return R112_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR112_INSTITUTIONAL_SELECTOR(String r112_INSTITUTIONAL_SELECTOR) {
+		R112_INSTITUTIONAL_SELECTOR = r112_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR112_TYPE_OF_ACCOUNT() {
+		return R112_TYPE_OF_ACCOUNT;
+	}
+	public void setR112_TYPE_OF_ACCOUNT(String r112_TYPE_OF_ACCOUNT) {
+		R112_TYPE_OF_ACCOUNT = r112_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR112_INTREST_RATE() {
+		return R112_INTREST_RATE;
+	}
+	public void setR112_INTREST_RATE(BigDecimal r112_INTREST_RATE) {
+		R112_INTREST_RATE = r112_INTREST_RATE;
+	}
+	public BigDecimal getR112_AMOUNT() {
+		return R112_AMOUNT;
+	}
+	public void setR112_AMOUNT(BigDecimal r112_AMOUNT) {
+		R112_AMOUNT = r112_AMOUNT;
+	}
+	public BigDecimal getR112_TOTAL_DEPOSIT() {
+		return R112_TOTAL_DEPOSIT;
+	}
+	public void setR112_TOTAL_DEPOSIT(BigDecimal r112_TOTAL_DEPOSIT) {
+		R112_TOTAL_DEPOSIT = r112_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR112_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R112_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR112_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r112_PERCENTAGE_TOTAL_DEPOSIT) {
+		R112_PERCENTAGE_TOTAL_DEPOSIT = r112_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR113_PRODUCT() {
+		return R113_PRODUCT;
+	}
+	public void setR113_PRODUCT(String r113_PRODUCT) {
+		R113_PRODUCT = r113_PRODUCT;
+	}
+	public String getR113_INSTITUTIONAL_SELECTOR() {
+		return R113_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR113_INSTITUTIONAL_SELECTOR(String r113_INSTITUTIONAL_SELECTOR) {
+		R113_INSTITUTIONAL_SELECTOR = r113_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR113_TYPE_OF_ACCOUNT() {
+		return R113_TYPE_OF_ACCOUNT;
+	}
+	public void setR113_TYPE_OF_ACCOUNT(String r113_TYPE_OF_ACCOUNT) {
+		R113_TYPE_OF_ACCOUNT = r113_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR113_INTREST_RATE() {
+		return R113_INTREST_RATE;
+	}
+	public void setR113_INTREST_RATE(BigDecimal r113_INTREST_RATE) {
+		R113_INTREST_RATE = r113_INTREST_RATE;
+	}
+	public BigDecimal getR113_AMOUNT() {
+		return R113_AMOUNT;
+	}
+	public void setR113_AMOUNT(BigDecimal r113_AMOUNT) {
+		R113_AMOUNT = r113_AMOUNT;
+	}
+	public BigDecimal getR113_TOTAL_DEPOSIT() {
+		return R113_TOTAL_DEPOSIT;
+	}
+	public void setR113_TOTAL_DEPOSIT(BigDecimal r113_TOTAL_DEPOSIT) {
+		R113_TOTAL_DEPOSIT = r113_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR113_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R113_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR113_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r113_PERCENTAGE_TOTAL_DEPOSIT) {
+		R113_PERCENTAGE_TOTAL_DEPOSIT = r113_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR114_PRODUCT() {
+		return R114_PRODUCT;
+	}
+	public void setR114_PRODUCT(String r114_PRODUCT) {
+		R114_PRODUCT = r114_PRODUCT;
+	}
+	public String getR114_INSTITUTIONAL_SELECTOR() {
+		return R114_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR114_INSTITUTIONAL_SELECTOR(String r114_INSTITUTIONAL_SELECTOR) {
+		R114_INSTITUTIONAL_SELECTOR = r114_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR114_TYPE_OF_ACCOUNT() {
+		return R114_TYPE_OF_ACCOUNT;
+	}
+	public void setR114_TYPE_OF_ACCOUNT(String r114_TYPE_OF_ACCOUNT) {
+		R114_TYPE_OF_ACCOUNT = r114_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR114_INTREST_RATE() {
+		return R114_INTREST_RATE;
+	}
+	public void setR114_INTREST_RATE(BigDecimal r114_INTREST_RATE) {
+		R114_INTREST_RATE = r114_INTREST_RATE;
+	}
+	public BigDecimal getR114_AMOUNT() {
+		return R114_AMOUNT;
+	}
+	public void setR114_AMOUNT(BigDecimal r114_AMOUNT) {
+		R114_AMOUNT = r114_AMOUNT;
+	}
+	public BigDecimal getR114_TOTAL_DEPOSIT() {
+		return R114_TOTAL_DEPOSIT;
+	}
+	public void setR114_TOTAL_DEPOSIT(BigDecimal r114_TOTAL_DEPOSIT) {
+		R114_TOTAL_DEPOSIT = r114_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR114_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R114_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR114_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r114_PERCENTAGE_TOTAL_DEPOSIT) {
+		R114_PERCENTAGE_TOTAL_DEPOSIT = r114_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR115_PRODUCT() {
+		return R115_PRODUCT;
+	}
+	public void setR115_PRODUCT(String r115_PRODUCT) {
+		R115_PRODUCT = r115_PRODUCT;
+	}
+	public String getR115_INSTITUTIONAL_SELECTOR() {
+		return R115_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR115_INSTITUTIONAL_SELECTOR(String r115_INSTITUTIONAL_SELECTOR) {
+		R115_INSTITUTIONAL_SELECTOR = r115_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR115_TYPE_OF_ACCOUNT() {
+		return R115_TYPE_OF_ACCOUNT;
+	}
+	public void setR115_TYPE_OF_ACCOUNT(String r115_TYPE_OF_ACCOUNT) {
+		R115_TYPE_OF_ACCOUNT = r115_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR115_INTREST_RATE() {
+		return R115_INTREST_RATE;
+	}
+	public void setR115_INTREST_RATE(BigDecimal r115_INTREST_RATE) {
+		R115_INTREST_RATE = r115_INTREST_RATE;
+	}
+	public BigDecimal getR115_AMOUNT() {
+		return R115_AMOUNT;
+	}
+	public void setR115_AMOUNT(BigDecimal r115_AMOUNT) {
+		R115_AMOUNT = r115_AMOUNT;
+	}
+	public BigDecimal getR115_TOTAL_DEPOSIT() {
+		return R115_TOTAL_DEPOSIT;
+	}
+	public void setR115_TOTAL_DEPOSIT(BigDecimal r115_TOTAL_DEPOSIT) {
+		R115_TOTAL_DEPOSIT = r115_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR115_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R115_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR115_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r115_PERCENTAGE_TOTAL_DEPOSIT) {
+		R115_PERCENTAGE_TOTAL_DEPOSIT = r115_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR116_PRODUCT() {
+		return R116_PRODUCT;
+	}
+	public void setR116_PRODUCT(String r116_PRODUCT) {
+		R116_PRODUCT = r116_PRODUCT;
+	}
+	public String getR116_INSTITUTIONAL_SELECTOR() {
+		return R116_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR116_INSTITUTIONAL_SELECTOR(String r116_INSTITUTIONAL_SELECTOR) {
+		R116_INSTITUTIONAL_SELECTOR = r116_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR116_TYPE_OF_ACCOUNT() {
+		return R116_TYPE_OF_ACCOUNT;
+	}
+	public void setR116_TYPE_OF_ACCOUNT(String r116_TYPE_OF_ACCOUNT) {
+		R116_TYPE_OF_ACCOUNT = r116_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR116_INTREST_RATE() {
+		return R116_INTREST_RATE;
+	}
+	public void setR116_INTREST_RATE(BigDecimal r116_INTREST_RATE) {
+		R116_INTREST_RATE = r116_INTREST_RATE;
+	}
+	public BigDecimal getR116_AMOUNT() {
+		return R116_AMOUNT;
+	}
+	public void setR116_AMOUNT(BigDecimal r116_AMOUNT) {
+		R116_AMOUNT = r116_AMOUNT;
+	}
+	public BigDecimal getR116_TOTAL_DEPOSIT() {
+		return R116_TOTAL_DEPOSIT;
+	}
+	public void setR116_TOTAL_DEPOSIT(BigDecimal r116_TOTAL_DEPOSIT) {
+		R116_TOTAL_DEPOSIT = r116_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR116_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R116_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR116_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r116_PERCENTAGE_TOTAL_DEPOSIT) {
+		R116_PERCENTAGE_TOTAL_DEPOSIT = r116_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR117_PRODUCT() {
+		return R117_PRODUCT;
+	}
+	public void setR117_PRODUCT(String r117_PRODUCT) {
+		R117_PRODUCT = r117_PRODUCT;
+	}
+	public String getR117_INSTITUTIONAL_SELECTOR() {
+		return R117_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR117_INSTITUTIONAL_SELECTOR(String r117_INSTITUTIONAL_SELECTOR) {
+		R117_INSTITUTIONAL_SELECTOR = r117_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR117_TYPE_OF_ACCOUNT() {
+		return R117_TYPE_OF_ACCOUNT;
+	}
+	public void setR117_TYPE_OF_ACCOUNT(String r117_TYPE_OF_ACCOUNT) {
+		R117_TYPE_OF_ACCOUNT = r117_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR117_INTREST_RATE() {
+		return R117_INTREST_RATE;
+	}
+	public void setR117_INTREST_RATE(BigDecimal r117_INTREST_RATE) {
+		R117_INTREST_RATE = r117_INTREST_RATE;
+	}
+	public BigDecimal getR117_AMOUNT() {
+		return R117_AMOUNT;
+	}
+	public void setR117_AMOUNT(BigDecimal r117_AMOUNT) {
+		R117_AMOUNT = r117_AMOUNT;
+	}
+	public BigDecimal getR117_TOTAL_DEPOSIT() {
+		return R117_TOTAL_DEPOSIT;
+	}
+	public void setR117_TOTAL_DEPOSIT(BigDecimal r117_TOTAL_DEPOSIT) {
+		R117_TOTAL_DEPOSIT = r117_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR117_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R117_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR117_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r117_PERCENTAGE_TOTAL_DEPOSIT) {
+		R117_PERCENTAGE_TOTAL_DEPOSIT = r117_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR118_PRODUCT() {
+		return R118_PRODUCT;
+	}
+	public void setR118_PRODUCT(String r118_PRODUCT) {
+		R118_PRODUCT = r118_PRODUCT;
+	}
+	public String getR118_INSTITUTIONAL_SELECTOR() {
+		return R118_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR118_INSTITUTIONAL_SELECTOR(String r118_INSTITUTIONAL_SELECTOR) {
+		R118_INSTITUTIONAL_SELECTOR = r118_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR118_TYPE_OF_ACCOUNT() {
+		return R118_TYPE_OF_ACCOUNT;
+	}
+	public void setR118_TYPE_OF_ACCOUNT(String r118_TYPE_OF_ACCOUNT) {
+		R118_TYPE_OF_ACCOUNT = r118_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR118_INTREST_RATE() {
+		return R118_INTREST_RATE;
+	}
+	public void setR118_INTREST_RATE(BigDecimal r118_INTREST_RATE) {
+		R118_INTREST_RATE = r118_INTREST_RATE;
+	}
+	public BigDecimal getR118_AMOUNT() {
+		return R118_AMOUNT;
+	}
+	public void setR118_AMOUNT(BigDecimal r118_AMOUNT) {
+		R118_AMOUNT = r118_AMOUNT;
+	}
+	public BigDecimal getR118_TOTAL_DEPOSIT() {
+		return R118_TOTAL_DEPOSIT;
+	}
+	public void setR118_TOTAL_DEPOSIT(BigDecimal r118_TOTAL_DEPOSIT) {
+		R118_TOTAL_DEPOSIT = r118_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR118_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R118_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR118_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r118_PERCENTAGE_TOTAL_DEPOSIT) {
+		R118_PERCENTAGE_TOTAL_DEPOSIT = r118_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR119_PRODUCT() {
+		return R119_PRODUCT;
+	}
+	public void setR119_PRODUCT(String r119_PRODUCT) {
+		R119_PRODUCT = r119_PRODUCT;
+	}
+	public String getR119_INSTITUTIONAL_SELECTOR() {
+		return R119_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR119_INSTITUTIONAL_SELECTOR(String r119_INSTITUTIONAL_SELECTOR) {
+		R119_INSTITUTIONAL_SELECTOR = r119_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR119_TYPE_OF_ACCOUNT() {
+		return R119_TYPE_OF_ACCOUNT;
+	}
+	public void setR119_TYPE_OF_ACCOUNT(String r119_TYPE_OF_ACCOUNT) {
+		R119_TYPE_OF_ACCOUNT = r119_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR119_INTREST_RATE() {
+		return R119_INTREST_RATE;
+	}
+	public void setR119_INTREST_RATE(BigDecimal r119_INTREST_RATE) {
+		R119_INTREST_RATE = r119_INTREST_RATE;
+	}
+	public BigDecimal getR119_AMOUNT() {
+		return R119_AMOUNT;
+	}
+	public void setR119_AMOUNT(BigDecimal r119_AMOUNT) {
+		R119_AMOUNT = r119_AMOUNT;
+	}
+	public BigDecimal getR119_TOTAL_DEPOSIT() {
+		return R119_TOTAL_DEPOSIT;
+	}
+	public void setR119_TOTAL_DEPOSIT(BigDecimal r119_TOTAL_DEPOSIT) {
+		R119_TOTAL_DEPOSIT = r119_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR119_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R119_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR119_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r119_PERCENTAGE_TOTAL_DEPOSIT) {
+		R119_PERCENTAGE_TOTAL_DEPOSIT = r119_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR120_PRODUCT() {
+		return R120_PRODUCT;
+	}
+	public void setR120_PRODUCT(String r120_PRODUCT) {
+		R120_PRODUCT = r120_PRODUCT;
+	}
+	public String getR120_INSTITUTIONAL_SELECTOR() {
+		return R120_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR120_INSTITUTIONAL_SELECTOR(String r120_INSTITUTIONAL_SELECTOR) {
+		R120_INSTITUTIONAL_SELECTOR = r120_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR120_TYPE_OF_ACCOUNT() {
+		return R120_TYPE_OF_ACCOUNT;
+	}
+	public void setR120_TYPE_OF_ACCOUNT(String r120_TYPE_OF_ACCOUNT) {
+		R120_TYPE_OF_ACCOUNT = r120_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR120_INTREST_RATE() {
+		return R120_INTREST_RATE;
+	}
+	public void setR120_INTREST_RATE(BigDecimal r120_INTREST_RATE) {
+		R120_INTREST_RATE = r120_INTREST_RATE;
+	}
+	public BigDecimal getR120_AMOUNT() {
+		return R120_AMOUNT;
+	}
+	public void setR120_AMOUNT(BigDecimal r120_AMOUNT) {
+		R120_AMOUNT = r120_AMOUNT;
+	}
+	public BigDecimal getR120_TOTAL_DEPOSIT() {
+		return R120_TOTAL_DEPOSIT;
+	}
+	public void setR120_TOTAL_DEPOSIT(BigDecimal r120_TOTAL_DEPOSIT) {
+		R120_TOTAL_DEPOSIT = r120_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR120_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R120_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR120_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r120_PERCENTAGE_TOTAL_DEPOSIT) {
+		R120_PERCENTAGE_TOTAL_DEPOSIT = r120_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR121_PRODUCT() {
+		return R121_PRODUCT;
+	}
+	public void setR121_PRODUCT(String r121_PRODUCT) {
+		R121_PRODUCT = r121_PRODUCT;
+	}
+	public String getR121_INSTITUTIONAL_SELECTOR() {
+		return R121_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR121_INSTITUTIONAL_SELECTOR(String r121_INSTITUTIONAL_SELECTOR) {
+		R121_INSTITUTIONAL_SELECTOR = r121_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR121_TYPE_OF_ACCOUNT() {
+		return R121_TYPE_OF_ACCOUNT;
+	}
+	public void setR121_TYPE_OF_ACCOUNT(String r121_TYPE_OF_ACCOUNT) {
+		R121_TYPE_OF_ACCOUNT = r121_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR121_INTREST_RATE() {
+		return R121_INTREST_RATE;
+	}
+	public void setR121_INTREST_RATE(BigDecimal r121_INTREST_RATE) {
+		R121_INTREST_RATE = r121_INTREST_RATE;
+	}
+	public BigDecimal getR121_AMOUNT() {
+		return R121_AMOUNT;
+	}
+	public void setR121_AMOUNT(BigDecimal r121_AMOUNT) {
+		R121_AMOUNT = r121_AMOUNT;
+	}
+	public BigDecimal getR121_TOTAL_DEPOSIT() {
+		return R121_TOTAL_DEPOSIT;
+	}
+	public void setR121_TOTAL_DEPOSIT(BigDecimal r121_TOTAL_DEPOSIT) {
+		R121_TOTAL_DEPOSIT = r121_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR121_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R121_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR121_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r121_PERCENTAGE_TOTAL_DEPOSIT) {
+		R121_PERCENTAGE_TOTAL_DEPOSIT = r121_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR122_PRODUCT() {
+		return R122_PRODUCT;
+	}
+	public void setR122_PRODUCT(String r122_PRODUCT) {
+		R122_PRODUCT = r122_PRODUCT;
+	}
+	public String getR122_INSTITUTIONAL_SELECTOR() {
+		return R122_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR122_INSTITUTIONAL_SELECTOR(String r122_INSTITUTIONAL_SELECTOR) {
+		R122_INSTITUTIONAL_SELECTOR = r122_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR122_TYPE_OF_ACCOUNT() {
+		return R122_TYPE_OF_ACCOUNT;
+	}
+	public void setR122_TYPE_OF_ACCOUNT(String r122_TYPE_OF_ACCOUNT) {
+		R122_TYPE_OF_ACCOUNT = r122_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR122_INTREST_RATE() {
+		return R122_INTREST_RATE;
+	}
+	public void setR122_INTREST_RATE(BigDecimal r122_INTREST_RATE) {
+		R122_INTREST_RATE = r122_INTREST_RATE;
+	}
+	public BigDecimal getR122_AMOUNT() {
+		return R122_AMOUNT;
+	}
+	public void setR122_AMOUNT(BigDecimal r122_AMOUNT) {
+		R122_AMOUNT = r122_AMOUNT;
+	}
+	public BigDecimal getR122_TOTAL_DEPOSIT() {
+		return R122_TOTAL_DEPOSIT;
+	}
+	public void setR122_TOTAL_DEPOSIT(BigDecimal r122_TOTAL_DEPOSIT) {
+		R122_TOTAL_DEPOSIT = r122_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR122_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R122_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR122_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r122_PERCENTAGE_TOTAL_DEPOSIT) {
+		R122_PERCENTAGE_TOTAL_DEPOSIT = r122_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR123_PRODUCT() {
+		return R123_PRODUCT;
+	}
+	public void setR123_PRODUCT(String r123_PRODUCT) {
+		R123_PRODUCT = r123_PRODUCT;
+	}
+	public String getR123_INSTITUTIONAL_SELECTOR() {
+		return R123_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR123_INSTITUTIONAL_SELECTOR(String r123_INSTITUTIONAL_SELECTOR) {
+		R123_INSTITUTIONAL_SELECTOR = r123_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR123_TYPE_OF_ACCOUNT() {
+		return R123_TYPE_OF_ACCOUNT;
+	}
+	public void setR123_TYPE_OF_ACCOUNT(String r123_TYPE_OF_ACCOUNT) {
+		R123_TYPE_OF_ACCOUNT = r123_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR123_INTREST_RATE() {
+		return R123_INTREST_RATE;
+	}
+	public void setR123_INTREST_RATE(BigDecimal r123_INTREST_RATE) {
+		R123_INTREST_RATE = r123_INTREST_RATE;
+	}
+	public BigDecimal getR123_AMOUNT() {
+		return R123_AMOUNT;
+	}
+	public void setR123_AMOUNT(BigDecimal r123_AMOUNT) {
+		R123_AMOUNT = r123_AMOUNT;
+	}
+	public BigDecimal getR123_TOTAL_DEPOSIT() {
+		return R123_TOTAL_DEPOSIT;
+	}
+	public void setR123_TOTAL_DEPOSIT(BigDecimal r123_TOTAL_DEPOSIT) {
+		R123_TOTAL_DEPOSIT = r123_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR123_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R123_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR123_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r123_PERCENTAGE_TOTAL_DEPOSIT) {
+		R123_PERCENTAGE_TOTAL_DEPOSIT = r123_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR124_PRODUCT() {
+		return R124_PRODUCT;
+	}
+	public void setR124_PRODUCT(String r124_PRODUCT) {
+		R124_PRODUCT = r124_PRODUCT;
+	}
+	public String getR124_INSTITUTIONAL_SELECTOR() {
+		return R124_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR124_INSTITUTIONAL_SELECTOR(String r124_INSTITUTIONAL_SELECTOR) {
+		R124_INSTITUTIONAL_SELECTOR = r124_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR124_TYPE_OF_ACCOUNT() {
+		return R124_TYPE_OF_ACCOUNT;
+	}
+	public void setR124_TYPE_OF_ACCOUNT(String r124_TYPE_OF_ACCOUNT) {
+		R124_TYPE_OF_ACCOUNT = r124_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR124_INTREST_RATE() {
+		return R124_INTREST_RATE;
+	}
+	public void setR124_INTREST_RATE(BigDecimal r124_INTREST_RATE) {
+		R124_INTREST_RATE = r124_INTREST_RATE;
+	}
+	public BigDecimal getR124_AMOUNT() {
+		return R124_AMOUNT;
+	}
+	public void setR124_AMOUNT(BigDecimal r124_AMOUNT) {
+		R124_AMOUNT = r124_AMOUNT;
+	}
+	public BigDecimal getR124_TOTAL_DEPOSIT() {
+		return R124_TOTAL_DEPOSIT;
+	}
+	public void setR124_TOTAL_DEPOSIT(BigDecimal r124_TOTAL_DEPOSIT) {
+		R124_TOTAL_DEPOSIT = r124_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR124_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R124_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR124_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r124_PERCENTAGE_TOTAL_DEPOSIT) {
+		R124_PERCENTAGE_TOTAL_DEPOSIT = r124_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR125_PRODUCT() {
+		return R125_PRODUCT;
+	}
+	public void setR125_PRODUCT(String r125_PRODUCT) {
+		R125_PRODUCT = r125_PRODUCT;
+	}
+	public String getR125_INSTITUTIONAL_SELECTOR() {
+		return R125_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR125_INSTITUTIONAL_SELECTOR(String r125_INSTITUTIONAL_SELECTOR) {
+		R125_INSTITUTIONAL_SELECTOR = r125_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR125_TYPE_OF_ACCOUNT() {
+		return R125_TYPE_OF_ACCOUNT;
+	}
+	public void setR125_TYPE_OF_ACCOUNT(String r125_TYPE_OF_ACCOUNT) {
+		R125_TYPE_OF_ACCOUNT = r125_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR125_INTREST_RATE() {
+		return R125_INTREST_RATE;
+	}
+	public void setR125_INTREST_RATE(BigDecimal r125_INTREST_RATE) {
+		R125_INTREST_RATE = r125_INTREST_RATE;
+	}
+	public BigDecimal getR125_AMOUNT() {
+		return R125_AMOUNT;
+	}
+	public void setR125_AMOUNT(BigDecimal r125_AMOUNT) {
+		R125_AMOUNT = r125_AMOUNT;
+	}
+	public BigDecimal getR125_TOTAL_DEPOSIT() {
+		return R125_TOTAL_DEPOSIT;
+	}
+	public void setR125_TOTAL_DEPOSIT(BigDecimal r125_TOTAL_DEPOSIT) {
+		R125_TOTAL_DEPOSIT = r125_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR125_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R125_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR125_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r125_PERCENTAGE_TOTAL_DEPOSIT) {
+		R125_PERCENTAGE_TOTAL_DEPOSIT = r125_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR126_PRODUCT() {
+		return R126_PRODUCT;
+	}
+	public void setR126_PRODUCT(String r126_PRODUCT) {
+		R126_PRODUCT = r126_PRODUCT;
+	}
+	public String getR126_INSTITUTIONAL_SELECTOR() {
+		return R126_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR126_INSTITUTIONAL_SELECTOR(String r126_INSTITUTIONAL_SELECTOR) {
+		R126_INSTITUTIONAL_SELECTOR = r126_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR126_TYPE_OF_ACCOUNT() {
+		return R126_TYPE_OF_ACCOUNT;
+	}
+	public void setR126_TYPE_OF_ACCOUNT(String r126_TYPE_OF_ACCOUNT) {
+		R126_TYPE_OF_ACCOUNT = r126_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR126_INTREST_RATE() {
+		return R126_INTREST_RATE;
+	}
+	public void setR126_INTREST_RATE(BigDecimal r126_INTREST_RATE) {
+		R126_INTREST_RATE = r126_INTREST_RATE;
+	}
+	public BigDecimal getR126_AMOUNT() {
+		return R126_AMOUNT;
+	}
+	public void setR126_AMOUNT(BigDecimal r126_AMOUNT) {
+		R126_AMOUNT = r126_AMOUNT;
+	}
+	public BigDecimal getR126_TOTAL_DEPOSIT() {
+		return R126_TOTAL_DEPOSIT;
+	}
+	public void setR126_TOTAL_DEPOSIT(BigDecimal r126_TOTAL_DEPOSIT) {
+		R126_TOTAL_DEPOSIT = r126_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR126_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R126_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR126_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r126_PERCENTAGE_TOTAL_DEPOSIT) {
+		R126_PERCENTAGE_TOTAL_DEPOSIT = r126_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR127_PRODUCT() {
+		return R127_PRODUCT;
+	}
+	public void setR127_PRODUCT(String r127_PRODUCT) {
+		R127_PRODUCT = r127_PRODUCT;
+	}
+	public String getR127_INSTITUTIONAL_SELECTOR() {
+		return R127_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR127_INSTITUTIONAL_SELECTOR(String r127_INSTITUTIONAL_SELECTOR) {
+		R127_INSTITUTIONAL_SELECTOR = r127_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR127_TYPE_OF_ACCOUNT() {
+		return R127_TYPE_OF_ACCOUNT;
+	}
+	public void setR127_TYPE_OF_ACCOUNT(String r127_TYPE_OF_ACCOUNT) {
+		R127_TYPE_OF_ACCOUNT = r127_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR127_INTREST_RATE() {
+		return R127_INTREST_RATE;
+	}
+	public void setR127_INTREST_RATE(BigDecimal r127_INTREST_RATE) {
+		R127_INTREST_RATE = r127_INTREST_RATE;
+	}
+	public BigDecimal getR127_AMOUNT() {
+		return R127_AMOUNT;
+	}
+	public void setR127_AMOUNT(BigDecimal r127_AMOUNT) {
+		R127_AMOUNT = r127_AMOUNT;
+	}
+	public BigDecimal getR127_TOTAL_DEPOSIT() {
+		return R127_TOTAL_DEPOSIT;
+	}
+	public void setR127_TOTAL_DEPOSIT(BigDecimal r127_TOTAL_DEPOSIT) {
+		R127_TOTAL_DEPOSIT = r127_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR127_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R127_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR127_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r127_PERCENTAGE_TOTAL_DEPOSIT) {
+		R127_PERCENTAGE_TOTAL_DEPOSIT = r127_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR128_PRODUCT() {
+		return R128_PRODUCT;
+	}
+	public void setR128_PRODUCT(String r128_PRODUCT) {
+		R128_PRODUCT = r128_PRODUCT;
+	}
+	public String getR128_INSTITUTIONAL_SELECTOR() {
+		return R128_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR128_INSTITUTIONAL_SELECTOR(String r128_INSTITUTIONAL_SELECTOR) {
+		R128_INSTITUTIONAL_SELECTOR = r128_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR128_TYPE_OF_ACCOUNT() {
+		return R128_TYPE_OF_ACCOUNT;
+	}
+	public void setR128_TYPE_OF_ACCOUNT(String r128_TYPE_OF_ACCOUNT) {
+		R128_TYPE_OF_ACCOUNT = r128_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR128_INTREST_RATE() {
+		return R128_INTREST_RATE;
+	}
+	public void setR128_INTREST_RATE(BigDecimal r128_INTREST_RATE) {
+		R128_INTREST_RATE = r128_INTREST_RATE;
+	}
+	public BigDecimal getR128_AMOUNT() {
+		return R128_AMOUNT;
+	}
+	public void setR128_AMOUNT(BigDecimal r128_AMOUNT) {
+		R128_AMOUNT = r128_AMOUNT;
+	}
+	public BigDecimal getR128_TOTAL_DEPOSIT() {
+		return R128_TOTAL_DEPOSIT;
+	}
+	public void setR128_TOTAL_DEPOSIT(BigDecimal r128_TOTAL_DEPOSIT) {
+		R128_TOTAL_DEPOSIT = r128_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR128_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R128_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR128_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r128_PERCENTAGE_TOTAL_DEPOSIT) {
+		R128_PERCENTAGE_TOTAL_DEPOSIT = r128_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR129_PRODUCT() {
+		return R129_PRODUCT;
+	}
+	public void setR129_PRODUCT(String r129_PRODUCT) {
+		R129_PRODUCT = r129_PRODUCT;
+	}
+	public String getR129_INSTITUTIONAL_SELECTOR() {
+		return R129_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR129_INSTITUTIONAL_SELECTOR(String r129_INSTITUTIONAL_SELECTOR) {
+		R129_INSTITUTIONAL_SELECTOR = r129_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR129_TYPE_OF_ACCOUNT() {
+		return R129_TYPE_OF_ACCOUNT;
+	}
+	public void setR129_TYPE_OF_ACCOUNT(String r129_TYPE_OF_ACCOUNT) {
+		R129_TYPE_OF_ACCOUNT = r129_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR129_INTREST_RATE() {
+		return R129_INTREST_RATE;
+	}
+	public void setR129_INTREST_RATE(BigDecimal r129_INTREST_RATE) {
+		R129_INTREST_RATE = r129_INTREST_RATE;
+	}
+	public BigDecimal getR129_AMOUNT() {
+		return R129_AMOUNT;
+	}
+	public void setR129_AMOUNT(BigDecimal r129_AMOUNT) {
+		R129_AMOUNT = r129_AMOUNT;
+	}
+	public BigDecimal getR129_TOTAL_DEPOSIT() {
+		return R129_TOTAL_DEPOSIT;
+	}
+	public void setR129_TOTAL_DEPOSIT(BigDecimal r129_TOTAL_DEPOSIT) {
+		R129_TOTAL_DEPOSIT = r129_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR129_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R129_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR129_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r129_PERCENTAGE_TOTAL_DEPOSIT) {
+		R129_PERCENTAGE_TOTAL_DEPOSIT = r129_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR130_PRODUCT() {
+		return R130_PRODUCT;
+	}
+	public void setR130_PRODUCT(String r130_PRODUCT) {
+		R130_PRODUCT = r130_PRODUCT;
+	}
+	public String getR130_INSTITUTIONAL_SELECTOR() {
+		return R130_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR130_INSTITUTIONAL_SELECTOR(String r130_INSTITUTIONAL_SELECTOR) {
+		R130_INSTITUTIONAL_SELECTOR = r130_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR130_TYPE_OF_ACCOUNT() {
+		return R130_TYPE_OF_ACCOUNT;
+	}
+	public void setR130_TYPE_OF_ACCOUNT(String r130_TYPE_OF_ACCOUNT) {
+		R130_TYPE_OF_ACCOUNT = r130_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR130_INTREST_RATE() {
+		return R130_INTREST_RATE;
+	}
+	public void setR130_INTREST_RATE(BigDecimal r130_INTREST_RATE) {
+		R130_INTREST_RATE = r130_INTREST_RATE;
+	}
+	public BigDecimal getR130_AMOUNT() {
+		return R130_AMOUNT;
+	}
+	public void setR130_AMOUNT(BigDecimal r130_AMOUNT) {
+		R130_AMOUNT = r130_AMOUNT;
+	}
+	public BigDecimal getR130_TOTAL_DEPOSIT() {
+		return R130_TOTAL_DEPOSIT;
+	}
+	public void setR130_TOTAL_DEPOSIT(BigDecimal r130_TOTAL_DEPOSIT) {
+		R130_TOTAL_DEPOSIT = r130_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR130_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R130_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR130_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r130_PERCENTAGE_TOTAL_DEPOSIT) {
+		R130_PERCENTAGE_TOTAL_DEPOSIT = r130_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR131_PRODUCT() {
+		return R131_PRODUCT;
+	}
+	public void setR131_PRODUCT(String r131_PRODUCT) {
+		R131_PRODUCT = r131_PRODUCT;
+	}
+	public String getR131_INSTITUTIONAL_SELECTOR() {
+		return R131_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR131_INSTITUTIONAL_SELECTOR(String r131_INSTITUTIONAL_SELECTOR) {
+		R131_INSTITUTIONAL_SELECTOR = r131_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR131_TYPE_OF_ACCOUNT() {
+		return R131_TYPE_OF_ACCOUNT;
+	}
+	public void setR131_TYPE_OF_ACCOUNT(String r131_TYPE_OF_ACCOUNT) {
+		R131_TYPE_OF_ACCOUNT = r131_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR131_INTREST_RATE() {
+		return R131_INTREST_RATE;
+	}
+	public void setR131_INTREST_RATE(BigDecimal r131_INTREST_RATE) {
+		R131_INTREST_RATE = r131_INTREST_RATE;
+	}
+	public BigDecimal getR131_AMOUNT() {
+		return R131_AMOUNT;
+	}
+	public void setR131_AMOUNT(BigDecimal r131_AMOUNT) {
+		R131_AMOUNT = r131_AMOUNT;
+	}
+	public BigDecimal getR131_TOTAL_DEPOSIT() {
+		return R131_TOTAL_DEPOSIT;
+	}
+	public void setR131_TOTAL_DEPOSIT(BigDecimal r131_TOTAL_DEPOSIT) {
+		R131_TOTAL_DEPOSIT = r131_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR131_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R131_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR131_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r131_PERCENTAGE_TOTAL_DEPOSIT) {
+		R131_PERCENTAGE_TOTAL_DEPOSIT = r131_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR132_PRODUCT() {
+		return R132_PRODUCT;
+	}
+	public void setR132_PRODUCT(String r132_PRODUCT) {
+		R132_PRODUCT = r132_PRODUCT;
+	}
+	public String getR132_INSTITUTIONAL_SELECTOR() {
+		return R132_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR132_INSTITUTIONAL_SELECTOR(String r132_INSTITUTIONAL_SELECTOR) {
+		R132_INSTITUTIONAL_SELECTOR = r132_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR132_TYPE_OF_ACCOUNT() {
+		return R132_TYPE_OF_ACCOUNT;
+	}
+	public void setR132_TYPE_OF_ACCOUNT(String r132_TYPE_OF_ACCOUNT) {
+		R132_TYPE_OF_ACCOUNT = r132_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR132_INTREST_RATE() {
+		return R132_INTREST_RATE;
+	}
+	public void setR132_INTREST_RATE(BigDecimal r132_INTREST_RATE) {
+		R132_INTREST_RATE = r132_INTREST_RATE;
+	}
+	public BigDecimal getR132_AMOUNT() {
+		return R132_AMOUNT;
+	}
+	public void setR132_AMOUNT(BigDecimal r132_AMOUNT) {
+		R132_AMOUNT = r132_AMOUNT;
+	}
+	public BigDecimal getR132_TOTAL_DEPOSIT() {
+		return R132_TOTAL_DEPOSIT;
+	}
+	public void setR132_TOTAL_DEPOSIT(BigDecimal r132_TOTAL_DEPOSIT) {
+		R132_TOTAL_DEPOSIT = r132_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR132_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R132_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR132_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r132_PERCENTAGE_TOTAL_DEPOSIT) {
+		R132_PERCENTAGE_TOTAL_DEPOSIT = r132_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR133_PRODUCT() {
+		return R133_PRODUCT;
+	}
+	public void setR133_PRODUCT(String r133_PRODUCT) {
+		R133_PRODUCT = r133_PRODUCT;
+	}
+	public String getR133_INSTITUTIONAL_SELECTOR() {
+		return R133_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR133_INSTITUTIONAL_SELECTOR(String r133_INSTITUTIONAL_SELECTOR) {
+		R133_INSTITUTIONAL_SELECTOR = r133_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR133_TYPE_OF_ACCOUNT() {
+		return R133_TYPE_OF_ACCOUNT;
+	}
+	public void setR133_TYPE_OF_ACCOUNT(String r133_TYPE_OF_ACCOUNT) {
+		R133_TYPE_OF_ACCOUNT = r133_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR133_INTREST_RATE() {
+		return R133_INTREST_RATE;
+	}
+	public void setR133_INTREST_RATE(BigDecimal r133_INTREST_RATE) {
+		R133_INTREST_RATE = r133_INTREST_RATE;
+	}
+	public BigDecimal getR133_AMOUNT() {
+		return R133_AMOUNT;
+	}
+	public void setR133_AMOUNT(BigDecimal r133_AMOUNT) {
+		R133_AMOUNT = r133_AMOUNT;
+	}
+	public BigDecimal getR133_TOTAL_DEPOSIT() {
+		return R133_TOTAL_DEPOSIT;
+	}
+	public void setR133_TOTAL_DEPOSIT(BigDecimal r133_TOTAL_DEPOSIT) {
+		R133_TOTAL_DEPOSIT = r133_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR133_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R133_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR133_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r133_PERCENTAGE_TOTAL_DEPOSIT) {
+		R133_PERCENTAGE_TOTAL_DEPOSIT = r133_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR134_PRODUCT() {
+		return R134_PRODUCT;
+	}
+	public void setR134_PRODUCT(String r134_PRODUCT) {
+		R134_PRODUCT = r134_PRODUCT;
+	}
+	public String getR134_INSTITUTIONAL_SELECTOR() {
+		return R134_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR134_INSTITUTIONAL_SELECTOR(String r134_INSTITUTIONAL_SELECTOR) {
+		R134_INSTITUTIONAL_SELECTOR = r134_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR134_TYPE_OF_ACCOUNT() {
+		return R134_TYPE_OF_ACCOUNT;
+	}
+	public void setR134_TYPE_OF_ACCOUNT(String r134_TYPE_OF_ACCOUNT) {
+		R134_TYPE_OF_ACCOUNT = r134_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR134_INTREST_RATE() {
+		return R134_INTREST_RATE;
+	}
+	public void setR134_INTREST_RATE(BigDecimal r134_INTREST_RATE) {
+		R134_INTREST_RATE = r134_INTREST_RATE;
+	}
+	public BigDecimal getR134_AMOUNT() {
+		return R134_AMOUNT;
+	}
+	public void setR134_AMOUNT(BigDecimal r134_AMOUNT) {
+		R134_AMOUNT = r134_AMOUNT;
+	}
+	public BigDecimal getR134_TOTAL_DEPOSIT() {
+		return R134_TOTAL_DEPOSIT;
+	}
+	public void setR134_TOTAL_DEPOSIT(BigDecimal r134_TOTAL_DEPOSIT) {
+		R134_TOTAL_DEPOSIT = r134_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR134_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R134_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR134_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r134_PERCENTAGE_TOTAL_DEPOSIT) {
+		R134_PERCENTAGE_TOTAL_DEPOSIT = r134_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR135_PRODUCT() {
+		return R135_PRODUCT;
+	}
+	public void setR135_PRODUCT(String r135_PRODUCT) {
+		R135_PRODUCT = r135_PRODUCT;
+	}
+	public String getR135_INSTITUTIONAL_SELECTOR() {
+		return R135_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR135_INSTITUTIONAL_SELECTOR(String r135_INSTITUTIONAL_SELECTOR) {
+		R135_INSTITUTIONAL_SELECTOR = r135_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR135_TYPE_OF_ACCOUNT() {
+		return R135_TYPE_OF_ACCOUNT;
+	}
+	public void setR135_TYPE_OF_ACCOUNT(String r135_TYPE_OF_ACCOUNT) {
+		R135_TYPE_OF_ACCOUNT = r135_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR135_INTREST_RATE() {
+		return R135_INTREST_RATE;
+	}
+	public void setR135_INTREST_RATE(BigDecimal r135_INTREST_RATE) {
+		R135_INTREST_RATE = r135_INTREST_RATE;
+	}
+	public BigDecimal getR135_AMOUNT() {
+		return R135_AMOUNT;
+	}
+	public void setR135_AMOUNT(BigDecimal r135_AMOUNT) {
+		R135_AMOUNT = r135_AMOUNT;
+	}
+	public BigDecimal getR135_TOTAL_DEPOSIT() {
+		return R135_TOTAL_DEPOSIT;
+	}
+	public void setR135_TOTAL_DEPOSIT(BigDecimal r135_TOTAL_DEPOSIT) {
+		R135_TOTAL_DEPOSIT = r135_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR135_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R135_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR135_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r135_PERCENTAGE_TOTAL_DEPOSIT) {
+		R135_PERCENTAGE_TOTAL_DEPOSIT = r135_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR136_PRODUCT() {
+		return R136_PRODUCT;
+	}
+	public void setR136_PRODUCT(String r136_PRODUCT) {
+		R136_PRODUCT = r136_PRODUCT;
+	}
+	public String getR136_INSTITUTIONAL_SELECTOR() {
+		return R136_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR136_INSTITUTIONAL_SELECTOR(String r136_INSTITUTIONAL_SELECTOR) {
+		R136_INSTITUTIONAL_SELECTOR = r136_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR136_TYPE_OF_ACCOUNT() {
+		return R136_TYPE_OF_ACCOUNT;
+	}
+	public void setR136_TYPE_OF_ACCOUNT(String r136_TYPE_OF_ACCOUNT) {
+		R136_TYPE_OF_ACCOUNT = r136_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR136_INTREST_RATE() {
+		return R136_INTREST_RATE;
+	}
+	public void setR136_INTREST_RATE(BigDecimal r136_INTREST_RATE) {
+		R136_INTREST_RATE = r136_INTREST_RATE;
+	}
+	public BigDecimal getR136_AMOUNT() {
+		return R136_AMOUNT;
+	}
+	public void setR136_AMOUNT(BigDecimal r136_AMOUNT) {
+		R136_AMOUNT = r136_AMOUNT;
+	}
+	public BigDecimal getR136_TOTAL_DEPOSIT() {
+		return R136_TOTAL_DEPOSIT;
+	}
+	public void setR136_TOTAL_DEPOSIT(BigDecimal r136_TOTAL_DEPOSIT) {
+		R136_TOTAL_DEPOSIT = r136_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR136_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R136_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR136_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r136_PERCENTAGE_TOTAL_DEPOSIT) {
+		R136_PERCENTAGE_TOTAL_DEPOSIT = r136_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR137_PRODUCT() {
+		return R137_PRODUCT;
+	}
+	public void setR137_PRODUCT(String r137_PRODUCT) {
+		R137_PRODUCT = r137_PRODUCT;
+	}
+	public String getR137_INSTITUTIONAL_SELECTOR() {
+		return R137_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR137_INSTITUTIONAL_SELECTOR(String r137_INSTITUTIONAL_SELECTOR) {
+		R137_INSTITUTIONAL_SELECTOR = r137_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR137_TYPE_OF_ACCOUNT() {
+		return R137_TYPE_OF_ACCOUNT;
+	}
+	public void setR137_TYPE_OF_ACCOUNT(String r137_TYPE_OF_ACCOUNT) {
+		R137_TYPE_OF_ACCOUNT = r137_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR137_INTREST_RATE() {
+		return R137_INTREST_RATE;
+	}
+	public void setR137_INTREST_RATE(BigDecimal r137_INTREST_RATE) {
+		R137_INTREST_RATE = r137_INTREST_RATE;
+	}
+	public BigDecimal getR137_AMOUNT() {
+		return R137_AMOUNT;
+	}
+	public void setR137_AMOUNT(BigDecimal r137_AMOUNT) {
+		R137_AMOUNT = r137_AMOUNT;
+	}
+	public BigDecimal getR137_TOTAL_DEPOSIT() {
+		return R137_TOTAL_DEPOSIT;
+	}
+	public void setR137_TOTAL_DEPOSIT(BigDecimal r137_TOTAL_DEPOSIT) {
+		R137_TOTAL_DEPOSIT = r137_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR137_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R137_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR137_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r137_PERCENTAGE_TOTAL_DEPOSIT) {
+		R137_PERCENTAGE_TOTAL_DEPOSIT = r137_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR138_PRODUCT() {
+		return R138_PRODUCT;
+	}
+	public void setR138_PRODUCT(String r138_PRODUCT) {
+		R138_PRODUCT = r138_PRODUCT;
+	}
+	public String getR138_INSTITUTIONAL_SELECTOR() {
+		return R138_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR138_INSTITUTIONAL_SELECTOR(String r138_INSTITUTIONAL_SELECTOR) {
+		R138_INSTITUTIONAL_SELECTOR = r138_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR138_TYPE_OF_ACCOUNT() {
+		return R138_TYPE_OF_ACCOUNT;
+	}
+	public void setR138_TYPE_OF_ACCOUNT(String r138_TYPE_OF_ACCOUNT) {
+		R138_TYPE_OF_ACCOUNT = r138_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR138_INTREST_RATE() {
+		return R138_INTREST_RATE;
+	}
+	public void setR138_INTREST_RATE(BigDecimal r138_INTREST_RATE) {
+		R138_INTREST_RATE = r138_INTREST_RATE;
+	}
+	public BigDecimal getR138_AMOUNT() {
+		return R138_AMOUNT;
+	}
+	public void setR138_AMOUNT(BigDecimal r138_AMOUNT) {
+		R138_AMOUNT = r138_AMOUNT;
+	}
+	public BigDecimal getR138_TOTAL_DEPOSIT() {
+		return R138_TOTAL_DEPOSIT;
+	}
+	public void setR138_TOTAL_DEPOSIT(BigDecimal r138_TOTAL_DEPOSIT) {
+		R138_TOTAL_DEPOSIT = r138_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR138_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R138_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR138_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r138_PERCENTAGE_TOTAL_DEPOSIT) {
+		R138_PERCENTAGE_TOTAL_DEPOSIT = r138_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR139_PRODUCT() {
+		return R139_PRODUCT;
+	}
+	public void setR139_PRODUCT(String r139_PRODUCT) {
+		R139_PRODUCT = r139_PRODUCT;
+	}
+	public String getR139_INSTITUTIONAL_SELECTOR() {
+		return R139_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR139_INSTITUTIONAL_SELECTOR(String r139_INSTITUTIONAL_SELECTOR) {
+		R139_INSTITUTIONAL_SELECTOR = r139_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR139_TYPE_OF_ACCOUNT() {
+		return R139_TYPE_OF_ACCOUNT;
+	}
+	public void setR139_TYPE_OF_ACCOUNT(String r139_TYPE_OF_ACCOUNT) {
+		R139_TYPE_OF_ACCOUNT = r139_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR139_INTREST_RATE() {
+		return R139_INTREST_RATE;
+	}
+	public void setR139_INTREST_RATE(BigDecimal r139_INTREST_RATE) {
+		R139_INTREST_RATE = r139_INTREST_RATE;
+	}
+	public BigDecimal getR139_AMOUNT() {
+		return R139_AMOUNT;
+	}
+	public void setR139_AMOUNT(BigDecimal r139_AMOUNT) {
+		R139_AMOUNT = r139_AMOUNT;
+	}
+	public BigDecimal getR139_TOTAL_DEPOSIT() {
+		return R139_TOTAL_DEPOSIT;
+	}
+	public void setR139_TOTAL_DEPOSIT(BigDecimal r139_TOTAL_DEPOSIT) {
+		R139_TOTAL_DEPOSIT = r139_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR139_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R139_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR139_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r139_PERCENTAGE_TOTAL_DEPOSIT) {
+		R139_PERCENTAGE_TOTAL_DEPOSIT = r139_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR140_PRODUCT() {
+		return R140_PRODUCT;
+	}
+	public void setR140_PRODUCT(String r140_PRODUCT) {
+		R140_PRODUCT = r140_PRODUCT;
+	}
+	public String getR140_INSTITUTIONAL_SELECTOR() {
+		return R140_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR140_INSTITUTIONAL_SELECTOR(String r140_INSTITUTIONAL_SELECTOR) {
+		R140_INSTITUTIONAL_SELECTOR = r140_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR140_TYPE_OF_ACCOUNT() {
+		return R140_TYPE_OF_ACCOUNT;
+	}
+	public void setR140_TYPE_OF_ACCOUNT(String r140_TYPE_OF_ACCOUNT) {
+		R140_TYPE_OF_ACCOUNT = r140_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR140_INTREST_RATE() {
+		return R140_INTREST_RATE;
+	}
+	public void setR140_INTREST_RATE(BigDecimal r140_INTREST_RATE) {
+		R140_INTREST_RATE = r140_INTREST_RATE;
+	}
+	public BigDecimal getR140_AMOUNT() {
+		return R140_AMOUNT;
+	}
+	public void setR140_AMOUNT(BigDecimal r140_AMOUNT) {
+		R140_AMOUNT = r140_AMOUNT;
+	}
+	public BigDecimal getR140_TOTAL_DEPOSIT() {
+		return R140_TOTAL_DEPOSIT;
+	}
+	public void setR140_TOTAL_DEPOSIT(BigDecimal r140_TOTAL_DEPOSIT) {
+		R140_TOTAL_DEPOSIT = r140_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR140_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R140_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR140_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r140_PERCENTAGE_TOTAL_DEPOSIT) {
+		R140_PERCENTAGE_TOTAL_DEPOSIT = r140_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR141_PRODUCT() {
+		return R141_PRODUCT;
+	}
+	public void setR141_PRODUCT(String r141_PRODUCT) {
+		R141_PRODUCT = r141_PRODUCT;
+	}
+	public String getR141_INSTITUTIONAL_SELECTOR() {
+		return R141_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR141_INSTITUTIONAL_SELECTOR(String r141_INSTITUTIONAL_SELECTOR) {
+		R141_INSTITUTIONAL_SELECTOR = r141_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR141_TYPE_OF_ACCOUNT() {
+		return R141_TYPE_OF_ACCOUNT;
+	}
+	public void setR141_TYPE_OF_ACCOUNT(String r141_TYPE_OF_ACCOUNT) {
+		R141_TYPE_OF_ACCOUNT = r141_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR141_INTREST_RATE() {
+		return R141_INTREST_RATE;
+	}
+	public void setR141_INTREST_RATE(BigDecimal r141_INTREST_RATE) {
+		R141_INTREST_RATE = r141_INTREST_RATE;
+	}
+	public BigDecimal getR141_AMOUNT() {
+		return R141_AMOUNT;
+	}
+	public void setR141_AMOUNT(BigDecimal r141_AMOUNT) {
+		R141_AMOUNT = r141_AMOUNT;
+	}
+	public BigDecimal getR141_TOTAL_DEPOSIT() {
+		return R141_TOTAL_DEPOSIT;
+	}
+	public void setR141_TOTAL_DEPOSIT(BigDecimal r141_TOTAL_DEPOSIT) {
+		R141_TOTAL_DEPOSIT = r141_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR141_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R141_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR141_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r141_PERCENTAGE_TOTAL_DEPOSIT) {
+		R141_PERCENTAGE_TOTAL_DEPOSIT = r141_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR142_PRODUCT() {
+		return R142_PRODUCT;
+	}
+	public void setR142_PRODUCT(String r142_PRODUCT) {
+		R142_PRODUCT = r142_PRODUCT;
+	}
+	public String getR142_INSTITUTIONAL_SELECTOR() {
+		return R142_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR142_INSTITUTIONAL_SELECTOR(String r142_INSTITUTIONAL_SELECTOR) {
+		R142_INSTITUTIONAL_SELECTOR = r142_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR142_TYPE_OF_ACCOUNT() {
+		return R142_TYPE_OF_ACCOUNT;
+	}
+	public void setR142_TYPE_OF_ACCOUNT(String r142_TYPE_OF_ACCOUNT) {
+		R142_TYPE_OF_ACCOUNT = r142_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR142_INTREST_RATE() {
+		return R142_INTREST_RATE;
+	}
+	public void setR142_INTREST_RATE(BigDecimal r142_INTREST_RATE) {
+		R142_INTREST_RATE = r142_INTREST_RATE;
+	}
+	public BigDecimal getR142_AMOUNT() {
+		return R142_AMOUNT;
+	}
+	public void setR142_AMOUNT(BigDecimal r142_AMOUNT) {
+		R142_AMOUNT = r142_AMOUNT;
+	}
+	public BigDecimal getR142_TOTAL_DEPOSIT() {
+		return R142_TOTAL_DEPOSIT;
+	}
+	public void setR142_TOTAL_DEPOSIT(BigDecimal r142_TOTAL_DEPOSIT) {
+		R142_TOTAL_DEPOSIT = r142_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR142_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R142_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR142_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r142_PERCENTAGE_TOTAL_DEPOSIT) {
+		R142_PERCENTAGE_TOTAL_DEPOSIT = r142_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR143_PRODUCT() {
+		return R143_PRODUCT;
+	}
+	public void setR143_PRODUCT(String r143_PRODUCT) {
+		R143_PRODUCT = r143_PRODUCT;
+	}
+	public String getR143_INSTITUTIONAL_SELECTOR() {
+		return R143_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR143_INSTITUTIONAL_SELECTOR(String r143_INSTITUTIONAL_SELECTOR) {
+		R143_INSTITUTIONAL_SELECTOR = r143_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR143_TYPE_OF_ACCOUNT() {
+		return R143_TYPE_OF_ACCOUNT;
+	}
+	public void setR143_TYPE_OF_ACCOUNT(String r143_TYPE_OF_ACCOUNT) {
+		R143_TYPE_OF_ACCOUNT = r143_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR143_INTREST_RATE() {
+		return R143_INTREST_RATE;
+	}
+	public void setR143_INTREST_RATE(BigDecimal r143_INTREST_RATE) {
+		R143_INTREST_RATE = r143_INTREST_RATE;
+	}
+	public BigDecimal getR143_AMOUNT() {
+		return R143_AMOUNT;
+	}
+	public void setR143_AMOUNT(BigDecimal r143_AMOUNT) {
+		R143_AMOUNT = r143_AMOUNT;
+	}
+	public BigDecimal getR143_TOTAL_DEPOSIT() {
+		return R143_TOTAL_DEPOSIT;
+	}
+	public void setR143_TOTAL_DEPOSIT(BigDecimal r143_TOTAL_DEPOSIT) {
+		R143_TOTAL_DEPOSIT = r143_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR143_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R143_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR143_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r143_PERCENTAGE_TOTAL_DEPOSIT) {
+		R143_PERCENTAGE_TOTAL_DEPOSIT = r143_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR144_PRODUCT() {
+		return R144_PRODUCT;
+	}
+	public void setR144_PRODUCT(String r144_PRODUCT) {
+		R144_PRODUCT = r144_PRODUCT;
+	}
+	public String getR144_INSTITUTIONAL_SELECTOR() {
+		return R144_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR144_INSTITUTIONAL_SELECTOR(String r144_INSTITUTIONAL_SELECTOR) {
+		R144_INSTITUTIONAL_SELECTOR = r144_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR144_TYPE_OF_ACCOUNT() {
+		return R144_TYPE_OF_ACCOUNT;
+	}
+	public void setR144_TYPE_OF_ACCOUNT(String r144_TYPE_OF_ACCOUNT) {
+		R144_TYPE_OF_ACCOUNT = r144_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR144_INTREST_RATE() {
+		return R144_INTREST_RATE;
+	}
+	public void setR144_INTREST_RATE(BigDecimal r144_INTREST_RATE) {
+		R144_INTREST_RATE = r144_INTREST_RATE;
+	}
+	public BigDecimal getR144_AMOUNT() {
+		return R144_AMOUNT;
+	}
+	public void setR144_AMOUNT(BigDecimal r144_AMOUNT) {
+		R144_AMOUNT = r144_AMOUNT;
+	}
+	public BigDecimal getR144_TOTAL_DEPOSIT() {
+		return R144_TOTAL_DEPOSIT;
+	}
+	public void setR144_TOTAL_DEPOSIT(BigDecimal r144_TOTAL_DEPOSIT) {
+		R144_TOTAL_DEPOSIT = r144_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR144_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R144_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR144_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r144_PERCENTAGE_TOTAL_DEPOSIT) {
+		R144_PERCENTAGE_TOTAL_DEPOSIT = r144_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR145_PRODUCT() {
+		return R145_PRODUCT;
+	}
+	public void setR145_PRODUCT(String r145_PRODUCT) {
+		R145_PRODUCT = r145_PRODUCT;
+	}
+	public String getR145_INSTITUTIONAL_SELECTOR() {
+		return R145_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR145_INSTITUTIONAL_SELECTOR(String r145_INSTITUTIONAL_SELECTOR) {
+		R145_INSTITUTIONAL_SELECTOR = r145_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR145_TYPE_OF_ACCOUNT() {
+		return R145_TYPE_OF_ACCOUNT;
+	}
+	public void setR145_TYPE_OF_ACCOUNT(String r145_TYPE_OF_ACCOUNT) {
+		R145_TYPE_OF_ACCOUNT = r145_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR145_INTREST_RATE() {
+		return R145_INTREST_RATE;
+	}
+	public void setR145_INTREST_RATE(BigDecimal r145_INTREST_RATE) {
+		R145_INTREST_RATE = r145_INTREST_RATE;
+	}
+	public BigDecimal getR145_AMOUNT() {
+		return R145_AMOUNT;
+	}
+	public void setR145_AMOUNT(BigDecimal r145_AMOUNT) {
+		R145_AMOUNT = r145_AMOUNT;
+	}
+	public BigDecimal getR145_TOTAL_DEPOSIT() {
+		return R145_TOTAL_DEPOSIT;
+	}
+	public void setR145_TOTAL_DEPOSIT(BigDecimal r145_TOTAL_DEPOSIT) {
+		R145_TOTAL_DEPOSIT = r145_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR145_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R145_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR145_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r145_PERCENTAGE_TOTAL_DEPOSIT) {
+		R145_PERCENTAGE_TOTAL_DEPOSIT = r145_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR146_PRODUCT() {
+		return R146_PRODUCT;
+	}
+	public void setR146_PRODUCT(String r146_PRODUCT) {
+		R146_PRODUCT = r146_PRODUCT;
+	}
+	public String getR146_INSTITUTIONAL_SELECTOR() {
+		return R146_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR146_INSTITUTIONAL_SELECTOR(String r146_INSTITUTIONAL_SELECTOR) {
+		R146_INSTITUTIONAL_SELECTOR = r146_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR146_TYPE_OF_ACCOUNT() {
+		return R146_TYPE_OF_ACCOUNT;
+	}
+	public void setR146_TYPE_OF_ACCOUNT(String r146_TYPE_OF_ACCOUNT) {
+		R146_TYPE_OF_ACCOUNT = r146_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR146_INTREST_RATE() {
+		return R146_INTREST_RATE;
+	}
+	public void setR146_INTREST_RATE(BigDecimal r146_INTREST_RATE) {
+		R146_INTREST_RATE = r146_INTREST_RATE;
+	}
+	public BigDecimal getR146_AMOUNT() {
+		return R146_AMOUNT;
+	}
+	public void setR146_AMOUNT(BigDecimal r146_AMOUNT) {
+		R146_AMOUNT = r146_AMOUNT;
+	}
+	public BigDecimal getR146_TOTAL_DEPOSIT() {
+		return R146_TOTAL_DEPOSIT;
+	}
+	public void setR146_TOTAL_DEPOSIT(BigDecimal r146_TOTAL_DEPOSIT) {
+		R146_TOTAL_DEPOSIT = r146_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR146_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R146_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR146_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r146_PERCENTAGE_TOTAL_DEPOSIT) {
+		R146_PERCENTAGE_TOTAL_DEPOSIT = r146_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR147_PRODUCT() {
+		return R147_PRODUCT;
+	}
+	public void setR147_PRODUCT(String r147_PRODUCT) {
+		R147_PRODUCT = r147_PRODUCT;
+	}
+	public String getR147_INSTITUTIONAL_SELECTOR() {
+		return R147_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR147_INSTITUTIONAL_SELECTOR(String r147_INSTITUTIONAL_SELECTOR) {
+		R147_INSTITUTIONAL_SELECTOR = r147_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR147_TYPE_OF_ACCOUNT() {
+		return R147_TYPE_OF_ACCOUNT;
+	}
+	public void setR147_TYPE_OF_ACCOUNT(String r147_TYPE_OF_ACCOUNT) {
+		R147_TYPE_OF_ACCOUNT = r147_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR147_INTREST_RATE() {
+		return R147_INTREST_RATE;
+	}
+	public void setR147_INTREST_RATE(BigDecimal r147_INTREST_RATE) {
+		R147_INTREST_RATE = r147_INTREST_RATE;
+	}
+	public BigDecimal getR147_AMOUNT() {
+		return R147_AMOUNT;
+	}
+	public void setR147_AMOUNT(BigDecimal r147_AMOUNT) {
+		R147_AMOUNT = r147_AMOUNT;
+	}
+	public BigDecimal getR147_TOTAL_DEPOSIT() {
+		return R147_TOTAL_DEPOSIT;
+	}
+	public void setR147_TOTAL_DEPOSIT(BigDecimal r147_TOTAL_DEPOSIT) {
+		R147_TOTAL_DEPOSIT = r147_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR147_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R147_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR147_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r147_PERCENTAGE_TOTAL_DEPOSIT) {
+		R147_PERCENTAGE_TOTAL_DEPOSIT = r147_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR148_PRODUCT() {
+		return R148_PRODUCT;
+	}
+	public void setR148_PRODUCT(String r148_PRODUCT) {
+		R148_PRODUCT = r148_PRODUCT;
+	}
+	public String getR148_INSTITUTIONAL_SELECTOR() {
+		return R148_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR148_INSTITUTIONAL_SELECTOR(String r148_INSTITUTIONAL_SELECTOR) {
+		R148_INSTITUTIONAL_SELECTOR = r148_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR148_TYPE_OF_ACCOUNT() {
+		return R148_TYPE_OF_ACCOUNT;
+	}
+	public void setR148_TYPE_OF_ACCOUNT(String r148_TYPE_OF_ACCOUNT) {
+		R148_TYPE_OF_ACCOUNT = r148_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR148_INTREST_RATE() {
+		return R148_INTREST_RATE;
+	}
+	public void setR148_INTREST_RATE(BigDecimal r148_INTREST_RATE) {
+		R148_INTREST_RATE = r148_INTREST_RATE;
+	}
+	public BigDecimal getR148_AMOUNT() {
+		return R148_AMOUNT;
+	}
+	public void setR148_AMOUNT(BigDecimal r148_AMOUNT) {
+		R148_AMOUNT = r148_AMOUNT;
+	}
+	public BigDecimal getR148_TOTAL_DEPOSIT() {
+		return R148_TOTAL_DEPOSIT;
+	}
+	public void setR148_TOTAL_DEPOSIT(BigDecimal r148_TOTAL_DEPOSIT) {
+		R148_TOTAL_DEPOSIT = r148_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR148_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R148_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR148_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r148_PERCENTAGE_TOTAL_DEPOSIT) {
+		R148_PERCENTAGE_TOTAL_DEPOSIT = r148_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR149_PRODUCT() {
+		return R149_PRODUCT;
+	}
+	public void setR149_PRODUCT(String r149_PRODUCT) {
+		R149_PRODUCT = r149_PRODUCT;
+	}
+	public String getR149_INSTITUTIONAL_SELECTOR() {
+		return R149_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR149_INSTITUTIONAL_SELECTOR(String r149_INSTITUTIONAL_SELECTOR) {
+		R149_INSTITUTIONAL_SELECTOR = r149_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR149_TYPE_OF_ACCOUNT() {
+		return R149_TYPE_OF_ACCOUNT;
+	}
+	public void setR149_TYPE_OF_ACCOUNT(String r149_TYPE_OF_ACCOUNT) {
+		R149_TYPE_OF_ACCOUNT = r149_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR149_INTREST_RATE() {
+		return R149_INTREST_RATE;
+	}
+	public void setR149_INTREST_RATE(BigDecimal r149_INTREST_RATE) {
+		R149_INTREST_RATE = r149_INTREST_RATE;
+	}
+	public BigDecimal getR149_AMOUNT() {
+		return R149_AMOUNT;
+	}
+	public void setR149_AMOUNT(BigDecimal r149_AMOUNT) {
+		R149_AMOUNT = r149_AMOUNT;
+	}
+	public BigDecimal getR149_TOTAL_DEPOSIT() {
+		return R149_TOTAL_DEPOSIT;
+	}
+	public void setR149_TOTAL_DEPOSIT(BigDecimal r149_TOTAL_DEPOSIT) {
+		R149_TOTAL_DEPOSIT = r149_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR149_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R149_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR149_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r149_PERCENTAGE_TOTAL_DEPOSIT) {
+		R149_PERCENTAGE_TOTAL_DEPOSIT = r149_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public String getR150_PRODUCT() {
+		return R150_PRODUCT;
+	}
+	public void setR150_PRODUCT(String r150_PRODUCT) {
+		R150_PRODUCT = r150_PRODUCT;
+	}
+	public String getR150_INSTITUTIONAL_SELECTOR() {
+		return R150_INSTITUTIONAL_SELECTOR;
+	}
+	public void setR150_INSTITUTIONAL_SELECTOR(String r150_INSTITUTIONAL_SELECTOR) {
+		R150_INSTITUTIONAL_SELECTOR = r150_INSTITUTIONAL_SELECTOR;
+	}
+	public String getR150_TYPE_OF_ACCOUNT() {
+		return R150_TYPE_OF_ACCOUNT;
+	}
+	public void setR150_TYPE_OF_ACCOUNT(String r150_TYPE_OF_ACCOUNT) {
+		R150_TYPE_OF_ACCOUNT = r150_TYPE_OF_ACCOUNT;
+	}
+	public BigDecimal getR150_INTREST_RATE() {
+		return R150_INTREST_RATE;
+	}
+	public void setR150_INTREST_RATE(BigDecimal r150_INTREST_RATE) {
+		R150_INTREST_RATE = r150_INTREST_RATE;
+	}
+	public BigDecimal getR150_AMOUNT() {
+		return R150_AMOUNT;
+	}
+	public void setR150_AMOUNT(BigDecimal r150_AMOUNT) {
+		R150_AMOUNT = r150_AMOUNT;
+	}
+	public BigDecimal getR150_TOTAL_DEPOSIT() {
+		return R150_TOTAL_DEPOSIT;
+	}
+	public void setR150_TOTAL_DEPOSIT(BigDecimal r150_TOTAL_DEPOSIT) {
+		R150_TOTAL_DEPOSIT = r150_TOTAL_DEPOSIT;
+	}
+	public BigDecimal getR150_PERCENTAGE_TOTAL_DEPOSIT() {
+		return R150_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public void setR150_PERCENTAGE_TOTAL_DEPOSIT(BigDecimal r150_PERCENTAGE_TOTAL_DEPOSIT) {
+		R150_PERCENTAGE_TOTAL_DEPOSIT = r150_PERCENTAGE_TOTAL_DEPOSIT;
+	}
+	public Date getReportDate() {
+		return reportDate;
+	}
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+	public String getReportVersion() {
+		return reportVersion;
+	}
+	public void setReportVersion(String reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+	public String getREPORT_FREQUENCY() {
+		return REPORT_FREQUENCY;
+	}
+	public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+		REPORT_FREQUENCY = rEPORT_FREQUENCY;
+	}
+	public String getREPORT_CODE() {
+		return REPORT_CODE;
+	}
+	public void setREPORT_CODE(String rEPORT_CODE) {
+		REPORT_CODE = rEPORT_CODE;
+	}
+	public String getREPORT_DESC() {
+		return REPORT_DESC;
+	}
+	public void setREPORT_DESC(String rEPORT_DESC) {
+		REPORT_DESC = rEPORT_DESC;
+	}
+	public String getENTITY_FLG() {
+		return ENTITY_FLG;
+	}
+	public void setENTITY_FLG(String eNTITY_FLG) {
+		ENTITY_FLG = eNTITY_FLG;
+	}
+	public String getMODIFY_FLG() {
+		return MODIFY_FLG;
+	}
+	public void setMODIFY_FLG(String mODIFY_FLG) {
+		MODIFY_FLG = mODIFY_FLG;
+	}
+	public String getDEL_FLG() {
+		return DEL_FLG;
+	}
+	public void setDEL_FLG(String dEL_FLG) {
+		DEL_FLG = dEL_FLG;
+	}
+	public M_DEP4_Summary_Entity3() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+}

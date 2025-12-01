@@ -244,6 +244,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_M_PD_ReportService BRRS_M_PD_ReportService;
 
+	@Autowired	
+	BRRS_M_DEP4_ReportService BRRS_M_DEP4_ReportService;
+
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -624,6 +627,12 @@ public class RegulatoryReportServices {
 				
 			case "M_PD":
 				repsummary = BRRS_M_PD_ReportService.getM_PDview(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+
+				break;
+			case "M_DEP4":
+				repsummary = BRRS_M_DEP4_ReportService.getM_DEP4View(reportId, fromdate, todate, currency,
 						dtltype,
 						pageable, type, version);
 
@@ -1496,6 +1505,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+			case "M_DEP4":
+				try {
+					repfile = BRRS_M_DEP4_ReportService.getM_dep4Excel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
 
 		}
 		return repfile;
@@ -2170,7 +2190,11 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
-
+			case "M_DEP4":
+				List<Object[]> DEP4List = BRRS_M_DEP4_ReportService.getM_DEP4Archival();
+				archivalData.addAll(DEP4List);
+				System.out.println("Fetched DEP4 archival data: " + DEP4List.size());
+				break;
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
 				break;
@@ -2888,7 +2912,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+			case "M_DEP4":
+				try {
+					List<Object[]> resubList = BRRS_M_DEP4_ReportService.getM_DEP4Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for DEP4: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_DEP4: " + e.getMessage());
+					e.printStackTrace();
+				}
 
+				break;
 			default:
 				System.out.println("Unsupported report code: " + rptcode);
 		}

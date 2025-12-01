@@ -94,6 +94,7 @@ import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
+import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
 
@@ -2788,7 +2789,7 @@ public ResponseEntity<String> updateReportReSub(
 	HttpServletRequest req) {
 
 try {
-	System.out.println("Came to Q_BRANCHNET Resub Controller");
+	System.out.println("Came to RPD Resub Controller");
 
 	if (asondate != null) {
 		request1.setReportDate(asondate);
@@ -3091,4 +3092,82 @@ public void detailDownloadpdf(HttpServletResponse response,
 		logger.error("Controller ERROR: A critical error occurred during file generation.", e);
 	}
 }
+
+@Autowired
+BRRS_M_DEP4_ReportService BRRS_M_DEP4_ReportService;
+
+@RequestMapping(value = "/M_DEP4_updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateReport1(
+		@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		@ModelAttribute M_DEP4_Summary_Entity1 request1,
+		@ModelAttribute M_DEP4_Summary_Entity2 request2,
+		@ModelAttribute M_DEP4_Summary_Entity3 request3,
+		@ModelAttribute M_DEP4_Summary_Entity4 request4, 		
+		@ModelAttribute M_DEP4_Summary_Entity5 request5, 		
+		@ModelAttribute M_DEP4_Summary_Entity6 request6
+
+) {
+
+	try {
+		System.out.println("came to single controller");
+		request1.setReportDate(asondate);
+		request2.setReportDate(asondate);
+		request3.setReportDate(asondate);
+		request4.setReportDate(asondate);
+		request5.setReportDate(asondate);
+		request6.setReportDate(asondate);
+
+		BRRS_M_DEP4_ReportService.updateReport1(request1);
+		BRRS_M_DEP4_ReportService.updateReport2(request2);
+		BRRS_M_DEP4_ReportService.updateReport3(request3);
+		BRRS_M_DEP4_ReportService.updateReport4(request4);
+		BRRS_M_DEP4_ReportService.updateReport5(request5);
+		BRRS_M_DEP4_ReportService.updateReport6(request6);
+
+		return ResponseEntity.ok("Updated Successfully.");
+	} catch (Exception e) {
+		e.printStackTrace();
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+	}
+}
+
+@RequestMapping(value = "/DEP4_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateReportReSub(
+		@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		@ModelAttribute M_DEP4_Summary_Entity1 request1,
+		@ModelAttribute M_DEP4_Summary_Entity2 request2,
+		@ModelAttribute M_DEP4_Summary_Entity3 request3,
+		@ModelAttribute M_DEP4_Summary_Entity4 request4,
+		@ModelAttribute M_DEP4_Summary_Entity5 request5,
+		@ModelAttribute M_DEP4_Summary_Entity6 request6,		HttpServletRequest req) {
+
+	try {
+		System.out.println("Came to M_SRWA_!2B Resub Controller");
+
+		if (asondate != null) {
+			request1.setReportDate(asondate);
+			request2.setReportDate(asondate);
+			request3.setReportDate(asondate);
+			request4.setReportDate(asondate);
+			request5.setReportDate(asondate);
+			request6.setReportDate(asondate);
+			
+			System.out.println("🗓 Set Report Date: " + asondate);
+		}
+
+		// ✅ Call service
+		BRRS_M_DEP4_ReportService.updateReportReSub(request1, request2, request3, request4,
+				request5, request6);
+
+		return ResponseEntity.ok("Resubmission Updated Successfully");
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body("M_DEP4 Resubmission Update Failed: " + e.getMessage());
+	}
+}
+
 }
