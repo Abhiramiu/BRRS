@@ -67,6 +67,7 @@ import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LARADV_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LIQGAP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
+import com.bornfire.brrs.services.BRRS_M_MRC_ReportService;
 import com.bornfire.brrs.services.BRRS_M_NOSVOS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OB_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OPTR_ReportService;
@@ -490,6 +491,34 @@ public class BRRS_ReportsController {
 
 			// call services
 			brrs_m_ca2_reportservice.updateReport(request1);
+
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	
+	@Autowired
+	private BRRS_M_MRC_ReportService brrs_m_mrc_reportservice;
+
+	@RequestMapping(value = "/MMRCupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+
+			@ModelAttribute M_MRC_Manual_Summary_Entity request1
+
+	) {
+		try {
+			System.out.println("Came to single controller");
+
+			// set date into entities
+			request1.setReport_date(asondate);
+
+			// call services
+			brrs_m_mrc_reportservice.updateReport(request1);
 
 			return ResponseEntity.ok("Updated Successfully.");
 		} catch (Exception e) {

@@ -347,7 +347,7 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_MRC":
-				repsummary = BRRS_M_MRC_reportservice.getM_MRCView(reportId, fromdate, todate, currency, dtltype,
+				repsummary = BRRS_M_MRC_reportservice.getM_MRCview(reportId, fromdate, todate, currency, dtltype,
 						pageable,
 						type, version);
 				break;
@@ -1527,7 +1527,7 @@ public class RegulatoryReportServices {
 			return BRRS_M_SP_reportservice.getM_SPDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("M_MRCDetail".equals(filename)) {
-			return BRRS_M_MRC_reportservice.BRRS_M_MRCDetailExcel(
+			return BRRS_M_MRC_reportservice.getM_MRCDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("M_CA1Detail".equals(filename)) {
 			return BRRS_M_CA1_reportservice.BRRS_M_CA1DetailExcel(
@@ -2201,7 +2201,7 @@ public class RegulatoryReportServices {
 			// fromdate, todate, currency,
 			// dtltype, type, version);
 		} else if (filename.equals("M_MRCDetail")) {
-			fileData = BRRS_M_MRC_reportservice.BRRS_M_MRCDetailExcel(filename, fromdate, todate, currency, dtltype,
+			fileData = BRRS_M_MRC_reportservice.getM_MRCDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		} /*
 			 * else if (filename.equals("M_SRWA_12CDetail")) { fileData =
