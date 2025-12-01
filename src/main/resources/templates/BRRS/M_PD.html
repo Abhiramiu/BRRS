@@ -1,0 +1,2528 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: SURESH
+CREATED ON	: 11.09.2025
+PURPOSE		: BWRBRREPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+  <link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+  <link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" />
+  <link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
+  <link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+  <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+  <!-- JavaScript -->
+  <!-- jQuery core (required first) -->
+
+  <!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+
+  <!-- jQuery (required first) -->
+  <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+  <!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+  <!-- ✅ jQuery Validation -->
+  <script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+    th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+  <!-- Bootstrap + Others -->
+  <script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+  <script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+  <script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+  <script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+  <script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+  <script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+  <style>
+    .btns {
+      float: right;
+      margin: 5px;
+    }
+
+    .col-sm-5 {
+      padding-bottom: 15px;
+    }
+
+    .list-body {
+      padding: 0px;
+    }
+
+    .error {
+      color: red;
+      padding-left: 10px;
+    }
+
+    .formline {
+      padding-bottom: 15px;
+    }
+
+    .btn-primary {
+      background-color: #e77400;
+      border-color: #0c0c0c;
+    }
+
+    .btn-primary:not (:disabled):not (.disabled).active,
+    .btn-primary:not (:disabled):not (.disabled):active,
+    .show>.btn-primary.dropdown-toggle {
+      color: #fff;
+      background-color: #cc000000;
+      border-color: #161617;
+    }
+
+    #finusertb {
+      width: 460px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+      padding: 0px;
+    }
+  </style>
+
+  <style>
+    div span {
+      font-weight: bold;
+      color: white !important;
+    }
+
+    .card {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .card-header h5 {
+      font-size: 22px;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .nav-tabs .nav-link {
+      font-weight: 500;
+      border: 1px solid #dee2e6;
+      border-bottom: none;
+      border-radius: 4px 4px 0 0;
+      background-color: #f1f1f1;
+      margin-right: 5px;
+    }
+
+    .nav-tabs .nav-link.active {
+      background-color: #ffffff;
+      border-color: #dee2e6 #dee2e6 #ffffff;
+    }
+
+    .table-responsive {
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #f3f6f9;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      background-color: #e9ecf0;
+      z-index: 1;
+    }
+
+    .table td {
+      background-color: #ffffff;
+    }
+
+    .card-footer {
+      padding: 10px;
+      border-top: 1px solid #ccc;
+    }
+
+    .btn-xs {
+      padding: 4px 12px;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+
+    #BRFvalidation th,
+    #usertable td {
+      vertical-align: middle;
+      text-align: left;
+      font-size: 16px;
+      font-family: Arial;
+    }
+
+    .fa-edit:hover {
+      color: #28a745;
+      transform: scale(1.1);
+    }
+
+    td {
+      border: 1px solid rgb(0, 164, 166);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  </style>
+
+  <style>
+    .form-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+      width: 100%;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      background: transparent;
+      transition: border-color 0.3s ease, padding-top 0.3s ease;
+    }
+
+    .error {
+      color: red;
+      padding-top: 15px;
+    }
+
+    .form-control:focus {
+      border-color: #007bff;
+    }
+
+    .form-legend {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      color: #aaa;
+      background: white;
+      padding: 0 5px;
+      pointer-events: none;
+      transition: 0.3s ease;
+    }
+
+    /* When input or select is focused or has a value, move the label up */
+    .form-control:focus~.form-legend,
+    .form-control:not (:placeholder-shown)~.form-legend {
+      top: -8px;
+      font-size: 1rem;
+      color: #007bff;
+    }
+
+    /* Hover effect when the input/select is focused */
+    .form-control:focus:hover~.form-legend {
+      color: #0056b3;
+      /* Darker shade of blue on hover */
+    }
+
+    /* Ensure the label returns to the normal color after focus or hover is removed */
+    .form-control:not (:focus)~.form-legend {
+      color: #aaa;
+      /* Normal label color */
+    }
+  </style>
+
+  <style>
+    /* Red border for invalid inputs */
+    input.error,
+    select.error {
+      border: 2px solid red !important;
+    }
+
+    /* Error message style */
+    label.error {
+      color: red;
+      font-size: 0.85em;
+      margin-top: 5px;
+      display: block;
+    }
+
+    .underline {
+      text-decoration: underline;
+      color: #08a6f1;
+      cursor: pointer;
+    }
+
+    .left-arrow-circle {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .left-arrow-circle i {
+      color: rgb(107, 122, 143);
+    }
+
+    .left-arrow-circle:hover {
+      background-color: rgb(107, 122, 143);
+      cursor: pointer;
+      transform: scale(1.05);
+      border: 2px solid white;
+    }
+
+    .left-arrow-circle:hover i {
+      color: white;
+    }
+
+    .white-text span {
+      color: white !important;
+    }
+
+    .table-cell tbody td:hover {
+      background-color: #f0f0f0;
+      /* Hover color for cell */
+      cursor: pointer;
+      /* Optional: pointer cursor */
+    }
+
+    .table-bordered td,
+    .table-bordered th {
+      border: 1px solid #000 !important;
+    }
+  </style>
+
+  <script th:inline="javascript">
+
+    $(document).ready(function () {
+      // hide loader on normal load
+      $('#loader').modal('hide');
+    });
+
+    $(window).on('pageshow', function () {
+      // hide loader on back/forward nav
+      $('#loader').modal('hide');
+    });
+
+    $(window).on('beforeunload', function () {
+      // hide loader on leaving page
+      $('#loader').modal('hide');
+    });
+
+
+
+    function home() {
+      $("#loader").modal("toggle");
+      location.href = 'Dashboard'
+    }
+
+    function back() {
+      $("#loader").modal("toggle");
+
+      window.history.back();
+    }
+
+    //to fetch summary from the database - called from the summary button
+    function showdetails() {
+
+      var Callurl;
+      $('#loader').modal('show');
+      Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+        location.href = Callurl;
+      console.log(Callurl);
+      /*  $.ajax({
+         type: 'get',
+         url: Callurl,
+         beforeSend: function () {
+           $('#loader').modal('show'); // 🔄 Show loader
+         },
+         success: function (data) {
+           $('.content').html(data);
+           //$("#detailsbtn").addClass("active");
+           //tablepagination();
+         },
+         complete: function () {
+           $('#loader').modal('hide');
+         },
+         error: function () {
+              $('#loader').modal('hide');
+           alert("Something went wrongss. Please try again.");
+
+         }
+       }); */
+    }
+
+    function showsummary() {
+      $('#loader').modal('show');
+      var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+      location.href = Callurl;
+
+    }
+  </script>
+
+  <script>
+    function activateTab(tabName) {
+      // Remove 'active' from all buttons
+      document.querySelectorAll(".custom-tab-btn").forEach((btn) => {
+        btn.classList.remove("active");
+      });
+
+      // Add 'active' to selected button
+      if (tabName === "summary") {
+        document
+          .getElementById("custom-tab-btnSummary")
+          .classList.add("active");
+      } else if (tabName === "Details") {
+        document
+          .getElementById("custom-tab-btnDetails")
+          .classList.add("active");
+      }
+    }
+
+    window.onload = function () {
+      /* setTimeout(function() {
+      var selectedTab = document.getElementById("selectedTab").value;
+      alert(selectedTab);
+      activateTab(selectedTab);
+  }, 10000); */ // 10,000 milliseconds = 10 seconds
+
+      var selectedTab = document.getElementById("selectedTab").value;
+      activateTab(selectedTab);
+    };
+
+    function downloadfile(button) {
+      var reportid = button.getAttribute("data-reportid");
+      var asondate = button.getAttribute("data-asondate");
+      var fromdate = button.getAttribute("data-fromdate");
+      var todate = button.getAttribute("data-todate");
+      var currency = button.getAttribute("data-currency");
+      var subreportid = button.getAttribute("data-subreportid");
+      var secid = button.getAttribute("data-secid");
+      var dtltype = button.getAttribute("data-dtltype");
+      var filename = button.getAttribute("data-filename");
+
+      $("#loader").modal("show");
+
+      $.ajax({
+        url:
+          "./downloadExcel?reportid=" +
+          reportid +
+          "&fromdate=" +
+          fromdate +
+          "&asondate=" +
+          asondate +
+          "&todate=" +
+          todate +
+          "&currency=" +
+          currency +
+          "&subreportid=" +
+          subreportid +
+          "&secid=" +
+          secid +
+          "&filename=" +
+          filename,
+        type: "GET",
+        xhrFields: {
+          responseType: "blob",
+        },
+        success: function (data) {
+          $("#loader").modal("hide");
+
+          if (data && data.size > 100) {
+            const blob = new Blob([data], {
+              type: "application/vnd.ms-excel",
+            });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            showResultModal(
+              "BRRS",
+              "The file has been downloaded successfully."
+            );
+          } else {
+            showResultModal(
+              "Information",
+              "No data was available to create a download."
+            );
+          }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          $("#loader").modal("hide");
+          console.error("Download failed:", textStatus, errorThrown);
+          showResultModal(
+            "Error",
+            "An error occurred while downloading the file. Please try again."
+          );
+        },
+      });
+    }
+
+    function editRecord() {
+      showResultModal("Alert", "Development in progress");
+    }
+    function closemodel() {
+      $("#alert").modal("hide");
+      $("#resultModal").modal("hide");
+    }
+
+    function showResultModal(title, message) {
+      // Set the text for the modal elements
+      $("#resultModalLabel").text(title);
+      $("#resultModalBody").text(message);
+
+      // Show the modal
+      $("#resultModal").modal("show");
+    }
+  </script>
+
+  <script>
+    function startReport(button) {
+      const alertMsg = document.getElementById("alertMessage");
+      const filename = button.getAttribute("data-filename");
+      const fromdate = button.getAttribute("data-fromdate");
+      const todate = button.getAttribute("data-todate");
+      const currency = button.getAttribute("data-currency");
+      const dtltype = button.getAttribute("data-dtltype");
+      const type = button.getAttribute("data-type");
+      const version = button.getAttribute("data-version");
+      const sessionfilename = sessionStorage.getItem("filename");
+
+      if (sessionfilename == filename) {
+        alertMsg.innerHTML = "Download request already Processing...";
+        showAlert();
+        return;
+      }
+
+      alertMsg.innerHTML = "Download request Processing...";
+      showAlert();
+
+      const baseUrl = "/BCDRS/Reports/startreport";
+      const downloadUrl =
+        baseUrl +
+        "?filename=" +
+        encodeURIComponent(filename) +
+        "&fromdate=" +
+        encodeURIComponent(fromdate) +
+        "&todate=" +
+        encodeURIComponent(todate) +
+        "&currency=" +
+        encodeURIComponent(currency) +
+        "&dtltype=" +
+        encodeURIComponent(dtltype) +
+        "&type=" +
+        encodeURIComponent(type) +
+        "&version=" +
+        encodeURIComponent(version);
+      fetch(downloadUrl) // ✅ no invalid characters now
+        .then((res) => res.text())
+        .then((jobId) => {
+          alertMsg.innerHTML = "Download request received..." + jobId;
+          showAlert();
+          sessionStorage.setItem("jobId", jobId);
+          sessionStorage.setItem("filename", filename);
+          checkReport(jobId);
+        });
+    }
+
+    function checkReport(jobId) {
+      const alertMsg = document.getElementById("alertMessage");
+      fetch("/BCDRS/Reports/checkreport?jobId=" + encodeURIComponent(jobId))
+        .then((res) => res.text())
+        .then((status) => {
+          if (status === "READY") {
+            alertMsg.innerHTML = "Report is ready! Downloading…";
+            showAlert();
+            const filename = sessionStorage.getItem("filename");
+            downloadDetailfile(jobId, filename);
+            sessionStorage.removeItem("jobId");
+            sessionStorage.removeItem("filename");
+          } else if (status === "PROCESSING") {
+            alertMsg.innerHTML = "Download Is Processing…";
+            showAlert();
+            setTimeout(() => checkReport(jobId), 5000);
+          } else if (status === "ERROR") {
+            alertMsg.innerHTML =
+              "No data was available to create a download.";
+            showAlert();
+            sessionStorage.removeItem("jobId");
+            sessionStorage.removeItem("filename");
+          }
+        });
+    }
+
+    function downloadDetailfile(jobId, filename) {
+      //$('#loader').modal('show');
+
+      $.ajax({
+        url:
+          "/BCDRS/Reports/downloaddetailExcel?jobId=" +
+          jobId +
+          "&filename=" +
+          filename,
+        type: "GET",
+        xhrFields: {
+          responseType: "blob",
+        },
+        success: function (data) {
+          $("#loader").modal("hide");
+
+          if (data && data.size > 100) {
+            const blob = new Blob([data], {
+              type: "application/vnd.ms-excel",
+            });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            showResultModal(
+              "Success",
+              filename + " downloaded successfully."
+            );
+          } else {
+            showResultModal(
+              "Information",
+              "No data was available to create a download."
+            );
+          }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          $("#loader").modal("hide");
+          console.error("Download failed:", textStatus, errorThrown);
+          showResultModal(
+            "Error",
+            "An error occurred while downloading the file. Please try again."
+          );
+        },
+      });
+    }
+  </script>
+
+  <script th:inline="javascript">
+    function showdetailsbyRowAndColumn(a) {
+      var rowId = a.getAttribute("RowId");
+      var columnId = a.getAttribute("ColumnId");
+      var cellValue = a.textContent || a.innerText;
+
+      if (cellValue !== "0") {
+        // Set dynamic message in modal (instead of confirm)
+        document.getElementById("cellresultModalLabel").innerText =
+          "Do you want to open details for Row: " +
+          rowId +
+          " and Column: " +
+          columnId +
+          "?";
+
+        // Show custom Bootstrap modal
+        $("#cellresultModal").modal("show");
+
+        // Handle Yes button
+        document.querySelector(".yes-btn").onclick = function () {
+          $("#cellresultModal").modal("hide");
+
+          // Show loader
+          const loader = bootstrap.Modal.getOrCreateInstance(
+            document.getElementById("loader"),
+            {
+              backdrop: "static",
+              keyboard: false,
+            }
+          );
+          $("#loader").modal("show");
+
+          // Build dynamic URL
+          var Callurl =
+              /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+          Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+          location.href = Callurl;
+        };
+      } else {
+        // Use your custom alert modal instead of window.alert
+        showResultModal(
+          "Alert",
+          "No Records available for this selected cell."
+        );
+      }
+    }
+  </script>
+</head>
+
+<title>BRRS</title>
+
+<body>
+  <div class="container-fluid" style="padding-left: 0px; padding-right: 0px">
+    <div class="row">
+      <div th:insert="HeaderMenu :: header"></div>
+
+      <div class="card">
+        <div class="card-header" style="
+              background-color: rgb(107, 122, 143);
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            ">
+          <div style="display: flex; align-items: center" onclick="back();">
+            <!-- ⬅️ Left circular arrow -->
+            <div class="left-arrow-circle">
+              <i class="fa fa-arrow-left"></i>
+            </div>
+
+            <!-- Title -->
+            <h5 style="
+                  font-family: arial;
+                  font-size: 20px;
+                  padding-top: 10px;
+                  font-weight: bold;
+                  color: white;
+                ">
+              (31) MONTHLY SCHEDULE: M-PD: PAST DUE LOANS AND ADVANCES
+            </h5>
+          </div>
+
+          <div class="custom-tab-btn-group nav-buttons" style="display: flex; color: white; align-items: center">
+            <!-- 📅 Date -->
+            <span class="white-text" style="
+                  color: white !important;
+                  font-size: 16px;
+                  margin-right: 20px;
+                ">Report Date: <span th:text="${asondate}">2025-09-11</span>
+            </span>
+
+            <!-- Buttons -->
+            <input type="hidden" id="selectedTab" th:value="${displaymode}" />
+            <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+              th:if="${displaymode == 'Details'}">
+              Summary
+            </button>
+            <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+              th:if="${displaymode == 'summary'}">
+              Details
+            </button>
+            <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+              th:attr="data-reportid=${reportid}, 
+                    				 data-asondate=${asondate}, 
+                    				 data-fromdate=${fromdate}, 
+                     				 data-todate=${todate}, 
+                     				 data-currency=${currency},  
+                     				 data-dtltype=${dtltype}, 
+                     				 data-filename='M_PD.xls',
+					 				 data-type=${type},
+					    			 data-version=${version}" onclick="downloadfile(this);">
+              <i class="fa fa-download"></i>
+            </button>
+            <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+              onclick="startReport(this);" th:attr="
+						    data-fromdate=${fromdate},
+						    data-todate=${todate},
+						    data-filename='M_PDDetail',
+						  ">
+              <i class="fa fa-download"></i>
+            </button>
+            <!---	<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='BRF2_18'",
+							onclick="editRecord();">
+							<i class="fa fa-download"></i>
+						</button> -->
+          </div>
+        </div>
+
+        <div th:if="${displaymode == 'summary'}">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="table-wrapper table-responsive scrollable-table-container"
+                style="border-right: 1px solid #dee2e6">
+                <table style="margin-bottom: 100px;"
+                  class="sticky-header-table table table-bordered table-cell table-sm table-condensed" id="reports">
+                  <thead class="thead-light">
+                    <tr>
+                      <th></th>
+                      <th colspan="5" style="
+                            text-align: center;
+                          
+                          ">
+                        >30 days < 90 days </th>
+                      <th colspan="4" style="
+                            text-align: center;
+                          
+                          ">
+                        >90 days < 180 days </th>
+                      <th colspan="4" style="
+                            text-align: center;
+                          
+                          ">
+                        >180 days
+                      </th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+                    <tr>
+                      <th>IMPAIRMENTS/PAST DUE</th>
+                      <th style="min-width: 150px;">>30 days < 90 days Past Due(6)</th>
+                      <th style="min-width: 150px;"> Non-Performing Loans(7)</th>
+                      <th style="min-width: 150px;">Non-Accruals**(8)</th>
+                      <th style="min-width: 150px;">Specific Provisions(9)</th>
+                      <th style="min-width: 150px;">No. of a/c's(10)</th>
+                      <th style="min-width: 150px;">>90 days < 180 days Past Due(11)</th>
+                      <th style="min-width: 150px;">Non-Accruals**(12)</th>
+                      <th style="min-width: 150px;">Specific Provisions (13)</th>
+                      <th style="min-width: 150px;">No. of a/c's(14)</th>
+                      <th style="min-width: 150px;">>180 days Past Due (15)</th>
+                      <th style="min-width: 150px;">Non-Accruals** (16)</th>
+                      <th style="min-width: 150px;">Specific Provisions (17)</th>
+                      <th style="min-width: 150px;">No. of a/c's (18)</th>
+                      <th style="min-width: 150px;">Total Non-Accrual Loans (19)=(8)+(12)+(16)</th>
+                      <th style="min-width: 150px;">Total Value of Past Due Loans (20)=(6)+(11)+(15)</th>
+                      <th style="min-width: 150px;">Total Value of Non-Performing Loans (21)=(7)+(11)+(16)</th>
+                      <th style="min-width: 150px;">Value of Collateral for Non-Performing Loans (22)</th>
+                      <th style="min-width: 150px;">Total Value of Unsecured Portion of NPL (23) = (21)-(22)</th>
+                      <th style="min-width: 150px;">Total Specific Provisions (24)=(9)+(13)+(17)</th>
+                      <th style="min-width: 150px;">Specific Provisions to Unsecured Portion of NPL (%)** (20) =(19)/(18)</th>
+                    </tr>
+
+                  </thead>
+
+
+                  <tbody th:each="report: ${reportsummary1}" style="font-family: Arial">
+
+                      <tr>
+                      <td style="padding-left: 20px" th:text="${report.R8_PRODUCT}"></td>
+
+                      <td style="text-align: right" th:attr="RowId='R8', ColumnId='C2'"
+                        th:text="${report.R8_30D_90D_PASTDUE}"></td>
+
+                      <td style="text-align: right" th:attr="RowId='R8', ColumnId='C3'"
+                        th:text="${report.R8_NON_PERFORM_LOANS}"></td>
+
+                      <td style="text-align: right" th:attr="RowId='R8', ColumnId='C4'"
+                        th:text="${report.R8_NON_ACCRUALS1}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C5'"
+                        th:text="${report.R8_SPECIFIC_PROV1}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C6'"
+                        th:text="${report.R8_NO_OF_ACC1}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C7'"
+                        th:text="${report.R8_90D_180D_PASTDUE}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C8'"
+                        th:text="${report.R8_NON_ACCRUALS2}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C9'"
+                        th:text="${report.R8_SPECIFIC_PROV2}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C10'"
+                        th:text="${report.R8_NO_OF_ACC2}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C11'"
+                        th:text="${report.R8_180D_ABOVE_PASTDUE}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C12'"
+                        th:text="${report.R8_NON_ACCRUALS3}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C13'"
+                        th:text="${report.R8_SPECIFIC_PROV3}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C14'"
+                        th:text="${report.R8_NO_OF_ACC3}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C15'"
+                        th:text="${report.R8_TOTAL_NON_ACCRUAL}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C16'"
+                        th:text="${report.R8_TOTAL_DUE_LOANS}"></td>
+
+                         <td style="text-align: right" th:attr="RowId='R8', ColumnId='C17'"
+                        th:text="${report.R8_TOTAL_PERFORMING_LOAN}"></td>
+
+                         <td style="text-align: right" th:attr="RowId='R8', ColumnId='C18'"
+                        th:text="${report.R8_VALUE_OF_COLLATERAL}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C19'"
+                        th:text="${report.R8_TOTAL_VALUE_NPL}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C20'"
+                        th:text="${report.R8_TOTAL_SPECIFIC_PROV}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R8', ColumnId='C21'"
+                        th:text="${report.R8_SPECIFIC_PROV_NPL}"></td>
+
+                    </tr>
+
+                    <!-- R9 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R9_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C2'" th:text="${report.R9_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C3'" th:text="${report.R9_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C4'" th:text="${report.R9_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C5'" th:text="${report.R9_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C6'" th:text="${report.R9_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C7'" th:text="${report.R9_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C8'" th:text="${report.R9_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C9'" th:text="${report.R9_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C10'" th:text="${report.R9_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C11'" th:text="${report.R9_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C12'" th:text="${report.R9_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C13'" th:text="${report.R9_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C14'" th:text="${report.R9_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C15'" th:text="${report.R9_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C16'" th:text="${report.R9_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C17'" th:text="${report.R9_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C18'" th:text="${report.R9_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C19'" th:text="${report.R9_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C20'" th:text="${report.R9_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R9', ColumnId='C21'" th:text="${report.R9_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R10 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R10_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C2'" th:text="${report.R10_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C3'" th:text="${report.R10_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C4'" th:text="${report.R10_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C5'" th:text="${report.R10_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C6'" th:text="${report.R10_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C7'" th:text="${report.R10_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C8'" th:text="${report.R10_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C9'" th:text="${report.R10_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C10'" th:text="${report.R10_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C11'" th:text="${report.R10_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C12'" th:text="${report.R10_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C13'" th:text="${report.R10_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C14'" th:text="${report.R10_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C15'" th:text="${report.R10_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C16'" th:text="${report.R10_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C17'" th:text="${report.R10_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C18'" th:text="${report.R10_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C19'" th:text="${report.R10_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C20'" th:text="${report.R10_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R10', ColumnId='C21'" th:text="${report.R10_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+
+                    <!-- ====================== R11 ====================== -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R11_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C2'" th:text="${report.R11_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C3'" th:text="${report.R11_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C4'" th:text="${report.R11_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C5'" th:text="${report.R11_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C6'" th:text="${report.R11_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C7'" th:text="${report.R11_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C8'" th:text="${report.R11_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C9'" th:text="${report.R11_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C10'" th:text="${report.R11_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C11'" th:text="${report.R11_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C12'" th:text="${report.R11_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C13'" th:text="${report.R11_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C14'" th:text="${report.R11_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C15'" th:text="${report.R11_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C16'" th:text="${report.R11_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C17'" th:text="${report.R11_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C18'" th:text="${report.R11_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C19'" th:text="${report.R11_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C20'" th:text="${report.R11_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R11', ColumnId='C21'" th:text="${report.R11_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- ====================== R12 ====================== -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R12_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C2'" th:text="${report.R12_30D_90D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C3'" th:text="${report.R12_NON_PERFORM_LOANS}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C4'" th:text="${report.R12_NON_ACCRUALS1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C5'" th:text="${report.R12_SPECIFIC_PROV1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C6'" th:text="${report.R12_NO_OF_ACC1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C7'" th:text="${report.R12_90D_180D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C8'" th:text="${report.R12_NON_ACCRUALS2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C9'" th:text="${report.R12_SPECIFIC_PROV2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C10'" th:text="${report.R12_NO_OF_ACC2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C11'" th:text="${report.R12_180D_ABOVE_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C12'" th:text="${report.R12_NON_ACCRUALS3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C13'" th:text="${report.R12_SPECIFIC_PROV3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C14'" th:text="${report.R12_NO_OF_ACC3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C15'" th:text="${report.R12_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C16'" th:text="${report.R12_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C17'" th:text="${report.R12_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C18'" th:text="${report.R12_VALUE_OF_COLLATERAL}" ></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C19'" th:text="${report.R12_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C20'" th:text="${report.R12_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R12', ColumnId='C21'" th:text="${report.R12_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- ====================== R13 ====================== -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R13_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C2'" th:text="${report.R13_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C3'" th:text="${report.R13_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C4'" th:text="${report.R13_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C5'" th:text="${report.R13_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C6'" th:text="${report.R13_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C7'" th:text="${report.R13_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C8'" th:text="${report.R13_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C9'" th:text="${report.R13_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C10'" th:text="${report.R13_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C11'" th:text="${report.R13_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C12'" th:text="${report.R13_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C13'" th:text="${report.R13_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C14'" th:text="${report.R13_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C15'" th:text="${report.R13_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C16'" th:text="${report.R13_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C17'" th:text="${report.R13_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C18'" th:text="${report.R13_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C19'" th:text="${report.R13_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C20'" th:text="${report.R13_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R13', ColumnId='C21'" th:text="${report.R13_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- ====================== R14 ====================== -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R14_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C2'" th:text="${report.R14_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C3'" th:text="${report.R14_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C4'" th:text="${report.R14_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C5'" th:text="${report.R14_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C6'" th:text="${report.R14_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C7'" th:text="${report.R14_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C8'" th:text="${report.R14_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C9'" th:text="${report.R14_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C10'" th:text="${report.R14_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C11'" th:text="${report.R14_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C12'" th:text="${report.R14_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C13'" th:text="${report.R14_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C14'" th:text="${report.R14_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C15'" th:text="${report.R14_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C16'" th:text="${report.R14_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C17'" th:text="${report.R14_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C18'" th:text="${report.R14_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C19'" th:text="${report.R14_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C20'" th:text="${report.R14_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R14', ColumnId='C21'" th:text="${report.R14_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- ====================== R15 ====================== -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R15_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C2'" th:text="${report.R15_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C3'" th:text="${report.R15_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C4'" th:text="${report.R15_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C5'" th:text="${report.R15_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C6'" th:text="${report.R15_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C7'" th:text="${report.R15_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C8'" th:text="${report.R15_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C9'" th:text="${report.R15_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C10'" th:text="${report.R15_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C11'" th:text="${report.R15_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C12'" th:text="${report.R15_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C13'" th:text="${report.R15_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C14'" th:text="${report.R15_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C15'" th:text="${report.R15_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C16'" th:text="${report.R15_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C17'" th:text="${report.R15_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C18'" th:text="${report.R15_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C19'" th:text="${report.R15_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C20'" th:text="${report.R15_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R15', ColumnId='C21'" th:text="${report.R15_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+
+  <!-- R16 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R16_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C2'" th:text="${report.R16_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C3'" th:text="${report.R16_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C4'" th:text="${report.R16_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C5'" th:text="${report.R16_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C6'" th:text="${report.R16_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C7'" th:text="${report.R16_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C8'" th:text="${report.R16_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C9'" th:text="${report.R16_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C10'" th:text="${report.R16_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C11'" th:text="${report.R16_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C12'" th:text="${report.R16_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C13'" th:text="${report.R16_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C14'" th:text="${report.R16_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C15'" th:text="${report.R16_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C16'" th:text="${report.R16_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C17'" th:text="${report.R16_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C18'" th:text="${report.R16_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C19'" th:text="${report.R16_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C20'" th:text="${report.R16_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R16', ColumnId='C21'" th:text="${report.R16_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R17 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R17_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C2'" th:text="${report.R17_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C3'" th:text="${report.R17_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C4'" th:text="${report.R17_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C5'" th:text="${report.R17_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C6'" th:text="${report.R17_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C7'" th:text="${report.R17_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C8'" th:text="${report.R17_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C9'" th:text="${report.R17_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C10'" th:text="${report.R17_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C11'" th:text="${report.R17_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C12'" th:text="${report.R17_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C13'" th:text="${report.R17_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C14'" th:text="${report.R17_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C15'" th:text="${report.R17_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C16'" th:text="${report.R17_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C17'" th:text="${report.R17_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C18'" th:text="${report.R17_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C19'" th:text="${report.R17_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C20'" th:text="${report.R17_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R17', ColumnId='C21'" th:text="${report.R17_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R18 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R18_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C2'" th:text="${report.R18_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C3'" th:text="${report.R18_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C4'" th:text="${report.R18_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C5'" th:text="${report.R18_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C6'" th:text="${report.R18_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C7'" th:text="${report.R18_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C8'" th:text="${report.R18_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C9'" th:text="${report.R18_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C10'" th:text="${report.R18_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C11'" th:text="${report.R18_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C12'" th:text="${report.R18_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C13'" th:text="${report.R18_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C14'" th:text="${report.R18_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C15'" th:text="${report.R18_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C16'" th:text="${report.R18_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C17'" th:text="${report.R18_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C18'" th:text="${report.R18_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C19'" th:text="${report.R18_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C20'" th:text="${report.R18_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R18', ColumnId='C21'" th:text="${report.R18_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R19 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R19_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C2'" th:text="${report.R19_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C3'" th:text="${report.R19_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C4'" th:text="${report.R19_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C5'" th:text="${report.R19_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C6'" th:text="${report.R19_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C7'" th:text="${report.R19_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C8'" th:text="${report.R19_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C9'" th:text="${report.R19_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C10'" th:text="${report.R19_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C11'" th:text="${report.R19_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C12'" th:text="${report.R19_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C13'" th:text="${report.R19_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C14'" th:text="${report.R19_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C15'" th:text="${report.R19_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C16'" th:text="${report.R19_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C17'" th:text="${report.R19_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C18'" th:text="${report.R19_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C19'" th:text="${report.R19_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C20'" th:text="${report.R19_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R19', ColumnId='C21'" th:text="${report.R19_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R20 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R20_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C2'" th:text="${report.R20_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C3'" th:text="${report.R20_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C4'" th:text="${report.R20_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C5'" th:text="${report.R20_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C6'" th:text="${report.R20_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C7'" th:text="${report.R20_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C8'" th:text="${report.R20_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C9'" th:text="${report.R20_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C10'" th:text="${report.R20_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C11'" th:text="${report.R20_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C12'" th:text="${report.R20_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C13'" th:text="${report.R20_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C14'" th:text="${report.R20_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C15'" th:text="${report.R20_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C16'" th:text="${report.R20_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C17'" th:text="${report.R20_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C18'" th:text="${report.R20_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C19'" th:text="${report.R20_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C20'" th:text="${report.R20_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R20', ColumnId='C21'" th:text="${report.R20_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R21 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R21_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C2'" th:text="${report.R21_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C3'" th:text="${report.R21_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C4'" th:text="${report.R21_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C5'" th:text="${report.R21_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C6'" th:text="${report.R21_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C7'" th:text="${report.R21_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C8'" th:text="${report.R21_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C9'" th:text="${report.R21_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C10'" th:text="${report.R21_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C11'" th:text="${report.R21_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C12'" th:text="${report.R21_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C13'" th:text="${report.R21_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C14'" th:text="${report.R21_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C15'" th:text="${report.R21_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C16'" th:text="${report.R21_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C17'" th:text="${report.R21_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C18'" th:text="${report.R21_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C19'" th:text="${report.R21_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C20'" th:text="${report.R21_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R21', ColumnId='C21'" th:text="${report.R21_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R22 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R22_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C2'" th:text="${report.R22_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C3'" th:text="${report.R22_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C4'" th:text="${report.R22_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C5'" th:text="${report.R22_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C6'" th:text="${report.R22_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C7'" th:text="${report.R22_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C8'" th:text="${report.R22_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C9'" th:text="${report.R22_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C10'" th:text="${report.R22_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C11'" th:text="${report.R22_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C12'" th:text="${report.R22_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C13'" th:text="${report.R22_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C14'" th:text="${report.R22_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C15'" th:text="${report.R22_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C16'" th:text="${report.R22_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C17'" th:text="${report.R22_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C18'" th:text="${report.R22_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C19'" th:text="${report.R22_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C20'" th:text="${report.R22_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R22', ColumnId='C21'" th:text="${report.R22_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R23 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R23_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C2'" th:text="${report.R23_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C3'" th:text="${report.R23_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C4'" th:text="${report.R23_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C5'" th:text="${report.R23_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C6'" th:text="${report.R23_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C7'" th:text="${report.R23_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C8'" th:text="${report.R23_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C9'" th:text="${report.R23_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C10'" th:text="${report.R23_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C11'" th:text="${report.R23_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C12'" th:text="${report.R23_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C13'" th:text="${report.R23_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C14'" th:text="${report.R23_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C15'" th:text="${report.R23_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C16'" th:text="${report.R23_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C17'" th:text="${report.R23_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C18'" th:text="${report.R23_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C19'" th:text="${report.R23_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C20'" th:text="${report.R23_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R23', ColumnId='C21'" th:text="${report.R23_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R24 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R24_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C2'" th:text="${report.R24_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C3'" th:text="${report.R24_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C4'" th:text="${report.R24_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C5'" th:text="${report.R24_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C6'" th:text="${report.R24_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C7'" th:text="${report.R24_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C8'" th:text="${report.R24_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C9'" th:text="${report.R24_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C10'" th:text="${report.R24_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C11'" th:text="${report.R24_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C12'" th:text="${report.R24_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C13'" th:text="${report.R24_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C14'" th:text="${report.R24_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C15'" th:text="${report.R24_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C16'" th:text="${report.R24_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C17'" th:text="${report.R24_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C18'" th:text="${report.R24_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C19'" th:text="${report.R24_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C20'" th:text="${report.R24_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R24', ColumnId='C21'" th:text="${report.R24_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R25 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R25_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C2'" th:text="${report.R25_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C3'" th:text="${report.R25_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C4'" th:text="${report.R25_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C5'" th:text="${report.R25_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C6'" th:text="${report.R25_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C7'" th:text="${report.R25_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C8'" th:text="${report.R25_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C9'" th:text="${report.R25_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C10'" th:text="${report.R25_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C11'" th:text="${report.R25_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C12'" th:text="${report.R25_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C13'" th:text="${report.R25_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C14'" th:text="${report.R25_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C15'" th:text="${report.R25_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C16'" th:text="${report.R25_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C17'" th:text="${report.R25_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C18'" th:text="${report.R25_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C19'" th:text="${report.R25_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C20'" th:text="${report.R25_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R25', ColumnId='C21'" th:text="${report.R25_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R26 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R26_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C2'" th:text="${report.R26_30D_90D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C3'" th:text="${report.R26_NON_PERFORM_LOANS}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C4'" th:text="${report.R26_NON_ACCRUALS1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C5'" th:text="${report.R26_SPECIFIC_PROV1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C6'" th:text="${report.R26_NO_OF_ACC1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C7'" th:text="${report.R26_90D_180D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C8'" th:text="${report.R26_NON_ACCRUALS2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C9'" th:text="${report.R26_SPECIFIC_PROV2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C10'" th:text="${report.R26_NO_OF_ACC2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C11'" th:text="${report.R26_180D_ABOVE_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C12'" th:text="${report.R26_NON_ACCRUALS3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C13'" th:text="${report.R26_SPECIFIC_PROV3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C14'" th:text="${report.R26_NO_OF_ACC3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C15'" th:text="${report.R26_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C16'" th:text="${report.R26_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C17'" th:text="${report.R26_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C18'" th:text="${report.R26_VALUE_OF_COLLATERAL}" ></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C19'" th:text="${report.R26_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C20'" th:text="${report.R26_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R26', ColumnId='C21'" th:text="${report.R26_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R27 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R27_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C2'" th:text="${report.R27_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C3'" th:text="${report.R27_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C4'" th:text="${report.R27_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C5'" th:text="${report.R27_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C6'" th:text="${report.R27_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C7'" th:text="${report.R27_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C8'" th:text="${report.R27_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C9'" th:text="${report.R27_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C10'" th:text="${report.R27_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C11'" th:text="${report.R27_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C12'" th:text="${report.R27_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C13'" th:text="${report.R27_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C14'" th:text="${report.R27_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C15'" th:text="${report.R27_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C16'" th:text="${report.R27_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C17'" th:text="${report.R27_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C18'" th:text="${report.R27_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C19'" th:text="${report.R27_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C20'" th:text="${report.R27_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R27', ColumnId='C21'" th:text="${report.R27_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R28 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R28_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C2'" th:text="${report.R28_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C3'" th:text="${report.R28_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C4'" th:text="${report.R28_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C5'" th:text="${report.R28_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C6'" th:text="${report.R28_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C7'" th:text="${report.R28_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C8'" th:text="${report.R28_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C9'" th:text="${report.R28_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C10'" th:text="${report.R28_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C11'" th:text="${report.R28_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C12'" th:text="${report.R28_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C13'" th:text="${report.R28_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C14'" th:text="${report.R28_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C15'" th:text="${report.R28_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C16'" th:text="${report.R28_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C17'" th:text="${report.R28_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C18'" th:text="${report.R28_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C19'" th:text="${report.R28_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C20'" th:text="${report.R28_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R28', ColumnId='C21'" th:text="${report.R28_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R29 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R29_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C2'" th:text="${report.R29_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C3'" th:text="${report.R29_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C4'" th:text="${report.R29_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C5'" th:text="${report.R29_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C6'" th:text="${report.R29_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C7'" th:text="${report.R29_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C8'" th:text="${report.R29_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C9'" th:text="${report.R29_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C10'" th:text="${report.R29_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C11'" th:text="${report.R29_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C12'" th:text="${report.R29_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C13'" th:text="${report.R29_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C14'" th:text="${report.R29_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C15'" th:text="${report.R29_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C16'" th:text="${report.R29_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C17'" th:text="${report.R29_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C18'" th:text="${report.R29_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C19'" th:text="${report.R29_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C20'" th:text="${report.R29_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R29', ColumnId='C21'" th:text="${report.R29_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R30 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R30_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C2'" th:text="${report.R30_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C3'" th:text="${report.R30_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C4'" th:text="${report.R30_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C5'" th:text="${report.R30_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C6'" th:text="${report.R30_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C7'" th:text="${report.R30_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C8'" th:text="${report.R30_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C9'" th:text="${report.R30_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C10'" th:text="${report.R30_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C11'" th:text="${report.R30_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C12'" th:text="${report.R30_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C13'" th:text="${report.R30_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C14'" th:text="${report.R30_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C15'" th:text="${report.R30_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C16'" th:text="${report.R30_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C17'" th:text="${report.R30_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C18'" th:text="${report.R30_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C19'" th:text="${report.R30_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C20'" th:text="${report.R30_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R30', ColumnId='C21'" th:text="${report.R30_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R31 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R31_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C2'" th:text="${report.R31_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C3'" th:text="${report.R31_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C4'" th:text="${report.R31_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C5'" th:text="${report.R31_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C6'" th:text="${report.R31_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C7'" th:text="${report.R31_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C8'" th:text="${report.R31_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C9'" th:text="${report.R31_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C10'" th:text="${report.R31_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C11'" th:text="${report.R31_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C12'" th:text="${report.R31_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C13'" th:text="${report.R31_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C14'" th:text="${report.R31_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C15'" th:text="${report.R31_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C16'" th:text="${report.R31_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C17'" th:text="${report.R31_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C18'" th:text="${report.R31_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C19'" th:text="${report.R31_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C20'" th:text="${report.R31_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R31', ColumnId='C21'" th:text="${report.R31_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R32 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R32_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C2'" th:text="${report.R32_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C3'" th:text="${report.R32_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C4'" th:text="${report.R32_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C5'" th:text="${report.R32_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C6'" th:text="${report.R32_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C7'" th:text="${report.R32_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C8'" th:text="${report.R32_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C9'" th:text="${report.R32_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C10'" th:text="${report.R32_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C11'" th:text="${report.R32_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C12'" th:text="${report.R32_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C13'" th:text="${report.R32_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C14'" th:text="${report.R32_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C15'" th:text="${report.R32_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C16'" th:text="${report.R32_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C17'" th:text="${report.R32_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C18'" th:text="${report.R32_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C19'" th:text="${report.R32_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C20'" th:text="${report.R32_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R32', ColumnId='C21'" th:text="${report.R32_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R33 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R33_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C2'" th:text="${report.R33_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C3'" th:text="${report.R33_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C4'" th:text="${report.R33_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C5'" th:text="${report.R33_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C6'" th:text="${report.R33_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C7'" th:text="${report.R33_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C8'" th:text="${report.R33_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C9'" th:text="${report.R33_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C10'" th:text="${report.R33_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C11'" th:text="${report.R33_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C12'" th:text="${report.R33_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C13'" th:text="${report.R33_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C14'" th:text="${report.R33_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C15'" th:text="${report.R33_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C16'" th:text="${report.R33_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C17'" th:text="${report.R33_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C18'" th:text="${report.R33_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C19'" th:text="${report.R33_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C20'" th:text="${report.R33_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R33', ColumnId='C21'" th:text="${report.R33_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R34 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R34_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C2'" th:text="${report.R34_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C3'" th:text="${report.R34_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C4'" th:text="${report.R34_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C5'" th:text="${report.R34_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C6'" th:text="${report.R34_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C7'" th:text="${report.R34_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C8'" th:text="${report.R34_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C9'" th:text="${report.R34_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C10'" th:text="${report.R34_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C11'" th:text="${report.R34_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C12'" th:text="${report.R34_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C13'" th:text="${report.R34_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C14'" th:text="${report.R34_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C15'" th:text="${report.R34_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C16'" th:text="${report.R34_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C17'" th:text="${report.R34_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C18'" th:text="${report.R34_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C19'" th:text="${report.R34_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C20'" th:text="${report.R34_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R34', ColumnId='C21'" th:text="${report.R34_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R35 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R35_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C2'" th:text="${report.R35_30D_90D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C3'" th:text="${report.R35_NON_PERFORM_LOANS}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C4'" th:text="${report.R35_NON_ACCRUALS1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C5'" th:text="${report.R35_SPECIFIC_PROV1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C6'" th:text="${report.R35_NO_OF_ACC1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C7'" th:text="${report.R35_90D_180D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C8'" th:text="${report.R35_NON_ACCRUALS2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C9'" th:text="${report.R35_SPECIFIC_PROV2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C10'" th:text="${report.R35_NO_OF_ACC2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C11'" th:text="${report.R35_180D_ABOVE_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C12'" th:text="${report.R35_NON_ACCRUALS3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C13'" th:text="${report.R35_SPECIFIC_PROV3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C14'" th:text="${report.R35_NO_OF_ACC3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C15'" th:text="${report.R35_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C16'" th:text="${report.R35_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C17'" th:text="${report.R35_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C18'" th:text="${report.R35_VALUE_OF_COLLATERAL}" ></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C19'" th:text="${report.R35_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C20'" th:text="${report.R35_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R35', ColumnId='C21'" th:text="${report.R35_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R36 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R36_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C2'" th:text="${report.R36_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C3'" th:text="${report.R36_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C4'" th:text="${report.R36_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C5'" th:text="${report.R36_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C6'" th:text="${report.R36_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C7'" th:text="${report.R36_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C8'" th:text="${report.R36_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C9'" th:text="${report.R36_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C10'" th:text="${report.R36_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C11'" th:text="${report.R36_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C12'" th:text="${report.R36_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C13'" th:text="${report.R36_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C14'" th:text="${report.R36_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C15'" th:text="${report.R36_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C16'" th:text="${report.R36_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C17'" th:text="${report.R36_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C18'" th:text="${report.R36_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C19'" th:text="${report.R36_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C20'" th:text="${report.R36_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R36', ColumnId='C21'" th:text="${report.R36_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R37 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R37_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C2'" th:text="${report.R37_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C3'" th:text="${report.R37_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C4'" th:text="${report.R37_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C5'" th:text="${report.R37_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C6'" th:text="${report.R37_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C7'" th:text="${report.R37_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C8'" th:text="${report.R37_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C9'" th:text="${report.R37_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C10'" th:text="${report.R37_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C11'" th:text="${report.R37_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C12'" th:text="${report.R37_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C13'" th:text="${report.R37_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C14'" th:text="${report.R37_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C15'" th:text="${report.R37_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C16'" th:text="${report.R37_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C17'" th:text="${report.R37_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C18'" th:text="${report.R37_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C19'" th:text="${report.R37_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C20'" th:text="${report.R37_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R37', ColumnId='C21'" th:text="${report.R37_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+
+</tbody>
+
+
+
+
+                  <tbody th:each="report: ${reportsummary2}" style="font-family: Arial">
+
+                      <tr>
+                      <td style="padding-left: 20px" th:text="${report.R38_PRODUCT}"></td>
+
+                      <td style="text-align: right" th:attr="RowId='R38', ColumnId='C2'"
+                        th:text="${report.R38_30D_90D_PASTDUE}"></td>
+
+                      <td style="text-align: right" th:attr="RowId='R38', ColumnId='C3'"
+                        th:text="${report.R38_NON_PERFORM_LOANS}"></td>
+
+                      <td style="text-align: right" th:attr="RowId='R38', ColumnId='C4'"
+                        th:text="${report.R38_NON_ACCRUALS1}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C5'"
+                        th:text="${report.R38_SPECIFIC_PROV1}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C6'"
+                        th:text="${report.R38_NO_OF_ACC1}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C7'"
+                        th:text="${report.R38_90D_180D_PASTDUE}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C8'"
+                        th:text="${report.R38_NON_ACCRUALS2}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C9'"
+                        th:text="${report.R38_SPECIFIC_PROV2}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C10'"
+                        th:text="${report.R38_NO_OF_ACC2}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C11'"
+                        th:text="${report.R38_180D_ABOVE_PASTDUE}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C12'"
+                        th:text="${report.R38_NON_ACCRUALS3}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C13'"
+                        th:text="${report.R38_SPECIFIC_PROV3}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C14'"
+                        th:text="${report.R38_NO_OF_ACC3}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C15'"
+                        th:text="${report.R38_TOTAL_NON_ACCRUAL}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C16'"
+                        th:text="${report.R38_TOTAL_DUE_LOANS}"></td>
+
+                         <td style="text-align: right" th:attr="RowId='R38', ColumnId='C17'"
+                        th:text="${report.R38_TOTAL_PERFORMING_LOAN}"></td>
+
+                         <td style="text-align: right" th:attr="RowId='R38', ColumnId='C18'"
+                        th:text="${report.R38_VALUE_OF_COLLATERAL}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C19'"
+                        th:text="${report.R38_TOTAL_VALUE_NPL}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C20'"
+                        th:text="${report.R38_TOTAL_SPECIFIC_PROV}"></td>
+
+                        <td style="text-align: right" th:attr="RowId='R38', ColumnId='C21'"
+                        th:text="${report.R38_SPECIFIC_PROV_NPL}"></td>
+
+                    </tr>
+
+                    <!-- R39 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R39_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C2'" th:text="${report.R39_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C3'" th:text="${report.R39_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C4'" th:text="${report.R39_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C5'" th:text="${report.R39_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C6'" th:text="${report.R39_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C7'" th:text="${report.R39_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C8'" th:text="${report.R39_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C9'" th:text="${report.R39_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C10'" th:text="${report.R39_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C11'" th:text="${report.R39_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C12'" th:text="${report.R39_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C13'" th:text="${report.R39_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C14'" th:text="${report.R39_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C15'" th:text="${report.R39_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C16'" th:text="${report.R39_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C17'" th:text="${report.R39_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C18'" th:text="${report.R39_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C19'" th:text="${report.R39_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C20'" th:text="${report.R39_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R39', ColumnId='C21'" th:text="${report.R39_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R40 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R40_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C2'" th:text="${report.R40_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C3'" th:text="${report.R40_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C4'" th:text="${report.R40_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C5'" th:text="${report.R40_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C6'" th:text="${report.R40_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C7'" th:text="${report.R40_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C8'" th:text="${report.R40_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C9'" th:text="${report.R40_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C10'" th:text="${report.R40_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C11'" th:text="${report.R40_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C12'" th:text="${report.R40_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C13'" th:text="${report.R40_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C14'" th:text="${report.R40_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C15'" th:text="${report.R40_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C16'" th:text="${report.R40_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C17'" th:text="${report.R40_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C18'" th:text="${report.R40_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C19'" th:text="${report.R40_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C20'" th:text="${report.R40_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R40', ColumnId='C21'" th:text="${report.R40_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R41 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R41_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C2'" th:text="${report.R41_30D_90D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C3'" th:text="${report.R41_NON_PERFORM_LOANS}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C4'" th:text="${report.R41_NON_ACCRUALS1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C5'" th:text="${report.R41_SPECIFIC_PROV1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C6'" th:text="${report.R41_NO_OF_ACC1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C7'" th:text="${report.R41_90D_180D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C8'" th:text="${report.R41_NON_ACCRUALS2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C9'" th:text="${report.R41_SPECIFIC_PROV2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C10'" th:text="${report.R41_NO_OF_ACC2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C11'" th:text="${report.R41_180D_ABOVE_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C12'" th:text="${report.R41_NON_ACCRUALS3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C13'" th:text="${report.R41_SPECIFIC_PROV3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C14'" th:text="${report.R41_NO_OF_ACC3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C15'" th:text="${report.R41_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C16'" th:text="${report.R41_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C17'" th:text="${report.R41_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C18'" th:text="${report.R41_VALUE_OF_COLLATERAL}" ></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C19'" th:text="${report.R41_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C20'" th:text="${report.R41_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R41', ColumnId='C21'" th:text="${report.R41_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R42 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R42_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C2'" th:text="${report.R42_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C3'" th:text="${report.R42_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C4'" th:text="${report.R42_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C5'" th:text="${report.R42_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C6'" th:text="${report.R42_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C7'" th:text="${report.R42_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C8'" th:text="${report.R42_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C9'" th:text="${report.R42_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C10'" th:text="${report.R42_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C11'" th:text="${report.R42_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C12'" th:text="${report.R42_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C13'" th:text="${report.R42_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C14'" th:text="${report.R42_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C15'" th:text="${report.R42_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C16'" th:text="${report.R42_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C17'" th:text="${report.R42_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C18'" th:text="${report.R42_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C19'" th:text="${report.R42_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C20'" th:text="${report.R42_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R42', ColumnId='C21'" th:text="${report.R42_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R43 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R43_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C2'" th:text="${report.R43_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C3'" th:text="${report.R43_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C4'" th:text="${report.R43_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C5'" th:text="${report.R43_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C6'" th:text="${report.R43_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C7'" th:text="${report.R43_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C8'" th:text="${report.R43_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C9'" th:text="${report.R43_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C10'" th:text="${report.R43_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C11'" th:text="${report.R43_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C12'" th:text="${report.R43_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C13'" th:text="${report.R43_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C14'" th:text="${report.R43_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C15'" th:text="${report.R43_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C16'" th:text="${report.R43_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C17'" th:text="${report.R43_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C18'" th:text="${report.R43_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C19'" th:text="${report.R43_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C20'" th:text="${report.R43_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R43', ColumnId='C21'" th:text="${report.R43_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R44 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R44_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C2'" th:text="${report.R44_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C3'" th:text="${report.R44_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C4'" th:text="${report.R44_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C5'" th:text="${report.R44_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C6'" th:text="${report.R44_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C7'" th:text="${report.R44_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C8'" th:text="${report.R44_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C9'" th:text="${report.R44_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C10'" th:text="${report.R44_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C11'" th:text="${report.R44_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C12'" th:text="${report.R44_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C13'" th:text="${report.R44_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C14'" th:text="${report.R44_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C15'" th:text="${report.R44_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C16'" th:text="${report.R44_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C17'" th:text="${report.R44_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C18'" th:text="${report.R44_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C19'" th:text="${report.R44_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C20'" th:text="${report.R44_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R44', ColumnId='C21'" th:text="${report.R44_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R45 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R45_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C2'" th:text="${report.R45_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C3'" th:text="${report.R45_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C4'" th:text="${report.R45_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C5'" th:text="${report.R45_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C6'" th:text="${report.R45_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C7'" th:text="${report.R45_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C8'" th:text="${report.R45_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C9'" th:text="${report.R45_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C10'" th:text="${report.R45_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C11'" th:text="${report.R45_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C12'" th:text="${report.R45_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C13'" th:text="${report.R45_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C14'" th:text="${report.R45_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C15'" th:text="${report.R45_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C16'" th:text="${report.R45_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C17'" th:text="${report.R45_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C18'" th:text="${report.R45_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C19'" th:text="${report.R45_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C20'" th:text="${report.R45_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R45', ColumnId='C21'" th:text="${report.R45_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R46 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R46_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C2'" th:text="${report.R46_30D_90D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C3'" th:text="${report.R46_NON_PERFORM_LOANS}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C4'" th:text="${report.R46_NON_ACCRUALS1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C5'" th:text="${report.R46_SPECIFIC_PROV1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C6'" th:text="${report.R46_NO_OF_ACC1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C7'" th:text="${report.R46_90D_180D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C8'" th:text="${report.R46_NON_ACCRUALS2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C9'" th:text="${report.R46_SPECIFIC_PROV2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C10'" th:text="${report.R46_NO_OF_ACC2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C11'" th:text="${report.R46_180D_ABOVE_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C12'" th:text="${report.R46_NON_ACCRUALS3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C13'" th:text="${report.R46_SPECIFIC_PROV3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C14'" th:text="${report.R46_NO_OF_ACC3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C15'" th:text="${report.R46_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C16'" th:text="${report.R46_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C17'" th:text="${report.R46_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C18'" th:text="${report.R46_VALUE_OF_COLLATERAL}" ></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C19'" th:text="${report.R46_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C20'" th:text="${report.R46_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R46', ColumnId='C21'" th:text="${report.R46_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R47 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R47_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C2'" th:text="${report.R47_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C3'" th:text="${report.R47_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C4'" th:text="${report.R47_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C5'" th:text="${report.R47_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C6'" th:text="${report.R47_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C7'" th:text="${report.R47_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C8'" th:text="${report.R47_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C9'" th:text="${report.R47_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C10'" th:text="${report.R47_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C11'" th:text="${report.R47_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C12'" th:text="${report.R47_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C13'" th:text="${report.R47_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C14'" th:text="${report.R47_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C15'" th:text="${report.R47_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C16'" th:text="${report.R47_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C17'" th:text="${report.R47_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C18'" th:text="${report.R47_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C19'" th:text="${report.R47_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C20'" th:text="${report.R47_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R47', ColumnId='C21'" th:text="${report.R47_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R48 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R48_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C2'" th:text="${report.R48_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C3'" th:text="${report.R48_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C4'" th:text="${report.R48_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C5'" th:text="${report.R48_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C6'" th:text="${report.R48_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C7'" th:text="${report.R48_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C8'" th:text="${report.R48_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C9'" th:text="${report.R48_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C10'" th:text="${report.R48_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C11'" th:text="${report.R48_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C12'" th:text="${report.R48_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C13'" th:text="${report.R48_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C14'" th:text="${report.R48_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C15'" th:text="${report.R48_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C16'" th:text="${report.R48_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C17'" th:text="${report.R48_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C18'" th:text="${report.R48_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C19'" th:text="${report.R48_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C20'" th:text="${report.R48_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R48', ColumnId='C21'" th:text="${report.R48_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R49 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R49_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C2'" th:text="${report.R49_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C3'" th:text="${report.R49_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C4'" th:text="${report.R49_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C5'" th:text="${report.R49_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C6'" th:text="${report.R49_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C7'" th:text="${report.R49_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C8'" th:text="${report.R49_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C9'" th:text="${report.R49_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C10'" th:text="${report.R49_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C11'" th:text="${report.R49_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C12'" th:text="${report.R49_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C13'" th:text="${report.R49_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C14'" th:text="${report.R49_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C15'" th:text="${report.R49_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C16'" th:text="${report.R49_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C17'" th:text="${report.R49_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C18'" th:text="${report.R49_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C19'" th:text="${report.R49_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C20'" th:text="${report.R49_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R49', ColumnId='C21'" th:text="${report.R49_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R50 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R50_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C2'" th:text="${report.R50_30D_90D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C3'" th:text="${report.R50_NON_PERFORM_LOANS}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C4'" th:text="${report.R50_NON_ACCRUALS1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C5'" th:text="${report.R50_SPECIFIC_PROV1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C6'" th:text="${report.R50_NO_OF_ACC1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C7'" th:text="${report.R50_90D_180D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C8'" th:text="${report.R50_NON_ACCRUALS2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C9'" th:text="${report.R50_SPECIFIC_PROV2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C10'" th:text="${report.R50_NO_OF_ACC2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C11'" th:text="${report.R50_180D_ABOVE_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C12'" th:text="${report.R50_NON_ACCRUALS3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C13'" th:text="${report.R50_SPECIFIC_PROV3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C14'" th:text="${report.R50_NO_OF_ACC3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C15'" th:text="${report.R50_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C16'" th:text="${report.R50_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C17'" th:text="${report.R50_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C18'" th:text="${report.R50_VALUE_OF_COLLATERAL}" ></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C19'" th:text="${report.R50_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C20'" th:text="${report.R50_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R50', ColumnId='C21'" th:text="${report.R50_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R51 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R51_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C2'" th:text="${report.R51_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C3'" th:text="${report.R51_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C4'" th:text="${report.R51_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C5'" th:text="${report.R51_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C6'" th:text="${report.R51_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C7'" th:text="${report.R51_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C8'" th:text="${report.R51_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C9'" th:text="${report.R51_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C10'" th:text="${report.R51_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C11'" th:text="${report.R51_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C12'" th:text="${report.R51_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C13'" th:text="${report.R51_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C14'" th:text="${report.R51_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C15'" th:text="${report.R51_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C16'" th:text="${report.R51_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C17'" th:text="${report.R51_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C18'" th:text="${report.R51_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C19'" th:text="${report.R51_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C20'" th:text="${report.R51_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R51', ColumnId='C21'" th:text="${report.R51_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R52 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R52_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C2'" th:text="${report.R52_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C3'" th:text="${report.R52_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C4'" th:text="${report.R52_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C5'" th:text="${report.R52_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C6'" th:text="${report.R52_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C7'" th:text="${report.R52_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C8'" th:text="${report.R52_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C9'" th:text="${report.R52_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C10'" th:text="${report.R52_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C11'" th:text="${report.R52_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C12'" th:text="${report.R52_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C13'" th:text="${report.R52_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C14'" th:text="${report.R52_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C15'" th:text="${report.R52_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C16'" th:text="${report.R52_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C17'" th:text="${report.R52_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C18'" th:text="${report.R52_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C19'" th:text="${report.R52_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C20'" th:text="${report.R52_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R52', ColumnId='C21'" th:text="${report.R52_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R53 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R53_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C2'" th:text="${report.R53_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C3'" th:text="${report.R53_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C4'" th:text="${report.R53_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C5'" th:text="${report.R53_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C6'" th:text="${report.R53_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C7'" th:text="${report.R53_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C8'" th:text="${report.R53_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C9'" th:text="${report.R53_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C10'" th:text="${report.R53_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C11'" th:text="${report.R53_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C12'" th:text="${report.R53_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C13'" th:text="${report.R53_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C14'" th:text="${report.R53_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C15'" th:text="${report.R53_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C16'" th:text="${report.R53_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C17'" th:text="${report.R53_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C18'" th:text="${report.R53_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C19'" th:text="${report.R53_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C20'" th:text="${report.R53_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R53', ColumnId='C21'" th:text="${report.R53_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R54 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R54_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C2'" th:text="${report.R54_30D_90D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C3'" th:text="${report.R54_NON_PERFORM_LOANS}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C4'" th:text="${report.R54_NON_ACCRUALS1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C5'" th:text="${report.R54_SPECIFIC_PROV1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C6'" th:text="${report.R54_NO_OF_ACC1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C7'" th:text="${report.R54_90D_180D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C8'" th:text="${report.R54_NON_ACCRUALS2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C9'" th:text="${report.R54_SPECIFIC_PROV2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C10'" th:text="${report.R54_NO_OF_ACC2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C11'" th:text="${report.R54_180D_ABOVE_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C12'" th:text="${report.R54_NON_ACCRUALS3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C13'" th:text="${report.R54_SPECIFIC_PROV3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C14'" th:text="${report.R54_NO_OF_ACC3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C15'" th:text="${report.R54_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C16'" th:text="${report.R54_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C17'" th:text="${report.R54_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C18'" th:text="${report.R54_VALUE_OF_COLLATERAL}" ></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C19'" th:text="${report.R54_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C20'" th:text="${report.R54_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R54', ColumnId='C21'" th:text="${report.R54_SPECIFIC_PROV_NPL}"></td>
+</tr>
+           
+
+<!-- R55 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R55_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C2'" th:text="${report.R55_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C3'" th:text="${report.R55_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C4'" th:text="${report.R55_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C5'" th:text="${report.R55_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C6'" th:text="${report.R55_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C7'" th:text="${report.R55_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C8'" th:text="${report.R55_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C9'" th:text="${report.R55_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C10'" th:text="${report.R55_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C11'" th:text="${report.R55_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C12'" th:text="${report.R55_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C13'" th:text="${report.R55_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C14'" th:text="${report.R55_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C15'" th:text="${report.R55_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C16'" th:text="${report.R55_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C17'" th:text="${report.R55_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C18'" th:text="${report.R55_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C19'" th:text="${report.R55_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C20'" th:text="${report.R55_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R55', ColumnId='C21'" th:text="${report.R55_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R56 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R56_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C2'" th:text="${report.R56_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C3'" th:text="${report.R56_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C4'" th:text="${report.R56_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C5'" th:text="${report.R56_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C6'" th:text="${report.R56_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C7'" th:text="${report.R56_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C8'" th:text="${report.R56_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C9'" th:text="${report.R56_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C10'" th:text="${report.R56_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C11'" th:text="${report.R56_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C12'" th:text="${report.R56_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C13'" th:text="${report.R56_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C14'" th:text="${report.R56_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C15'" th:text="${report.R56_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C16'" th:text="${report.R56_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C17'" th:text="${report.R56_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C18'" th:text="${report.R56_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C19'" th:text="${report.R56_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C20'" th:text="${report.R56_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R56', ColumnId='C21'" th:text="${report.R56_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R57 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R57_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C2'" th:text="${report.R57_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C3'" th:text="${report.R57_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C4'" th:text="${report.R57_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C5'" th:text="${report.R57_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C6'" th:text="${report.R57_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C7'" th:text="${report.R57_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C8'" th:text="${report.R57_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C9'" th:text="${report.R57_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C10'" th:text="${report.R57_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C11'" th:text="${report.R57_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C12'" th:text="${report.R57_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C13'" th:text="${report.R57_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C14'" th:text="${report.R57_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C15'" th:text="${report.R57_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C16'" th:text="${report.R57_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C17'" th:text="${report.R57_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C18'" th:text="${report.R57_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C19'" th:text="${report.R57_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C20'" th:text="${report.R57_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R57', ColumnId='C21'" th:text="${report.R57_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R58 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R58_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C2'" th:text="${report.R58_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C3'" th:text="${report.R58_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C4'" th:text="${report.R58_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C5'" th:text="${report.R58_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C6'" th:text="${report.R58_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C7'" th:text="${report.R58_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C8'" th:text="${report.R58_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C9'" th:text="${report.R58_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C10'" th:text="${report.R58_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C11'" th:text="${report.R58_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C12'" th:text="${report.R58_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C13'" th:text="${report.R58_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C14'" th:text="${report.R58_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C15'" th:text="${report.R58_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C16'" th:text="${report.R58_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C17'" th:text="${report.R58_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C18'" th:text="${report.R58_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C19'" th:text="${report.R58_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C20'" th:text="${report.R58_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R58', ColumnId='C21'" th:text="${report.R58_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R59 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R59_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C2'" th:text="${report.R59_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C3'" th:text="${report.R59_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C4'" th:text="${report.R59_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C5'" th:text="${report.R59_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C6'" th:text="${report.R59_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C7'" th:text="${report.R59_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C8'" th:text="${report.R59_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C9'" th:text="${report.R59_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C10'" th:text="${report.R59_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C11'" th:text="${report.R59_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C12'" th:text="${report.R59_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C13'" th:text="${report.R59_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C14'" th:text="${report.R59_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C15'" th:text="${report.R59_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C16'" th:text="${report.R59_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C17'" th:text="${report.R59_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C18'" th:text="${report.R59_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C19'" th:text="${report.R59_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C20'" th:text="${report.R59_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R59', ColumnId='C21'" th:text="${report.R59_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R60 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R60_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C2'" th:text="${report.R60_30D_90D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C3'" th:text="${report.R60_NON_PERFORM_LOANS}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C4'" th:text="${report.R60_NON_ACCRUALS1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C5'" th:text="${report.R60_SPECIFIC_PROV1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C6'" th:text="${report.R60_NO_OF_ACC1}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C7'" th:text="${report.R60_90D_180D_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C8'" th:text="${report.R60_NON_ACCRUALS2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C9'" th:text="${report.R60_SPECIFIC_PROV2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C10'" th:text="${report.R60_NO_OF_ACC2}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C11'" th:text="${report.R60_180D_ABOVE_PASTDUE}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C12'" th:text="${report.R60_NON_ACCRUALS3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C13'" th:text="${report.R60_SPECIFIC_PROV3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C14'" th:text="${report.R60_NO_OF_ACC3}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C15'" th:text="${report.R60_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C16'" th:text="${report.R60_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C17'" th:text="${report.R60_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C18'" th:text="${report.R60_VALUE_OF_COLLATERAL}" onclick="showdetailsbyRowAndColumn(this)"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C19'" th:text="${report.R60_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C20'" th:text="${report.R60_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R60', ColumnId='C21'" th:text="${report.R60_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+<!-- R61 -->
+<tr>
+  <td style="padding-left: 20px" th:text="${report.R61_PRODUCT}"></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C2'" th:text="${report.R61_30D_90D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C3'" th:text="${report.R61_NON_PERFORM_LOANS}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C4'" th:text="${report.R61_NON_ACCRUALS1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C5'" th:text="${report.R61_SPECIFIC_PROV1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C6'" th:text="${report.R61_NO_OF_ACC1}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C7'" th:text="${report.R61_90D_180D_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C8'" th:text="${report.R61_NON_ACCRUALS2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C9'" th:text="${report.R61_SPECIFIC_PROV2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C10'" th:text="${report.R61_NO_OF_ACC2}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C11'" th:text="${report.R61_180D_ABOVE_PASTDUE}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C12'" th:text="${report.R61_NON_ACCRUALS3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C13'" th:text="${report.R61_SPECIFIC_PROV3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C14'" th:text="${report.R61_NO_OF_ACC3}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C15'" th:text="${report.R61_TOTAL_NON_ACCRUAL}"></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C16'" th:text="${report.R61_TOTAL_DUE_LOANS}"></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C17'" th:text="${report.R61_TOTAL_PERFORMING_LOAN}"></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C18'" th:text="${report.R61_VALUE_OF_COLLATERAL}" ></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C19'" th:text="${report.R61_TOTAL_VALUE_NPL}"></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C20'" th:text="${report.R61_TOTAL_SPECIFIC_PROV}"></td>
+  <td style="text-align: right" th:attr="RowId='R61', ColumnId='C21'" th:text="${report.R61_SPECIFIC_PROV_NPL}"></td>
+</tr>
+
+
+
+
+                  </tbody>
+
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div th:if="${displaymode == 'Details'}">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="table-responsive scrollable-table-container" style="border-right: 1px solid #dee2e6">
+                <table class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+                  id="reportss">
+                  <thead class="thead-light">
+                    <tr>
+                      <th></th>
+                      <th>CUST ID</th>
+                      <th>ACCT NO</th>
+                      <th>ACCT NAME</th>
+                      <th style="text-align: right">ACCT BALANCE</th>
+                      <th style="text-align: left">ROWID</th>
+                      <th>COLUMNID</th>
+                      <th>REPORT_DATE</th>
+                    </tr>
+                  </thead>
+
+                  <tbody style="font-family: Arial">
+                    <tr th:each="report: ${reportdetails}">
+                      <td>
+                        <a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+                          <i class="fas fa-edit" onclick="editRecord(this)"></i>
+                        </a>
+                      </td>
+                      <td th:text="${report.CUST_ID}"></td>
+                      <td th:text="${report.ACCT_NUMBER}"></td>
+                      <td th:text="${report.ACCT_NAME}"></td>
+                      <!---	<td th:text="${report.acctBalanceInpula} "></td> -->
+                      <td th:text="${#numbers.formatDecimal(report.ACCT_BALANCE_IN_PULA, 1, 3)}"
+                        style="text-align: right"></td>
+
+                      <td style="text-align: left" th:text="${report.ROW_ID}"></td>
+                      <td th:text="${report.COLUMN_ID}"></td>
+                      <td th:text="${#dates.format(report.REPORT_DATE, 'dd-MM-yyyy')}"></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div style="margin-top: 20px; text-align: center" th:if="${pagination=='YES'}">
+                  <a th:if="${currentPage > 0}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																	    asondate=${asondate},                             
+																	    fromdate=${fromdate},
+																	    todate=${todate},
+																	    currency=${currency},
+																	    dtltype=${dtltype},
+																	    type=${type},
+																	    version=${version},
+																	    page=${currentPage - 100},
+																	    size=100
+																	)}">
+                    Previous
+                  </a>
+
+                  <span>Page [[${currentPage / 100 + 1}]] of
+                    [[${totalPages}]]</span>
+
+                  <a th:if="${currentPage < (totalPages - 1) * 100}" th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																	    asondate=${asondate},
+																	    fromdate=${fromdate},
+																	    todate=${todate},
+																	    currency=${currency},
+																	    dtltype=${dtltype},
+																	    type=${type},
+																	    version=${version},
+																	    page=${currentPage + 100},
+																	    size=100
+																	)}">
+                    Next
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content" style="background: transparent">
+        <div class="modal-body" style="text-align: center">
+          <div>
+            <img th:src=@{/images/loader.gif} id="bfirelogo" style="width:
+              153px; height: auto; margin-left: 18px; background-color:
+              transparent; border-color: transparent;" alt="Bornfire">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Alert/Result Modal (Matches your existing style) -->
+  <div class="modal fade" id="resultModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <!-- Your custom styled header -->
+        <div class="menu-title-header">
+          <div class="modal-title" id="resultModalLabel" style="text-align: center; color: white">
+            <!-- Title will be set by JavaScript -->
+          </div>
+        </div>
+        <div class="modal-body" style="text-align: center; font-size: 1.1rem">
+          <p id="resultModalBody"></p>
+          <!-- Your custom styled button -->
+          <button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Cellresult Modal -->
+  <div class="modal fade" id="cellresultModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <!-- Custom header -->
+        <div class="menu-title-header" style="
+              background-color: #6c7a91;
+              padding: 8px;
+              border-radius: 5px 5px 0 0;
+            ">
+          <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white">
+            Do you want to open the report?
+          </div>
+        </div>
+
+        <div class="modal-body" style="text-align: center; font-size: 1.1rem">
+          <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal" style="
+                margin-right: 10px;
+                border: 2px solid #6c7a91;
+                background: white;
+                color: black;
+                border-radius: 20px;
+                padding: 5px 15px;
+              ">
+            Cancel
+          </button>
+          <button type="button" class="custom-tab-btn yes-btn" style="
+                background: #6c7a91;
+                color: white;
+                border: none;
+                border-radius: 20px;
+                padding: 5px 20px;
+              ">
+            Yes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<style>
+  /* Your existing CSS - this is the correct approach */
+  .scrollable-table-container {
+    /* This is the key: it creates the scroll context */
+    max-height: 820px;
+    /* Or a suitable height like 80vh for responsive design */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+  }
+
+  /* Your existing sticky header CSS, targeting the tr elements within the thead */
+  .scrollable-table-container thead tr:nth-child(1) {
+    position: sticky;
+    top: 0;
+    background-color: #b3b6b9;
+    z-index: 5;
+  }
+
+  .scrollable-table-container thead tr:nth-child(2) {
+    position: sticky;
+    top: 36px;
+    /* adjust based on row height */
+    background-color: #b3b6b9;
+    z-index: 4;
+  }
+
+  .scrollable-table-container thead tr:nth-child(3) {
+    position: sticky;
+    top: 72px;
+    /* Adjust based on row height */
+    background-color: #b3b6b9;
+    z-index: 3;
+  }
+
+  .scrollable-table-container thead tr:nth-child(4) {
+    position: sticky;
+    top: 100px;
+    /* Adjust based on row height */
+    background-color: #b3b6b9;
+    z-index: 2;
+  }
+
+  .scrollable-table-container thead tr:nth-child(5) {
+    position: sticky;
+    top: 135px;
+    /* Adjust based on row height */
+    background-color: #b3b6b9;
+    z-index: 1;
+  }
+</style>
+
+<style>
+  .inner {
+    max-height: 600px;
+    /* Adjust height as needed */
+    overflow: auto;
+    border: 1px solid #dee2e6;
+  }
+
+  /* Sticky thead */
+  #reports thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    /* Match Bootstrap thead-light */
+    z-index: 2;
+  }
+
+  div.dataTables_wrapper div.dataTables_paginate {
+    text-align: right !important;
+    float: right !important;
+    width: auto;
+    margin-top: 10px;
+  }
+
+  /* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+  div.dataTables_wrapper div.dataTables_info {
+    float: left !important;
+    margin-top: 10px;
+  }
+
+  .pagination {
+    margin: 0;
+  }
+
+  .page-item.active .page-link {
+    background-color: #386276;
+    border-color: #386276;
+  }
+
+  .page-link {
+    color: #386276;
+  }
+
+  .page-link:hover {
+    color: #2a4a5c;
+  }
+
+  .form-select {
+    display: inline-block;
+    width: auto;
+  }
+</style>
+
+</html>

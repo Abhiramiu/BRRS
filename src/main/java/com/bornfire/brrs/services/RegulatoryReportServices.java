@@ -236,6 +236,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_FAS_ReportService BRRS_M_FAS_reportservice;
+	
+	@Autowired
+	BRRS_M_PD_ReportService BRRS_M_PD_ReportService;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -614,6 +617,13 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+			case "M_PD":
+				repsummary = BRRS_M_PD_ReportService.getM_PDview(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, type, version);
+
+				break;
 
 		}
 
@@ -782,6 +792,12 @@ public class RegulatoryReportServices {
 			case "M_GALOR":
 
 				repdetail = BRRS_m_galor_ReportService.getM_GALORcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype, pageable, Filter, type, version);
+				break;
+				
+			case "M_PD":
+
+				repdetail = BRRS_M_PD_ReportService.getM_PDcurrentDtl(reportId, fromdate, todate, currency,
 						dtltype, pageable, Filter, type, version);
 				break;
 
@@ -1465,6 +1481,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "M_PD":
+				try {
+					repfile = BRRS_M_PD_ReportService.BRRS_M_PDExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 		}
 		return repfile;
@@ -1546,6 +1573,11 @@ public class RegulatoryReportServices {
 					version);
 		} else if ("Q_SMMEDetail".equals(filename)) {
 			return BRRS_Q_SMME_Intrest_Income_ReportService.BRRS_Q_SMMEDetailExcel(
+					filename, fromdate, todate, currency, dtltype, type, version);
+		}
+		
+		else if ("M_PD".equals(filename)) {
+			return BRRS_M_PD_ReportService.BRRS_M_PDDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		}
 
@@ -2124,6 +2156,16 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+			case "M_PD":
+				try {
+					archivalData = BRRS_M_PD_ReportService.getM_PDArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
@@ -2247,7 +2289,13 @@ public class RegulatoryReportServices {
 			fileData = BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 
+		} else if ("M_PD".equals(filename)) {
+
+			fileData = BRRS_M_PD_ReportService.BRRS_M_PDDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+
 		}
+		
 
 		if (fileData == null) {
 			// logger.warn("Excel generation failed or no data for jobId: {}", jobId);
