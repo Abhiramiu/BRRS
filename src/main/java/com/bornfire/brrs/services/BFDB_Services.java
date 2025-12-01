@@ -1,17 +1,14 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -40,16 +37,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bornfire.brrs.config.SequenceGenerator;
 import com.bornfire.brrs.entities.BFDB_Entity;
 import com.bornfire.brrs.entities.BFDB_Rep;
-import com.bornfire.brrs.entities.BrrsGeneralMasterEntity;
-import com.bornfire.brrs.entities.BrrsGeneralMasterRepo;
-import com.bornfire.brrs.entities.GeneralMasterEntity;
 import com.bornfire.brrs.entities.GeneralMasterRepo;
 
 @Service
@@ -114,8 +107,10 @@ public class BFDB_Services {
 	    Connection conn = null;
 	    PreparedStatement stmtBFDB = null;
 	    PreparedStatement stmtMaster = null;
-	    PreparedStatement stmtUpdateMaster = null;
-	    PreparedStatement stmtDeleteBFDB = null;
+	    PreparedStatement stmtSelectDepBookVersion = null;
+	    PreparedStatement stmtSoftDeleteDepBook = null;
+	    PreparedStatement stmtSelectMasterVersion = null;
+	    PreparedStatement stmtSoftDeleteMaster = null;
 	    InputStream is = null;
 	    Workbook workbook = null;
 
@@ -133,34 +128,42 @@ public class BFDB_Services {
 	        DataFormatter formatter = new DataFormatter();
 	        FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 
-	        // 🟩 DELETE old data in BFDB only
-	        String deleteBFDB = "DELETE FROM BRRS_BFDB WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
-	        stmtDeleteBFDB = conn.prepareStatement(deleteBFDB);
+	        // Version + soft delete helpers for DEP_BOOK
+	        String selectDepBookVersionSql = "SELECT NVL(MAX(VERSION),0) FROM DEP_BOOK WHERE ACCOUNT_NO = ? AND REPORT_DATE = ?";
+	        stmtSelectDepBookVersion = conn.prepareStatement(selectDepBookVersionSql);
 
-	        // 🟩 BFDB insert query
-	        String insertBFDB = "INSERT INTO BRRS_BFDB (SOL_ID, CUSTOMER_ID, GENDER, ACCOUNT_NO, CUSTOMER_NAME, SCHM_CODE, SCHM_DESC, "
-	                + "ACCT_OPEN_DATE, ACCT_CLOSE_DATE, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, RATE_OF_INTEREST, HUNDRED, STATUS, "
-	                + "MATURITY_DATE, GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INTEREST_RATE, "
-	                + "REPORT_DATE, ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG) "
-	                + "VALUES (" + String.join(",", Collections.nCopies(27, "?")) + ")";
+	        String softDeleteDepBookSql = "UPDATE DEP_BOOK SET DEL_FLG = 'Y' " +
+	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ? AND DEL_FLG = 'N'";
+	        stmtSoftDeleteDepBook = conn.prepareStatement(softDeleteDepBookSql);
+
+	        // Version + soft delete helpers for GENERAL_MASTER_TABLE
+	        String selectMasterVersionSql = "SELECT NVL(MAX(VERSION),0) FROM GENERAL_MASTER_TABLE WHERE ACCOUNT_NO = ? AND REPORT_DATE = ? AND REPORT_CODE='DEPB' ";
+	        stmtSelectMasterVersion = conn.prepareStatement(selectMasterVersionSql);
+
+	        String softDeleteMasterSql = "UPDATE GENERAL_MASTER_TABLE SET DEL_FLG = 'Y' " +
+	                "WHERE ACCOUNT_NO = ? AND REPORT_DATE = ? AND DEL_FLG = 'N' AND REPORT_CODE='DEPB' ";
+	        stmtSoftDeleteMaster = conn.prepareStatement(softDeleteMasterSql);
+
+	        // DEP_BOOK insert query
+	        String insertBFDB = "INSERT INTO DEP_BOOK (" +
+	                "SOL_ID, CUSTOMER_ID, GENDER, ACCOUNT_NO, CUSTOMER_NAME, SCHM_CODE, SCHM_DESC, " +
+	                "ACCT_OPEN_DATE, ACCT_CLOSE_DATE, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, " +
+	                "RATE_OF_INTEREST, HUNDRED, STATUS, MATURITY_DATE, GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, " +
+	                "TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INTEREST_RATE, " +
+	                "REPORT_DATE, ENTRY_TIME, MODIFY_TIME, VERIFY_TIME, ENTRY_USER, ENTRY_FLG, MODIFY_USER, VERIFY_USER, " +
+	                "MODIFY_FLG, VERIFY_FLG, DEL_FLG, DEL_USER, UPLOAD_DATE, REPORT_CODE, VERSION" +
+	                ") VALUES (" + String.join(",", Collections.nCopies(37, "?")) + ")";
 	        stmtBFDB = conn.prepareStatement(insertBFDB);
 
-	        // 🟩 MASTER update query
-	        String updateMaster = "UPDATE GENERAL_MASTER_TABLE SET "
-	                + "SOL_ID=?, CUSTOMER_ID=?, CUSTOMER_NAME=?, GENDER=?, SCHM_CODE=?, SCHM_DESC=?, "
-	                + "ACCT_OPEN_DATE=?, ACCT_CLOSE_DATE=?, BALANCE_AS_ON=?, CURRENCY=?, BAL_EQUI_TO_BWP=?, "
-	                + "RATE_OF_INTEREST=?, HUNDRED=?, STATUS=?, MATURITY_DATE=?, GL_SUB_HEAD_CODE=?, "
-	                + "GL_SUB_HEAD_DESC=?, TYPE_OF_ACCOUNTS=?, SEGMENT=?, PERIOD=?, EFFECTIVE_INTEREST_RATE=?, "
-	                + "ENTRY_DATE=?, ENTRY_USER=?, ENTRY_FLG=?, BFDB_FLG=? "
-	                + "WHERE ACCOUNT_NO=? AND REPORT_DATE=?";
-	        stmtUpdateMaster = conn.prepareStatement(updateMaster);
-
-	        // 🟢 MASTER insert query (when record doesn't exist)
-	        String insertMaster = "INSERT INTO GENERAL_MASTER_TABLE (ID, SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, ACCOUNT_NO, GENDER, SCHM_CODE, SCHM_DESC, "
-	                + "ACCT_OPEN_DATE, ACCT_CLOSE_DATE, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, RATE_OF_INTEREST, HUNDRED, STATUS, "
-	                + "MATURITY_DATE, GL_SUB_HEAD_CODE, GL_SUB_HEAD_DESC, TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INTEREST_RATE, "
-	                + "REPORT_DATE, ENTRY_DATE, ENTRY_USER, ENTRY_FLG, DEL_FLG, BFDB_FLG) "
-	                + "VALUES (" + String.join(",", Collections.nCopies(29, "?")) + ")";
+	        // GENERAL_MASTER_TABLE insert query (VERSION and DEL_FLG added)
+	        String insertMaster = "INSERT INTO GENERAL_MASTER_TABLE (" +
+	                "ID, SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, ACCOUNT_NO, GENDER, SCHM_CODE, SCHM_DESC, " +
+	                "ACCT_OPEN_DATE, ACCT_CLOSE_DATE, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, " +
+	                "RATE_OF_INTEREST, HUNDRED, STATUS, MATURITY_DATE, GL_SUB_HEAD_CODE, " +
+	                "GL_SUB_HEAD_DESC, TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INTEREST_RATE, " +
+	                "REPORT_DATE, ENTRY_TIME, MODIFY_TIME, VERIFY_TIME, UPLOAD_DATE, ENTRY_USER, MODIFY_USER, VERIFY_USER, " +
+	                "ENTRY_FLG, MODIFY_FLG, VERIFY_FLG, DEL_FLG, BFDB_FLG, REPORT_CODE, VERSION" +
+	                ") VALUES (" + String.join(",", Collections.nCopies(38, "?")) + ")";  // 38 params now
 	        stmtMaster = conn.prepareStatement(insertMaster);
 
 	        int count = 0;
@@ -194,111 +197,124 @@ public class BFDB_Services {
 	                    continue;
 	                }
 
-	                // Delete duplicate from BFDB only
-	                stmtDeleteBFDB.setString(1, accountNo);
-	                stmtDeleteBFDB.setDate(2, reportDate);
-	                stmtDeleteBFDB.executeUpdate();
+	                // Set current timestamp once for all time fields
+	                java.sql.Date currentTime = new java.sql.Date(System.currentTimeMillis());
 
-	                // --- BFDB insert ---
+	                // 1. Handle DEP_BOOK versioning + soft delete (existing logic)
+	                int depBookVersion = 1;
+	                stmtSelectDepBookVersion.setString(1, accountNo);
+	                stmtSelectDepBookVersion.setDate(2, reportDate);
+	                try (ResultSet rs = stmtSelectDepBookVersion.executeQuery()) {
+	                    if (rs.next()) {
+	                        int maxVersion = rs.getInt(1);
+	                        if (maxVersion > 0) {
+	                            stmtSoftDeleteDepBook.setString(1, accountNo);
+	                            stmtSoftDeleteDepBook.setDate(2, reportDate);
+	                            stmtSoftDeleteDepBook.executeUpdate();
+	                            depBookVersion = maxVersion + 1;
+	                        }
+	                    }
+	                }
+
+	                // 2. Handle GENERAL_MASTER_TABLE versioning + soft delete (NEW)
+	                int masterVersion = 1;
+	                stmtSelectMasterVersion.setString(1, accountNo);
+	                stmtSelectMasterVersion.setDate(2, reportDate);
+	                try (ResultSet rs = stmtSelectMasterVersion.executeQuery()) {
+	                    if (rs.next()) {
+	                        int maxVersion = rs.getInt(1);
+	                        if (maxVersion > 0) {
+	                            stmtSoftDeleteMaster.setString(1, accountNo);
+	                            stmtSoftDeleteMaster.setDate(2, reportDate);
+	                            stmtSoftDeleteMaster.executeUpdate();
+	                            masterVersion = maxVersion + 1;
+	                        }
+	                    }
+	                }
+
+	                // 3. DEP_BOOK INSERT (always new version)
 	                int col = 0;
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 0, formatter, evaluator)); // SOL_ID
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 1, formatter, evaluator)); // CUSTOMER_ID
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 2, formatter, evaluator)); // GENDER
-	                stmtBFDB.setString(++col, accountNo);
+	                stmtBFDB.setString(++col, accountNo);                                        // ACCOUNT_NO
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 4, formatter, evaluator)); // CUSTOMER_NAME
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 5, formatter, evaluator)); // SCHM_CODE
 	                stmtBFDB.setString(++col, getCellStringSafe(row, 6, formatter, evaluator)); // SCHM_DESC
-	                stmtBFDB.setDate(++col, getCellDateSafe(row, 7, formatter, evaluator)); // ACCT_OPEN_DATE
-	                stmtBFDB.setDate(++col, getCellDateSafe(row, 8, formatter, evaluator)); // ACCT_CLOSE_DATE
-	                stmtBFDB.setBigDecimal(++col, getCellDecimalSafe(row, 9, formatter, evaluator)); // BALANCE_AS_ON
-	                stmtBFDB.setString(++col, getCellStringSafe(row, 10, formatter, evaluator)); // CURRENCY
+	                stmtBFDB.setDate(++col, getCellDateSafe(row, 7, formatter, evaluator));     // ACCT_OPEN_DATE
+	                stmtBFDB.setDate(++col, getCellDateSafe(row, 8, formatter, evaluator));     // ACCT_CLOSE_DATE
+	                stmtBFDB.setBigDecimal(++col, getCellDecimalSafe(row, 9, formatter, evaluator));  // BALANCE_AS_ON
+	                stmtBFDB.setString(++col, getCellStringSafe(row, 10, formatter, evaluator));      // CURRENCY
 	                stmtBFDB.setBigDecimal(++col, getCellDecimalSafe(row, 11, formatter, evaluator)); // BAL_EQUI_TO_BWP
 	                stmtBFDB.setBigDecimal(++col, getCellDecimalSafe(row, 12, formatter, evaluator)); // RATE_OF_INTEREST
 	                stmtBFDB.setBigDecimal(++col, getCellDecimalSafe(row, 13, formatter, evaluator)); // HUNDRED
-	                stmtBFDB.setString(++col, getCellStringSafe(row, 14, formatter, evaluator)); // STATUS
-	                stmtBFDB.setDate(++col, getCellDateSafe(row, 15, formatter, evaluator)); // MATURITY_DATE
-	                stmtBFDB.setString(++col, getCellStringSafe(row, 16, formatter, evaluator)); // GL_SUB_HEAD_CODE
-	                stmtBFDB.setString(++col, getCellStringSafe(row, 17, formatter, evaluator)); // GL_SUB_HEAD_DESC
-	                stmtBFDB.setString(++col, getCellStringSafe(row, 18, formatter, evaluator)); // TYPE_OF_ACCOUNTS
-	                stmtBFDB.setString(++col, getCellStringSafe(row, 19, formatter, evaluator)); // SEGMENT
-	                stmtBFDB.setString(++col, getCellStringSafe(row, 20, formatter, evaluator)); // PERIOD
+	                stmtBFDB.setString(++col, getCellStringSafe(row, 14, formatter, evaluator));      // STATUS
+	                stmtBFDB.setDate(++col, getCellDateSafe(row, 15, formatter, evaluator));          // MATURITY_DATE
+	                stmtBFDB.setString(++col, getCellStringSafe(row, 16, formatter, evaluator));      // GL_SUB_HEAD_CODE
+	                stmtBFDB.setString(++col, getCellStringSafe(row, 17, formatter, evaluator));      // GL_SUB_HEAD_DESC
+	                stmtBFDB.setString(++col, getCellStringSafe(row, 18, formatter, evaluator));      // TYPE_OF_ACCOUNTS
+	                stmtBFDB.setString(++col, getCellStringSafe(row, 19, formatter, evaluator));      // SEGMENT
+	                stmtBFDB.setString(++col, getCellStringSafe(row, 20, formatter, evaluator));      // PERIOD
 	                stmtBFDB.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
-	                stmtBFDB.setDate(++col, reportDate);
-	                stmtBFDB.setDate(++col, new java.sql.Date(System.currentTimeMillis()));
-	                stmtBFDB.setString(++col, userid);
-	                stmtBFDB.setString(++col, "Y");
-	                stmtBFDB.setString(++col, "N");
+	                stmtBFDB.setDate(++col, reportDate);                                              // REPORT_DATE
+	                stmtBFDB.setDate(++col, currentTime);                                             // ENTRY_TIME
+	                stmtBFDB.setDate(++col, currentTime);                                             // MODIFY_TIME
+	                stmtBFDB.setDate(++col, currentTime);                                             // VERIFY_TIME
+	                stmtBFDB.setString(++col, userid);                                                // ENTRY_USER
+	                stmtBFDB.setString(++col, "Y");                                                   // ENTRY_FLG
+	                stmtBFDB.setString(++col, userid);                                                // MODIFY_USER
+	                stmtBFDB.setString(++col, userid);                                                // VERIFY_USER
+	                stmtBFDB.setString(++col, "N");                                                   // MODIFY_FLG
+	                stmtBFDB.setString(++col, "N");                                                   // VERIFY_FLG
+	                stmtBFDB.setString(++col, "N");                                                   // DEL_FLG
+	                stmtBFDB.setString(++col, "N");                                                   // DEL_USER
+	                stmtBFDB.setDate(++col, currentTime);                                             // UPLOAD_DATE
+	                stmtBFDB.setString(++col, "DEPB");                                                // REPORT_CODE
+	                stmtBFDB.setInt(++col, depBookVersion);                                           // VERSION
 	                stmtBFDB.addBatch();
 
-	                // 🟢 Try UPDATE first
+	                // 4. GENERAL_MASTER_TABLE INSERT (always new version, no UPDATE)
 	                col = 0;
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 0, formatter, evaluator)); // SOL_ID
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 1, formatter, evaluator)); // CUSTOMER_ID
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 4, formatter, evaluator)); // CUSTOMER_NAME
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 2, formatter, evaluator)); // GENDER
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 5, formatter, evaluator)); // SCHM_CODE
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 6, formatter, evaluator)); // SCHM_DESC
-	                stmtUpdateMaster.setDate(++col, getCellDateSafe(row, 7, formatter, evaluator)); // ACCT_OPEN_DATE
-	                stmtUpdateMaster.setDate(++col, getCellDateSafe(row, 8, formatter, evaluator)); // ACCT_CLOSE_DATE
-	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 9, formatter, evaluator)); // BALANCE_AS_ON
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 10, formatter, evaluator)); // CURRENCY
-	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 11, formatter, evaluator)); // BAL_EQUI_TO_BWP
-	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 12, formatter, evaluator)); // RATE_OF_INTEREST
-	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 13, formatter, evaluator)); // HUNDRED
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 14, formatter, evaluator)); // STATUS
-	                stmtUpdateMaster.setDate(++col, getCellDateSafe(row, 15, formatter, evaluator)); // MATURITY_DATE
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 16, formatter, evaluator)); // GL_SUB_HEAD_CODE
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 17, formatter, evaluator)); // GL_SUB_HEAD_DESC
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 18, formatter, evaluator)); // TYPE_OF_ACCOUNTS
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 19, formatter, evaluator)); // SEGMENT
-	                stmtUpdateMaster.setString(++col, getCellStringSafe(row, 20, formatter, evaluator)); // PERIOD
-	                stmtUpdateMaster.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
-	                stmtUpdateMaster.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
-	                stmtUpdateMaster.setString(++col, userid); // ENTRY_USER
-	                stmtUpdateMaster.setString(++col, "Y"); // ENTRY_FLG
-	                stmtUpdateMaster.setString(++col, "Y"); // BFDB_FLG
-	                stmtUpdateMaster.setString(++col, accountNo); // WHERE ACCOUNT_NO
-	                stmtUpdateMaster.setDate(++col, reportDate); // WHERE REPORT_DATE
-
-	                int updatedRows = stmtUpdateMaster.executeUpdate();
-
-	                // 🟢 If UPDATE didn't affect any rows, INSERT new record
-	                if (updatedRows == 0) {
-	                    col = 0;
-	                    stmtMaster.setString(++col, sequence.generateRequestUUId()); // ID
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 0, formatter, evaluator)); // SOL_ID
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 1, formatter, evaluator)); // CUSTOMER_ID
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 4, formatter, evaluator)); // CUSTOMER_NAME
-	                    stmtMaster.setString(++col, accountNo); // ACCOUNT_NO
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 2, formatter, evaluator)); // GENDER
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 5, formatter, evaluator)); // SCHM_CODE
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 6, formatter, evaluator)); // SCHM_DESC
-	                    stmtMaster.setDate(++col, getCellDateSafe(row, 7, formatter, evaluator)); // ACCT_OPEN_DATE
-	                    stmtMaster.setDate(++col, getCellDateSafe(row, 8, formatter, evaluator)); // ACCT_CLOSE_DATE
-	                    stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 9, formatter, evaluator)); // BALANCE_AS_ON
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 10, formatter, evaluator)); // CURRENCY
-	                    stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 11, formatter, evaluator)); // BAL_EQUI_TO_BWP
-	                    stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 12, formatter, evaluator)); // RATE_OF_INTEREST
-	                    stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 13, formatter, evaluator)); // HUNDRED
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 14, formatter, evaluator)); // STATUS
-	                    stmtMaster.setDate(++col, getCellDateSafe(row, 15, formatter, evaluator)); // MATURITY_DATE
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 16, formatter, evaluator)); // GL_SUB_HEAD_CODE
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 17, formatter, evaluator)); // GL_SUB_HEAD_DESC
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 18, formatter, evaluator)); // TYPE_OF_ACCOUNTS
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 19, formatter, evaluator)); // SEGMENT
-	                    stmtMaster.setString(++col, getCellStringSafe(row, 20, formatter, evaluator)); // PERIOD
-	                    stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
-	                    stmtMaster.setDate(++col, reportDate); // REPORT_DATE
-	                    stmtMaster.setDate(++col, new java.sql.Date(System.currentTimeMillis())); // ENTRY_DATE
-	                    stmtMaster.setString(++col, userid); // ENTRY_USER
-	                    stmtMaster.setString(++col, "Y"); // ENTRY_FLG
-	                    stmtMaster.setString(++col, "N"); // DEL_FLG
-	                    stmtMaster.setString(++col, "Y"); // BFDB_FLG
-	                    stmtMaster.addBatch();
-	                    insertedCount++;
-	                } else {
-	                    updatedCount++;
-	                }
+	                stmtMaster.setString(++col, sequence.generateRequestUUId());                      // ID
+	                stmtMaster.setString(++col, getCellStringSafe(row, 0, formatter, evaluator));    // SOL_ID
+	                stmtMaster.setString(++col, getCellStringSafe(row, 1, formatter, evaluator));    // CUSTOMER_ID
+	                stmtMaster.setString(++col, getCellStringSafe(row, 4, formatter, evaluator));    // CUSTOMER_NAME
+	                stmtMaster.setString(++col, accountNo);                                           // ACCOUNT_NO
+	                stmtMaster.setString(++col, getCellStringSafe(row, 2, formatter, evaluator));    // GENDER
+	                stmtMaster.setString(++col, getCellStringSafe(row, 5, formatter, evaluator));    // SCHM_CODE
+	                stmtMaster.setString(++col, getCellStringSafe(row, 6, formatter, evaluator));    // SCHM_DESC
+	                stmtMaster.setDate(++col, getCellDateSafe(row, 7, formatter, evaluator));        // ACCT_OPEN_DATE
+	                stmtMaster.setDate(++col, getCellDateSafe(row, 8, formatter, evaluator));        // ACCT_CLOSE_DATE
+	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 9, formatter, evaluator)); // BALANCE_AS_ON
+	                stmtMaster.setString(++col, getCellStringSafe(row, 10, formatter, evaluator));   // CURRENCY
+	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 11, formatter, evaluator)); // BAL_EQUI_TO_BWP
+	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 12, formatter, evaluator)); // RATE_OF_INTEREST
+	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 13, formatter, evaluator)); // HUNDRED
+	                stmtMaster.setString(++col, getCellStringSafe(row, 14, formatter, evaluator));   // STATUS
+	                stmtMaster.setDate(++col, getCellDateSafe(row, 15, formatter, evaluator));       // MATURITY_DATE
+	                stmtMaster.setString(++col, getCellStringSafe(row, 16, formatter, evaluator));   // GL_SUB_HEAD_CODE
+	                stmtMaster.setString(++col, getCellStringSafe(row, 17, formatter, evaluator));   // GL_SUB_HEAD_DESC
+	                stmtMaster.setString(++col, getCellStringSafe(row, 18, formatter, evaluator));   // TYPE_OF_ACCOUNTS
+	                stmtMaster.setString(++col, getCellStringSafe(row, 19, formatter, evaluator));   // SEGMENT
+	                stmtMaster.setString(++col, getCellStringSafe(row, 20, formatter, evaluator));   // PERIOD
+	                stmtMaster.setBigDecimal(++col, getCellDecimalSafe(row, 21, formatter, evaluator)); // EFFECTIVE_INTEREST_RATE
+	                stmtMaster.setDate(++col, reportDate);                                            // REPORT_DATE
+	                stmtMaster.setDate(++col, currentTime);                                           // ENTRY_TIME
+	                stmtMaster.setDate(++col, currentTime);                                           // MODIFY_TIME
+	                stmtMaster.setDate(++col, currentTime);                                           // VERIFY_TIME
+	                stmtMaster.setDate(++col, currentTime);                                           // UPLOAD_DATE
+	                stmtMaster.setString(++col, userid);                                              // ENTRY_USER
+	                stmtMaster.setString(++col, userid);                                              // MODIFY_USER
+	                stmtMaster.setString(++col, userid);                                              // VERIFY_USER
+	                stmtMaster.setString(++col, "Y");                                                 // ENTRY_FLG
+	                stmtMaster.setString(++col, "N");                                                 // MODIFY_FLG
+	                stmtMaster.setString(++col, "Y");                                                 // VERIFY_FLG
+	                stmtMaster.setString(++col, "N");                                                  // DEL_FLG (current record)
+	                stmtMaster.setString(++col, "Y");                                                 // BFDB_FLG
+	                stmtMaster.setString(++col, "DEPB");                                              // REPORT_CODE
+	                stmtMaster.setInt(++col, masterVersion);                                          // VERSION (new version)
+	                stmtMaster.addBatch();
+	                insertedCount++;
 
 	                savedCount++;
 	                count++;
@@ -313,7 +329,7 @@ public class BFDB_Services {
 
 	                if (totalProcessed % commitInterval == 0) {
 	                    conn.commit();
-	                    logger.info("Progress: {} rows processed (Updated: {}, Inserted: {})", totalProcessed, updatedCount, insertedCount);
+	                    logger.info("Progress: {} rows processed (Inserted: {})", totalProcessed, insertedCount);
 	                }
 
 	            } catch (Exception ex) {
@@ -327,8 +343,9 @@ public class BFDB_Services {
 	        conn.commit();
 
 	        long duration = System.currentTimeMillis() - startTime;
-	        return String.format("✅ BFDB upload completed. Saved: %d (Updated: %d, Inserted: %d), Skipped: %d. Time: %d ms", 
-	                savedCount, updatedCount, insertedCount, skippedCount, duration);
+	        return String.format(
+	                "✅ BFDB upload completed. Saved: %d (Inserted: %d), Skipped: %d. Time: %d ms",
+	                savedCount, insertedCount, skippedCount, duration);
 
 	    } catch (Exception e) {
 	        if (conn != null) conn.rollback();
@@ -337,15 +354,15 @@ public class BFDB_Services {
 	    } finally {
 	        if (stmtBFDB != null) stmtBFDB.close();
 	        if (stmtMaster != null) stmtMaster.close();
-	        if (stmtUpdateMaster != null) stmtUpdateMaster.close();
-	        if (stmtDeleteBFDB != null) stmtDeleteBFDB.close();
+	        if (stmtSelectDepBookVersion != null) stmtSelectDepBookVersion.close();
+	        if (stmtSoftDeleteDepBook != null) stmtSoftDeleteDepBook.close();
+	        if (stmtSelectMasterVersion != null) stmtSelectMasterVersion.close();
+	        if (stmtSoftDeleteMaster != null) stmtSoftDeleteMaster.close();
 	        if (conn != null) conn.close();
 	        if (workbook != null) workbook.close();
 	        if (is != null) is.close();
 	    }
 	}
-
-
 
 
 
