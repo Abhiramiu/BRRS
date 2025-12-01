@@ -566,14 +566,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 		
 					//row10
 					// Column b
-					Cell cell1 = row.createCell(1);
-					if (record.getR10_PRODUCT() != null) {
-						cell1.setCellValue(record.getR10_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+					
 					//column c
 					Cell cell2 = row.createCell(2);
 					if (record.getR10_AMOUNT() != null) {
@@ -590,14 +583,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row11
 					row = sheet.getRow(10);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR11_PRODUCT() != null) {
-						cell1.setCellValue(record.getR11_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -612,15 +598,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row12
 					row = sheet.getRow(11);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR12_PRODUCT() != null) {
-						cell1.setCellValue(record.getR12_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+					
 					// Column c
 					 cell2 = row.createCell(2);
 					if (record.getR12_AMOUNT() != null) {
@@ -634,14 +612,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row13
 					row = sheet.getRow(12);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR13_PRODUCT() != null) {
-						cell1.setCellValue(record.getR13_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 					// Column c
 					 cell2 = row.createCell(2);
 					if (record.getR13_AMOUNT() != null) {
@@ -656,15 +627,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row14
 					row = sheet.getRow(13);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR14_PRODUCT() != null) {
-						cell1.setCellValue(record.getR14_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+					
 					// Column c
 					 cell2 = row.createCell(2);
 					if (record.getR14_AMOUNT() != null) {
@@ -679,14 +642,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row15
 					row = sheet.getRow(14);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR15_PRODUCT() != null) {
-						cell1.setCellValue(record.getR15_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+					
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -701,14 +657,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row16
 					row = sheet.getRow(15);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR16_PRODUCT() != null) {
-						cell1.setCellValue(record.getR16_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+					
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -723,14 +672,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row17
 					row = sheet.getRow(16);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR17_PRODUCT() != null) {
-						cell1.setCellValue(record.getR17_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -745,14 +687,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row18
 					row = sheet.getRow(17);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR18_PRODUCT() != null) {
-						cell1.setCellValue(record.getR18_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+					
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -767,14 +702,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row19
 					row = sheet.getRow(18);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR19_PRODUCT() != null) {
-						cell1.setCellValue(record.getR19_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -789,14 +717,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row20
 					row = sheet.getRow(19);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR20_PRODUCT() != null) {
-						cell1.setCellValue(record.getR20_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.getCell(2);
@@ -810,14 +731,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row24
 					row = sheet.getRow(23);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR24_PRODUCT() != null) {
-						cell1.setCellValue(record.getR24_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+					
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -832,14 +746,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row25
 					row = sheet.getRow(24);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR25_PRODUCT() != null) {
-						cell1.setCellValue(record.getR25_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -854,14 +761,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row26
 					row = sheet.getRow(25);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR26_PRODUCT() != null) {
-						cell1.setCellValue(record.getR26_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -876,15 +776,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row27
 					row = sheet.getRow(26);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR27_PRODUCT() != null) {
-						cell1.setCellValue(record.getR27_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+				
 					// Column c
 					 cell2 = row.createCell(2);
 					if (record.getR27_AMOUNT() != null) {
@@ -898,15 +790,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row28
 					row = sheet.getRow(27);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR28_PRODUCT() != null) {
-						cell1.setCellValue(record.getR28_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+				
 					// Column c
 					 cell2 = row.getCell(2);
 					if (record.getR28_AMOUNT() != null) {
@@ -919,15 +803,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row29
 					row = sheet.getRow(28);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR29_PRODUCT() != null) {
-						cell1.setCellValue(record.getR29_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+					
 					// Column c
 					 cell2 = row.getCell(2);
 					if (record.getR29_AMOUNT() != null) {
@@ -941,14 +817,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row36
 					row = sheet.getRow(35);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR36_PRODUCT() != null) {
-						cell1.setCellValue(record.getR36_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -962,15 +831,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row37
 					row = sheet.getRow(36);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR37_PRODUCT() != null) {
-						cell1.setCellValue(record.getR37_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+				
 					// Column c
 					 cell2 = row.createCell(2);
 					if (record.getR37_AMOUNT() != null) {
@@ -984,15 +845,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row38
 					row = sheet.getRow(37);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR38_PRODUCT() != null) {
-						cell1.setCellValue(record.getR38_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+					
 					// Column c
 					 cell2 = row.createCell(2);
 					if (record.getR38_AMOUNT() != null) {
@@ -1006,14 +859,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row39
 					row = sheet.getRow(38);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR39_PRODUCT() != null) {
-						cell1.setCellValue(record.getR39_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -1028,14 +874,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row40
 					row = sheet.getRow(39);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR40_PRODUCT() != null) {
-						cell1.setCellValue(record.getR40_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -1050,14 +889,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row41
 					row = sheet.getRow(40);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR41_PRODUCT() != null) {
-						cell1.setCellValue(record.getR41_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.getCell(2);
@@ -1072,15 +904,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row44
 					row = sheet.getRow(43);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR44_PRODUCT() != null) {
-						cell1.setCellValue(record.getR44_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+					
 					// Column c
 					 cell2 = row.createCell(2);
 					if (record.getR44_AMOUNT() != null) {
@@ -1094,14 +918,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row45
 					row = sheet.getRow(44);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR45_PRODUCT() != null) {
-						cell1.setCellValue(record.getR45_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.getCell(2);
@@ -1116,15 +933,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row46
 					row = sheet.getRow(45);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR46_PRODUCT() != null) {
-						cell1.setCellValue(record.getR46_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+				
 					// Column c
 					 cell2 = row.getCell(2);
 					if (record.getR46_AMOUNT() != null) {
@@ -1138,15 +947,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row50
 					row = sheet.getRow(49);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR50_PRODUCT() != null) {
-						cell1.setCellValue(record.getR50_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+				
 					// Column c
 					 cell2 = row.createCell(2);
 					if (record.getR50_AMOUNT() != null) {
@@ -1160,14 +961,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row51
 					row = sheet.getRow(50);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR51_PRODUCT() != null) {
-						cell1.setCellValue(record.getR51_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -1182,14 +976,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row52
 					row = sheet.getRow(51);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR52_PRODUCT() != null) {
-						cell1.setCellValue(record.getR52_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -1204,14 +991,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row53
 					row = sheet.getRow(52);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR53_PRODUCT() != null) {
-						cell1.setCellValue(record.getR53_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.createCell(2);
@@ -1226,15 +1006,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row54
 					row = sheet.getRow(53);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR54_PRODUCT() != null) {
-						cell1.setCellValue(record.getR54_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+				
 					// Column c
 					 cell2 = row.createCell(2);
 					if (record.getR54_AMOUNT() != null) {
@@ -1248,14 +1020,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row55
 					row = sheet.getRow(54);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR55_PRODUCT() != null) {
-						cell1.setCellValue(record.getR55_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.getCell(2);
@@ -1272,15 +1037,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row58
 					row = sheet.getRow(57);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR58_PRODUCT() != null) {
-						cell1.setCellValue(record.getR58_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+				
 					// Column c
 					 cell2 = row.createCell(2);
 					if (record.getR58_AMOUNT() != null) {
@@ -1294,14 +1051,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row59
 					row = sheet.getRow(58);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR59_PRODUCT() != null) {
-						cell1.setCellValue(record.getR59_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
+				
 
 					// Column c
 					 cell2 = row.getCell(2);
@@ -1316,15 +1066,7 @@ public byte[] BRRS_M_CA3Excel(String filename,String reportId, String fromdate, 
 					//row60
 					row = sheet.getRow(14);			
 					// Column b
-					 cell1 = row.createCell(1);
-					if (record.getR15_PRODUCT() != null) {
-						cell1.setCellValue(record.getR15_PRODUCT());
-						cell1.setCellStyle(numberStyle);
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(textStyle);
-					}
-
+				
 					// Column c
 					 cell2 = row.getCell(2);
 					if (record.getR15_AMOUNT() != null) {
@@ -1584,781 +1326,531 @@ if (dataList.isEmpty()) {
 				if (row == null) {
 					row = sheet.createRow(startRow + i);
 				}
+				
+						//row10
+						// Column b
+						
+						//column c
+						Cell cell2 = row.createCell(2);
+						if (record.getR10_AMOUNT() != null) {
+							cell2.setCellValue(record.getR10_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+						
+						
+										
+						
+						//row11
+						row = sheet.getRow(10);			
+						// Column b
+					
 
-				//row10
-				// Column b
-				Cell cell1 = row.createCell(1);
-				if (record.getR10_PRODUCT() != null) {
-					cell1.setCellValue(record.getR10_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-				//column c
-				Cell cell2 = row.createCell(2);
-				if (record.getR10_AMOUNT() != null) {
-					cell2.setCellValue(record.getR10_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR11_AMOUNT() != null) {
+							cell2.setCellValue(record.getR11_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+						
+						//row12
+						row = sheet.getRow(11);			
+						// Column b
+						
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR12_AMOUNT() != null) {
+							cell2.setCellValue(record.getR12_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+						
+						//row13
+						row = sheet.getRow(12);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR13_AMOUNT() != null) {
+							cell2.setCellValue(record.getR13_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+						
+
+						//row14
+						row = sheet.getRow(13);			
+						// Column b
+						
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR14_AMOUNT() != null) {
+							cell2.setCellValue(record.getR14_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+						
+
+						//row15
+						row = sheet.getRow(14);			
+						// Column b
+						
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR15_AMOUNT() != null) {
+							cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row16
+						row = sheet.getRow(15);			
+						// Column b
+						
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR16_AMOUNT() != null) {
+							cell2.setCellValue(record.getR16_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row17
+						row = sheet.getRow(16);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR17_AMOUNT() != null) {
+							cell2.setCellValue(record.getR17_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row18
+						row = sheet.getRow(17);			
+						// Column b
+						
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR18_AMOUNT() != null) {
+							cell2.setCellValue(record.getR18_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row19
+						row = sheet.getRow(18);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR19_AMOUNT() != null) {
+							cell2.setCellValue(record.getR19_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row20
+						row = sheet.getRow(19);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR20_AMOUNT() != null) {
+							cell2.setCellValue(record.getR20_AMOUNT().doubleValue());
+							
+						} else {
+							cell2.setCellValue("");
+												}
+
+						//row24
+						row = sheet.getRow(23);			
+						// Column b
+						
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR24_AMOUNT() != null) {
+							cell2.setCellValue(record.getR24_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row25
+						row = sheet.getRow(24);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR25_AMOUNT() != null) {
+							cell2.setCellValue(record.getR25_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row26
+						row = sheet.getRow(25);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR26_AMOUNT() != null) {
+							cell2.setCellValue(record.getR26_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row27
+						row = sheet.getRow(26);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR27_AMOUNT() != null) {
+							cell2.setCellValue(record.getR27_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row28
+						row = sheet.getRow(27);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR28_AMOUNT() != null) {
+							cell2.setCellValue(record.getR28_AMOUNT().doubleValue());
+							
+						} else {
+							cell2.setCellValue("");
+												}
+
+						//row29
+						row = sheet.getRow(28);			
+						// Column b
+						
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR29_AMOUNT() != null) {
+							cell2.setCellValue(record.getR29_AMOUNT().doubleValue());
+
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+						//row36
+						row = sheet.getRow(35);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR36_AMOUNT() != null) {
+							cell2.setCellValue(record.getR36_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+						//row37
+						row = sheet.getRow(36);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR37_AMOUNT() != null) {
+							cell2.setCellValue(record.getR37_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row38
+						row = sheet.getRow(37);			
+						// Column b
+						
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR38_AMOUNT() != null) {
+							cell2.setCellValue(record.getR38_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row39
+						row = sheet.getRow(38);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR39_AMOUNT() != null) {
+							cell2.setCellValue(record.getR39_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row40
+						row = sheet.getRow(39);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR40_AMOUNT() != null) {
+							cell2.setCellValue(record.getR40_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row41
+						row = sheet.getRow(40);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR41_AMOUNT() != null) {
+							cell2.setCellValue(record.getR41_AMOUNT().doubleValue());
+
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+						//row44
+						row = sheet.getRow(43);			
+						// Column b
+						
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR44_AMOUNT() != null) {
+							cell2.setCellValue(record.getR44_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row45
+						row = sheet.getRow(44);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR45_AMOUNT() != null) {
+							cell2.setCellValue(record.getR45_AMOUNT().doubleValue());
+
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+						//row46
+						row = sheet.getRow(45);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR46_AMOUNT() != null) {
+							cell2.setCellValue(record.getR46_AMOUNT().doubleValue());
 				
-				
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+						//row50
+						row = sheet.getRow(49);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR50_AMOUNT() != null) {
+							cell2.setCellValue(record.getR50_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row51
+						row = sheet.getRow(50);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR51_AMOUNT() != null) {
+							cell2.setCellValue(record.getR51_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row52
+						row = sheet.getRow(51);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR52_AMOUNT() != null) {
+							cell2.setCellValue(record.getR52_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row53
+						row = sheet.getRow(52);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR53_AMOUNT() != null) {
+							cell2.setCellValue(record.getR53_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row54
+						row = sheet.getRow(53);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR54_AMOUNT() != null) {
+							cell2.setCellValue(record.getR54_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row55
+						row = sheet.getRow(54);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR55_AMOUNT() != null) {
+							cell2.setCellValue(record.getR55_AMOUNT().doubleValue());
+
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+					
+
+						//row58
+						row = sheet.getRow(57);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR58_AMOUNT() != null) {
+							cell2.setCellValue(record.getR58_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row59
+						row = sheet.getRow(58);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR59_AMOUNT() != null) {
+							cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
+
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+						//row60
+						row = sheet.getRow(14);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR15_AMOUNT() != null) {
+							cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
+
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+						
+						
+						
+
+						
+						
+
+						
 								
-				
-				//row11
-				row = sheet.getRow(10);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR11_PRODUCT() != null) {
-					cell1.setCellValue(record.getR11_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR11_AMOUNT() != null) {
-					cell2.setCellValue(record.getR11_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-				
-				//row12
-				row = sheet.getRow(11);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR12_PRODUCT() != null) {
-					cell1.setCellValue(record.getR12_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR12_AMOUNT() != null) {
-					cell2.setCellValue(record.getR12_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-				
-				//row13
-				row = sheet.getRow(12);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR13_PRODUCT() != null) {
-					cell1.setCellValue(record.getR13_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR13_AMOUNT() != null) {
-					cell2.setCellValue(record.getR13_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-				
-
-				//row14
-				row = sheet.getRow(13);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR14_PRODUCT() != null) {
-					cell1.setCellValue(record.getR14_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR14_AMOUNT() != null) {
-					cell2.setCellValue(record.getR14_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-				
-
-				//row15
-				row = sheet.getRow(14);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR15_PRODUCT() != null) {
-					cell1.setCellValue(record.getR15_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR15_AMOUNT() != null) {
-					cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row16
-				row = sheet.getRow(15);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR16_PRODUCT() != null) {
-					cell1.setCellValue(record.getR16_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR16_AMOUNT() != null) {
-					cell2.setCellValue(record.getR16_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row17
-				row = sheet.getRow(16);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR17_PRODUCT() != null) {
-					cell1.setCellValue(record.getR17_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR17_AMOUNT() != null) {
-					cell2.setCellValue(record.getR17_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row18
-				row = sheet.getRow(17);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR18_PRODUCT() != null) {
-					cell1.setCellValue(record.getR18_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR18_AMOUNT() != null) {
-					cell2.setCellValue(record.getR18_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row19
-				row = sheet.getRow(18);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR19_PRODUCT() != null) {
-					cell1.setCellValue(record.getR19_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR19_AMOUNT() != null) {
-					cell2.setCellValue(record.getR19_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row20
-				row = sheet.getRow(19);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR20_PRODUCT() != null) {
-					cell1.setCellValue(record.getR20_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR20_AMOUNT() != null) {
-					cell2.setCellValue(record.getR20_AMOUNT().doubleValue());
-					
-				} else {
-					cell2.setCellValue("");
-										}
-
-				//row24
-				row = sheet.getRow(23);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR24_PRODUCT() != null) {
-					cell1.setCellValue(record.getR24_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR24_AMOUNT() != null) {
-					cell2.setCellValue(record.getR24_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row25
-				row = sheet.getRow(24);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR25_PRODUCT() != null) {
-					cell1.setCellValue(record.getR25_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR25_AMOUNT() != null) {
-					cell2.setCellValue(record.getR25_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row26
-				row = sheet.getRow(25);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR26_PRODUCT() != null) {
-					cell1.setCellValue(record.getR26_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR26_AMOUNT() != null) {
-					cell2.setCellValue(record.getR26_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row27
-				row = sheet.getRow(26);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR27_PRODUCT() != null) {
-					cell1.setCellValue(record.getR27_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR27_AMOUNT() != null) {
-					cell2.setCellValue(record.getR27_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row28
-				row = sheet.getRow(27);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR28_PRODUCT() != null) {
-					cell1.setCellValue(record.getR28_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR28_AMOUNT() != null) {
-					cell2.setCellValue(record.getR28_AMOUNT().doubleValue());
-					
-				} else {
-					cell2.setCellValue("");
-										}
-
-				//row29
-				row = sheet.getRow(28);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR29_PRODUCT() != null) {
-					cell1.setCellValue(record.getR29_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR29_AMOUNT() != null) {
-					cell2.setCellValue(record.getR29_AMOUNT().doubleValue());
-
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-				//row36
-				row = sheet.getRow(35);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR36_PRODUCT() != null) {
-					cell1.setCellValue(record.getR36_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR36_AMOUNT() != null) {
-					cell2.setCellValue(record.getR36_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-				//row37
-				row = sheet.getRow(36);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR37_PRODUCT() != null) {
-					cell1.setCellValue(record.getR37_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR37_AMOUNT() != null) {
-					cell2.setCellValue(record.getR37_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row38
-				row = sheet.getRow(37);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR38_PRODUCT() != null) {
-					cell1.setCellValue(record.getR38_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR38_AMOUNT() != null) {
-					cell2.setCellValue(record.getR38_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row39
-				row = sheet.getRow(38);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR39_PRODUCT() != null) {
-					cell1.setCellValue(record.getR39_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR39_AMOUNT() != null) {
-					cell2.setCellValue(record.getR39_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row40
-				row = sheet.getRow(39);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR40_PRODUCT() != null) {
-					cell1.setCellValue(record.getR40_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR40_AMOUNT() != null) {
-					cell2.setCellValue(record.getR40_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row41
-				row = sheet.getRow(40);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR41_PRODUCT() != null) {
-					cell1.setCellValue(record.getR41_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR41_AMOUNT() != null) {
-					cell2.setCellValue(record.getR41_AMOUNT().doubleValue());
-
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-				//row44
-				row = sheet.getRow(43);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR44_PRODUCT() != null) {
-					cell1.setCellValue(record.getR44_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR44_AMOUNT() != null) {
-					cell2.setCellValue(record.getR44_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row45
-				row = sheet.getRow(44);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR45_PRODUCT() != null) {
-					cell1.setCellValue(record.getR45_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR45_AMOUNT() != null) {
-					cell2.setCellValue(record.getR45_AMOUNT().doubleValue());
-
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-				//row46
-				row = sheet.getRow(45);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR46_PRODUCT() != null) {
-					cell1.setCellValue(record.getR46_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR46_AMOUNT() != null) {
-					cell2.setCellValue(record.getR46_AMOUNT().doubleValue());
-		
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-				//row50
-				row = sheet.getRow(49);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR50_PRODUCT() != null) {
-					cell1.setCellValue(record.getR50_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR50_AMOUNT() != null) {
-					cell2.setCellValue(record.getR50_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row51
-				row = sheet.getRow(50);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR51_PRODUCT() != null) {
-					cell1.setCellValue(record.getR51_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR51_AMOUNT() != null) {
-					cell2.setCellValue(record.getR51_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row52
-				row = sheet.getRow(51);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR52_PRODUCT() != null) {
-					cell1.setCellValue(record.getR52_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR52_AMOUNT() != null) {
-					cell2.setCellValue(record.getR52_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row53
-				row = sheet.getRow(52);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR53_PRODUCT() != null) {
-					cell1.setCellValue(record.getR53_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR53_AMOUNT() != null) {
-					cell2.setCellValue(record.getR53_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row54
-				row = sheet.getRow(53);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR54_PRODUCT() != null) {
-					cell1.setCellValue(record.getR54_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR54_AMOUNT() != null) {
-					cell2.setCellValue(record.getR54_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row55
-				row = sheet.getRow(54);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR55_PRODUCT() != null) {
-					cell1.setCellValue(record.getR55_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR55_AMOUNT() != null) {
-					cell2.setCellValue(record.getR55_AMOUNT().doubleValue());
-
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-			
-
-				//row58
-				row = sheet.getRow(57);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR58_PRODUCT() != null) {
-					cell1.setCellValue(record.getR58_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR58_AMOUNT() != null) {
-					cell2.setCellValue(record.getR58_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row59
-				row = sheet.getRow(58);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR59_PRODUCT() != null) {
-					cell1.setCellValue(record.getR59_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR59_AMOUNT() != null) {
-					cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
-
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-				//row60
-				row = sheet.getRow(14);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR15_PRODUCT() != null) {
-					cell1.setCellValue(record.getR15_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR15_AMOUNT() != null) {
-					cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
-
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-				
-
-			}
+											
+					}
 			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 		} else {
 
@@ -2472,789 +1964,530 @@ public byte[] getExcelM_CA3ARCHIVAL(String filename, String reportId, String fro
 				if (row == null) {
 					row = sheet.createRow(startRow + i);
 				}
-				
-				//row10
-				// Column b
-				Cell cell1 = row.createCell(1);
-				if (record.getR10_PRODUCT() != null) {
-					cell1.setCellValue(record.getR10_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-				//column c
-				Cell cell2 = row.createCell(2);
-				if (record.getR10_AMOUNT() != null) {
-					cell2.setCellValue(record.getR10_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-				
-				
-								
-				
-				//row11
-				row = sheet.getRow(10);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR11_PRODUCT() != null) {
-					cell1.setCellValue(record.getR11_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR11_AMOUNT() != null) {
-					cell2.setCellValue(record.getR11_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-				
-				//row12
-				row = sheet.getRow(11);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR12_PRODUCT() != null) {
-					cell1.setCellValue(record.getR12_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR12_AMOUNT() != null) {
-					cell2.setCellValue(record.getR12_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-				
-				//row13
-				row = sheet.getRow(12);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR13_PRODUCT() != null) {
-					cell1.setCellValue(record.getR13_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR13_AMOUNT() != null) {
-					cell2.setCellValue(record.getR13_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-				
-
-				//row14
-				row = sheet.getRow(13);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR14_PRODUCT() != null) {
-					cell1.setCellValue(record.getR14_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR14_AMOUNT() != null) {
-					cell2.setCellValue(record.getR14_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-				
-
-				//row15
-				row = sheet.getRow(14);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR15_PRODUCT() != null) {
-					cell1.setCellValue(record.getR15_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR15_AMOUNT() != null) {
-					cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row16
-				row = sheet.getRow(15);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR16_PRODUCT() != null) {
-					cell1.setCellValue(record.getR16_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR16_AMOUNT() != null) {
-					cell2.setCellValue(record.getR16_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row17
-				row = sheet.getRow(16);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR17_PRODUCT() != null) {
-					cell1.setCellValue(record.getR17_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR17_AMOUNT() != null) {
-					cell2.setCellValue(record.getR17_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row18
-				row = sheet.getRow(17);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR18_PRODUCT() != null) {
-					cell1.setCellValue(record.getR18_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR18_AMOUNT() != null) {
-					cell2.setCellValue(record.getR18_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row19
-				row = sheet.getRow(18);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR19_PRODUCT() != null) {
-					cell1.setCellValue(record.getR19_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR19_AMOUNT() != null) {
-					cell2.setCellValue(record.getR19_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row20
-				row = sheet.getRow(19);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR20_PRODUCT() != null) {
-					cell1.setCellValue(record.getR20_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR20_AMOUNT() != null) {
-					cell2.setCellValue(record.getR20_AMOUNT().doubleValue());
-					
-				} else {
-					cell2.setCellValue("");
-										}
-
-				//row24
-				row = sheet.getRow(23);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR24_PRODUCT() != null) {
-					cell1.setCellValue(record.getR24_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR24_AMOUNT() != null) {
-					cell2.setCellValue(record.getR24_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row25
-				row = sheet.getRow(24);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR25_PRODUCT() != null) {
-					cell1.setCellValue(record.getR25_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR25_AMOUNT() != null) {
-					cell2.setCellValue(record.getR25_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row26
-				row = sheet.getRow(25);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR26_PRODUCT() != null) {
-					cell1.setCellValue(record.getR26_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR26_AMOUNT() != null) {
-					cell2.setCellValue(record.getR26_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row27
-				row = sheet.getRow(26);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR27_PRODUCT() != null) {
-					cell1.setCellValue(record.getR27_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR27_AMOUNT() != null) {
-					cell2.setCellValue(record.getR27_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row28
-				row = sheet.getRow(27);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR28_PRODUCT() != null) {
-					cell1.setCellValue(record.getR28_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR28_AMOUNT() != null) {
-					cell2.setCellValue(record.getR28_AMOUNT().doubleValue());
-					
-				} else {
-					cell2.setCellValue("");
-										}
-
-				//row29
-				row = sheet.getRow(28);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR29_PRODUCT() != null) {
-					cell1.setCellValue(record.getR29_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR29_AMOUNT() != null) {
-					cell2.setCellValue(record.getR29_AMOUNT().doubleValue());
-
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-				//row36
-				row = sheet.getRow(35);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR36_PRODUCT() != null) {
-					cell1.setCellValue(record.getR36_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR36_AMOUNT() != null) {
-					cell2.setCellValue(record.getR36_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-				//row37
-				row = sheet.getRow(36);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR37_PRODUCT() != null) {
-					cell1.setCellValue(record.getR37_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR37_AMOUNT() != null) {
-					cell2.setCellValue(record.getR37_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row38
-				row = sheet.getRow(37);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR38_PRODUCT() != null) {
-					cell1.setCellValue(record.getR38_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR38_AMOUNT() != null) {
-					cell2.setCellValue(record.getR38_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row39
-				row = sheet.getRow(38);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR39_PRODUCT() != null) {
-					cell1.setCellValue(record.getR39_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR39_AMOUNT() != null) {
-					cell2.setCellValue(record.getR39_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row40
-				row = sheet.getRow(39);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR40_PRODUCT() != null) {
-					cell1.setCellValue(record.getR40_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR40_AMOUNT() != null) {
-					cell2.setCellValue(record.getR40_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row41
-				row = sheet.getRow(40);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR41_PRODUCT() != null) {
-					cell1.setCellValue(record.getR41_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR41_AMOUNT() != null) {
-					cell2.setCellValue(record.getR41_AMOUNT().doubleValue());
-
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-				//row44
-				row = sheet.getRow(43);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR44_PRODUCT() != null) {
-					cell1.setCellValue(record.getR44_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR44_AMOUNT() != null) {
-					cell2.setCellValue(record.getR44_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row45
-				row = sheet.getRow(44);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR45_PRODUCT() != null) {
-					cell1.setCellValue(record.getR45_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR45_AMOUNT() != null) {
-					cell2.setCellValue(record.getR45_AMOUNT().doubleValue());
-
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-				//row46
-				row = sheet.getRow(45);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR46_PRODUCT() != null) {
-					cell1.setCellValue(record.getR46_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR46_AMOUNT() != null) {
-					cell2.setCellValue(record.getR46_AMOUNT().doubleValue());
-		
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-				//row50
-				row = sheet.getRow(49);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR50_PRODUCT() != null) {
-					cell1.setCellValue(record.getR50_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR50_AMOUNT() != null) {
-					cell2.setCellValue(record.getR50_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row51
-				row = sheet.getRow(50);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR51_PRODUCT() != null) {
-					cell1.setCellValue(record.getR51_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR51_AMOUNT() != null) {
-					cell2.setCellValue(record.getR51_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row52
-				row = sheet.getRow(51);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR52_PRODUCT() != null) {
-					cell1.setCellValue(record.getR52_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR52_AMOUNT() != null) {
-					cell2.setCellValue(record.getR52_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row53
-				row = sheet.getRow(52);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR53_PRODUCT() != null) {
-					cell1.setCellValue(record.getR53_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR53_AMOUNT() != null) {
-					cell2.setCellValue(record.getR53_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row54
-				row = sheet.getRow(53);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR54_PRODUCT() != null) {
-					cell1.setCellValue(record.getR54_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR54_AMOUNT() != null) {
-					cell2.setCellValue(record.getR54_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row55
-				row = sheet.getRow(54);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR55_PRODUCT() != null) {
-					cell1.setCellValue(record.getR55_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR55_AMOUNT() != null) {
-					cell2.setCellValue(record.getR55_AMOUNT().doubleValue());
-
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-			
-
-				//row58
-				row = sheet.getRow(57);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR58_PRODUCT() != null) {
-					cell1.setCellValue(record.getR58_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.createCell(2);
-				if (record.getR58_AMOUNT() != null) {
-					cell2.setCellValue(record.getR58_AMOUNT().doubleValue());
-					cell2.setCellStyle(numberStyle);
-				} else {
-					cell2.setCellValue("");
-					cell2.setCellStyle(textStyle);
-				}
-
-				//row59
-				row = sheet.getRow(58);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR59_PRODUCT() != null) {
-					cell1.setCellValue(record.getR59_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR59_AMOUNT() != null) {
-					cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
-
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-				//row60
-				row = sheet.getRow(14);			
-				// Column b
-				 cell1 = row.createCell(1);
-				if (record.getR15_PRODUCT() != null) {
-					cell1.setCellValue(record.getR15_PRODUCT());
-					cell1.setCellStyle(numberStyle);
-				} else {
-					cell1.setCellValue("");
-					cell1.setCellStyle(textStyle);
-				}
-
-				// Column c
-				 cell2 = row.getCell(2);
-				if (record.getR15_AMOUNT() != null) {
-					cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
-
-				} else {
-					cell2.setCellValue("");
-
-				}
-
-				
-				
-				
-
-				
-				
-
-				
+						//row10
+						// Column b
 						
-									
-			}
+						//column c
+						Cell cell2 = row.createCell(2);
+						if (record.getR10_AMOUNT() != null) {
+							cell2.setCellValue(record.getR10_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+						
+						
+										
+						
+						//row11
+						row = sheet.getRow(10);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR11_AMOUNT() != null) {
+							cell2.setCellValue(record.getR11_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+						
+						//row12
+						row = sheet.getRow(11);			
+						// Column b
+						
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR12_AMOUNT() != null) {
+							cell2.setCellValue(record.getR12_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+						
+						//row13
+						row = sheet.getRow(12);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR13_AMOUNT() != null) {
+							cell2.setCellValue(record.getR13_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+						
+
+						//row14
+						row = sheet.getRow(13);			
+						// Column b
+						
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR14_AMOUNT() != null) {
+							cell2.setCellValue(record.getR14_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+						
+
+						//row15
+						row = sheet.getRow(14);			
+						// Column b
+						
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR15_AMOUNT() != null) {
+							cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row16
+						row = sheet.getRow(15);			
+						// Column b
+						
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR16_AMOUNT() != null) {
+							cell2.setCellValue(record.getR16_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row17
+						row = sheet.getRow(16);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR17_AMOUNT() != null) {
+							cell2.setCellValue(record.getR17_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row18
+						row = sheet.getRow(17);			
+						// Column b
+						
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR18_AMOUNT() != null) {
+							cell2.setCellValue(record.getR18_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row19
+						row = sheet.getRow(18);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR19_AMOUNT() != null) {
+							cell2.setCellValue(record.getR19_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row20
+						row = sheet.getRow(19);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR20_AMOUNT() != null) {
+							cell2.setCellValue(record.getR20_AMOUNT().doubleValue());
+							
+						} else {
+							cell2.setCellValue("");
+												}
+
+						//row24
+						row = sheet.getRow(23);			
+						// Column b
+						
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR24_AMOUNT() != null) {
+							cell2.setCellValue(record.getR24_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row25
+						row = sheet.getRow(24);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR25_AMOUNT() != null) {
+							cell2.setCellValue(record.getR25_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row26
+						row = sheet.getRow(25);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR26_AMOUNT() != null) {
+							cell2.setCellValue(record.getR26_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row27
+						row = sheet.getRow(26);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR27_AMOUNT() != null) {
+							cell2.setCellValue(record.getR27_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row28
+						row = sheet.getRow(27);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR28_AMOUNT() != null) {
+							cell2.setCellValue(record.getR28_AMOUNT().doubleValue());
+							
+						} else {
+							cell2.setCellValue("");
+												}
+
+						//row29
+						row = sheet.getRow(28);			
+						// Column b
+						
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR29_AMOUNT() != null) {
+							cell2.setCellValue(record.getR29_AMOUNT().doubleValue());
+
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+						//row36
+						row = sheet.getRow(35);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR36_AMOUNT() != null) {
+							cell2.setCellValue(record.getR36_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+						//row37
+						row = sheet.getRow(36);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR37_AMOUNT() != null) {
+							cell2.setCellValue(record.getR37_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row38
+						row = sheet.getRow(37);			
+						// Column b
+						
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR38_AMOUNT() != null) {
+							cell2.setCellValue(record.getR38_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row39
+						row = sheet.getRow(38);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR39_AMOUNT() != null) {
+							cell2.setCellValue(record.getR39_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row40
+						row = sheet.getRow(39);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR40_AMOUNT() != null) {
+							cell2.setCellValue(record.getR40_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row41
+						row = sheet.getRow(40);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR41_AMOUNT() != null) {
+							cell2.setCellValue(record.getR41_AMOUNT().doubleValue());
+
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+						//row44
+						row = sheet.getRow(43);			
+						// Column b
+						
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR44_AMOUNT() != null) {
+							cell2.setCellValue(record.getR44_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row45
+						row = sheet.getRow(44);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR45_AMOUNT() != null) {
+							cell2.setCellValue(record.getR45_AMOUNT().doubleValue());
+
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+						//row46
+						row = sheet.getRow(45);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR46_AMOUNT() != null) {
+							cell2.setCellValue(record.getR46_AMOUNT().doubleValue());
+				
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+						//row50
+						row = sheet.getRow(49);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR50_AMOUNT() != null) {
+							cell2.setCellValue(record.getR50_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row51
+						row = sheet.getRow(50);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR51_AMOUNT() != null) {
+							cell2.setCellValue(record.getR51_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row52
+						row = sheet.getRow(51);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR52_AMOUNT() != null) {
+							cell2.setCellValue(record.getR52_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row53
+						row = sheet.getRow(52);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR53_AMOUNT() != null) {
+							cell2.setCellValue(record.getR53_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row54
+						row = sheet.getRow(53);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR54_AMOUNT() != null) {
+							cell2.setCellValue(record.getR54_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row55
+						row = sheet.getRow(54);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR55_AMOUNT() != null) {
+							cell2.setCellValue(record.getR55_AMOUNT().doubleValue());
+
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+					
+
+						//row58
+						row = sheet.getRow(57);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.createCell(2);
+						if (record.getR58_AMOUNT() != null) {
+							cell2.setCellValue(record.getR58_AMOUNT().doubleValue());
+							cell2.setCellStyle(numberStyle);
+						} else {
+							cell2.setCellValue("");
+							cell2.setCellStyle(textStyle);
+						}
+
+						//row59
+						row = sheet.getRow(58);			
+						// Column b
+					
+
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR59_AMOUNT() != null) {
+							cell2.setCellValue(record.getR59_AMOUNT().doubleValue());
+
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+						//row60
+						row = sheet.getRow(14);			
+						// Column b
+					
+						// Column c
+						 cell2 = row.getCell(2);
+						if (record.getR15_AMOUNT() != null) {
+							cell2.setCellValue(record.getR15_AMOUNT().doubleValue());
+
+						} else {
+							cell2.setCellValue("");
+
+						}
+
+						
+						
+						
+
+						
+						
+
+						
+								
+											
+					}
 			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 		} else {
 			
