@@ -951,6 +951,68 @@ PURPOSE		: BWRBRREPORT
 
 
 
+		function downloadfilepdf(button) {
+	    var reportid = button.getAttribute('data-reportid');
+	    var asondate = button.getAttribute('data-asondate');
+	    var fromdate = button.getAttribute('data-fromdate');
+	    var todate = button.getAttribute('data-todate');
+	    var currency = button.getAttribute('data-currency');
+	    var subreportid = button.getAttribute('data-subreportid');
+	    var secid = button.getAttribute('data-secid');
+	    var dtltype = button.getAttribute('data-dtltype');
+	    var filename = button.getAttribute('data-filename');
+	    var type = button.getAttribute('data-type');
+	    var version = button.getAttribute('data-version');
+
+	    $('#loader').modal('show');
+
+	    $.ajax({
+	        url: './downloaddetailpdf?reportid=' + reportid +
+	            '&fromdate=' + fromdate +
+	            '&asondate=' + asondate +
+	            '&todate=' + todate +
+	            '&currency=' + currency +
+	            '&subreportid=' + subreportid +
+	            '&secid=' + secid +
+	            '&dtltype=' + dtltype +
+	            '&filename=' + filename +
+	            '&type=' + type +
+	            '&version=' + version,
+	        type: 'GET',
+	        xhrFields: { responseType: 'blob' },
+
+	        success: function (data) {
+	            $('#loader').modal('hide');
+
+	            if (data && data.size > 100) {
+	                const blob = new Blob([data], { type: 'application/pdf' });
+	                const url = window.URL.createObjectURL(blob);
+	                const a = document.createElement('a');
+	                a.style.display = 'none';
+	                a.href = url;
+
+	                a.download = filename.replace(".xlsx", "") + ".pdf";
+
+	                document.body.appendChild(a);
+	                a.click();
+	                window.URL.revokeObjectURL(url);
+	                document.body.removeChild(a);
+
+	                showResultModal('BRRS', 'The file has been downloaded successfully.');
+	            } else {
+	                showResultModal('Information', 'No data was available to create a download.');
+	            }
+	        },
+	        error: function (jqXHR, textStatus, errorThrown) {
+	            $('#loader').modal('hide');
+	            console.error("Download failed:", textStatus, errorThrown);
+	            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+	        }
+	    });
+	}
+
+
+
 
 
 	</script>
@@ -1015,6 +1077,22 @@ PURPOSE		: BWRBRREPORT
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
+
+
+						  <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+            th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='M_SFINP1.xlsx',
+                     data-type=${type},
+                     data-version=${version}"
+            onclick="downloadfilepdf(this);">PDF
+            <i class="fa fa-download"></i>
+        </button>
+		
 
 
 

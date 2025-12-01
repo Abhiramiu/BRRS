@@ -3006,7 +3006,7 @@ public ResponseEntity<String> updateAllReports(
 
 
 
-@GetMapping("/downloadExcel1")
+@GetMapping("/downloadExcel")
 public void downloadExcel(@RequestParam String asondate,
                           @RequestParam String fromdate,
                           @RequestParam String todate,

@@ -1,5 +1,7 @@
 package com.bornfire.brrs.services;
-
+import org.apache.poi.ss.usermodel.DataFormatter;
+import java.awt.Color;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -56,6 +58,54 @@ import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity3;
 import com.bornfire.brrs.entities.M_AIDP_Archival_Summary_Entity4;
 import com.bornfire.brrs.entities.M_SFINP2_Archival_Summary_Entity;
+
+
+
+//=== Apache POI Excel ===
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
+
+//=== iText PDF ===
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
 
 
 @Component
@@ -455,11 +505,36 @@ public class BRRS_M_AIDP_ReportService {
 	}
 	
 	
-	System.out.println("came to excel download service");
-	List<BRRS_M_AIDP_Summary_Entity1> dataList = BRRS_M_aidpRepo1.getdatabydateList(dateformat.parse(todate));
-	List<BRRS_M_AIDP_Summary_Entity2> dataList2 = BRRS_M_aidpRepo2.getdatabydateList(dateformat.parse(todate));
-	List<BRRS_M_AIDP_Summary_Entity3> dataList3 = BRRS_M_aidpRepo3.getdatabydateList(dateformat.parse(todate));
-	List<BRRS_M_AIDP_Summary_Entity4> dataList4 = BRRS_M_aidpRepo4.getdatabydateList(dateformat.parse(todate));
+	System.out.println("came to excel download service"); 
+
+
+	  // ✅ FIX: Correct date parsing
+    SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+    Date parsedDate = null;
+
+    try {
+        parsedDate = inputFormat.parse(todate);
+        logger.info("Parsed report date: {}", parsedDate);
+    } catch (Exception e) {
+        logger.error("Invalid date format for todate: {}. Expected dd/MM/yyyy", todate);
+        throw e;
+    }
+	// List<BRRS_M_AIDP_Summary_Entity1> dataList = BRRS_M_aidpRepo1.getdatabydateList(dateformat.parse(todate));
+	// List<BRRS_M_AIDP_Summary_Entity2> dataList2 = BRRS_M_aidpRepo2.getdatabydateList(dateformat.parse(todate));
+	// List<BRRS_M_AIDP_Summary_Entity3> dataList3 = BRRS_M_aidpRepo3.getdatabydateList(dateformat.parse(todate));
+	// List<BRRS_M_AIDP_Summary_Entity4> dataList4 = BRRS_M_aidpRepo4.getdatabydateList(dateformat.parse(todate)); 
+
+	 List<BRRS_M_AIDP_Summary_Entity1> dataList =
+            BRRS_M_aidpRepo1.getdatabydateList(parsedDate);
+
+    List<BRRS_M_AIDP_Summary_Entity2> dataList2 =
+            BRRS_M_aidpRepo2.getdatabydateList(parsedDate);
+
+    List<BRRS_M_AIDP_Summary_Entity3> dataList3 =
+            BRRS_M_aidpRepo3.getdatabydateList(parsedDate);
+
+    List<BRRS_M_AIDP_Summary_Entity4> dataList4 =
+            BRRS_M_aidpRepo4.getdatabydateList(parsedDate);
 	
 	if (dataList.isEmpty()) {
 	logger.warn("Service: No data found for BRF7.3 report. Returning empty result.");
@@ -1160,6 +1235,293 @@ String[] fieldSuffixes3 = {
 	        }
 	    }
 	}
+
+
+
+	
+private int getUsedColumnCount(Sheet sheet) {
+    int maxCol = 0;
+
+    for (Row row : sheet) {
+        if (row == null) continue;
+        if (row.getLastCellNum() > maxCol) {
+            maxCol = row.getLastCellNum();
+        }
+    }
+
+    // Now remove trailing blank columns
+    boolean columnUsed;
+
+    for (int col = maxCol - 1; col >= 0; col--) {
+        columnUsed = false;
+        for (Row row : sheet) {
+            Cell cell = (row == null) ? null : row.getCell(col);
+            if (cell != null && cell.getCellType() != CellType.BLANK &&
+                !new DataFormatter().formatCellValue(cell).trim().isEmpty()) {
+                columnUsed = true;
+                break;
+            }
+        }
+        if (columnUsed) {
+            return col + 1; // This is last actual column
+        }
+    }
+
+    return 1; // Fallback
+}
+
+private BaseColor toBaseColor(Color excelColor) {
+    if (excelColor == null) 
+        return BaseColor.WHITE;
+    return new BaseColor(excelColor.getRed(), excelColor.getGreen(), excelColor.getBlue());
+}
+
+
+/**
+ * Compatibility-safe applyCellStyleToPdf.
+ * Works with POI 3.x (old constants) and POI 4.x/5.x (enums) via reflection.
+ */
+private void applyCellStyleToPdf(Cell excelCell, PdfPCell pdfCell, Workbook workbook) {
+    if (excelCell == null) return;
+    CellStyle style = excelCell.getCellStyle();
+    if (style == null) return;
+
+    // ===== Background color (XSSF) =====
+    try {
+        if (workbook instanceof XSSFWorkbook) {
+            XSSFCellStyle xssfStyle = (XSSFCellStyle) style;
+            XSSFColor bg = xssfStyle.getFillForegroundXSSFColor();
+            if (bg != null && bg.getRGB() != null) {
+                byte[] rgb = bg.getRGB();
+                pdfCell.setBackgroundColor(new BaseColor(rgb[0] & 0xFF, rgb[1] & 0xFF, rgb[2] & 0xFF));
+            }
+        }
+    } catch (Throwable t) {
+        // ignore background color extraction errors
+    }
+
+    // ===== Alignment (use reflection to support both old and new POI) =====
+    int pdfAlignment = Element.ALIGN_LEFT;
+    try {
+        java.lang.reflect.Method m = style.getClass().getMethod("getAlignment");
+        Object alignVal = m.invoke(style);
+        if (alignVal instanceof Short) {
+            short s = ((Short) alignVal).shortValue();
+            // Old POI short codes: 1 = LEFT, 2 = CENTER, 3 = RIGHT (common mapping)
+            if (s == 2) pdfAlignment = Element.ALIGN_CENTER;
+            else if (s == 3) pdfAlignment = Element.ALIGN_RIGHT;
+            else pdfAlignment = Element.ALIGN_LEFT;
+        } else if (alignVal != null) {
+            // New POI: enum HorizontalAlignment (toString -> "CENTER"/"RIGHT"/"LEFT")
+            String name = alignVal.toString();
+            if ("CENTER".equalsIgnoreCase(name)) pdfAlignment = Element.ALIGN_CENTER;
+            else if ("RIGHT".equalsIgnoreCase(name)) pdfAlignment = Element.ALIGN_RIGHT;
+            else pdfAlignment = Element.ALIGN_LEFT;
+        }
+    } catch (Throwable t) {
+        // fallback to left alignment
+        pdfAlignment = Element.ALIGN_LEFT;
+    }
+    pdfCell.setHorizontalAlignment(pdfAlignment);
+
+    // ===== Borders (reflection: support short or enum) =====
+    boolean leftBorder = false, rightBorder = false, topBorder = false, bottomBorder = false;
+    try {
+        leftBorder = borderPresent(style, "Left");
+        rightBorder = borderPresent(style, "Right");
+        topBorder = borderPresent(style, "Top");
+        bottomBorder = borderPresent(style, "Bottom");
+    } catch (Throwable t) {
+        // ignore -> keep false defaults
+    }
+    pdfCell.setBorderWidthLeft(leftBorder ? 0.8f : 0f);
+    pdfCell.setBorderWidthRight(rightBorder ? 0.8f : 0f);
+    pdfCell.setBorderWidthTop(topBorder ? 0.8f : 0f);
+    pdfCell.setBorderWidthBottom(bottomBorder ? 0.8f : 0f);
+
+    // ===== Font extraction =====
+    org.apache.poi.ss.usermodel.Font excelFont = null;
+    try {
+        excelFont = workbook.getFontAt(style.getFontIndex());
+    } catch (Throwable t) {
+        // fallback: create a default workbook font
+        try {
+            excelFont = workbook.createFont();
+        } catch (Throwable ignored) { }
+    }
+
+    BaseColor fontColor = BaseColor.BLACK;
+    int fontSize = 9;
+    boolean isBold = false;
+
+    if (excelFont != null) {
+        try {
+            fontSize = excelFont.getFontHeightInPoints();
+            if (fontSize <= 0) fontSize = 9;
+        } catch (Throwable ignored) { fontSize = 9; }
+        try {
+            isBold = excelFont.getBold();
+        } catch (Throwable ignored) { isBold = false; }
+
+        // try to extract XSSF font color (if available)
+        try {
+            if (excelFont instanceof XSSFFont) {
+                XSSFFont xssfFont = (XSSFFont) excelFont;
+                XSSFColor xColor = xssfFont.getXSSFColor();
+                if (xColor != null && xColor.getRGB() != null) {
+                    byte[] rgb = xColor.getRGB();
+                    fontColor = new BaseColor(rgb[0] & 0xFF, rgb[1] & 0xFF, rgb[2] & 0xFF);
+                }
+            }
+        } catch (Throwable ignored) { }
+    }
+
+    // ===== Create iText font (iText 5-style) =====
+    com.itextpdf.text.Font pdfFont;
+    try {
+    	pdfFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, fontSize,
+                isBold ? com.itextpdf.text.Font.BOLD : com.itextpdf.text.Font.NORMAL, fontColor);
+    } catch (Throwable tt) {
+        // fallback font if HELEVETICA constant not available
+        pdfFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.UNDEFINED, fontSize,
+                isBold ? com.itextpdf.text.Font.BOLD : com.itextpdf.text.Font.NORMAL, fontColor);
+    }
+
+    // ===== Phrase safe set (old iText constructors compatibility) =====
+    String text = "";
+    Phrase existing = pdfCell.getPhrase();
+    if (existing != null) {
+        try {
+            text = existing.getContent();
+        } catch (Throwable ignored) { text = ""; }
+    }
+    Phrase phrase = new Phrase(text, pdfFont);
+    phrase.setLeading(pdfFont.getSize() + 2);  // proper line spacing
+    pdfCell.setPhrase(phrase);
+    pdfCell.setNoWrap(false);  // always wrap
+    pdfCell.setPadding(4f);   // spacing so text doesn’t collide
+
+    // ===== Wrap text =====
+    try {
+    	pdfCell.setNoWrap(false);
+    } catch (Throwable t) {
+        // ignore
+    }
+}
+
+/** Helper used by applyCellStyleToPdf to discover whether a border exists (Left/Right/Top/Bottom). */
+private boolean borderPresent(CellStyle style, String which) {
+    // which should be "Left", "Right", "Top", or "Bottom"
+    try {
+        java.lang.reflect.Method m = style.getClass().getMethod("getBorder" + which);
+        Object val = m.invoke(style);
+        if (val == null) return false;
+        if (val instanceof Short) {
+            short s = ((Short) val).shortValue();
+            return s != 0; // old POI: 0 means BORDER_NONE
+        } else {
+            // new POI: enum BorderStyle, e.g., NONE, THIN, etc.
+            String name = val.toString();
+            return !"NONE".equalsIgnoreCase(name);
+        }
+    } catch (NoSuchMethodException nsme) {
+        // try alternative new-style method names (getBorderLeftEnum) for some versions
+        try {
+            java.lang.reflect.Method m2 = style.getClass().getMethod("getBorder" + which + "Enum");
+            Object val2 = m2.invoke(style);
+            if (val2 == null) return false;
+            return !"NONE".equalsIgnoreCase(val2.toString());
+        } catch (Throwable t) {
+            return false;
+        }
+    } catch (Throwable t) {
+        return false;
+    }
+}
+
+private Rectangle getPageSizeForColumns(int columnCount) {
+
+    // Approx width per column (10 pts per column)
+    float requiredWidth = columnCount * 55; 
+
+    if (requiredWidth <= PageSize.A4.getWidth())
+        return PageSize.A4.rotate();
+
+    if (requiredWidth <= PageSize.A3.getWidth())
+        return PageSize.A3.rotate();
+
+    if (requiredWidth <= PageSize.A2.getWidth())
+        return PageSize.A2.rotate();
+
+    if (requiredWidth <= PageSize.A1.getWidth())
+        return PageSize.A1.rotate();
+
+    if (requiredWidth <= PageSize.A0.getWidth())
+        return PageSize.A0.rotate();
+
+    // If still bigger → custom large canvas
+    return new Rectangle(requiredWidth + 100, PageSize.A0.getHeight()).rotate();
+}
+
+
+
+public byte[] convertExcelBytesToPdf(byte[] excelBytes) throws Exception {
+
+    try (InputStream inputStream = new ByteArrayInputStream(excelBytes);
+         Workbook workbook = WorkbookFactory.create(inputStream);
+         ByteArrayOutputStream pdfOut = new ByteArrayOutputStream()) {
+
+        Sheet sheet = workbook.getSheetAt(0);
+
+        // Determine number of columns
+        int colCount = getUsedColumnCount(sheet);
+        System.out.println("Final usable column count = " + colCount);
+
+        // Get dynamic page size
+        Rectangle pageSize = getPageSizeForColumns(colCount);
+
+        Document document = new Document(pageSize, 20, 20, 20, 20);
+        PdfWriter.getInstance(document, pdfOut);
+        document.open();
+
+        PdfPTable table = new PdfPTable(colCount);
+        table.setWidthPercentage(100);
+
+        // Auto column width
+        float[] widths = new float[colCount];
+        for (int i = 0; i < colCount; i++) {
+            int excelWidth = sheet.getColumnWidth(i);
+
+            // Prevent ultra-small or ultra-big widths
+            widths[i] = Math.max(50f, Math.min(excelWidth / 30f, 300f));
+        }
+        table.setWidths(widths);
+
+
+        FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+        DataFormatter formatter = new DataFormatter();
+
+        for (Row row : sheet) {
+            if (row == null) continue;
+
+            for (int i = 0; i < colCount; i++) {
+                Cell cell = row.getCell(i);
+                String value = formatter.formatCellValue(cell, evaluator);
+                PdfPCell pdfCell = new PdfPCell(new Phrase(value));
+                applyCellStyleToPdf(cell, pdfCell, workbook);
+                pdfCell.setPadding(4);
+                table.addCell(pdfCell);
+
+
+            }
+        }
+
+        document.add(table);
+        document.close();
+        return pdfOut.toByteArray();
+    }
+}
+
 
 
 }

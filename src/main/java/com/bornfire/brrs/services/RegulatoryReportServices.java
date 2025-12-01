@@ -52,7 +52,11 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_SFINP1_ReportService BRRS_M_SFINP1_reportservice;
-
+	
+	@Autowired
+	BRRS_M_AIDP_ReportService BRRS_M_AIDP_reportservice; 
+	
+	
 	@Autowired
 	BRRS_M_LA4_ReportService BRRS_M_LA4_reportservice;
 
@@ -3253,6 +3257,8 @@ public class RegulatoryReportServices {
 		}
 	}
 
+
+	// download pdf ->
 	public byte[] getPdfDownloadFile(String reportId, String filename, String asondate, String fromdate, String todate,
 			String currency, String subreportid, String secid, String dtltype, String reportingTime,
 			String instancecode, String filter, String type, String version) {
@@ -3260,6 +3266,22 @@ public class RegulatoryReportServices {
 		byte[] pdffile = null;
 
 		switch (reportId) {
+
+
+			case "M_AIDP":
+				try {
+					byte[] excelBytes = BRRS_M_AIDP_reportservice.getM_AIDPExcel(filename, reportId, fromdate,
+							todate, currency,
+							dtltype, type, version);
+
+					pdffile = BRRS_M_AIDP_reportservice.convertExcelBytesToPdf(excelBytes);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				break;
+		
+		
 
 			case "M_SFINP1":
 				try {
