@@ -14,328 +14,401 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_M_PD_ARCHIVAL_TABLE_DETAIL")
 public class M_PD_Archival_Detail_Entity {
 	
-	
-	
-    @Id
-    @Column(name = "CUST_ID", length = 100)
-    private String CUST_ID;
 
-    @Column(name = "ACCT_NUMBER", length = 100)
-    private String ACCT_NUMBER;
+	   @Column(name = "CUST_ID")
+	   private String custId;
+	   @Id
+	   @Column(name = "ACCT_NUMBER")
+	   private String acctNumber;
+	   @Column(name = "ACCT_NAME")
+	   private String acctName;
+	   @Column(name = "DATA_TYPE")
+	   private String dataType;
+	   @Column(name = "REPORT_ADDL_CRITERIA_1")
+	   private String reportAddlCriteria1;
+	   @Column(name = "REPORT_ADDL_CRITERIA_2")
+	   private String reportAddlCriteria2;
+	   @Column(name = "REPORT_ADDL_CRITERIA_3")
+	   private String reportAddlCriteria3;
+	   @Column(name = "REPORT_ADDL_CRITERIA_4")
+	   private String reportAddlCriteria4;
+	  
+	   @Column(name = "REPORT_LABLE")
+	   private String reportLable;
+	   @Column(name = "REPORT_REMARKS")
+	   private String reportRemarks;
+	   @Column(name = "MODIFICATION_REMARKS")
+	   private String modificationRemarks;
+	   @Column(name = "DATA_ENTRY_VERSION")
+	   private String dataEntryVersion;
+	   @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 2)
+	   private BigDecimal acctBalanceInpula;
+	   
+	   @Column(name = "REPORT_DATE")
+	   @DateTimeFormat(pattern = "dd-MM-yyyy")
+	   private Date reportDate;
+	   @Column(name = "REPORT_NAME")
+	   private String reportName;
+	   @Column(name = "CREATE_USER")
+	   private String createUser;
+	   @Column(name = "CREATE_TIME")
+	   @DateTimeFormat(pattern = "dd-MM-yyyy")
+	   private Date createTime;
+	   @Column(name = "MODIFY_USER")
+	   private String modifyUser;
+	   @Column(name = "MODIFY_TIME")
+	   @DateTimeFormat(pattern = "dd-MM-yyyy")
+	   private Date modifyTime;
+	   @Column(name = "VERIFY_USER")
+	   private String verifyUser;
+	   @Column(name = "VERIFY_TIME")
+	   @DateTimeFormat(pattern = "dd-MM-yyyy")
+	   private Date verifyTime;
+	   @Column(name = "ENTITY_FLG", length = 1)
+	   private String entityFlg;
 
-    @Column(name = "ACCT_NAME", length = 100)
-    private String ACCT_NAME;
+	   @Column(name = "MODIFY_FLG", length = 1)
+	   private String modifyFlg;
 
-    @Column(name = "DATA_TYPE", length = 100)
-    private String DATA_TYPE;
+	   @Column(name = "DEL_FLG", length = 1)
+	   private String delFlg;    
+ 
+ 
 
-    @Column(name = "ROW_ID", length = 100)
-    private String ROW_ID;
 
-    @Column(name = "COLUMN_ID", length = 100)
-    private String COLUMN_ID;
-
-    @Column(name = "REPORT_REMARKS", length = 100)
-    private String REPORT_REMARKS;
-
-    @Column(name = "MODIFICATION_REMARKS", length = 100)
-    private String MODIFICATION_REMARKS;
-
-    @Column(name = "DATA_ENTRY_VERSION", length = 100)
-    private String DATA_ENTRY_VERSION;
-
-    @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
-    private BigDecimal ACCT_BALANCE_IN_PULA;
-
-    @Column(name = "REPORT_DATE")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date REPORT_DATE;
-
-    @Column(name = "REPORT_NAME", length = 100)
-    private String REPORT_NAME;
-
-    @Column(name = "CREATE_USER", length = 100)
-    private String CREATE_USER;
-
-    @Column(name = "CREATE_TIME")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date CREATE_TIME;
-
-    @Column(name = "MODIFY_USER", length = 50)
-    private String MODIFY_USER;
-
-    @Column(name = "MODIFY_TIME")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date MODIFY_TIME;
-
-    @Column(name = "VERIFY_USER", length = 50)
-    private String VERIFY_USER;
-
-    @Column(name = "VERIFY_TIME")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Date VERIFY_TIME;
-
-    @Column(name = "ENTITY_FLG", length = 1)
-    private String ENTITY_FLG;
-
-    @Column(name = "MODIFY_FLG", length = 1)
-    private String MODIFY_FLG;
-
-    @Column(name = "DEL_FLG", length = 1)
-    private String DEL_FLG;
-    
-    
-    
-    
-        public String getCUST_ID() {
-		return CUST_ID;
+		public String getCustId() {
+		return custId;
 	}
 
 
 
-	public void setCUST_ID(String cUST_ID) {
-		CUST_ID = cUST_ID;
+
+	public void setCustId(String custId) {
+		this.custId = custId;
 	}
 
 
 
-	public String getACCT_NUMBER() {
-		return ACCT_NUMBER;
+
+	public String getAcctNumber() {
+		return acctNumber;
 	}
 
 
 
-	public void setACCT_NUMBER(String aCCT_NUMBER) {
-		ACCT_NUMBER = aCCT_NUMBER;
+
+	public void setAcctNumber(String acctNumber) {
+		this.acctNumber = acctNumber;
 	}
 
 
 
-	public String getACCT_NAME() {
-		return ACCT_NAME;
+
+	public String getAcctName() {
+		return acctName;
 	}
 
 
 
-	public void setACCT_NAME(String aCCT_NAME) {
-		ACCT_NAME = aCCT_NAME;
+
+	public void setAcctName(String acctName) {
+		this.acctName = acctName;
 	}
 
 
 
-	public String getDATA_TYPE() {
-		return DATA_TYPE;
+
+	public String getDataType() {
+		return dataType;
 	}
 
 
 
-	public void setDATA_TYPE(String dATA_TYPE) {
-		DATA_TYPE = dATA_TYPE;
+
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
 	}
 
 
 
-	public String getROW_ID() {
-		return ROW_ID;
+
+	public String getReportAddlCriteria1() {
+		return reportAddlCriteria1;
 	}
 
 
 
-	public void setROW_ID(String rOW_ID) {
-		ROW_ID = rOW_ID;
+
+	public void setReportAddlCriteria1(String reportAddlCriteria1) {
+		this.reportAddlCriteria1 = reportAddlCriteria1;
 	}
 
 
 
-	public String getCOLUMN_ID() {
-		return COLUMN_ID;
+
+	public String getReportAddlCriteria2() {
+		return reportAddlCriteria2;
 	}
 
 
 
-	public void setCOLUMN_ID(String cOLUMN_ID) {
-		COLUMN_ID = cOLUMN_ID;
+
+	public void setReportAddlCriteria2(String reportAddlCriteria2) {
+		this.reportAddlCriteria2 = reportAddlCriteria2;
 	}
 
 
 
-	public String getREPORT_REMARKS() {
-		return REPORT_REMARKS;
+
+	public String getReportAddlCriteria3() {
+		return reportAddlCriteria3;
 	}
 
 
 
-	public void setREPORT_REMARKS(String rEPORT_REMARKS) {
-		REPORT_REMARKS = rEPORT_REMARKS;
+
+	public void setReportAddlCriteria3(String reportAddlCriteria3) {
+		this.reportAddlCriteria3 = reportAddlCriteria3;
 	}
 
 
 
-	public String getMODIFICATION_REMARKS() {
-		return MODIFICATION_REMARKS;
+
+	public String getReportAddlCriteria4() {
+		return reportAddlCriteria4;
 	}
 
 
 
-	public void setMODIFICATION_REMARKS(String mODIFICATION_REMARKS) {
-		MODIFICATION_REMARKS = mODIFICATION_REMARKS;
+
+	public void setReportAddlCriteria4(String reportAddlCriteria4) {
+		this.reportAddlCriteria4 = reportAddlCriteria4;
 	}
 
 
 
-	public String getDATA_ENTRY_VERSION() {
-		return DATA_ENTRY_VERSION;
+
+	public String getReportLable() {
+		return reportLable;
 	}
 
 
 
-	public void setDATA_ENTRY_VERSION(String dATA_ENTRY_VERSION) {
-		DATA_ENTRY_VERSION = dATA_ENTRY_VERSION;
+
+	public void setReportLable(String reportLable) {
+		this.reportLable = reportLable;
 	}
 
 
 
-	public BigDecimal getACCT_BALANCE_IN_PULA() {
-		return ACCT_BALANCE_IN_PULA;
+
+	public String getReportRemarks() {
+		return reportRemarks;
 	}
 
 
 
-	public void setACCT_BALANCE_IN_PULA(BigDecimal aCCT_BALANCE_IN_PULA) {
-		ACCT_BALANCE_IN_PULA = aCCT_BALANCE_IN_PULA;
+
+	public void setReportRemarks(String reportRemarks) {
+		this.reportRemarks = reportRemarks;
 	}
 
 
 
-	public Date getREPORT_DATE() {
-		return REPORT_DATE;
+
+	public String getModificationRemarks() {
+		return modificationRemarks;
 	}
 
 
 
-	public void setREPORT_DATE(Date rEPORT_DATE) {
-		REPORT_DATE = rEPORT_DATE;
+
+	public void setModificationRemarks(String modificationRemarks) {
+		this.modificationRemarks = modificationRemarks;
 	}
 
 
 
-	public String getREPORT_NAME() {
-		return REPORT_NAME;
+
+	public String getDataEntryVersion() {
+		return dataEntryVersion;
 	}
 
 
 
-	public void setREPORT_NAME(String rEPORT_NAME) {
-		REPORT_NAME = rEPORT_NAME;
+
+	public void setDataEntryVersion(String dataEntryVersion) {
+		this.dataEntryVersion = dataEntryVersion;
 	}
 
 
 
-	public String getCREATE_USER() {
-		return CREATE_USER;
+
+	public BigDecimal getAcctBalanceInpula() {
+		return acctBalanceInpula;
 	}
 
 
 
-	public void setCREATE_USER(String cREATE_USER) {
-		CREATE_USER = cREATE_USER;
+
+	public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+		this.acctBalanceInpula = acctBalanceInpula;
 	}
 
 
 
-	public Date getCREATE_TIME() {
-		return CREATE_TIME;
+
+	public Date getReportDate() {
+		return reportDate;
 	}
 
 
 
-	public void setCREATE_TIME(Date cREATE_TIME) {
-		CREATE_TIME = cREATE_TIME;
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
 	}
 
 
 
-	public String getMODIFY_USER() {
-		return MODIFY_USER;
+
+	public String getReportName() {
+		return reportName;
 	}
 
 
 
-	public void setMODIFY_USER(String mODIFY_USER) {
-		MODIFY_USER = mODIFY_USER;
+
+	public void setReportName(String reportName) {
+		this.reportName = reportName;
 	}
 
 
 
-	public Date getMODIFY_TIME() {
-		return MODIFY_TIME;
+
+	public String getCreateUser() {
+		return createUser;
 	}
 
 
 
-	public void setMODIFY_TIME(Date mODIFY_TIME) {
-		MODIFY_TIME = mODIFY_TIME;
+
+	public void setCreateUser(String createUser) {
+		this.createUser = createUser;
 	}
 
 
 
-	public String getVERIFY_USER() {
-		return VERIFY_USER;
+
+	public Date getCreateTime() {
+		return createTime;
 	}
 
 
 
-	public void setVERIFY_USER(String vERIFY_USER) {
-		VERIFY_USER = vERIFY_USER;
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
 	}
 
 
 
-	public Date getVERIFY_TIME() {
-		return VERIFY_TIME;
+
+	public String getModifyUser() {
+		return modifyUser;
 	}
 
 
 
-	public void setVERIFY_TIME(Date vERIFY_TIME) {
-		VERIFY_TIME = vERIFY_TIME;
+
+	public void setModifyUser(String modifyUser) {
+		this.modifyUser = modifyUser;
 	}
 
 
 
-	public String getENTITY_FLG() {
-		return ENTITY_FLG;
+
+	public Date getModifyTime() {
+		return modifyTime;
 	}
 
 
 
-	public void setENTITY_FLG(String eNTITY_FLG) {
-		ENTITY_FLG = eNTITY_FLG;
+
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
 	}
 
 
 
-	public String getMODIFY_FLG() {
-		return MODIFY_FLG;
+
+	public String getVerifyUser() {
+		return verifyUser;
 	}
 
 
 
-	public void setMODIFY_FLG(String mODIFY_FLG) {
-		MODIFY_FLG = mODIFY_FLG;
+
+	public void setVerifyUser(String verifyUser) {
+		this.verifyUser = verifyUser;
 	}
 
 
 
-	public String getDEL_FLG() {
-		return DEL_FLG;
+
+	public Date getVerifyTime() {
+		return verifyTime;
 	}
 
 
 
-	public void setDEL_FLG(String dEL_FLG) {
-		DEL_FLG = dEL_FLG;
+
+	public void setVerifyTime(Date verifyTime) {
+		this.verifyTime = verifyTime;
 	}
+
+
+
+
+	public String getEntityFlg() {
+		return entityFlg;
+	}
+
+
+
+
+	public void setEntityFlg(String entityFlg) {
+		this.entityFlg = entityFlg;
+	}
+
+
+
+
+	public String getModifyFlg() {
+		return modifyFlg;
+	}
+
+
+
+
+	public void setModifyFlg(String modifyFlg) {
+		this.modifyFlg = modifyFlg;
+	}
+
+
+
+
+	public String getDelFlg() {
+		return delFlg;
+	}
+
+
+
+
+	public void setDelFlg(String delFlg) {
+		this.delFlg = delFlg;
+	}
+
 
 
 
