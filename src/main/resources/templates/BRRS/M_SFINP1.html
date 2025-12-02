@@ -844,7 +844,7 @@ function cancelModify() {
 							<td id="ROW14" style="padding-left: 20px; font-weight: bold;text-align: right;">
 																		        <input class="display-input Show_input"
 																		               type="text"
-																		               th:value="${reportsummary1[0].R14_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R14_MONTH_END, 1, 0, 'POINT') : '0'}"
+																		               th:value="${reportsummary1[0].R14_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R14_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
 																		               id="R14_MONTH_END"
 																		               name="R14_MONTH_END"
 																		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -956,7 +956,7 @@ function cancelModify() {
 							<td id="ROW34" style="padding-left: 20px; font-weight: bold;text-align: right;">
 											        <input class="display-input Show_input"
 											               type="text"
-											               th:value="${reportsummary1[0].R34_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R34_MONTH_END, 1, 0, 'POINT') : '0'}"
+											               th:value="${reportsummary1[0].R34_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R34_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
 											               id="R34_MONTH_END"
 											               name="R34_MONTH_END"
 											               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -979,7 +979,7 @@ function cancelModify() {
 							<td id="ROW37" style="padding-left: 20px; font-weight: bold;text-align: right;">
 																		        <input class="display-input Show_input"
 																		               type="text"
-																		               th:value="${reportsummary1[0].R37_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R37_MONTH_END, 1, 0, 'POINT') : '0'}"
+																		               th:value="${reportsummary1[0].R37_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R37_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
 																		               id="R37_MONTH_END"
 																		               name="R37_MONTH_END"
 																		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -997,7 +997,7 @@ function cancelModify() {
 							<td id="ROW39" style="padding-left: 20px; font-weight: bold;text-align: right;">
 																		        <input class="display-input Show_input"
 																		               type="text"
-																		               th:value="${reportsummary1[0].R39_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R39_MONTH_END, 1, 0, 'POINT') : '0'}"
+																		               th:value="${reportsummary1[0].R39_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R39_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
 																		               id="R39_MONTH_END"
 																		               name="R39_MONTH_END"
 																		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1022,10 +1022,10 @@ function cancelModify() {
 							
 							<tr>  <td style="padding-left: 30px;" th:text="${report.r43_product}"></td>
 							<td th:text="${report.r43_cross_ref}"  style="text-align: left; "></td>
-							<td id="ROW43" style="padding-left: 20px; font-weight: bold;text-align: right;">
+							<td id="ROW43" style=" font-weight: bold;text-align: right;">
 																		        <input class="display-input Show_input"
 																		               type="text"
-																		               th:value="${reportsummary1[0].R43_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R43_MONTH_END, 1, 0, 'POINT') : '0'}"
+																		               th:value="${reportsummary1[0].R43_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R43_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
 																		               id="R43_MONTH_END"
 																		               name="R43_MONTH_END"
 																		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1068,7 +1068,7 @@ function cancelModify() {
 							<td id="ROW50" style="padding-left: 20px; font-weight: bold;text-align: right;">
 																		        <input class="display-input Show_input"
 																		               type="text"
-																		               th:value="${reportsummary1[0].R50_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R50_MONTH_END, 1, 0, 'POINT') : '0'}"
+																		               th:value="${reportsummary1[0].R50_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R50_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
 																		               id="R50_MONTH_END"
 																		               name="R50_MONTH_END"
 																		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1081,7 +1081,7 @@ function cancelModify() {
 							<td id="ROW51" style="padding-left: 20px; font-weight: bold;text-align: right;">
 																		        <input class="display-input Show_input"
 																		               type="text"
-																		               th:value="${reportsummary1[0].R51_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R51_MONTH_END, 1, 0, 'POINT') : '0'}"
+																		               th:value="${reportsummary1[0].R51_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R51_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
 																		               id="R51_MONTH_END"
 																		               name="R51_MONTH_END"
 																		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1094,7 +1094,7 @@ function cancelModify() {
 							<td id="ROW52" style="padding-left: 20px; font-weight: bold;text-align: right;">
 																		        <input class="display-input Show_input"
 																		               type="text"
-																		               th:value="${reportsummary1[0].R52_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R52_MONTH_END, 1, 0, 'POINT') : '0'}"
+																		               th:value="${reportsummary1[0].R52_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R52_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
 																		               id="R52_MONTH_END"
 																		               name="R52_MONTH_END"
 																		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1127,7 +1127,7 @@ function cancelModify() {
 							<td id="ROW57" style="padding-left: 20px; font-weight: bold;text-align: right;">
 																		        <input class="display-input Show_input"
 																		               type="text"
-																		               th:value="${reportsummary1[0].R57_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R57_MONTH_END, 1, 0, 'POINT') : '0'}"
+																		               th:value="${reportsummary1[0].R57_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R57_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
 																		               id="R57_MONTH_END"
 																		               name="R57_MONTH_END"
 																		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
@@ -1145,7 +1145,7 @@ function cancelModify() {
 							<td id="ROW59" style="padding-left: 20px; font-weight: bold;text-align: right;">
 																		        <input class="display-input Show_input"
 																		               type="text"
-																		               th:value="${reportsummary1[0].R59_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R59_MONTH_END, 1, 0, 'POINT') : '0'}"
+																		               th:value="${reportsummary1[0].R59_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R59_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
 																		               id="R59_MONTH_END"
 																		               name="R59_MONTH_END"
 																		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
