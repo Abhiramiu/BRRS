@@ -7359,39 +7359,39 @@ public class BRRS_M_SRWA_12H_ReportService {
 
 					}
 
-					row = sheet.getRow(80);
-					Cell cell1 = row.createCell(1);
-					if (record.getR81_PRODUCT() != null) {
-						cell1.setCellValue(record.getR81_PRODUCT().doubleValue());
-						cell1.setCellStyle(numberStyle);
+					// row = sheet.getRow(80);
+					// Cell cell1 = row.createCell(1);
+					// if (record.getR81_PRODUCT() != null) {
+					// 	cell1.setCellValue(record.getR81_PRODUCT().doubleValue());
+					// 	cell1.setCellStyle(numberStyle);
 
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(numberStyle);
-					}
+					// } else {
+					// 	cell1.setCellValue("");
+					// 	cell1.setCellStyle(numberStyle);
+					// }
 
-					// Column C
-					cell2 = row.createCell(2);
-					if (record.getR81_ISSUER() != null) {
-						cell2.setCellValue(record.getR81_ISSUER().doubleValue());
-						cell2.setCellStyle(numberStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
+					// // Column C
+					// cell2 = row.createCell(2);
+					// if (record.getR81_ISSUER() != null) {
+					// 	cell2.setCellValue(record.getR81_ISSUER().doubleValue());
+					// 	cell2.setCellStyle(numberStyle);
+					// } else {
+					// 	cell2.setCellValue("");
+					// 	cell2.setCellStyle(textStyle);
+					// }
 
-					// row80
-					// Column D
-					cell3 = row.createCell(3);
-					if (record.getR81_ISSUES_RATING() != null) {
-						cell3.setCellValue(record.getR81_ISSUES_RATING().doubleValue());
-						cell3.setCellStyle(numberStyle);
+					// // row80
+					// // Column D
+					// cell3 = row.createCell(3);
+					// if (record.getR81_ISSUES_RATING() != null) {
+					// 	cell3.setCellValue(record.getR81_ISSUES_RATING().doubleValue());
+					// 	cell3.setCellStyle(numberStyle);
 
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(numberStyle);
+					// } else {
+					// 	cell3.setCellValue("");
+					// 	cell3.setCellStyle(numberStyle);
 
-					}
+					// }
 
 					row = sheet.getRow(80);
 
@@ -14528,39 +14528,39 @@ public class BRRS_M_SRWA_12H_ReportService {
 						cell9.setCellStyle(numberStyle);
 
 					}
-					row = sheet.getRow(80);
-					Cell cell1 = row.createCell(1);
-					if (record.getR81_PRODUCT() != null) {
-						cell1.setCellValue(record.getR81_PRODUCT().doubleValue());
-						cell1.setCellStyle(numberStyle);
+					// row = sheet.getRow(80);
+					// Cell cell1 = row.createCell(1);
+					// if (record.getR81_PRODUCT() != null) {
+					// 	cell1.setCellValue(record.getR81_PRODUCT().doubleValue());
+					// 	cell1.setCellStyle(numberStyle);
 
-					} else {
-						cell1.setCellValue("");
-						cell1.setCellStyle(numberStyle);
-					}
+					// } else {
+					// 	cell1.setCellValue("");
+					// 	cell1.setCellStyle(numberStyle);
+					// }
 
-					// Column C
-					cell2 = row.createCell(2);
-					if (record.getR81_ISSUER() != null) {
-						cell2.setCellValue(record.getR81_ISSUER().doubleValue());
-						cell2.setCellStyle(numberStyle);
-					} else {
-						cell2.setCellValue("");
-						cell2.setCellStyle(textStyle);
-					}
+					// // Column C
+					// cell2 = row.createCell(2);
+					// if (record.getR81_ISSUER() != null) {
+					// 	cell2.setCellValue(record.getR81_ISSUER().doubleValue());
+					// 	cell2.setCellStyle(numberStyle);
+					// } else {
+					// 	cell2.setCellValue("");
+					// 	cell2.setCellStyle(textStyle);
+					// }
 
-					// row80
-					// Column D
-					cell3 = row.createCell(3);
-					if (record.getR81_ISSUES_RATING() != null) {
-						cell3.setCellValue(record.getR81_ISSUES_RATING().doubleValue());
-						cell3.setCellStyle(numberStyle);
+					// // row80
+					// // Column D
+					// cell3 = row.createCell(3);
+					// if (record.getR81_ISSUES_RATING() != null) {
+					// 	cell3.setCellValue(record.getR81_ISSUES_RATING().doubleValue());
+					// 	cell3.setCellStyle(numberStyle);
 
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(numberStyle);
+					// } else {
+					// 	cell3.setCellValue("");
+					// 	cell3.setCellStyle(numberStyle);
 
-					}
+					// }
 
 					row = sheet.getRow(80);
 

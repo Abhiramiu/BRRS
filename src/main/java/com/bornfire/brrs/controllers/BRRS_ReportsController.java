@@ -53,6 +53,7 @@ import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_DEP3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
+import com.bornfire.brrs.services.BRRS_M_FAS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GALOR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService;
@@ -3196,6 +3197,29 @@ public ResponseEntity<String> updateReportReSub(
 	}
 }
 
+	@Autowired
+	BRRS_M_FAS_ReportService brrs_M_FAS_reportservice;
+@RequestMapping(value = "/M_FASupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_FAS_Manual_Summary_Entity request) {
 
+		try {
+			System.out.println("came to single controller");
+
+			// ? set the asondate into entity
+			request.setReport_date(asondate);
+
+			// call services
+			brrs_M_FAS_reportservice.updateReport1(request);
+
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Update Failed: " + e.getMessage());
+		}
+	}
 
 }
