@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "BRRS_BFDB")
-@IdClass(BLBF_Key.class)
+
 public class BFDB_Entity {
 
     
@@ -53,7 +53,7 @@ public class BFDB_Entity {
     private BigDecimal effective_interest_rate; 
     private String branch_name;
     private String branch_code;
-    @Id
+  
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date report_date;
