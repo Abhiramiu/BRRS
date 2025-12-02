@@ -144,6 +144,65 @@ PURPOSE		: BRRS REPORT
 			}
 		}
 	</style>
+	
+	
+	<style>
+					/* Keep the header fixed and aligned */
+					.dataTables_scrollHeadInner,
+					.dataTables_scrollBody table {
+					  width: 100% !important;
+					}
+
+					/* Prevent thead shrinking at zoom */
+					.dataTables_scrollHeadInner table {
+					  width: 100% !important;
+					  min-width: 100% !important;
+					}
+
+					#reportdetails {
+					  width: 100% !important;
+					  table-layout: fixed !important;
+					}
+
+					#reportdetails th, 
+					#reportdetails td {
+					  white-space: nowrap;
+					}
+					table.dataTable th.dt-type-numeric,
+						table.dataTable th.dt-type-date,
+						table.dataTable td.dt-type-numeric,
+						table.dataTable td.dt-type-date {
+						    text-align: left !important;
+						}
+						
+						/* Right-align header (6th column = ACCT BALANCE) */
+															table.dataTable th.dt-type-numeric:nth-child(6) {
+															  text-align: right !important;
+															}
+															
+															/* Right-align data (6th column = ACCT BALANCE) */
+																									#reportdetails td:nth-child(6),
+																									.dataTables_scrollHeadInner table th:nth-child(6) {
+																									 text-align: right !important;
+																									 padding-right: 10px !important;
+																										}
+						
+				
+
+
+
+						  
+						</style>
+				
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 
 <style>
@@ -422,6 +481,154 @@ $(window).on('beforeunload', function() {
 
 						}
     </script>
+
+
+
+<script th:inline="javascript">
+				  $(document).ready(function () {
+				    var table = $('#reportdetails').DataTable({
+				      scrollY: "550px",
+				      scrollX: true,
+				      scrollCollapse: true,
+				      autoWidth: false,
+				      paging: true,
+				      searching: true,
+				      lengthChange: false,
+				      ordering: true,
+				      pageLength: 100,
+				      fixedHeader: true, // ✅ You can simply set it to true
+					  // ✅ Column width settings
+					   columnDefs: [
+					     { width: "60px", targets: 0 },   // Edit icon column
+					     { width: "150px", targets: 1 }  ,  // S No column
+						 { width: "300px", targets: 7 }    // S No column
+					   ],
+
+				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+				    });
+
+				    // ✅ Fix alignment on resize / zoom
+				    $(window).on('resize', function () {
+				      table.columns.adjust().draw(false);
+				    });
+
+				    // ✅ Fix initial misalignment if loaded at non-100% zoom
+				    setTimeout(function () {
+				      table.columns.adjust().draw(false);
+				    }, 500);
+				  });
+				</script>
+
+
+<script>
+		function editRecord(icon) {
+			const row = icon.closest('tr');
+			const provisionInput = row.querySelector('.provision-field');
+
+			// Enable only provision field for editing
+			provisionInput.removeAttribute('readonly');
+			provisionInput.focus();
+
+			// Highlight editable cell
+			provisionInput.style.backgroundColor = '#fff8e1';
+
+			// Show submit button
+			document.getElementById('submitButton').style.display = 'inline-block';
+		}
+
+
+
+	</script>
+	<script th:inline="javascript">
+	    /*<![CDATA[*/
+	    const reportId = /*[[${reportid}]]*/ null;
+	    /*]]>*/
+	</script>
+
+	<script>
+	    function openMSCIDetail(elem, mode) {
+			
+			var type = elem.getAttribute('data-type');   
+
+			        if (type === "ARCHIVAL") {
+			            showResultModal('BRRS',"Archived Data cannot be modified");
+			            return;
+			        }			
+			
+	        const acctNo = elem.getAttribute("data-acctNo");
+	        const asondate = elem.getAttribute("data-asondate");
+	        
+	        // Use the 'reportId' variable initialized above
+	        // Use backticks (`) for a template literal to easily include the variable
+	        location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+	    }
+	</script>
+
+
+
+
+	<script>
+		function submitMSCIUpdate() {
+			const formData = $('#msciDetailForm').serialize(); // Ensure correct form ID
+
+			// ✅ Store the previous page URL
+			const previousUrl = document.referrer; // same as going back once in history
+
+			// Show loader while processing
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: `/BRRS/Reports/${reportId}/update`,
+				type: 'POST',
+				data: formData,
+				success: function (response) {
+					$('#loader').modal('hide');
+
+					// Show message via modal
+					if (response && response.toLowerCase().includes('success')) {
+						showResultModal('BRRS', response);
+					} else {
+						showResultModal('Information', response || 'No data updated.');
+					}
+
+					// ✅ Redirect back to the previous page after short delay
+					setTimeout(() => {
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							// fallback: just go back if referrer not found
+							window.history.back();
+						}
+					}, 1500);
+				},
+				error: function (xhr, status, error) {
+					$('#loader').modal('hide');
+					console.error("Update error:", error);
+
+					showResultModal('Error', 'Failed to update record. Please try again.');
+
+					// ✅ On error also return to previous page after delay
+					setTimeout(() => {
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							window.history.back();
+						}
+					}, 1500);
+				}
+			});
+		}
+
+	</script>
+
+
+
+
+
+
+
+
+
 
 <script>
 
@@ -2676,102 +2883,157 @@ function cancelModify() {
 					</div>
 				</div>
 
-				<div th:if="${displaymode == 'Details'}">
-					<div class="row">
-						<div class="col-sm-12">
+				<div th:if="${displaymode == 'Details'}" >
+					<div class="row"  >
+						<div class="col-sm-12" >
 							<div class="table-responsive scrollable-table-container"
 								style="border-right: 1px solid #dee2e6;">
-								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reports">
-									<thead class="thead-light">
+								<table class="table table-striped table-hover" id="reportdetail">
+								<thead class="thead-light">
 										<tr>
 											<th></th>
+											<th>S No</th>
 											<th>CUST_ID</th>
 											<th>ACCT_NUMBER</th>
 											<th>ACCT_NAME</th>
-											
-											
-											
 											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
-											<th>REPORT LABLE</th>
+											<th>REPORT LABEL</th>
 											<th>REPORT ADDL CRITERIA1</th>
 											<th>REPORT_DATE</th>
 										</tr>
 
 									</thead>
 
-									<tbody th:each="report: ${reportdetails}"
-										style="font-family: Arial;">
-										<tr>
-											<td><a data-toggle="tooltip" class="editrec"
-												title="Click to Edit this Record"> <i
-													class="fas fa-edit" onclick="editRecord(this)"></i>
-											</a></td>
+									<tbody style="font-family: Arial;">
+										<tr th:each="report, srlno : ${reportdetails}">
+											<td>
+												<a data-toggle="tooltip" class="editrec"
+													title="Click to Edit this Record">
+													<i class="fas fa-edit" style="color: black; cursor:pointer;"
+														th:attr="data-acctNo=${report.acctNumber},
+																							data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
+														onclick="openMSCIDetail(this, 'edit')"></i>
+
+												</a>
+											</td>
+
+
+											<td th:text="${srlno.index + 1}"></td>
 											<td th:text="${report.custId}"></td>
 											<td th:text="${report.acctNumber}"></td>
 											<td th:text="${report.acctName}"></td>
-											
-											<td style="text-align:right;"
-											th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3, 'POINT')}"></td>
-											
+
+											<td style="text-align:right !important;"
+    th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
+</td>
+
+
 											<td th:text="${report.reportLable}"></td>
 											<td th:text="${report.reportAddlCriteria_1}"></td>
-											<td
-												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>
 									</tbody>
-
-
 								</table>
-								
-								
-								
-								<div style="margin-top: 20px; text-align: center;"
-									th:if="${pagination=='YES'}">
-
-
-
-									<a th:if="${currentPage > 0}"
-										th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																	    asondate=${asondate},                             
-																	    fromdate=${fromdate},
-																	    todate=${todate},
-																	    currency=${currency},
-																	    dtltype=${dtltype},
-																	    type=${type},
-																	    version=${version},
-																	    page=${currentPage - 100},
-																	    size=100
-																	)}">
-										Previous </a> <span>Page [[${currentPage / 100 + 1}]] of
-										[[${totalPages}]]</span> <a
-										th:if="${currentPage < (totalPages - 1) * 100}"
-										th:href="@{'/Reports/' + ${reportid} + '/Details'(
-																	    asondate=${asondate},
-																	    fromdate=${fromdate},
-																	    todate=${todate},
-																	    currency=${currency},
-																	    dtltype=${dtltype},
-																	    type=${type},
-																	    version=${version},
-																	    page=${currentPage + 100},
-																	    size=100
-																	)}">
-										Next </a>
-								</div>
-
-
-						
-
 
 							</div>
 
-
+							<!-- Submit Button -->
+							<div style="text-align: center; margin-top: 15px; background-color: white;">
+								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									onclick="updateform();" style="display: none;">
+									Submit
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
+				
+				
+				<!-- MSCIE Detail Form Screen -->
+			<div th:if="${formmode == 'edit'}" class="card">
 
+
+				<div class="card-body">
+					<form th:object="${msciData}" method="post" id="msciDetailForm">
+						<div class="row formline" style="margin-top:10px;">
+							<label class="col-sm-2">Customer ID</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+							</div>
+
+							<div class="col-sm-1"></div>
+
+							<label class="col-sm-2">Account Number</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{acctNumber}" name="acctNumber"
+									class="form-control form-control-sm" readonly />
+							</div>
+						</div>
+
+						<div class="row formline" style="margin-top:10px;">
+							<label class="col-sm-2">Account Name</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
+							</div>
+
+							<div class="col-sm-1"></div>
+
+							<label class="col-sm-2">Acct Balance</label>
+							<div class="col-sm-3">
+									<input type="number" step="0.01" th:field="*{acctBalanceInpula}"
+										class="form-control form-control-sm" style="text-align:right;" />
+								</div>
+						</div>
+
+						<div class="row formline" style="margin-top:10px;">
+							<label class="col-sm-2">Report Label</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
+							</div>
+
+							<div class="col-sm-1"></div>
+
+							<label class="col-sm-2">Report Addl Criteria 1</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{reportAddlCriteria_1}" class="form-control form-control-sm"
+									readonly />
+							</div>
+						</div>
+
+						<div class="row formline" style="margin-top:10px;">
+							<label class="col-sm-2">Report Date</label>
+							<div class="col-sm-3">
+								<input type="date" name="reportDate" class="form-control form-control-sm"readonly
+									th:value="${#dates.format(msciData.reportDate, 'yyyy-MM-dd')}" />
+							</div>
+						</div>
+
+						<div style="text-align:center; margin-top:20px;">
+							<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
+								onclick="submitMSCIUpdate()">Update</button>
+
+						</div>
+					</form>
+				</div>
+			</div>
+			
+			
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
 			</div>
 
 

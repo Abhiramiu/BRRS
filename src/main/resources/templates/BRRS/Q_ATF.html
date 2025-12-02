@@ -1,0 +1,3029 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: ISHWARYA 
+CREATED ON	: 01.12.2025
+PURPOSE		: BRRS REPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+
+
+<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+
+
+
+
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
+
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
+
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+.table td {
+	background-color: #FFFFFF;
+}
+
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
+
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
+
+#BRFvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
+
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
+
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+
+
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
+
+.error {
+	color: red;
+	padding-top: 15px;
+}
+
+.form-control:focus {
+	border-color: #007bff;
+}
+
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
+	) ~ .form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~ .form-legend {
+	color: #0056b3; /* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus ) ~ .form-legend {
+	color: #aaa; /* Normal label color */
+}
+
+.table-cell tbody td:hover {
+        background-color: #f0f0f0; /* Hover color for cell */
+        cursor: pointer;           /* Optional: pointer cursor */
+    }
+
+	.table-bordered td, 
+	.table-bordered th {
+	     border: 1px solid #000 !important;
+	}
+</style>
+
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.green-cell {
+	 background-color: rgb(107, 122, 143) !important;
+    color: white !important;
+}
+
+
+
+</style>
+
+
+
+
+
+
+	<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 80px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
+
+
+
+
+
+
+
+
+
+
+<script th:inline="javascript">
+
+
+
+		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+		});
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
+			$('#loader').modal('hide');
+		});
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+
+        
+		$(document).ready(function() {
+			Maker_Checker_Function(); 
+		});
+
+		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",    
+				type: "GET",
+				success: function(roleId) {
+					// console.log("User Role ID:", roleId);
+				
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						const modifyBtn = document.getElementById("addRecord");
+						if (modifyBtn) modifyBtn.style.display = "none";
+					}
+
+					if (roleId === "ADM-M" || roleId === "USR-M") {
+								const button = document.getElementById("custom-tab-btnAdd");
+								if (button) button.style.display = "none";
+							}
+
+				},
+				error: function(err) {
+					console.error("Error fetching role:", err);
+		     }
+		    });
+		}
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard'
+		}
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+
+		//to fetch summary from the database - called from the summary button
+		//to fetch summary from the database - called from the summary button
+	function showdetails() {
+    
+    var Callurl;
+    	$('#loader').modal('show');
+        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+        location.href = Callurl;
+        	console.log(Callurl);
+   /*  $.ajax({
+        type: 'get',
+        url: Callurl,
+        beforeSend: function () {
+            $('#loader').modal('show'); // 🔄 Show loader
+        },
+        success: function (data) {
+            $('.content').html(data);
+            //$("#detailsbtn").addClass("active");
+            //tablepagination();
+        },
+        complete: function () {
+            $('#loader').modal('hide'); 
+        },
+        error: function () {
+        	  $('#loader').modal('hide');
+            alert("Something went wrongss. Please try again.");
+          
+        }
+    }); */
+}
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+
+
+	</script>
+
+
+
+
+<!-- <script>
+	// Show Modify (enable inputs & dropdowns)
+    function showmodify(btn) {   
+    	
+    	
+    
+    	var readonlyIds = [];
+
+    	// Add product + total for rows 22,23,57,58,60,61,64,65,67,68
+    	let rows = [22, 23, 57, 58, 60, 61, 64, 65, 67, 68];
+
+    	rows.forEach(i => {
+    	    readonlyIds.push(
+    	        `r${i}_product`,
+    	        `r${i}_total`
+    	    );
+    	});
+
+    	// Make all .Show_input editable except the ones in readonlyIds 
+    	$(".Show_input").each(function () {
+    	    if (!readonlyIds.includes(this.id)) {
+    	        $(this).removeAttr("readonly").removeAttr("disabled");
+    	    }
+    	});
+
+    
+    
+     // -------------------------------------------------------------
+     // 1) APPLY GRAY BACKGROUND FOR MULTIPLE ROWS & ALL TARGET COLUMNS
+     // -------------------------------------------------------------
+
+     const grayColumns = [
+        
+         "botswana",
+         "south_africa",
+         "sadc",
+         "usa",
+         "uk",
+         "europe",
+         "india",
+         "sydney",
+         "uganda",
+         "c10",
+         "c11",
+         "c12",
+         "c13",
+         "c14",
+         "c15",
+         "c16"
+         
+     ];
+
+     // All rows that need gray background for full column list
+     const grayRows = [22, 23, 57, 58, 60, 61, 64, 65, 67, 68];
+
+     grayRows.forEach(r => {
+         grayColumns.forEach(col => {
+             const selector = `#r${r}_${col}`;
+             if ($(selector).length) {
+                 $(selector).css("background-color", "#d3d3d3");
+             }
+         });
+     });
+
+
+     // ---------------------------------------------------------------------
+     // 2) APPLY GRAY BACKGROUND ONLY FOR BOTSWANA COLUMN FOR R111–R114
+     // ---------------------------------------------------------------------
+
+     const botswanaOnlyRows = [111, 112, 113, 114];
+
+     botswanaOnlyRows.forEach(r => {
+         const selector = `#r${r}_botswana`;
+         if ($(selector).length) {
+             $(selector).css("background-color", "#d3d3d3");
+         }
+     });
+
+    
+    // Toggle buttons 
+    
+    $("#submitButton").show();  
+    $("#cancelRecord").show();   
+    $(btn).hide(); 
+    // hide the clicked Modify button
+    }
+
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+        	
+        	
+        	
+            
+        
+
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
+
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+
+    }
+
+	
+
+	</script>
+
+
+
+ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+function activateTab(tabName) {
+    // Remove 'active' from all buttons
+    document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Add 'active' to selected button
+    if (tabName === 'summary') {
+        document.getElementById('custom-tab-btnSummary').classList.add('active');
+    } else if (tabName === 'Details') {
+        document.getElementById('custom-tab-btnDetails').classList.add('active');
+    }
+}
+
+window.onload = function() {
+    /* setTimeout(function() {
+        var selectedTab = document.getElementById("selectedTab").value;
+        alert(selectedTab);
+        activateTab(selectedTab);
+    }, 10000); */ // 10,000 milliseconds = 10 seconds
+    
+	var selectedTab = document.getElementById("selectedTab").value;
+    activateTab(selectedTab);
+};
+
+
+function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+
+
+			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
+			loader.show();
+
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+function editRecord(){
+	showResultModal('Alert', 'Development in progress');
+	
+}
+function closemodel(){
+	$('#alert').modal('hide');
+	$('#resultModal').modal('hide');
+	
+}
+
+function showResultModal(title, message) {
+	// Set the text for the modal elements
+	$('#resultModalLabel').text(title);
+	$('#resultModalBody').text(message);
+
+	// Show the modal
+	$('#resultModal').modal('show');
+}
+
+</script>
+
+
+<script>
+
+		function startReport(button) {
+			const alertMsg = document.getElementById("alertMessage");
+
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+
+			const sessionfilename = sessionStorage.getItem("filename");
+
+			if (sessionfilename === filename) {
+				alertMsg.innerHTML = 'Download request already processing...';
+				showAlert();
+				return;
+			}
+
+			alertMsg.innerHTML = 'Download request started...';
+			showAlert();
+
+			const downloadUrl = '/BRRS/Reports/startreport'
+				+ '?filename=' + encodeURIComponent(filename)
+				+ '&fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate)
+				+ '&currency=' + encodeURIComponent(currency)
+				+ '&dtltype=' + encodeURIComponent(dtltype)
+				+ '&type=' + encodeURIComponent(type)
+				+ '&version=' + encodeURIComponent(version);
+
+			fetch(downloadUrl)
+				.then(res => res.text())
+				.then(jobId => {
+
+					alertMsg.innerHTML = 'Request received. Job ID: ' + jobId;
+					showAlert();
+
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+
+					checkReport(jobId);
+				});
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report ready! Downloading...';
+						showAlert();
+
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename + ".xlsx");
+
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+
+					} else if (status === "PROCESSING") {
+						alertMsg.innerHTML = 'Report processing...';
+						showAlert();
+
+						setTimeout(() => checkReport(jobId), 4000);
+
+					} else if (status === "ERROR") {
+						alertMsg.innerHTML = 'No data available to download.';
+						showAlert();
+
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					}
+				});
+		}
+
+		function downloadDetailfile(jobId, filename) {
+
+			$.ajax({
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId + '&filename=' + filename,
+				type: 'GET',
+				xhrFields: { responseType: 'blob' },
+
+				success: function (data) {
+					if (data && data.size > 100) {
+						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+						const url = window.URL.createObjectURL(blob);
+
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data found to download.');
+					}
+				}
+			});
+		}
+
+	</script>
+
+
+
+
+
+
+<!-- <script>
+
+	function startReport(button){
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+			
+			if(sessionfilename==filename){
+				alertMsg.innerHTML ='Download request already Processing...';
+	       	 	showAlert();
+				return;
+			}
+			
+			alertMsg.innerHTML ='Download request Processing...';
+	   	 	showAlert();
+
+			const baseUrl = '/BCDRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+		    fetch(downloadUrl)  // ✅ no invalid characters now
+		        .then(res => res.text())
+		        .then(jobId => {
+
+		        	alertMsg.innerHTML ='Download request received...'+jobId;
+		       	 	showAlert();
+		            sessionStorage.setItem("jobId", jobId);
+		            sessionStorage.setItem("filename", filename);
+		            checkReport(jobId);
+		        });
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+		    fetch('/BCDRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+		        .then(res => res.text())
+		        .then(status => {
+		            if (status === "READY") {
+		            	alertMsg.innerHTML ='Report is ready! Downloading…';
+		           	 	showAlert();
+		                const filename = sessionStorage.getItem("filename");
+		                downloadDetailfile(jobId,filename)
+		                sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");                
+		                
+		            } else if(status ==="PROCESSING") {
+		                alertMsg.innerHTML ='Download Is Processing…';
+		            	showAlert();
+		                setTimeout(() => checkReport(jobId), 5000);
+		            }
+		            else if(status ==="ERROR") {
+		                alertMsg.innerHTML ='No data was available to create a download.';
+		            	showAlert();
+		            	sessionStorage.removeItem("jobId");
+		                sessionStorage.removeItem("filename");  
+		            }
+		        });
+		}
+
+
+
+		function downloadDetailfile(jobId,filename) {
+			
+			//$('#loader').modal('show');
+			
+			$.ajax({
+				url: '/BCDRS/Reports/downloaddetailExcel?jobId='+ jobId +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+
+</script> -->
+
+<script th:inline="javascript">
+function showdetailsbyRowAndColumn(a) { 
+    var rowId = a.getAttribute('RowId');
+    var columnId = a.getAttribute('ColumnId');
+    var cellValue = a.textContent || a.innerText;
+
+    if (cellValue !== '0') {
+        // Set dynamic message in modal (instead of confirm)
+        document.getElementById("cellresultModalLabel").innerText = 
+            "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+        // Show custom Bootstrap modal
+        $('#cellresultModal').modal('show');
+
+        // Handle Yes button
+        document.querySelector('.yes-btn').onclick = function() {
+            $('#cellresultModal').modal('hide');
+
+            // Show loader
+            const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            $('#loader').modal('show');
+
+            // Build dynamic URL
+            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+            location.href = Callurl;
+        };
+    } else {
+        // Use your custom alert modal instead of window.alert
+        showResultModal("Alert", "No Records available for this selected cell.");
+    }
+}
+</script>
+
+
+
+<!-- <script>
+
+function getCellValue(selector) {
+	  let el = $(selector);
+	  if (!el.length) return 0;
+
+	  if (el.is("input")) {
+	      return parseFloat(el.val()?.replace(/,/g, "")) || 0;
+	  } else {
+	      return parseFloat(el.text()?.replace(/,/g, "")) || 0;
+	  }
+	}
+
+	function setCellValue(selector, value) {
+	  let el = $(selector);
+	  if (!el.length) return;
+
+	  const formatted = value.toLocaleString('en-US', {
+	      minimumFractionDigits: 0,
+	      maximumFractionDigits: 0
+	  });
+
+	  if (el.is("input")) {
+	      el.val(formatted);
+	  } else {
+	      el.text(formatted);
+	  }
+	}
+
+	//--------------------------------------
+	// UNIVERSAL CALCULATION FUNCTION
+	//--------------------------------------
+	function calculateAllTotals() {
+
+	  let cols = [
+	      "botswana", "south_africa", "sadc", "usa", "uk", "europe",
+	      "india", "sydney", "uganda", "c10", "c11", "c12", "c13",
+	      "c14", "c15", "c16"
+	  ];
+
+	  // -----------------------------------------------------
+	  // BLOCK 1 → Row 21 = Row 22 + Row 23
+	  // -----------------------------------------------------
+	  let R22 = 0, R23 = 0;
+
+	  cols.forEach(col => {
+	      let v22 = getCellValue("#r22_" + col);
+	      let v23 = getCellValue("#r23_" + col);
+
+	      setCellValue("#r21_" + col, v22 + v23);
+
+	      R22 += v22;
+	      R23 += v23;
+	  });
+
+	  setCellValue("#r22_total", R22);
+	  setCellValue("#r23_total", R23);
+	  setCellValue("#r21_total", R22 + R23);
+
+	  // -----------------------------------------------------
+	  // BLOCK 2 → Row 56 = Row 57 + Row 58
+	  // -----------------------------------------------------
+	  let R57 = 0, R58 = 0;
+
+	  cols.forEach(col => {
+	      let v57 = getCellValue("#r57_" + col);
+	      let v58 = getCellValue("#r58_" + col);
+
+	      setCellValue("#r56_" + col, v57 + v58);
+
+	      R57 += v57;
+	      R58 += v58;
+	  });
+
+	  setCellValue("#r57_total", R57);
+	  setCellValue("#r58_total", R58);
+	  setCellValue("#r56_total", R57 + R58);
+
+	  // -----------------------------------------------------
+	  // BLOCK 3 → Row 59 = Row 60 + Row 61
+	  // -----------------------------------------------------
+	  let R60 = 0, R61 = 0;
+
+	  cols.forEach(col => {
+	      let v60 = getCellValue("#r60_" + col);
+	      let v61 = getCellValue("#r61_" + col);
+
+	      setCellValue("#r59_" + col, v60 + v61);
+
+	      R60 += v60;
+	      R61 += v61;
+	  });
+
+	  setCellValue("#r60_total", R60);
+	  setCellValue("#r61_total", R61);
+	  setCellValue("#r59_total", R60 + R61);
+
+	  // -----------------------------------------------------
+	  // BLOCK 4 → Row 63 = Row 64 + Row 65
+	  // -----------------------------------------------------
+	  let R64 = 0, R65 = 0;
+
+	  cols.forEach(col => {
+	      let v64 = getCellValue("#r64_" + col);
+	      let v65 = getCellValue("#r65_" + col);
+
+	      setCellValue("#r63_" + col, v64 + v65);
+
+	      R64 += v64;
+	      R65 += v65;
+	  });
+
+	  setCellValue("#r64_total", R64);
+	  setCellValue("#r65_total", R65);
+	  setCellValue("#r63_total", R64 + R65);
+
+	  // -----------------------------------------------------
+	  // BLOCK 5 → Row 66 = Row 67 + Row 68
+	  // -----------------------------------------------------
+	  let R67 = 0, R68 = 0;
+
+	  cols.forEach(col => {
+	      let v67 = getCellValue("#r67_" + col);
+	      let v68 = getCellValue("#r68_" + col);
+
+	      setCellValue("#r66_" + col, v67 + v68);
+
+	      R67 += v67;
+	      R68 += v68;
+	  });
+
+	  setCellValue("#r67_total", R67);
+	  setCellValue("#r68_total", R68);
+	  setCellValue("#r66_total", R67 + R68);
+
+	  // -----------------------------------------------------
+	  // BLOCK 6 → Row 55 = Row 56 + Row 59
+	  // -----------------------------------------------------
+	  let R56_total = getCellValue("#r56_total");
+	  let R59_total = getCellValue("#r59_total");
+
+	  setCellValue("#r55_total", R56_total + R59_total);
+
+	  cols.forEach(col => {
+	      let v56 = getCellValue("#r56_" + col);
+	      let v59 = getCellValue("#r59_" + col);
+	      setCellValue("#r55_" + col, v56 + v59);
+	  });
+
+	  // -----------------------------------------------------
+	  // BLOCK 7 → Row 62 = Row 63 + Row 66
+	  // -----------------------------------------------------
+	  let R63_total = getCellValue("#r63_total");
+	  let R66_total = getCellValue("#r66_total");
+
+	  setCellValue("#r62_total", R63_total + R66_total);
+
+	  cols.forEach(col => {
+	      let v63 = getCellValue("#r63_" + col);
+	      let v66 = getCellValue("#r66_" + col);
+	      setCellValue("#r62_" + col, v63 + v66);
+	  });
+	  
+	  
+	// -----------------------------------------------------
+	// BLOCK → Row 54 = Row 55 + Row 62
+	// -----------------------------------------------------
+	let R55_total = getCellValue("#r55_total");
+	let R62_total = getCellValue("#r62_total");
+
+	setCellValue("#r54_total", R55_total + R62_total);
+
+	cols.forEach(col => {
+	    let v55 = getCellValue("#r55_" + col);
+	    let v62 = getCellValue("#r62_" + col);
+	    setCellValue("#r54_" + col, v55 + v62);
+	});
+	
+	
+	// -----------------------------------------------------
+	// BLOCK → Row 69 = Row 47 + Row 54
+	// -----------------------------------------------------
+	let R47_total = getCellValue("#r47_total");
+	let R54_total = getCellValue("#r54_total");
+
+	setCellValue("#r69_total", R47_total + R54_total);
+
+	cols.forEach(col => {
+	    let v47 = getCellValue("#r47_" + col);
+	    let v54 = getCellValue("#r54_" + col);
+	    setCellValue("#r69_" + col, v47 + v54);
+	});
+
+	  // -----------------------------------------------------
+	  // NEW BLOCK → ROW 10 = sum of multiple rows (includes r21)
+	  // Rows: 11,12,13,18,19,20,21,24,28,31,32,33,36,41,42,43,44,45
+	  // -----------------------------------------------------
+	  let list = [
+	      11, 12, 13, 18, 19, 20, 21,
+	      24, 28, 31, 32, 33,
+	      36, 41, 42, 43, 44, 45
+	  ];
+
+	  // per-country columns (B..R)
+	  cols.forEach(col => {
+	      let sum = 0;
+	      list.forEach(r => {
+	          // read each source row's column value (works for inputs and TDs)
+	          sum += getCellValue("#r" + r + "_" + col);
+	      });
+	      setCellValue("#r10_" + col, sum);
+	  });
+
+	  // TOTAL for row 10: sum the r10 per-column values
+	  let total10 = 0;
+	  cols.forEach(col => {
+	      total10 += getCellValue("#r10_" + col);
+	  });
+	  setCellValue("#r10_total", total10);
+	  
+	// -----------------------------------------------------
+	// BLOCK → Row 108 (Botswana Only) = SUM(R109:R114)
+	// -----------------------------------------------------
+	let b109 = getCellValue("#r109_botswana");
+	let b110 = getCellValue("#r110_botswana");
+	let b111 = getCellValue("#r111_botswana");
+	let b112 = getCellValue("#r112_botswana");
+	let b113 = getCellValue("#r113_botswana");
+	let b114 = getCellValue("#r114_botswana");
+
+	let totalBotswana = b109 + b110 + b111 + b112 + b113 + b114;
+	setCellValue("#r108_botswana", totalBotswana);
+
+	} 
+
+	//--------------------------------------
+	// EVENT LISTENERS
+	$(document).ready(function () {
+
+	  calculateAllTotals();
+
+	  let cols = [
+	      "botswana", "south_africa", "sadc", "usa", "uk", "europe",
+	      "india", "sydney", "uganda", "c10", "c11", "c12", "c13",
+	      "c14", "c15", "c16"
+	  ];
+
+	  cols.forEach(col => {
+
+	      // R21 depends on R22 + R23
+	      $("#r22_" + col + ", #r23_" + col).on("input", calculateAllTotals);
+
+	      // R56 block
+	      $("#r57_" + col + ", #r58_" + col).on("input", calculateAllTotals);
+
+	      // R59 block
+	      $("#r60_" + col + ", #r61_" + col).on("input", calculateAllTotals);
+
+	      // R63 block
+	      $("#r64_" + col + ", #r65_" + col).on("input", calculateAllTotals);
+
+	      // R66 block
+	      $("#r67_" + col + ", #r68_" + col).on("input", calculateAllTotals);
+
+	      // R55 = R56 + R59
+	      $("#r56_" + col + ", #r59_" + col).on("input", calculateAllTotals);
+
+	      // R62 = R63 + R66
+	      $("#r63_" + col + ", #r66_" + col).on("input", calculateAllTotals);
+	   // R69 = R47 + R54
+	      $("#r47_" + col + ", #r54_" + col).on("input", calculateAllTotals);
+
+	      // -----------------------------------------------------
+	      //  NEW: R54 = R55 + R62  (your requested addition)
+	      // -----------------------------------------------------
+	      $("#r55_" + col + ", #r62_" + col).on("input", calculateAllTotals);
+	   
+	   // R108 Botswana = SUM(R109..R114)  (botswana only)
+	      $("#r109_botswana, #r110_botswana, #r111_botswana, #r112_botswana, #r113_botswana, #r114_botswana")
+	          .on("input", calculateAllTotals);
+
+	  });
+
+	  // rows that feed r10 (some are inputs, some backend-filled)
+	  let b10Rows = [
+	      11, 12, 13, 18, 19, 20, 21,
+	      24, 28, 31, 32, 33, 36,
+	      41, 42, 43, 44, 45
+	  ];
+
+	  b10Rows.forEach(r => {
+	      cols.forEach(col => {
+	          $("#r" + r + "_" + col).on("input", calculateAllTotals);
+	      });
+	  });
+
+	});
+
+
+
+
+
+</script>
+
+ -->
+
+
+
+
+
+
+
+
+
+
+
+<!-- <script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+    $("#resultModal").modal("hide");
+    $('#loader').modal('hide');
+
+    // Only reload if not from Details modal
+    if (!isDetailsModal) {
+        setTimeout(function () {
+            location.reload();
+        }, 300);
+    } else {
+        // reset flag for next modal usage
+        isDetailsModal = false;
+    }
+}
+
+	// This is the main function that orchestrates the entire form submission process.
+	// It is triggered by the "Update" button click.
+// Make the function global so onclick="fileuploads(this)" can see it
+window.fileuploads = function(btn) {
+    // Get the report date from the button's data attribute
+    const asondate = btn.getAttribute("data-todate");
+
+    // Show loading spinner
+    $('#loader').modal('show');
+
+    // Ensure totals are calculated before submission
+    if (typeof calculateTotals === "function") calculateTotals();
+
+    // Remove commas from all text inputs inside #fileupload
+    $("#fileupload input[type='text']").each(function () {
+        const val = $(this).val();
+        if (val && val.includes(",")) {
+            $(this).val(val.replace(/,/g, ''));
+        }
+    });
+
+    // Validate form
+    if (!$("#fileupload").valid()) {
+        $('#loader').modal('hide');
+        return;
+    }
+
+    // Prepare FormData
+    const formData1 = new FormData();
+    formData1.append("asondate", asondate);
+
+    // Append row fields to FormData
+// FULL FIELD LIST
+const fields = [
+    "product", "botswana", "south_africa", "sadc", "usa", "uk",
+    "europe", "india", "sydney", "uganda",
+    "c10", "c11", "c12", "c13", "c14", "c15", "c16",
+    "total"
+];
+
+// ONLY for 111–114
+const botswanaOnly = ["botswana"];
+
+// SAME RANGES AS JAVA
+const ranges = [
+    [22, 23],
+    [57, 58],
+    [60, 61],
+    [64, 65],
+    [67, 68],
+    [111, 114]
+];
+
+ranges.forEach(range => {
+    for (let i = range[0]; i <= range[1]; i++) {
+
+        // Only botswana for 111–114
+        const activeFields = (i >= 111 && i <= 114) ? botswanaOnly : fields;
+
+        activeFields.forEach(field => {
+            const input = $("#r" + i + "_" + field);
+            if (input.length) {
+                formData1.append(input.attr("name"), input.val());
+            }
+        });
+
+    }
+});
+    // Send AJAX request
+    $.ajax({
+        url: './_M_GALORupdateAll',
+        type: 'POST',
+        data: formData1,
+        processData: false,
+        contentType: false,
+        dataType: 'text'
+    })
+    .done(function() {
+        $("#resultModalLabel").text("Success");
+        $("#resultModalBody").text("Updated successfully.");
+        $("#resultModal").modal("show");
+    })
+    .fail(function(jqXHR) {
+        console.error("Error response:", jqXHR.responseText);
+        $("#resultModalLabel").text("Error");
+        $("#resultModalBody").text("One or more updates failed. Check console for details.");
+        $("#resultModal").modal("show");
+    })
+    .always(function() {
+        $('#loader').modal('hide');
+    });
+};
+
+
+
+
+
+	</script>
+ -->
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+<title>BRRS</title>
+<body>
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+
+						<!-- Title -->
+						<h5
+								style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							(23) MONTHLY SCHEDULE: M-GALOR: <br>GEOGRAPHICAL BREAKDOWN OF ASSETS 
+							AND <br>LIABILITIES AND OFF-BALANCE SHEET ITEMS BY RESIDENCE 																								
+</h5>
+
+
+  <!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+						</div>
+						
+						
+					</div>
+
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+      style="color: white !important; font-size: 16px; margin-right: 20px;">
+    Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+</span>
+
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+							
+							
+							
+								<!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							th:if="${type != 'ARCHIVAL'}"
+							id="addRecord">Modify</button>
+
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn"
+							title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+							
+							
+							
+							
+							
+							
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+							th:attr="data-reportid=${reportid}, 
+                    				 data-asondate=${asondate}, 
+                    				 data-fromdate=${fromdate}, 
+                     				 data-todate=${todate}, 
+                     				 data-currency=${currency},  
+                     				 data-dtltype=${dtltype}, 
+                     				 data-filename='Q_ATF.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}"
+							onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+						
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid}, 
+             data-asondate=${asondate}, 
+             data-fromdate=${fromdate}, 
+             data-todate=${todate}, 
+             data-currency=${currency},  
+             data-dtltype=${dtltype}, 
+             data-filename='Q_ATF_Detail',
+             data-type=${type},
+					data-version=${version} "
+							onclick="startReport(this)">
+							<!-- 🛠️ Fix: pass `this` -->
+							<i class="fa fa-download"></i>
+						</button>
+						
+					</div>
+				</div>
+
+
+
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+					
+							<div
+								class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light">
+										<tr>
+
+											<th
+												style="text-align: left; font-weight: bold; background-color: #D8D8D8; padding: 10px;   ">NUMBERS BY INSTITUTIONAL SECTOR
+												</th>
+											<th 
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;    "> Number of depositors 
+												</th>
+											<th 
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8;  padding: 10px; "> Number of deposit A/Cs 
+</th>
+											<th 
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   "> Number of Borrowers 
+												</th>
+											
+<th 
+												style="text-align: right; font-weight: bold; background-color: #D8D8D8; padding: 10px;   "> Number of Loan A/Cs 
+ 
+												</th>
+											
+
+										</tr>
+
+										
+
+									</thead>
+
+
+									<tbody th:each="report: ${reportsummary}"
+										style="font-family: Arial;">
+                             
+ <tr>
+										<td style="text-align: left; font-weight: bold;"
+												th:text="${report?.r11_num_by_inst_sec ?: ''}"></td>
+
+									
+												<td id="r11_num_depo" style="text-align: right; padding-right:10px;" class="green-cell"
+    th:text="${report?.r11_num_depo }">
+</td>
+
+<td id="r11_num_depo_acc" style="text-align: right; padding-right:10px;"   class="green-cell"
+    th:text="${report?.r11_num_depo_acc }">
+</td>
+
+
+
+
+<td id="r11_num_borrowers" style="text-align: right; padding-right:10px;"  class="green-cell" 
+    th:text="${report?.r11_num_borrowers }">
+</td>
+
+<td id="r11_num_loan_acc" style="text-align: right; padding-right:10px;"   class="green-cell"
+    th:text="${report?.r11_num_loan_acc }">
+</td>
+
+ </tr>
+ 
+ 
+ 
+  <tr>
+										<td style="text-align: left; "
+												th:text="${report?.r12_num_by_inst_sec ?: ''}"></td>
+
+									
+												<td id="r12_num_depo" style="text-align: right; padding-right:10px;" 
+    th:text="${report?.r12_num_depo }"    th:attr="RowId='R12', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)">
+</td>
+
+<td id="r12_num_depo_acc" style="text-align: right; padding-right:10px;"   
+    th:text="${report?.r12_num_depo_acc }"   th:attr="RowId='R12', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)">
+</td>
+
+
+
+
+<td id="r12_num_borrowers" style="text-align: right; padding-right:10px;" 
+    th:text="${report?.r12_num_borrowers }"   th:attr="RowId='R12', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)">
+</td>
+
+<td id="r12_num_loan_acc" style="text-align: right; padding-right:10px;"  
+    th:text="${report?.r12_num_loan_acc }"   th:attr="RowId='R12', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)">
+</td>
+
+ </tr>
+ 
+ 
+ 
+ 
+ 
+
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r13_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r13_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r13_num_depo}"
+        th:attr="RowId='R13', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r13_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r13_num_depo_acc}"
+         th:attr="RowId='R13', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r13_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r13_num_borrowers}"
+         th:attr="RowId='R13', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r13_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r13_num_loan_acc}"
+         th:attr="RowId='R13', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r14_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r14_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r14_num_depo}"
+         th:attr="RowId='R14', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r14_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r14_num_depo_acc}"
+         th:attr="RowId='R14', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r14_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r14_num_borrowers}"
+         th:attr="RowId='R14', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r14_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r14_num_loan_acc}"
+         th:attr="RowId='R14', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r15_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r15_num_depo" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r15_num_depo}"></td>
+
+    <td id="r15_num_depo_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r15_num_depo_acc}"></td>
+
+    <td id="r15_num_borrowers" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r15_num_borrowers}"></td>
+
+    <td id="r15_num_loan_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r15_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r16_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r16_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r16_num_depo}"
+         th:attr="RowId='R16', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r16_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r16_num_depo_acc}"
+         th:attr="RowId='R16', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r16_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r16_num_borrowers}"
+         th:attr="RowId='R16', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r16_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r16_num_loan_acc}"
+         th:attr="RowId='R16', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r17_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r17_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r17_num_depo}"
+         th:attr="RowId='R17', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r17_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r17_num_depo_acc}"
+         th:attr="RowId='R17', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r17_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r17_num_borrowers}"
+         th:attr="RowId='R17', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r17_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r17_num_loan_acc}"
+         th:attr="RowId='R17', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r18_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r18_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r18_num_depo}"
+         th:attr="RowId='R18', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r18_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r18_num_depo_acc}"
+         th:attr="RowId='R18', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r18_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r18_num_borrowers}"
+         th:attr="RowId='R18', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r18_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r18_num_loan_acc}"
+         th:attr="RowId='R18', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r19_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r19_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r19_num_depo}"
+         th:attr="RowId='R19', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r19_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r19_num_depo_acc}"
+        th:attr="RowId='R19', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r19_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r19_num_borrowers}"
+        th:attr="RowId='R19', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r19_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r19_num_loan_acc}"
+        th:attr="RowId='R19', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r20_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r20_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r20_num_depo}"
+        th:attr="RowId='R20', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r20_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r20_num_depo_acc}"
+         th:attr="RowId='R20', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r20_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r20_num_borrowers}"
+         th:attr="RowId='R20', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r20_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r20_num_loan_acc}"
+         th:attr="RowId='R20', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r21_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r21_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r21_num_depo}"
+        th:attr="RowId='R21', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r21_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r21_num_depo_acc}"
+        th:attr="RowId='R21', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r21_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r21_num_borrowers}"
+        th:attr="RowId='R21', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r21_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r21_num_loan_acc}"
+        th:attr="RowId='R21', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r22_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r22_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r22_num_depo}"
+        th:attr="RowId='R22', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r22_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r22_num_depo_acc}"
+        th:attr="RowId='R22', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r22_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r22_num_borrowers}"
+        th:attr="RowId='R22', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r22_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r22_num_loan_acc}"
+        th:attr="RowId='R22', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r23_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r23_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r23_num_depo}"
+        th:attr="RowId='R23', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r23_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r23_num_depo_acc}"
+        th:attr="RowId='R23', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r23_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r23_num_borrowers}"
+        th:attr="RowId='R23', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r23_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r23_num_loan_acc}"
+        th:attr="RowId='R23', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r24_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r24_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r24_num_depo}"
+        th:attr="RowId='R24', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r24_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r24_num_depo_acc}"
+        th:attr="RowId='R24', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r24_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r24_num_borrowers}"
+        th:attr="RowId='R24', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r24_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r24_num_loan_acc}"
+        th:attr="RowId='R24', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r25_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r25_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r25_num_depo}"
+        th:attr="RowId='R25', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r25_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r25_num_depo_acc}"
+        th:attr="RowId='R25', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r25_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r25_num_borrowers}"
+        th:attr="RowId='R25', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r25_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r25_num_loan_acc}"
+        th:attr="RowId='R25', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r26_num_by_inst_sec ?: ''}"
+      ></td>
+
+    <td id="r26_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r26_num_depo}"
+         th:attr="RowId='R26', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r26_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r26_num_depo_acc}"
+          th:attr="RowId='R26', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r26_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r26_num_borrowers}"
+          th:attr="RowId='R26', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r26_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r26_num_loan_acc}"
+          th:attr="RowId='R26', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r27_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r27_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r27_num_depo}"
+          th:attr="RowId='R27', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r27_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r27_num_depo_acc}"
+          th:attr="RowId='R27', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r27_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r27_num_borrowers}"
+          th:attr="RowId='R27', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r27_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r27_num_loan_acc}"
+          th:attr="RowId='R27', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r28_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r28_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r28_num_depo}"
+          th:attr="RowId='R28', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r28_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r28_num_depo_acc}"
+          th:attr="RowId='R28', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r28_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r28_num_borrowers}"
+          th:attr="RowId='R28', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r28_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r28_num_loan_acc}"
+          th:attr="RowId='R28', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r29_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r29_num_depo" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r29_num_depo}"></td>
+
+    <td id="r29_num_depo_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r29_num_depo_acc}"></td>
+ 
+    <td id="r29_num_borrowers" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r29_num_borrowers}"></td>
+
+    <td id="r29_num_loan_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r29_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r30_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r30_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r30_num_depo}"
+          th:attr="RowId='R30', ColumnId='C2'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r30_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r30_num_depo_acc}"
+          th:attr="RowId='R30', ColumnId='C3'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r30_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r30_num_borrowers}"
+          th:attr="RowId='R30', ColumnId='C4'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+
+    <td id="r30_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r30_num_loan_acc}"
+          th:attr="RowId='R30', ColumnId='C5'"
+    onclick="showdetailsbyRowAndColumn(this)"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r31_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r31_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r31_num_depo}"></td>
+
+    <td id="r31_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r31_num_depo_acc}"></td>
+
+    <td id="r31_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r31_num_borrowers}"></td>
+
+    <td id="r31_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r31_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r32_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r32_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r32_num_depo}"></td>
+
+    <td id="r32_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r32_num_depo_acc}"></td>
+
+    <td id="r32_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r32_num_borrowers}"></td>
+
+    <td id="r32_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r32_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r33_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r33_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r33_num_depo}"></td>
+
+    <td id="r33_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r33_num_depo_acc}"></td>
+
+    <td id="r33_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r33_num_borrowers}"></td>
+
+    <td id="r33_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r33_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r34_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r34_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r34_num_depo}"></td>
+
+    <td id="r34_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r34_num_depo_acc}"></td>
+
+    <td id="r34_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r34_num_borrowers}"></td>
+
+    <td id="r34_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r34_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r35_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r35_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r35_num_depo}"></td>
+
+    <td id="r35_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r35_num_depo_acc}"></td>
+
+    <td id="r35_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r35_num_borrowers}"></td>
+
+    <td id="r35_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r35_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r36_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r36_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r36_num_depo}"></td>
+
+    <td id="r36_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r36_num_depo_acc}"></td>
+
+    <td id="r36_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r36_num_borrowers}"></td>
+
+    <td id="r36_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r36_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r37_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r37_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r37_num_depo}"></td>
+
+    <td id="r37_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r37_num_depo_acc}"></td>
+
+    <td id="r37_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r37_num_borrowers}"></td>
+
+    <td id="r37_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r37_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r38_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r38_num_depo" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r38_num_depo}"></td>
+ 
+    <td id="r38_num_depo_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r38_num_depo_acc}"></td>
+
+    <td id="r38_num_borrowers" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r38_num_borrowers}"></td>
+
+    <td id="r38_num_loan_acc" style="text-align: right; padding-right:10px;"  class="green-cell"
+        th:text="${report?.r38_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r39_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r39_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r39_num_depo}"></td>
+
+    <td id="r39_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r39_num_depo_acc}"></td>
+
+    <td id="r39_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r39_num_borrowers}"></td>
+
+    <td id="r39_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r39_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r40_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r40_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r40_num_depo}"></td>
+
+    <td id="r40_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r40_num_depo_acc}"></td>
+
+    <td id="r40_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r40_num_borrowers}"></td>
+
+    <td id="r40_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r40_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r41_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r41_num_depo" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r41_num_depo}"></td>
+
+    <td id="r41_num_depo_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r41_num_depo_acc}"></td>
+
+    <td id="r41_num_borrowers" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r41_num_borrowers}"></td>
+
+    <td id="r41_num_loan_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r41_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r42_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r42_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r42_num_depo}"></td>
+
+    <td id="r42_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r42_num_depo_acc}"></td>
+
+    <td id="r42_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r42_num_borrowers}"></td>
+
+    <td id="r42_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r42_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r43_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r43_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r43_num_depo}"></td>
+
+    <td id="r43_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r43_num_depo_acc}"></td>
+
+    <td id="r43_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r43_num_borrowers}"></td>
+
+    <td id="r43_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r43_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r44_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r44_num_depo" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r44_num_depo}"></td>
+
+    <td id="r44_num_depo_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r44_num_depo_acc}"></td>
+
+    <td id="r44_num_borrowers" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r44_num_borrowers}"></td>
+
+    <td id="r44_num_loan_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r44_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r45_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r45_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r45_num_depo}"></td>
+
+    <td id="r45_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r45_num_depo_acc}"></td>
+
+    <td id="r45_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r45_num_borrowers}"></td>
+
+    <td id="r45_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r45_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r46_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r46_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r46_num_depo}"></td>
+
+    <td id="r46_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r46_num_depo_acc}"></td>
+
+    <td id="r46_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r46_num_borrowers}"></td>
+
+    <td id="r46_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r46_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r47_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r47_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r47_num_depo}"></td>
+
+    <td id="r47_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r47_num_depo_acc}"></td>
+
+    <td id="r47_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r47_num_borrowers}"></td>
+
+    <td id="r47_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r47_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r48_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r48_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r48_num_depo}"></td>
+
+    <td id="r48_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r48_num_depo_acc}"></td>
+
+    <td id="r48_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r48_num_borrowers}"></td>
+
+    <td id="r48_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r48_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r49_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r49_num_depo" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r49_num_depo}"></td>
+
+    <td id="r49_num_depo_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r49_num_depo_acc}"></td>
+
+    <td id="r49_num_borrowers" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r49_num_borrowers}"></td>
+
+    <td id="r49_num_loan_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r49_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r50_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r50_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r50_num_depo}"></td>
+
+    <td id="r50_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r50_num_depo_acc}"></td>
+
+    <td id="r50_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r50_num_borrowers}"></td>
+
+    <td id="r50_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r50_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r51_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r51_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r51_num_depo}"></td>
+
+    <td id="r51_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r51_num_depo_acc}"></td>
+
+    <td id="r51_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r51_num_borrowers}"></td>
+
+    <td id="r51_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r51_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r52_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r52_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r52_num_depo}"></td>
+
+    <td id="r52_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r52_num_depo_acc}"></td>
+
+    <td id="r52_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r52_num_borrowers}"></td>
+
+    <td id="r52_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r52_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r53_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r53_num_depo" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r53_num_depo}"></td>
+
+    <td id="r53_num_depo_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r53_num_depo_acc}"></td>
+
+    <td id="r53_num_borrowers" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r53_num_borrowers}"></td>
+
+    <td id="r53_num_loan_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r53_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r54_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r54_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r54_num_depo}"></td>
+
+    <td id="r54_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r54_num_depo_acc}"></td>
+
+    <td id="r54_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r54_num_borrowers}"></td>
+
+    <td id="r54_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r54_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r55_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r55_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r55_num_depo}"></td>
+
+    <td id="r55_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r55_num_depo_acc}"></td>
+
+    <td id="r55_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r55_num_borrowers}"></td>
+
+    <td id="r55_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r55_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r56_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r56_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r56_num_depo}"></td>
+
+    <td id="r56_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r56_num_depo_acc}"></td>
+
+    <td id="r56_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r56_num_borrowers}"></td>
+
+    <td id="r56_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r56_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r57_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r57_num_depo" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r57_num_depo}"></td>
+
+    <td id="r57_num_depo_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r57_num_depo_acc}"></td>
+
+    <td id="r57_num_borrowers" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r57_num_borrowers}"></td>
+
+    <td id="r57_num_loan_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r57_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r58_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r58_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r58_num_depo}"></td>
+
+    <td id="r58_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r58_num_depo_acc}"></td>
+
+    <td id="r58_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r58_num_borrowers}"></td>
+
+    <td id="r58_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r58_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r59_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r59_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r59_num_depo}"></td>
+
+    <td id="r59_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r59_num_depo_acc}"></td>
+
+    <td id="r59_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r59_num_borrowers}"></td>
+
+    <td id="r59_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r59_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r60_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r60_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r60_num_depo}"></td>
+
+    <td id="r60_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r60_num_depo_acc}"></td>
+
+    <td id="r60_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r60_num_borrowers}"></td>
+
+    <td id="r60_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r60_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r61_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r61_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r61_num_depo}"></td>
+
+    <td id="r61_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r61_num_depo_acc}"></td>
+
+    <td id="r61_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r61_num_borrowers}"></td>
+
+    <td id="r61_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r61_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r62_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r62_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r62_num_depo}"></td>
+
+    <td id="r62_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r62_num_depo_acc}"></td>
+
+    <td id="r62_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r62_num_borrowers}"></td>
+
+    <td id="r62_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r62_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r63_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r63_num_depo" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r63_num_depo}"></td>
+
+    <td id="r63_num_depo_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r63_num_depo_acc}"></td>
+
+    <td id="r63_num_borrowers" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r63_num_borrowers}"></td>
+
+    <td id="r63_num_loan_acc" style="text-align: right; padding-right:10px;"
+        th:text="${report?.r63_num_loan_acc}"></td>
+</tr>
+
+
+<tr>
+    <td style="text-align: left; "
+        th:text="${report?.r64_num_by_inst_sec ?: ''}"></td>
+
+    <td id="r64_num_depo" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r64_num_depo}"></td>
+
+    <td id="r64_num_depo_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r64_num_depo_acc}"></td>
+
+    <td id="r64_num_borrowers" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r64_num_borrowers}"></td>
+
+    <td id="r64_num_loan_acc" style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r64_num_loan_acc}"></td>
+</tr>
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+									</tbody>
+
+
+								</table>
+
+							</div>
+
+
+
+						</div>
+					</div>
+				</div>
+
+			
+
+				<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light">
+										<tr>
+											<th></th>
+											<th>CUST_ID</th>
+											<th>ACCT_NUMBER</th>
+											<th>ACCT_NAME</th>
+											
+											
+											
+											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
+											<th>REPORT LABLE</th>
+											<th>REPORT ADDL CRITERIA1</th>
+											<th>REPORT_DATE</th>
+										</tr>
+
+									</thead>
+
+									<tbody th:each="report: ${reportdetails}"
+										style="font-family: Arial;">
+										<tr>
+											<td><a data-toggle="tooltip" class="editrec"
+												title="Click to Edit this Record"> <i
+													class="fas fa-edit" onclick="editRecord(this)"></i>
+											</a></td>
+											<td th:text="${report?.custId}"></td>
+											<td th:text="${report?.acctNumber}"></td>
+											<td th:text="${report?.acctName}"></td>
+											
+											<td style="text-align:right;"
+											th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 3, 'POINT')}"></td>
+											
+											<td th:text="${report?.reportLabel}"></td>
+											<td th:text="${report?.reportAddlCriteria_1}"></td>
+											<td th:text="${report?.reportDate == null ? '' : #dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
+
+										</tr>
+									</tbody>
+
+
+								</table>
+								
+								
+								
+								<div style="margin-top: 20px; text-align: center;"
+									th:if="${pagination=='YES'}">
+
+
+
+									<a th:if="${currentPage > 0}"
+										th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																	    asondate=${asondate},                             
+																	    fromdate=${fromdate},
+																	    todate=${todate},
+																	    currency=${currency},
+																	    dtltype=${dtltype},
+																	    type=${type},
+																	    version=${version},
+																	    page=${currentPage - 100},
+																	    size=100
+																	)}">
+										Previous </a> <span>Page [[${currentPage / 100 + 1}]] of
+										[[${totalPages}]]</span> <a
+										th:if="${currentPage < (totalPages - 1) * 100}"
+										th:href="@{'/Reports/' + ${reportid} + '/Details'(
+																	    asondate=${asondate},
+																	    fromdate=${fromdate},
+																	    todate=${todate},
+																	    currency=${currency},
+																	    dtltype=${dtltype},
+																	    type=${type},
+																	    version=${version},
+																	    page=${currentPage + 100},
+																	    size=100
+																	)}">
+										Next </a>
+								</div>
+
+
+						
+
+
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+
+
+		</div>
+
+
+
+	</div>
+
+
+
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel"
+						style="text-align: center; color: white;">Do you want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn"
+						data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</body>
+
+
+
+
+
+
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height:520px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+
+
+<style>
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+</style>
+
+</html>
