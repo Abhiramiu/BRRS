@@ -176,69 +176,87 @@ public class BRRS_M_SRWA_12F_ReportService {
 
 
 	public void updateReport(M_SRWA_12F_Summary_Entity updatedEntity) {
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-		M_SRWA_12F_Summary_Entity existing = M_SRWA_12F_Summary_Repo
-				.findTopByReportDateOrderByReportVersionDesc(updatedEntity.getReportDate())
-				.orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-		try {
-			// 1️⃣ Loop through R14 to R100
-			for (int i = 11; i <= 36; i++) {
-				String prefix = "R" + i + "_";
+	    M_SRWA_12F_Summary_Entity existing =
+	            M_SRWA_12F_Summary_Repo.findTopByReportDateOrderByReportVersionDesc(updatedEntity.getReportDate())
+	                    .orElseThrow(() ->
+	                            new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
-				String[] fields = { "NAME_OF_CORPORATE", "CREDIT_RATING", "RATING_AGENCY", "EXPOSURE_AMT",
-						"RISK_WEIGHT", };
+	    try {
+	        // 1️⃣ Update R14 to R36 (based on your loop)
+	        for (int i = 11; i <= 36; i++) {
+	            String prefix = "R" + i + "_";
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	            String[] fields = {
+	                    "NAME_OF_CORPORATE",
+	                    "CREDIT_RATING",
+	                    "RATING_AGENCY",
+	                    "EXPOSURE_AMT",
+	                    "RISK_WEIGHT",
+	                    "RISK_WEIGHTED_AMT"
+	            };
 
-					try {
-						Method getter = M_SRWA_12F_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_SRWA_12F_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	            for (String field : fields) {
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
+	                try {
+	                    Method getter = M_SRWA_12F_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = M_SRWA_12F_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
+	                    Object newValue = getter.invoke(updatedEntity);
 
-			// 2️⃣ Handle R100 total fields using same structure
-			String prefix = "R37_";
-			String[] totalFields = { "NAME_OF_CORPORATE", "CREDIT_RATING", "RATING_AGENCY", "EXPOSURE_AMT",
-					"RISK_WEIGHT", "RISK_WEIGHTED_AMT" };
+	                    // ✔ Prevent null overwriting if updatedEntity does not send the field
+	                    if (newValue != null) {
+	                        setter.invoke(existing, newValue);
+	                    }
 
-			for (String field : totalFields) {
-				String getterName = "get" + prefix + field;
-				String setterName = "set" + prefix + field;
+	                } catch (NoSuchMethodException e) {
+	                    System.out.println("Skipping missing field: " + setterName);
+	                }
+	            }
+	        }
 
-				try {
-					Method getter = M_SRWA_12F_Summary_Entity.class.getMethod(getterName);
-					Method setter = M_SRWA_12F_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	        // 2️⃣ Handle R37 TOTAL
+	        String prefix = "R37_";
+	        String[] totalFields = {
+	                "NAME_OF_CORPORATE",
+	                "CREDIT_RATING",
+	                "RATING_AGENCY",
+	                "EXPOSURE_AMT",
+	                "RISK_WEIGHT",
+	                "RISK_WEIGHTED_AMT"
+	        };
 
-					Object newValue = getter.invoke(updatedEntity);
-					setter.invoke(existing, newValue);
+	        for (String field : totalFields) {
 
-				} catch (NoSuchMethodException e) {
-					// Skip missing total fields
-					continue;
-				}
-			}
+	            String getterName = "get" + prefix + field;
+	            String setterName = "set" + prefix + field;
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	            try {
+	                Method getter = M_SRWA_12F_Summary_Entity.class.getMethod(getterName);
+	                Method setter = M_SRWA_12F_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-		// Save updated entity
-		System.out.println("abc");
-		M_SRWA_12F_Summary_Repo.save(existing);
+	                Object newValue = getter.invoke(updatedEntity);
+
+	                if (newValue != null) {
+	                    setter.invoke(existing, newValue);
+	                }
+
+	            } catch (NoSuchMethodException e) {
+	                System.out.println("Skipping missing total field: " + setterName);
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+
+	    System.out.println("Saving updated entity");
+	    M_SRWA_12F_Summary_Repo.save(existing);
 	}
 
 
