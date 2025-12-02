@@ -29,12 +29,12 @@ private BigDecimal	r11_disposals;
 private BigDecimal	r11_depreciation;
 private BigDecimal	r11_net_book_value;
 
-private String	r12_fix_ass;
-private BigDecimal	r12_cost;
-private BigDecimal	r12_add;
-private BigDecimal	r12_disposals;
-private BigDecimal	r12_depreciation;
-private BigDecimal	r12_net_book_value;
+// private String	r12_fix_ass;
+// private BigDecimal	r12_cost;
+// private BigDecimal	r12_add;
+// private BigDecimal	r12_disposals;
+// private BigDecimal	r12_depreciation;
+// private BigDecimal	r12_net_book_value;
 
 private String	r13_fix_ass;
 private BigDecimal	r13_cost;
@@ -71,53 +71,53 @@ private BigDecimal	r17_disposals;
 private BigDecimal	r17_depreciation;
 private BigDecimal	r17_net_book_value;
 
-private String	r23_intangible_ass;
-private BigDecimal	r23_cost_rev;
-private BigDecimal	r23_useful_life;
-private BigDecimal	r23_res_value;
-private BigDecimal	r23_month_amort;
-private BigDecimal	r23_acc_amort_amt;
-private BigDecimal	r23_close_bal;
+// private String	r23_intangible_ass;
+// private BigDecimal	r23_cost_rev;
+// private BigDecimal	r23_useful_life;
+// private BigDecimal	r23_res_value;
+// private BigDecimal	r23_month_amort;
+// private BigDecimal	r23_acc_amort_amt;
+// private BigDecimal	r23_close_bal;
 
-private String	r24_intangible_ass;
-private BigDecimal	r24_cost_rev;
-private BigDecimal	r24_useful_life;
-private BigDecimal	r24_res_value;
-private BigDecimal	r24_month_amort;
-private BigDecimal	r24_acc_amort_amt;
-private BigDecimal	r24_close_bal;
+// private String	r24_intangible_ass;
+// private BigDecimal	r24_cost_rev;
+// private BigDecimal	r24_useful_life;
+// private BigDecimal	r24_res_value;
+// private BigDecimal	r24_month_amort;
+// private BigDecimal	r24_acc_amort_amt;
+// private BigDecimal	r24_close_bal;
 
-private String	r25_intangible_ass;
-private BigDecimal	r25_cost_rev;
-private BigDecimal	r25_useful_life;
-private BigDecimal	r25_res_value;
-private BigDecimal	r25_month_amort;
-private BigDecimal	r25_acc_amort_amt;
-private BigDecimal	r25_close_bal;
+// private String	r25_intangible_ass;
+// private BigDecimal	r25_cost_rev;
+// private BigDecimal	r25_useful_life;
+// private BigDecimal	r25_res_value;
+// private BigDecimal	r25_month_amort;
+// private BigDecimal	r25_acc_amort_amt;
+// private BigDecimal	r25_close_bal;
 
-private String	r26_intangible_ass;
-private BigDecimal	r26_cost_rev;
-private BigDecimal	r26_useful_life;
-private BigDecimal	r26_res_value;
-private BigDecimal	r26_month_amort;
-private BigDecimal	r26_acc_amort_amt;
-private BigDecimal	r26_close_bal;
+// private String	r26_intangible_ass;
+// private BigDecimal	r26_cost_rev;
+// private BigDecimal	r26_useful_life;
+// private BigDecimal	r26_res_value;
+// private BigDecimal	r26_month_amort;
+// private BigDecimal	r26_acc_amort_amt;
+// private BigDecimal	r26_close_bal;
 
-private String	r27_intangible_ass;
-private BigDecimal	r27_cost_rev;
-private BigDecimal	r27_useful_life;
-private BigDecimal	r27_res_value;
-private BigDecimal	r27_month_amort;
-private BigDecimal	r27_acc_amort_amt;
-private BigDecimal	r27_close_bal;
+// private String	r27_intangible_ass;
+// private BigDecimal	r27_cost_rev;
+// private BigDecimal	r27_useful_life;
+// private BigDecimal	r27_res_value;
+// private BigDecimal	r27_month_amort;
+// private BigDecimal	r27_acc_amort_amt;
+// private BigDecimal	r27_close_bal;
 
-private String	r28_intangible_ass;
-private BigDecimal	r28_cost_rev;
-private BigDecimal	r28_useful_life;
-private BigDecimal	r28_res_value;
-private BigDecimal	r28_month_amort;
-private BigDecimal	r28_acc_amort_amt;
-private BigDecimal	r28_close_bal;
+// private String	r28_intangible_ass;
+// private BigDecimal	r28_cost_rev;
+// private BigDecimal	r28_useful_life;
+// private BigDecimal	r28_res_value;
+// private BigDecimal	r28_month_amort;
+// private BigDecimal	r28_acc_amort_amt;
+// private BigDecimal	r28_close_bal;
 @Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Id
@@ -201,42 +201,42 @@ public BigDecimal getR11_net_book_value() {
 public void setR11_net_book_value(BigDecimal r11_net_book_value) {
     this.r11_net_book_value = r11_net_book_value;
 }
-public String getR12_fix_ass() {
-    return r12_fix_ass;
-}
-public void setR12_fix_ass(String r12_fix_ass) {
-    this.r12_fix_ass = r12_fix_ass;
-}
-public BigDecimal getR12_cost() {
-    return r12_cost;
-}
-public void setR12_cost(BigDecimal r12_cost) {
-    this.r12_cost = r12_cost;
-}
-public BigDecimal getR12_add() {
-    return r12_add;
-}
-public void setR12_add(BigDecimal r12_add) {
-    this.r12_add = r12_add;
-}
-public BigDecimal getR12_disposals() {
-    return r12_disposals;
-}
-public void setR12_disposals(BigDecimal r12_disposals) {
-    this.r12_disposals = r12_disposals;
-}
-public BigDecimal getR12_depreciation() {
-    return r12_depreciation;
-}
-public void setR12_depreciation(BigDecimal r12_depreciation) {
-    this.r12_depreciation = r12_depreciation;
-}
-public BigDecimal getR12_net_book_value() {
-    return r12_net_book_value;
-}
-public void setR12_net_book_value(BigDecimal r12_net_book_value) {
-    this.r12_net_book_value = r12_net_book_value;
-}
+// public String getR12_fix_ass() {
+//     return r12_fix_ass;
+// }
+// public void setR12_fix_ass(String r12_fix_ass) {
+//     this.r12_fix_ass = r12_fix_ass;
+// }
+// public BigDecimal getR12_cost() {
+//     return r12_cost;
+// }
+// public void setR12_cost(BigDecimal r12_cost) {
+//     this.r12_cost = r12_cost;
+// }
+// public BigDecimal getR12_add() {
+//     return r12_add;
+// }
+// public void setR12_add(BigDecimal r12_add) {
+//     this.r12_add = r12_add;
+// }
+// public BigDecimal getR12_disposals() {
+//     return r12_disposals;
+// }
+// public void setR12_disposals(BigDecimal r12_disposals) {
+//     this.r12_disposals = r12_disposals;
+// }
+// public BigDecimal getR12_depreciation() {
+//     return r12_depreciation;
+// }
+// public void setR12_depreciation(BigDecimal r12_depreciation) {
+//     this.r12_depreciation = r12_depreciation;
+// }
+// public BigDecimal getR12_net_book_value() {
+//     return r12_net_book_value;
+// }
+// public void setR12_net_book_value(BigDecimal r12_net_book_value) {
+//     this.r12_net_book_value = r12_net_book_value;
+// }
 public String getR13_fix_ass() {
     return r13_fix_ass;
 }
@@ -417,258 +417,258 @@ public BigDecimal getR17_net_book_value() {
 public void setR17_net_book_value(BigDecimal r17_net_book_value) {
     this.r17_net_book_value = r17_net_book_value;
 }
-public String getR23_intangible_ass() {
-    return r23_intangible_ass;
-}
-public void setR23_intangible_ass(String r23_intangible_ass) {
-    this.r23_intangible_ass = r23_intangible_ass;
-}
-public BigDecimal getR23_cost_rev() {
-    return r23_cost_rev;
-}
-public void setR23_cost_rev(BigDecimal r23_cost_rev) {
-    this.r23_cost_rev = r23_cost_rev;
-}
-public BigDecimal getR23_useful_life() {
-    return r23_useful_life;
-}
-public void setR23_useful_life(BigDecimal r23_useful_life) {
-    this.r23_useful_life = r23_useful_life;
-}
-public BigDecimal getR23_res_value() {
-    return r23_res_value;
-}
-public void setR23_res_value(BigDecimal r23_res_value) {
-    this.r23_res_value = r23_res_value;
-}
-public BigDecimal getR23_month_amort() {
-    return r23_month_amort;
-}
-public void setR23_month_amort(BigDecimal r23_month_amort) {
-    this.r23_month_amort = r23_month_amort;
-}
-public BigDecimal getR23_acc_amort_amt() {
-    return r23_acc_amort_amt;
-}
-public void setR23_acc_amort_amt(BigDecimal r23_acc_amort_amt) {
-    this.r23_acc_amort_amt = r23_acc_amort_amt;
-}
-public BigDecimal getR23_close_bal() {
-    return r23_close_bal;
-}
-public void setR23_close_bal(BigDecimal r23_close_bal) {
-    this.r23_close_bal = r23_close_bal;
-}
-public String getR24_intangible_ass() {
-    return r24_intangible_ass;
-}
-public void setR24_intangible_ass(String r24_intangible_ass) {
-    this.r24_intangible_ass = r24_intangible_ass;
-}
-public BigDecimal getR24_cost_rev() {
-    return r24_cost_rev;
-}
-public void setR24_cost_rev(BigDecimal r24_cost_rev) {
-    this.r24_cost_rev = r24_cost_rev;
-}
-public BigDecimal getR24_useful_life() {
-    return r24_useful_life;
-}
-public void setR24_useful_life(BigDecimal r24_useful_life) {
-    this.r24_useful_life = r24_useful_life;
-}
-public BigDecimal getR24_res_value() {
-    return r24_res_value;
-}
-public void setR24_res_value(BigDecimal r24_res_value) {
-    this.r24_res_value = r24_res_value;
-}
-public BigDecimal getR24_month_amort() {
-    return r24_month_amort;
-}
-public void setR24_month_amort(BigDecimal r24_month_amort) {
-    this.r24_month_amort = r24_month_amort;
-}
-public BigDecimal getR24_acc_amort_amt() {
-    return r24_acc_amort_amt;
-}
-public void setR24_acc_amort_amt(BigDecimal r24_acc_amort_amt) {
-    this.r24_acc_amort_amt = r24_acc_amort_amt;
-}
-public BigDecimal getR24_close_bal() {
-    return r24_close_bal;
-}
-public void setR24_close_bal(BigDecimal r24_close_bal) {
-    this.r24_close_bal = r24_close_bal;
-}
-public String getR25_intangible_ass() {
-    return r25_intangible_ass;
-}
-public void setR25_intangible_ass(String r25_intangible_ass) {
-    this.r25_intangible_ass = r25_intangible_ass;
-}
-public BigDecimal getR25_cost_rev() {
-    return r25_cost_rev;
-}
-public void setR25_cost_rev(BigDecimal r25_cost_rev) {
-    this.r25_cost_rev = r25_cost_rev;
-}
-public BigDecimal getR25_useful_life() {
-    return r25_useful_life;
-}
-public void setR25_useful_life(BigDecimal r25_useful_life) {
-    this.r25_useful_life = r25_useful_life;
-}
-public BigDecimal getR25_res_value() {
-    return r25_res_value;
-}
-public void setR25_res_value(BigDecimal r25_res_value) {
-    this.r25_res_value = r25_res_value;
-}
-public BigDecimal getR25_month_amort() {
-    return r25_month_amort;
-}
-public void setR25_month_amort(BigDecimal r25_month_amort) {
-    this.r25_month_amort = r25_month_amort;
-}
-public BigDecimal getR25_acc_amort_amt() {
-    return r25_acc_amort_amt;
-}
-public void setR25_acc_amort_amt(BigDecimal r25_acc_amort_amt) {
-    this.r25_acc_amort_amt = r25_acc_amort_amt;
-}
-public BigDecimal getR25_close_bal() {
-    return r25_close_bal;
-}
-public void setR25_close_bal(BigDecimal r25_close_bal) {
-    this.r25_close_bal = r25_close_bal;
-}
-public String getR26_intangible_ass() {
-    return r26_intangible_ass;
-}
-public void setR26_intangible_ass(String r26_intangible_ass) {
-    this.r26_intangible_ass = r26_intangible_ass;
-}
-public BigDecimal getR26_cost_rev() {
-    return r26_cost_rev;
-}
-public void setR26_cost_rev(BigDecimal r26_cost_rev) {
-    this.r26_cost_rev = r26_cost_rev;
-}
-public BigDecimal getR26_useful_life() {
-    return r26_useful_life;
-}
-public void setR26_useful_life(BigDecimal r26_useful_life) {
-    this.r26_useful_life = r26_useful_life;
-}
-public BigDecimal getR26_res_value() {
-    return r26_res_value;
-}
-public void setR26_res_value(BigDecimal r26_res_value) {
-    this.r26_res_value = r26_res_value;
-}
-public BigDecimal getR26_month_amort() {
-    return r26_month_amort;
-}
-public void setR26_month_amort(BigDecimal r26_month_amort) {
-    this.r26_month_amort = r26_month_amort;
-}
-public BigDecimal getR26_acc_amort_amt() {
-    return r26_acc_amort_amt;
-}
-public void setR26_acc_amort_amt(BigDecimal r26_acc_amort_amt) {
-    this.r26_acc_amort_amt = r26_acc_amort_amt;
-}
-public BigDecimal getR26_close_bal() {
-    return r26_close_bal;
-}
-public void setR26_close_bal(BigDecimal r26_close_bal) {
-    this.r26_close_bal = r26_close_bal;
-}
-public String getR27_intangible_ass() {
-    return r27_intangible_ass;
-}
-public void setR27_intangible_ass(String r27_intangible_ass) {
-    this.r27_intangible_ass = r27_intangible_ass;
-}
-public BigDecimal getR27_cost_rev() {
-    return r27_cost_rev;
-}
-public void setR27_cost_rev(BigDecimal r27_cost_rev) {
-    this.r27_cost_rev = r27_cost_rev;
-}
-public BigDecimal getR27_useful_life() {
-    return r27_useful_life;
-}
-public void setR27_useful_life(BigDecimal r27_useful_life) {
-    this.r27_useful_life = r27_useful_life;
-}
-public BigDecimal getR27_res_value() {
-    return r27_res_value;
-}
-public void setR27_res_value(BigDecimal r27_res_value) {
-    this.r27_res_value = r27_res_value;
-}
-public BigDecimal getR27_month_amort() {
-    return r27_month_amort;
-}
-public void setR27_month_amort(BigDecimal r27_month_amort) {
-    this.r27_month_amort = r27_month_amort;
-}
-public BigDecimal getR27_acc_amort_amt() {
-    return r27_acc_amort_amt;
-}
-public void setR27_acc_amort_amt(BigDecimal r27_acc_amort_amt) {
-    this.r27_acc_amort_amt = r27_acc_amort_amt;
-}
-public BigDecimal getR27_close_bal() {
-    return r27_close_bal;
-}
-public void setR27_close_bal(BigDecimal r27_close_bal) {
-    this.r27_close_bal = r27_close_bal;
-}
-public String getR28_intangible_ass() {
-    return r28_intangible_ass;
-}
-public void setR28_intangible_ass(String r28_intangible_ass) {
-    this.r28_intangible_ass = r28_intangible_ass;
-}
-public BigDecimal getR28_cost_rev() {
-    return r28_cost_rev;
-}
-public void setR28_cost_rev(BigDecimal r28_cost_rev) {
-    this.r28_cost_rev = r28_cost_rev;
-}
-public BigDecimal getR28_useful_life() {
-    return r28_useful_life;
-}
-public void setR28_useful_life(BigDecimal r28_useful_life) {
-    this.r28_useful_life = r28_useful_life;
-}
-public BigDecimal getR28_res_value() {
-    return r28_res_value;
-}
-public void setR28_res_value(BigDecimal r28_res_value) {
-    this.r28_res_value = r28_res_value;
-}
-public BigDecimal getR28_month_amort() {
-    return r28_month_amort;
-}
-public void setR28_month_amort(BigDecimal r28_month_amort) {
-    this.r28_month_amort = r28_month_amort;
-}
-public BigDecimal getR28_acc_amort_amt() {
-    return r28_acc_amort_amt;
-}
-public void setR28_acc_amort_amt(BigDecimal r28_acc_amort_amt) {
-    this.r28_acc_amort_amt = r28_acc_amort_amt;
-}
-public BigDecimal getR28_close_bal() {
-    return r28_close_bal;
-}
-public void setR28_close_bal(BigDecimal r28_close_bal) {
-    this.r28_close_bal = r28_close_bal;
-}
+// public String getR23_intangible_ass() {
+//     return r23_intangible_ass;
+// }
+// public void setR23_intangible_ass(String r23_intangible_ass) {
+//     this.r23_intangible_ass = r23_intangible_ass;
+// }
+// public BigDecimal getR23_cost_rev() {
+//     return r23_cost_rev;
+// }
+// public void setR23_cost_rev(BigDecimal r23_cost_rev) {
+//     this.r23_cost_rev = r23_cost_rev;
+// }
+// public BigDecimal getR23_useful_life() {
+//     return r23_useful_life;
+// }
+// public void setR23_useful_life(BigDecimal r23_useful_life) {
+//     this.r23_useful_life = r23_useful_life;
+// }
+// public BigDecimal getR23_res_value() {
+//     return r23_res_value;
+// }
+// public void setR23_res_value(BigDecimal r23_res_value) {
+//     this.r23_res_value = r23_res_value;
+// }
+// public BigDecimal getR23_month_amort() {
+//     return r23_month_amort;
+// }
+// public void setR23_month_amort(BigDecimal r23_month_amort) {
+//     this.r23_month_amort = r23_month_amort;
+// }
+// public BigDecimal getR23_acc_amort_amt() {
+//     return r23_acc_amort_amt;
+// }
+// public void setR23_acc_amort_amt(BigDecimal r23_acc_amort_amt) {
+//     this.r23_acc_amort_amt = r23_acc_amort_amt;
+// }
+// public BigDecimal getR23_close_bal() {
+//     return r23_close_bal;
+// }
+// public void setR23_close_bal(BigDecimal r23_close_bal) {
+//     this.r23_close_bal = r23_close_bal;
+// }
+// public String getR24_intangible_ass() {
+//     return r24_intangible_ass;
+// }
+// public void setR24_intangible_ass(String r24_intangible_ass) {
+//     this.r24_intangible_ass = r24_intangible_ass;
+// }
+// public BigDecimal getR24_cost_rev() {
+//     return r24_cost_rev;
+// }
+// public void setR24_cost_rev(BigDecimal r24_cost_rev) {
+//     this.r24_cost_rev = r24_cost_rev;
+// }
+// public BigDecimal getR24_useful_life() {
+//     return r24_useful_life;
+// }
+// public void setR24_useful_life(BigDecimal r24_useful_life) {
+//     this.r24_useful_life = r24_useful_life;
+// }
+// public BigDecimal getR24_res_value() {
+//     return r24_res_value;
+// }
+// public void setR24_res_value(BigDecimal r24_res_value) {
+//     this.r24_res_value = r24_res_value;
+// }
+// public BigDecimal getR24_month_amort() {
+//     return r24_month_amort;
+// }
+// public void setR24_month_amort(BigDecimal r24_month_amort) {
+//     this.r24_month_amort = r24_month_amort;
+// }
+// public BigDecimal getR24_acc_amort_amt() {
+//     return r24_acc_amort_amt;
+// }
+// public void setR24_acc_amort_amt(BigDecimal r24_acc_amort_amt) {
+//     this.r24_acc_amort_amt = r24_acc_amort_amt;
+// }
+// public BigDecimal getR24_close_bal() {
+//     return r24_close_bal;
+// }
+// public void setR24_close_bal(BigDecimal r24_close_bal) {
+//     this.r24_close_bal = r24_close_bal;
+// }
+// public String getR25_intangible_ass() {
+//     return r25_intangible_ass;
+// }
+// public void setR25_intangible_ass(String r25_intangible_ass) {
+//     this.r25_intangible_ass = r25_intangible_ass;
+// }
+// public BigDecimal getR25_cost_rev() {
+//     return r25_cost_rev;
+// }
+// public void setR25_cost_rev(BigDecimal r25_cost_rev) {
+//     this.r25_cost_rev = r25_cost_rev;
+// }
+// public BigDecimal getR25_useful_life() {
+//     return r25_useful_life;
+// }
+// public void setR25_useful_life(BigDecimal r25_useful_life) {
+//     this.r25_useful_life = r25_useful_life;
+// }
+// public BigDecimal getR25_res_value() {
+//     return r25_res_value;
+// }
+// public void setR25_res_value(BigDecimal r25_res_value) {
+//     this.r25_res_value = r25_res_value;
+// }
+// public BigDecimal getR25_month_amort() {
+//     return r25_month_amort;
+// }
+// public void setR25_month_amort(BigDecimal r25_month_amort) {
+//     this.r25_month_amort = r25_month_amort;
+// }
+// public BigDecimal getR25_acc_amort_amt() {
+//     return r25_acc_amort_amt;
+// }
+// public void setR25_acc_amort_amt(BigDecimal r25_acc_amort_amt) {
+//     this.r25_acc_amort_amt = r25_acc_amort_amt;
+// }
+// public BigDecimal getR25_close_bal() {
+//     return r25_close_bal;
+// }
+// public void setR25_close_bal(BigDecimal r25_close_bal) {
+//     this.r25_close_bal = r25_close_bal;
+// }
+// public String getR26_intangible_ass() {
+//     return r26_intangible_ass;
+// }
+// public void setR26_intangible_ass(String r26_intangible_ass) {
+//     this.r26_intangible_ass = r26_intangible_ass;
+// }
+// public BigDecimal getR26_cost_rev() {
+//     return r26_cost_rev;
+// }
+// public void setR26_cost_rev(BigDecimal r26_cost_rev) {
+//     this.r26_cost_rev = r26_cost_rev;
+// }
+// public BigDecimal getR26_useful_life() {
+//     return r26_useful_life;
+// }
+// public void setR26_useful_life(BigDecimal r26_useful_life) {
+//     this.r26_useful_life = r26_useful_life;
+// }
+// public BigDecimal getR26_res_value() {
+//     return r26_res_value;
+// }
+// public void setR26_res_value(BigDecimal r26_res_value) {
+//     this.r26_res_value = r26_res_value;
+// }
+// public BigDecimal getR26_month_amort() {
+//     return r26_month_amort;
+// }
+// public void setR26_month_amort(BigDecimal r26_month_amort) {
+//     this.r26_month_amort = r26_month_amort;
+// }
+// public BigDecimal getR26_acc_amort_amt() {
+//     return r26_acc_amort_amt;
+// }
+// public void setR26_acc_amort_amt(BigDecimal r26_acc_amort_amt) {
+//     this.r26_acc_amort_amt = r26_acc_amort_amt;
+// }
+// public BigDecimal getR26_close_bal() {
+//     return r26_close_bal;
+// }
+// public void setR26_close_bal(BigDecimal r26_close_bal) {
+//     this.r26_close_bal = r26_close_bal;
+// }
+// public String getR27_intangible_ass() {
+//     return r27_intangible_ass;
+// }
+// public void setR27_intangible_ass(String r27_intangible_ass) {
+//     this.r27_intangible_ass = r27_intangible_ass;
+// }
+// public BigDecimal getR27_cost_rev() {
+//     return r27_cost_rev;
+// }
+// public void setR27_cost_rev(BigDecimal r27_cost_rev) {
+//     this.r27_cost_rev = r27_cost_rev;
+// }
+// public BigDecimal getR27_useful_life() {
+//     return r27_useful_life;
+// }
+// public void setR27_useful_life(BigDecimal r27_useful_life) {
+//     this.r27_useful_life = r27_useful_life;
+// }
+// public BigDecimal getR27_res_value() {
+//     return r27_res_value;
+// }
+// public void setR27_res_value(BigDecimal r27_res_value) {
+//     this.r27_res_value = r27_res_value;
+// }
+// public BigDecimal getR27_month_amort() {
+//     return r27_month_amort;
+// }
+// public void setR27_month_amort(BigDecimal r27_month_amort) {
+//     this.r27_month_amort = r27_month_amort;
+// }
+// public BigDecimal getR27_acc_amort_amt() {
+//     return r27_acc_amort_amt;
+// }
+// public void setR27_acc_amort_amt(BigDecimal r27_acc_amort_amt) {
+//     this.r27_acc_amort_amt = r27_acc_amort_amt;
+// }
+// public BigDecimal getR27_close_bal() {
+//     return r27_close_bal;
+// }
+// public void setR27_close_bal(BigDecimal r27_close_bal) {
+//     this.r27_close_bal = r27_close_bal;
+// }
+// public String getR28_intangible_ass() {
+//     return r28_intangible_ass;
+// }
+// public void setR28_intangible_ass(String r28_intangible_ass) {
+//     this.r28_intangible_ass = r28_intangible_ass;
+// }
+// public BigDecimal getR28_cost_rev() {
+//     return r28_cost_rev;
+// }
+// public void setR28_cost_rev(BigDecimal r28_cost_rev) {
+//     this.r28_cost_rev = r28_cost_rev;
+// }
+// public BigDecimal getR28_useful_life() {
+//     return r28_useful_life;
+// }
+// public void setR28_useful_life(BigDecimal r28_useful_life) {
+//     this.r28_useful_life = r28_useful_life;
+// }
+// public BigDecimal getR28_res_value() {
+//     return r28_res_value;
+// }
+// public void setR28_res_value(BigDecimal r28_res_value) {
+//     this.r28_res_value = r28_res_value;
+// }
+// public BigDecimal getR28_month_amort() {
+//     return r28_month_amort;
+// }
+// public void setR28_month_amort(BigDecimal r28_month_amort) {
+//     this.r28_month_amort = r28_month_amort;
+// }
+// public BigDecimal getR28_acc_amort_amt() {
+//     return r28_acc_amort_amt;
+// }
+// public void setR28_acc_amort_amt(BigDecimal r28_acc_amort_amt) {
+//     this.r28_acc_amort_amt = r28_acc_amort_amt;
+// }
+// public BigDecimal getR28_close_bal() {
+//     return r28_close_bal;
+// }
+// public void setR28_close_bal(BigDecimal r28_close_bal) {
+//     this.r28_close_bal = r28_close_bal;
+// }
 public Date getReport_date() {
     return report_date;
 }
