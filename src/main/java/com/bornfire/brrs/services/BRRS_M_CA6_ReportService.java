@@ -397,764 +397,693 @@ Date reportDate = dateformat.parse(todate);
 				System.out.println("enterred serice method.....");
 				Row row = sheet.getRow(startRow + i);
 				if (row == null) {
-					row = sheet.createRow(startRow + i);
+					row = sheet.getRow(startRow + i);
 				}
 
 
 				//row12
 				// Column D
-				Cell cell3 = row.createCell(3);
+				Cell cell3 = row.getCell(3);
 				if (record.getR12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
 				
 				//row12
 				// Column E
-				Cell cell4 = row.createCell(4);
+				Cell cell4 = row.getCell(4);
 				if (record.getR12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell4.setCellValue(record.getR12_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row13
 				row = sheet.getRow(12);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
+					
 				}
 				
 				
 				
 				//row13
 				// Column E
-				cell4 = row.createCell(4);
+				cell4 = row.getCell(4);
 				if (record.getR13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell4.setCellValue(record.getR13_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
+					
 				}
 				
 				//row14
 				row = sheet.getRow(13);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
+					
 				}
 				
 				
 				
 				//row14
 				// Column E
-				cell4 = row.createCell(4);
+				cell4 = row.getCell(4);
 				if (record.getR14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell4.setCellValue(record.getR14_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
+					
 				}
 
 				//row15
 				row = sheet.getRow(14);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
+					
 				}
 				
 				
 				
 				//row15
 				// Column E
-				cell4 = row.createCell(4);
+				cell4 = row.getCell(4);
 				if (record.getR15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell4.setCellValue(record.getR15_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row16
 				row = sheet.getRow(15);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
 				
 				//row16
 				// Column E
-				cell4 = row.createCell(4);
+				cell4 = row.getCell(4);
 				if (record.getR16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell4.setCellValue(record.getR16_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row20
 				row = sheet.getRow(19);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
 				
 				//row20
 				// Column E
-				cell4 = row.createCell(4);
+				cell4 = row.getCell(4);
 				if (record.getR20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell4.setCellValue(record.getR20_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row21
 				row = sheet.getRow(20);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
 				
 				//row21
 				// Column E
-				cell4 = row.createCell(4);
+				cell4 = row.getCell(4);
 				if (record.getR21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell4.setCellValue(record.getR21_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 
 				//row22
 				row = sheet.getRow(21);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
 				
 				//row22
 				// Column E
-				cell4 = row.createCell(4);
+				cell4 = row.getCell(4);
 				if (record.getR22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell4.setCellValue(record.getR22_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row23
 				row = sheet.getRow(22);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
 				
 				//row23
 				// Column E
-				cell4 = row.createCell(4);
+				cell4 = row.getCell(4);
 				if (record.getR23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell4.setCellValue(record.getR23_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 
 				//row24
 				row = sheet.getRow(23);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
 				
 				//row24
 				// Column E
-				cell4 = row.createCell(4);
+				cell4 = row.getCell(4);
 				if (record.getR24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell4.setCellValue(record.getR24_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				
 				//row28
 				row = sheet.getRow(27);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR28_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR28_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR28_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR28_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR28_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR28_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR28_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR28_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row29
 				row = sheet.getRow(28);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR29_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR29_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR29_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR29_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR29_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR29_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR29_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR29_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row30
 				row = sheet.getRow(29);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR30_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR30_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR30_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR30_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR30_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR30_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR30_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR30_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row31
 				row = sheet.getRow(30);
 				// Column D
 				
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR31_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR31_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR31_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR31_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR31_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR31_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR31_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR31_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row32
 				row = sheet.getRow(31);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR32_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR32_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR32_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR32_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR32_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR32_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR32_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR32_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row33
 				row = sheet.getRow(32);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR33_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR33_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR33_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR33_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR33_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR33_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR33_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR33_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row34
 				row = sheet.getRow(33);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR34_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR34_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR34_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR34_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR34_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR34_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR34_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR34_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row40
 				row = sheet.getRow(39);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR40_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR40_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR40_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR40_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR40_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR40_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR40_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR40_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row41
 				row = sheet.getRow(40);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR41_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR41_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR41_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR41_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR41_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR41_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR41_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR41_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row42
 				row = sheet.getRow(41);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR42_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR42_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR42_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR42_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR42_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR42_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR42_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR42_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row43
 				row = sheet.getRow(42);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR43_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR43_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR43_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR43_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR43_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR43_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR43_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR43_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row44
 				row = sheet.getRow(43);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR44_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR44_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR44_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR44_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR44_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR44_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR44_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR44_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row45
 				row = sheet.getRow(44);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR45_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR45_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR45_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR45_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR45_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR45_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR45_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR45_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row46
 				row = sheet.getRow(45);
 				// Column D
 				
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR46_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR46_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR46_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR46_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR46_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR46_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR46_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR46_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 
 
@@ -1293,13 +1222,12 @@ public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String from
 
 				//row12
 				// Column D
-				Cell cell3 = row.createCell(3);
+				Cell cell3 = row.getCell(3);
 				if (record.getR12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -1312,19 +1240,17 @@ public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row13
 				row = sheet.getRow(12);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -1337,19 +1263,17 @@ public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row14
 				row = sheet.getRow(13);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -1362,19 +1286,17 @@ public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 
 				//row15
 				row = sheet.getRow(14);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -1387,19 +1309,17 @@ public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row16
 				row = sheet.getRow(15);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -1412,19 +1332,17 @@ public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row20
 				row = sheet.getRow(19);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -1437,19 +1355,17 @@ public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row21
 				row = sheet.getRow(20);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -1462,19 +1378,17 @@ public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 
 				//row22
 				row = sheet.getRow(21);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -1487,19 +1401,17 @@ public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row23
 				row = sheet.getRow(22);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -1512,19 +1424,17 @@ public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 
 				//row24
 				row = sheet.getRow(23);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -1537,514 +1447,457 @@ public byte[] getExcelM_CA6ARCHIVAL(String filename,String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				
 				//row28
 				row = sheet.getRow(27);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR28_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR28_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR28_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR28_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR28_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR28_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR28_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR28_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row29
 				row = sheet.getRow(28);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR29_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR29_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR29_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR29_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR29_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR29_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR29_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR29_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row30
 				row = sheet.getRow(29);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR30_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR30_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR30_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR30_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR30_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR30_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR30_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR30_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row31
 				row = sheet.getRow(30);
 				// Column D
 				
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR31_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR31_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR31_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR31_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR31_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR31_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR31_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR31_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row32
 				row = sheet.getRow(31);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR32_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR32_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR32_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR32_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR32_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR32_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR32_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR32_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row33
 				row = sheet.getRow(32);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR33_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR33_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR33_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR33_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR33_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR33_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR33_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR33_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row34
 				row = sheet.getRow(33);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR34_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR34_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR34_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR34_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR34_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR34_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR34_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR34_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row40
 				row = sheet.getRow(39);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR40_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR40_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR40_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR40_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR40_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR40_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR40_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR40_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row41
 				row = sheet.getRow(40);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR41_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR41_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR41_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR41_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR41_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR41_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR41_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR41_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row42
 				row = sheet.getRow(41);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR42_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR42_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR42_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR42_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR42_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR42_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR42_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR42_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row43
 				row = sheet.getRow(42);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR43_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR43_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR43_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR43_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR43_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR43_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR43_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR43_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row44
 				row = sheet.getRow(43);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR44_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR44_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR44_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR44_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR44_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR44_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR44_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR44_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row45
 				row = sheet.getRow(44);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR45_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR45_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR45_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR45_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR45_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR45_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR45_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR45_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row46
 				row = sheet.getRow(45);
 				// Column D
 				
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR46_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR46_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR46_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR46_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR46_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR46_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR46_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR46_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 
 
@@ -2560,13 +2413,12 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 
 				//row12
 				// Column D
-				Cell cell3 = row.createCell(3);
+				Cell cell3 = row.getCell(3);
 				if (record.getR12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR12_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -2579,19 +2431,17 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row13
 				row = sheet.getRow(12);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR13_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -2604,19 +2454,17 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row14
 				row = sheet.getRow(13);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR14_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -2629,19 +2477,17 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 
 				//row15
 				row = sheet.getRow(14);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR15_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -2654,19 +2500,17 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row16
 				row = sheet.getRow(15);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR16_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -2679,19 +2523,17 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row20
 				row = sheet.getRow(19);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR20_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -2704,19 +2546,17 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row21
 				row = sheet.getRow(20);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR21_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -2729,19 +2569,17 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 
 				//row22
 				row = sheet.getRow(21);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR22_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -2754,19 +2592,17 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				//row23
 				row = sheet.getRow(22);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR23_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -2779,19 +2615,17 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 
 				//row24
 				row = sheet.getRow(23);
 				// Column D
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record.getR24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT() != null) {
 					cell3.setCellValue(record.getR24_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				
@@ -2804,514 +2638,457 @@ public byte[] BRRS_M_CA6ResubExcel(String filename, String reportId, String from
 					cell4.setCellStyle(numberStyle);
 				} else {
 					cell4.setCellValue("");
-					cell4.setCellStyle(textStyle);
 				}
 				
 				
 				//row28
 				row = sheet.getRow(27);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR28_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR28_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR28_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR28_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR28_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR28_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR28_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR28_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row29
 				row = sheet.getRow(28);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR29_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR29_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR29_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR29_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR29_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR29_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR29_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR29_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row30
 				row = sheet.getRow(29);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR30_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR30_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR30_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR30_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR30_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR30_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR30_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR30_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row31
 				row = sheet.getRow(30);
 				// Column D
 				
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR31_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR31_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR31_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR31_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR31_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR31_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR31_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR31_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row32
 				row = sheet.getRow(31);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR32_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR32_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR32_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR32_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR32_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR32_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR32_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR32_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row33
 				row = sheet.getRow(32);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR33_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR33_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR33_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR33_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR33_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR33_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR33_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR33_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row34
 				row = sheet.getRow(33);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR34_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR34_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR34_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR34_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR34_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR34_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR34_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR34_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row40
 				row = sheet.getRow(39);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR40_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR40_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR40_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR40_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR40_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR40_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR40_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR40_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row41
 				row = sheet.getRow(40);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR41_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR41_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR41_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR41_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR41_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR41_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR41_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR41_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row42
 				row = sheet.getRow(41);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR42_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR42_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR42_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR42_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR42_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR42_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR42_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR42_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row43
 				row = sheet.getRow(42);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR43_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR43_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR43_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR43_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR43_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR43_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR43_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR43_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row44
 				row = sheet.getRow(43);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR44_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR44_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR44_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR44_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR44_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR44_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR44_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR44_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row45
 				row = sheet.getRow(44);
 				// Column D
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR45_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR45_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR45_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR45_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR45_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR45_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR45_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR45_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 				
 				//row46
 				row = sheet.getRow(45);
 				// Column D
 				
-				cell3 = row.createCell(2); 
+				cell3 = row.getCell(2); 
 				if (record2.getR46_ISSUANCE_DATE() != null) {
 				    cell3.setCellValue(record2.getR46_ISSUANCE_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(3);
+				cell3 = row.getCell(3);
 				if (record2.getR46_CONTRACTUAL_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR46_CONTRACTUAL_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(4);
+				cell3 = row.getCell(4);
 				if (record2.getR46_EFFECTIVE_MATURITY_DATE() != null) {
 				    cell3.setCellValue(record2.getR46_EFFECTIVE_MATURITY_DATE());
 				    cell3.setCellStyle(dateStyle);
 				} else {
 				    cell3.setCellValue("");
-				    cell3.setCellStyle(textStyle);
 				}
-				cell3 = row.createCell(5);
+				cell3 = row.getCell(5);
 				if (record2.getR46_AMOUNT() != null) {
 					cell3.setCellValue(record2.getR46_AMOUNT().doubleValue());
 					cell3.setCellStyle(numberStyle);
 				} else {
 					cell3.setCellValue("");
-					cell3.setCellStyle(textStyle);
 				}
 
 				
