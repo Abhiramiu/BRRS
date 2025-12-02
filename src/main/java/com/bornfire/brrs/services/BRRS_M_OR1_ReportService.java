@@ -433,7 +433,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 		List<M_OR1_Summary_Entity> dataList = M_OR1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for BRF2.4 report. Returning empty result.");
+			logger.warn("Service: No data found for M-OR1 report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -1139,7 +1139,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 				.getdatabydateListarchival(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for M_DEP1 report. Returning empty result.");
+			logger.warn("Service: No data found for M-OR1 report. Returning empty result.");
 			return new byte[0];
 		}
 
@@ -1814,7 +1814,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 					}
 				}
 			} else {
-				logger.info("No data found for BRRS_M_DEP1 — only header will be written.");
+				logger.info("No data found for BRRS_M-OR1 — only header will be written.");
 			}
 
 			// Write to byte[]
@@ -1826,7 +1826,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 			return bos.toByteArray();
 
 		} catch (Exception e) {
-			logger.error("Error generating BRRS_M_DEP1Excel", e);
+			logger.error("Error generating BRRS_M_OR1Excel", e);
 			return new byte[0];
 		}
 	}

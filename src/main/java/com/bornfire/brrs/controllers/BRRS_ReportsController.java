@@ -3033,7 +3033,7 @@ public ResponseEntity<String> updateAllReports(
 }
 
 
-@GetMapping("/downloadExcel")
+@GetMapping("/downloadExcel1")
 public void downloadExcel(@RequestParam String asondate,
                           @RequestParam String fromdate,
                           @RequestParam String todate,

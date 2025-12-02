@@ -1158,21 +1158,20 @@ $(document).ready(function() {
 							<thead class="thead-light">
   									 <!-- First header row -->
                                    <tr style="background-color: #b3b6b9">
-                                        <th rowspan="1" style="text-align: center; background-color: #D8D8D8; vertical-align: center; padding:10px; ">Line no.</th>
-                                        <th colspan="2" style="text-align: center; background-color: #D8D8D8; vertical-align: center; padding:10px;">Number of working days after the agreed settlement date:</th>
-                                        <th rowspan="1" style="text-align: right; background-color:#D8D8D8; vertical-align: center; padding:10px;">Number of Failed Trades</th>
-										 <th colspan="1" style="text-align: right; background-color:#D8D8D8; vertical-align: center; padding:10px; ">Positive Current Exposure</th>
-										  <th colspan="1" style="text-align: center; background-color:#D8D8D8; vertical-align: center; padding:10px;  ">Risk Multiplier</th>
-										   <th colspan="1" style="text-align: right; background-color:#D8D8D8; vertical-align: center; padding:10px; ">RWA</th>
+                                        <th rowspan="1" style="text-align: center; background-color: white; vertical-align: center; padding:10px; ">Line no.</th>
+                                        <th colspan="2" style="text-align: center; background-color: white; vertical-align: center; padding:10px;">Number of working days after the agreed settlement date:</th>
+                                        <th rowspan="1" style="text-align: right; background-color:white; vertical-align: center; padding:10px;">Number of Failed Trades</th>
+										 <th colspan="1" style="text-align: right; background-color:white; vertical-align: center; padding:10px; ">Positive Current Exposure</th>
+										  <th colspan="1" style="text-align: center; background-color:white; vertical-align: center; padding:10px;  ">Risk Multiplier</th>
+										   <th colspan="1" style="text-align: right; background-color:white; vertical-align: center; padding:10px; ">RWA</th>
                                     </tr>
 									<tr>
-		<th style="text-align: center; background-color:#D8D8D8;"> </th>
-        <th style="text-align: center; background-color:#D8D8D8; "> </th>
-        <th style="text-align: center; background-color:#D8D8D8; "> </th>
-        <th style="text-align: right; background-color:#D8D8D8;">(1)</th>
-        <th style="text-align: right; background-color:#D8D8D8;">(2)</th>
-        <th style="text-align: center; background-color:#D8D8D8;">(3)</th>
-        <th style="text-align: center; text-align: right; background-color:#D8D8D8;">(4) = (2) x (3) x 1250%</th>
+		<th style="text-align: center; background-color:white;"> </th>
+        <th colspan="2" style="text-align: center; background-color:white; "> </th>
+        <th style="text-align: right; background-color:white;">(1)</th>
+        <th style="text-align: right; background-color:white;">(2)</th>
+        <th style="text-align: center; background-color:white;">(3)</th>
+        <th style="text-align: center; text-align: right; background-color:white;">(4) = (2) x (3) x 1250%</th>
     </tr>
 								</thead>
 
@@ -1181,7 +1180,7 @@ $(document).ready(function() {
 
 								        <tr>
 											<td style="text-align: right; font-weight:  normal; background-color: #ffffff;">1</td>
-                                            <td style="text-align: right;font-weight:  normal;background-color: white;"></td>
+                                            <td style="text-align: right;font-weight:  normal;background-color: white; border-right: 1px solid transparent !important;"></td>
                                    <!--          <td style="text-align: left; font-weight:  normal;background-color: white; text-decoration: underline;" th:text="${report.R11_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
                                    
                                    
@@ -1208,7 +1207,7 @@ $(document).ready(function() {
 
                                         <tr>
 											<td style="text-align: right; font-weight:  normal;">2</td>
-											<td style="text-align: right;font-weight:  normal;"></td>
+											<td style="text-align: right;font-weight:  normal; border-right: 1px solid transparent !important;"></td>
 											
                                             <!-- <td style="font-weight:  normal; padding-left: 30px;"  th:text="${report.R12_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
                                             
@@ -1285,7 +1284,7 @@ $(document).ready(function() {
 										<!-- R13 -->
 										<tr>
    										 <td style="text-align: right; font-weight: normal">3</td>
-   										 <td style="text-align: right; font-weight: normal; "></td>
+   										 <td style="text-align: right; font-weight: normal; border-right: 1px solid transparent !important;"></td>
    										 
    										 
    										 
@@ -1372,7 +1371,7 @@ $(document).ready(function() {
 <!-- R14 -->
 <tr>
     <td style="text-align: right; font-weight: normal; ">4</td>
-    <td style="text-align: right; font-weight: normal; "></td>
+    <td style="text-align: right; font-weight: normal; border-right: 1px solid transparent !important;"></td>
     
     <!-- <td style="text-align: left; font-weight: normal; padding-left: 30px;" 
         th:text="${report.R14_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
@@ -1455,7 +1454,7 @@ $(document).ready(function() {
 <!-- R15 -->
 <tr>
     <td style="text-align: right; font-weight: normal; ">5</td>
-    <td style="text-align: right; font-weight: normal;"></td>
+    <td style="text-align: right; font-weight: normal; border-right: 1px solid transparent !important;"></td>
     <!-- <td style="text-align: left; font-weight: normal; padding-left: 30px;" 
         th:text="${report.R15_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
     <td style="text-align: right; font-weight: normal;" 
@@ -1534,7 +1533,7 @@ $(document).ready(function() {
 <!-- R16 -->
 <tr>
     <td style="text-align: right; font-weight: normal; ">6</td>
-    <td style="text-align: right; font-weight: normal; "></td>
+    <td style="text-align: right; font-weight: normal; border-right: 1px solid transparent !important;"></td>
    <!--  <td style="text-align: left; font-weight: normal; " 
     
         th:text="${report.R16_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
@@ -1624,21 +1623,20 @@ $(document).ready(function() {
 							<thead class="thead-light">
   									 <!-- First header row -->
                                     <tr style="background-color: #b3b6b9">
-                                        <th rowspan="1" style="text-align: center; background-color: #D8D8D8; vertical-align: center; padding:10px;"></th>
-                                        <th colspan="2" style="text-align: center; background-color: #D8D8D8; vertical-align: center; padding:10px;">Number of working days after the agreed settlement date:</th>
-                                        <th rowspan="1" style="text-align: right; background-color:#D8D8D8; vertical-align: center; padding:10px;  ">Number of Failed Trades</th>
-										 <th colspan="1" style="text-align: right; background-color:#D8D8D8; vertical-align: center; padding:10px;  ">Balance</th>
-										  <th colspan="1" style="text-align: center; background-color:#D8D8D8; vertical-align: center; padding:10px; ">Risk Multiplier</th>
-										   <th colspan="1" style="text-align: right; background-color:#D8D8D8; vertical-align: center; padding:10px;  ">RWA</th>
+                                        <th rowspan="1" style="text-align: center; background-color: white; vertical-align: center; padding:10px;"></th>
+                                        <th colspan="2" style="text-align: center; background-color: white; vertical-align: center; padding:10px;">Number of working days after the agreed settlement date:</th>
+                                        <th rowspan="1" style="text-align: right; background-color:white; vertical-align: center; padding:10px;  ">Number of Failed Trades</th>
+										 <th colspan="1" style="text-align: right; background-color:white; vertical-align: center; padding:10px;  ">Balance</th>
+										  <th colspan="1" style="text-align: center; background-color:white; vertical-align: center; padding:10px; ">Risk Multiplier</th>
+										   <th colspan="1" style="text-align: right; background-color:white; vertical-align: center; padding:10px;  ">RWA</th>
                                     </tr>
 									<tr>
-		<th style="text-align: center; background-color:#D8D8D8;"></th>
-        <th style="text-align: center; background-color:#D8D8D8;"></th>
-        <th style="text-align: center; background-color:#D8D8D8;"></th>
-        <th style="text-align: right; background-color:#D8D8D8;">(1)</th>
-        <th style="text-align: right; background-color:#D8D8D8;">(2)</th>
-        <th style="text-align: center; background-color:#D8D8D8;">(3)</th>
-        <th style="text-align: right; background-color:#D8D8D8;">(4) = (2) x (3) x 1250%</th>
+		<th style="text-align: center; background-color:white;"></th>
+        <th colspan="2" style="text-align: center; background-color:white; border-bottom: 1px solid transparent !important;"></th>
+        <th style="text-align: right; background-color:white;">(1)</th>
+        <th style="text-align: right; background-color:white;">(2)</th>
+        <th style="text-align: center; background-color:white;">(3)</th>
+        <th style="text-align: right; background-color:white;">(4) = (2) x (3) x 1250%</th>
     </tr>
 								</thead>
 
@@ -1647,12 +1645,12 @@ $(document).ready(function() {
 
 								        <tr>
 											<td style="text-align: right; font-weight:  normal; ">7</td>
-                                            <td style="text-align: right;font-weight:  normal;"></td>
+                                            <td style="text-align: right;font-weight:  normal; border-right: 1px solid transparent !important;"></td>
                                             <!-- <td style="text-align: left;font-weight:  bold;background-color: white; text-decoration: underline;" th:text="${report.R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
                                             
                                             <!-- R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE -->
 <td id="R19_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE"
-    style="font-weight: bold; text-align: left; background-color: #FFFFFF; text-decoration: underline; padding-left: 10px;">
+    style="font-weight: bold; text-align: left; background-color: #FFFFFF; text-decoration: underline; padding-left: 10px; ">
     <input
         class="display-input Show_input"
         type="text"
@@ -1679,7 +1677,7 @@ $(document).ready(function() {
                                       
                                        <tr>
     <td style="text-align: right; font-weight: normal; ">8</td>
-    <td style="text-align: right;font-weight: normal;"></td>
+    <td style="text-align: right;font-weight: normal; border-right: 1px solid transparent !important;"></td>
     <td style="text-align: right;font-weight: normal;" th:text="${report.R20_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
    <!--  <td style="text-align: right;font-weight:  normal;"  th:text="${report.R20_NUMBER_OF_FAILED_TRADES}"
         th:attr="RowId='R20', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
@@ -1753,7 +1751,7 @@ $(document).ready(function() {
 
 <tr>
     <td style="text-align: right; font-weight: normal; ">9</td>
-    <td></td>
+    <td style="border-right: 1px solid transparent !important;"></td>
     <td style="text-align: right;font-weight:  normal;"  th:text="${report.R21_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
     
     
@@ -1818,7 +1816,7 @@ $(document).ready(function() {
 
 <tr>
     <td style="text-align: right; font-weight: normal; ">10</td>
-    <td></td>
+    <td style="border-right: 1px solid transparent !important;"></td>
     <td style="text-align: right;font-weight:  normal;" th:text="${report.R22_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
     <!-- <td style="text-align: right;font-weight:  normal;" th:text="${report.R22_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R22', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
     <td style="text-align: right;font-weight:  normal;" th:text="${report.R22_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R22', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
@@ -1879,7 +1877,7 @@ $(document).ready(function() {
 
 <tr>
     <td style="text-align: right; font-weight: normal; ">11</td>
-    <td></td>
+    <td style="border-right: 1px solid transparent !important;"></td>
     <td style="text-align: right;font-weight:  normal;" th:text="${report.R23_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
     <!-- <td style="text-align: right;font-weight:  normal;" th:text="${report.R23_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R23', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
     <td style="text-align: right;font-weight:  normal;" th:text="${report.R23_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R23', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
@@ -1943,7 +1941,7 @@ $(document).ready(function() {
 
 <tr>
     <td style="text-align: right; font-weight: normal; ">12</td>
-    <td></td>
+    <td style="border-right: 1px solid transparent !important;"></td>
     <td style="text-align: right;font-weight:  normal;" th:text="${report.R24_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
     <!-- <td style="text-align: right;font-weight:  normal;" th:text="${report.R24_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R24', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
     <td style="text-align: right;font-weight:  normal;" th:text="${report.R24_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R24', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
@@ -2005,7 +2003,7 @@ $(document).ready(function() {
 
 <tr>
     <td style="text-align: right; font-weight: normal; ">13</td>
-    <td></td>
+    <td style="border-right: 1px solid transparent !important;"></td>
     <td style="text-align: right;font-weight:  normal;" th:text="${report.R25_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
     <!-- <td style="text-align: right;font-weight:  normal;" th:text="${report.R25_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R25', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
     <td style="text-align: right;font-weight:  normal;" th:text="${report.R25_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R25', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
@@ -2067,7 +2065,7 @@ $(document).ready(function() {
 
 <tr>
     <td style="text-align: right; font-weight: normal; ">14</td>
-    <td></td>
+    <td style="border-right: 1px solid transparent !important;"></td>
     <td style="text-align: right;font-weight:  normal;" th:text="${report.R26_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td>
     <!-- <td style="text-align: right;font-weight:  normal;" th:text="${report.R26_NUMBER_OF_FAILED_TRADES}" th:attr="RowId='R26', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
     <td style="text-align: right;font-weight:  normal;" th:text="${report.R26_POSITIVE_CURRENT_EXPOSURE}" th:attr="RowId='R26', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td> -->
@@ -2126,7 +2124,7 @@ $(document).ready(function() {
 </tr>
 <tr>
     <td style="text-align: right; font-weight: normal; ">15</td>
-    <td></td>
+    <td style="border-right: 1px solid transparent !important;"></td>
     <!-- <td style="text-align: left;font-weight:  normal;" th:text="${report.R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
     
     <!-- R27_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE -->
@@ -2175,7 +2173,7 @@ $(document).ready(function() {
         readonly />
 </td>
     
-    <td style="text-align: left; font-weight: normal; background-color: #adaaaa;" ></td>
+    <td style="text-align: left; font-weight: normal; background-color: #adaaaa; border-bottom: 1px solid #adaaaa !important;" ></td>
     
     <!-- <td style="text-align: right;font-weight:  normal;background-color: 	#ADFF2F;" th:text="${report.R27_RWA}" ></td> -->
     
@@ -2197,7 +2195,7 @@ $(document).ready(function() {
 
 <tr>
     <td style="text-align: right; font-weight: normal; ">16</td>
-    <td></td>
+    <td style="border-right: 1px solid transparent !important;"></td>
    <!--  <td style="text-align: left;font-weight:  normal;" th:text="${report.R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE}"></td> -->
    
    <!-- R28_NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE -->
