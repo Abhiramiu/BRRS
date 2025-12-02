@@ -143,6 +143,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_LIQ_ReportService BRRS_M_LIQ_reportservice;
+	
+	@Autowired
+	BRRS_M_LCR_ReportService BRRS_M_LCR_reportservice;
 
 	@Autowired
 	BRRS_Q_STAFF_Report_Service BRRS_Q_STAFF_report_service;
@@ -468,6 +471,12 @@ public class RegulatoryReportServices {
 						pageable,
 						type, version);
 				break;
+				
+			case "M_LCR":
+				repsummary = BRRS_M_LCR_reportservice.getM_LCRView(reportId, fromdate, todate, currency, dtltype,
+						pageable,
+						type, version);
+				break;
 
 			case "Q_STAFF":
 				repsummary = BRRS_Q_STAFF_report_service.getQ_STAFFView(reportId, fromdate, todate, currency, dtltype,
@@ -776,6 +785,11 @@ public class RegulatoryReportServices {
 
 			case "M_LIQ":
 				repdetail = BRRS_M_LIQ_reportservice.getM_LIQcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+						pageable, Filter, type, version);
+				break;
+				
+			case "M_LCR":
+				repdetail = BRRS_M_LCR_reportservice.getM_LCRcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 						pageable, Filter, type, version);
 				break;
 
@@ -1223,6 +1237,16 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "M_LCR":
+				try {
+					repfile = BRRS_M_LCR_reportservice.getM_LCRExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "Q_STAFF":
 				try {
@@ -1592,6 +1616,9 @@ public class RegulatoryReportServices {
 		} else if ("M_LIQ".equals(filename)) {
 			return BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
+		}else if ("M_LCRDetail".equals(filename)) {
+			return BRRS_M_LCR_reportservice.getM_LCRDetailExcel(
+					filename, fromdate, todate, currency, dtltype, type, version);
 		} else if ("M_FASDetail".equals(filename)) {
 			return BRRS_M_FAS_reportservice.BRRS_M_FASDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -1842,6 +1869,15 @@ public class RegulatoryReportServices {
 			case "M_LIQ":
 				try {
 					archivalData = BRRS_M_LIQ_reportservice.getM_LIQArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+			case "M_LCR":
+				try {
+					archivalData = BRRS_M_LCR_reportservice.getM_LCRArchival();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -2269,7 +2305,10 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("M_LIQDetail")) {
 			fileData = BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		} else if (filename.equals("M_SMMEDetail")) {
+		} else if (filename.equals("M_LCRDetail")) {
+			fileData = BRRS_M_LCR_reportservice.getM_LCRDetailExcel(filename, fromdate, todate, currency, dtltype, type,
+					version);
+		}else if (filename.equals("M_SMMEDetail")) {
 			fileData = BRRS_Q_SMME_Intrest_Income_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		} else if (filename.equals("M_CA2Detail")) {
