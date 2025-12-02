@@ -2616,6 +2616,11 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_M_LIQ_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+				case "M_LCR":
+					modelAndView = BRRS_M_LCR_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 
 				case "M_DEP1":
 					modelAndView = BRRS_M_DEP1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -2712,6 +2717,10 @@ public class RegulatoryReportServices {
 
 				case "M_LIQ":
 					response = BRRS_M_LIQ_reportservice.updateDetailEdit(request);
+					break;
+					
+				case "M_LCR":
+					response = BRRS_M_LCR_reportservice.updateDetailEdit(request);
 					break;
 
 				case "M_DEP1":

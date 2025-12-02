@@ -1957,97 +1957,97 @@ public class BRRS_M_LCR_ReportService {
 //    }
 //}
 
-//	@Autowired
-//	private BRRS_M_LCR_Detail_Repo M_LCR_Detail_Repo;
-//
-//	@Autowired
-//	private JdbcTemplate jdbcTemplate;
-//
-//	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-//		ModelAndView mv = new ModelAndView("BRRS/M_LCR"); 
-//
-//		if (acctNo != null) {
-//			M_LCR_Detail_Entity mLCREntity = M_LCR_Detail_Repo.findByAcctNumber(acctNo);
-//			if (mLCREntity != null && mLCREntity.getReportDate() != null) {
-//				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(mLCREntity.getReportDate());
-//				mv.addObject("asondate", formattedDate);
-//			}
-//			mv.addObject("mLCRData", mLCREntity);
-//		}
-//
-//		mv.addObject("displaymode", "edit");
-//		mv.addObject("formmode", formMode != null ? formMode : "edit");
-//		return mv;
-//	}
-//
-//	@Transactional
-//	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
-//		try {
-//			String acctNo = request.getParameter("acctNumber");
-//			String provisionStr = request.getParameter("provision");
-//			String acctName = request.getParameter("acctName");
-//			String reportDateStr = request.getParameter("reportDate");
-//
-//			logger.info("Received update for ACCT_NO: {}", acctNo);
-//
-//			M_LCR_Detail_Entity existing = M_LCR_Detail_Repo.findByAcctNumber(acctNo);
-//			if (existing == null) {
-//				logger.warn("No record found for ACCT_NO: {}", acctNo);
-//				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
-//			}
-//
-//			boolean isChanged = false;
-//
-//			if (acctName != null && !acctName.isEmpty()) {
-//				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
-//					existing.setAcctName(acctName);
-//					isChanged = true;
-//					logger.info("Account name updated to {}", acctName);
-//				}
-//			}
-//
-//			if (provisionStr != null && !provisionStr.isEmpty()) {
-//				BigDecimal newProvision = new BigDecimal(provisionStr);
-//				if (existing.getProvision() == null || existing.getProvision().compareTo(newProvision) != 0) {
-//					existing.setProvision(newProvision);
-//					isChanged = true;
-//					logger.info("Provision updated to {}", newProvision);
-//				}
-//			}
-//			if (isChanged) {
-//				M_LCR_Detail_Repo.save(existing);
-//				logger.info("Record updated successfully for account {}", acctNo);
-//
-//				// Format date for procedure
-//				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-//						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-//
-//				// Run summary procedure after commit
-//				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-//					@Override
-//					public void afterCommit() {
-//						try {
-//							logger.info("Transaction committed — calling BRRS_M_LCR_SUMMARY_PROCEDURE({})",
-//									formattedDate);
-//							jdbcTemplate.update("BEGIN BRRS_M_LCR_SUMMARY_PROCEDURE(?); END;", formattedDate);
-//							logger.info("Procedure executed successfully after commit.");
-//						} catch (Exception e) {
-//							logger.error("Error executing procedure after commit", e);
-//						}
-//					}
-//				});
-//
-//				return ResponseEntity.ok("Record updated successfully!");
-//			} else {
-//				logger.info("No changes detected for ACCT_NO: {}", acctNo);
-//				return ResponseEntity.ok("No changes were made.");
-//			}
-//
-//		} catch (Exception e) {
-//			logger.error("Error updating M_LCR record", e);
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//					.body("Error updating record: " + e.getMessage());
-//		}
-//	}
-//
+	@Autowired
+	private BRRS_M_LCR_Detail_Repo M_LCR_Detail_Repo;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+		ModelAndView mv = new ModelAndView("BRRS/M_LCR"); 
+
+		if (acctNo != null) {
+			M_LCR_Detail_Entity mLCREntity = M_LCR_Detail_Repo.findByAcctnumber(acctNo);
+			if (mLCREntity != null && mLCREntity.getReportDate() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(mLCREntity.getReportDate());
+				mv.addObject("asondate", formattedDate);
+			}
+			mv.addObject("Data", mLCREntity);
+		}
+
+		mv.addObject("displaymode", "edit");
+		mv.addObject("formmode", formMode != null ? formMode : "edit");
+		return mv;
+	}
+
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+		try {
+			String acctNo = request.getParameter("acctNumber");
+			String provisionStr = request.getParameter("acctBalanceInPula");
+			String acctName = request.getParameter("acctName");
+			String reportDateStr = request.getParameter("reportDate");
+
+			logger.info("Received update for ACCT_NO: {}", acctNo);
+
+			M_LCR_Detail_Entity existing = M_LCR_Detail_Repo.findByAcctnumber(acctNo);
+			if (existing == null) {
+				logger.warn("No record found for ACCT_NO: {}", acctNo);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+			}
+
+			boolean isChanged = false;
+
+			if (acctName != null && !acctName.isEmpty()) {
+				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+					existing.setAcctName(acctName);
+					isChanged = true;
+					logger.info("Account name updated to {}", acctName);
+				}
+			}
+
+			if (provisionStr != null && !provisionStr.isEmpty()) {
+				BigDecimal newProvision = new BigDecimal(provisionStr);
+				if (existing.getAcctBalanceInPula() == null || existing.getAcctBalanceInPula().compareTo(newProvision) != 0) {
+					existing.setAcctBalanceInPula(newProvision);
+					isChanged = true;
+					logger.info("Provision updated to {}", newProvision);
+				}
+			}
+			if (isChanged) {
+				M_LCR_Detail_Repo.save(existing);
+				logger.info("Record updated successfully for account {}", acctNo);
+
+				// Format date for procedure
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+				// Run summary procedure after commit
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+					@Override
+					public void afterCommit() {
+						try {
+							logger.info("Transaction committed — calling BRRS_M_LCR_SUMMARY_PROCEDURE({})",
+									formattedDate);
+							jdbcTemplate.update("BEGIN BRRS_M_LCR_SUMMARY_PROCEDURE(?); END;", formattedDate);
+							logger.info("Procedure executed successfully after commit.");
+						} catch (Exception e) {
+							logger.error("Error executing procedure after commit", e);
+						}
+					}
+				});
+
+				return ResponseEntity.ok("Record updated successfully!");
+			} else {
+				logger.info("No changes detected for ACCT_NO: {}", acctNo);
+				return ResponseEntity.ok("No changes were made.");
+			}
+
+		} catch (Exception e) {
+			logger.error("Error updating M_LCR record", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+		}
+	}
+
 }

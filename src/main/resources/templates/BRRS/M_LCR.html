@@ -843,7 +843,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 	<script>
 		function submitMPLLUpdate() {
-			const formData = $('#mpllDetailForm').serialize(); // Ensure correct form ID
+			const formData = $('#DetailForm').serialize(); // Ensure correct form ID
 
 			// ✅ Store the previous page URL
 			const previousUrl = document.referrer; // same as going back once in history
@@ -2323,7 +2323,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 
 				<div class="card-body">
-					<form th:object="${mpllData}" method="post" id="mpllDetailForm">
+					<form th:object="${Data}" method="post" id="DetailForm">
 						<div class="row formline" style="margin-top:10px;">
 							<label class="col-sm-2">Customer ID</label>
 							<div class="col-sm-3">
@@ -2359,14 +2359,14 @@ PURPOSE		: BRRS_M_PLLREPORT
 						<div class="row formline" style="margin-top:10px;">
 							<label class="col-sm-2">Row ID</label>
 							<div class="col-sm-3">
-								<input type="text" th:field="*{rowId}" class="form-control form-control-sm" readonly />
+								<input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
 							</div>
 
 							<div class="col-sm-1"></div>
 
 							<label class="col-sm-2">Column ID</label>
 							<div class="col-sm-3">
-								<input type="text" th:field="*{columnId}" class="form-control form-control-sm"
+								<input type="text" th:field="*{reportAddlCriteria1}" class="form-control form-control-sm"
 									readonly />
 							</div>
 						</div>
@@ -2375,7 +2375,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 							<label class="col-sm-2">Report Date</label>
 							<div class="col-sm-3">
 								<input type="date" name="reportDate" class="form-control form-control-sm" readonly
-									th:value="${#dates.format(mpllData.reportDate, 'yyyy-MM-dd')}" />
+									th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" />
 							</div>
 						</div>
 
