@@ -43,9 +43,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.ws.wsdl.wsdl11.provider.SoapProvider;
 
 import com.bornfire.brrs.entities.BRRS_Q_SMME_loans_Advances_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_SMME_loans_Advances_Archival_Summary_Repo;
@@ -81,51 +83,43 @@ public class BRRS_Q_SMME_loans_Advances_ReportService<BBRS_Q_SMME_Detail_Repo> {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getBRRS_Q_SMMEView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, String version) {
+	public ModelAndView getBRRS_Q_SMMEView(String reportId, String fromdate, String todate,
+			String currency, String dtltype, Pageable pageable,
+			String type, String version) {
+
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
 
-		System.out.println("testing");
-		System.out.println(version);
+		try {
+			Date d1 = dateformat.parse(todate);
 
-		if (type.equals("ARCHIVAL") & version != null) {
-			System.out.println(type);
-			List<Q_SMME_loans_Advances_Archival_Summary_Entity> T1Master = new ArrayList<Q_SMME_loans_Advances_Archival_Summary_Entity>();
-			System.out.println(version);
-			try {
-				Date d1 = dateformat.parse(todate);
 
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = Q_SMME_Archival_Summary_Repo.getdatabydateListarchival(todate, version);
+	 // ---------- CASE 1: ARCHIVAL ----------
+        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+            List<Q_SMME_loans_Advances_Archival_Summary_Entity> T1Master = 
+                Q_SMME_Archival_Summary_Repo.getdatabydateListarchival(todate, version);
+            mv.addObject("reportsummary", T1Master);
+			System.out.println("T1Master"+T1Master);
+        }
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+        // ---------- CASE 3: NORMAL ----------
+        else {
+            List<Q_SMME_loans_Advances_Summary_Entity> T1Master = 
+                q_SMME_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+            System.out.println("T1Master Size "+T1Master.size());
+            mv.addObject("reportsummary", T1Master);
+        }
 
-			mv.addObject("reportsummary", T1Master);
-		} else {
-			List<Q_SMME_loans_Advances_Summary_Entity> T1Master = new ArrayList<Q_SMME_loans_Advances_Summary_Entity>();
-			try {
-				Date d1 = dateformat.parse(todate);
-
-				T1Master = q_SMME_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			mv.addObject("reportsummary", T1Master);
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
 
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
 		mv.setViewName("BRRS/Q_SMME_Loans_Advances");
 		mv.addObject("displaymode", "summary");
-		System.out.println("scv" + mv.getViewName());
+		System.out.println("View set to: " + mv.getViewName());
 		return mv;
 	}
 
@@ -896,7 +890,7 @@ public class BRRS_Q_SMME_loans_Advances_ReportService<BBRS_Q_SMME_Detail_Repo> {
 			System.out.println("countser" + Q_SMMEArchivallist.size());
 		} catch (Exception e) {
 			// Log the exception
-			System.err.println("Error fetching M_SFINP2 Archival data: " + e.getMessage());
+			System.err.println("Error fetching Q_SMME LA Archival data: " + e.getMessage());
 			e.printStackTrace();
 
 			// Optionally, you can rethrow it or return empty list
@@ -1601,14 +1595,11 @@ public class BRRS_Q_SMME_loans_Advances_ReportService<BBRS_Q_SMME_Detail_Repo> {
 		}
 	}
 
-
-	
-
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/Q_SMME_Loans_Advances"); 
+		ModelAndView mv = new ModelAndView("BRRS/Q_SMME_Loans_Advances");
 
 		if (acctNo != null) {
 			Q_SMME_loans_Advances_Detail_Entity q_smmeLA = q_SMME_Detail_Repo.findByAcctnumber(acctNo);
@@ -1624,73 +1615,82 @@ public class BRRS_Q_SMME_loans_Advances_ReportService<BBRS_Q_SMME_Detail_Repo> {
 		return mv;
 	}
 
-	
-	
-	
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 		try {
 			String acctNo = request.getParameter("acctNumber");
-			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+			String acctBalanceInpula = request.getParameter("acctBalanceInPula");
 			String acctName = request.getParameter("acctName");
-			String reportDateStr = request.getParameter("reportDate");
+			String reportDateStr = request.getParameter("reportDate"); // yyyy-MM-dd from HTML
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
 
 			Q_SMME_loans_Advances_Detail_Entity existing = q_SMME_Detail_Repo.findByAcctnumber(acctNo);
+
 			if (existing == null) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body("Record not found for update.");
 			}
 
 			boolean isChanged = false;
 
-			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
-					existing.setAcctName(acctName);
+			// Update account name
+			if (acctName != null && !acctName.isEmpty() &&
+					!acctName.equals(existing.getAcctName())) {
+
+				existing.setAcctName(acctName);
+				isChanged = true;
+				logger.info("Updated acctName → {}", acctName);
+			}
+
+			// Update Pula balance
+			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+
+				BigDecimal newBalance = new BigDecimal(acctBalanceInpula.replace(",", ""));
+
+				if (existing.getAcctBalanceInPula() == null ||
+						existing.getAcctBalanceInPula().compareTo(newBalance) != 0) {
+
+					existing.setAcctBalanceInPula(newBalance);
 					isChanged = true;
-					logger.info("Account name updated to {}", acctName);
+					logger.info("Updated acctBalanceInPula → {}", newBalance);
 				}
 			}
 
-			 if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
-		            BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
-		            if (existing.getAcctBalanceInPula()  == null ||
-		                existing.getAcctBalanceInPula().compareTo(newacctBalanceInpula) != 0) {
-		            	 existing.setAcctBalanceInPula(newacctBalanceInpula);
-		                isChanged = true;
-		                logger.info("Balance updated to {}", newacctBalanceInpula);
-		            }
-		        }
-		        
-			if (isChanged) {
-				q_SMME_Detail_Repo.save(existing);
-				logger.info("Record updated successfully for account {}", acctNo);
-
-				// Format date for procedure
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_Q_SMME_LOANS_ADVANCES_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_Q_SMME_LOANS_ADVANCES_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
-					}
-				});
-
-				return ResponseEntity.ok("Record updated successfully!");
-			} else {
-				logger.info("No changes detected for ACCT_NO: {}", acctNo);
+			if (!isChanged) {
+				logger.info("No changes detected for ACCT_NO {}", acctNo);
 				return ResponseEntity.ok("No changes were made.");
 			}
+
+			// Save updated data
+			q_SMME_Detail_Repo.save(existing);
+
+			logger.info("Record updated successfully for ACCT_NO {}", acctNo);
+
+			// Format date "yyyy-MM-dd" → "dd-MM-yyyy"
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+			// Register after-commit callback
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+				@Override
+				public void afterCommit() {
+					try {
+						logger.info("AFTER COMMIT → Executing BRRS_Q_SMME_LOANS_ADVANCES_SUMMARY_PROCEDURE({})",
+								formattedDate);
+
+						jdbcTemplate.update(
+								"BEGIN BRRS_Q_SMME_LOANS_ADVANCES_SUMMARY_PROCEDURE(?); END;",
+								formattedDate);
+
+					} catch (Exception e) {
+						logger.error("Error executing after-commit procedure", e);
+					}
+				}
+			});
+
+			return ResponseEntity.ok("Record updated successfully!");
 
 		} catch (Exception e) {
 			logger.error("Error updating Q_SMME_LA record", e);

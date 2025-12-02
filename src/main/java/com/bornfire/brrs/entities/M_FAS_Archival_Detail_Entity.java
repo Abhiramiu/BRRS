@@ -14,10 +14,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_M_FAS_ARCHIVALTABLE_DETAIL")
 public class M_FAS_Archival_Detail_Entity {
 
-    @Id
-    @Column(name = "CUST_ID")
+     @Column(name = "CUST_ID")
     private String custId;
-
+    @Id
     @Column(name = "ACCT_NUMBER")
     private String acctNumber;
 
@@ -27,11 +26,20 @@ public class M_FAS_Archival_Detail_Entity {
     @Column(name = "DATA_TYPE")
     private String dataType;
 
-    @Column(name = "COLUMN_ID")
-    private String columnId;
+    @Column(name = "REPORT_NAME")
+    private String reportName;
 
-    @Column(name = "ROW_ID")
-    private String rowId;
+    @Column(name = "REPORT_LABEL")
+    private String reportLabel;
+
+    @Column(name = "REPORT_ADDL_CRITERIA_1")
+    private String reportAddlCriteria1;
+
+    @Column(name = "REPORT_ADDL_CRITERIA_2")
+    private String reportAddlCriteria2;
+
+    @Column(name = "REPORT_ADDL_CRITERIA_3")
+    private String reportAddlCriteria3;
 
     @Column(name = "REPORT_REMARKS")
     private String reportRemarks;
@@ -42,45 +50,50 @@ public class M_FAS_Archival_Detail_Entity {
     @Column(name = "DATA_ENTRY_VERSION")
     private String dataEntryVersion;
 
-    @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
-    private BigDecimal acctBalanceInpula;
+    @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 2)
+    private BigDecimal acctBalanceInPula;
 
     @Column(name = "REPORT_DATE")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date reportDate;
-
-    @Column(name = "REPORT_NAME")
-    private String reportName;
 
     @Column(name = "CREATE_USER")
     private String createUser;
 
     @Column(name = "CREATE_TIME")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date createTime;
 
     @Column(name = "MODIFY_USER")
     private String modifyUser;
 
     @Column(name = "MODIFY_TIME")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date modifyTime;
 
     @Column(name = "VERIFY_USER")
     private String verifyUser;
 
     @Column(name = "VERIFY_TIME")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date verifyTime;
 
     @Column(name = "ENTITY_FLG")
-    private char entityFlg;
+    private String entityFlg;
 
     @Column(name = "MODIFY_FLG")
-    private char modifyFlg;
+    private String modifyFlg;
 
     @Column(name = "DEL_FLG")
-    private char delFlg;
+    private String delFlg;
+
+    @Column(name = "DEBIT_EQUIVALENT", precision = 18, scale = 2)
+    private BigDecimal debitEquivalent;
+
+    @Column(name = "CREDIT_EQUIVALENT", precision = 18, scale = 2)
+    private BigDecimal creditEquivalent;
+
+    public M_FAS_Archival_Detail_Entity() {
+    }
+
+    // ------ GETTERS & SETTERS BELOW ------
 
     public String getCustId() {
         return custId;
@@ -114,20 +127,44 @@ public class M_FAS_Archival_Detail_Entity {
         this.dataType = dataType;
     }
 
-    public String getColumnId() {
-        return columnId;
+    public String getReportName() {
+        return reportName;
     }
 
-    public void setColumnId(String columnId) {
-        this.columnId = columnId;
+    public void setReportName(String reportName) {
+        this.reportName = reportName;
     }
 
-    public String getRowId() {
-        return rowId;
+    public String getReportLabel() {
+        return reportLabel;
     }
 
-    public void setRowId(String rowId) {
-        this.rowId = rowId;
+    public void setReportLabel(String reportLabel) {
+        this.reportLabel = reportLabel;
+    }
+
+    public String getReportAddlCriteria1() {
+        return reportAddlCriteria1;
+    }
+
+    public void setReportAddlCriteria1(String reportAddlCriteria1) {
+        this.reportAddlCriteria1 = reportAddlCriteria1;
+    }
+
+    public String getReportAddlCriteria2() {
+        return reportAddlCriteria2;
+    }
+
+    public void setReportAddlCriteria2(String reportAddlCriteria2) {
+        this.reportAddlCriteria2 = reportAddlCriteria2;
+    }
+
+    public String getReportAddlCriteria3() {
+        return reportAddlCriteria3;
+    }
+
+    public void setReportAddlCriteria3(String reportAddlCriteria3) {
+        this.reportAddlCriteria3 = reportAddlCriteria3;
     }
 
     public String getReportRemarks() {
@@ -154,12 +191,12 @@ public class M_FAS_Archival_Detail_Entity {
         this.dataEntryVersion = dataEntryVersion;
     }
 
-    public BigDecimal getAcctBalanceInpula() {
-        return acctBalanceInpula;
+    public BigDecimal getAcctBalanceInPula() {
+        return acctBalanceInPula;
     }
 
-    public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
-        this.acctBalanceInpula = acctBalanceInpula;
+    public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
+        this.acctBalanceInPula = acctBalanceInPula;
     }
 
     public Date getReportDate() {
@@ -168,14 +205,6 @@ public class M_FAS_Archival_Detail_Entity {
 
     public void setReportDate(Date reportDate) {
         this.reportDate = reportDate;
-    }
-
-    public String getReportName() {
-        return reportName;
-    }
-
-    public void setReportName(String reportName) {
-        this.reportName = reportName;
     }
 
     public String getCreateUser() {
@@ -226,32 +255,44 @@ public class M_FAS_Archival_Detail_Entity {
         this.verifyTime = verifyTime;
     }
 
-    public char getEntityFlg() {
+    public String getEntityFlg() {
         return entityFlg;
     }
 
-    public void setEntityFlg(char entityFlg) {
+    public void setEntityFlg(String entityFlg) {
         this.entityFlg = entityFlg;
     }
 
-    public char getModifyFlg() {
+    public String getModifyFlg() {
         return modifyFlg;
     }
 
-    public void setModifyFlg(char modifyFlg) {
+    public void setModifyFlg(String modifyFlg) {
         this.modifyFlg = modifyFlg;
     }
 
-    public char getDelFlg() {
+    public String getDelFlg() {
         return delFlg;
     }
 
-    public void setDelFlg(char delFlg) {
+    public void setDelFlg(String delFlg) {
         this.delFlg = delFlg;
     }
 
-    public M_FAS_Archival_Detail_Entity() {
-        super();
+    public BigDecimal getDebitEquivalent() {
+        return debitEquivalent;
+    }
+
+    public void setDebitEquivalent(BigDecimal debitEquivalent) {
+        this.debitEquivalent = debitEquivalent;
+    }
+
+    public BigDecimal getCreditEquivalent() {
+        return creditEquivalent;
+    }
+
+    public void setCreditEquivalent(BigDecimal creditEquivalent) {
+        this.creditEquivalent = creditEquivalent;
     }
 
 

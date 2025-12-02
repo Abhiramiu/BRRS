@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface BRRS_M_FAS_Detail_Repo extends JpaRepository<M_FAS_Detail_Entity, String> {
   // Fetch all records for a given date
@@ -17,8 +18,11 @@ public interface BRRS_M_FAS_Detail_Repo extends JpaRepository<M_FAS_Detail_Entit
    @Query(value = "select count(*) from BRRS_M_FAS_DETAILTABLE where REPORT_DATE = ?1", nativeQuery = true)
    int getdatacount(Date reportdate);
  
-	@Query(value = "select * from BRRS_M_FAS_DETAILTABLE where ROW_ID =?1 and COLUMN_ID=?2 AND REPORT_DATE=?3", nativeQuery = true)
-	List<M_FAS_Detail_Entity> GetDataByRowIdAndColumnId(String rowId,String ColumnId,Date reportdate);
+	@Query(value = "select * from BRRS_M_FAS_DETAILTABLE where REPORT_LABEL =?1 and REPORT_ADDL_CRITERIA_1=?2 AND REPORT_DATE=?3", nativeQuery = true)
+	List<M_FAS_Detail_Entity> GetDataByRowIdAndColumnId(String reportLabel,String reportAddlCriteria1,Date reportdate);
+
+  		@Query(value = "SELECT * FROM BRRS_M_FAS_DETAILTABLE WHERE ACCT_NUMBER = :acctNumber", nativeQuery = true)
+		M_FAS_Detail_Entity findByAcctnumber(@Param("acctNumber") String acctNumber);
 }
 
 

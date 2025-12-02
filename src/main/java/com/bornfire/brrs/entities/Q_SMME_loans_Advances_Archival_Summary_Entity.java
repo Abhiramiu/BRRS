@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "BRRS_Q_SMME_LOANS_ADVANCES_ARCHIVAL_SUMMARYTABLE")
+@Table(name = "BRRS_Q_SMME_LOANS_ADVANCES_ARCHIVALTABLE_SUMMARY")
 public class Q_SMME_loans_Advances_Archival_Summary_Entity {
 
     // === R15 ===

@@ -102,10 +102,6 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService<BBRS_Q_SMME_Detail_Repo> {
 			System.out.println(version);
 			try {
 				Date d1 = dateformat.parse(todate);
-
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
 				T1Master = Q_SMME_Archival_Summary_Repo.getdatabydateListarchival(todate, version);
 				
 
@@ -127,7 +123,6 @@ public class BRRS_Q_SMME_Intrest_Income_ReportService<BBRS_Q_SMME_Detail_Repo> {
 			mv.addObject("reportsummary", T1Master);
 		}
 
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
 		mv.setViewName("BRRS/Q_SMME");
 		mv.addObject("displaymode", "summary");
 		System.out.println("scv" + mv.getViewName());

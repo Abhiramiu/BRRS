@@ -346,7 +346,7 @@ PURPOSE		: BRRSREPORT
 			}
 		}
 	</style>
-		<script th:inline="javascript">
+	<script th:inline="javascript">
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
@@ -520,7 +520,44 @@ PURPOSE		: BRRSREPORT
 
 		}
 	</script>
+	<script th:inline="javascript">
+		$(document).ready(function () {
+			var table = $('#reportdetail').DataTable({
+				scrollY: "550px",
+				scrollX: true,
+				scrollCollapse: true,
+				autoWidth: false,
+				paging: true,
+				searching: true,
+				lengthChange: false,
+				ordering: true,
+				pageLength: 100,
+				fixedHeader: true, // ✅ You can simply set it to true
+				// ✅ Column width settings
+				columnDefs: [
+					{ width: "60px", targets: 0 },
+					{ width: "100px", targets: 1 },
+					{ width: "250px", targets: 5 },
+					{ width: "250px", targets: 7 },
 
+					// ⭐ Right align these 5 columns
+					{ className: "dt-right", targets: [3, 4, 5, 7, 8] }
+				],
+
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			});
+
+			// ✅ Fix alignment on resize / zoom
+			$(window).on('resize', function () {
+				table.columns.adjust().draw(false);
+			});
+
+			// ✅ Fix initial misalignment if loaded at non-100% zoom
+			setTimeout(function () {
+				table.columns.adjust().draw(false);
+			}, 500);
+		});
+	</script>
 	<script>
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
@@ -645,7 +682,6 @@ PURPOSE		: BRRSREPORT
 	</script>
 
 	<script>
-
 		function startReport(button) {
 			const alertMsg = document.getElementById("alertMessage");
 
@@ -687,11 +723,11 @@ PURPOSE		: BRRSREPORT
 					sessionStorage.setItem("jobId", jobId);
 					sessionStorage.setItem("filename", filename);
 
-					checkReport(jobId);
+					checkReport(jobId, button);
 				});
 		}
 
-		function checkReport(jobId) {
+		function checkReport(jobId, button) {
 			const alertMsg = document.getElementById("alertMessage");
 
 			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
@@ -703,7 +739,7 @@ PURPOSE		: BRRSREPORT
 						showAlert();
 
 						const filename = sessionStorage.getItem("filename");
-						downloadDetailfile(jobId, filename + ".xlsx");
+						downloadDetailfile(jobId, filename, button);
 
 						sessionStorage.removeItem("jobId");
 						sessionStorage.removeItem("filename");
@@ -712,7 +748,7 @@ PURPOSE		: BRRSREPORT
 						alertMsg.innerHTML = 'Report processing...';
 						showAlert();
 
-						setTimeout(() => checkReport(jobId), 4000);
+						setTimeout(() => checkReport(jobId, button), 4000);
 
 					} else if (status === "ERROR") {
 						alertMsg.innerHTML = 'No data available to download.';
@@ -724,13 +760,19 @@ PURPOSE		: BRRSREPORT
 				});
 		}
 
-		function downloadDetailfile(jobId, filename) {
+		function downloadDetailfile(jobId, filename, button) {
 
 			$.ajax({
-				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId + '&filename=' + filename,
+				url: '/BRRS/Reports/downloaddetailExcel',
 				type: 'GET',
+				data: {
+					jobId: jobId,
+					filename: filename,
+					type: button.getAttribute('data-type'),
+					version: button.getAttribute('data-version'),
+					todate: button.getAttribute('data-todate')
+				},
 				xhrFields: { responseType: 'blob' },
-
 				success: function (data) {
 					if (data && data.size > 100) {
 						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
@@ -738,7 +780,8 @@ PURPOSE		: BRRSREPORT
 
 						const a = document.createElement('a');
 						a.href = url;
-						a.download = filename;
+						// ✅ Use .xls to match your backend
+						a.download = filename + ".xls";
 						document.body.appendChild(a);
 						a.click();
 
@@ -749,11 +792,20 @@ PURPOSE		: BRRSREPORT
 					} else {
 						showResultModal('Information', 'No data found to download.');
 					}
+				},
+				error: function () {
+					showResultModal('Error', 'Failed to download file. Please try again.');
 				}
 			});
 		}
 
+		function showResultModal(title, message) {
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			$('#resultModal').modal('show');
+		}
 	</script>
+
 
 
 	<script th:inline="javascript">
@@ -1295,7 +1347,7 @@ PURPOSE		: BRRSREPORT
 
 								<label class="col-sm-2">Account Number</label>
 								<div class="col-sm-3">
-									<input type="text" th:field="*{acctNumber}" name="acctNumber"
+									<input type="text" th:field="*{acctNumber}" name="acct_number"
 										class="form-control form-control-sm" readonly />
 								</div>
 							</div>
@@ -1303,8 +1355,8 @@ PURPOSE		: BRRSREPORT
 							<div class="row formline" style="margin-top:10px;">
 								<label class="col-sm-2">Account Name</label>
 								<div class="col-sm-3">
-									<input type="text" th:field="*{acctName}" class="form-control form-control-sm"
-										readonly />
+									<input type="text" th:field="*{acctName}" name="accountName"
+										class="form-control form-control-sm" readonly />
 								</div>
 
 								<div class="col-sm-1"></div>
@@ -1312,7 +1364,8 @@ PURPOSE		: BRRSREPORT
 								<label class="col-sm-2">Acct Balance</label>
 								<div class="col-sm-3">
 									<input type="number" step="0.01" th:field="*{acctBalanceInPula}"
-										class="form-control form-control-sm" style="text-align:right;" />
+										name="acctBalanceInPula" class="form-control form-control-sm"
+										style="text-align:right;" />
 								</div>
 							</div>
 
@@ -1335,8 +1388,9 @@ PURPOSE		: BRRSREPORT
 							<div class="row formline" style="margin-top:10px;">
 								<label class="col-sm-2">Report Date</label>
 								<div class="col-sm-3">
-									<input type="date" name="reportDate" class="form-control form-control-sm" readonly
-										th:value="${#dates.format(Q_SMMELAData.reportDate, 'yyyy-MM-dd')}" />
+									<input type="date" th:field="*{reportDate}" class="form-control form-control-sm"
+										readonly th:value="${#dates.format(Q_SMMELAData.reportDate, 'yyyy-MM-dd')}" />
+
 								</div>
 							</div>
 
@@ -1348,22 +1402,6 @@ PURPOSE		: BRRSREPORT
 						</form>
 					</div>
 				</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			</div>
 
 
@@ -1544,44 +1582,7 @@ PURPOSE		: BRRSREPORT
 		width: auto;
 	}
 </style>
-<script th:inline="javascript">
-	$(document).ready(function () {
-		var table = $('#reportdetail').DataTable({
-			scrollY: "550px",
-			scrollX: true,
-			scrollCollapse: true,
-			autoWidth: false,
-			paging: true,
-			searching: true,
-			lengthChange: false,
-			ordering: true,
-			pageLength: 100,
-			fixedHeader: true, // ✅ You can simply set it to true
-			// ✅ Column width settings
-			columnDefs: [
-				{ width: "60px", targets: 0 },
-				{ width: "100px", targets: 1 },
-				{ width: "250px", targets: 5 },
-				{ width: "250px", targets: 7 },
 
-				// ⭐ Right align these 5 columns
-				{ className: "dt-right", targets: [3, 4, 5, 7, 8] }
-			],
-
-			dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-		});
-
-		// ✅ Fix alignment on resize / zoom
-		$(window).on('resize', function () {
-			table.columns.adjust().draw(false);
-		});
-
-		// ✅ Fix initial misalignment if loaded at non-100% zoom
-		setTimeout(function () {
-			table.columns.adjust().draw(false);
-		}, 500);
-	});
-</script>
 
 
 
