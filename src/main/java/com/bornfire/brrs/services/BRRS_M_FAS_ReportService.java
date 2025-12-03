@@ -60,6 +60,8 @@ import com.bornfire.brrs.entities.M_FAS_Detail_Entity;
 import com.bornfire.brrs.entities.M_FAS_Manual_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_FAS_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_FAS_Summary_Entity;
+import com.bornfire.brrs.entities.M_GALOR_Archival_Detail_Entity;
+import com.bornfire.brrs.entities.M_GALOR_Detail_Entity;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity1;
 import com.bornfire.brrs.entities.Q_STAFF_Summary_Entity2;
 import com.bornfire.brrs.entities.BRRS_M_FAS_Manual_Archival_Summary_Repo;
@@ -142,89 +144,171 @@ public class BRRS_M_FAS_ReportService<BBRS_M_FAS_Detail_Repo> {
         return mv;
     }
 
-    public ModelAndView getBRRS_M_FAScurrentDtl(String reportId,
-            String fromdate,
-            String todate,
-            String currency,
-            String dtltype,
-            Pageable pageable,
-            String filter,
-            String type,
-            String version) {
+    // public ModelAndView getBRRS_M_FAScurrentDtl(String reportId,
+    //         String fromdate,
+    //         String todate,
+    //         String currency,
+    //         String dtltype,
+    //         Pageable pageable,
+    //         String filter,
+    //         String type,
+    //         String version) {
 
-        int pageSize = pageable != null ? pageable.getPageSize() : 10;
-        int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-        int totalPages = 0;
+    //     int pageSize = pageable != null ? pageable.getPageSize() : 10;
+    //     int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+    //     int totalPages = 0;
 
-        ModelAndView mv = new ModelAndView();
+    //     ModelAndView mv = new ModelAndView();
 
-        try {
-            Date parsedDate = null;
-            if (todate != null && !todate.isEmpty()) {
-                parsedDate = dateformat.parse(todate); // make sure dateformat = SimpleDateFormat("dd-MM-yyyy")
-            }
+    //     try {
+    //         Date parsedDate = null;
+    //         if (todate != null && !todate.isEmpty()) {
+    //             parsedDate = dateformat.parse(todate); // make sure dateformat = SimpleDateFormat("dd-MM-yyyy")
+    //         }
 
-            String rowId = null;
-            String columnId = null;
+    //         String rowId = null;
+    //         String columnId = null;
 
-            if (filter != null && filter.contains(",")) {
-                String[] parts = filter.split(",");
-                if (parts.length >= 2) {
-                    rowId = parts[0].trim();
-                    columnId = parts[1].trim();
-                }
-            }
+    //         if (filter != null && filter.contains(",")) {
+    //             String[] parts = filter.split(",");
+    //             if (parts.length >= 2) {
+    //                 rowId = parts[0].trim();
+    //                 columnId = parts[1].trim();
+    //             }
+    //         }
 
-            if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-                List<M_FAS_Archival_Detail_Entity> resultList;
+    //         if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+    //             List<M_FAS_Archival_Detail_Entity> resultList;
 
-                if (rowId != null && columnId != null) {
-                    resultList = m_FAS_Archival_Detail_Repo
-                            .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
-                } else {
-                    resultList = m_FAS_Archival_Detail_Repo
-                            .getdatabydateList(todate, version);
-                }
+    //             if (rowId != null && columnId != null) {
+    //                 resultList = m_FAS_Archival_Detail_Repo
+    //                         .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+    //             } else {
+    //                 resultList = m_FAS_Archival_Detail_Repo
+    //                         .getdatabydateList(parsedDate, currentPage, pageSize);
+    //             }
 
-                mv.addObject("reportdetails", resultList);
-                mv.addObject("reportmaster12", resultList);
-                System.out.println("ARCHIVAL COUNT: " + (resultList != null ? resultList.size() : 0));
+    //             mv.addObject("reportdetails", resultList);
+    //             mv.addObject("reportmaster12", resultList);
+    //             System.out.println("ARCHIVAL COUNT: " + (resultList != null ? resultList.size() : 0));
 
-            } else {
-                List<M_FAS_Detail_Entity> resultList;
+    //         } else {
+    //             List<M_FAS_Detail_Entity> resultList;
 
-                if (rowId != null && columnId != null) {
-                    resultList = m_FAS_Detail_Repo
-                            .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
-                } else {
-                    resultList = m_FAS_Detail_Repo.getdatabydateList(parsedDate);
-                    totalPages = m_FAS_Detail_Repo.getdatacount(parsedDate);
-                    mv.addObject("pagination", "YES");
-                }
+    //             if (rowId != null && columnId != null) {
+    //                 resultList = m_FAS_Detail_Repo
+    //                         .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+    //             } else {
+    //                 resultList = m_FAS_Detail_Repo.getdatabydateList(parsedDate);
+    //                 totalPages = m_FAS_Detail_Repo.getdatacount(parsedDate);
+    //                 mv.addObject("pagination", "YES");
+    //             }
 
-                mv.addObject("reportdetails", resultList);
-                mv.addObject("reportmaster12", resultList);
+    //             mv.addObject("reportdetails", resultList);
+    //             mv.addObject("reportmaster12", resultList);
 
-                System.out.println("CURRENT Details COUNT: " + (resultList != null ? resultList.size() : 0));
-            }
+    //             System.out.println("CURRENT Details COUNT: " + (resultList != null ? resultList.size() : 0));
+    //         }
 
-        } catch (ParseException e) {
-            e.printStackTrace();
-            mv.addObject("errorMessage", "Invalid date format: " + todate);
-        } catch (Exception e) {
-            e.printStackTrace();
-            mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
-        }
+    //     } catch (ParseException e) {
+    //         e.printStackTrace();
+    //         mv.addObject("errorMessage", "Invalid date format: " + todate);
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+    //     }
 
-        mv.setViewName("BRRS/M_FAS"); // Make sure file is BRRS/M_FAS.html
-        mv.addObject("displaymode", "Details");
-        mv.addObject("currentPage", currentPage);
-        mv.addObject("totalPages", (int) Math.ceil((double) totalPages / pageSize));
-        mv.addObject("reportsflag", "reportsflag");
-        mv.addObject("menu", reportId);
+    //     mv.setViewName("BRRS/M_FAS"); // Make sure file is BRRS/M_FAS.html
+    //     mv.addObject("displaymode", "Details");
+    //     mv.addObject("currentPage", currentPage);
+    //     mv.addObject("totalPages", (int) Math.ceil((double) totalPages / pageSize));
+    //     mv.addObject("reportsflag", "reportsflag");
+    //     mv.addObject("menu", reportId);
 
-        return mv;
-    }
+    //     return mv;
+    // }
+
+    public ModelAndView getBRRS_M_FAScurrentDtl(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String filter, String type, String version) {
+
+		int pageSize = pageable != null ? pageable.getPageSize() : 10;
+		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+		int totalPages = 0;
+
+		ModelAndView mv = new ModelAndView();
+
+		// Session hs = sessionFactory.getCurrentSession();
+
+		try {
+			Date parsedDate = null;
+
+			if (todate != null && !todate.isEmpty()) {
+				parsedDate = dateformat.parse(todate);
+			}
+
+			String reportLable = null;
+			String reportAddlCriteria_1 = null;
+			// ✅ Split filter string into rowId & columnId
+			if (filter != null && filter.contains(",")) {
+				String[] parts = filter.split(",");
+				if (parts.length >= 2) {
+					reportLable = parts[0];
+					reportAddlCriteria_1 = parts[1];
+				}
+			}
+
+			System.out.println(type);
+			if ("ARCHIVAL".equals(type) && version != null) {
+				System.out.println(type);
+				// 🔹 Archival branch
+				List<M_FAS_Archival_Detail_Entity> T1Dt1;
+				if (reportLable != null && reportAddlCriteria_1 != null) {
+					T1Dt1 = m_FAS_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1,
+							parsedDate, version);
+				} else {
+					T1Dt1 = m_FAS_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+				}
+
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+
+			} else {
+				// 🔹 Current branch
+				List<M_FAS_Detail_Entity> T1Dt1;
+
+				if (reportLable != null && reportAddlCriteria_1 != null) {
+					T1Dt1 = m_FAS_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1,
+							parsedDate);
+				} else {
+					T1Dt1 = m_FAS_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
+					totalPages = m_FAS_Detail_Repo.getdatacount(parsedDate);
+					mv.addObject("pagination", "YES");
+
+				}
+
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+
+				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Invalid date format: " + todate);
+		} catch (Exception e) {
+			e.printStackTrace();
+			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+		}
+
+		mv.setViewName("BRRS/M_FAS");
+		mv.addObject("displaymode", "Details");
+		mv.addObject("currentPage", currentPage);
+		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("reportsflag", "reportsflag");
+		mv.addObject("menu", reportId);
+		return mv;
+	}
 
     public byte[] getM_FASExcel(String filename, String reportId, String fromdate, String todate, String currency,
             String dtltype, String type, String version) throws Exception {
@@ -1745,8 +1829,7 @@ public class BRRS_M_FAS_ReportService<BBRS_M_FAS_Detail_Repo> {
             // --- Fetch data from DB ---
             // Date parsedToDate = new SimpleDateFormat("dd-MM-yyyy").parse(todate); //✅
             // match with controller
-            List<M_FAS_Archival_Detail_Entity> reportData = m_FAS_Archival_Detail_Repo.getdatabydateList(todate,
-                    version);
+            List<M_FAS_Archival_Detail_Entity> reportData = m_FAS_Archival_Detail_Repo.getdatabydateList(dateformat.parse(todate), version);
 
             logger.info("Fetched {} rows from DB for ARCHIVAL", reportData != null ? reportData.size() : 0);
 
@@ -1798,24 +1881,24 @@ public class BRRS_M_FAS_ReportService<BBRS_M_FAS_Detail_Repo> {
     }
 
     // Resubmission for M_FAS
-    public List<M_FAS_Archival_Detail_Entity> getM_FASResub() {
-        List<M_FAS_Archival_Detail_Entity> resubList = new ArrayList<>();
-        try {
-            List<M_FAS_Archival_Detail_Entity> latestArchivalList = m_FAS_Archival_Detail_Repo
-                    .getdatabydateListWithVersion();
+    // public List<M_FAS_Archival_Detail_Entity> getM_FASResub() {
+    //     List<M_FAS_Archival_Detail_Entity> resubList = new ArrayList<>();
+    //     try {
+    //         List<M_FAS_Archival_Detail_Entity> latestArchivalList = m_FAS_Archival_Detail_Repo
+    //                 .getdatabydateListWithVersion();
 
-            if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-                resubList.addAll(latestArchivalList);
-                System.out.println("Fetched " + latestArchivalList.size() + " record(s)");
-            } else {
-                System.out.println("No archival data found.");
-            }
-        } catch (Exception e) {
-            System.err.println("Error fetching M_FAS Resub data: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return resubList;
-    }
+    //         if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+    //             resubList.addAll(latestArchivalList);
+    //             System.out.println("Fetched " + latestArchivalList.size() + " record(s)");
+    //         } else {
+    //             System.out.println("No archival data found.");
+    //         }
+    //     } catch (Exception e) {
+    //         System.err.println("Error fetching M_FAS Resub data: " + e.getMessage());
+    //         e.printStackTrace();
+    //     }
+    //     return resubList;
+    // }
 
     // Archival for M_FAS VIEW
     // public List<M_FAS_Archival_Detail_Entity> getM_FASArchival() {
