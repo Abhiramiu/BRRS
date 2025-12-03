@@ -10,8 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BRRS_M_FXR_Archival_Summary_Repo3
-        extends JpaRepository<M_FXR_Archival_Summary_Entity3, M_FXR_Archival_Summary3_PK> {
+public interface BRRS_M_FXR_Archival_Summary_Repo3  extends JpaRepository<M_FXR_Archival_Summary_Entity3, String>{
 
     // Fetch specific archival data by report date & version
    @Query(value = "SELECT * FROM BRRS_M_FXR_ARCHIVALTABLE_SUMMARY3 WHERE REPORT_DATE = ?1 AND REPORT_VERSION = ?2", nativeQuery = true)
