@@ -386,7 +386,7 @@ PURPOSE		: BWRBRREPORT
     </script>
 
 
-	</script>
+	
 	<script>
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
@@ -555,363 +555,42 @@ function cancelModify() {
 	
 	<SCRIPT>
 	
-	function calculateR10_TOTAL() {
+	
+	function calculateR33Totals() {
 
-	    const fields = [
-	        "CURRENT",
-	        "CALL",
-	        "SAVINGS",
-	        "NOTICE_0_31_DAYS",
-	        "NOTICE_32_88_DAYS",
-	        "91_DEPOSIT_DAY",
-	        "FD_1_6_MONTHS",
-	        "FD_7_12_MONTHS",
-	        "FD_13_18_MONTHS",
-	        "FD_19_24_MONTHS",
-	        "FD_OVER_24_MONTHS"
-	    ];
+	    function getVal(id) {
+	        let el = $("#" + id);
 
-	    // sum all fields for row 10 (R15-style structure)
-	    let sum = 0;
+	        if (el.length === 0) return 0;
 
-	    fields.forEach(field => {
-	        let val = parseFloat($("#R10_" + field).val().replace(/,/g, "")) || 0;
-	        sum += val;
-	    });
+	        let raw = el.is("input") ? el.val() : el.text();
+	        raw = (raw || "0").replace(/,/g, "").trim();
 
-	    // assign total
-	    $("#R10_TOTAL").val(sum.toLocaleString('en-US', { maximumFractionDigits: 0 }));
-	}
-
-
-	$(document).ready(function () {
-
-	    const fields = [
-	        "CURRENT",
-	        "CALL",
-	        "SAVINGS",
-	        "NOTICE_0_31_DAYS",
-	        "NOTICE_32_88_DAYS",
-	        "91_DEPOSIT_DAY",
-	        "FD_1_6_MONTHS",
-	        "FD_7_12_MONTHS",
-	        "FD_13_18_MONTHS",
-	        "FD_19_24_MONTHS",
-	        "FD_OVER_24_MONTHS"
-	    ];
-
-	    // initial calculation
-	    calculateR10_TOTAL();
-
-	    // auto-update on input
-	    fields.forEach(field => {
-	        $("#R10_" + field).on("input", calculateR10_TOTAL);
-	    });
-
-	});
-
-
-	function calculateR11_TOTAL() {
-
-	    const fields = [
-	        "CURRENT",
-	        "CALL",
-	        "SAVINGS",
-	        "NOTICE_0_31_DAYS",
-	        "NOTICE_32_88_DAYS",
-	        "91_DEPOSIT_DAY",
-	        "FD_1_6_MONTHS",
-	        "FD_7_12_MONTHS",
-	        "FD_13_18_MONTHS",
-	        "FD_19_24_MONTHS",
-	        "FD_OVER_24_MONTHS"
-	    ];
-
-	    // sum all fields for row 11 (R15-style structure)
-	    let sum = 0;
-
-	    fields.forEach(field => {
-	        let val = parseFloat($("#R11_" + field).val().replace(/,/g, "")) || 0;
-	        sum += val;
-	    });
-
-	    // assign total
-	    $("#R11_TOTAL").val(sum.toLocaleString('en-US', { maximumFractionDigits: 0 }));
-	}
-
-
-	$(document).ready(function () {
-
-	    const fields = [
-	        "CURRENT",
-	        "CALL",
-	        "SAVINGS",
-	        "NOTICE_0_31_DAYS",
-	        "NOTICE_32_88_DAYS",
-	        "91_DEPOSIT_DAY",
-	        "FD_1_6_MONTHS",
-	        "FD_7_12_MONTHS",
-	        "FD_13_18_MONTHS",
-	        "FD_19_24_MONTHS",
-	        "FD_OVER_24_MONTHS"
-	    ];
-
-	    // initial calculation
-	    calculateR11_TOTAL();
-
-	    // auto-update on input
-	    fields.forEach(field => {
-	        $("#R11_" + field).on("input", calculateR11_TOTAL);
-	    });
-
-	});
-
-
-	function calculateR12_TOTAL() {
-
-	    const fields = [
-	        "CURRENT",
-	        "CALL",
-	        "SAVINGS",
-	        "NOTICE_0_31_DAYS",
-	        "NOTICE_32_88_DAYS",
-	        "91_DEPOSIT_DAY",
-	        "FD_1_6_MONTHS",
-	        "FD_7_12_MONTHS",
-	        "FD_13_18_MONTHS",
-	        "FD_19_24_MONTHS",
-	        "FD_OVER_24_MONTHS"
-	    ];
-
-	    // sum all fields for row 12 (same pattern as R15 style)
-	    let sum = 0;
-
-	    fields.forEach(field => {
-	        let val = parseFloat($("#R12_" + field).val().replace(/,/g, "")) || 0;
-	        sum += val;
-	    });
-
-	    // assign total
-	    $("#R12_TOTAL").val(sum.toLocaleString('en-US', { maximumFractionDigits: 0 }));
-	}
-
-
-	$(document).ready(function () {
-
-	    const fields = [
-	        "CURRENT",
-	        "CALL",
-	        "SAVINGS",
-	        "NOTICE_0_31_DAYS",
-	        "NOTICE_32_88_DAYS",
-	        "91_DEPOSIT_DAY",
-	        "FD_1_6_MONTHS",
-	        "FD_7_12_MONTHS",
-	        "FD_13_18_MONTHS",
-	        "FD_19_24_MONTHS",
-	        "FD_OVER_24_MONTHS"
-	    ];
-
-	    // initial load
-	    calculateR12_TOTAL();
-
-	    // auto-update on input
-	    fields.forEach(field => {
-	        $("#R12_" + field).on("input", calculateR12_TOTAL);
-	    });
-
-	});
-
-
-	function calculateR13_TOTAL() {
-
-	    const fields = [
-	        "CURRENT",
-	        "CALL",
-	        "SAVINGS",
-	        "NOTICE_0_31_DAYS",
-	        "NOTICE_32_88_DAYS",
-	        "91_DEPOSIT_DAY",
-	        "FD_1_6_MONTHS",
-	        "FD_7_12_MONTHS",
-	        "FD_13_18_MONTHS",
-	        "FD_19_24_MONTHS",
-	        "FD_OVER_24_MONTHS"
-	    ];
-
-	    // sum all fields for row 13 (same pattern as R15 style)
-	    let sum = 0;
-
-	    fields.forEach(field => {
-	        let val = parseFloat($("#R13_" + field).val().replace(/,/g, "")) || 0;
-	        sum += val;
-	    });
-
-	    // assign total
-	    $("#R13_TOTAL").val(sum.toLocaleString('en-US', { maximumFractionDigits: 0 }));
-	}
-
-
-	$(document).ready(function () {
-
-	    const fields = [
-	        "CURRENT",
-	        "CALL",
-	        "SAVINGS",
-	        "NOTICE_0_31_DAYS",
-	        "NOTICE_32_88_DAYS",
-	        "91_DEPOSIT_DAY",
-	        "FD_1_6_MONTHS",
-	        "FD_7_12_MONTHS",
-	        "FD_13_18_MONTHS",
-	        "FD_19_24_MONTHS",
-	        "FD_OVER_24_MONTHS"
-	    ];
-
-	    // initial load
-	    calculateR13_TOTAL();
-
-	    // auto-update on input
-	    fields.forEach(field => {
-	        $("#R13_" + field).on("input", calculateR13_TOTAL);
-	    });
-
-	});
-
-
-	function calculateR14_TOTAL() {
-
-	    const fields = [
-	        "CURRENT",
-	        "CALL",
-	        "SAVINGS",
-	        "NOTICE_0_31_DAYS",
-	        "NOTICE_32_88_DAYS",
-	        "91_DEPOSIT_DAY",
-	        "FD_1_6_MONTHS",
-	        "FD_7_12_MONTHS",
-	        "FD_13_18_MONTHS",
-	        "FD_19_24_MONTHS",
-	        "FD_OVER_24_MONTHS"
-	    ];
-
-	    // sum all fields for row 14 (same pattern as R15)
-	    let sum = 0;
-
-	    fields.forEach(field => {
-	        let val = parseFloat($("#R14_" + field).val().replace(/,/g, "")) || 0;
-	        sum += val;
-	    });
-
-	    // assign total
-	    $("#R14_TOTAL").val(sum.toLocaleString('en-US', { maximumFractionDigits: 0 }));
-	}
-
-
-	$(document).ready(function () {
-
-	    const fields = [
-	        "CURRENT",
-	        "CALL",
-	        "SAVINGS",
-	        "NOTICE_0_31_DAYS",
-	        "NOTICE_32_88_DAYS",
-	        "91_DEPOSIT_DAY",
-	        "FD_1_6_MONTHS",
-	        "FD_7_12_MONTHS",
-	        "FD_13_18_MONTHS",
-	        "FD_19_24_MONTHS",
-	        "FD_OVER_24_MONTHS"
-	    ];
-
-	    // initial load
-	    calculateR14_TOTAL();
-
-	    // auto-update on input
-	    fields.forEach(field => {
-	        $("#R14_" + field).on("input", calculateR14_TOTAL);
-	    });
-
-	});
-
-
-
-	function calculateR15_TOTAL() {
-
-	    const fields = [
-	        "CURRENT",
-	        "CALL",
-	        "SAVINGS",
-	        "NOTICE_0_31_DAYS",
-	        "NOTICE_32_88_DAYS",
-	        "91_DEPOSIT_DAY",
-	        "FD_1_6_MONTHS",
-	        "FD_7_12_MONTHS",
-	        "FD_13_18_MONTHS",
-	        "FD_19_24_MONTHS",
-	        "FD_OVER_24_MONTHS"
-	    ];
-
-	    let rows = [10, 11, 12, 13, 14];
-
-	    // each column of R15 = sum of row 10 to 14
-	    for (let f = 0; f < fields.length; f++) {
-	        let field = fields[f];
-	        let sum = 0;
-
-	        for (let r = 0; r < rows.length; r++) {
-	            let row = rows[r];
-	            let val = parseFloat($("#R" + row + "_" + field).val().replace(/,/g, "")) || 0;
-	            sum += val;
-	        }
-
-	        $("#R15_" + field).val(sum.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+	        return parseFloat(raw) || 0;
 	    }
 
-	    // finally TOTAL column for R15
-	    let grandTotal = 0;
-	    for (let f = 0; f < fields.length; f++) {
-	        let field = fields[f];
-	        let val = parseFloat($("#R15_" + field).val().replace(/,/g, "")) || 0;
-	        grandTotal += val;
-	    }
+	    let thirdMonth  = getVal("r33_third_month");
+	    let lastMonth   = getVal("r33_last_month");
+	    let firstYear   = getVal("r33_first_year");
+	    let fifthYear   = getVal("r33_fifth_year");
+	    let nonInterest = getVal("r33_non_interest_bearing");
 
-	    $("#R15_TOTAL").val(grandTotal.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+	    let total = thirdMonth + lastMonth + firstYear + fifthYear + nonInterest;
+
+	    let target = $("#r33_cumulative_total");
+
+	    if (target.is("input")) {
+	        target.val(total.toLocaleString("en-US"));
+	    } else {
+	        target.text(total.toLocaleString("en-US"));
+	    }
 	}
 
+	$(document).ready(function () {
+	    calculateR33Totals();
 
-	$(document).ready(function() {
-
-	    const fields = [
-	        "CURRENT",
-	        "CALL",
-	        "SAVINGS",
-	        "NOTICE_0_31_DAYS",
-	        "NOTICE_32_88_DAYS",
-	        "91_DEPOSIT_DAY",
-	        "FD_1_6_MONTHS",
-	        "FD_7_12_MONTHS",
-	        "FD_13_18_MONTHS",
-	        "FD_19_24_MONTHS",
-	        "FD_OVER_24_MONTHS"
-	    ];
-
-	    let rows = [10, 11, 12, 13, 14];
-
-	    // Initialise /
-	    calculateR15_TOTAL();
-
-	    // onchange events
-	    for (let r = 0; r < rows.length; r++) {
-	        let row = rows[r];
-	        for (let f = 0; f < fields.length; f++) {
-	            let field = fields[f];
-	            $("#R" + row + "_" + field).on("input", function () {
-	                calculateR15_TOTAL();
-	            });
-	        }
-	    }
-
+	    $("#r33_third_month, #r33_last_month, #r33_first_year, #r33_fifth_year, #r33_non_interest_bearing")
+	        .on("input", calculateR33Totals);
 	});
 	
 	
@@ -955,13 +634,7 @@ function closemodel() {
 	    $('#loader').modal('show');
 
 	    // ✅ Step 1: Calculate TOTALs
-	       calculateR10_TOTAL();
-    calculateR11_TOTAL();
-    calculateR12_TOTAL();
-    calculateR13_TOTAL();
-    calculateR14_TOTAL();
-    
-	    calculateR15_TOTAL();
+	       calculateR33Totals();
 	    
 	    
 
@@ -1383,7 +1056,7 @@ function closemodel() {
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW10" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R10_TOTAL != null ? #numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R10_TOTAL" name="R10_TOTAL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
@@ -1462,7 +1135,7 @@ function closemodel() {
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW11" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R11_TOTAL" name="R11_TOTAL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
@@ -1541,7 +1214,7 @@ function closemodel() {
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW12" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R12_TOTAL != null ? #numbers.formatDecimal(report.R12_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R12_TOTAL" name="R12_TOTAL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
@@ -1620,7 +1293,7 @@ function closemodel() {
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW13" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R13_TOTAL != null ? #numbers.formatDecimal(report.R13_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R13_TOTAL" name="R13_TOTAL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
@@ -1699,7 +1372,7 @@ function closemodel() {
                style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW14" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R14_TOTAL != null ? #numbers.formatDecimal(report.R14_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R14_TOTAL" name="R14_TOTAL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
@@ -1712,73 +1385,73 @@ function closemodel() {
     <td id="ROW15" style="font-weight: bold;">TOTAL
 </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R15_CURRENT != null ? #numbers.formatDecimal(report.R15_CURRENT, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_CURRENT" name="R15_CURRENT"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R15_CALL != null ? #numbers.formatDecimal(report.R15_CALL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_CALL" name="R15_CALL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R15_SAVINGS != null ? #numbers.formatDecimal(report.R15_SAVINGS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_SAVINGS" name="R15_SAVINGS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R15_NOTICE_0_31_DAYS != null ? #numbers.formatDecimal(report.R15_NOTICE_0_31_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_NOTICE_0_31_DAYS" name="R15_NOTICE_0_31_DAYS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R15_NOTICE_32_88_DAYS != null ? #numbers.formatDecimal(report.R15_NOTICE_32_88_DAYS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_NOTICE_32_88_DAYS" name="R15_NOTICE_32_88_DAYS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R15_91_DEPOSIT_DAY != null ? #numbers.formatDecimal(report.R15_91_DEPOSIT_DAY, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_91_DEPOSIT_DAY" name="R15_91_DEPOSIT_DAY"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R15_FD_1_6_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_1_6_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_FD_1_6_MONTHS" name="R15_FD_1_6_MONTHS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R15_FD_7_12_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_7_12_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_FD_7_12_MONTHS" name="R15_FD_7_12_MONTHS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R15_FD_13_18_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_13_18_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_FD_13_18_MONTHS" name="R15_FD_13_18_MONTHS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R15_FD_19_24_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_19_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_FD_19_24_MONTHS" name="R15_FD_19_24_MONTHS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R15_FD_OVER_24_MONTHS != null ? #numbers.formatDecimal(report.R15_FD_OVER_24_MONTHS, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_FD_OVER_24_MONTHS" name="R15_FD_OVER_24_MONTHS"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />
     </td>
     <td id="ROW15" style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
-        <input class="display-input Show_inputnonEditable" type="text"
+        <input class="display-input Show_input" type="text"
                th:value="${report.R15_TOTAL != null ? #numbers.formatDecimal(report.R15_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
                id="R15_TOTAL" name="R15_TOTAL"
                style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;" readonly />

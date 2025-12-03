@@ -1911,6 +1911,31 @@ if (!dataList1.isEmpty()) {
 						    cell3.setCellValue("");
 						    cell3.setCellStyle(textStyle);
 						}
+						
+						
+						// ----------------- R24 -----------------
+						row = sheet.getRow(23);  // R24 = Excel row 24 (index 23)
+						if (row == null) {
+						    row = sheet.createRow(23);
+						}
+
+						cell1 = row.createCell(1);
+						if (record.getR24_NOMINAL_INTEREST_RATE() != null) {
+						    cell1.setCellValue(record.getR24_NOMINAL_INTEREST_RATE());  // <-- use text if 200-200
+						    cell1.setCellStyle(textStyle);
+						} else {
+						    cell1.setCellValue("");
+						    cell1.setCellStyle(textStyle);
+						}
+
+						cell2 = row.createCell(2);
+						if (record.getR24_AVG_EFFECTIVE_RATE() != null) {
+						    cell2.setCellValue(record.getR24_AVG_EFFECTIVE_RATE());
+						    cell2.setCellStyle(textStyle);
+						} else {
+						    cell2.setCellValue("");
+						    cell2.setCellStyle(textStyle);
+						}
 
 
 						row = sheet.getRow(24);
