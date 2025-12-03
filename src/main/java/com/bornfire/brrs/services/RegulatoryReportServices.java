@@ -1679,7 +1679,7 @@ public class RegulatoryReportServices {
 					filename, fromdate, todate, currency, dtltype, type, version);
 		}
 
-		else if ("M_PD".equals(filename)) {
+		else if ("M_PDDetail".equals(filename)) {
 			return BRRS_M_PD_ReportService.BRRS_M_PDDetailExcel(
 					filename, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -2443,7 +2443,7 @@ public class RegulatoryReportServices {
 			fileData = BRRS_M_LIQ_reportservice.getM_LIQDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 
-		} else if ("M_PD".equals(filename)) {
+		} else if (filename.equals("M_PDDetail")) {
 
 			fileData = BRRS_M_PD_ReportService.BRRS_M_PDDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
@@ -2596,17 +2596,20 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_m_galor_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
 
-				case "M_SCI_E":
-					modelAndView = brrs_m_sci_e_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-							request.getParameter("formmode"));
-					break;
-
-				case "Q_ATF":
-					modelAndView = brrs_q_atf_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-							request.getParameter("formmode"));
-					break;
-
+					
+					
+				  case "M_SCI_E":
+						modelAndView = brrs_m_sci_e_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+								request.getParameter("formmode"));
+						break;	
+						
+				  case "Q_ATF":
+						modelAndView = brrs_q_atf_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+								request.getParameter("formmode"));
+						break;	
+		
 				case "M_FAS":
 					modelAndView = BRRS_M_FAS_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
@@ -2623,6 +2626,20 @@ public class RegulatoryReportServices {
 							request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+
+				case "M_PD":
+					modelAndView = BRRS_M_PD_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+	     
+				case "M_PI":
+					modelAndView = BRRS_M_PI_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+	
+
+
+
 				default:
 					logger.warn("No detail service found for reportId: {}", reportId);
 					modelAndView = new ModelAndView("error/report_not_found");
@@ -2711,6 +2728,8 @@ public class RegulatoryReportServices {
 					response = BRRS_m_galor_ReportService.updateDetailEdit(request);
 					break;
 
+
+
 				case "M_SCI_E":
 					response = brrs_m_sci_e_reportservice.updateDetailEdit(request);
 					break;
@@ -2718,6 +2737,16 @@ public class RegulatoryReportServices {
 				case "Q_ATF":
 					response = brrs_q_atf_reportservice.updateDetailEdit(request);
 					break;
+
+					
+				case "M_PD":
+					response = BRRS_M_PD_ReportService.updateDetailEdit(request);
+					break;
+				case "M_PI":
+					response = BRRS_M_PI_reportservice.updateDetailEdit(request);
+					break;
+
+
 
 				case "M_FAS":
 					response = BRRS_M_FAS_reportservice.updateDetailEdit(request);

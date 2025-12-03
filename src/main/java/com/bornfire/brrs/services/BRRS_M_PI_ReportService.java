@@ -1,9 +1,11 @@
-
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,10 +15,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -28,25 +34,33 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_PI_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_PI_Archival_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_PI_Manual_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_PI_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_PI_Summary_Repo;
+import com.bornfire.brrs.entities.BRRS_M_PI_Manual_Summary_Repo;
 import com.bornfire.brrs.entities.M_PI_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_PI_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.M_PI_Manual_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_PI_Detail_Entity;
 import com.bornfire.brrs.entities.M_PI_Summary_Entity;
+import com.bornfire.brrs.entities.M_PI_Manual_Summary_Entity;
 
 @Component
 @Service
@@ -63,6 +77,8 @@ public class BRRS_M_PI_ReportService {
 	
 	@Autowired
 	BRRS_M_PI_Summary_Repo BRRS_M_PI_Summary_Repo;
+	@Autowired
+	BRRS_M_PI_Manual_Summary_Repo BRRS_M_PI_Manual_Summary_Repo;
 
 	@Autowired
 	BRRS_M_PI_Detail_Repo M_PI_Detail_Repo;
@@ -72,6 +88,8 @@ public class BRRS_M_PI_ReportService {
 
 	@Autowired
 	BRRS_M_PI_Archival_Summary_Repo M_PI_Archival_Summary_Repo;
+	@Autowired
+	BRRS_M_PI_Manual_Archival_Summary_Repo M_PI_Manual_Archival_Summary_Repo;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -79,13 +97,14 @@ public class BRRS_M_PI_ReportService {
 			String dtltype, Pageable pageable, String type, String version) {
 
 		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
+//		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
 
 		if (type.equals("ARCHIVAL") & version != null) {
 			List<M_PI_Archival_Summary_Entity> T1Master = new ArrayList<M_PI_Archival_Summary_Entity>();
+			List<M_PI_Manual_Archival_Summary_Entity> T2Master = new ArrayList<M_PI_Manual_Archival_Summary_Entity>();
 			try {
 				Date d1 = dateformat.parse(todate);
 				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
@@ -94,15 +113,18 @@ public class BRRS_M_PI_ReportService {
 				// ", BRF1_REPORT_ENTITY.class)
 				// .setParameter(1, df.parse(todate)).getResultList();
 				T1Master = M_PI_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
-
+				T2Master = M_PI_Manual_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+				
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			mv.addObject("reportsummary", T1Master);
+			mv.addObject("reportsummary1", T2Master);
 
 		} else {
 
 			List<M_PI_Summary_Entity> T1Master = new ArrayList<M_PI_Summary_Entity>();
+			List<M_PI_Manual_Summary_Entity> T2Master = new ArrayList<M_PI_Manual_Summary_Entity>();
 			try {
 				Date d1 = dateformat.parse(todate);
 				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
@@ -111,11 +133,13 @@ public class BRRS_M_PI_ReportService {
 				// ", BRF1_REPORT_ENTITY.class)
 				// .setParameter(1, df.parse(todate)).getResultList();
 				T1Master = BRRS_M_PI_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+				T2Master = BRRS_M_PI_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			mv.addObject("reportsummary", T1Master);
+			mv.addObject("reportsummary1", T2Master);
 		}
 
 		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
@@ -133,85 +157,126 @@ public class BRRS_M_PI_ReportService {
 	}
 
 	public ModelAndView getM_PIcurrentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String filter, String type, String version) {
+			  String dtltype, Pageable pageable, String Filter, String type, String version) {
 
-		int pageSize = pageable != null ? pageable.getPageSize() : 10;
-		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
+	int pageSize = pageable != null ? pageable.getPageSize() : 10;
+	int currentPage = pageable != null ? pageable.getPageNumber() : 0;
+	int totalPages = 0;
 
-		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
+	ModelAndView mv = new ModelAndView();
+//	Session hs = sessionFactory.getCurrentSession();
 
-		try {
-			Date parsedDate = null;
-			if (todate != null && !todate.isEmpty()) {
-				parsedDate = dateformat.parse(todate);
-			}
-
-			String rowId = null;
-			String columnId = null;
-
-			// ✅ Split the filter string here
-			if (filter != null && filter.contains(",")) {
-				String[] parts = filter.split(",");
-				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
-				}
-			}
-
-			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// 🔹 Archival branch
-				List<M_PI_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_PI_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
-				} else {
-					T1Dt1 = M_PI_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-					System.out.println(T1Dt1.size());
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-
-			} else {
-				System.out.println("Praveen");
-				// 🔹 Current branch
-				List<M_PI_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = M_PI_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
-				} else {
-					T1Dt1 = M_PI_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
-					totalPages = M_PI_Detail_Repo.getdatacount(parsedDate);
-					mv.addObject("pagination", "YES");
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-			}
-
-		} catch (ParseException e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
-		} catch (Exception e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+	try {
+		Date parsedDate = null;
+		if (todate != null && !todate.isEmpty()) {
+			parsedDate = dateformat.parse(todate);
 		}
 
-		// ✅ Common attributes
-		mv.setViewName("BRRS/M_PI");
-		mv.addObject("displaymode", "Details");
-		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("reportsflag", "reportsflag");
-		mv.addObject("menu", reportId);
+		String rowId = null;
+		String columnId = null;
 
-		return mv;
+		// ✅ Split filter string into rowId & columnId
+		if (Filter != null && Filter.contains(",")) {
+			String[] parts = Filter.split(",");
+			if (parts.length >= 2) {
+				rowId = parts[0];
+				columnId = parts[1];
+			}
+		}
+	
+		if ("ARCHIVAL".equals(type) && version != null) {
+			// 🔹 Archival branch
+			List<M_PI_Archival_Detail_Entity> T1Dt1;
+			if (rowId != null && columnId != null) {
+				T1Dt1 = M_PI_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+			} else {
+				T1Dt1 = M_PI_Archival_Detail_Repo.getdatabydateList(parsedDate, version);					
+			}
+
+			mv.addObject("reportdetails", T1Dt1);
+			mv.addObject("reportmaster12", T1Dt1);
+			System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+
+		} else {
+			// 🔹 Current branch
+			List<M_PI_Detail_Entity> T1Dt1;
+			if (rowId != null && columnId != null) {
+				T1Dt1 = M_PI_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+			} else {
+				T1Dt1 = M_PI_Detail_Repo.getdatabydateList(parsedDate);
+				totalPages = M_PI_Detail_Repo.getdatacount(parsedDate);
+				mv.addObject("pagination", "YES");
+			}
+
+			mv.addObject("reportdetails", T1Dt1);
+			mv.addObject("reportmaster12", T1Dt1);
+			System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+		}
+
+	} catch (ParseException e) {
+		e.printStackTrace();
+		mv.addObject("errorMessage", "Invalid date format: " + todate);
+	} catch (Exception e) {
+		e.printStackTrace();
+		mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
 	}
 
+	// ✅ Common attributes
+	mv.setViewName("BRRS/M_PI");
+	mv.addObject("displaymode", "Details");
+	mv.addObject("currentPage", currentPage);
+	System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
+	mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+	mv.addObject("reportsflag", "reportsflag");
+	mv.addObject("menu", reportId);
+
+	return mv;
+}
+
+
+	public void updateReport(M_PI_Manual_Summary_Entity updatedEntity) {
+	    System.out.println("Came to services1");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
+	    M_PI_Manual_Summary_Entity existing = BRRS_M_PI_Manual_Summary_Repo.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+
+	    try {
+	        // ✅ Loop for amount_2 fields
+	        int[] amount2Rows = {14, 18, 19, 25};
+	        for (int i : amount2Rows) {
+	            String prefix = "R" + i + "_";
+	            String[] fields = {"VALUE"};
+
+	            for (String field : fields) {
+	                try {
+	                    String getterName = "get" + prefix + field;
+	                    String setterName = "set" + prefix + field;
+
+	                    Method getter = M_PI_Manual_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = M_PI_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing getter/setter gracefully
+	                    continue;
+	                }
+	            }
+	        }
+
+	        // ✅ Save after all updates
+	        BRRS_M_PI_Manual_Summary_Repo.save(existing);
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+	}
+
+
+	
 	public byte[] BRRS_M_PIExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
@@ -225,6 +290,7 @@ public class BRRS_M_PI_ReportService {
 
 		List<M_PI_Summary_Entity> dataList = BRRS_M_PI_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 
+		List<M_PI_Manual_Summary_Entity> dataList1 = BRRS_M_PI_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRF2.4 report. Returning empty result.");
 			return new byte[0];
@@ -293,9 +359,10 @@ public class BRRS_M_PI_ReportService {
 
 			int startRow = 7;
 
-			if (!dataList.isEmpty()) {
+			if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_PI_Summary_Entity record = dataList.get(i);
+					M_PI_Manual_Summary_Entity record1 = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -510,8 +577,8 @@ public class BRRS_M_PI_ReportService {
 					row = sheet.getRow(13);
 					// Column F
 					cell5 = row.createCell(5);
-					if (record.getR14_VALUE() != null) {
-						cell5.setCellValue(record.getR14_VALUE().doubleValue());
+					if (record1.getR14_VALUE() != null) {
+						cell5.setCellValue(record1.getR14_VALUE().doubleValue());
 						cell5.setCellStyle(numberStyle);
 					} else {
 						cell5.setCellValue("");
@@ -613,8 +680,8 @@ public class BRRS_M_PI_ReportService {
 					row = sheet.getRow(17);
 					// Column F
 					cell5 = row.createCell(5);
-					if (record.getR18_VALUE() != null) {
-						cell5.setCellValue(record.getR18_VALUE().doubleValue() / 100);
+					if (record1.getR18_VALUE() != null) {
+						cell5.setCellValue(record1.getR18_VALUE().doubleValue() / 100);
 						cell5.setCellStyle(percentStyle);
 					} else {
 						cell5.setCellValue("");
@@ -636,8 +703,8 @@ public class BRRS_M_PI_ReportService {
 					row = sheet.getRow(18);
 					// Column F
 					cell5 = row.createCell(5);
-					if (record.getR19_VALUE() != null) {
-						cell5.setCellValue(record.getR19_VALUE().doubleValue() / 100);
+					if (record1.getR19_VALUE() != null) {
+						cell5.setCellValue(record1.getR19_VALUE().doubleValue() / 100);
 						cell5.setCellStyle(percentStyle);
 					} else {
 						cell5.setCellValue("");
@@ -774,8 +841,8 @@ public class BRRS_M_PI_ReportService {
 					row = sheet.getRow(24);
 					// Column F
 					cell5 = row.createCell(5);
-					if (record.getR25_VALUE() != null) {
-						cell5.setCellValue(record.getR25_VALUE().doubleValue() / 100);
+					if (record1.getR25_VALUE() != null) {
+						cell5.setCellValue(record1.getR25_VALUE().doubleValue() / 100);
 						cell5.setCellStyle(percentStyle);
 					} else {
 						cell5.setCellValue("");
@@ -854,121 +921,145 @@ public class BRRS_M_PI_ReportService {
 		}
 	}
 
+//	public byte[] BRRS_M_PIDetailExcel(String filename, String fromdate, String todate, String currency,
 	public byte[] BRRS_M_PIDetailExcel(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
+			   String dtltype, String type, String version) {
+try {
+logger.info("Generating Excel for M_PI Details...");
+System.out.println("came to Detail download service");
 
-		try {
-			logger.info("Generating Excel for BRRS_M_PI Details...");
-			System.out.println("came to Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
-				byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
-						version);
-				return ARCHIVALreport;
+
+if (type.equals("ARCHIVAL") & version != null) {
+byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
+version);
+return ARCHIVALreport;
+}
+
+XSSFWorkbook workbook = new XSSFWorkbook();
+XSSFSheet sheet = workbook.createSheet("M_PIDetail");
+
+//Common border style
+BorderStyle border = BorderStyle.THIN;
+
+//Header style (left aligned)
+CellStyle headerStyle = workbook.createCellStyle();
+Font headerFont = workbook.createFont();
+headerFont.setBold(true);
+headerFont.setFontHeightInPoints((short) 10);
+headerStyle.setFont(headerFont);
+headerStyle.setAlignment(HorizontalAlignment.LEFT);
+headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+headerStyle.setBorderTop(border);
+headerStyle.setBorderBottom(border);
+headerStyle.setBorderLeft(border);
+headerStyle.setBorderRight(border);
+
+//Right-aligned header style for ACCT BALANCE
+CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+//Default data style (left aligned)
+CellStyle dataStyle = workbook.createCellStyle();
+dataStyle.setAlignment(HorizontalAlignment.LEFT);
+dataStyle.setBorderTop(border);
+dataStyle.setBorderBottom(border);
+dataStyle.setBorderLeft(border);
+dataStyle.setBorderRight(border);
+
+//ACCT BALANCE style (right aligned with thousand separator)
+CellStyle balanceStyle = workbook.createCellStyle();
+balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
+balanceStyle.setBorderTop(border);
+balanceStyle.setBorderBottom(border);
+balanceStyle.setBorderLeft(border);
+balanceStyle.setBorderRight(border);
+
+
+
+
+
+
+//Header row
+String[] headers = {
+"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABLE", "REPORT ADDL CRITERIA1",
+"REPORT_DATE"
+};
+
+XSSFRow headerRow = sheet.createRow(0);
+for (int i = 0; i < headers.length; i++) {
+Cell cell = headerRow.createCell(i);
+cell.setCellValue(headers[i]);
+
+if (i == 3) { // ACCT BALANCE
+cell.setCellStyle(rightAlignedHeaderStyle);
+} else {
+cell.setCellStyle(headerStyle);
+}
+
+sheet.setColumnWidth(i, 5000);
+}
+
+//Get data
+Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+List<M_PI_Detail_Entity> reportData = M_PI_Detail_Repo.getdatabydateList(parsedToDate);
+
+if (reportData != null && !reportData.isEmpty()) {
+int rowIndex = 1;
+for (M_PI_Detail_Entity item : reportData) {
+XSSFRow row = sheet.createRow(rowIndex++);
+
+row.createCell(0).setCellValue(item.getCustId());
+row.createCell(1).setCellValue(item.getAcctNumber());
+row.createCell(2).setCellValue(item.getAcctName());
+
+//ACCT BALANCE (right aligned, 3 decimal places)
+Cell balanceCell = row.createCell(3);
+if (item.getAcctBalanceInpula() != null) {
+balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+} else {
+balanceCell.setCellValue(0);
+}
+balanceCell.setCellStyle(balanceStyle);
+
+		row.createCell(4).setCellValue(item.getReportLable());
+		row.createCell(5).setCellValue(item.getReportAddlCriteria1());
+		row.createCell(6)
+				.setCellValue(item.getReportDate() != null
+						? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+						: "");
+
+		// Apply data style for all other cells
+		for (int j = 0; j < 7; j++) {
+			if (j != 3) {
+				row.getCell(j).setCellStyle(dataStyle);
 			}
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("BRRS_M_PIDetails");
-
-// Common border style
-			BorderStyle border = BorderStyle.THIN;
-// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
-					"REPORT_DATE" };
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-				if (i == 3) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-				sheet.setColumnWidth(i, 5000);
-			}
-// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_PI_Detail_Entity> reportData = M_PI_Detail_Repo.getdatabydateList(parsedToDate);
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (M_PI_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
-// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0.000);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-					row.createCell(4).setCellValue(item.getRowId());
-					row.createCell(5).setCellValue(item.getColumnId());
-					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-									: "");
-// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for BRRS_M_PI — only header will be written.");
-			}
-// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-		} catch (Exception e) {
-			logger.error("Error generating BRRS_M_PI Excel", e);
-			return new byte[0];
 		}
 	}
+} else {
+	logger.info("No data found for M_PI — only header will be written.");
+}
 
+//Write to byte[]
+ByteArrayOutputStream bos = new ByteArrayOutputStream();
+workbook.write(bos);
+workbook.close();
+
+logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+return bos.toByteArray();
+
+} catch (Exception e) {
+logger.error("Error generating M_PI Excel", e);
+return new byte[0];
+}
+}
 	public List<Object> getM_PIArchival() {
 		List<Object> M_PIArchivallist = new ArrayList<>();
 		try {
 			M_PIArchivallist = M_PI_Archival_Summary_Repo.getM_PIarchival();
+			M_PIArchivallist = M_PI_Manual_Archival_Summary_Repo.getM_PIarchival();
 			System.out.println("countser" + M_PIArchivallist.size());
 		} catch (Exception e) {
 			// Log the exception
@@ -989,8 +1080,10 @@ public class BRRS_M_PI_ReportService {
 		}
 		List<M_PI_Archival_Summary_Entity> dataList = M_PI_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_PI_Manual_Archival_Summary_Entity> dataList1 = M_PI_Manual_Archival_Summary_Repo
+				.getdatabydateListarchival(dateformat.parse(todate), version);
 
-		if (dataList.isEmpty()) {
+		if (dataList.isEmpty() || dataList1.isEmpty()) {
 			logger.warn("Service: No data found for M_PI report. Returning empty result.");
 			return new byte[0];
 		}
@@ -1057,14 +1150,16 @@ public class BRRS_M_PI_ReportService {
 			// --- End of Style Definitions ---
 			int startRow = 7;
 
-			if (!dataList.isEmpty()) {
+			if (!dataList.isEmpty() || !dataList1.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_PI_Archival_Summary_Entity record = dataList.get(i);
+					M_PI_Manual_Archival_Summary_Entity record1 = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
+
 
 					// row8
 					// Column F
@@ -1274,8 +1369,8 @@ public class BRRS_M_PI_ReportService {
 					row = sheet.getRow(13);
 					// Column F
 					cell5 = row.createCell(5);
-					if (record.getR14_VALUE() != null) {
-						cell5.setCellValue(record.getR14_VALUE().doubleValue());
+					if (record1.getR14_VALUE() != null) {
+						cell5.setCellValue(record1.getR14_VALUE().doubleValue());
 						cell5.setCellStyle(numberStyle);
 					} else {
 						cell5.setCellValue("");
@@ -1377,8 +1472,8 @@ public class BRRS_M_PI_ReportService {
 					row = sheet.getRow(17);
 					// Column F
 					cell5 = row.createCell(5);
-					if (record.getR18_VALUE() != null) {
-						cell5.setCellValue(record.getR18_VALUE().doubleValue() / 100);
+					if (record1.getR18_VALUE() != null) {
+						cell5.setCellValue(record1.getR18_VALUE().doubleValue() / 100);
 						cell5.setCellStyle(percentStyle);
 					} else {
 						cell5.setCellValue("");
@@ -1400,8 +1495,8 @@ public class BRRS_M_PI_ReportService {
 					row = sheet.getRow(18);
 					// Column F
 					cell5 = row.createCell(5);
-					if (record.getR19_VALUE() != null) {
-						cell5.setCellValue(record.getR19_VALUE().doubleValue() / 100);
+					if (record1.getR19_VALUE() != null) {
+						cell5.setCellValue(record1.getR19_VALUE().doubleValue() / 100);
 						cell5.setCellStyle(percentStyle);
 					} else {
 						cell5.setCellValue("");
@@ -1538,8 +1633,8 @@ public class BRRS_M_PI_ReportService {
 					row = sheet.getRow(24);
 					// Column F
 					cell5 = row.createCell(5);
-					if (record.getR25_VALUE() != null) {
-						cell5.setCellValue(record.getR25_VALUE().doubleValue() / 100);
+					if (record1.getR25_VALUE() != null) {
+						cell5.setCellValue(record1.getR25_VALUE().doubleValue() / 100);
 						cell5.setCellStyle(percentStyle);
 					} else {
 						cell5.setCellValue("");
@@ -1619,126 +1714,255 @@ public class BRRS_M_PI_ReportService {
 	}
 
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-		try {
-			logger.info("Generating Excel for BRRS_M_PI ARCHIVAL Details...");
-			System.out.println("came to Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			 String dtltype, String type, String version) {
+try {
+logger.info("Generating Excel for BRRS_M_PI ARCHIVAL Details...");
+System.out.println("came to Detail download service");
+if (type.equals("ARCHIVAL") & version != null) {
 
-			}
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("MSFinP2Detail");
+}
+XSSFWorkbook workbook = new XSSFWorkbook();
+XSSFSheet sheet = workbook.createSheet("M_PIDetail");
 
-			// Common border style
-			BorderStyle border = BorderStyle.THIN;
+//Common border style
+BorderStyle border = BorderStyle.THIN;
 
-			// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
+//Header style (left aligned)
+CellStyle headerStyle = workbook.createCellStyle();
+Font headerFont = workbook.createFont();
+headerFont.setBold(true);
+headerFont.setFontHeightInPoints((short) 10);
+headerStyle.setFont(headerFont);
+headerStyle.setAlignment(HorizontalAlignment.LEFT);
+headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+headerStyle.setBorderTop(border);
+headerStyle.setBorderBottom(border);
+headerStyle.setBorderLeft(border);
+headerStyle.setBorderRight(border);
 
-			// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+//Right-aligned header style for ACCT BALANCE
+CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 
-			// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
+//Default data style (left aligned)
+CellStyle dataStyle = workbook.createCellStyle();
+dataStyle.setAlignment(HorizontalAlignment.LEFT);
+dataStyle.setBorderTop(border);
+dataStyle.setBorderBottom(border);
+dataStyle.setBorderLeft(border);
+dataStyle.setBorderRight(border);
 
-			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
+//ACCT BALANCE style (right aligned with 3 decimals)
+CellStyle balanceStyle = workbook.createCellStyle();
+balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
+balanceStyle.setBorderTop(border);
+balanceStyle.setBorderBottom(border);
+balanceStyle.setBorderLeft(border);
+balanceStyle.setBorderRight(border);
 
-			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
-					"REPORT_DATE" };
 
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
+//Header row
+String[] headers = {
+"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABLE", "REPORT ADDL CRITERIA", "REPORT_DATE"
+};
 
-				if (i == 3) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
+XSSFRow headerRow = sheet.createRow(0);
+for (int i = 0; i < headers.length; i++) {
+Cell cell = headerRow.createCell(i);
+cell.setCellValue(headers[i]);
 
-				sheet.setColumnWidth(i, 5000);
-			}
+if (i == 3) { // ACCT BALANCE
+cell.setCellStyle(rightAlignedHeaderStyle);
+} else {
+cell.setCellStyle(headerStyle);
+}
 
-			// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_PI_Archival_Detail_Entity> reportData = M_PI_Archival_Detail_Repo.getdatabydateList(parsedToDate,
-					version);
-			System.out.println("Size");
-			System.out.println(reportData.size());
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (M_PI_Archival_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
+sheet.setColumnWidth(i, 5000);
+}
 
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
+//Get data
+Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+List<M_PI_Archival_Detail_Entity> reportData = M_PI_Archival_Detail_Repo.getdatabydateList(parsedToDate,version);
 
-					// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0.000);
-					}
-					balanceCell.setCellStyle(balanceStyle);
+if (reportData != null && !reportData.isEmpty()) {
+int rowIndex = 1;
+for (M_PI_Archival_Detail_Entity item : reportData) {
+XSSFRow row = sheet.createRow(rowIndex++);
 
-					row.createCell(4).setCellValue(item.getRowId());
-					row.createCell(5).setCellValue(item.getColumnId());
-					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-									: "");
+row.createCell(0).setCellValue(item.getCustId());
+row.createCell(1).setCellValue(item.getAcctNumber());
+row.createCell(2).setCellValue(item.getAcctName());
 
-					// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for BRRS_M_PI — only header will be written.");
-			}
+//ACCT BALANCE (right aligned, 3 decimal places with comma separator)
+Cell balanceCell = row.createCell(3);
 
-			// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
+if (item.getAcctBalanceInpula() != null) {
+balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+} else {
+balanceCell.setCellValue(0);
+}
 
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
+//Create style with thousand separator and decimal point
+DataFormat format = workbook.createDataFormat();
 
-		} catch (Exception e) {
-			logger.error("Error generating BRRS_M_PIExcel", e);
-			return new byte[0];
-		}
+//Format: 1,234,567
+balanceStyle.setDataFormat(format.getFormat("#,##0"));
+
+//Right alignment (optional)
+balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+balanceCell.setCellStyle(balanceStyle);
+
+row.createCell(4).setCellValue(item.getReportLable());
+row.createCell(5).setCellValue(item.getReportAddlCriteria1());
+row.createCell(6).setCellValue(
+item.getReportDate() != null ?
+new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
+);
+
+//Apply data style for all other cells
+for (int j = 0; j < 7; j++) {
+if (j != 3) {
+row.getCell(j).setCellStyle(dataStyle);
+}
+}
+}
+} else {
+logger.info("No data found for M_PI — only header will be written.");
+}
+//Write to byte[]
+ByteArrayOutputStream bos = new ByteArrayOutputStream();
+workbook.write(bos);
+workbook.close();
+
+logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+return bos.toByteArray();
+
+} catch (Exception e) {
+logger.error("Error generating M_PI Excel", e);
+return new byte[0];
+}
+}
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_PI"); // ✅ match the report name
+	    System.out.println("Hello");
+	    if (acctNo != null) {
+	    	M_PI_Detail_Entity dep3Entity = M_PI_Detail_Repo.findByAcctnumber(acctNo);
+	        if (dep3Entity != null && dep3Entity.getReportDate() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(dep3Entity.getReportDate());
+	            mv.addObject("asondate", formattedDate);
+	        }
+	        mv.addObject("Data", dep3Entity);
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
 	}
+
+
+
+
+
+	public ModelAndView updateDetailEdit(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_PI"); // ✅ match the report name
+
+	    if (acctNo != null) {
+	        M_PI_Detail_Entity la1Entity = M_PI_Detail_Repo.findByAcctnumber(acctNo);
+	        if (la1Entity != null && la1Entity.getReportDate() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
+	            mv.addObject("asondate", formattedDate);
+	            System.out.println(formattedDate);
+	        }
+	        mv.addObject("Data", la1Entity);
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+	    try {
+	        String acctNo = request.getParameter("acctNumber");
+	        String provisionStr = request.getParameter("acctBalanceInpula");
+	        String acctName = request.getParameter("acctName");
+	        String reportDateStr = request.getParameter("reportDate");
+
+	        logger.info("Received update for ACCT_NO: {}", acctNo);
+
+	        M_PI_Detail_Entity existing = M_PI_Detail_Repo.findByAcctnumber(acctNo);
+	        if (existing == null) {
+	            logger.warn("No record found for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+	        }
+
+	        boolean isChanged = false;
+
+	        if (acctName != null && !acctName.isEmpty()) {
+	            if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+	                existing.setAcctName(acctName);
+	                isChanged = true;
+	                logger.info("Account name updated to {}", acctName);
+	            }
+	        }
+
+	        if (provisionStr != null && !provisionStr.isEmpty()) {
+	            BigDecimal newProvision = new BigDecimal(provisionStr);
+	            if (existing.getAcctBalanceInpula() == null ||
+	                existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
+	                existing.setAcctBalanceInpula(newProvision);
+	                isChanged = true;
+	                logger.info("Balance updated to {}", newProvision);
+	            }
+	        }
+	        
+	        
+
+	        if (isChanged) {
+	        	M_PI_Detail_Repo.save(existing);
+	            logger.info("Record updated successfully for account {}", acctNo);
+
+	            // Format date for procedure
+	            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+	                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+	            // Run summary procedure after commit
+	            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+	                @Override
+	                public void afterCommit() {
+	                    try {
+	                        logger.info("Transaction committed — calling BRRS_M_PI_SUMMARY_PROCEDURE({})",
+	                                formattedDate);
+	                        jdbcTemplate.update("BEGIN BRRS_M_PI_SUMMARY_PROCEDURE(?); END;", formattedDate);
+	                        logger.info("Procedure executed successfully after commit.");
+	                    } catch (Exception e) {
+	                        logger.error("Error executing procedure after commit", e);
+	                    }
+	                }
+	            });
+
+	            return ResponseEntity.ok("Record updated successfully!");
+	        } else {
+	            logger.info("No changes detected for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.ok("No changes were made.");
+	        }
+
+	    } catch (Exception e) {
+	        logger.error("Error updating M_PI record", e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error updating record: " + e.getMessage());
+	    }
+	}
+	
+
+	
 }

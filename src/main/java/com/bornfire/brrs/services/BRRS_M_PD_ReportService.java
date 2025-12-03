@@ -58,7 +58,6 @@ import com.bornfire.brrs.entities.BRRS_M_PD_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_PD_Summary_Repo2;
 
 import com.bornfire.brrs.entities.BRRS_M_PD_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_PD_Archival_Summary_Repo2;
 
 import com.bornfire.brrs.entities.M_PD_Detail_Entity;
 import com.bornfire.brrs.entities.M_PD_Archival_Detail_Entity;
@@ -92,17 +91,13 @@ public class BRRS_M_PD_ReportService {
 	@Autowired
 	BRRS_M_PD_Summary_Repo BRRS_M_PD_Summary_Repo;
 	
-	@Autowired
-	BRRS_M_PD_Summary_Repo2 BRRS_M_PD_Summary_Repo2;
 
 	@Autowired
 	BRRS_M_PD_Archival_Detail_Repo BRRS_M_PD_Archival_Detail_Repo;
 
 	@Autowired
 	BRRS_M_PD_Archival_Summary_Repo BRRS_M_PD_Archival_Summary_Repo1;
-	
-	@Autowired
-	BRRS_M_PD_Archival_Summary_Repo2 BRRS_M_PD_Archival_Summary_Repo2;
+
 	
 	@Autowired
 	BRRS_M_PD_Manual_Summary_Repo BRRS_M_PD_Manual_Summary_Repo;
@@ -183,82 +178,104 @@ public class BRRS_M_PD_ReportService {
 	}
 
 	public ModelAndView getM_PDcurrentDtl(String reportId, String fromdate, String todate, String currency,
-											  String dtltype, Pageable pageable, String Filter, String type, String version) {
+			String dtltype, Pageable pageable, String filter, String type, String version) {
 
+		ModelAndView mv = new ModelAndView("BRRS/M_PD");
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
-		int totalPages = 0;
-
-		ModelAndView mv = new ModelAndView();
-//		Session hs = sessionFactory.getCurrentSession();
+		int totalRecords = 0;
 
 		try {
+// ✅ Parse toDate
 			Date parsedDate = null;
 			if (todate != null && !todate.isEmpty()) {
 				parsedDate = dateformat.parse(todate);
 			}
 
-			String rowId = null;
-			String columnId = null;
-
-			// ✅ Split filter string into rowId & columnId
-			if (Filter != null && Filter.contains(",")) {
-				String[] parts = Filter.split(",");
-				if (parts.length >= 2) {
-					rowId = parts[0];
-					columnId = parts[1];
-				}
+// ✅ Parse filter (reportLable, reportAddlCriteria1)
+			String reportLable = null, reportAddlCriteria1 = null, reportAddlCriteria2 = null, reportAddlCriteria3 = null, reportAddlCriteria4 = null;
+			if (filter != null && !filter.isEmpty()) {
+				String[] parts = filter.split(",", -1);
+				reportLable = parts.length > 0 ? parts[0] : null;
+				reportAddlCriteria1 = parts.length > 1 ? parts[1] : null;
+				reportAddlCriteria2 = parts.length > 2 ? parts[2] : null;
+				reportAddlCriteria3 = parts.length > 3 ? parts[3] : null;
+				reportAddlCriteria4 = parts.length > 4 ? parts[4] : null;
 			}
-			System.out.println(type);
-			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// 🔹 Archival branch
-				List<M_PD_Archival_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = BRRS_M_PD_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
-				} else {
-					T1Dt1 = BRRS_M_PD_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+// ✅ ARCHIVAL DATA BRANCH
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.isEmpty()) {
+				logger.info("Fetching ARCHIVAL data for version {}", version);
 
-			} else {
-				// 🔹 Current branch
-				List<M_PD_Detail_Entity> T1Dt1;
-				if (rowId != null && columnId != null) {
-					T1Dt1 = BRRS_M_PD_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+				List<M_PD_Archival_Detail_Entity> detailList;
+
+// 🔹 Filtered (ROWID + COLUMNID)
+				if (reportLable != null && !reportLable.isEmpty()
+						&& (isNotEmpty(reportAddlCriteria1) || isNotEmpty(reportAddlCriteria2) || isNotEmpty(reportAddlCriteria3) ||isNotEmpty(reportAddlCriteria4))) {
+
+					logger.info("➡ ARCHIVAL DETAIL QUERY TRIGGERED (with filters)");
+					detailList = BRRS_M_PD_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria1, reportAddlCriteria2, reportAddlCriteria3,
+							reportAddlCriteria4,parsedDate);
+
 				} else {
-					T1Dt1 = BRRS_M_PD_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
-					totalPages = BRRS_M_PD_Detail_Repo.getdatacount(parsedDate);
+					logger.info("➡ ARCHIVAL LIST QUERY TRIGGERED (with pagination)");
+					detailList = BRRS_M_PD_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+					totalRecords = BRRS_M_PD_Archival_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
+				logger.info("ARCHIVAL COUNT: {}", (detailList != null ? detailList.size() : 0));
+
+			} else {
+// ✅ CURRENT DATA BRANCH
+				logger.info("Fetching CURRENT data for M_PD");
+
+				List<M_PD_Detail_Entity> detailList;
+
+				if (reportLable != null && !reportLable.isEmpty()
+						&& (isNotEmpty(reportAddlCriteria1) || isNotEmpty(reportAddlCriteria2) || isNotEmpty(reportAddlCriteria3) ||isNotEmpty(reportAddlCriteria4))) {
+
+					logger.info("➡ CURRENT DETAIL QUERY TRIGGERED (with filters)");
+					detailList = BRRS_M_PD_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria1, reportAddlCriteria2, reportAddlCriteria3, reportAddlCriteria4,parsedDate);
+
+				} else {
+					logger.info("➡ CURRENT LIST QUERY TRIGGERED (with pagination)");
+					detailList = BRRS_M_PD_Detail_Repo.getdatabydateList(parsedDate);
+					totalRecords = BRRS_M_PD_Detail_Repo.getdatacount(parsedDate);
+					mv.addObject("pagination", "YES");
+				}
+
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
+				logger.info("CURRENT COUNT: {}", (detailList != null ? detailList.size() : 0));
 			}
 
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("Invalid date format: {}", todate, e);
 			mv.addObject("errorMessage", "Invalid date format: " + todate);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Unexpected error in getM_PDcurrentDtl", e);
 			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
 		}
 
-		// ✅ Common attributes
-		mv.setViewName("BRRS/M_PD");
+// ✅ Common model attributes
+		int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
 		mv.addObject("displaymode", "Details");
 		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
-		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
+		mv.addObject("totalPages", totalPages);
 		mv.addObject("reportsflag", "reportsflag");
 		mv.addObject("menu", reportId);
 
+		logger.info("Total pages calculated: {}", totalPages);
 		return mv;
 	}
+	
+	//Helper for null/empty check
+		private boolean isNotEmpty(String value) {
+			return value != null && !value.trim().isEmpty();
+		}
 
 
 	public void updateReport(M_PD_Manual_Summary_Entity updatedEntity) {
@@ -271,10 +288,13 @@ public class BRRS_M_PD_ReportService {
 
 	    try {
 	        // ✅ Loop for table 2 fields
-	        int[] Rows = {9};
+	        int[] Rows = {8,12,26,35,38,41,46,50,54,61};
 	        for (int i : Rows) {
 	            String prefix = "R" + i + "_";
-	            String[] fields = {"TOTAL_NON_ACCRUAL","NON_ACCRUALS1","NON_ACCRUALS2","NON_ACCRUALS3"};
+	            String[] fields = {"30D_90D_PASTDUE","NON_PERFORM_LOANS","NON_ACCRUALS1","SPECIFIC_PROV1","NO_OF_ACC1"
+	            		,"90D_180D_PASTDUE","NON_ACCRUALS2","SPECIFIC_PROV2","NO_OF_ACC2","180D_ABOVE_PASTDUE","NON_ACCRUALS3"
+	            		,"SPECIFIC_PROV3","NO_OF_ACC3","TOTAL_NON_ACCRUAL","TOTAL_DUE_LOANS","TOTAL_PERFORMING_LOAN","VALUE_OF_COLLATERAL"
+	            		,"TOTAL_VALUE_NPL","TOTAL_SPECIFIC_PROV","SPECIFIC_PROV_NPL"};
 
 	            for (String field : fields) {
 	                try {
@@ -293,75 +313,67 @@ public class BRRS_M_PD_ReportService {
 	                }
 	            }
 	        }
-		        // ✅ Loop for table 2 fields
-		        int[] Row = {9};
-		        for (int i : Row) {
-		            String prefix = "R" + i + "_";
-		            String[] fields = {"TOTAL_NON_ACCRUAL"};
+	     // Loop rows 5 to 36
+	        for (int i = 9; i <= 60; i++) {
+	        	if(i == 12 || i == 26 || i == 35 || i == 38 || i == 41 || i == 46 || i == 50 || i == 54)continue;
 
-		            for (String field : fields) {
-		                try {
-		                    String getterName = "get" + prefix + field;
-		                    String setterName = "set" + prefix + field;
+	            String prefix = "R" + i + "_";
 
-		                    Method getter = M_PD_Manual_Summary_Entity.class.getMethod(getterName);
-		                    Method setter = M_PD_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	            String[] fields = {
+	                "30D_90D_PASTDUE","NON_PERFORM_LOANS","NON_ACCRUALS1","SPECIFIC_PROV1","NO_OF_ACC1",
+	                "90D_180D_PASTDUE","NON_ACCRUALS2","SPECIFIC_PROV2","NO_OF_ACC2","VALUE_OF_COLLATERAL"
+	            };
 
-		                    Object newValue = getter.invoke(updatedEntity);
-		                    setter.invoke(existing, newValue);
+	            for (int f = 0; f < fields.length; f++) {
 
-		                } catch (NoSuchMethodException e) {
-		                    // Skip missing getter/setter gracefully
-		                    continue;
-		                }
-		            }
-		        }
+	                String field = fields[f];
 
-//	        // ✅ Loop for amount_1 fields
-//	        int[] Rows1 = {11,12,13,14,15,16};
-//	        for (int i : Rows1) {
-//	            String prefix = "R" + i + "_";
-//	            String[] fields = {"ex_rate_buy", "ex_rate_mid", "ex_rate_sell"};
-//
-//	            for (String field : fields) {
-//	                try {
-//	                    String getterName = "get" + prefix + field;
-//	                    String setterName = "set" + prefix + field;
-//
-//	                    Method getter = M_PD_Manual_Summary_Entity.class.getMethod(getterName);
-//	                    Method setter = M_PD_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-//
-//	                    Object newValue = getter.invoke(updatedEntity);
-//	                    setter.invoke(existing, newValue);
-//
-//	                } catch (NoSuchMethodException e) {
-//	                    continue;
-//	                }
-//	            }
-//	        }
-//	        
-//	        // ✅ Loop for amount_1 fields
-//	        int[] Rows2 = {11,12,13,14,15,16,18};
-//	        for (int i : Rows2) {
-//	            String prefix = "R" + i + "_";
-//	            String[] fields = {"notice_0to31", "notice_32to88", "cer_of_depo"};
-//
-//	            for (String field : fields) {
-//	                try {
-//	                    String getterName = "get" + prefix + field;
-//	                    String setterName = "set" + prefix + field;
-//
-//	                    Method getter = M_PD_Manual_Summary_Entity.class.getMethod(getterName);
-//	                    Method setter = M_PD_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-//
-//	                    Object newValue = getter.invoke(updatedEntity);
-//	                    setter.invoke(existing, newValue);
-//
-//	                } catch (NoSuchMethodException e) {
-//	                    continue;
-//	                }
-//	            }
-//	        }
+	                try {
+	                    String getterName = "get" + prefix + field;
+	                    String setterName = "set" + prefix + field;
+
+	                    Method getter = M_PD_Manual_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = M_PD_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing methods
+	                    continue;
+	                }
+	            }
+	        }
+		     // Loop rows 5 to 36
+	        for (int i = 9; i <= 60; i++) {
+	        	if(i == 12 || i == 26 || i == 35 || i == 38 || i == 41 || i == 46 || i == 50 || i == 54)continue;
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	            		"TOTAL_NON_ACCRUAL","TOTAL_DUE_LOANS","TOTAL_PERFORMING_LOAN","TOTAL_VALUE_NPL","TOTAL_SPECIFIC_PROV","SPECIFIC_PROV_NPL"
+	            };
+
+	            for (int f = 0; f < fields.length; f++) {
+
+	                String field = fields[f];
+
+	                try {
+	                    String getterName = "get" + prefix + field;
+	                    String setterName = "set" + prefix + field;
+
+	                    Method getter = M_PD_Manual_Summary_Entity.class.getMethod(getterName);
+	                    Method setter = M_PD_Manual_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+	                    Object newValue = getter.invoke(updatedEntity);
+	                    setter.invoke(existing, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    // Skip missing methods
+	                    continue;
+	                }
+	            }
+	        }
 
 	        // ✅ Save after all updates
 	        BRRS_M_PD_Manual_Summary_Repo.save(existing);
@@ -6266,8 +6278,8 @@ public class BRRS_M_PD_ReportService {
 
 			//Header row
 			String[] headers = {
-			"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABLE", "REPORT ADDL CRITERIA1",
-			"REPORT_DATE"
+			"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "PROVISION", "REPORT LABLE", "REPORT ADDL CRITERIA1"
+			 ,"REPORT ADDL CRITERIA2", "REPORT ADDL CRITERIA3", "REPORT ADDL CRITERIA4","REPORT_DATE"
 			};
 
 			XSSFRow headerRow = sheet.createRow(0);
@@ -6275,7 +6287,7 @@ public class BRRS_M_PD_ReportService {
 			Cell cell = headerRow.createCell(i);
 			cell.setCellValue(headers[i]);
 
-			if (i == 3) { // ACCT BALANCE
+			if (i == 3 || i == 4) { // ACCT BALANCE & for PROVISION
 			cell.setCellStyle(rightAlignedHeaderStyle);
 			} else {
 			cell.setCellStyle(headerStyle);
@@ -6305,18 +6317,44 @@ public class BRRS_M_PD_ReportService {
 			balanceCell.setCellValue(0);
 			}
 			balanceCell.setCellStyle(balanceStyle);
+			
+			//PROVISION(right aligned, 3 decimal places)
+			Cell balanceCell1 = row.createCell(4);
+			if (item.getProvision() != null) {
+			balanceCell1.setCellValue(item.getProvision().doubleValue());
+			} else {
+			balanceCell1.setCellValue(0);
+			}
+			balanceCell1.setCellStyle(balanceStyle);
 
-					row.createCell(4).setCellValue(item.getReportLable());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-					row.createCell(6)
+					row.createCell(5).setCellValue(item.getReportLable());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(7).setCellValue(item.getReportAddlCriteria2());
+					row.createCell(8).setCellValue(item.getReportAddlCriteria3());
+					row.createCell(9).setCellValue(item.getReportAddlCriteria4());
+					row.createCell(10)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
 
-					// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
+//					// Apply data style for all other cells
+//					for (int j = 0; j < 7; j++) {
+//						if (j != 3) {
+//							row.getCell(j).setCellStyle(dataStyle);
+//						}
+//					}
+//				}
+					// Apply border style to all cells in the row
+					for (int colIndex = 0; colIndex < headers.length; colIndex++) {
+						Cell cell = row.getCell(colIndex);
+						if (cell != null) {
+							if (colIndex == 3) { // ACCT BALANCE
+								cell.setCellStyle(balanceStyle);
+							} else if (colIndex == 4) { // APPROVED LIMIT
+								cell.setCellStyle(balanceStyle);
+							} else {
+								cell.setCellStyle(dataStyle);
+							}
 						}
 					}
 				}
@@ -6343,7 +6381,7 @@ public class BRRS_M_PD_ReportService {
 		List<Object> M_PDArchivallist1 = new ArrayList<>();
 		try {
 			M_PDArchivallist = BRRS_M_PD_Archival_Summary_Repo1.getM_PDarchival();
-			M_PDArchivallist1 = BRRS_M_PD_Archival_Summary_Repo2.getM_PDarchival();
+			M_PDArchivallist1 = BRRS_M_PD_Manual_Archival_Summary_Repo.getM_PDarchival();
 			System.out.println("countser" + M_PDArchivallist.size());
 		} catch (Exception e) {
 			// Log the exception
@@ -12245,7 +12283,8 @@ balanceStyle.setBorderRight(border);
 
 //Header row
 String[] headers = {
-"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABLE", "REPORT ADDL CRITERIA", "REPORT_DATE"
+		"CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "PROVISION", "REPORT LABLE", "REPORT ADDL CRITERIA1"
+		 ,"REPORT ADDL CRITERIA2", "REPORT ADDL CRITERIA3", "REPORT ADDL CRITERIA4","REPORT_DATE"
 };
 
 XSSFRow headerRow = sheet.createRow(0);
@@ -12253,7 +12292,7 @@ for (int i = 0; i < headers.length; i++) {
 Cell cell = headerRow.createCell(i);
 cell.setCellValue(headers[i]);
 
-if (i == 3) { // ACCT BALANCE
+if (i == 3 || i == 4) { // ACCT BALANCE
 cell.setCellStyle(rightAlignedHeaderStyle);
 } else {
 cell.setCellStyle(headerStyle);
@@ -12275,41 +12314,56 @@ row.createCell(0).setCellValue(item.getCustId());
 row.createCell(1).setCellValue(item.getAcctNumber());
 row.createCell(2).setCellValue(item.getAcctName());
 
-//ACCT BALANCE (right aligned, 3 decimal places with comma separator)
+//ACCT BALANCE (right aligned, 3 decimal places)
 Cell balanceCell = row.createCell(3);
-
 if (item.getAcctBalanceInpula() != null) {
 balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
 } else {
 balanceCell.setCellValue(0);
 }
-
-//Create style with thousand separator and decimal point
-DataFormat format = workbook.createDataFormat();
-
-//Format: 1,234,567
-balanceStyle.setDataFormat(format.getFormat("#,##0"));
-
-//Right alignment (optional)
-balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-
 balanceCell.setCellStyle(balanceStyle);
 
-row.createCell(4).setCellValue(item.getReportLable());
-row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-row.createCell(6).setCellValue(
-item.getReportDate() != null ?
-new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate()) : ""
-);
-
-//Apply data style for all other cells
-for (int j = 0; j < 7; j++) {
-if (j != 3) {
-row.getCell(j).setCellStyle(dataStyle);
-}
-}
-}
+//PROVISION(right aligned, 3 decimal places)
+Cell balanceCell1 = row.createCell(4);
+if (item.getProvision() != null) {
+balanceCell1.setCellValue(item.getProvision().doubleValue());
 } else {
+balanceCell1.setCellValue(0);
+}
+balanceCell1.setCellStyle(balanceStyle);
+
+		row.createCell(5).setCellValue(item.getReportLable());
+		row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+		row.createCell(7).setCellValue(item.getReportAddlCriteria2());
+		row.createCell(8).setCellValue(item.getReportAddlCriteria3());
+		row.createCell(9).setCellValue(item.getReportAddlCriteria4());
+		row.createCell(10)
+				.setCellValue(item.getReportDate() != null
+						? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+						: "");
+
+//		// Apply data style for all other cells
+//		for (int j = 0; j < 7; j++) {
+//			if (j != 3) {
+//				row.getCell(j).setCellStyle(dataStyle);
+//			}
+//		}
+//	}
+		// Apply border style to all cells in the row
+		for (int colIndex = 0; colIndex < headers.length; colIndex++) {
+			Cell cell = row.getCell(colIndex);
+			if (cell != null) {
+				if (colIndex == 3) { // ACCT BALANCE
+					cell.setCellStyle(balanceStyle);
+				} else if (colIndex == 4) { // APPROVED LIMIT
+					cell.setCellStyle(balanceStyle);
+				} else {
+					cell.setCellStyle(dataStyle);
+				}
+			}
+		}
+	}
+}  else {
 logger.info("No data found for M_PD — only header will be written.");
 }
 //Write to byte[]
@@ -12326,5 +12380,130 @@ return new byte[0];
 }
 }
 
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_PD"); // ✅ match the report name
+	    System.out.println("Hello");
+	    if (acctNo != null) {
+	        M_PD_Detail_Entity PDEntity = BRRS_M_PD_Detail_Repo.findByAcctnumber(acctNo);
+	        if (PDEntity != null && PDEntity.getReportDate() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(PDEntity.getReportDate());
+	            mv.addObject("asondate", formattedDate);
+	        }
+	        mv.addObject("Data", PDEntity);
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+	
+
+
+
+
+	public ModelAndView updateDetailEdit(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_PD"); // ✅ match the report name
+
+	    if (acctNo != null) {
+	        M_PD_Detail_Entity PDEntity = BRRS_M_PD_Detail_Repo.findByAcctnumber(acctNo);
+	        if (PDEntity != null && PDEntity.getReportDate() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(PDEntity.getReportDate());
+	            mv.addObject("asondate", formattedDate);
+	            System.out.println(formattedDate);
+	        }
+	        mv.addObject("Data", PDEntity);
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+	    try {
+	        String acctNo = request.getParameter("acctNumber");
+	        String provisionStr = request.getParameter("acctBalanceInpula");
+	        String provision = request.getParameter("provision");
+	        String acctName = request.getParameter("acctName");
+	        String reportDateStr = request.getParameter("reportDate");
+
+	        logger.info("Received update for ACCT_NO: {}", acctNo);
+
+	        M_PD_Detail_Entity existing = BRRS_M_PD_Detail_Repo.findByAcctnumber(acctNo);
+	        if (existing == null) {
+	            logger.warn("No record found for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+	        }
+
+	        boolean isChanged = false;
+
+	        if (acctName != null && !acctName.isEmpty()) {
+	            if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+	                existing.setAcctName(acctName);
+	                isChanged = true;
+	                logger.info("Account name updated to {}", acctName);
+	            }
+	        }
+
+	        if (provisionStr != null && !provisionStr.isEmpty()) {
+	            BigDecimal newProvision = new BigDecimal(provisionStr);
+	            if (existing.getAcctBalanceInpula() == null ||
+	                existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
+	                existing.setAcctBalanceInpula(newProvision);
+	                isChanged = true;
+	                logger.info("Provision updated to {}", newProvision);
+	            }
+	        }
+	        
+	        if (provision != null && !provision.isEmpty()) {
+	            BigDecimal newSanctionLimit = new BigDecimal(provision);
+	            if (existing.getProvision() == null ||
+	                existing.getProvision().compareTo(newSanctionLimit) != 0) {
+	                existing.setProvision(newSanctionLimit);
+	                isChanged = true;
+	                logger.info("Sanction limit updated to {}", newSanctionLimit);
+	            }
+	        }
+
+	        if (isChanged) {
+	            BRRS_M_PD_Detail_Repo.save(existing);
+	            logger.info("Record updated successfully for account {}", acctNo);
+
+	            // Format date for procedure
+	            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+	                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+	            // Run summary procedure after commit
+	            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+	                @Override
+	                public void afterCommit() {
+	                    try {
+	                        logger.info("Transaction committed — calling BRRS_M_PD_SUMMARY_PROCEDURE({})",
+	                                formattedDate);
+	                        jdbcTemplate.update("BEGIN BRRS_M_PD_SUMMARY_PROCEDURE(?); END;", formattedDate);
+	                        logger.info("Procedure executed successfully after commit.");
+	                    } catch (Exception e) {
+	                        logger.error("Error executing procedure after commit", e);
+	                    }
+	                }
+	            });
+
+	            return ResponseEntity.ok("Record updated successfully!");
+	        } else {
+	            logger.info("No changes detected for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.ok("No changes were made.");
+	        }
+
+	    } catch (Exception e) {
+	        logger.error("Error updating M_PD record", e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error updating record: " + e.getMessage());
+	    }
+	}
 
 }

@@ -43,6 +43,8 @@ public class M_PD_Archival_Detail_Entity {
 	   private String dataEntryVersion;
 	   @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 2)
 	   private BigDecimal acctBalanceInpula;
+	   @Column(name = "PROVISION", precision = 24, scale = 2)
+	   private BigDecimal provision;
 	   
 	   @Column(name = "REPORT_DATE")
 	   @DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -74,6 +76,20 @@ public class M_PD_Archival_Detail_Entity {
 	   private String delFlg;    
  
  
+
+
+		public BigDecimal getProvision() {
+		return provision;
+	}
+
+
+
+
+	public void setProvision(BigDecimal provision) {
+		this.provision = provision;
+	}
+
+
 
 
 		public String getCustId() {

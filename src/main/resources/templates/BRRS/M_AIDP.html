@@ -127,6 +127,7 @@ PURPOSE		: BWRBRREPORT
 			top: 0;
 			background-color: #e9ecf0;
 			z-index: 1;
+			
 		}
 
 		.table td {
@@ -1072,7 +1073,7 @@ PURPOSE		: BWRBRREPORT
                     				 data-todate=${todate},
                     				 data-currency=${currency}, 
                     				 data-dtltype=${dtltype},
-                    				 data-filename='M-AIDP.xlsx',
+                    				 data-filename='M_AIDP.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
@@ -1086,7 +1087,7 @@ PURPOSE		: BWRBRREPORT
                      data-todate=${todate}, 
                      data-currency=${currency},  
                      data-dtltype=${dtltype}, 
-                     data-filename='M-AIDP.xlsx',
+                     data-filename='M_AIDP.xlsx',
                      data-type=${type},
                      data-version=${version}"
             onclick="downloadfilepdf(this);">PDF
@@ -1123,6 +1124,7 @@ PURPOSE		: BWRBRREPORT
 										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
 										id="reports">
 										<thead class="thead-light">
+									
 											<tr>
 												<th colspan="7"
 													style="text-align: left; padding-left: 20px; width: 900px;">
@@ -1131,26 +1133,26 @@ PURPOSE		: BWRBRREPORT
 
 											<tr style="background-color: #b3b6b9;">
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; padding-left: 20px; width: 900px;">
+													style="background-color: #D8D8D8;text-align: left;  width: 900px;">
 													Name of Bank
 												</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center; width: 200px;">
+													style="background-color: #D8D8D8;text-align: center;  width: 200px;">
 													Type of account</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center;width: 150px;">
+													style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Purpose</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center; width: 150px;">
+													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
 													Currency</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left;vertical-align:center; width: 150px;">
+													style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 150px;">
+													style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (on demand or less than 184 days)</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 150px;">
+													style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (more than 184 days)</th>
 
 											</tr>
@@ -1245,7 +1247,7 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 
-												<td id="ROW11" style="padding-left: 20px; font-weight: bold;">
+												<td id="ROW11" style="padding-right: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${#strings.defaultString(report.R11_BANK_RATE, 'N/A')}"
 														id="R11_BANK_RATE" name="R11_BANK_RATE"
@@ -5697,7 +5699,7 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 											</tr>
-
+<tr><td colspan="7" style="height: 50px;"></td></tr>
 										</tbody>
 
 										<thead class="thead-light">
@@ -5709,29 +5711,30 @@ PURPOSE		: BWRBRREPORT
 
 											<tr style="background-color: #b3b6b9;">
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; padding-left: 20px; width: 900px;">
+													style="background-color: #D8D8D8;text-align: left;  width: 900px;">
 													Name of Bank
 												</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center; width: 200px;">
+													style="background-color: #D8D8D8;text-align: center;  width: 200px;">
 													Type of account</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center;width: 150px;">
+													style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Purpose</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center; width: 150px;">
+													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
 													Currency</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left;vertical-align:center; width: 150px;">
+													style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 150px;">
+													style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (on demand or less than 184 days)</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 150px;">
+													style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (more than 184 days)</th>
 
 											</tr>
+											
 
 
 										</thead>
@@ -10272,7 +10275,7 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 											</tr>
-
+<tr><td colspan="7" style="height: 50px;"></td></tr>
 										</tbody>
 
 
@@ -10288,26 +10291,26 @@ PURPOSE		: BWRBRREPORT
 
 											<tr style="background-color: #b3b6b9;">
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; padding-left: 20px; width: 900px;">
+													style="background-color: #D8D8D8;text-align: left; width: 900px;">
 													Name of Bank
 												</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center; width: 200px;">
+													style="background-color: #D8D8D8;text-align: center;  width: 200px;">
 													Type of account</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center;width: 150px;">
+													style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Purpose</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left; vertical-align:center; width: 150px;">
+													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
 													Currency</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: left;vertical-align:center; width: 150px;">
+													style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 150px;">
+													style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (on demand or less than 184 days)</th>
 												<th
-													style="background-color: #D8D8D8;vertical-align:middle;text-align: right; width: 150px;">
+													style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (more than 184 days)</th>
 
 											</tr>
@@ -15007,40 +15010,41 @@ PURPOSE		: BWRBRREPORT
 
 
 										</tbody>
-
+<tr><td colspan="7" class="noborder" style="height: 50px; border-right:none important;"></td></tr>
 
 										<thead class="thead-light">
+										
 											<tr>
-												<th colspan="7"
+												<th colspan="8"
 													style="text-align: left; padding-left: 20px; width: 900px;">
 													DUE TO NON-AFFLIATED DOMESTIC BANKS </th>
 											</tr>
 
 											<tr style="background-color: #b3b6b9;">
 												<th
-													style="background-color: #D8D8D8;text-align: left;vertical-align:middle; padding-left: 20px; width: 900px;">
+													style="background-color: #D8D8D8;text-align: left; width: 900px;">
 													Name of Bank
 												</th>
 												<th
-													style="background-color: #D8D8D8;text-align: left; vertical-align:middle; width: 200px;">
+													style="background-color: #D8D8D8;text-align: center;  width: 200px;">
 													Type of account</th>
 												<th
-													style="background-color: #D8D8D8;text-align: left; vertical-align:middle; width: 150px;">
+													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
 													Country</th>
 												<th
-													style="background-color: #D8D8D8;text-align: left; vertical-align:middle;width: 150px;">
+													style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Purpose</th>
 												<th
-													style="background-color: #D8D8D8;text-align: left; vertical-align:middle; width: 150px;">
+													style="background-color: #D8D8D8;text-align: center;  width: 150px;">
 													Currency</th>
 												<th
-													style="background-color: #D8D8D8;text-align: left;vertical-align:middle; width: 150px;">
+													style="background-color: #D8D8D8;text-align: center; width: 150px;">
 													Bank Rating, e.g, AAA, AA or A1</th>
 												<th
-													style="background-color: #D8D8D8;text-align: right;vertical-align:middle; width: 150px;">
+													style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (on demand or less than 184 days)</th>
 												<th
-													style="background-color: #D8D8D8;text-align: right;vertical-align:middle; width: 150px;">
+													style="background-color: #D8D8D8;text-align: right; width: 150px;">
 													Amount (more than 184 days)</th>
 
 											</tr>
@@ -20899,120 +20903,146 @@ PURPOSE		: BWRBRREPORT
 															  });
 	
 														</script> -->
+<script>
+$(document).ready(function () {
+
+    $("tr").each(function () {
+
+        // get all tds in this row
+        let tds = $(this).find("td");
+
+        // total count
+        let count = tds.length;
+
+        // loop through each TD
+        tds.each(function (index) {
+
+            // skip last two TDs
+            if (index >= count - 2) {
+                return; // do nothing
+            }
+
+            // change padding-left → padding-right
+            $(this).css({
+                "padding-right": "20px",
+                "padding-left": "0"
+            });
+        });
+    });
+
+});
+</script>
 
 <style>
-	#BRFdet td {
-		border: 1px solid #ccc;
-		padding: 8px;
-	}
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 620px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
 
-	#BRFdet {
-		border-collapse: collapse;
-		width: 100%;
-	}
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
 </style>
 
+
 <style>
-	/* Your existing CSS - this is the correct approach */
-	.scrollable-table-container {
-		/* This is the key: it creates the scroll context */
-		max-height: 590px;
-		/* Or a suitable height like 80vh for responsive design */
-		overflow-y: auto;
-		border: 1px solid #ccc;
-	}
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
 
-	/* Your existing sticky header CSS, targeting the tr elements within the thead */
-	.scrollable-table-container thead tr:nth-child(1) {
-		position: sticky;
-		top: 0;
-		background-color: #b3b6b9;
-		z-index: 5;
-	}
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #D8D8D8; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
 
-	.scrollable-table-container thead tr:nth-child(2) {
-		position: sticky;
-		top: 36px;
-		/* adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 4;
-	}
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
 
-	.scrollable-table-container thead tr:nth-child(3) {
-		position: sticky;
-		top: 72px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 3;
-	}
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
 
-	.scrollable-table-container thead tr:nth-child(4) {
-		position: sticky;
-		top: 100px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 2;
-	}
+.pagination {
+	margin: 0;
+}
 
-	.scrollable-table-container thead tr:nth-child(5) {
-		position: sticky;
-		top: 135px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 1;
-	}
-</style>
-<style>
-	.inner {
-		max-height: 600px;
-		/* Adjust height as needed */
-		overflow: auto;
-		border: 1px solid #dee2e6;
-	}
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
 
-	/* Sticky thead */
-	#reports thead th {
-		position: sticky;
-		top: 0;
-		background-color: #f8f9fa;
-		/* Match Bootstrap thead-light */
-		z-index: 2;
-	}
+.page-link {
+	color: #386276;
+}
 
-	div.dataTables_wrapper div.dataTables_paginate {
-		text-align: right !important;
-		float: right !important;
-		width: auto;
-		margin-top: 10px;
-	}
+.page-link:hover {
+	color: #2a4a5c;
+}
 
-	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-	div.dataTables_wrapper div.dataTables_info {
-		float: left !important;
-		margin-top: 10px;
-	}
+.form-select {
+	display: inline-block;
+	width: auto;
+}
 
-	.pagination {
-		margin: 0;
-	}
+.scrollable-table-container thead tr:nth-child(1),
+.scrollable-table-container thead tr:nth-child(2),
+.scrollable-table-container thead tr:nth-child(3),
+.scrollable-table-container thead tr:nth-child(4),
+.scrollable-table-container thead tr:nth-child(5) {
+    background-color: #D8D8D8; /* set header color */
+}
 
-	.page-item.active .page-link {
-		background-color: #386276;
-		border-color: #386276;
-	}
-
-	.page-link {
-		color: #386276;
-	}
-
-	.page-link:hover {
-		color: #2a4a5c;
-	}
-
-	.form-select {
-		display: inline-block;
-		width: auto;
-	}
+  .noborder td, tr, thead {
+    border: none !important;
+    background-color:white;
+  }
 </style>
 
 </html>

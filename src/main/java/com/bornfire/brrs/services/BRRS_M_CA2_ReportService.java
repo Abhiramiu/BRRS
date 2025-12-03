@@ -316,7 +316,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportSe
 		}
 
 		// Fetch data
-
+		logger.info("report date: {}", todate);
 		List<M_CA2_Summary_Entity> dataList =BRRS_M_CA2_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
 		List<M_CA2_Manual_Summary_Entity> dataList1 =BRRS_M_CA2_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate)) ;
 

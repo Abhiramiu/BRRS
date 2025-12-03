@@ -13,7 +13,7 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_PD_ARCHIVAL_MANUAL_SUMMARYTABLE")
+@Table(name = "BRRS_M_PD_MANUAL_ARCHIVALTABLE_SUMMARY")
 public class M_PD_Manual_Archival_Summary_Entity {
 
 @Id

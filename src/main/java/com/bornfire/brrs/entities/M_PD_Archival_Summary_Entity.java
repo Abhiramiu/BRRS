@@ -12,8 +12,9 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_PD_ARCHIVAL_TABLE_SUMMARY")
+@Table(name = "BRRS_M_PD_ARCHIVALTABLE_SUMMARY")
 public class M_PD_Archival_Summary_Entity {
+
 
 
     @Temporal(TemporalType.DATE)
@@ -4052,6 +4053,8 @@ public class M_PD_Archival_Summary_Entity {
 	public void setR61_PRODUCT(String r61_PRODUCT) {
 		R61_PRODUCT = r61_PRODUCT;
 	}
+
+
 
 
 
