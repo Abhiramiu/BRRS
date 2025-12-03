@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,6 +15,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -37,16 +41,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.BRRS_M_SCI_E_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_ATF_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_ATF_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_ATF_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_Q_ATF_Summary_Repo;
-
-
+import com.bornfire.brrs.entities.M_SCI_E_Detail_Entity;
 import com.bornfire.brrs.entities.Q_ATF_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.Q_ATF_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Q_ATF_Detail_Entity;
@@ -2793,6 +2802,2015 @@ public class BRRS_Q_ATF_ReportService {
 					}
 			
 					
+					
+					// ======================= R13 =======================
+					// row13
+					row = sheet.getRow(12);
+					
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR13_num_depo() != null) {
+					    cellB.setCellValue(record.getR13_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR13_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR13_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR13_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR13_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR13_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR13_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R14 =======================
+					// row14
+					row = sheet.getRow(13);
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR14_num_depo() != null) {
+					    cellB.setCellValue(record.getR14_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR14_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR14_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR14_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR14_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR14_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR14_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					// ======================= R16 =======================
+
+					// row16
+					row = sheet.getRow(15);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR16_num_depo() != null) {
+					    cellB.setCellValue(record.getR16_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR16_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR16_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR16_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR16_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR16_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR16_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R17 =======================
+
+					// row17
+					row = sheet.getRow(16);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR17_num_depo() != null) {
+					    cellB.setCellValue(record.getR17_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR17_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR17_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR17_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR17_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR17_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR17_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R18 =======================
+
+					// row18
+					row = sheet.getRow(17);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR18_num_depo() != null) {
+					    cellB.setCellValue(record.getR18_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR18_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR18_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR18_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR18_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR18_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR18_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R19 =======================
+
+					// row19
+					row = sheet.getRow(18);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR19_num_depo() != null) {
+					    cellB.setCellValue(record.getR19_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR19_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR19_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR19_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR19_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR19_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR19_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R20 =======================
+
+					// row20
+					row = sheet.getRow(19);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR20_num_depo() != null) {
+					    cellB.setCellValue(record.getR20_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR20_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR20_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR20_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR20_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR20_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR20_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R21 =======================
+
+					// row21
+					row = sheet.getRow(20);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR21_num_depo() != null) {
+					    cellB.setCellValue(record.getR21_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR21_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR21_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR21_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR21_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR21_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR21_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R22 =======================
+
+					// row22
+					row = sheet.getRow(21);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR22_num_depo() != null) {
+					    cellB.setCellValue(record.getR22_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR22_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR22_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR22_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR22_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR22_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR22_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R23 =======================
+
+					// row23
+					row = sheet.getRow(22);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR23_num_depo() != null) {
+					    cellB.setCellValue(record.getR23_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR23_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR23_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR23_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR23_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR23_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR23_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R24 =======================
+
+					// row24
+					row = sheet.getRow(23);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR24_num_depo() != null) {
+					    cellB.setCellValue(record.getR24_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR24_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR24_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR24_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR24_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR24_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR24_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R25 =======================
+
+					// row25
+					row = sheet.getRow(24);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR25_num_depo() != null) {
+					    cellB.setCellValue(record.getR25_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR25_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR25_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR25_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR25_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR25_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR25_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R26 =======================
+
+					// row26
+					row = sheet.getRow(25);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR26_num_depo() != null) {
+					    cellB.setCellValue(record.getR26_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR26_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR26_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR26_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR26_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR26_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR26_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R27 =======================
+
+					// row27
+					row = sheet.getRow(26);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR27_num_depo() != null) {
+					    cellB.setCellValue(record.getR27_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR27_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR27_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR27_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR27_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR27_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR27_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R28 =======================
+
+					// row28
+					row = sheet.getRow(27);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR28_num_depo() != null) {
+					    cellB.setCellValue(record.getR28_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR28_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR28_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR28_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR28_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR28_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR28_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					// ======================= R30 =======================
+
+					// row30
+					row = sheet.getRow(29);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR30_num_depo() != null) {
+					    cellB.setCellValue(record.getR30_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR30_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR30_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR30_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR30_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR30_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR30_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R31 =======================
+
+					// row31
+					row = sheet.getRow(30);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR31_num_depo() != null) {
+					    cellB.setCellValue(record.getR31_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR31_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR31_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR31_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR31_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR31_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR31_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R32 =======================
+
+					// row32
+					row = sheet.getRow(31);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR32_num_depo() != null) {
+					    cellB.setCellValue(record.getR32_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR32_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR32_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR32_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR32_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR32_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR32_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R33 =======================
+
+					// row33
+					row = sheet.getRow(32);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR33_num_depo() != null) {
+					    cellB.setCellValue(record.getR33_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR33_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR33_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR33_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR33_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR33_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR33_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R34 =======================
+
+					// row34
+					row = sheet.getRow(33);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR34_num_depo() != null) {
+					    cellB.setCellValue(record.getR34_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR34_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR34_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR34_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR34_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR34_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR34_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R35 =======================
+
+					// row35
+					row = sheet.getRow(34);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR35_num_depo() != null) {
+					    cellB.setCellValue(record.getR35_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR35_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR35_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR35_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR35_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR35_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR35_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R36 =======================
+
+					// row36
+					row = sheet.getRow(35);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR36_num_depo() != null) {
+					    cellB.setCellValue(record.getR36_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR36_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR36_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR36_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR36_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR36_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR36_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R37 =======================
+
+					// row37
+					row = sheet.getRow(36);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR37_num_depo() != null) {
+					    cellB.setCellValue(record.getR37_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR37_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR37_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR37_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR37_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR37_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR37_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+				
+					// ======================= R39 =======================
+
+					// row39
+					row = sheet.getRow(38);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR39_num_depo() != null) {
+					    cellB.setCellValue(record.getR39_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR39_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR39_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR39_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR39_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR39_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR39_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R40 =======================
+
+					// row40
+					row = sheet.getRow(39);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR40_num_depo() != null) {
+					    cellB.setCellValue(record.getR40_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR40_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR40_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR40_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR40_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR40_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR40_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					// ======================= R42 =======================
+
+					// row42
+					row = sheet.getRow(41);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR42_num_depo() != null) {
+					    cellB.setCellValue(record.getR42_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR42_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR42_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR42_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR42_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR42_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR42_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R43 =======================
+
+					// row43
+					row = sheet.getRow(42);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR43_num_depo() != null) {
+					    cellB.setCellValue(record.getR43_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR43_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR43_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR43_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR43_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR43_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR43_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+					
+					// ======================= R45 =======================
+
+					// row45
+					row = sheet.getRow(44);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR45_num_depo() != null) {
+					    cellB.setCellValue(record.getR45_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR45_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR45_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR45_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR45_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR45_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR45_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R46 =======================
+
+					// row46
+					row = sheet.getRow(45);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR46_num_depo() != null) {
+					    cellB.setCellValue(record.getR46_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR46_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR46_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR46_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR46_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR46_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR46_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R47 =======================
+
+					// row47
+					row = sheet.getRow(46);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR47_num_depo() != null) {
+					    cellB.setCellValue(record.getR47_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR47_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR47_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR47_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR47_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR47_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR47_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R48 =======================
+
+					// row48
+					row = sheet.getRow(47);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR48_num_depo() != null) {
+					    cellB.setCellValue(record.getR48_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR48_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR48_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR48_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR48_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR48_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR48_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					
+					
+					// ======================= R50 =======================
+
+					// row50
+					row = sheet.getRow(49);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR50_num_depo() != null) {
+					    cellB.setCellValue(record.getR50_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR50_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR50_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR50_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR50_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR50_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR50_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R51 =======================
+
+					// row51
+					row = sheet.getRow(50);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR51_num_depo() != null) {
+					    cellB.setCellValue(record.getR51_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR51_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR51_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR51_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR51_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR51_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR51_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R52 =======================
+
+					// row52
+					row = sheet.getRow(51);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR52_num_depo() != null) {
+					    cellB.setCellValue(record.getR52_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR52_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR52_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR52_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR52_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR52_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR52_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					// ======================= R54 =======================
+
+					// row54
+					row = sheet.getRow(53);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR54_num_depo() != null) {
+					    cellB.setCellValue(record.getR54_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR54_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR54_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR54_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR54_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR54_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR54_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R55 =======================
+
+					// row55
+					row = sheet.getRow(54);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR55_num_depo() != null) {
+					    cellB.setCellValue(record.getR55_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR55_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR55_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR55_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR55_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR55_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR55_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R56 =======================
+
+					// row56
+					row = sheet.getRow(55);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR56_num_depo() != null) {
+					    cellB.setCellValue(record.getR56_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR56_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR56_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR56_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR56_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR56_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR56_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+					
+					// ======================= R58 =======================
+
+					// row58
+					row = sheet.getRow(57);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR58_num_depo() != null) {
+					    cellB.setCellValue(record.getR58_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR58_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR58_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR58_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR58_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR58_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR58_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R59 =======================
+
+					// row59
+					row = sheet.getRow(58);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR59_num_depo() != null) {
+					    cellB.setCellValue(record.getR59_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR59_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR59_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR59_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR59_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR59_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR59_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R60 =======================
+
+					// row60
+					row = sheet.getRow(59);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR60_num_depo() != null) {
+					    cellB.setCellValue(record.getR60_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR60_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR60_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR60_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR60_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR60_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR60_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R61 =======================
+
+					// row61
+					row = sheet.getRow(60);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR61_num_depo() != null) {
+					    cellB.setCellValue(record.getR61_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR61_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR61_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR61_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR61_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR61_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR61_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R62 =======================
+
+					// row62
+					row = sheet.getRow(61);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR62_num_depo() != null) {
+					    cellB.setCellValue(record.getR62_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR62_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR62_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR62_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR62_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR62_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR62_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+
+
+					// ======================= R63 =======================
+
+					// row63
+					row = sheet.getRow(62);
+
+					// Column 2 - _num_depo
+					cellB = row.createCell(1);
+					if (record.getR63_num_depo() != null) {
+					    cellB.setCellValue(record.getR63_num_depo().doubleValue());
+					    cellB.setCellStyle(numberStyle);
+					} else {
+					    cellB.setCellValue("");
+					    cellB.setCellStyle(textStyle);
+					}
+
+					// Column 3 - _num_depo_acc
+					cellC = row.createCell(2);
+					if (record.getR63_num_depo_acc() != null) {
+					    cellC.setCellValue(record.getR63_num_depo_acc().doubleValue());
+					    cellC.setCellStyle(numberStyle);
+					} else {
+					    cellC.setCellValue("");
+					    cellC.setCellStyle(textStyle);
+					}
+
+					// Column 4 - _num_borrowers
+					cellD = row.createCell(3);
+					if (record.getR63_num_borrowers() != null) {
+					    cellD.setCellValue(record.getR63_num_borrowers().doubleValue());
+					    cellD.setCellStyle(numberStyle);
+					} else {
+					    cellD.setCellValue("");
+					    cellD.setCellStyle(textStyle);
+					}
+
+					// Column 5 - _num_loan_acc
+					cellE = row.createCell(4);
+					if (record.getR63_num_loan_acc() != null) {
+					    cellE.setCellValue(record.getR63_num_loan_acc().doubleValue());
+					    cellE.setCellStyle(numberStyle);
+					} else {
+					    cellE.setCellValue("");
+					    cellE.setCellStyle(textStyle);
+					}
+
+					
 			
 
 				}
@@ -2817,7 +4835,103 @@ public class BRRS_Q_ATF_ReportService {
 	
 	
 	 
-	
+	 @Autowired BRRS_Q_ATF_Detail_Repo q_atf_detail_repo;
+		
+		
+		@Autowired
+		private JdbcTemplate jdbcTemplate;
+
+		public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+			ModelAndView mv = new ModelAndView("BRRS/Q_ATF"); 
+
+			if (acctNo != null) {
+				Q_ATF_Detail_Entity qatfEntity = q_atf_detail_repo.findByAcctnumber(acctNo);
+				if (qatfEntity != null && qatfEntity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(qatfEntity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("qatfData", qatfEntity);
+			}
+
+			mv.addObject("displaymode", "edit");
+			mv.addObject("formmode", formMode != null ? formMode : "edit");
+			return mv;
+		}
+
+		@Transactional
+		public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+			try {
+				String acctNo = request.getParameter("acctNumber");
+				String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+				String acctName = request.getParameter("acctName");
+				String reportDateStr = request.getParameter("reportDate");
+
+				logger.info("Received update for ACCT_NO: {}", acctNo);
+
+				Q_ATF_Detail_Entity existing = q_atf_detail_repo.findByAcctnumber(acctNo);
+				if (existing == null) {
+					logger.warn("No record found for ACCT_NO: {}", acctNo);
+					return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+				}
+
+				boolean isChanged = false;
+
+				if (acctName != null && !acctName.isEmpty()) {
+					if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+						existing.setAcctName(acctName);
+						isChanged = true;
+						logger.info("Account name updated to {}", acctName);
+					}
+				}
+
+				 if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+			            BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
+			            if (existing.getAcctBalanceInpula()  == null ||
+			                existing.getAcctBalanceInpula().compareTo(newacctBalanceInpula) != 0) {
+			            	 existing.setAcctBalanceInpula(newacctBalanceInpula);
+			                isChanged = true;
+			                logger.info("Balance updated to {}", newacctBalanceInpula);
+			            }
+			        }
+			        
+				if (isChanged) {
+					q_atf_detail_repo.save(existing);
+					logger.info("Record updated successfully for account {}", acctNo);
+
+					// Format date for procedure
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+							.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+					// Run summary procedure after commit
+					TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+						@Override
+						public void afterCommit() {
+							try {
+								logger.info("Transaction committed — calling BRRS_Q_ATF_SUMMARY_PROCEDURE({})",
+										formattedDate);
+								jdbcTemplate.update("BEGIN BRRS_Q_ATF_SUMMARY_PROCEDURE(?); END;", formattedDate);
+								logger.info("Procedure executed successfully after commit.");
+							} catch (Exception e) {
+								logger.error("Error executing procedure after commit", e);
+							}
+						}
+					});
+
+					return ResponseEntity.ok("Record updated successfully!");
+				} else {
+					logger.info("No changes detected for ACCT_NO: {}", acctNo);
+					return ResponseEntity.ok("No changes were made.");
+				}
+
+			} catch (Exception e) {
+				logger.error("Error updating Q_ATF record", e);
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body("Error updating record: " + e.getMessage());
+			}
+		}
+
+		
+		
 	
 	
 	

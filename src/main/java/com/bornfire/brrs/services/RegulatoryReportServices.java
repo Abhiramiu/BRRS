@@ -2653,6 +2653,12 @@ public class RegulatoryReportServices {
 						modelAndView = brrs_m_sci_e_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 								request.getParameter("formmode"));
 						break;	
+						
+				  case "Q_ATF":
+						modelAndView = brrs_q_atf_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+								request.getParameter("formmode"));
+						break;	
+		
 
 
 				default:
@@ -2748,6 +2754,12 @@ public class RegulatoryReportServices {
 				case "M_SCI_E":
 					response = brrs_m_sci_e_reportservice.updateDetailEdit(request);
 					break;
+					
+					
+				case "Q_ATF":
+					response = brrs_q_atf_reportservice.updateDetailEdit(request);
+					break;
+					
 					
 					
 

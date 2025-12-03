@@ -1077,9 +1077,119 @@ function cancelModify() {
 
 
 
+<script>
+	function getCellValue(selector) {
+		let el = $(selector);
+		if (!el.length) return 0;
 
+		if (el.is("input")) {
+			return parseFloat(el.val()?.replace(/,/g, "")) || 0;
+		} else {
+			return parseFloat(el.text()?.replace(/,/g, "")) || 0;
+		}
+	}
 
+	function setCellValue(selector, value) {
+		let el = $(selector);
+		if (!el.length) return;
 
+		const formatted = value.toLocaleString('en-US', {
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
+		});
+
+		if (el.is("input")) {
+			el.val(formatted);
+		} else {
+			el.text(formatted);
+		}
+	}
+
+	//--------------------------------------
+	// MONTH-ONLY CALCULATION FUNCTION
+	//--------------------------------------
+	function calculateMonthTotals() {
+		let cols = ["month"]; // Only the "_month" column
+
+		// ---------------------------- R44 = R45 + R46 ----------------------------
+		let R45_total = 0, R46_total = 0;
+		cols.forEach(col => {
+			let v45 = getCellValue("#r45_" + col);
+			let v46 = getCellValue("#r46_" + col);
+			setCellValue("#r44_" + col, v45 + v46);
+
+			R45_total += v45;
+			R46_total += v46;
+		});
+		setCellValue("#r44_total", R45_total + R46_total);
+
+		// ---------------------------- R57 = R58 + R59 + R60 ----------------------------
+		let R58_total = 0, R59_total = 0, R60_total = 0;
+		cols.forEach(col => {
+			let v58 = getCellValue("#r58_" + col);
+			let v59 = getCellValue("#r59_" + col);
+			let v60 = getCellValue("#r60_" + col);
+
+			setCellValue("#r57_" + col, v58 + v59 + v60);
+
+			R58_total += v58;
+			R59_total += v59;
+			R60_total += v60;
+		});
+		setCellValue("#r57_total", R58_total + R59_total + R60_total);
+
+		// ---------------------------- R62 = R63 + R64 + R65 + R66 + R67 + R68 + R69 ----------------------------
+		let R63_total = 0, R64_total = 0, R65_total = 0, R66_total = 0, R67_total = 0, R68_total = 0, R69_total = 0;
+		cols.forEach(col => {
+			let v63 = getCellValue("#r63_" + col);
+			let v64 = getCellValue("#r64_" + col);
+			let v65 = getCellValue("#r65_" + col);
+			let v66 = getCellValue("#r66_" + col);
+			let v67 = getCellValue("#r67_" + col);
+			let v68 = getCellValue("#r68_" + col);
+			let v69 = getCellValue("#r69_" + col);
+
+			setCellValue("#r62_" + col, v63 + v64 + v65 + v66 + v67 + v68 + v69);
+		});
+		setCellValue("#r62_total", getCellValue("#r63_month") + getCellValue("#r64_month") + getCellValue("#r65_month") + getCellValue("#r66_month") + getCellValue("#r67_month") + getCellValue("#r68_month") + getCellValue("#r69_month"));
+
+		// ---------------------------- R70 = R71 + R72 + R73 + R74 + R75 + R80 ----------------------------
+		cols.forEach(col => {
+			let total = getCellValue("#r71_" + col) + getCellValue("#r72_" + col) + getCellValue("#r73_" + col) + getCellValue("#r74_" + col) + getCellValue("#r75_" + col) + getCellValue("#r80_" + col);
+			setCellValue("#r70_" + col, total);
+		});
+		setCellValue("#r70_total", getCellValue("#r71_month") + getCellValue("#r72_month") + getCellValue("#r73_month") + getCellValue("#r74_month") + getCellValue("#r75_month") + getCellValue("#r80_month"));
+
+		// ---------------------------- R86 = R84 - R85 ----------------------------
+		cols.forEach(col => {
+			let total = getCellValue("#r84_" + col) - getCellValue("#r85_" + col);
+			setCellValue("#r86_" + col, total);
+		});
+		setCellValue("#r86_total", getCellValue("#r84_month") - getCellValue("#r85_month"));
+	}
+
+	//--------------------------------------
+	// EVENT LISTENERS (MONTH ONLY)
+	//--------------------------------------
+	$(document).ready(function () {
+		calculateMonthTotals();
+
+		let cols = ["month"]; // Only "_month" column
+
+		cols.forEach(col => {
+			// R44 block
+			$("#r45_" + col + ", #r46_" + col).on("input", calculateMonthTotals);
+			// R57 block
+			$("#r58_" + col + ", #r59_" + col + ", #r60_" + col).on("input", calculateMonthTotals);
+			// R62 block
+			$("#r63_" + col + ", #r64_" + col + ", #r65_" + col + ", #r66_" + col + ", #r67_" + col + ", #r68_" + col + ", #r69_" + col).on("input", calculateMonthTotals);
+			// R70 block
+			$("#r71_" + col + ", #r72_" + col + ", #r73_" + col + ", #r74_" + col + ", #r75_" + col + ", #r80_" + col).on("input", calculateMonthTotals);
+			// R86 block
+			$("#r84_" + col + ", #r85_" + col).on("input", calculateMonthTotals);
+		});
+	});
+</script>
 
 
 
@@ -1108,6 +1218,7 @@ function cancelModify() {
 	    try {
 	        // ✅ Step 1: Calculate totals
 	       /*  calculateR14Totals(); */
+	      calculateMonthTotals();
 	    
 	        // ✅ Step 2: Remove commas from all text inputs
 	        $("#fileupload input[type='text']").each(function () {
@@ -1956,7 +2067,7 @@ function cancelModify() {
 											<td style="text-align: left; "
 												th:text="${report?.r44_cross_reference ?: ''}"
 												></td>
-											<td style="text-align: right;  padding-right:10px;" class="green-cell" 
+											<td id="r44_month" style="text-align: right;  padding-right:10px;" class="green-cell" 
 												th:text="${report?.r44_month ?: ''}"
 												></td>
 											<td style="text-align: right;  padding-right:10px;" class="green-cell" 
@@ -2209,7 +2320,7 @@ function cancelModify() {
 											<td style="text-align: right; "
 												th:text="${report?.r57_cross_reference ?: ''}"
 												></td>
-											<td style="text-align: right; padding-right:12px; " class="green-cell" 
+											<td id="r57_month" style="text-align: right; padding-right:12px; " class="green-cell" 
 												th:text="${report?.r57_month ?: ''}"
 												></td>
 											<td style="text-align: right;  padding-right:10px;" class="green-cell" 
@@ -2325,7 +2436,7 @@ function cancelModify() {
 											<td th:text="${report?.r62_cross_reference ?: ''}"
 												
 												style="text-align: right;  padding-right:10px;"></td>
-											<td th:text="${report?.r62_month ?: ''}" class="green-cell" 
+											<td 	id="r62_month" th:text="${report?.r62_month ?: ''}" class="green-cell" 
 												
 												style="text-align: right; padding-right:10px; "></td>
 											<td th:text="${report?.r62_ytd ?: ''}" class="green-cell" 
@@ -2342,7 +2453,7 @@ function cancelModify() {
 												style="text-align: right;  "></td>
 												
 												
-											<td th:text="${report?.r63_month ?: ''}"
+											<td 	id="r63_month" th:text="${report?.r63_month ?: ''}"
 												th:attr="RowId='R63', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												style="text-align: right; padding-right:10px; "></td>
@@ -2361,7 +2472,7 @@ function cancelModify() {
 												
 												style="text-align: right; "></td>
 												
-											<td th:text="${report?.r64_month ?: ''}"
+											<td 	id="r64_month" th:text="${report?.r64_month ?: ''}"
 												th:attr="RowId='R64', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												style="text-align: right; padding-right:10px;"></td>
@@ -2379,7 +2490,7 @@ function cancelModify() {
 											<td th:text="${report?.r65_cross_reference ?: ''}"
 												
 												style="text-align: right; "></td>
-											<td th:text="${report?.r65_month ?: ''}"
+											<td 	id="r65_month" th:text="${report?.r65_month ?: ''}"
 												th:attr="RowId='R65', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												style="text-align: right; padding-right:10px; "></td>
@@ -2485,7 +2596,7 @@ function cancelModify() {
 											<td th:text="${report?.r69_cross_reference ?: ''}"
 												
 												style="text-align: right; "></td>
-											<td th:text="${report?.r69_month ?: ''}"
+											<td  	id="r69_month"th:text="${report?.r69_month ?: ''}"
 												th:attr="RowId='R69', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
 												style="text-align: right;  padding-right:10px;"></td>
@@ -2499,10 +2610,10 @@ function cancelModify() {
 											<td th:text="${report?.r70_product_name ?: ''}"
 												
 												style="text-align: left;  font-weight: bold;"></td>
-											<td th:text="${report?.r70_cross_reference ?: ''}"
+											<td  th:text="${report?.r70_cross_reference ?: ''}"
 												
 												style="text-align: right;  "></td>
-											<td th:text="${report?.r70_month ?: ''}" class="green-cell" 
+											<td id="r70_month" th:text="${report?.r70_month ?: ''}" class="green-cell" 
 												
 												style="text-align: right;  padding-right:10px; "></td>
 											<td th:text="${report?.r70_ytd ?: ''}" class="green-cell" 
@@ -2521,7 +2632,7 @@ function cancelModify() {
 												th:text="${report?.r71_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right; padding-right:10px; "
+											<td id="r71_month" style="text-align: right; padding-right:10px; "
 												th:text="${report?.r71_month ?: ''}"
 												th:attr="RowId='R71', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -2542,7 +2653,7 @@ function cancelModify() {
 												th:text="${report?.r72_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right;  padding-right:10px;"
+											<td  id="r72_month"style="text-align: right;  padding-right:10px;"
 												th:text="${report?.r72_month ?: ''}"
 												th:attr="RowId='R72', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -2563,7 +2674,7 @@ function cancelModify() {
 												th:text="${report?.r73_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right;  padding-right:10px;"
+											<td  id="r73_month"style="text-align: right;  padding-right:10px;"
 												th:text="${report?.r73_month ?: ''}"
 												th:attr="RowId='R73', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -2614,7 +2725,7 @@ function cancelModify() {
 												th:text="${report?.r75_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right; padding-right:10px; " class="green-cell" 
+											<td  id="r75_month"style="text-align: right; padding-right:10px; " class="green-cell" 
 												th:text="${report?.r75_month ?: ''}"
 												></td>
 
@@ -2633,7 +2744,7 @@ function cancelModify() {
 												th:text="${report?.r76_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right;  padding-right:10px;"
+											<td  id="r76_month"style="text-align: right;  padding-right:10px;"
 												th:text="${report?.r76_month ?: ''}"
 												th:attr="RowId='R76', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -2654,7 +2765,7 @@ function cancelModify() {
 												th:text="${report?.r77_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right;  padding-right:10px;"
+											<td id="r77_month"style="text-align: right;  padding-right:10px;"
 												th:text="${report?.r77_month ?: ''}"
 												th:attr="RowId='R77', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -2675,7 +2786,7 @@ function cancelModify() {
 												th:text="${report?.r78_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right;  padding-right:10px;"
+											<td  id="r78_month"style="text-align: right;  padding-right:10px;"
 												th:text="${report?.r78_month ?: ''}"
 												th:attr="RowId='R78', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -2696,7 +2807,7 @@ function cancelModify() {
 												th:text="${report?.r79_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right; padding-right:10px; "
+											<td id="r79_month" style="text-align: right; padding-right:10px; "
 												th:text="${report?.r79_month ?: ''}"
 												th:attr="RowId='R79', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -2718,7 +2829,7 @@ function cancelModify() {
 												th:text="${report?.r80_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right; padding-right:10px; "
+											<td id="r80_month" style="text-align: right; padding-right:10px; "
 												th:text="${report?.r80_month ?: ''}"
 												th:attr="RowId='R80', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -2739,7 +2850,7 @@ function cancelModify() {
 												th:text="${report?.r81_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right; padding-right:10px; " class="green-cell" 
+											<td id="r81_month" style="text-align: right; padding-right:10px; " class="green-cell" 
 												th:text="${report?.r81_month ?: ''}"
 												></td>
  
@@ -2758,7 +2869,7 @@ function cancelModify() {
 												th:text="${report?.r82_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right; padding-right:10px; " class="green-cell" 
+											<td id="r82_month" style="text-align: right; padding-right:10px; " class="green-cell" 
 												th:text="${report?.r82_month ?: ''}"
 												></td>
 
@@ -2777,7 +2888,7 @@ function cancelModify() {
 												th:text="${report?.r83_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right;  padding-right:10px;"
+											<td id="r83_month" style="text-align: right;  padding-right:10px;"
 												th:text="${report?.r83_month ?: ''}"
 												th:attr="RowId='R83', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -2798,7 +2909,7 @@ function cancelModify() {
 												th:text="${report?.r84_cross_reference ?: ''}"
 												></td>
  
-											<td style="text-align: right;  padding-right:10px;" class="green-cell" 
+											<td  	id="r84_month"style="text-align: right;  padding-right:10px;" class="green-cell" 
 												th:text="${report?.r84_month ?: ''}"
 												></td>
 
@@ -2847,7 +2958,7 @@ function cancelModify() {
 												th:text="${report?.r86_cross_reference ?: ''}"
 												></td>
 
-											<td style="text-align: right;  padding-right:10px;" class="green-cell" 
+											<td  	id="r86_month"style="text-align: right;  padding-right:10px;" class="green-cell" 
 												th:text="${report?.r86_month ?: ''}"
 												></td>
 

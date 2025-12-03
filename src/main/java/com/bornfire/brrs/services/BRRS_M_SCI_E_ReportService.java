@@ -3655,18 +3655,28 @@ Cell cellC,cellD;
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-	    M_SCI_E_Manual_Summary_Entity existing = brrs_m_sci_e_manual_summary_repo.findById(updatedEntity.getReport_date())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	    //  Use your query to fetch by date
+	    List<M_SCI_E_Manual_Summary_Entity> list = brrs_m_sci_e_manual_summary_repo
+	        .getdatabydateList(updatedEntity.getReport_date());
+
+	    M_SCI_E_Manual_Summary_Entity existing;
+	    if (list.isEmpty()) {
+	        // Record not found — optionally create it
+	        System.out.println("No record found for REPORT_DATE: " + updatedEntity.getReport_date());
+	        existing = new M_SCI_E_Manual_Summary_Entity();
+	        existing.setReport_date(updatedEntity.getReport_date());
+	    } else {
+	        existing = list.get(0);
+	    }
 
 	    try {
-	        // ✅ Only for specific row numbers
+	        //  Only for specific row numbers
 	        int[] rows = {45, 46, 54, 58, 59, 60, 66, 67, 68, 74, 85};
 
 	        for (int row : rows) {
 	            String prefix = "R" + row + "_";
 
-	            // ✅ Fields to update
+	            // Fields to update
 	            String[] fields = {"month"};
 
 	            for (String field : fields) {
@@ -3687,15 +3697,34 @@ Cell cellC,cellD;
 	            }
 	        }
 
+	        // Metadata
+	        existing.setReport_version(updatedEntity.getReport_version());
+	        existing.setReport_frequency(updatedEntity.getReport_frequency());
+	        existing.setReport_code(updatedEntity.getReport_code());
+	        existing.setReport_desc(updatedEntity.getReport_desc());
+	        existing.setEntity_flg(updatedEntity.getEntity_flg());
+	        existing.setModify_flg(updatedEntity.getModify_flg());
+	        existing.setDel_flg(updatedEntity.getDel_flg());
+
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
+	        throw new RuntimeException("Error while updating M_SCI_E Summary fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
-	    brrs_m_sci_e_manual_summary_repo.save(existing);
+	    //  FIRST COMMIT — forces immediate commit
+	    brrs_m_sci_e_manual_summary_repo.saveAndFlush(existing);
+	    System.out.println("M_SCI_E Summary updated and COMMITTED");
+
+	    //  Execute procedure with updated data
+	    String oracleDate = new SimpleDateFormat("dd-MM-yyyy")
+	            .format(updatedEntity.getReport_date())
+	            .toUpperCase();
+
+	    String sql = "BEGIN BRRS.BRRS_M_SCI_E_SUMMARY_PROCEDURE ('" + oracleDate + "'); END;";
+	    jdbcTemplate.execute(sql);
+
+	    System.out.println("Procedure executed for date: " + oracleDate);
 	}
 
-	
 	 @Autowired BRRS_M_SCI_E_Detail_Repo m_sci_e_detail_repo;
 	
 	
