@@ -988,7 +988,7 @@ private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR1_ReportSe
 
 					
 				}
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 				
 			}

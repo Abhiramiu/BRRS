@@ -12,7 +12,7 @@ import javax.persistence.TemporalType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "BRRS_M_LIQGAP_MANUAL_ARCHIVALTABLE_SUMMARY")
+@Table(name = "BRRS_M_LIQGAP_ARCHIVAL_MANUAL_SUMMARYTABLE")
 
 public class M_LIQGAP_Manual_Archival_Summary_Entity {
 	

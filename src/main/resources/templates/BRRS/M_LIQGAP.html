@@ -1,7 +1,7 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 
 <!-- 
-CREATED BY	: HARIHARAN M V 
+CREATED BY	: INFANT JONES J 
 CREATED ON	: 04.08.2025
 PURPOSE		: BRRS_M_CA2REPORT
 -->
@@ -836,24 +836,27 @@ function showResultModalDetail(title, message) {
 	
 <script>
 function showmodify(btn) {
-    // ✅ Enable all editable fields except those marked as nonEditable
+	//$(".Show_input").removeAttr("readonly").removeAttr("disabled");
     $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+    
+    const readonlyIds = [
+    	"r22_gross_income","r35_gross_income","r48_gross_income","r50_aggregate_gross_income","r51_aggregate_gross_income","r52_aggregate_gross_income",
+    	,"r53_aggregate_gross_income","r54_aggregate_gross_income","r55_risk_weight_factor","r56_risk_weight_factor"
 
-    // ✅ Highlight gray background for specific rows
-    const amount1Rows = [13, 14, 15, 16, 18, 19, 21];
-    const amount2Rows = [11, 32, 42, 43, 44, 46];
+    	
+    	
+    	
+    ];
 
-    // Gray background for amount_1
-    amount1Rows.forEach(i => {
-        let selector = `#r${i}_amount_1`;
-        if ($(selector).length) $(selector).css("background-color", "#d3d3d3");
+    // 🔹 Enable editing for all inputs except formula ones
+    $(".show_input, .display-input").each(function () {
+        if (!readonlyIds.includes(this.id)) {
+            $(this).removeAttr("readonly")
+                   .removeAttr("disabled")
+                   .css({"background-color": "#d3d3d3"}); // light yellow for editable
+        } 
     });
 
-    // Gray background for amount_2
-    amount2Rows.forEach(i => {
-        let selector = `#r${i}_amount_2`;
-        if ($(selector).length) $(selector).css("background-color", "#d3d3d3");
-    });
 
     // ✅ Show action buttons
     $("#submitButton").show();
@@ -888,53 +891,64 @@ function cancelModify() {
 
 <script>
 
-function calculateCumulativeTotals() {
+function calculateR54_AggregateGrossIncome() {
+    function getVal(id) {
+        let el = $("#" + id);
+        if (!el.length) return 0;
+        let raw = el.is(":input") ? el.val() : el.text();
+        raw = raw.toString().replace(/,/g, "").replace(/[^0-9.\-]/g, "");
+        return parseFloat(raw) || 0;
+    }
 
-    // -------------------
-    //   R21 CUMULATIVE
-    // -------------------
-    let R21_NIB = parseFloat($("#r21_non_interest_bearing").is("input")
-        ? $("#r21_non_interest_bearing").val().replace(/,/g, "")
-        : $("#r21_non_interest_bearing").text().replace(/,/g, "")) || 0;
+    let r52 = getVal("r52_aggregate_gross_income");
+    let r53 = getVal("r53_aggregate_gross_income");
 
-    let R21_Cumulative = R21_NIB;
+    let total = r53 !== 0 ? r52 / r53 : 0;
 
-    $("#r21_cumulative_total").text(R21_Cumulative.toLocaleString('en-US'));
-
-    // -------------------
-    //   R33 CUMULATIVE
-    // -------------------
-    let R33_THIRD = parseFloat($("#r33_third_month").val().replace(/,/g, "")) || 0;
-    let R33_LAST = parseFloat($("#r33_last_month").val().replace(/,/g, "")) || 0;
-    let R33_FIRST_YEAR = parseFloat($("#r33_first_year").val().replace(/,/g, "")) || 0;
-    let R33_FIFTH_YEAR = parseFloat($("#r33_fifth_year").val().replace(/,/g, "")) || 0;
-    let R33_NIB = parseFloat($("#r33_non_interest_bearing").val().replace(/,/g, "")) || 0;
-
-    let R33_Cumulative = R33_THIRD + R33_LAST + R33_FIRST_YEAR + R33_FIFTH_YEAR + R33_NIB;
-
-    $("#r33_cumulative_total").text(R33_Cumulative.toLocaleString('en-US'));
-
-    // -------------------
-    //   R34 CUMULATIVE
-    // -------------------
-    let R34_FIRST = parseFloat($("#r34_first_month").is("input")
-        ? $("#r34_first_month").val().replace(/,/g, "")
-        : $("#r34_first_month").text().replace(/,/g, "")) || 0;
-
-    let R34_Cumulative = R34_FIRST;
-
-    $("#r34_cumulative_total").text(R34_Cumulative.toLocaleString('en-US'));
+    let outEl = $("#r54_aggregate_gross_income");
+    if (outEl.length) {
+        let formatted = Number.isFinite(total)
+            ? Math.round(total).toLocaleString("en-US") // ✅ Rounded, no decimals
+            : "0";
+        outEl.is(":input") ? outEl.val(formatted) : outEl.text(formatted);
+    }
 }
-$(document).ready(function() {
 
-    calculateCumulativeTotals();
+function calculateR63_Total() {
+    function getVal(id) {
+        let el = $("#" + id);
+        if (!el.length) return 0;
+        let raw = el.is(":input") ? el.val() : el.text();
+        raw = raw.toString().replace(/,/g, "").replace(/[^0-9.\-]/g, "");
+        return parseFloat(raw) || 0;
+    }
 
-    // Recalculate whenever relevant fields change
-    $("#r21_non_interest_bearing, #r33_third_month, #r33_last_month, #r33_first_year, #r33_fifth_year, #r33_non_interest_bearing, #r34_first_month")
-        .on("input", function() {
-            calculateCumulativeTotals();
-        });
+    let r61 = getVal("r61_operational_risk_cap_charge");
+    let r62 = getVal("r62_operational_risk_cap_charge");
+
+    let result = r62 !== 0 ? r61 / r62 : 0;
+
+    let outEl = $("#r63_operational_risk_cap_charge");
+    if (outEl.length) {
+        let formatted = Number.isFinite(result)
+            ? Math.round(result).toLocaleString("en-US") // ✅ Rounded, no decimals
+            : "0";
+        outEl.is(":input") ? outEl.val(formatted) : outEl.text(formatted);
+    }
+}
+
+$(document).ready(function () {
+    calculateR54_AggregateGrossIncome();
+    calculateR63_Total();
+
+    $("#r52_aggregate_gross_income, #r53_aggregate_gross_income")
+        .on("input change", calculateR54_AggregateGrossIncome);
+
+    $("#r61_operational_risk_cap_charge, #r62_operational_risk_cap_charge")
+        .on("input change", calculateR63_Total);
 });
+
+
 </script>
 
 
@@ -963,7 +977,8 @@ $(document).ready(function() {
 
 	    try {
 	        // ✅ Step 1: Calculate totals
-	        calculateCumulativeTotals();
+	        calculateR54_AggregateGrossIncome();
+            calculateR63_Total();
 
 	        // ✅ Step 2: Remove commas from all text inputs
 	        $("#fileupload input[type='text']").each(function () {
@@ -987,6 +1002,36 @@ $(document).ready(function() {
 	                formData.append(name, $(this).val());
 	            }
 	        });
+	        
+	        
+	        // --- NEW: append type value (NORMAL, RESUB, ARCHIVAL) ---
+		    //const selectedType = $("#SRWA_12GType").val(); // Get from dropdown
+		    //formData.append("type", selectedType);
+		    //console.log("Selected type:", selectedType);
+
+		    // --- Entity fields (R10-R17) ---
+		    // Save R10–R56 values correctly (lowercase IDs)
+const rowCodes = [21, 32, 33, 34];
+
+const fields = [
+    "first_month",
+    "third_month",
+    "last_month",
+    "first_year",
+    "fifth_year",
+    "non_interest_bearing"
+];
+
+rowCodes.forEach(code => {
+    fields.forEach(field => {
+        const input = $("#R" + code + "_" + field);
+        if (input.length) {
+            formData.append(input.attr("name"), input.val());
+        }
+    });
+});
+
+
 
 	        // ✅ Step 5: AJAX submission
 	        $.ajax({
@@ -1236,13 +1281,13 @@ $(document).ready(function() {
   			<tr style="background-color: #b3b6b9 ">
 									
 						<th rowspan="1" style="text-align: left;"></th>
-						<th style="text-align: center;">up to 1 month</th>
-						<th style="text-align: center;">>1 to 3 months </th>
-						<th style="text-align: center;">>3-12 months</th>
-						<th style="text-align: center;">>1-5 years</th>
-						<th style="text-align: center;"> over 5 years </th>
-						<th style="text-align: center;">Non-interest Bearing</th>
-						<th style="text-align: center;">Cumulative Total</th>
+						<th style="background-color: #D8D8D8; vertical-align:middle;text-align: right;">up to 1 month</th>
+						<th style="background-color: #D8D8D8; vertical-align:middle;text-align: right;">>1 to 3 months </th>
+						<th style="background-color: #D8D8D8; vertical-align:middle;text-align: right;">>3-12 months</th>
+						<th style="background-color: #D8D8D8; vertical-align:middle;text-align: right;">>1-5 years</th>
+						<th style="background-color: #D8D8D8; vertical-align:middle;text-align: right;"> over 5 years </th>
+						<th style="background-color: #D8D8D8; vertical-align:middle;text-align: right;">Non-interest Bearing</th>
+						<th style="background-color: #D8D8D8; vertical-align:middle;text-align: right;width: 250px;">Cumulative Total</th>
 						
 						
             </tr>
@@ -1251,7 +1296,7 @@ $(document).ready(function() {
 	<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 	
 <tr>
-	<td style="text-align: left;" th:attr="reportLable='R10', reportAddlCriteria1='C1'"  th:text="${report.r10_product}"></td>
+	<td style="text-align: left;font-weight:bold;" th:attr="reportLable='R10', reportAddlCriteria1='C1'"  th:text="${report.r10_product}"></td>
 	<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
     th:attr="reportLable='R10', reportAddlCriteria1='C2'"
     th:text="${report.r10_first_month != null ? #numbers.formatDecimal(report.r10_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
@@ -1741,18 +1786,16 @@ $(document).ready(function() {
         th:text="${report.r21_fifth_year != null ? #numbers.formatDecimal(report.r21_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
     </td>
 
-	<td th:each="report: ${reportsummary1}"
-    th:attr="reportLable='R21', reportAddlCriteria1='C7'"
-    style="text-align: right;  padding-left:10px; background-color:white;">
+	<td th:each="report: ${reportsummary1}" id="R21" style="text-align: right; ">
 
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r21_non_interest_bearing != null ? #numbers.formatDecimal(report.r21_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}"
            id="r21_non_interest_bearing"
            name="r21_non_interest_bearing"
-           style="background-color:#FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right;"
+           style="background-color:#FFFFFF; width: 90%; height: 28px; border-color: transparent; text-align: right;"
            readonly />
-           <td th:attr="reportLable='R21', reportAddlCriteria1='C7'" style="text-align: right;background-color:white;"></td>
+      </td>
 
 
 
@@ -1973,7 +2016,7 @@ $(document).ready(function() {
 </tr>
 
 <tr>
-    <td style="text-align: left;" 
+    <td style="text-align: left;font-weight:bold;" 
         th:attr="reportLable='R27', reportAddlCriteria1='C1'" 
         th:text="${report.r27_product}">
     </td>
@@ -2164,17 +2207,12 @@ $(document).ready(function() {
         onclick="showdetailsbyRowAndColumn(this)"
         th:text="${report.r31_fifth_year != null ? #numbers.formatDecimal(report.r31_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}">
     </td>
-
-	<td th:each="report: ${reportsummary1}" id="R31" style="text-align: right; padding-left:10px; ">
-    <input class="display-input Show_input"
-           type="text"
-           th:value="${report.r31_non_interest_bearing != null ? #numbers.formatDecimal(report.r31_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}"
-           id="r31_non_interest_bearing"
-           name="r31_non_interest_bearing"
-           style="background-color:#FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
-             readonly/>
-<td th:attr="reportLable='R32', reportAddlCriteria1='C7'" style="text-align: right;background-color:white;"></td>
-
+    
+    <td style="text-align: right;" th:attr="reportLable='R31', reportAddlCriteria1='C7'"
+        onclick="showdetailsbyRowAndColumn(this)"
+        th:text="${report.r31_non_interest_bearing != null ? #numbers.formatDecimal(report.r31_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}">
+    </td>
+	
 	<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
         th:attr="reportLable='R31', reportAddlCriteria1='C8'"
         th:text="${report.r31_cumulative_total != null ? #numbers.formatDecimal(report.r31_cumulative_total, 1, 'COMMA', 0, 'POINT') : '0'}">
@@ -2213,23 +2251,20 @@ $(document).ready(function() {
     </td>
 
 
-<td th:each="report: ${reportsummary1}" id="R32" style="text-align:right; padding-left:10px;">
+<td th:each="report: ${reportsummary1}" id="R31" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
            th:value="${report.r32_non_interest_bearing != null ?
-                      #numbers.formatDecimal(report.r32_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}"
+                      #numbers.formatDecimal(report.r32_non_interest_bearing, 1, 'COMMA', 0, 'POINT') :
+                      '0'}"
            id="r32_non_interest_bearing"
            name="r32_non_interest_bearing"
-           style="background-color:#FFFFFF; width:250px; height:28px; border-color:transparent; text-align:right;"
+           style="background-color:#FFFFFF; width: 90%; height:28px; border-color: transparent; text-align:right;"
            readonly />
 </td>
 
 
-<td th:attr="reportLable='R32', reportAddlCriteria1='C7'"
-    style="text-align: right; background-color:white;">
-</td>
 
-    
 
     <td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
         th:attr="reportLable='R32', reportAddlCriteria1='C8'"
@@ -2249,55 +2284,71 @@ $(document).ready(function() {
         th:text="${report.r33_first_month != null ? #numbers.formatDecimal(report.r33_first_month, 1, 'COMMA', 0, 'POINT') : '0'}">
     </td>
 
-	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right;  padding-left:10px; ">
+	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; ">
     <input class="display-input Show_input"
            type="text"
-           th:value="${report.r33_third_month != null ? #numbers.formatDecimal(report.r33_third_month, 1, 'COMMA', 0, 'POINT') : '0'}"
+           th:value="${report.r33_third_month != null ?
+                      #numbers.formatDecimal(report.r33_third_month, 1, 'COMMA', 0, 'POINT') :
+                      '0'}"
            id="r33_third_month"
            name="r33_third_month"
-           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
-            readonly/>
-<td th:attr="reportLable='R33', reportAddlCriteria1='C3'" style="text-align: right;background-color:white;"></td>
+           style="background-color:#FFFFFF; width: 90%; height:28px; border-color: transparent; text-align:right;"
+           readonly />
+</td>
+
+
 	
-	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; padding-left:10px; ">
+	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
-           th:value="${report.r33_last_month != null ? #numbers.formatDecimal(report.r33_last_month, 1, 'COMMA', 0, 'POINT') : '0'}"
+           th:value="${report.r33_last_month != null ?
+                      #numbers.formatDecimal(report.r33_last_month, 1, 'COMMA', 0, 'POINT') :
+                      '0'}"
            id="r33_last_month"
            name="r33_last_month"
-           style="background-color:#FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
-            readonly />
-<td th:attr="reportLable='R33', reportAddlCriteria1='C4'" style="text-align: right;background-color:white;"></td>
+           style="background-color:#FFFFFF;width: 90%; height:28px; border-color: transparent; text-align:right;"
+           readonly />
+</td>
+
 	
-	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; width: 250px;  padding-left:10px; ">
+	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
-           th:value="${report.r33_first_year != null ? #numbers.formatDecimal(report.r33_first_year, 1, 'COMMA', 0, 'POINT') : '0'}"
+           th:value="${report.r33_first_year != null ?
+                      #numbers.formatDecimal(report.r33_first_year, 1, 'COMMA', 0, 'POINT') :
+                      '0'}"
            id="r33_first_year"
            name="r33_first_year"
-           style="background-color:#FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
-            readonly />
-<td th:attr="reportLable='R33', reportAddlCriteria1='C5'" style="text-align: right;background-color:white;"></td>
+           style="background-color:#FFFFFF;width: 90%; height:28px; border-color: transparent; text-align:right;"
+           readonly />
+</td>
+
 	
-	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; padding-left:10px; ">
+	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; ">
     <input class="display-input Show_input"
            type="text"
-           th:value="${report.r33_fifth_year != null ? #numbers.formatDecimal(report.r33_fifth_year, 1, 'COMMA', 0, 'POINT') : '0'}"
+           th:value="${report.r33_fifth_year != null ?
+                      #numbers.formatDecimal(report.r33_fifth_year, 1, 'COMMA', 0, 'POINT') :
+                      '0'}"
            id="r33_fifth_year"
            name="r33_fifth_year"
-           style="background-color:#FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
-            readonly />
-<td th:attr="reportLable='R33', reportAddlCriteria1='C6'" style="text-align: right;background-color:white;"></td>
+           style="background-color:#FFFFFF;width: 90%; height:28px; border-color: transparent; text-align:right;"
+           readonly />
+</td>
+
 	
-	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; padding-left:10px; ">
+	<td th:each="report: ${reportsummary1}" id="R33" style="text-align: right; ">
     <input class="display-input Show_input"
            type="text"
-           th:value="${report.r33_non_interest_bearing != null ? #numbers.formatDecimal(report.r33_non_interest_bearing, 1, 'COMMA', 0, 'POINT') : '0'}"
+           th:value="${report.r33_non_interest_bearing != null ?
+                      #numbers.formatDecimal(report.r33_non_interest_bearing, 1, 'COMMA', 0, 'POINT') :
+                      '0'}"
            id="r33_non_interest_bearing"
            name="r33_non_interest_bearing"
-           style="background-color:#FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
-            readonly />
-<td th:attr="reportLable='R33', reportAddlCriteria1='C7'" style="text-align: right;background-color:white;"></td>
+           style="background-color:#FFFFFF;width: 90%; height:28px; border-color: transparent; text-align:right;"
+           readonly />
+</td>
+
 	
 	<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;" 
         th:attr="reportLable='R33', reportAddlCriteria1='C8'"
@@ -2307,16 +2358,24 @@ $(document).ready(function() {
 
 
 <tr>
-	<td style="text-align: left;" th:attr="reportLable='R34', reportAddlCriteria1='C1'" th:text="${report.r34_product}"></td>
-	<td th:each="report: ${reportsummary1}" id="R34" style="text-align: right; padding-left:10px; ">
+
+ <td style="text-align: left;" 
+        th:attr="reportLable='R34', reportAddlCriteria1='C1'" 
+        th:text="${report.r34_product}">
+    </td>
+    
+	<td th:each="report: ${reportsummary1}" id="R34" style="text-align: right;">
     <input class="display-input Show_input"
            type="text"
-           th:value="${report.r34_first_month != null ? #numbers.formatDecimal(report.r34_first_month, 1, 'COMMA', 0, 'POINT') : '0'}"
+           th:value="${report.r34_first_month != null ?
+                      #numbers.formatDecimal(report.r34_first_month, 1, 'COMMA', 0, 'POINT') :
+                      '0'}"
            id="r34_first_month"
            name="r34_first_month"
-           style="background-color:#FFFFFF;  height: 28px; border-color: transparent; text-align: right;"
-            readonly />
-<td th:attr="reportLable='R34', reportAddlCriteria1='C2'" style="text-align: right;background-color:white;"></td>
+           style="background-color:#FFFFFF;width: 90%; height:28px; border-color: transparent; text-align:right;"
+           readonly />
+</td>
+
 
 	 <td style="text-align: right;" th:attr="reportLable='R34', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)"
@@ -2980,7 +3039,7 @@ $(document).ready(function() {
 </tr>
 
 <tr>
-    <td style="text-align: left;" 
+    <td style="text-align: left;font-weight:bold;" 
         th:attr="reportLable='R50', reportAddlCriteria1='C1'" 
         th:text="${report.r50_product}">
     </td>
