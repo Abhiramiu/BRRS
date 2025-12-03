@@ -778,6 +778,10 @@ PURPOSE		: BRRS REPORT
 			$("#resultModal").modal("hide");
 			$('#loader').modal('hide');
 
+			// Reload the page after a short delay to ensure the modal animation completes smoothly.
+			setTimeout(function () {
+				location.reload();
+			}, 300);
 		}
 	</script>
 
@@ -1045,7 +1049,7 @@ PURPOSE		: BRRS REPORT
 			var reportAddlCriteria_1 = a.getAttribute('reportAddlCriteria_1');
 			var cellValue = a.textContent || a.innerText;
 
-			
+
 			if (cellValue !== '0') {
 				// Set dynamic message in modal (instead of confirm)
 				document.getElementById("cellresultModalLabel").innerText =
@@ -1295,7 +1299,7 @@ PURPOSE		: BRRS REPORT
 
 	</script>
 
-	
+
 
 	<script>
 
@@ -1618,20 +1622,7 @@ PURPOSE		: BRRS REPORT
 
 			// This function is for closing the modal after an action is complete.
 			// It hides the result and loader modals and reloads the page.
-			function closemodel() {
-				$("#resultModal").modal("hide");
-				$('#loader').modal('hide');
-
-				// Only reload if not from Details modal
-				if (!isDetailsModal) {
-					setTimeout(function () {
-						location.reload();
-					}, 300);
-				} else {
-					// reset flag for next modal usage
-					isDetailsModal = false;
-				}
-			}
+			
 
 			// This is the main function that orchestrates the entire form submission process.
 			// It is triggered by the "Update" button click.
@@ -1711,7 +1702,7 @@ PURPOSE		: BRRS REPORT
 					dataType: 'text'
 				})
 					.done(function () {
-						$("#resultModalLabel").text("Success");
+						$("#resultModalLabel").text("BRRS");
 						$("#resultModalBody").text("Updated successfully.");
 						$("#resultModal").modal("show");
 					})
@@ -2112,7 +2103,7 @@ PURPOSE		: BRRS REPORT
 
 
 
-																<tr>
+											<tr>
 												<td style="text-align: left;" th:text="${report?.r11_product ?: ''}">
 												</td>
 
