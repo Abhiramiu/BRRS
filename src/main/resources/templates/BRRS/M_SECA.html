@@ -885,7 +885,7 @@ PURPOSE		: BWRBRREPORT
 						a.click();
 						window.URL.revokeObjectURL(url);
 						document.body.removeChild(a);
-						showResultModal('BRRS', 'M_SECA downloaded successfully.');
+						showResultModal('BRRS', 'M_SECA.xlsx downloaded successfully.');
 					} else {
 						showResultModal('Information', 'No data was available to create a download.');
 					}
@@ -2832,7 +2832,7 @@ calculateR13Last();
         dataType: 'text',
         success: function (response) {
             $("#resultModalLabel").text("BRRS");
-            $("#resultModalBody").text("Updated successfully");
+            $("#resultModalBody").text("Updated successfully.");
             $("#resultModal").modal("show");
         },
         error: function (xhr) {

@@ -185,6 +185,79 @@ td {
 
 
 <style>
+				.header-bar {
+				  display: flex;
+				  align-items: center;
+				  flex-wrap: wrap; /* ✅ allows wrapping on smaller screens */
+				  gap: 10px; /* spacing between elements */
+				  cursor: pointer;
+				}
+
+				/* 🔘 Circular arrow */
+				.left-arrow-circle {
+				  width: 35px;
+				  height: 35px;
+				  border-radius: 50%;
+				  background-color: white;
+				  color: #1f3a93;
+				  display: flex;
+				  align-items: center;
+				  justify-content: center;
+				  margin-right: 10px;
+				}
+
+				.left-arrow-circle i {
+				  font-size: 18px;
+				}
+
+				/* 🏷️ Title */
+				.header-title {
+				  font-family: Arial, sans-serif;
+				  font-size: 20px;
+				  font-weight: bold;
+				  color: white;
+				  margin: 0;
+				  flex-shrink: 0;
+				}
+
+				/* 🚌 Bus display style box */
+				.boards {
+					transform: translateY(6px);
+				  background-color: rgb(107, 122, 143);
+				  color: white;
+				  padding: 5px 45px;
+				  border-radius: 8px;
+				  overflow: hidden;
+				  white-space: nowrap;
+				  flex: 1; /* ✅ makes it take available space dynamically */
+				  min-width: 200px;
+				  box-shadow: 0 0 10px rgb(107, 122, 143);
+				  position: relative;
+				}
+
+				/* ✨ Scrolling animation */
+				.scrolling-text {
+				  display: inline-block;
+				  font-family: "Courier New", monospace;
+				  font-weight: bold;
+				  letter-spacing: 1px;
+				  animation: scroll-left 10s linear infinite;
+				}
+
+				@keyframes scroll-left {
+				  0% {
+				    transform: translateX(100%);
+				  }
+				  100% {
+				    transform: translateX(-100%);
+				  }
+				}
+
+				</style>
+	
+
+
+<style>
 .form-group {
 	position: relative;
 	margin-bottom: 1.5rem;
@@ -1175,8 +1248,12 @@ window.fileuploads = function (btn) {
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; color: white;">
-							 M-BOP: BALANCE OF PAYMENTS</h5>
+							style="font-family: arial; font-size: 20px; padding-top: 10px; font-weight: bold; margin-right:5px; color: white;">
+							 (42) MONTHLY SCHEDULE:M-BOP: BALANCE OF PAYMENTS</h5>
+							 
+							 <div class="boards">
+								    <p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+								  </div>
 					</div>
 
 					<div class="custom-tab-btn-group nav-buttons"
