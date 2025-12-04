@@ -43,6 +43,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
@@ -63,7 +64,6 @@ import com.bornfire.brrs.entities.M_CALOC_Detail_Entity;
 import com.bornfire.brrs.entities.M_CALOC_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CALOC_Summary_Entity2;
 import com.bornfire.brrs.entities.M_CALOC_Summary_Entity3;
-import com.bornfire.brrs.entities.M_CALOC_Detail_Entity;
 
 @Component
 @Service
@@ -228,7 +228,7 @@ public class BRRS_M_CALOC_ReportService {
 				if (rowId != null && columnId != null) {
 					T1Dt1 = M_CALOC_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
 				} else {
-					T1Dt1 = M_CALOC_Detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
+					T1Dt1 = M_CALOC_Detail_Repo.getdatabydateList(parsedDate);
 					totalPages = M_CALOC_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
@@ -18637,8 +18637,8 @@ public class BRRS_M_CALOC_ReportService {
 
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInPula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+					if (item.getBalEquiToBwp() != null) {
+						balanceCell.setCellValue(item.getBalEquiToBwp().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
@@ -37077,8 +37077,8 @@ public class BRRS_M_CALOC_ReportService {
 
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInPula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
+					if (item.getBalEquiToBwp() != null) {
+						balanceCell.setCellValue(item.getBalEquiToBwp().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
@@ -37116,9 +37116,6 @@ public class BRRS_M_CALOC_ReportService {
 		}
 	}
 
-	// @Autowired
-	// private BRRS_M_CALOC_Detail_Repo M_CALOC_Detail_Repo;
-
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -37126,12 +37123,12 @@ public class BRRS_M_CALOC_ReportService {
 		ModelAndView mv = new ModelAndView("BRRS/M_CALOC");
 
 		if (acctNo != null) {
-			M_CALOC_Detail_Entity mcalocEntity = M_CALOC_Detail_Repo.findByAcctNumber(acctNo);
-			if (mcalocEntity != null && mcalocEntity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(mcalocEntity.getReportDate());
+			M_CALOC_Detail_Entity caloc = M_CALOC_Detail_Repo.findByAcctNumber(acctNo);
+			if (caloc != null && caloc.getReportDate() != null) {
+				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(caloc.getReportDate());
 				mv.addObject("asondate", formattedDate);
 			}
-			mv.addObject("mcalocData", mcalocEntity);
+			mv.addObject("MCALOCData", caloc);
 		}
 
 		mv.addObject("displaymode", "edit");
@@ -37143,72 +37140,85 @@ public class BRRS_M_CALOC_ReportService {
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 		try {
 			String acctNo = request.getParameter("acctNumber");
-			String provisionStr = request.getParameter("provision");
+			String acctBalanceInpula = request.getParameter("balEquiToBwp");
 			String acctName = request.getParameter("acctName");
-			String reportDateStr = request.getParameter("reportDate");
+			String reportDateStr = request.getParameter("reportDate"); // yyyy-MM-dd from HTML
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
 
-			M_CALOC_Detail_Entity existing = M_CALOC_Detail_Repo.findByAcctNumber(acctNo);
+			M_CALOC_Detail_Entity existing = M_CALOC_Detail_Repo.findByAcctnumber(acctNo);
+
 			if (existing == null) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body("Record not found for update.");
 			}
 
 			boolean isChanged = false;
 
-			if (acctName != null && !acctName.trim().isEmpty()) {
-				String newAcctName = acctName.trim();
-				if (existing.getAcctName() == null || !existing.getAcctName().trim().equals(newAcctName)) {
-					existing.setAcctName(newAcctName);
+			// Update account name
+			if (acctName != null && !acctName.isEmpty() &&
+					!acctName.equals(existing.getAcctName())) {
+
+				existing.setAcctName(acctName);
+				isChanged = true;
+				logger.info("Updated acctName → {}", acctName);
+			}
+
+			// Update Pula balance
+			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+
+				BigDecimal newBalance = new BigDecimal(acctBalanceInpula.replace(",", ""));
+
+				if (existing.getBalEquiToBwp() == null ||
+						existing.getBalEquiToBwp().compareTo(newBalance) != 0) {
+
+					existing.setBalEquiToBwp(newBalance);
 					isChanged = true;
-					logger.info("Account name updated to {}", acctName);
+					logger.info("Updated acctBalanceInPula → {}", newBalance);
 				}
 			}
 
-			if (provisionStr != null && !provisionStr.trim().isEmpty()) {
-				BigDecimal newProvision = new BigDecimal(provisionStr.trim());
-
-				if (existing.getProvision() == null || existing.getProvision().compareTo(newProvision) != 0) {
-					existing.setProvision(newProvision);
-					isChanged = true;
-					logger.info("Provision updated to {}", newProvision);
-				}
-			}
-			if (isChanged) {
-				M_CALOC_Detail_Repo.save(existing);
-				logger.info("Record updated successfully for account {}", acctNo);
-
-				// Format date for procedure
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_M_CALOC_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_M_CALOC_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
-					}
-				});
-
-				return ResponseEntity.ok("Record updated successfully!");
-			} else {
-				logger.info("No changes detected for ACCT_NO: {}", acctNo);
+			if (!isChanged) {
+				logger.info("No changes detected for ACCT_NO {}", acctNo);
 				return ResponseEntity.ok("No changes were made.");
 			}
 
+			// Save updated data
+			M_CALOC_Detail_Repo.save(existing);
+
+			logger.info("Record updated successfully for ACCT_NO {}", acctNo);
+
+			// Format date "yyyy-MM-dd" → "dd-MM-yyyy"
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+			// Register after-commit callback
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+				@Override
+				public void afterCommit() {
+					try {
+						logger.info("AFTER COMMIT → Executing BRRS_M_CALOC_SUMMARY_PROCEDURE({})",
+								formattedDate);
+
+						jdbcTemplate.update(
+								"BEGIN BRRS_M_CALOC_SUMMARY_PROCEDURE(?); END;",
+								formattedDate);
+
+					} catch (Exception e) {
+						logger.error("Error executing after-commit procedure", e);
+					}
+				}
+			});
+
+			return ResponseEntity.ok("Record updated successfully!");
+
 		} catch (Exception e) {
-			logger.error("Error updating M_CALOC record", e);
+			logger.error("Error updating CALOC record", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error updating record: " + e.getMessage());
 		}
 	}
+
 
 }

@@ -47,8 +47,8 @@ public class M_CALOC_Archival_Detail_Entity {
     @Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
     private BigDecimal acctBalanceInPula;
     
-    @Column(name = "PROVISION", precision = 32, scale = 2)
-    private BigDecimal provision;
+	@Column(name = "BAL_EQUI_TO_BWP")
+	private BigDecimal balEquiToBwp;
     
     @Column(name = "REPORT_DATE")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -169,12 +169,13 @@ public class M_CALOC_Archival_Detail_Entity {
 		this.acctBalanceInPula = acctBalanceInPula;
 	}
 
-	public BigDecimal getProvision() {
-		return provision;
+
+	public BigDecimal getBalEquiToBwp() {
+		return balEquiToBwp;
 	}
 
-	public void setProvision(BigDecimal provision) {
-		this.provision = provision;
+	public void setBalEquiToBwp(BigDecimal balEquiToBwp) {
+		this.balEquiToBwp = balEquiToBwp;
 	}
 
 	public Date getReportDate() {

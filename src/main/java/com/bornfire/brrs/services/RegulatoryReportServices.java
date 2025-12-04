@@ -2688,6 +2688,13 @@ public class RegulatoryReportServices {
 							request.getParameter("formmode"));
 					break;
 
+
+					case "M_CALOC":
+					modelAndView = BRRS_M_CALOC_reportService.getViewOrEditPage(
+							request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+
 				case "Q_SMME":
 					modelAndView = BRRS_Q_SMME_Intrest_Income_ReportService.getViewOrEditPage(
 							request.getParameter("acctNo"),
@@ -2831,9 +2838,15 @@ public class RegulatoryReportServices {
 				case "Q_SMME_LA":
 					response = BRRS_Q_SMME_loans_Advances_reportService.updateDetailEdit(request);
 					break;
+
+					case "M_CALOC":
+					response = BRRS_M_CALOC_reportService.updateDetailEdit(request);
+					break;
+					
 				case "Q_SMME":
 					response = BRRS_Q_SMME_Intrest_Income_ReportService.updateDetailEdit(request);
 					break;
+
 				default:
 					logger.warn("Unsupported report ID: {}", reportId);
 					response = ResponseEntity.badRequest()

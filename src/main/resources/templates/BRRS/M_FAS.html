@@ -999,6 +999,7 @@ PURPOSE		: BRRSREPORT
       $(btn).hide(); // hide the clicked Modify button
     }
 
+    
     function fileuploads(btn) {
       const asondate = btn.getAttribute("data-todate");
       const type = btn.getAttribute("data-type");
@@ -1067,6 +1068,73 @@ function cancelModify() {
 }
 
   </script>
+
+
+<script>
+  function getCellValue(selector) {
+    let el = $(selector);
+    if (!el.length) return 0;
+
+    if (el.is("input")) {
+        return parseFloat(el.val().replace(/,/g, "")) || 0;
+    } else {
+        return parseFloat(el.text().replace(/,/g, "")) || 0;
+    }
+}
+
+function setCellValue(selector, value) {
+    let el = $(selector);
+    if (!el.length) return;
+
+    const formatted = value.toLocaleString("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+
+    el.text(formatted);
+}
+
+
+// ===========================
+// SUM for all 5 columns
+// ===========================
+function calculateTotals() {
+    let columns = ["cost", "add", "disposals", "depreciation", "net_book_value"];
+
+    columns.forEach(col => {
+
+        let total = 0;
+
+        for (let i = 10; i <= 16; i++) {
+            total += getCellValue(`#r${i}_${col}`);
+        }
+
+        setCellValue(`#r17_${col}`, total);
+    });
+}
+
+
+// ===========================
+// Attach events
+// ===========================
+$(document).ready(function () {
+
+    // Initial calculation
+    calculateTotals();
+
+    // Trigger when INPUT fields change
+    $("input[id$='_cost'], input[id$='_add'], input[id$='_disposals'], input[id$='_depreciation'], input[id$='_net_book_value']")
+        .on("input", calculateTotals);
+
+    // Trigger when clicking TDs (non-input values)
+    $("td[id$='_cost'], td[id$='_add'], td[id$='_disposals'], td[id$='_depreciation'], td[id$='_net_book_value']")
+        .on("click", calculateTotals);
+});
+
+</script>
+
+
+
 </head>
 
 <title>BRRS</title>
@@ -1171,15 +1239,15 @@ function cancelModify() {
                       <tr th:each="reportsummary: ${reportsummary}">
                         <td th:text="${reportsummary.r10_fix_ass}"></td>
                         <td th:text="${reportsummary.r10_cost}" class="left" th:attr="RowId='R10', ColumnId='C2'"
-                          th:id="'r10_cost'" name="r10_cost" onclick="showdetailsbyRowAndColumn(this)"></td>
+                          id="r10_cost" name="r10_cost" onclick="showdetailsbyRowAndColumn(this)"></td>
                         <td th:text="${reportsummary.r10_add}" class="left" th:attr="RowId='R10', ColumnId='C3'"
-                          th:id="'r10_add'" name="r10_add" onclick="showdetailsbyRowAndColumn(this)"></td>
+                          id="r10_add" name="r10_add" onclick="showdetailsbyRowAndColumn(this)"></td>
                         <td th:text="${reportsummary.r10_disposals}" class="left" th:attr="RowId='R10', ColumnId='C4'"
-                          th:id="'r10_disposals'" name="r10_disposals" onclick="showdetailsbyRowAndColumn(this)"></td>
-                        <td th:text="${reportsummary.r10_depreciation}" class="left" th:id="'r10_depreciation'"
+                          id="r10_disposals" name="r10_disposals" onclick="showdetailsbyRowAndColumn(this)"></td>
+                        <td th:text="${reportsummary.r10_depreciation}" class="left" id="r10_depreciation"
                           name="'r10_depreciation'" th:attr="RowId='R10', ColumnId='C5'"
                           onclick="showdetailsbyRowAndColumn(this)"></td>
-                        <td th:text="${reportsummary.r10_net_book_value}" class="left" id="color"></td>
+                        <td th:text="${reportsummary.r10_net_book_value}" class="left" id="r10_net_book_value" style="background-color: rgb(107, 122, 143);color: white;font-weight: bold;"></td>
                       </tr>
                       <tr th:each="reportsummary: ${reportsummary}">
                         <td th:text="${reportsummary.r11_fix_ass}"></td>
@@ -1192,7 +1260,7 @@ function cancelModify() {
                         <td th:text="${reportsummary.r11_depreciation}" class="left" id="r11_depreciation"
                           name="r11_depreciation" th:attr="RowId='R11', ColumnId='C5'"
                           onclick="showdetailsbyRowAndColumn(this)"></td>
-                        <td th:text="${reportsummary.r11_net_book_value}" class="left" id="color"></td>
+                        <td th:text="${reportsummary.r11_net_book_value}" class="left" id="r11_net_book_value" style="background-color: rgb(107, 122, 143);color: white;font-weight: bold;"></td>
                       </tr>
 
                       <!-- R12 (comes from different list reportsummary1) -->
@@ -1256,7 +1324,7 @@ function cancelModify() {
                         <td th:text="${reportsummary.r13_depreciation}" class="left" id="r13_depreciation"
                           name="r13_depreciation" th:attr="RowId='R13', ColumnId='C5'"
                           onclick="showdetailsbyRowAndColumn(this)"></td>
-                        <td th:text="${reportsummary.r13_net_book_value}" class="left" id="color"></td>
+                        <td th:text="${reportsummary.r13_net_book_value}" class="left" id="r13_net_book_value" style="background-color: rgb(107, 122, 143);color: white;font-weight: bold;"></td>
                       </tr>
                       <tr th:each="reportsummary: ${reportsummary}">
                         <td th:text="${reportsummary.r14_fix_ass}"></td>
@@ -1269,7 +1337,7 @@ function cancelModify() {
                         <td th:text="${reportsummary.r14_depreciation}" class="left" id="r14_depreciation"
                           name="r14_depreciation" th:attr="RowId='R14', ColumnId='C5'"
                           onclick="showdetailsbyRowAndColumn(this)"></td>
-                        <td th:text="${reportsummary.r14_net_book_value}" class="left" id="color"></td>
+                        <td th:text="${reportsummary.r14_net_book_value}" class="left" id="r14_net_book_value" style="background-color: rgb(107, 122, 143);color: white;font-weight: bold;"></td>
                       </tr>
                       <tr th:each="reportsummary: ${reportsummary}">
                         <td th:text="${reportsummary.r15_fix_ass}"></td>
@@ -1282,7 +1350,7 @@ function cancelModify() {
                         <td th:text="${reportsummary.r15_depreciation}" class="left" id="r15_depreciation"
                           name="r15_depreciation" th:attr="RowId='R15', ColumnId='C5'"
                           onclick="showdetailsbyRowAndColumn(this)"></td>
-                        <td th:text="${reportsummary.r15_net_book_value}" class="left" id="color"></td>
+                        <td th:text="${reportsummary.r15_net_book_value}" class="left" id="r15_net_book_value" style="background-color: rgb(107, 122, 143);color: white;font-weight: bold;"></td>
                       </tr>
                       <tr th:each="reportsummary: ${reportsummary}">
                         <td th:text="${reportsummary.r16_fix_ass}"></td>
@@ -1295,15 +1363,15 @@ function cancelModify() {
                         <td th:text="${reportsummary.r16_depreciation}" class="left" id="r16_depreciation"
                           name="r16_depreciation" th:attr="RowId='R16', ColumnId='C4'"
                           onclick="showdetailsbyRowAndColumn(this)"></td>
-                        <td th:text="${reportsummary.r16_net_book_value}" class="left" id="color"></td>
+                        <td th:text="${reportsummary.r16_net_book_value}" class="left" id="r16_net_book_value" style="background-color: rgb(107, 122, 143);color: white;font-weight: bold;"></td>
                       </tr>
                       <tr th:each="reportsummary: ${reportsummary}">
                         <td th:text="${reportsummary.r17_fix_ass}" style="font-weight: bold;"></td>
-                        <td th:text="${reportsummary.r17_cost}" class="left" id="color"></td>
-                        <td th:text="${reportsummary.r17_add}" class="left" id="color"></td>
-                        <td th:text="${reportsummary.r17_disposals}" class="left" id="color"></td>
-                        <td th:text="${reportsummary.r17_depreciation}" class="left" id="color"></td>
-                        <td th:text="${reportsummary.r17_net_book_value}" class="left" id="color"></td>
+                        <td th:text="${reportsummary.r17_cost}" class="left" id="r17_cost" style="background-color: rgb(107, 122, 143);color: white;font-weight: bold;"></td>
+                        <td th:text="${reportsummary.r17_add}" class="left" id="r17_add" style="background-color: rgb(107, 122, 143);color: white;font-weight: bold;" ></td>
+                        <td th:text="${reportsummary.r17_disposals}" class="left" id="r17_disposals" style="background-color: rgb(107, 122, 143);color: white;font-weight: bold;"></td>
+                        <td th:text="${reportsummary.r17_depreciation}" class="left" id="r17_depreciation"  style="background-color: rgb(107, 122, 143);color: white;font-weight: bold;"></td>
+                        <td th:text="${reportsummary.r17_net_book_value}" class="left" id="r17_net_book_value"  style="background-color: rgb(107, 122, 143);color: white;font-weight: bold;"></td>
                       </tr>
                     </tbody>
 

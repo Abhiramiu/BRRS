@@ -5,7 +5,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "BRRS_Q_SMME_LOANS_ADVANCES_ARCHIVALTABLE_DETAIL")
+@Table(name = "BRRS_Q_SMME_LOANS_ADVANCES_DETAILTABLE")
 public class Q_SMME_loans_Advances_Detail_Entity {
   
     @Column(name = "CUST_ID")
