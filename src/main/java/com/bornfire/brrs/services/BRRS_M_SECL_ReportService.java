@@ -193,7 +193,7 @@ public ModelAndView getM_SECLView(String reportId, String fromdate, String todat
 
 	    try {
 	        // Loop from R11 to R50 and copy fields
-	        for (int i = 12; i <= 15; i++) {
+	        for (int i = 13; i <= 15; i++) {
 	            String prefix = "R" + i + "_";
 	            String[] fields = {"EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
 	                    "REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS"};
@@ -378,9 +378,7 @@ public ModelAndView getM_SECLView(String reportId, String fromdate, String todat
 	        }
 
 	            String[] totalFields = {
-	                    "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
-	                    "REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS",
-	                    "PLEDGED_ASSETS", "TOTAL"
+	                     "TOTAL"
 	            };
 
 	            // Loop from R12 to R57 and copy fields
