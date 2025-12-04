@@ -226,14 +226,14 @@ public class MCBL_Services {
 	        // ---------------- SQL PREPARATION ----------------
 	        String insertMCBL = "INSERT INTO MCBL (MCBL_GL_CODE, MCBL_GL_SUB_CODE, MCBL_HEAD_ACC_NO, " +
 	                "MCBL_DESCRIPTION, MCBL_CURRENCY, MCBL_DEBIT_BALANCE, MCBL_CREDIT_BALANCE, " +
-	                "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, REPORT_CODE, HOME_CURRENCY, DEL_FLG, VERSION, ENTRY_USER, ENTRY_TIME, REPORT_DATE, " +
-	                "CUST_FLG, MODIFY_TIME, VERIFY_TIME, MODIFY_USER, VERIFY_USER, ENTRY_FLG, MODIFY_FLG, VERIFY_FLG) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Y','N', 'N')";
+	                "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, REPORT_CODE, HOME_CURRENCY, DEL_FLG, VERSION, ENTRY_USER, ENTRY_TIME,UPLOAD_DATE, REPORT_DATE, " +
+	                "CUST_FLG, MODIFY_TIME, VERIFY_TIME, MODIFY_USER, VERIFY_USER, ENTRY_FLG, MODIFY_FLG, VERIFY_FLG) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Y','N', 'N')";
 	        PreparedStatement insertStmt = conn.prepareStatement(insertMCBL);
 
 	        String insertGeneral = "INSERT INTO GENERAL_MASTER_TABLE (ID, MCBL_GL_CODE, GL_SUB_HEAD_CODE, " +
 	                "ACCOUNT_NO, MCBL_DESCRIPTION, CURRENCY, MCBL_DEBIT_BALANCE, MCBL_CREDIT_BALANCE, " +
-	                "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, REPORT_CODE, DEL_FLG, VERSION, ENTRY_USER, ENTRY_TIME, REPORT_DATE, MCBL_FLG) " +
-	                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	                "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, REPORT_CODE, DEL_FLG, VERSION, ENTRY_USER, ENTRY_TIME, UPLOAD_DATE, REPORT_DATE, MCBL_FLG) " +
+	                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	        PreparedStatement insertGeneralStmt = conn.prepareStatement(insertGeneral);
 
 	        String insertTrack = "INSERT INTO BRRS_MCBL_ACCOUNT_TRACK " +
@@ -302,19 +302,18 @@ public class MCBL_Services {
 	            insertStmt.setInt(13, version); // VERSION
 	            insertStmt.setString(14, userid);
 	            insertStmt.setDate(15, new java.sql.Date(System.currentTimeMillis()));
-	            insertStmt.setDate(16, sqlReportDate);
-	            insertStmt.setString(17, custFlg);
-	            insertStmt.setDate(18, sqlReportDate);
+	            insertStmt.setDate(16, new java.sql.Date(System.currentTimeMillis()));	//Upload Date
+	            insertStmt.setDate(17, sqlReportDate);
+	            insertStmt.setString(18, custFlg);
 	            insertStmt.setDate(19, sqlReportDate);
-	            insertStmt.setString(20, userid);
+	            insertStmt.setDate(20, sqlReportDate);
 	            insertStmt.setString(21, userid);
+	            insertStmt.setString(22, userid);
 	            
 	            insertStmt.addBatch();
 
-	            // --- Insert GENERAL_MASTER_TABLE (if numeric) ---
-	            if (isNumeric(headAccNo)) {
+	           
 	                String generalKey = headAccNo + "|" + sqlReportDate;
-	                if (!existingGeneralKeys.contains(generalKey)) {
 	                    insertGeneralStmt.setString(1, sequence.generateRequestUUId());
 	                    insertGeneralStmt.setString(2, glCode);
 	                    insertGeneralStmt.setString(3, glSubCode);
@@ -330,15 +329,13 @@ public class MCBL_Services {
 	                    insertGeneralStmt.setInt(13, version); // VERSION
 	                    insertGeneralStmt.setString(14, userid);
 	                    insertGeneralStmt.setDate(15, new java.sql.Date(System.currentTimeMillis()));
-	                    insertGeneralStmt.setDate(16, sqlReportDate);
-	                    insertGeneralStmt.setString(17, "Y");
+	                    insertGeneralStmt.setDate(16, new java.sql.Date(System.currentTimeMillis()));	//UPLOAD DATE
+	                    insertGeneralStmt.setDate(17, sqlReportDate);
+	                    insertGeneralStmt.setString(18, "Y");
 	                    
 	                    insertGeneralStmt.addBatch();
 	                    existingGeneralKeys.add(generalKey);
-	                } else {
-	                    skippedExistingDupes++;
-	                }
-	            }
+	            
 
 	            currentAccounts.add(headAccNo);
 	            count++;
