@@ -2595,166 +2595,73 @@ numberStyle.setFont(font);
 /// RESUB VIEW
 	public List<Object[]> getM_SECResub() {
 	    List<Object[]> resubList = new ArrayList<>();
-
 	    try {
-	        // Fetch all archival versions
-	        List<BRRS_M_SEC_Archival_Summary_Entity1> latestArchivalList =
-	                archivalSummaryRepo1.getdatabydateListWithVersionAll();
-	        List<BRRS_M_SEC_Archival_Summary_Entity2> latestArchivalList1 =
-	                archivalSummaryRepo2.getdatabydateListWithVersionAll();
-	        List<BRRS_M_SEC_Archival_Summary_Entity3> latestArchivalList2 =
-	                archivalSummaryRepo3.getdatabydateListWithVersionAll();
-	        List<BRRS_M_SEC_Archival_Summary_Entity4> latestArchivalList3 =
-	                archivalSummaryRepo4.getdatabydateListWithVersionAll();
+	        List<BRRS_M_SEC_Archival_Summary_Entity1> latestArchivalList =archivalSummaryRepo1
+	                .getdatabydateListWithVersion();
 
-	        // ===========================
-	        // Process List #1
-	        // ===========================
 	        if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 	            for (BRRS_M_SEC_Archival_Summary_Entity1 entity : latestArchivalList) {
-	                Object[] row = new Object[]{
+	                resubList.add(new Object[] {
 	                        entity.getReportDate(),
 	                        entity.getReportVersion()
-	                };
-	                resubList.add(row);
+	                });
 	            }
+	            System.out.println("Fetched " + resubList.size() + " record(s)");
+	        } else {
+	            System.out.println("No archival data found.");
 	        }
-
-	        // ===========================
-	        // Process List #2
-	        // ===========================
-	        if (latestArchivalList1 != null && !latestArchivalList1.isEmpty()) {
-	            for (BRRS_M_SEC_Archival_Summary_Entity2 entity : latestArchivalList1) {
-	                Object[] row = new Object[]{
-	                        entity.getReportDate(),
-	                        entity.getReportVersion()
-	                };
-	                resubList.add(row);
-	            }
-	        }
-
-	        // ===========================
-	        // Process List #3
-	        // ===========================
-	        if (latestArchivalList2 != null && !latestArchivalList2.isEmpty()) {
-	            for (BRRS_M_SEC_Archival_Summary_Entity3 entity : latestArchivalList2) {
-	                Object[] row = new Object[]{
-	                        entity.getReportDate(),
-	                        entity.getReportVersion()
-	                };
-	                resubList.add(row);
-	            }
-	        }
-
-	        // ===========================
-	        // Process List #4
-	        // ===========================
-	        if (latestArchivalList3 != null && !latestArchivalList3.isEmpty()) {
-	            for (BRRS_M_SEC_Archival_Summary_Entity4 entity : latestArchivalList3) {
-	                Object[] row = new Object[]{
-	                        entity.getReportDate(),
-	                        entity.getReportVersion()
-	                };
-	                resubList.add(row);
-	            }
-	        }
-
-	        System.out.println("Fetched total " + resubList.size() + " record(s)");
 
 	    } catch (Exception e) {
 	        System.err.println("Error fetching M_SEC Resub data: " + e.getMessage());
 	        e.printStackTrace();
 	    }
-
 	    return resubList;
 	}
 
-
-	// Archival View
 	public List<Object[]> getM_SECArchival() {
 	    List<Object[]> archivalList = new ArrayList<>();
-
 	    try {
-	        List<BRRS_M_SEC_Archival_Summary_Entity1> repoData  = archivalSummaryRepo1.getdatabydateListWithVersionAll();
-	        List<BRRS_M_SEC_Archival_Summary_Entity2> repoData1 = archivalSummaryRepo2.getdatabydateListWithVersionAll();
-	        List<BRRS_M_SEC_Archival_Summary_Entity3> repoData2 = archivalSummaryRepo3.getdatabydateListWithVersionAll();
-	        List<BRRS_M_SEC_Archival_Summary_Entity4> repoData3 = archivalSummaryRepo4.getdatabydateListWithVersionAll();
+	        List<BRRS_M_SEC_Archival_Summary_Entity1> latestArchivalList =archivalSummaryRepo1
+	                .getdatabydateListWithVersion();
 
-	        // Process List 1
-	        if (repoData != null && !repoData.isEmpty()) {
-	            for (BRRS_M_SEC_Archival_Summary_Entity1 entity : repoData) {
+	        if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+	            for (BRRS_M_SEC_Archival_Summary_Entity1 entity : latestArchivalList) {
 	                archivalList.add(new Object[] {
 	                        entity.getReportDate(),
 	                        entity.getReportVersion()
 	                });
 	            }
-	            System.out.println("Repo1 records: " + repoData.size());
+	            System.out.println("Fetched " + archivalList.size() + " record(s)");
+	        } else {
+	            System.out.println("No archival data found.");
 	        }
-
-	        // Process List 2
-	        if (repoData1 != null && !repoData1.isEmpty()) {
-	            for (BRRS_M_SEC_Archival_Summary_Entity2 entity : repoData1) {
-	                archivalList.add(new Object[] {
-	                        entity.getReportDate(),
-	                        entity.getReportVersion()
-	                });
-	            }
-	            System.out.println("Repo2 records: " + repoData1.size());
-	        }
-
-	        // Process List 3
-	        if (repoData2 != null && !repoData2.isEmpty()) {
-	            for (BRRS_M_SEC_Archival_Summary_Entity3 entity : repoData2) {
-	                archivalList.add(new Object[] {
-	                        entity.getReportDate(),
-	                        entity.getReportVersion()
-	                });
-	            }
-	            System.out.println("Repo3 records: " + repoData2.size());
-	        }
-
-	        // Process List 4
-	        if (repoData3 != null && !repoData3.isEmpty()) {
-	            for (BRRS_M_SEC_Archival_Summary_Entity4 entity : repoData3) {
-	                archivalList.add(new Object[] {
-	                        entity.getReportDate(),
-	                        entity.getReportVersion()
-	                });
-	            }
-	            System.out.println("Repo4 records: " + repoData3.size());
-	        }
-
-	        System.out.println("Fetched total " + archivalList.size() + " archival records");
 
 	    } catch (Exception e) {
-	        System.err.println("Error fetching M_SEC Archival data: " + e.getMessage());
+	        System.err.println("Error fetching M_SEC Resub data: " + e.getMessage());
 	        e.printStackTrace();
 	    }
-
 	    return archivalList;
 	}
 
-
-
 	public void updateReportReSub(
-	        BRRS_M_SEC_Summary_Entity1 updatedEntity1,
-	        BRRS_M_SEC_Summary_Entity2 updatedEntity2,
-	        BRRS_M_SEC_Summary_Entity3 updatedEntity3,
-	        BRRS_M_SEC_Summary_Entity4 updatedEntity4) {
+	       BRRS_M_SEC_Summary_Entity1 updatedEntity1,
+	       BRRS_M_SEC_Summary_Entity2 updatedEntity2,
+	       BRRS_M_SEC_Summary_Entity3 updatedEntity3,
+	       BRRS_M_SEC_Summary_Entity4 updatedEntity4) {
 
-	    System.out.println("Came to M_SEC Resub Service");
+	    System.out.println("Came t M_SEC Resub Service");
 	    System.out.println("Report Date: " + updatedEntity1.getReportDate());
 
 	    Date reportDate = updatedEntity1.getReportDate();
 	    int newVersion = 1;
 
 	    try {
-	        // 🔹 Fetch latest archival version (from Entity1 table)
-	        Optional<BRRS_M_SEC_Archival_Summary_Entity1> latestArchivalOpt1 =
-	                archivalSummaryRepo1.getLatestArchivalVersionByDate(reportDate);
+	        // 🔹 Fetch the latest archival version for this report date from Entity1
+	        Optional<BRRS_M_SEC_Archival_Summary_Entity1> latestArchivalOpt1 =archivalSummaryRepo1
+	                .getLatestArchivalVersionByDate(reportDate);
 
 	        if (latestArchivalOpt1.isPresent()) {
-	            BRRS_M_SEC_Archival_Summary_Entity1 latestArchival = latestArchivalOpt1.get();
+	        	BRRS_M_SEC_Archival_Summary_Entity1 latestArchival = latestArchivalOpt1.get();
 	            try {
 	                newVersion = Integer.parseInt(latestArchival.getReportVersion()) + 1;
 	            } catch (NumberFormatException e) {
@@ -2765,54 +2672,55 @@ numberStyle.setFont(font);
 	            System.out.println("No previous archival found for date: " + reportDate);
 	        }
 
-	        // 🔹 Prevent duplicate version number (Check only in Repo1)
-	        boolean exists = archivalSummaryRepo1
+	        // 🔹 Prevent duplicate version number in Repo1
+	        boolean exists =archivalSummaryRepo1
 	                .findByReportDateAndReportVersion(reportDate, String.valueOf(newVersion))
 	                .isPresent();
 
 	        if (exists) {
-	            throw new RuntimeException("⚠ Version " + newVersion +
-	                    " already exists for report date " + reportDate);
+	            throw new RuntimeException("⚠ Version " + newVersion + " already exists for report date " + reportDate);
 	        }
 
-	        // 🔹 Create 4 archival entities
+	        // Copy data from summary to archival entities for all 3 entities
 	        BRRS_M_SEC_Archival_Summary_Entity1 archivalEntity1 = new BRRS_M_SEC_Archival_Summary_Entity1();
 	        BRRS_M_SEC_Archival_Summary_Entity2 archivalEntity2 = new BRRS_M_SEC_Archival_Summary_Entity2();
 	        BRRS_M_SEC_Archival_Summary_Entity3 archivalEntity3 = new BRRS_M_SEC_Archival_Summary_Entity3();
 	        BRRS_M_SEC_Archival_Summary_Entity4 archivalEntity4 = new BRRS_M_SEC_Archival_Summary_Entity4();
-
-	        // Copy data
+	       
 	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity1, archivalEntity1);
 	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity2, archivalEntity2);
 	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity3, archivalEntity3);
 	        org.springframework.beans.BeanUtils.copyProperties(updatedEntity4, archivalEntity4);
+	        
 
-	        // 🔹 Set common fields
+	        // Set common fields
 	        Date now = new Date();
-
 	        archivalEntity1.setReportDate(reportDate);
 	        archivalEntity2.setReportDate(reportDate);
 	        archivalEntity3.setReportDate(reportDate);
 	        archivalEntity4.setReportDate(reportDate);
+	        
 
 	        archivalEntity1.setReportVersion(String.valueOf(newVersion));
 	        archivalEntity2.setReportVersion(String.valueOf(newVersion));
 	        archivalEntity3.setReportVersion(String.valueOf(newVersion));
 	        archivalEntity4.setReportVersion(String.valueOf(newVersion));
+	        
 
 	        archivalEntity1.setReportResubDate(now);
 	        archivalEntity2.setReportResubDate(now);
 	        archivalEntity3.setReportResubDate(now);
 	        archivalEntity4.setReportResubDate(now);
+	        
 
 	        System.out.println("Saving new archival version: " + newVersion);
 
-	        // 🔹 Save to archival repositories
+	        // Save to all three archival repositories
 	        archivalSummaryRepo1.save(archivalEntity1);
 	        archivalSummaryRepo2.save(archivalEntity2);
 	        archivalSummaryRepo3.save(archivalEntity3);
 	        archivalSummaryRepo4.save(archivalEntity4);
-
+	       
 	        System.out.println("Saved archival version successfully: " + newVersion);
 
 	    } catch (Exception e) {
