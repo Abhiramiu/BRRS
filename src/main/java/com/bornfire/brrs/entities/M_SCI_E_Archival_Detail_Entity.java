@@ -15,10 +15,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "BRRS_M_SCI_E_ARCHIVALTABLE_DETAIL")
 public class M_SCI_E_Archival_Detail_Entity {
 
-	@Id
+
 	 @Column(name = "CUST_ID")
   private String custId;
-
+		@Id
   @Column(name = "ACCT_NUMBER")
   private String acctNumber;
 

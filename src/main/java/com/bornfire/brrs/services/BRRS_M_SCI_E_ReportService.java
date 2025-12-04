@@ -115,24 +115,29 @@ public class BRRS_M_SCI_E_ReportService {
 		System.out.println("testing");
 		System.out.println(version);
 
-		if (type.equals("ARCHIVAL") & version != null) {
-			System.out.println(type);
-			List<M_SCI_E_Archival_Summary_Entity> T1Master = new ArrayList<M_SCI_E_Archival_Summary_Entity>();
-			List<M_SCI_E_Archival_Manual_Summary_Entity> T2Master = new ArrayList<M_SCI_E_Archival_Manual_Summary_Entity>();
-			System.out.println(version);
-			try {
-				
+		if ("ARCHIVAL".equals(type) && version != null && !version.isEmpty()) {
 
-				T1Master = brrs_m_sci_e_Archival_summary_repo.getdatabydateListarchival(dateformat.parse(todate), version);
-				T2Master = m_sci_e_manual_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate),
-						version);
+		    System.out.println("ARCHIVAL MODE");
+		    System.out.println("version = " + version);
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+		    List<M_SCI_E_Archival_Summary_Entity> T1Master = new ArrayList<>();
+		    List<M_SCI_E_Archival_Manual_Summary_Entity> T2Master = new ArrayList<>();
 
-			mv.addObject("reportsummary", T1Master);
-			mv.addObject("reportsummary1", T2Master);
+		    try {
+		        Date dt = dateformat.parse(todate);
+
+		        T1Master = brrs_m_sci_e_Archival_summary_repo.getdatabydateListarchival(dt, version);
+		        T2Master = m_sci_e_manual_Archival_Summary_Repo.getdatabydateListarchival(dt, version);
+
+		        System.out.println("T1Master size = " + T1Master.size());
+		        System.out.println("T2Master size = " + T2Master.size());
+
+		    } catch (ParseException e) {
+		        e.printStackTrace();
+		    }
+
+		    mv.addObject("reportsummary", T1Master);
+		    mv.addObject("reportsummary1", T2Master);
 		} else {
 
 			List<M_SCI_E_Summary_Entity> T1Master = new ArrayList<M_SCI_E_Summary_Entity>();
@@ -1903,9 +1908,7 @@ Cell cellC,cellD;
 						row = sheet.createRow(startRow + i);
 					}
 
-Cell cellC,cellD; 
-
-   
+Cell cellC,cellD;    
 					
 					// row11
 					
@@ -3376,11 +3379,22 @@ Cell cellC,cellD;
 	}
 	
 	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public List<Object> getM_SCI_EArchival() {
 		List<Object> M_SCI_EArchivallist = new ArrayList<>();
 		try {
-			M_SCI_EArchivallist = brrs_m_sci_e_Archival_summary_repo.get_M_SCI_Earchival();
-			M_SCI_EArchivallist = brrs_m_sci_e_Archival_summary_repo.get_M_SCI_Earchival();
+			M_SCI_EArchivallist = brrs_m_sci_e_Archival_summary_repo.getM_SCI_Earchival();
+			M_SCI_EArchivallist = m_sci_e_manual_Archival_Summary_Repo.getM_SCI_Earchival();
 			System.out.println("countser" + M_SCI_EArchivallist.size());
 			System.out.println("countser" + M_SCI_EArchivallist.size());
 		} catch (Exception e) {
