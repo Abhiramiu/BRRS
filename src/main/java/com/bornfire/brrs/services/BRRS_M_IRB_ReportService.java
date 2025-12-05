@@ -53,22 +53,22 @@ public class BRRS_M_IRB_ReportService {
     SessionFactory sessionFactory;
 
     @Autowired
-    M_IRB_SUMMARY_REPO_1 m_irb_summary_repo_1;
+    M_IRB_Summary_Repo2 m_irb_summary_repo_1;
 
     @Autowired
-    M_IRB_SUMMARY_REPO_2 m_irb_summary_repo_2;
+    M_IRB_Summary_Repo1 m_irb_summary_repo_2;
 
     @Autowired
-    BRRS_M_IRB_DETAIL_REPO brrs_m_irb_detail_repo;
+    BRRS_M_IRB_Detail_Repo brrs_m_irb_detail_repo;
 
     @Autowired
-    BRRS_M_IRB_DETAIL_ARCHIVAL_REPO M_IRB_Archival_Detail_Repo;
+    BRRS_M_IRB_Detail_Archival_Repo M_IRB_Archival_Detail_Repo;
 
     @Autowired
-    M_IRB_SUMMARY_ARCHIVAL_REPO_2 M_IRB_Archival_Summary_Repo_2;
+    M_IRB_Archival_Summary_Repo1 M_IRB_Archival_Summary_Repo_2;
 
     @Autowired
-    M_IRB_SUMMARY_ARCHIVAL_REPO_1 M_IRB_Archival_Summary_Repo_1;
+    M_IRB_Archival_Summary_Repo2 M_IRB_Archival_Summary_Repo_1;
 
     SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -82,8 +82,8 @@ public class BRRS_M_IRB_ReportService {
         int startItem = currentPage * pageSize;
 
         if (type.equals("ARCHIVAL") & version != null) {
-            List<M_IRB_SUMMARY_ARCHIVAL_ENTITY_2> T1Master = new ArrayList<M_IRB_SUMMARY_ARCHIVAL_ENTITY_2>();
-            List<M_IRB_SUMMARY_ARCHIVAL_ENTITY_1> T2Master = new ArrayList<M_IRB_SUMMARY_ARCHIVAL_ENTITY_1>();
+            List<M_IRB_Archival_Summary_Entity1> T1Master = new ArrayList<M_IRB_Archival_Summary_Entity1>();
+            List<M_IRB_Archival_Summary_Entity2> T2Master = new ArrayList<M_IRB_Archival_Summary_Entity2>();
             try {
                 Date d1 = dateformat.parse(todate);
                 T2Master = M_IRB_Archival_Summary_Repo_1.getdatabydateListarchival(dateformat.parse(todate), version);
@@ -96,8 +96,8 @@ public class BRRS_M_IRB_ReportService {
             mv.addObject("reportsummary2", T2Master);
         } else {
 
-            List<M_IRB_SUMMARY_ENTITY_1> T2Master = new ArrayList<M_IRB_SUMMARY_ENTITY_1>();
-            List<M_IRB_SUMMARY_ENTITY_2> T1Master = new ArrayList<M_IRB_SUMMARY_ENTITY_2>();
+            List<M_IRB_Summary_Entity2> T2Master = new ArrayList<M_IRB_Summary_Entity2>();
+            List<M_IRB_Summary_Entity1> T1Master = new ArrayList<M_IRB_Summary_Entity1>();
             try {
                 Date d1 = dateformat.parse(todate);
 
@@ -156,7 +156,7 @@ public class BRRS_M_IRB_ReportService {
             if ("ARCHIVAL".equals(type) && version != null) {
                 System.out.println(type);
                 // 🔹 Archival branch
-                List<BRRS_M_IRB_DETAILS_ARCHIVAL_ENTITY> T1Dt1;
+                List<BRRS_M_IRB_Detail_Archival_Entity> T1Dt1;
                 if (rowId != null && columnId != null) {
                     T1Dt1 = M_IRB_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
                 } else {
@@ -171,7 +171,7 @@ public class BRRS_M_IRB_ReportService {
             } else {
                 System.out.println("Praveen");
                 // 🔹 Current branch
-                List<BRRS_M_IRB_DETAILS_ENTITY> T1Dt1;
+                List<BRRS_M_IRB_Detail_Entity> T1Dt1;
                 if (rowId != null && columnId != null) {
                     T1Dt1 = brrs_m_irb_detail_repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
                 } else {
@@ -216,8 +216,8 @@ public class BRRS_M_IRB_ReportService {
             return ARCHIVALreport;
         }
 
-        List<M_IRB_SUMMARY_ENTITY_2> dataList = m_irb_summary_repo_2.getdatabydateList(dateformat.parse(todate));
-        List<M_IRB_SUMMARY_ENTITY_1> dataList2 = m_irb_summary_repo_1.getdatabydateList(dateformat.parse(todate));
+        List<M_IRB_Summary_Entity1> dataList = m_irb_summary_repo_2.getdatabydateList(dateformat.parse(todate));
+        List<M_IRB_Summary_Entity2> dataList2 = m_irb_summary_repo_1.getdatabydateList(dateformat.parse(todate));
 
         if (dataList.isEmpty()) {
             logger.warn("Service: No data found for M_IRB report. Returning empty result.");
@@ -327,7 +327,7 @@ public class BRRS_M_IRB_ReportService {
         }
     }
 
-    private void populateEntity2Data(Sheet sheet, M_IRB_SUMMARY_ENTITY_1 record, CellStyle textStyle, CellStyle numberStyle) {
+    private void populateEntity2Data(Sheet sheet, M_IRB_Summary_Entity2 record, CellStyle textStyle, CellStyle numberStyle) {
 
                     Row row = sheet.getRow(53) != null ? sheet.getRow(53) : sheet.createRow(53);
                     // Row 54
@@ -2659,7 +2659,7 @@ public class BRRS_M_IRB_ReportService {
 
     }
 
-    private void populateEntity1Data(Sheet sheet, M_IRB_SUMMARY_ENTITY_2 record, CellStyle textStyle, CellStyle numberStyle) {
+    private void populateEntity1Data(Sheet sheet, M_IRB_Summary_Entity1 record, CellStyle textStyle, CellStyle numberStyle) {
 
         Row row = sheet.getRow(11) != null ? sheet.getRow(11) : sheet.createRow(11);
 //        Row row;
@@ -5365,10 +5365,10 @@ public class BRRS_M_IRB_ReportService {
             }
 // Get data
             Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-            List<BRRS_M_IRB_DETAILS_ENTITY> reportData = brrs_m_irb_detail_repo.getdatabydateList(parsedToDate);
+            List<BRRS_M_IRB_Detail_Entity> reportData = brrs_m_irb_detail_repo.getdatabydateList(parsedToDate);
             if (reportData != null && !reportData.isEmpty()) {
                 int rowIndex = 1;
-                for (BRRS_M_IRB_DETAILS_ENTITY item : reportData) {
+                for (BRRS_M_IRB_Detail_Entity item : reportData) {
                     XSSFRow row = sheet.createRow(rowIndex++);
                     row.createCell(0).setCellValue(item.getCust_id());
                     row.createCell(1).setCellValue(item.getAcct_number());
@@ -5431,8 +5431,8 @@ public class BRRS_M_IRB_ReportService {
         if (type.equals("ARCHIVAL") & version != null) {
 
         }
-        List<M_IRB_SUMMARY_ARCHIVAL_ENTITY_1> dataList = M_IRB_Archival_Summary_Repo_1.getdatabydateListarchival(dateformat.parse(todate), version);
-        List<M_IRB_SUMMARY_ARCHIVAL_ENTITY_2> dataList2 = M_IRB_Archival_Summary_Repo_2.getdatabydateListarchival(dateformat.parse(todate), version);
+        List<M_IRB_Archival_Summary_Entity2> dataList = M_IRB_Archival_Summary_Repo_1.getdatabydateListarchival(dateformat.parse(todate), version);
+        List<M_IRB_Archival_Summary_Entity1> dataList2 = M_IRB_Archival_Summary_Repo_2.getdatabydateListarchival(dateformat.parse(todate), version);
 
         if (dataList.isEmpty()) {
             logger.warn("Service: No data found for M_PI report. Returning empty result.");
@@ -5503,7 +5503,7 @@ public class BRRS_M_IRB_ReportService {
 
             if (!dataList.isEmpty()) {
                 for (int i = 0; i < dataList.size(); i++) {
-                    M_IRB_SUMMARY_ARCHIVAL_ENTITY_1 record = dataList.get(i);
+                    M_IRB_Archival_Summary_Entity2 record = dataList.get(i);
                     System.out.println("rownumber=" + startRow + i);
                     Row row = sheet.getRow(startRow + i);
                     if (row == null) {
@@ -5597,13 +5597,13 @@ public class BRRS_M_IRB_ReportService {
 
             // Get data
             Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-            List<BRRS_M_IRB_DETAILS_ARCHIVAL_ENTITY> reportData = M_IRB_Archival_Detail_Repo.getdatabydateList(parsedToDate,
+            List<BRRS_M_IRB_Detail_Archival_Entity> reportData = M_IRB_Archival_Detail_Repo.getdatabydateList(parsedToDate,
                     version);
             System.out.println("Size");
             System.out.println(reportData.size());
             if (reportData != null && !reportData.isEmpty()) {
                 int rowIndex = 1;
-                for (BRRS_M_IRB_DETAILS_ARCHIVAL_ENTITY item : reportData) {
+                for (BRRS_M_IRB_Detail_Archival_Entity item : reportData) {
                     XSSFRow row = sheet.createRow(rowIndex++);
 
                     row.createCell(0).setCellValue(item.getCust_id());

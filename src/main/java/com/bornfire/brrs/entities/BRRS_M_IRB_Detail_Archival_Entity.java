@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(name="M_IRB_DETAIL_ARCHIVAL_TABLE")
-public class BRRS_M_IRB_DETAILS_ARCHIVAL_ENTITY {
+public class BRRS_M_IRB_Detail_Archival_Entity {
 
     @Id
     private String cust_id;
@@ -221,9 +221,9 @@ public class BRRS_M_IRB_DETAILS_ARCHIVAL_ENTITY {
         this.del_flg = del_flg;
     }
 
-    public BRRS_M_IRB_DETAILS_ARCHIVAL_ENTITY() {}
+    public BRRS_M_IRB_Detail_Archival_Entity() {}
 
-    public BRRS_M_IRB_DETAILS_ARCHIVAL_ENTITY(String cust_id, String acct_number, String acct_name, String data_type, String row_id,
+    public BRRS_M_IRB_Detail_Archival_Entity(String cust_id, String acct_number, String acct_name, String data_type, String row_id,
                                               String column_id, String report_remarks, String modification_remarks, String data_entry_version,
                                               BigDecimal acct_balance_in_pula, Date report_date, String report_name, String create_user, Date create_time,
                                               String modify_user, Date modify_time, String verify_user, Date verify_time, String entity_flg,

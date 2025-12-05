@@ -1,20 +1,14 @@
 package com.bornfire.brrs.entities;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import org.springframework.format.annotation.DateTimeFormat;
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Entity
-@Table(name = "BRRS_M_IRB_SUMMARY_TABLE")
-public class M_IRB_SUMMARY_ENTITY_1 {
+@Table(name = "BRRS_M_IRB_ARCHIVALTABLE_SUMMARY2")
+public class M_IRB_Archival_Summary_Entity2 {
 	
 	@Id
 	private Date	report_date;
