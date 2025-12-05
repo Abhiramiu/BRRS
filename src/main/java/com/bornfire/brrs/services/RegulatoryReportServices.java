@@ -254,6 +254,10 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_Q_ATF_ReportService brrs_q_atf_reportservice;
+	
+
+	@Autowired
+	BRRS_M_I_S_CA_ReportService brrs_m_i_s_ca_reportservice;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -664,6 +668,16 @@ public class RegulatoryReportServices {
 						pageable, type, version);
 
 				break;
+				
+				
+				
+			case "M_I_S_CA":
+
+				repsummary = brrs_m_i_s_ca_reportservice.getM_I_S_CAView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
+				
 
 		}
 
@@ -858,6 +872,18 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, Filter, type, version);
 				break;
+				
+				
+			case "M_I_S_CA":
+
+					repdetail = brrs_m_i_s_ca_reportservice.getM_I_S_CAcurrentDtl(reportId, fromdate, todate, currency,
+							dtltype,
+							pageable, Filter, type, version);
+					break;
+					
+				
+				
+				
 
 		}
 		return repdetail;
@@ -1592,6 +1618,24 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+				
+			case "M_I_S_CA":
+				try {
+
+					repfile = brrs_m_i_s_ca_reportservice.getM_I_S_CAExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+								
+				
+				
+				
+				
 
 		}
 		return repfile;
@@ -2108,6 +2152,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+			case "M_I_S_CA":
+				try {
+					archivalData = brrs_m_i_s_ca_reportservice.getM_I_S_CAArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
 
 			// New Archival
 			case "M_SRWA_12H":
@@ -2461,6 +2516,18 @@ public class RegulatoryReportServices {
 			fileData = brrs_m_sci_e_reportservice.getM_SCI_EDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
+		
+		
+		else if ("M_I_S_CA".equals(filename)) {
+
+			fileData = brrs_m_i_s_ca_reportservice.getM_I_S_CADetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
+		
+		
+		
+		
 
 		if (fileData == null) {
 			// logger.warn("Excel generation failed or no data for jobId: {}", jobId);
@@ -2637,7 +2704,10 @@ public class RegulatoryReportServices {
 							request.getParameter("formmode"));
 					break;
 	
-
+				case "M_I_S_CA":
+					modelAndView = brrs_m_i_s_ca_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 
 
 				default:
@@ -2747,6 +2817,12 @@ public class RegulatoryReportServices {
 					break;
 
 
+					
+				case "M_I_S_CA":
+					response = brrs_m_i_s_ca_reportservice.updateDetailEdit(request);
+					break;
+					
+					
 
 				case "M_FAS":
 					response = BRRS_M_FAS_reportservice.updateDetailEdit(request);

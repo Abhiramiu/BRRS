@@ -1,0 +1,3711 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: ISHWARYA 
+CREATED ON	: 03.12.2025
+PURPOSE		: BRRS REPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+
+
+<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+
+<!-- jQuery (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+
+<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+					.boards {
+						transform: translateY(6px);
+					  background-color: rgb(107, 122, 143);
+					  color: white;
+					  padding: 5px 80px;
+					  border-radius: 8px;
+					  overflow: hidden;
+					  white-space: nowrap;
+					  flex: 1; /* ✅ makes it take available space dynamically */
+					  min-width: 200px;
+					  box-shadow: 0 0 10px rgb(107, 122, 143);
+					  position: relative;
+					}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
+	
+	
+	<style>
+					/* Keep the header fixed and aligned */
+					.dataTables_scrollHeadInner,
+					.dataTables_scrollBody table {
+					  width: 100% !important;
+					}
+
+					/* Prevent thead shrinking at zoom */
+					.dataTables_scrollHeadInner table {
+					  width: 100% !important;
+					  min-width: 100% !important;
+					}
+
+					#reportdetails {
+					  width: 100% !important;
+					  table-layout: fixed !important;
+					}
+
+					#reportdetails th, 
+					#reportdetails td {
+					  white-space: nowrap;
+					}
+					table.dataTable th.dt-type-numeric,
+						table.dataTable th.dt-type-date,
+						table.dataTable td.dt-type-numeric,
+						table.dataTable td.dt-type-date {
+						    text-align: left !important;
+						}
+						
+						/* Right-align header (6th column = ACCT BALANCE) */
+															table.dataTable th.dt-type-numeric:nth-child(6) {
+															  text-align: right !important;
+															}
+															
+															/* Right-align data (6th column = ACCT BALANCE) */
+																									#reportdetails td:nth-child(6),
+																									.dataTables_scrollHeadInner table th:nth-child(6) {
+																									 text-align: right !important;
+																									 padding-right: 10px !important;
+																										}
+						
+				
+
+
+
+						  
+						</style>
+				
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
+
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
+
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+.table td {
+	background-color: #FFFFFF;
+}
+
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
+
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
+
+#BRFvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
+
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
+
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+
+
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
+
+.error {
+	color: red;
+	padding-top: 15px;
+}
+
+.form-control:focus {
+	border-color: #007bff;
+}
+
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
+	) ~ .form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~ .form-legend {
+	color: #0056b3; /* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus ) ~ .form-legend {
+	color: #aaa; /* Normal label color */
+}
+
+.table-cell tbody td:hover {
+	background-color: #f0f0f0; /* Hover color for cell */
+	cursor: pointer; /* Optional: pointer cursor */
+}
+
+.table-bordered td, .table-bordered th {
+	border: 1px solid #000 !important;
+}
+</style>
+
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.green-cell {
+	 background-color: rgb(107, 122, 143) !important;
+    color: white !important;
+}
+</style>
+
+
+<script th:inline="javascript">
+
+$(document).ready(function() {
+    // hide loader on normal load
+    $('#loader').modal('hide');
+});
+
+$(window).on('pageshow', function() {
+    // hide loader on back/forward nav
+    $('#loader').modal('hide');
+});
+
+$(window).on('beforeunload', function() {
+    // hide loader on leaving page
+    $('#loader').modal('hide');
+});
+
+	
+
+	function home() {
+        $("#loader").modal("toggle");
+		location.href = 'Dashboard'
+	}
+
+	function back() {
+        $("#loader").modal("toggle");
+
+		window.history.back();
+	}
+	
+	//to fetch summary from the database - called from the summary button
+		//to fetch summary from the database - called from the summary button
+	function showdetails() {
+    
+    var Callurl;
+    	$('#loader').modal('show');
+        Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+        location.href = Callurl;
+        	console.log(Callurl);
+   /*  $.ajax({
+        type: 'get',
+        url: Callurl,
+        beforeSend: function () {
+            $('#loader').modal('show'); // 🔄 Show loader
+        },
+        success: function (data) {
+            $('.content').html(data);
+            //$("#detailsbtn").addClass("active");
+            //tablepagination();
+        },
+        complete: function () {
+            $('#loader').modal('hide'); 
+        },
+        error: function () {
+        	  $('#loader').modal('hide');
+            alert("Something went wrongss. Please try again.");
+          
+        }
+    }); */
+}
+		
+				function showsummary() {
+							var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
+							loader.show();
+							var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
+								location.href = Callurl;
+
+						}
+    </script>
+
+
+
+<script th:inline="javascript">
+				  $(document).ready(function () {
+				    var table = $('#reportdetails').DataTable({
+				      scrollY: "550px",
+				      scrollX: true,
+				      scrollCollapse: true,
+				      autoWidth: false,
+				      paging: true,
+				      searching: true,
+				      lengthChange: false,
+				      ordering: true,
+				      pageLength: 100,
+				      fixedHeader: true, // ✅ You can simply set it to true
+					  // ✅ Column width settings
+					   columnDefs: [
+					     { width: "60px", targets: 0 },   // Edit icon column
+					     { width: "150px", targets: 1 }  ,  // S No column
+						 { width: "300px", targets: 7 }    // S No column
+					   ],
+
+				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+				    });
+
+				    // ✅ Fix alignment on resize / zoom
+				    $(window).on('resize', function () {
+				      table.columns.adjust().draw(false);
+				    });
+
+				    // ✅ Fix initial misalignment if loaded at non-100% zoom
+				    setTimeout(function () {
+				      table.columns.adjust().draw(false);
+				    }, 500);
+				  });
+				</script>
+
+
+<script>
+		function editRecord(icon) {
+			const row = icon.closest('tr');
+			const provisionInput = row.querySelector('.provision-field');
+
+			// Enable only provision field for editing
+			provisionInput.removeAttribute('readonly');
+			provisionInput.focus();
+
+			// Highlight editable cell
+			provisionInput.style.backgroundColor = '#fff8e1';
+
+			// Show submit button
+			document.getElementById('submitButton').style.display = 'inline-block';
+		}
+
+
+
+	</script>
+	<script th:inline="javascript">
+	    /*<![CDATA[*/
+	    const reportId = /*[[${reportid}]]*/ null;
+	    /*]]>*/
+	</script>
+
+	<script>
+	    function openMSCIDetail(elem, mode) {
+			
+			var type = elem.getAttribute('data-type');   
+
+			        if (type === "ARCHIVAL") {
+			            showResultModal('BRRS',"Archived Data cannot be modified");
+			            return;
+			        }			
+			
+	        const acctNo = elem.getAttribute("data-acctNo");
+	        const asondate = elem.getAttribute("data-asondate");
+	        
+	        // Use the 'reportId' variable initialized above
+	        // Use backticks (`) for a template literal to easily include the variable
+	        location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+	    }
+	</script>
+
+
+
+
+	<script>
+		function submitMSCIUpdate() {
+			const formData = $('#msciDetailForm').serialize(); // Ensure correct form ID
+
+			// ✅ Store the previous page URL
+			const previousUrl = document.referrer; // same as going back once in history
+
+			// Show loader while processing
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: `/BRRS/Reports/${reportId}/update`,
+				type: 'POST',
+				data: formData,
+				success: function (response) {
+					$('#loader').modal('hide');
+
+					// Show message via modal
+					if (response && response.toLowerCase().includes('success')) {
+						showResultModal('BRRS', response);
+					} else {
+						showResultModal('Information', response || 'No data updated.');
+					}
+
+					// ✅ Redirect back to the previous page after short delay
+					setTimeout(() => {
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							// fallback: just go back if referrer not found
+							window.history.back();
+						}
+					}, 1500);
+				},
+				error: function (xhr, status, error) {
+					$('#loader').modal('hide');
+					console.error("Update error:", error);
+
+					showResultModal('Error', 'Failed to update record. Please try again.');
+
+					// ✅ On error also return to previous page after delay
+					setTimeout(() => {
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							window.history.back();
+						}
+					}, 1500);
+				}
+			});
+		}
+
+	</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+
+function activateTab(tabName) {
+    // Remove 'active' from all buttons
+    document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Add 'active' to selected button
+    if (tabName === 'summary') {
+        document.getElementById('custom-tab-btnSummary').classList.add('active');
+    } else if (tabName === 'Details') {
+        document.getElementById('custom-tab-btnDetails').classList.add('active');
+    }
+}
+
+window.onload = function() {
+    /* setTimeout(function() {
+        var selectedTab = document.getElementById("selectedTab").value;
+        alert(selectedTab);
+        activateTab(selectedTab);
+    }, 10000); */ // 10,000 milliseconds = 10 seconds
+    
+	var selectedTab = document.getElementById("selectedTab").value;
+    activateTab(selectedTab);
+};
+
+
+function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+
+
+			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static',keyboard: false});
+			loader.show();
+
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+function editRecord(){
+	showResultModal('Alert', 'Development in progress');
+	
+}
+function closemodel(){
+	$('#alert').modal('hide');
+	$('#resultModal').modal('hide');
+	
+}
+
+function showResultModal(title, message) {
+	// Set the text for the modal elements
+	$('#resultModalLabel').text(title);
+	$('#resultModalBody').text(message);
+
+	// Show the modal
+	$('#resultModal').modal('show');
+}
+
+</script>
+
+
+
+<script>
+
+		function startReport(button) {
+			const alertMsg = document.getElementById("alertMessage");
+
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+
+			const sessionfilename = sessionStorage.getItem("filename");
+
+			if (sessionfilename === filename) {
+				alertMsg.innerHTML = 'Download request already processing...';
+				showAlert();
+				return;
+			}
+
+			alertMsg.innerHTML = 'Download request started...';
+			showAlert();
+
+			const downloadUrl = '/BRRS/Reports/startreport'
+				+ '?filename=' + encodeURIComponent(filename)
+				+ '&fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate)
+				+ '&currency=' + encodeURIComponent(currency)
+				+ '&dtltype=' + encodeURIComponent(dtltype)
+				+ '&type=' + encodeURIComponent(type)
+				+ '&version=' + encodeURIComponent(version);
+
+			fetch(downloadUrl)
+				.then(res => res.text())
+				.then(jobId => {
+
+					alertMsg.innerHTML = 'Request received. Job ID: ' + jobId;
+					showAlert();
+
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+
+					checkReport(jobId);
+				});
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report ready! Downloading...';
+						showAlert();
+
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename + ".xlsx");
+
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+
+					} else if (status === "PROCESSING") {
+						alertMsg.innerHTML = 'Report processing...';
+						showAlert();
+
+						setTimeout(() => checkReport(jobId), 4000);
+
+					} else if (status === "ERROR") {
+						alertMsg.innerHTML = 'No data available to download.';
+						showAlert();
+
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					}
+				});
+		}
+
+		function downloadDetailfile(jobId, filename) {
+
+			$.ajax({
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId + '&filename=' + filename,
+				type: 'GET',
+				xhrFields: { responseType: 'blob' },
+
+				success: function (data) {
+					if (data && data.size > 100) {
+						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+						const url = window.URL.createObjectURL(blob);
+
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data found to download.');
+					}
+				}
+			});
+		}
+
+	</script>
+
+
+
+
+
+<script th:inline="javascript">
+function showdetailsbyRowAndColumn(a) { 
+    var rowId = a.getAttribute('RowId');
+    var columnId = a.getAttribute('ColumnId');
+    var cellValue = a.textContent || a.innerText;
+
+    if (cellValue !== '0') {
+        // Set dynamic message in modal (instead of confirm)
+        document.getElementById("cellresultModalLabel").innerText = 
+            "Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+        // Show custom Bootstrap modal
+        $('#cellresultModal').modal('show');
+
+        // Handle Yes button
+        document.querySelector('.yes-btn').onclick = function() {
+            $('#cellresultModal').modal('hide');
+
+            // Show loader
+            const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+                backdrop: 'static',
+                keyboard: false
+            });
+            $('#loader').modal('show');
+
+            // Build dynamic URL
+            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+            Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+            location.href = Callurl;
+        };
+    } else {
+        // Use your custom alert modal instead of window.alert
+        showResultModal("Alert", "No Records available for this selected cell.");
+    }
+}
+</script>
+
+
+<script>
+	// Show Modify (enable inputs & dropdowns)
+function showmodify(btn) {
+    // IDs that should always remain readonly
+  $(".Show_input").removeAttr("readonly").removeAttr("disabled");
+    
+    
+    
+
+//===============================
+//Apply gray background to TOTAL fields
+//===============================
+[
+   "#r67_total",
+   "#r68_total"
+].forEach(selector => {
+   if ($(selector).length) {
+       $(selector).css("background-color", "#d3d3d3");
+   }
+});
+
+//===============================
+//Apply gray background to WRITE_OFFS fields (R12–R63 excluding specific rows)
+//===============================
+let skipWriteOffs = [15, 29, 38, 41, 49, 53, 57];
+
+for (let i = 12; i <= 63; i++) {
+   if (!skipWriteOffs.includes(i)) {
+       let selector = "#r" + i + "_write_offs";
+       if ($(selector).length) {
+           $(selector).css("background-color", "#d3d3d3");
+       }
+   }
+}
+
+
+    // Toggle buttons
+    $("#submitButton, #btnBack_edit, #cancelRecord").show();
+    $("#btnBack").hide();
+
+    // Hide the clicked Modify button
+    $(btn).hide();
+}
+
+
+//Cancel / Reset function
+function cancelModify() {
+    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+        // ✅ Only when user clicks YES
+        location.reload();
+        
+        $(".Show_input").attr("readonly", true).attr("disabled", true);
+
+
+        	
+        	
+            
+        
+
+        $("#submitButton, #btnBack_edit").hide();
+        $("#btnBack").show();
+
+        // Hide Cancel button again
+        $("#cancelRecord").hide();
+
+        // Show all Modify buttons
+        $("#addRecord").show();
+    }
+    // ❌ If user clicks CANCEL, nothing happens
+
+    }
+
+	
+
+	</script>
+
+
+
+<script>
+	function getCellValue(selector) {
+		let el = $(selector);
+		if (!el.length) return 0;
+
+		if (el.is("input")) {
+			return parseFloat(el.val()?.replace(/,/g, "")) || 0;
+		} else {
+			return parseFloat(el.text()?.replace(/,/g, "")) || 0;
+		}
+	}
+
+	function setCellValue(selector, value) {
+		let el = $(selector);
+		if (!el.length) return;
+
+		const formatted = value.toLocaleString('en-US', {
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
+		});
+
+		if (el.is("input")) {
+			el.val(formatted);
+		} else {
+			el.text(formatted);
+		}
+	}
+
+	//--------------------------------------
+	// MONTH-ONLY CALCULATION FUNCTION
+	//--------------------------------------
+	function calculateMonthTotals() {
+		let cols = ["month"]; // Only the "_month" column
+
+		// ---------------------------- R44 = R45 + R46 ----------------------------
+		let R45_total = 0, R46_total = 0;
+		cols.forEach(col => {
+			let v45 = getCellValue("#r45_" + col);
+			let v46 = getCellValue("#r46_" + col);
+			setCellValue("#r44_" + col, v45 + v46);
+
+			R45_total += v45;
+			R46_total += v46;
+		});
+		setCellValue("#r44_total", R45_total + R46_total);
+
+		// ---------------------------- R57 = R58 + R59 + R60 ----------------------------
+		let R58_total = 0, R59_total = 0, R60_total = 0;
+		cols.forEach(col => {
+			let v58 = getCellValue("#r58_" + col);
+			let v59 = getCellValue("#r59_" + col);
+			let v60 = getCellValue("#r60_" + col);
+
+			setCellValue("#r57_" + col, v58 + v59 + v60);
+
+			R58_total += v58;
+			R59_total += v59;
+			R60_total += v60;
+		});
+		setCellValue("#r57_total", R58_total + R59_total + R60_total);
+
+		// ---------------------------- R62 = R63 + R64 + R65 + R66 + R67 + R68 + R69 ----------------------------
+		let R63_total = 0, R64_total = 0, R65_total = 0, R66_total = 0, R67_total = 0, R68_total = 0, R69_total = 0;
+		cols.forEach(col => {
+			let v63 = getCellValue("#r63_" + col);
+			let v64 = getCellValue("#r64_" + col);
+			let v65 = getCellValue("#r65_" + col);
+			let v66 = getCellValue("#r66_" + col);
+			let v67 = getCellValue("#r67_" + col);
+			let v68 = getCellValue("#r68_" + col);
+			let v69 = getCellValue("#r69_" + col);
+
+			setCellValue("#r62_" + col, v63 + v64 + v65 + v66 + v67 + v68 + v69);
+		});
+		setCellValue("#r62_total", getCellValue("#r63_month") + getCellValue("#r64_month") + getCellValue("#r65_month") + getCellValue("#r66_month") + getCellValue("#r67_month") + getCellValue("#r68_month") + getCellValue("#r69_month"));
+
+		// ---------------------------- R70 = R71 + R72 + R73 + R74 + R75 + R80 ----------------------------
+		cols.forEach(col => {
+			let total = getCellValue("#r71_" + col) + getCellValue("#r72_" + col) + getCellValue("#r73_" + col) + getCellValue("#r74_" + col) + getCellValue("#r75_" + col) + getCellValue("#r80_" + col);
+			setCellValue("#r70_" + col, total);
+		});
+		setCellValue("#r70_total", getCellValue("#r71_month") + getCellValue("#r72_month") + getCellValue("#r73_month") + getCellValue("#r74_month") + getCellValue("#r75_month") + getCellValue("#r80_month"));
+
+		// ---------------------------- R86 = R84 - R85 ----------------------------
+		cols.forEach(col => {
+			let total = getCellValue("#r84_" + col) - getCellValue("#r85_" + col);
+			setCellValue("#r86_" + col, total);
+		});
+		setCellValue("#r86_total", getCellValue("#r84_month") - getCellValue("#r85_month"));
+	}
+
+	//--------------------------------------
+	// EVENT LISTENERS (MONTH ONLY)
+	//--------------------------------------
+	$(document).ready(function () {
+		calculateMonthTotals();
+
+		let cols = ["month"]; // Only "_month" column
+
+		cols.forEach(col => {
+			// R44 block
+			$("#r45_" + col + ", #r46_" + col).on("input", calculateMonthTotals);
+			// R57 block
+			$("#r58_" + col + ", #r59_" + col + ", #r60_" + col).on("input", calculateMonthTotals);
+			// R62 block
+			$("#r63_" + col + ", #r64_" + col + ", #r65_" + col + ", #r66_" + col + ", #r67_" + col + ", #r68_" + col + ", #r69_" + col).on("input", calculateMonthTotals);
+			// R70 block
+			$("#r71_" + col + ", #r72_" + col + ", #r73_" + col + ", #r74_" + col + ", #r75_" + col + ", #r80_" + col).on("input", calculateMonthTotals);
+			// R86 block
+			$("#r84_" + col + ", #r85_" + col).on("input", calculateMonthTotals);
+		});
+	});
+</script>
+
+
+
+<script>
+	
+
+	// This function is for closing the modal after an action is complete.
+	// It hides the result and loader modals and reloads the page.
+	function closemodel() {
+	    $("#resultModal").modal("hide");
+	    $('#loader').modal('hide');
+
+	    // Reload the page after a short delay to ensure the modal animation completes smoothly.
+	    setTimeout(function () {
+	        location.reload();
+	    }, 300);
+	}
+
+	function fileuploads(btn) {
+	    const asondate = btn.getAttribute("data-todate");
+	    const type = btn.getAttribute("data-type");
+
+	    // Show loader
+	    $('#loader').modal('show');
+
+	    try {
+	        // ✅ Step 1: Calculate totals
+	       /*  calculateR14Totals(); */
+	      calculateMonthTotals();
+	    
+	        // ✅ Step 2: Remove commas from all text inputs
+	        $("#fileupload input[type='text']").each(function () {
+	            $(this).val($(this).val().replace(/,/g, ''));
+	        });
+
+	        // ✅ Step 3: Validate form
+	        if (!$("#fileupload").valid()) {
+	            $('#loader').modal('hide');
+	            return;
+	        }
+
+	        // ✅ Step 4: Build FormData
+	        const formData = new FormData();
+	        formData.append("asondate", asondate);
+	        formData.append("type", type);
+
+	        $('#fileupload').find(':input').each(function () {
+	            const name = $(this).attr('name');
+	            if (name) {
+	                formData.append(name, $(this).val());
+	            }
+	        });
+
+	        // ✅ Step 5: AJAX submission
+	        $.ajax({
+	            url: './M_SCI_EupdateAll',
+	            type: 'POST',
+	            data: formData,
+	            processData: false,
+	            contentType: false,
+	            dataType: 'text',
+	            success: function () {
+	                $("#resultModalLabel").text("BRRS");
+	                $("#resultModalBody").text(" Updated Successfully.");
+	                $("#resultModal").modal("show");
+	            },
+	            error: function (jqXHR) {
+	                console.error("Error response:", jqXHR.responseText);
+	                $("#resultModalLabel").text("Error");
+	                $("#resultModalBody").text("Update failed. Check console for details.");
+	                $("#resultModal").modal("show");
+	            },
+	            complete: function () {
+	                $('#loader').modal('hide');
+	            }
+	        });
+
+	    } catch (error) {
+	        console.error("Error in fileuploads function:", error);
+	        $('#loader').modal('hide');
+	        $("#resultModalLabel").text("Error");
+	        $("#resultModalBody").text("Unexpected error occurred. Check console.");
+	        $("#resultModal").modal("show");
+	    }
+	}
+
+
+
+
+
+	</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+<title>BRRS</title>
+<body>
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							(32) MONTHLY SCHEUDLE: M-I (S&CA) :<br>IMPAIRMENTS (SPECIFIC AND COLLECTIVELY ASSESSED)</h5>
+							
+							
+							<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT </p>
+						</div>
+							
+							
+							
+							
+							
+					</div>
+
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+      style="color: white !important; font-size: 16px; margin-right: 20px;">
+    Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+</span>
+
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+							
+							
+							
+							
+								<!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>
+
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn"
+							title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+							
+							
+							
+							
+							
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'summary'}"
+							th:attr="data-reportid=${reportid}, 
+                    				 data-asondate=${asondate}, 
+                    				 data-fromdate=${fromdate}, 
+                     				 data-todate=${todate}, 
+                     				 data-currency=${currency},  
+                     				 data-dtltype=${dtltype}, 
+                     				 data-filename='M_I_S_CA.xlsx',
+					 				 data-type=${type},
+					    			 data-version=${version}"
+							onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+						<button type="button" class="custom-tab-btn"
+							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							onclick="startReport(this);"
+							th:attr="
+						    data-fromdate=${fromdate},
+						    data-todate=${todate},
+						    data-filename='M_I_S_CA',
+						 data-type=${type},
+					data-version=${version}  ">
+							<i class="fa fa-download"></i>
+						</button>
+						
+					</div>
+				</div>
+
+
+
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+						
+						
+						<form action="#" method="POST" id="fileupload">
+							<div
+								class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reports">
+									<thead class="thead-light">
+										<tr style="background-color: #b3b6b9">
+											<th rowspan="1"
+												style="text-align: left; background-color: #D8D8D8;  padding: 10px; font-weight:bold;">SPECIFIC IMPAIRMENTS
+											</th>
+											<th rowspan="1"
+												style="text-align: right; background-color: #D8D8D8;  padding: 10px; font-weight:bold;">(RECOVERIES)
+												Reference</th>
+											<th rowspan="1"
+												style="text-align: right; background-color: #D8D8D8 ;  padding: 10px; font-weight:bold;" >(WRITE-OFFS)</th>
+											<th rowspan="1"
+												style="text-align: right; background-color: #D8D8D8;  padding: 10px; font-weight:bold;">NEW CHARGES</th>
+												
+													<th rowspan="1"
+												style="text-align: right; background-color: #D8D8D8;  padding: 10px; font-weight:bold;">Total</th>
+												
+										</tr>
+
+
+									</thead>
+
+
+									<tbody th:each="report1: ${reportsummary1}"
+										style="font-family: Arial;">
+
+										<tr th:each="report: ${reportsummary}">
+
+
+											<td    style="text-align: left;  font-weight: bold;"
+												th:text="${report?.r10_spec_impairments ?: ''}"
+												></td>
+
+											<td  colspan="3" style="text-align: right; "
+												
+												></td>
+
+											<!-- th:text="${report?.r10_recoveries ?: ''}"
+											
+											<td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r10_write_offs ?: ''}"
+												></td>
+
+											<td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r10_new_chars ?: ''}"
+												></td> -->
+												
+													<td style="text-align: right; padding-right:10px; "  
+												th:text="${report?.r10_total ?: ''}"
+												th:attr="RowId='R10', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+
+										</tr>
+
+
+										<tr th:each="report: ${reportsummary}">
+
+
+											<td style="text-align: left;  font-weight:bold;"
+												th:text="${report?.r11_spec_impairments ?: ''}"
+												></td>
+
+											<td style="text-align: right; " class="green-cell" 
+												th:text="${report?.r11_recoveries ?: ''}"
+												></td>
+
+											<td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r11_write_offs ?: ''}"
+												></td>
+
+											<td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r11_new_chars ?: ''}"
+												></td>
+												
+													<td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r11_total ?: ''}"
+												></td>
+
+
+										</tr>
+
+										<tr th:each="report: ${reportsummary}">
+
+
+											<td style="text-align: left; padding-left: 20px; "
+												th:text="${report?.r12_spec_impairments ?: ''}"
+												></td>
+
+											<td style="text-align: right; "
+												th:text="${report?.r12_recoveries ?: ''}"
+												th:attr="RowId='R12', ColumnId='C2'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+											<!-- <td style="text-align: right;  padding-right:10px;"
+												th:text="${report1?.r12_write_offs ?: ''}"
+												th:attr="RowId='R12', ColumnId='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td> -->
+												
+													<td id="ROW12"
+													style=" font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width: 200px;"><input
+													class="display-input Show_input" type="text"
+													th:value="${report1.r12_write_offs != null ? #numbers.formatDecimal(report1.r12_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="r12_write_offs" name="r12_write_offs"
+													style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
+													readonly /></td>
+
+											<td style="text-align: right;  padding-right:10px;"
+												th:text="${report?.r12_new_chars ?: ''}"
+												th:attr="RowId='R12', ColumnId='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+                                           <td style="text-align: right;  padding-right:10px;"  class="green-cell" 
+												th:text="${report?.r12_total ?: ''}"
+												></td>
+
+
+
+										</tr>
+
+										
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r13_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r13_recoveries ?: ''}"
+        th:attr="RowId='R13', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW13"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r13_write_offs != null ? #numbers.formatDecimal(report1.r13_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r13_write_offs" name="r13_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r13_new_chars ?: ''}"
+        th:attr="RowId='R13', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r13_total ?: ''}">
+    </td>
+
+</tr>
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r14_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r14_recoveries ?: ''}"
+        th:attr="RowId='R14', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW14"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r14_write_offs != null ? #numbers.formatDecimal(report1.r14_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r14_write_offs" name="r14_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r14_new_chars ?: ''}"
+        th:attr="RowId='R14', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r14_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r15_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;" class="green-cell" 
+        th:text="${report?.r15_recoveries ?: ''}"
+       >
+    </td>
+
+   	<td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r15_write_offs ?: ''}"
+												></td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell" 
+        th:text="${report?.r15_new_chars ?: ''}"
+      >
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r15_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r16_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r16_recoveries ?: ''}"
+        th:attr="RowId='R16', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW16"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r16_write_offs != null ? #numbers.formatDecimal(report1.r16_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r16_write_offs" name="r16_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r16_new_chars ?: ''}"
+        th:attr="RowId='R16', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r16_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r17_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r17_recoveries ?: ''}"
+        th:attr="RowId='R17', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW17"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r17_write_offs != null ? #numbers.formatDecimal(report1.r17_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r17_write_offs" name="r17_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r17_new_chars ?: ''}"
+        th:attr="RowId='R17', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r17_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r18_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r18_recoveries ?: ''}"
+        th:attr="RowId='R18', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW18"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r18_write_offs != null ? #numbers.formatDecimal(report1.r18_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r18_write_offs" name="r18_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r18_new_chars ?: ''}"
+        th:attr="RowId='R18', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r18_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r19_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r19_recoveries ?: ''}"
+        th:attr="RowId='R19', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW19"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r19_write_offs != null ? #numbers.formatDecimal(report1.r19_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r19_write_offs" name="r19_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r19_new_chars ?: ''}"
+        th:attr="RowId='R19', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r19_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r20_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r20_recoveries ?: ''}"
+        th:attr="RowId='R20', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW20"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r20_write_offs != null ? #numbers.formatDecimal(report1.r20_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r20_write_offs" name="r20_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r20_new_chars ?: ''}"
+        th:attr="RowId='R20', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r20_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r21_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r21_recoveries ?: ''}"
+        th:attr="RowId='R21', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW21"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r21_write_offs != null ? #numbers.formatDecimal(report1.r21_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r21_write_offs" name="r21_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r21_new_chars ?: ''}"
+        th:attr="RowId='R21', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r21_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r22_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r22_recoveries ?: ''}"
+        th:attr="RowId='R22', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW22"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r22_write_offs != null ? #numbers.formatDecimal(report1.r22_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r22_write_offs" name="r22_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r22_new_chars ?: ''}"
+        th:attr="RowId='R22', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r22_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r23_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r23_recoveries ?: ''}"
+        th:attr="RowId='R23', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW23"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r23_write_offs != null ? #numbers.formatDecimal(report1.r23_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r23_write_offs" name="r23_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r23_new_chars ?: ''}"
+        th:attr="RowId='R23', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r23_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r24_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r24_recoveries ?: ''}"
+        th:attr="RowId='R24', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW24"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r24_write_offs != null ? #numbers.formatDecimal(report1.r24_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r24_write_offs" name="r24_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r24_new_chars ?: ''}"
+        th:attr="RowId='R24', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r24_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r25_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r25_recoveries ?: ''}"
+        th:attr="RowId='R25', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW25"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r25_write_offs != null ? #numbers.formatDecimal(report1.r25_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r25_write_offs" name="r25_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r25_new_chars ?: ''}"
+        th:attr="RowId='R25', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r25_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r26_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r26_recoveries ?: ''}"
+        th:attr="RowId='R26', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW26"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r26_write_offs != null ? #numbers.formatDecimal(report1.r26_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r26_write_offs" name="r26_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r26_new_chars ?: ''}"
+        th:attr="RowId='R26', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r26_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r27_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r27_recoveries ?: ''}"
+        th:attr="RowId='R27', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW27"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r27_write_offs != null ? #numbers.formatDecimal(report1.r27_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r27_write_offs" name="r27_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r27_new_chars ?: ''}"
+        th:attr="RowId='R27', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r27_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r28_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r28_recoveries ?: ''}"
+        th:attr="RowId='R28', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW28"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r28_write_offs != null ? #numbers.formatDecimal(report1.r28_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r28_write_offs" name="r28_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r28_new_chars ?: ''}"
+        th:attr="RowId='R28', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r28_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r29_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;" class="green-cell" 
+        th:text="${report?.r29_recoveries ?: ''}"
+       >
+    </td>
+
+   <td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r29_write_offs ?: ''}"
+												></td>
+
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell" 
+        th:text="${report?.r29_new_chars ?: ''}"
+       >
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r29_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r30_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r30_recoveries ?: ''}"
+        th:attr="RowId='R30', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW30"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r30_write_offs != null ? #numbers.formatDecimal(report1.r30_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r30_write_offs" name="r30_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r30_new_chars ?: ''}"
+        th:attr="RowId='R30', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r30_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r31_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r31_recoveries ?: ''}"
+        th:attr="RowId='R31', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW31"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r31_write_offs != null ? #numbers.formatDecimal(report1.r31_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r31_write_offs" name="r31_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r31_new_chars ?: ''}"
+        th:attr="RowId='R31', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r31_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r32_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r32_recoveries ?: ''}"
+        th:attr="RowId='R32', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW32"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r32_write_offs != null ? #numbers.formatDecimal(report1.r32_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r32_write_offs" name="r32_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r32_new_chars ?: ''}"
+        th:attr="RowId='R32', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r32_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r33_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r33_recoveries ?: ''}"
+        th:attr="RowId='R33', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW33"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r33_write_offs != null ? #numbers.formatDecimal(report1.r33_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r33_write_offs" name="r33_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r33_new_chars ?: ''}"
+        th:attr="RowId='R33', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r33_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r34_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r34_recoveries ?: ''}"
+        th:attr="RowId='R34', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW34"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r34_write_offs != null ? #numbers.formatDecimal(report1.r34_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r34_write_offs" name="r34_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r34_new_chars ?: ''}"
+        th:attr="RowId='R34', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r34_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r35_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r35_recoveries ?: ''}"
+        th:attr="RowId='R35', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW35"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r35_write_offs != null ? #numbers.formatDecimal(report1.r35_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r35_write_offs" name="r35_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r35_new_chars ?: ''}"
+        th:attr="RowId='R35', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r35_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r36_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r36_recoveries ?: ''}"
+        th:attr="RowId='R36', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW36"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r36_write_offs != null ? #numbers.formatDecimal(report1.r36_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r36_write_offs" name="r36_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r36_new_chars ?: ''}"
+        th:attr="RowId='R36', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r36_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r37_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r37_recoveries ?: ''}"
+        th:attr="RowId='R37', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW37"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r37_write_offs != null ? #numbers.formatDecimal(report1.r37_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r37_write_offs" name="r37_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r37_new_chars ?: ''}"
+        th:attr="RowId='R37', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r37_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r38_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;" class="green-cell" 
+        th:text="${report?.r38_recoveries ?: ''}"
+       >
+    </td>
+
+   <td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r38_write_offs ?: ''}"
+												></td>
+
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell" 
+        th:text="${report?.r38_new_chars ?: ''}"
+       >
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r38_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r39_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r39_recoveries ?: ''}"
+        th:attr="RowId='R39', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW39"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r39_write_offs != null ? #numbers.formatDecimal(report1.r39_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r39_write_offs" name="r39_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r39_new_chars ?: ''}"
+        th:attr="RowId='R39', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r39_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r40_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r40_recoveries ?: ''}"
+        th:attr="RowId='R40', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW40"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r40_write_offs != null ? #numbers.formatDecimal(report1.r40_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r40_write_offs" name="r40_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r40_new_chars ?: ''}"
+        th:attr="RowId='R40', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r40_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r41_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;" class="green-cell" 
+        th:text="${report?.r41_recoveries ?: ''}"
+        th:attr="RowId='R41', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+   <td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r41_write_offs ?: ''}"
+												></td>
+
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell" 
+        th:text="${report?.r41_new_chars ?: ''}"
+       >
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r41_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r42_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r42_recoveries ?: ''}"
+        th:attr="RowId='R42', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW42"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r42_write_offs != null ? #numbers.formatDecimal(report1.r42_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r42_write_offs" name="r42_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r42_new_chars ?: ''}"
+        th:attr="RowId='R42', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r42_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r43_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r43_recoveries ?: ''}"
+        th:attr="RowId='R43', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW43"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r43_write_offs != null ? #numbers.formatDecimal(report1.r43_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r43_write_offs" name="r43_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r43_new_chars ?: ''}"
+        th:attr="RowId='R43', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r43_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r44_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r44_recoveries ?: ''}"
+        th:attr="RowId='R44', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW44"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r44_write_offs != null ? #numbers.formatDecimal(report1.r44_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r44_write_offs" name="r44_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r44_new_chars ?: ''}"
+        th:attr="RowId='R44', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r44_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r45_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r45_recoveries ?: ''}"
+        th:attr="RowId='R45', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW45"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r45_write_offs != null ? #numbers.formatDecimal(report1.r45_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r45_write_offs" name="r45_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r45_new_chars ?: ''}"
+        th:attr="RowId='R45', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r45_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r46_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r46_recoveries ?: ''}"
+        th:attr="RowId='R46', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW46"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r46_write_offs != null ? #numbers.formatDecimal(report1.r46_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r46_write_offs" name="r46_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r46_new_chars ?: ''}"
+        th:attr="RowId='R46', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r46_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r47_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r47_recoveries ?: ''}"
+        th:attr="RowId='R47', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW47"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r47_write_offs != null ? #numbers.formatDecimal(report1.r47_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r47_write_offs" name="r47_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r47_new_chars ?: ''}"
+        th:attr="RowId='R47', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r47_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r48_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r48_recoveries ?: ''}"
+        th:attr="RowId='R48', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW48"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r48_write_offs != null ? #numbers.formatDecimal(report1.r48_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r48_write_offs" name="r48_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r48_new_chars ?: ''}"
+        th:attr="RowId='R48', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r48_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r49_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;" class="green-cell" 
+        th:text="${report?.r49_recoveries ?: ''}"
+       >
+    </td>
+
+   <td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r49_write_offs ?: ''}"
+												></td>
+
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell" 
+        th:text="${report?.r49_new_chars ?: ''}"
+      >
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r49_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r50_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r50_recoveries ?: ''}"
+        th:attr="RowId='R50', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW50"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r50_write_offs != null ? #numbers.formatDecimal(report1.r50_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r50_write_offs" name="r50_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r50_new_chars ?: ''}"
+        th:attr="RowId='R50', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r50_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r51_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r51_recoveries ?: ''}"
+        th:attr="RowId='R51', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW51"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r51_write_offs != null ? #numbers.formatDecimal(report1.r51_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r51_write_offs" name="r51_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r51_new_chars ?: ''}"
+        th:attr="RowId='R51', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r51_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r52_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r52_recoveries ?: ''}"
+        th:attr="RowId='R52', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW52"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r52_write_offs != null ? #numbers.formatDecimal(report1.r52_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r52_write_offs" name="r52_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r52_new_chars ?: ''}"
+        th:attr="RowId='R52', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r52_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r53_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"  class="green-cell" 
+        th:text="${report?.r53_recoveries ?: ''}"
+       >
+    </td>
+
+    <td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r53_write_offs ?: ''}"
+												></td>
+
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell" 
+        th:text="${report?.r53_new_chars ?: ''}"
+        >
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r53_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r54_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r54_recoveries ?: ''}"
+        th:attr="RowId='R54', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW54"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r54_write_offs != null ? #numbers.formatDecimal(report1.r54_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r54_write_offs" name="r54_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r54_new_chars ?: ''}"
+        th:attr="RowId='R54', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r54_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r55_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r55_recoveries ?: ''}"
+        th:attr="RowId='R55', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW55"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r55_write_offs != null ? #numbers.formatDecimal(report1.r55_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r55_write_offs" name="r55_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r55_new_chars ?: ''}"
+        th:attr="RowId='R55', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r55_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r56_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r56_recoveries ?: ''}"
+        th:attr="RowId='R56', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW56"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r56_write_offs != null ? #numbers.formatDecimal(report1.r56_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r56_write_offs" name="r56_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r56_new_chars ?: ''}"
+        th:attr="RowId='R56', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r56_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r57_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;" class="green-cell" 
+        th:text="${report?.r57_recoveries ?: ''}"
+       >
+    </td>
+
+   <td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r57_write_offs ?: ''}"
+												></td>
+
+
+    <td style="text-align: right; padding-right:10px;"  class="green-cell" 
+        th:text="${report?.r57_new_chars ?: ''}"
+       >
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r57_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r58_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r58_recoveries ?: ''}"
+        th:attr="RowId='R58', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW58"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r58_write_offs != null ? #numbers.formatDecimal(report1.r58_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r58_write_offs" name="r58_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r58_new_chars ?: ''}"
+        th:attr="RowId='R58', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r58_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r59_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r59_recoveries ?: ''}"
+        th:attr="RowId='R59', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW59"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r59_write_offs != null ? #numbers.formatDecimal(report1.r59_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r59_write_offs" name="r59_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r59_new_chars ?: ''}"
+        th:attr="RowId='R59', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r59_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r60_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r60_recoveries ?: ''}"
+        th:attr="RowId='R60', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW60"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r60_write_offs != null ? #numbers.formatDecimal(report1.r60_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r60_write_offs" name="r60_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r60_new_chars ?: ''}"
+        th:attr="RowId='R60', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r60_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r61_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r61_recoveries ?: ''}"
+        th:attr="RowId='R61', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW61"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r61_write_offs != null ? #numbers.formatDecimal(report1.r61_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r61_write_offs" name="r61_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r61_new_chars ?: ''}"
+        th:attr="RowId='R61', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r61_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r62_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r62_recoveries ?: ''}"
+        th:attr="RowId='R62', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW62"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r62_write_offs != null ? #numbers.formatDecimal(report1.r62_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r62_write_offs" name="r62_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r62_new_chars ?: ''}"
+        th:attr="RowId='R62', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r62_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r63_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;"
+        th:text="${report?.r63_recoveries ?: ''}"
+        th:attr="RowId='R63', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td id="ROW63"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r63_write_offs != null ? #numbers.formatDecimal(report1.r63_write_offs, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r63_write_offs" name="r63_write_offs"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+    <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r63_new_chars ?: ''}"
+        th:attr="RowId='R63', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r63_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r64_spec_impairments ?: ''}">
+    </td>
+
+    <td style="text-align: right;" class="green-cell" 
+        th:text="${report?.r64_recoveries ?: ''}"
+       >
+    </td>
+
+   <td style="text-align: right; padding-right:10px; " class="green-cell" 
+												th:text="${report?.r64_write_offs ?: ''}"
+												></td>
+
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell" 
+        th:text="${report?.r64_new_chars ?: ''}"
+        >
+    </td>
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r64_total ?: ''}">
+    </td>
+
+</tr>
+
+
+                                         <tr  th:each="report: ${reportsummary}">
+
+											<td style="text-align: left; font-weight: bold;"
+												th:text="${report.r65_spec_impairments}"></td>
+
+											<td rowspan="6" colspan="3" style="text-align: right;"></td>
+
+
+											<td style="text-align: right;" class="green-cell"
+												th:text="${report.r65_total}"></td>
+
+										</tr>
+
+										<tr th:each="report: ${reportsummary}">
+
+											<td  style="text-align: left; font-weight: bold;"
+												th:text="${report.r66_spec_impairments}"></td>
+												
+<td colspan="4"
+    style="
+        background:white;
+        border-left:4px solid white !important;
+      
+        height:1px;
+        padding:0;
+    ">
+</td>
+										</tr>
+										
+										
+										<tr th:each="report: ${reportsummary}">
+
+											<td style="text-align: left; "
+												th:text="${report.r67_spec_impairments}"></td>
+												
+												<td id="ROW67"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r67_total != null ? #numbers.formatDecimal(report1.r67_total, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r67_total" name="r67_total"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+
+											<!-- <td style="text-align: right;" 
+												th:text="${report1.r67_total}"
+												
+												th:attr="RowId='R67', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td> -->
+
+										</tr>
+										
+											<tr th:each="report: ${reportsummary}">
+
+											<td style="text-align: left; "
+												th:text="${report.r68_spec_impairments}"></td>
+												
+												<td id="ROW68"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r68_total != null ? #numbers.formatDecimal(report1.r68_total, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r68_total" name="r68_total"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+												
+
+											<!-- <td style="text-align: right;" 
+												th:text="${report1.r68_total}"
+												
+												th:attr="RowId='R68', ColumnId='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td> -->
+
+										</tr>
+
+
+
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r69_spec_impairments ?: ''}">
+    </td>
+
+    <!-- <td style="text-align: right;"
+        th:text="${report?.r69_recoveries ?: ''}"
+        th:attr="RowId='R69', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td> -->
+
+  <!--   <td id="ROW69"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r69_total != null ? #numbers.formatDecimal(report1.r69_total, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r69_total" name="r69_total"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td> -->
+
+   <!--  <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r69_new_chars ?: ''}"
+        th:attr="RowId='R69', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td> -->
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r69_total ?: ''}">
+    </td>
+
+</tr>
+
+
+<tr th:each="report: ${reportsummary}">
+
+    <td style="text-align: left; padding-left: 20px;"
+        th:text="${report?.r70_spec_impairments ?: ''}">
+    </td>
+
+   <!--  <td style="text-align: right;"
+        th:text="${report?.r70_recoveries ?: ''}"
+        th:attr="RowId='R70', ColumnId='C2'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td> -->
+
+   <!--  <td id="ROW70"
+        style="font-weight: bold; text-align: right; padding-right:10px; padding-left:20px; width:200px;">
+        
+        <input class="display-input Show_input" type="text"
+            th:value="${report1.r70_total != null ? #numbers.formatDecimal(report1.r70_total, 1, 'COMMA', 0, 'POINT') : '0'}"
+            id="r70_total" name="r70_total"
+            style="background-color:#FFFFFF; width:180px; height:28px; border-color:transparent; text-align:right;"
+            readonly />
+    </td>
+ -->
+   <!--  <td style="text-align: right; padding-right:10px;"
+        th:text="${report?.r70_new_chars ?: ''}"
+        th:attr="RowId='R70', ColumnId='C4'"
+        onclick="showdetailsbyRowAndColumn(this)">
+    </td>-->
+
+    <td style="text-align: right; padding-right:10px;" class="green-cell"
+        th:text="${report?.r70_total ?: ''}">
+    </td> 
+
+</tr>
+
+
+									</tbody>
+
+
+								</table>
+
+							</div>
+
+<div style="text-align: center; margin-top: 10px;">
+
+									<button id="submitButton" type="button"
+										class="custom-tab-btn Show_input" form="fileupload"
+										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										style="display: none;">Submit</button>
+								</div>
+
+
+                  </form>
+
+						</div>
+					</div>
+				</div>
+
+				<div th:if="${displaymode == 'Details'}" >
+					<div class="row"  >
+						<div class="col-sm-12" >
+							<div class="table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;">
+								<table class="table table-striped table-hover" id="reportdetail">
+								<thead class="thead-light">
+										<tr>
+											<th></th>
+											<th>S No</th>
+											<th>CUST_ID</th>
+											<th>ACCT_NUMBER</th>
+											<th>ACCT_NAME</th>
+											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
+											<th>REPORT LABEL</th>
+											<th>REPORT ADDL CRITERIA1</th>
+											<th>REPORT_DATE</th>
+										</tr>
+
+									</thead>
+
+									<tbody style="font-family: Arial;">
+										<tr th:each="report, srlno : ${reportdetails}">
+											<td>
+												<a data-toggle="tooltip" class="editrec"
+													title="Click to Edit this Record">
+													<i class="fas fa-edit" style="color: black; cursor:pointer;"
+														th:attr="data-acctNo=${report.acctNumber},
+																							data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
+														onclick="openMISCADetail(this, 'edit')"></i>
+
+												</a>
+											</td>
+
+
+											<td th:text="${srlno.index + 1}"></td>
+											<td th:text="${report.custId}"></td>
+											<td th:text="${report.acctNumber}"></td>
+											<td th:text="${report.acctName}"></td>
+
+											<td style="text-align:right !important;"
+    th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
+</td>
+
+
+											<td th:text="${report.reportLable}"></td>
+											<td th:text="${report.reportAddlCriteria_1}"></td>
+											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+										</tr>
+									</tbody>
+								</table>
+
+							</div>
+
+							<!-- Submit Button -->
+							<div style="text-align: center; margin-top: 15px; background-color: white;">
+								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									onclick="updateform();" style="display: none;">
+									Submit
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				
+				<!-- MSCIE Detail Form Screen -->
+			<div th:if="${formmode == 'edit'}" class="card">
+
+
+				<div class="card-body">
+					<form th:object="${miscaData}" method="post" id="miscaDetailForm">
+						<div class="row formline" style="margin-top:10px;">
+							<label class="col-sm-2">Customer ID</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+							</div>
+
+							<div class="col-sm-1"></div>
+
+							<label class="col-sm-2">Account Number</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{acctNumber}" name="acctNumber"
+									class="form-control form-control-sm" readonly />
+							</div>
+						</div>
+
+						<div class="row formline" style="margin-top:10px;">
+							<label class="col-sm-2">Account Name</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
+							</div>
+
+							<div class="col-sm-1"></div>
+
+							<label class="col-sm-2">Acct Balance</label>
+							<div class="col-sm-3">
+									<input type="number" step="0.01" th:field="*{acctBalanceInpula}"
+										class="form-control form-control-sm" style="text-align:right;" />
+								</div>
+						</div>
+
+						<div class="row formline" style="margin-top:10px;">
+							<label class="col-sm-2">Report Label</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
+							</div>
+
+							<div class="col-sm-1"></div>
+
+							<label class="col-sm-2">Report Addl Criteria 1</label>
+							<div class="col-sm-3">
+								<input type="text" th:field="*{reportAddlCriteria_1}" class="form-control form-control-sm"
+									readonly />
+							</div>
+						</div>
+
+						<div class="row formline" style="margin-top:10px;">
+							<label class="col-sm-2">Report Date</label>
+							<div class="col-sm-3">
+								<input type="date" name="reportDate" class="form-control form-control-sm"readonly
+									th:value="${#dates.format(msciData.reportDate, 'yyyy-MM-dd')}" />
+							</div>
+						</div>
+
+						<div style="text-align:center; margin-top:20px;">
+							<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
+								onclick="submitMISCAUpdate()">Update</button>
+
+						</div>
+					</form>
+				</div>
+			</div>
+			
+			
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+			</div>
+
+
+
+		</div>
+
+
+
+	</div>
+
+
+
+	<div class="modal fade" id="loader" data-backdrop="static"
+		data-keyboard="false">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel"
+						style="text-align: center; color: white;">Do you want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn"
+						data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</body>
+
+
+
+
+
+
+<style>
+/* Your existing CSS - this is the correct approach */
+.scrollable-table-container {
+	/* This is the key: it creates the scroll context */
+	max-height: 520px;
+	/* Or a suitable height like 80vh for responsive design */
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+
+/* Your existing sticky header CSS, targeting the tr elements within the thead */
+.scrollable-table-container thead tr:nth-child(1) {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9;
+	z-index: 5;
+}
+
+.scrollable-table-container thead tr:nth-child(2) {
+	position: sticky;
+	top: 36px; /* adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 4;
+}
+
+.scrollable-table-container thead tr:nth-child(3) {
+	position: sticky;
+	top: 72px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 3;
+}
+
+.scrollable-table-container thead tr:nth-child(4) {
+	position: sticky;
+	top: 100px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 2;
+}
+
+.scrollable-table-container thead tr:nth-child(5) {
+	position: sticky;
+	top: 135px; /* Adjust based on row height */
+	background-color: #b3b6b9;
+	z-index: 1;
+}
+</style>
+
+
+<style>
+.inner {
+	max-height: 600px; /* Adjust height as needed */
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+/* Sticky thead */
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa; /* Match Bootstrap thead-light */
+	z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+</style>
+
+</html>

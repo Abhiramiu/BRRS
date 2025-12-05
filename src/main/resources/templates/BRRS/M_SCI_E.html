@@ -412,6 +412,10 @@ label.error {
 </style>
 
 
+
+
+
+
 <script th:inline="javascript">
 
 $(document).ready(function() {
@@ -484,40 +488,7 @@ $(window).on('beforeunload', function() {
 
 
 
-<script th:inline="javascript">
-				  $(document).ready(function () {
-				    var table = $('#reportdetails').DataTable({
-				      scrollY: "550px",
-				      scrollX: true,
-				      scrollCollapse: true,
-				      autoWidth: false,
-				      paging: true,
-				      searching: true,
-				      lengthChange: false,
-				      ordering: true,
-				      pageLength: 100,
-				      fixedHeader: true, // ✅ You can simply set it to true
-					  // ✅ Column width settings
-					   columnDefs: [
-					     { width: "60px", targets: 0 },   // Edit icon column
-					     { width: "150px", targets: 1 }  ,  // S No column
-						 { width: "300px", targets: 7 }    // S No column
-					   ],
 
-				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-				    });
-
-				    // ✅ Fix alignment on resize / zoom
-				    $(window).on('resize', function () {
-				      table.columns.adjust().draw(false);
-				    });
-
-				    // ✅ Fix initial misalignment if loaded at non-100% zoom
-				    setTimeout(function () {
-				      table.columns.adjust().draw(false);
-				    }, 500);
-				  });
-				</script>
 
 
 <script>
@@ -2997,9 +2968,9 @@ function cancelModify() {
 				<div th:if="${displaymode == 'Details'}" >
 					<div class="row"  >
 						<div class="col-sm-12" >
-							<div class="table-responsive scrollable-table-container"
+							<div class="table-responsive "
 								style="border-right: 1px solid #dee2e6;">
-								<table class="table table-striped table-hover" id="reportdetail">
+								<table class="table table-striped table-hover" id="reportdetails">
 								<thead class="thead-light">
 										<tr>
 											<th></th>
@@ -3007,7 +2978,8 @@ function cancelModify() {
 											<th>CUST_ID</th>
 											<th>ACCT_NUMBER</th>
 											<th>ACCT_NAME</th>
-											<th style="text-align:right;">ACCT_BALANCE_IN_PULA</th>
+											<th style="text-align:right;">MONTHLY_INT</th>
+												<th style="text-align:right;">BALANCE_AMT</th>
 											<th>REPORT LABEL</th>
 											<th>REPORT ADDL CRITERIA1</th>
 											<th>REPORT_DATE</th>
@@ -3035,9 +3007,11 @@ function cancelModify() {
 											<td th:text="${report.acctName}"></td>
 
 											<td style="text-align:right !important;"
-    th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
+    th:text="${#numbers.formatDecimal(report.monthlyInt, 1, 'COMMA', 0, 'POINT')}">
 </td>
-
+<td style="text-align:right !important;"
+    th:text="${#numbers.formatDecimal(report.balanceAmt, 1, 'COMMA', 0, 'POINT')}">
+</td>
 
 											<td th:text="${report.reportLable}"></td>
 											<td th:text="${report.reportAddlCriteria_1}"></td>
@@ -3089,35 +3063,58 @@ function cancelModify() {
 
 							<div class="col-sm-1"></div>
 
-							<label class="col-sm-2">Acct Balance</label>
+							<label class="col-sm-2">Monthly Interest</label>
 							<div class="col-sm-3">
-									<input type="number" step="0.01" th:field="*{acctBalanceInpula}"
+									<input type="number" step="0.01" name="monthlyInt" th:field="*{monthlyInt}"
+										class="form-control form-control-sm" style="text-align:right;" />
+								</div>
+						</div>
+						
+						<div class="row formline" style="margin-top:10px;">
+							
+                     <label class="col-sm-2">Report Label</label>
+							<div class="col-sm-3">
+								<input type="text"  th:field="*{reportLable}" class="form-control form-control-sm" readonly />
+							</div>
+							<div class="col-sm-1"></div>
+
+							<label class="col-sm-2">Balance Amount</label>
+							<div class="col-sm-3">
+									<input type="number" step="0.01"  name="balanceAmt" th:field="*{balanceAmt}"
 										class="form-control form-control-sm" style="text-align:right;" />
 								</div>
 						</div>
 
 						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Report Label</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
-							</div>
+							
 
-							<div class="col-sm-1"></div>
+							
 
 							<label class="col-sm-2">Report Addl Criteria 1</label>
 							<div class="col-sm-3">
 								<input type="text" th:field="*{reportAddlCriteria_1}" class="form-control form-control-sm"
 									readonly />
 							</div>
-						</div>
-
-						<div class="row formline" style="margin-top:10px;">
+							
+							<div class="col-sm-1"></div>
+							
+							
 							<label class="col-sm-2">Report Date</label>
 							<div class="col-sm-3">
 								<input type="date" name="reportDate" class="form-control form-control-sm"readonly
 									th:value="${#dates.format(msciData.reportDate, 'yyyy-MM-dd')}" />
 							</div>
+							
+							
+							
+							
+							
+							
 						</div>
+
+					<!-- 	<div class="row formline" style="margin-top:10px;">
+							
+						</div> -->
 
 						<div style="text-align:center; margin-top:20px;">
 							<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
@@ -3228,7 +3225,40 @@ function cancelModify() {
 
 </body>
 
+<script th:inline="javascript">
+				  $(document).ready(function () {
+				    var table = $('#reportdetails').DataTable({
+				      scrollY: "550px",
+				      scrollX: true,
+				      scrollCollapse: true,
+				      autoWidth: false,
+				      paging: true,
+				      searching: true,
+				      lengthChange: false,
+				      ordering: true,
+				      pageLength: 100,
+				      fixedHeader: true, // ✅ You can simply set it to true
+					  // ✅ Column width settings
+					   columnDefs: [
+					     { width: "60px", targets: 0 },   // Edit icon column
+					     { width: "150px", targets: 1 }  ,  // S No column
+						 { width: "300px", targets: 7 }    // S No column
+					   ],
 
+				      dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+				    });
+
+				    // ✅ Fix alignment on resize / zoom
+				    $(window).on('resize', function () {
+				      table.columns.adjust().draw(false);
+				    });
+
+				    // ✅ Fix initial misalignment if loaded at non-100% zoom
+				    setTimeout(function () {
+				      table.columns.adjust().draw(false);
+				    }, 500);
+				  });
+				</script>
 
 
 

@@ -222,7 +222,7 @@ public class BRRS_M_SCI_E_ReportService {
 				if (reportLable != null && reportAddlCriteria_1 != null) {
 					T1Dt1 = brrs_m_sci_e_detail_repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate);
 				} else {
-					T1Dt1 = brrs_m_sci_e_detail_repo.getdatabydateList(parsedDate, currentPage, pageSize);
+					T1Dt1 = brrs_m_sci_e_detail_repo.getdatabydateList(parsedDate);
 					totalPages = brrs_m_sci_e_detail_repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 
@@ -3465,17 +3465,17 @@ Cell cellC,cellD;
 			balanceStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
+			String[] headers = {  "CUST ID", "ACCT NO", "ACCT NAME","MONTHLY_INT", "BALANCE_AMT", "REPORT LABLE", "REPORT ADDL CRITERIA1", "REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
 
-				if (i == 3) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
+				if (i == 3 || i == 4) {  // MONTHLY_INT (3) and BALANCE_AMT (4)
+				    cell.setCellStyle(rightAlignedHeaderStyle);
 				} else {
-					cell.setCellStyle(headerStyle);
+				    cell.setCellStyle(headerStyle);
 				}
 
 				sheet.setColumnWidth(i, 5000);
@@ -3493,10 +3493,19 @@ Cell cellC,cellD;
 					row.createCell(0).setCellValue(item.getCustId());
 					row.createCell(1).setCellValue(item.getAcctNumber());
 					row.createCell(2).setCellValue(item.getAcctName());
-					// ACCT BALANCE (right aligned, 3 decimal places)
+					// MONTHLY_INT (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					if (item.getMonthlyInt() != null) {
+						balanceCell.setCellValue(item.getMonthlyInt().doubleValue());
+					} else {
+						balanceCell.setCellValue(0.000);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+					
+					// BALANCE_AMT (right aligned, 3 decimal places)
+					 balanceCell = row.createCell(4);
+					if (item.getBalanceAmt() != null) {
+						balanceCell.setCellValue(item.getBalanceAmt().doubleValue());
 					} else {
 						balanceCell.setCellValue(0.000);
 					}
@@ -3504,9 +3513,9 @@ Cell cellC,cellD;
 
 					
 
-					row.createCell(4).setCellValue(item.getReportLable());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria_1());
-					row.createCell(6)
+					row.createCell(5).setCellValue(item.getReportLable());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria_1());
+					row.createCell(7)
 							.setCellValue(item.getReportDate() != null
 									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
 									: "");
@@ -3766,7 +3775,8 @@ Cell cellC,cellD;
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 		try {
 			String acctNo = request.getParameter("acctNumber");
-			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+			String monthlyInt = request.getParameter("monthlyInt");
+			String balanceAmt = request.getParameter("balanceAmt");
 			String acctName = request.getParameter("acctName");
 			String reportDateStr = request.getParameter("reportDate");
 
@@ -3788,16 +3798,26 @@ Cell cellC,cellD;
 				}
 			}
 
-			 if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
-		            BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
-		            if (existing.getAcctBalanceInpula()  == null ||
-		                existing.getAcctBalanceInpula().compareTo(newacctBalanceInpula) != 0) {
-		            	 existing.setAcctBalanceInpula(newacctBalanceInpula);
+			 if (monthlyInt != null && !monthlyInt.isEmpty()) {
+		            BigDecimal newmonthlyInt = new BigDecimal(monthlyInt);
+		            if (existing.getMonthlyInt()  == null ||
+		                existing.getMonthlyInt().compareTo(newmonthlyInt) != 0) {
+		            	 existing.setMonthlyInt(newmonthlyInt);
 		                isChanged = true;
-		                logger.info("Balance updated to {}", newacctBalanceInpula);
+		                logger.info("Balance updated to {}", newmonthlyInt);
 		            }
 		        }
 		        
+			 if (balanceAmt != null && !balanceAmt.isEmpty()) {
+		            BigDecimal newbalanceAmt = new BigDecimal(balanceAmt);
+		            if (existing.getBalanceAmt()  == null ||
+		                existing.getBalanceAmt().compareTo(newbalanceAmt) != 0) {
+		            	 existing.setBalanceAmt(newbalanceAmt);
+		                isChanged = true;
+		                logger.info("Balance updated to {}", newbalanceAmt);
+		            }
+		        }
+			 
 			if (isChanged) {
 				m_sci_e_detail_repo.save(existing);
 				logger.info("Record updated successfully for account {}", acctNo);

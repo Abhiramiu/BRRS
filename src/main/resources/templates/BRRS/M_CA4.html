@@ -1337,7 +1337,7 @@ window.fileuploads = function (btn) {
                      data-todate=${todate}, 
                      data-currency=${currency},  
                      data-dtltype=${dtltype}, 
-                     data-filename='M_CA4.xls',
+                     data-filename='M_CA4.xlsx',
                      data-type=${type},
 					data-version=${version} "
 							onclick="downloadfile(this);">
@@ -1944,41 +1944,41 @@ window.fileuploads = function (btn) {
 													style="background-color: #FFFFFF; width: 900px; height: 28px; border-color: transparent; text-align: left;"
 													readonly /></td>
 
-												<td id="ROW19" style="font-weight: bold; text-align: right;  padding-left:20px; " class="graybox">
-													<input class="display-input Show_input graybox" type="text"
+												<td id="ROW19" style="font-weight: bold; text-align: right;  padding-left:20px; " >
+													<input class="display-input Show_input " type="text"
 													th:value="${report.r19_amt_name_of_sub1 != null ? #numbers.formatDecimal(report.r19_amt_name_of_sub1, 0, 'COMMA', 0, 'POINT') : '0'}"
 													id="r19_amt_name_of_sub1" name="r19_amt_name_of_sub1"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 												</td>
 
-												<td id="ROW19" style="font-weight: bold; text-align: right;  padding-left:20px; " class="graybox">
-													<input class="display-input Show_input graybox " type="text"
+												<td id="ROW19" style="font-weight: bold; text-align: right;  padding-left:20px; " >
+													<input class="display-input Show_input  " type="text"
 													th:value="${report.r19_amt_name_of_sub2 != null ? #numbers.formatDecimal(report.r19_amt_name_of_sub2, 0, 'COMMA', 0, 'POINT') : '0'}"
 													id="r19_amt_name_of_sub2" name="r19_amt_name_of_sub2"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 												</td>
 
-												<td id="ROW19" style="font-weight: bold; text-align: right;  padding-left:20px; " class="graybox">
-													<input class="display-input Show_input graybox" type="text"
-													th:value="${report.r19_amt_name_of_sub3 != null ? #numbers.formatDecimal(report.r19_amt_name_of_sub3, 1, 'COMMA', 0, 'POINT') : '0'}"
+												<td id="ROW19" style="font-weight: bold; text-align: right;  padding-left:20px; " >
+													<input class="display-input Show_input " type="text"
+													th:value="${report.r19_amt_name_of_sub3 != null ? #numbers.formatDecimal(report.r19_amt_name_of_sub3, 0, 'COMMA', 0, 'POINT') : '0'}"
 													id="r19_amt_name_of_sub3" name="r19_amt_name_of_sub3"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 												</td>
 
-												<td id="ROW19" style="font-weight: bold; text-align: right;  padding-left:20px; " class="graybox">
-													<input class="display-input Show_input graybox" type="text"
-													th:value="${report.r19_amt_name_of_sub4 != null ? #numbers.formatDecimal(report.r19_amt_name_of_sub4, 1, 'COMMA', 0, 'POINT') : '0'}"
+												<td id="ROW19" style="font-weight: bold; text-align: right;  padding-left:20px; " >
+													<input class="display-input Show_input " type="text"
+													th:value="${report.r19_amt_name_of_sub4 != null ? #numbers.formatDecimal(report.r19_amt_name_of_sub4, 0, 'COMMA', 0, 'POINT') : '0'}"
 													id="r19_amt_name_of_sub4" name="r19_amt_name_of_sub4"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />
 												</td>
 
-												<td id="ROW19" style="font-weight: bold; text-align: right;  padding-left:20px; " class="graybox">
-													<input class="display-input Show_input graybox " type="text"
-													th:value="${report.r19_amt_name_of_sub5 != null ? #numbers.formatDecimal(report.r19_amt_name_of_sub5, 1, 'COMMA', 1, 'POINT') : '0'}"
+												<td id="ROW19" style="font-weight: bold; text-align: right;  padding-left:20px; " >
+													<input class="display-input Show_input  " type="text"
+													th:value="${report.r19_amt_name_of_sub5 != null ? #numbers.formatDecimal(report.r19_amt_name_of_sub5, 1, 'COMMA', 0, 'POINT') : '0'}"
 													id="r19_amt_name_of_sub5" name="r19_amt_name_of_sub5"
 													style="background-color: #FFFFFF; width: 300px; height: 28px; border-color: transparent; text-align: right;"
 													readonly />

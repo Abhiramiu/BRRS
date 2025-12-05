@@ -39,17 +39,12 @@ public class M_SCI_E_Detail_Entity {
   @Column(name = "REPORT_ADDL_CRITERIA_1")
   private String reportAddlCriteria_1;
   
-  @Column(name = "REPORT_ADDL_CRITERIA_2")
-  private String reportAddlCriteria_2;
-
-  @Column(name = "REPORT_ADDL_CRITERIA_3")
-  private String reportAddlCriteria_3;
+ 
   
   @Column(name = "REPORT_REMARKS")
   private String reportRemarks;
   
-  @Column(name = "SANCTION_LIMIT")
-  private String sanctionLimit;
+
 
   @Column(name = "MODIFICATION_REMARKS")
   private String modificationRemarks;
@@ -98,11 +93,7 @@ public class M_SCI_E_Detail_Entity {
   @Column(name = "DEL_FLG")
   private char delFlg;
 
-    @Column(name = "DEBIT_BALANCE", precision =18, scale = 2)
-    private BigDecimal debitBalance;
-
-    @Column(name = "CREDIT_BALANCE", precision = 18, scale = 2)
-    private BigDecimal creditBalance;
+   
 
     @Column(name = "DEBIT_EQUIVALENT", precision = 18, scale = 2)
     private BigDecimal debitEquivalent;
@@ -110,14 +101,17 @@ public class M_SCI_E_Detail_Entity {
     @Column(name = "CREDIT_EQUIVALENT", precision = 18, scale = 2)
     private BigDecimal creditEquivalent;
 
-    @Column(name = "EAB_BAL_LC", precision = 18, scale = 2)
-    private BigDecimal eabBalLc;
+    @Column(name = "BALANCE_AMT")
+    private BigDecimal balanceAmt;
 
     @Column(name = "GLSH_CODE", length = 50)
     private String glshCode;
 
     @Column(name = "ACCT_CRNCY_CODE", length = 10)
     private String acctCrncyCode;
+    
+    @Column(name = "MONTHLY_INT", precision = 24, scale = 2)
+    private BigDecimal monthlyInt;
 
 	public String getCustId() {
 		return custId;
@@ -175,36 +169,12 @@ public class M_SCI_E_Detail_Entity {
 		this.reportAddlCriteria_1 = reportAddlCriteria_1;
 	}
 
-	public String getReportAddlCriteria_2() {
-		return reportAddlCriteria_2;
-	}
-
-	public void setReportAddlCriteria_2(String reportAddlCriteria_2) {
-		this.reportAddlCriteria_2 = reportAddlCriteria_2;
-	}
-
-	public String getReportAddlCriteria_3() {
-		return reportAddlCriteria_3;
-	}
-
-	public void setReportAddlCriteria_3(String reportAddlCriteria_3) {
-		this.reportAddlCriteria_3 = reportAddlCriteria_3;
-	}
-
 	public String getReportRemarks() {
 		return reportRemarks;
 	}
 
 	public void setReportRemarks(String reportRemarks) {
 		this.reportRemarks = reportRemarks;
-	}
-
-	public String getSanctionLimit() {
-		return sanctionLimit;
-	}
-
-	public void setSanctionLimit(String sanctionLimit) {
-		this.sanctionLimit = sanctionLimit;
 	}
 
 	public String getModificationRemarks() {
@@ -311,22 +281,6 @@ public class M_SCI_E_Detail_Entity {
 		this.delFlg = delFlg;
 	}
 
-	public BigDecimal getDebitBalance() {
-		return debitBalance;
-	}
-
-	public void setDebitBalance(BigDecimal debitBalance) {
-		this.debitBalance = debitBalance;
-	}
-
-	public BigDecimal getCreditBalance() {
-		return creditBalance;
-	}
-
-	public void setCreditBalance(BigDecimal creditBalance) {
-		this.creditBalance = creditBalance;
-	}
-
 	public BigDecimal getDebitEquivalent() {
 		return debitEquivalent;
 	}
@@ -343,12 +297,12 @@ public class M_SCI_E_Detail_Entity {
 		this.creditEquivalent = creditEquivalent;
 	}
 
-	public BigDecimal getEabBalLc() {
-		return eabBalLc;
+	public BigDecimal getBalanceAmt() {
+		return balanceAmt;
 	}
 
-	public void setEabBalLc(BigDecimal eabBalLc) {
-		this.eabBalLc = eabBalLc;
+	public void setBalanceAmt(BigDecimal balanceAmt) {
+		this.balanceAmt = balanceAmt;
 	}
 
 	public String getGlshCode() {
@@ -367,10 +321,22 @@ public class M_SCI_E_Detail_Entity {
 		this.acctCrncyCode = acctCrncyCode;
 	}
 
+	public BigDecimal getMonthlyInt() {
+		return monthlyInt;
+	}
+
+	public void setMonthlyInt(BigDecimal monthlyInt) {
+		this.monthlyInt = monthlyInt;
+	}
+
 	public M_SCI_E_Detail_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+	
+    
+    
 
 	
 
