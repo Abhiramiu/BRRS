@@ -2705,6 +2705,11 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_M_PD_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+				case "M_SFINP1":
+					modelAndView = BRRS_M_SFINP1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
 	     
 				case "M_PI":
 					modelAndView = BRRS_M_PI_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -2833,6 +2838,10 @@ public class RegulatoryReportServices {
 
 				case "M_FAS":
 					response = BRRS_M_FAS_reportservice.updateDetailEdit(request);
+					break;
+					
+				case "M_SFINP1":
+					response = BRRS_M_SFINP1_reportservice.updateDetailEdit(request);
 					break;
 
 				case "Q_SMME_LA":

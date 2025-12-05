@@ -312,6 +312,88 @@ label.error {
   }
 </style>
     
+<style>
+					/* Keep the header fixed and aligned */
+					.dataTables_scrollHeadInner,
+					.dataTables_scrollBody table {
+					  width: 100% !important;
+					}
+
+					/* Prevent thead shrinking at zoom */
+					.dataTables_scrollHeadInner table {
+					  width: 100% !important;
+					  min-width: 100% !important;
+					}
+
+					#reportdetails {
+					  width: 100% !important;
+					  table-layout: fixed !important;
+					}
+
+					#reportdetails th, 
+					#reportdetails td {
+					  white-space: nowrap;
+					}
+					table.dataTable th.dt-type-numeric,
+						table.dataTable th.dt-type-date,
+						table.dataTable td.dt-type-numeric,
+						table.dataTable td.dt-type-date {
+						    text-align: left !important;
+						}
+						
+						/* Right-align header (6th column = ACCT BALANCE) */
+															table.dataTable th.dt-type-numeric:nth-child(6) {
+															  text-align: right !important;
+															}
+															
+															/* Right-align data (6th column = ACCT BALANCE) */
+																									#reportdetails td:nth-child(6),
+																									.dataTables_scrollHeadInner table th:nth-child(6) {
+																									 text-align: right !important;
+																									 padding-right: 10px !important;
+																										}
+						
+				
+
+
+
+						  
+						</style>
+
+	<script th:inline="javascript">
+		$(document).ready(function () {
+			var table = $('#reportdetails').DataTable({
+				scrollY: "550px",
+				scrollX: true,
+				scrollCollapse: true,
+				autoWidth: false,
+				paging: true,
+				searching: true,
+				lengthChange: false,
+				ordering: true,
+				pageLength: 100,
+				fixedHeader: true, // ✅ You can simply set it to true
+				// ✅ Column width settings
+				columnDefs: [
+					{width: "60px", targets: 0},   // Edit icon column
+					{width: "100px", targets: 1},  // S No column
+					   // S No column
+				],
+
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			});
+
+			// ✅ Fix alignment on resize / zoom
+			$(window).on('resize', function () {
+				table.columns.adjust().draw(false);
+			});
+
+			// ✅ Fix initial misalignment if loaded at non-100% zoom
+			setTimeout(function () {
+				table.columns.adjust().draw(false);
+			}, 500);
+		});
+	</script>
 
 <script th:inline="javascript">
 		$(document).ready(function () {
@@ -369,9 +451,14 @@ label.error {
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-		
-			 showResultModal('BRRS',' Details page not available for Manual Report');
-		}
+
+					var Callurl;
+					$('#loader').modal('show');
+					Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+						location.href = Callurl;
+					console.log(Callurl);
+
+				}
 
 		function showsummary() {
 			$('#loader').modal('show');
@@ -473,6 +560,15 @@ label.error {
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
+		
+		function showResultModalDetail(title, message) {
+					// Set the text for the modal elements
+					$('#resultModalLabel1').text(title);
+					$('#resultModalBody1').text(message);
+
+					// Show the modal
+					$('#resultModal1').modal('show');
+				}
 	</script>
 	
 	
@@ -541,7 +637,7 @@ function cancelModify() {
 
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
+	function closemodels() {
 	    $("#resultModal").modal("hide");
 	    $('#loader').modal('hide');
 
@@ -682,6 +778,316 @@ function cancelModify() {
 	}
 
 	</script>
+	
+	<script th:inline="javascript">
+			/*<![CDATA[*/
+			const reportId = /*[[${reportid}]]*/ null;
+			/*]]>*/
+		</script>
+
+		<script>
+			function openDetail(elem, mode) {
+
+				var type = elem.getAttribute('data-type');
+
+				if (type === "ARCHIVAL") {
+					showResultModal('BRRS', "Archived Data cannot be modified");
+					return;
+				}
+				const acctNo = elem.getAttribute("data-acctNo");
+				const asondate = elem.getAttribute("data-asondate");
+				location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+			}
+		</script>
+	
+	<style>
+			.header-bar {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				/* ✅ allows wrapping on smaller screens */
+				gap: 10px;
+				/* spacing between elements */
+				cursor: pointer;
+			}
+
+			/* 🔘 Circular arrow */
+			.left-arrow-circle {
+				width: 35px;
+				height: 35px;
+				border-radius: 50%;
+				background-color: white;
+				color: #1f3a93;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin-right: 10px;
+			}
+
+			.left-arrow-circle i {
+				font-size: 18px;
+			}
+
+			/* 🏷️ Title */
+			.header-title {
+				font-family: Arial, sans-serif;
+				font-size: 20px;
+				font-weight: bold;
+				color: white;
+				margin: 0;
+				flex-shrink: 0;
+			}
+
+			/* 🚌 Bus display style box */
+			.boards {
+				margin-left: 20px;
+				transform: translateY(6px);
+				background-color: rgb(107, 122, 143);
+				color: white;
+				padding: 5px 5px;
+				border-radius: 8px;
+				overflow: hidden;
+				white-space: nowrap;
+				flex: 1;
+				/* ✅ makes it take available space dynamically */
+				min-width: 200px;
+				box-shadow: 0 0 10px rgb(107, 122, 143);
+				position: relative;
+			}
+
+			/* ✨ Scrolling animation */
+			.scrolling-text {
+				display: inline-block;
+				font-family: "Courier New", monospace;
+				font-weight: bold;
+				letter-spacing: 1px;
+				animation: scroll-left 10s linear infinite;
+			}
+
+			@keyframes scroll-left {
+				0% {
+					transform: translateX(100%);
+				}
+
+				100% {
+					transform: translateX(-100%);
+				}
+			}
+		</style>
+
+		
+
+	
+	<script>
+
+		function startReport(button) {
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+
+			if (sessionfilename == filename) {
+				alertMsg.innerHTML = 'Download request already Processing...';
+				showAlert();
+				return;
+			}
+
+			alertMsg.innerHTML = 'Download request Processing...';
+			showAlert();
+
+
+			const baseUrl = '/BRRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+			fetch(downloadUrl)  // ✅ no invalid characters now
+				.then(res => res.text())
+				.then(jobId => {
+
+					alertMsg.innerHTML = 'Download request received...' + jobId;
+					showAlert();
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+					checkReport(jobId);
+				});
+			console.log("Report params:", {
+				filename, fromdate, todate, currency, dtltype, type, version
+			});
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report is ready! Downloded…';
+						showAlert();
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename)
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+
+					} else if (status === "PROCESSING") {
+						alertMsg.innerHTML = 'Download Is Processing…';
+						showAlert();
+						setTimeout(() => checkReport(jobId), 5000);
+					}
+					else if (status === "ERROR") {
+						alertMsg.innerHTML = 'No data was available to create a download.';
+						showAlert();
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					}
+				});
+		}
+
+
+
+		function downloadDetailfile(jobId, filename) {
+
+			//$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+
+	</script>
+	
+	<script th:inline="javascript">
+			function showdetailsbyRowAndColumn(a) {
+				var rowId = a.getAttribute('RowId');
+				var columnId = a.getAttribute('ColumnId');
+				var cellValue = a.textContent || a.innerText;
+
+				if (cellValue !== '0') {
+					// Set dynamic message in modal (instead of confirm)
+					document.getElementById("cellresultModalLabel").innerText =
+						"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+					// Show custom Bootstrap modal
+					$('#cellresultModal').modal('show');
+
+					// Handle Yes button
+					document.querySelector('.yes-btn').onclick = function () {
+						$('#cellresultModal').modal('hide');
+
+						// Show loader
+						const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+							backdrop: 'static',
+							keyboard: false
+						});
+						$('#loader').modal('show');
+
+						// Build dynamic URL
+						var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+						Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+						location.href = Callurl;
+					};
+				} else {
+					// Use your custom alert modal instead of window.alert
+					showResultModal("Alert", "No Records available for this selected cell.");
+				}
+			}
+		</script>
+		
+		<script>
+				function submitUpdate() {
+					const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+
+					// ✅ Store the previous page URL
+					const previousUrl = document.referrer; // same as going back once in history
+
+					// Show loader while processing
+					$('#loader').modal('show');
+
+					$.ajax({
+						url: `/BRRS/Reports/${reportId}/update`,
+						type: 'POST',
+						data: formData,
+						success: function (response) {
+							$('#loader').modal('hide');
+
+							// ✅ Handle SUCCESS & NON-SUCCESS (Information)
+							if (response && response.toLowerCase().includes('success')) {
+								showResultModalDetail('BRRS', response);
+							} else {
+								showResultModalDetail('Information', response || 'No data updated.');
+							}
+
+							// Redirect after 1.5 sec
+							setTimeout(() => {
+								if (previousUrl) {
+									window.location.href = previousUrl;
+								} else {
+									window.history.back(); // fallback
+								}
+							}, 1500);
+						},
+
+						error: function (xhr, status, error) {
+							$('#loader').modal('hide');
+							console.error("Update error:", error);
+
+							// ✅ Handle ERROR
+							showResultModalDetail('Error', 'Failed to update record. Please try again.');
+
+							// Redirect back after delay even on error
+							setTimeout(() => {
+								if (previousUrl) {
+									window.location.href = previousUrl;
+								} else {
+									window.history.back();
+								}
+							}, 1500);
+						}
+					});
+				}
+			</script>
+
  
 
 
@@ -709,6 +1115,11 @@ function cancelModify() {
         <h5 style="font-family: arial; font-size: 20px; padding-top:10px; font-weight: bold; color: white;">
            M-SFinP1: STATEMENT OF FINANCIAL POSITION AS AT(P'000)									
         </h5>
+		
+		<!-- Bus Scrolling Text -->
+		<div class="boards" style="min-width: 250px;">
+			<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+		</div>
         
     </div>
 
@@ -724,14 +1135,16 @@ function cancelModify() {
         <input type="hidden" id="selectedTab" th:value="${displaymode}">
         <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();" th:if="${displaymode == 'Details'}">Summary</button>
         <button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();" th:if="${displaymode == 'summary'}">Details</button>
-		<!-- Modify button -->
-				<button type="button" class="custom-tab-btn"
-				        onclick="showmodify(this);"
-				        title="Click to EDIT Records"
-						th:if="${type != 'ARCHIVAL'}"
-				        th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-				        id="addRecord">Modify</button>
-
+		<!-- Modify Button -->
+		       <button type="button"
+		               class="custom-tab-btn"
+		               onclick="showmodify(this);"
+		               title="Click to EDIT Records"
+		               th:if="${type != 'ARCHIVAL'}"
+		               th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+		               id="addRecord">
+		           Modify
+		       </button>
 				<!-- Cancel button (hidden initially) -->
 				<button type="button" class="custom-tab-btn"
 				        title="Cancel editing"
@@ -780,7 +1193,7 @@ function cancelModify() {
 		  th:attr="
 		    data-fromdate=${fromdate},
 		    data-todate=${todate},
-		    data-filename='M_SFINP1Detail'
+		    data-filename='MSFinP1Detail'
 		  ">
 		  <i class="fa fa-download"></i>
 		</button>
@@ -994,7 +1407,7 @@ function cancelModify() {
 							
 							<tr>  <td style="padding-left: 4px;" th:text="${report.r39_product}"></td>
 							<td th:text="${report.r39_cross_ref}" style="text-align: left; "></td>
-							<td id="ROW39" style="padding-left: 20px; font-weight: bold;text-align: right;">
+						<!---	<td id="ROW39" style="padding-left: 20px; font-weight: bold;text-align: right;">
 																		        <input class="display-input Show_input"
 																		               type="text"
 																		               th:value="${reportsummary1[0].R39_MONTH_END != null ? #numbers.formatDecimal(reportsummary1[0].R39_MONTH_END, 1,'COMMA', 0, 'POINT') : '0'}"
@@ -1002,7 +1415,8 @@ function cancelModify() {
 																		               name="R39_MONTH_END"
 																		               style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 																		           readonly />
-																		    </td> 
+																		    </td>   -->
+							<td th:text="${#numbers.formatDecimal(report.r39_month_end, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R39', ColumnId='C3'"  style="text-align: right; background-color: rgb(107, 122, 143);color: white;"></td>
 							<td th:text="${#numbers.formatDecimal(report.r39_average, 0, 'COMMA', 0, 'POINT')}" th:attr="RowId='R39', ColumnId='C4'" onclick="showdetailsbyRowAndColumn(this)" style="text-align: right; "></td>  </tr>
 							
 							<tr>  <td style="padding-left: 4px;"  th:text="${report.r40_product}"></td>
@@ -1168,12 +1582,12 @@ function cancelModify() {
 								
 							</div>
 							
-									<div style="text-align: center; margin-top: 10px;">
+									<div style="text-align: center;  background-color: white;  ">
 										<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-																													form="fileupload" th:attr="data-todate=${asondate},data-type=${type}"
-																													onclick="fileuploads(this);" style="display: none;">
-																													Submit
-																													</button>
+										form="fileupload" th:attr="data-todate=${asondate},data-type=${type}"
+										onclick="fileuploads(this);" style="display: none;">
+										Submit
+										</button>
 
 																		
 																		
@@ -1184,8 +1598,139 @@ function cancelModify() {
 
 														</div>
 													</div>
+													
+													<div th:if="${displaymode == 'Details'}">
+																		<div class="row">
+																			<div class="col-sm-12">
+																				<div class="table-container"
+																					style="border-right: 1px solid #dee2e6;">
+																					<table
+																						class="table table-striped table-bordered table-hover"
+																						id="reportdetails">
+																						<thead class="thead-light">
+																							<tr>
+																								<th></th>
+																								<th style="width: 60px; text-align:center;">S No</th>
+																								<th>CUST ID</th>
+																								<th>ACCT NO</th>
+																								<th>ACCT NAME</th>
+																								<th style="text-align:right;">ACCT BALANCE IN PULA</th>
+																								<th>ROW ID</th>
+																								<th>COLUMN ID</th>
+																								<th>REPORT_DATE</th>
+																							</tr>
+
+																						</thead>
+
+																						<tbody 
+																							style="font-family: Arial;">
+																							<tr th:each="report ,srlno: ${reportdetails}">
+																								<td>
+																																			<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+																																				<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber},
+																								                            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+																								                            data-type=${type}" onclick="openDetail(this, 'edit')"></i>
+																																			</a>
+																																		</td>
+																								<td style="text-align:center;" th:text="${srlno.index + 1}"></td>
+																								<td th:text="${report.custId}"></td>
+																								<td th:text="${report.acctNumber}"></td>
+																								<td th:text="${report.acctName}"></td>
+																								<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInPula,1,'COMMA',0,'POINT')}"></td>
+																								<td th:text="${report.rowId}"></td>
+																								<td th:text="${report.columnId}"></td>
+																								<td
+																									th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+
+																							</tr>
+																						</tbody>
+																					</table>
+																												</div>
+																												<div style="text-align: center; margin-top: 10px;">
+																													
+																													</div>
+																												</form>
+																											</div>
+																										</div>
+																									</div>
+												</div>
+												
+												<div th:if="${formmode == 'edit'}" class="card">
+													<div class="card-body">
+														<form th:object="${Data}" method="post" id="DetailForm">
+
+															<!-- Row 1 -->
+															<div class="row formline" style="margin-top:10px;">
+																<label class="col-sm-2">Customer ID</label>
+																<div class="col-sm-3">
+																	<input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+																</div>
+
+																<div class="col-sm-1"></div>
+
+																<label class="col-sm-2">Account Number</label>
+																<div class="col-sm-3">
+																	<input type="text" th:field="*{acctNumber}" class="form-control form-control-sm" readonly />
+																</div>
+															</div>
+
+															<!-- Row 2 -->
+															<div class="row formline" style="margin-top:10px;">
+																<label class="col-sm-2">Account Name</label>
+																<div class="col-sm-3">
+																	<input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
+																</div>
+
+																<div class="col-sm-1"></div>
+
+																<label class="col-sm-2">Acct Balance</label>
+																<div class="col-sm-3">
+																	<input type="number" step="0.01" th:field="*{acctBalanceInPula}"
+																		class="form-control form-control-sm" style="text-align:right;" />
+																</div>
+															</div>
+
+															<!-- Row 3 -->
+															<div class="row formline" style="margin-top:10px;">
+																<label class="col-sm-2">Report Label</label>
+																<div class="col-sm-3">
+																	<input type="text" th:field="*{rowId}" class="form-control form-control-sm"
+																		readonly />
+																</div>
+
+																<div class="col-sm-1"></div>
+
+																<label class="col-sm-2">Report Addl Criteria 1</label>
+																<div class="col-sm-3">
+																	<input type="text" th:field="*{columnId}" class="form-control form-control-sm"
+																		readonly />
+																</div> 
+															</div>
+
+															<!-- Row 4 -->
+															<div class="row formline" style="margin-top:10px;">
+																<label class="col-sm-2">Report Date</label>
+																<div class="col-sm-3">
+																	<input type="date" name="reportDate" class="form-control form-control-sm"
+																		th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" readonly />
+																</div>
+															</div>
+
+															<!-- Update Button -->
+															<div style="text-align:center; margin-top:20px;">
+																<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
+																	onclick="submitUpdate()">Update</button>
+															</div>
+														</form>
+													</div>
 												</div>
 											</div>
+											
+
+																							
+																						</div>
+																					</div>
+																				</div>
 											<!-- Custom Cellresult Modal -->
 																					<div class="modal fade" id="cellresultModal">
 																					  <div class="modal-dialog modal-dialog-centered">
@@ -1224,111 +1769,76 @@ function cancelModify() {
 																						</div>
 																					</div>
 																				</div>
-																				<!-- Custom Alert/Result Modal (Matches your existing style) -->
-																				<div class="modal fade" id="resultModal">
-																					<div class="modal-dialog modal-dialog-centered">
-																						<div class="modal-content">
-																							<!-- Your custom styled header -->
-																							<div class="menu-title-header">
-																								<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-																									<!-- Title will be set by JavaScript -->
+																				
+																				<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
+																					<div class="modal fade" id="resultModal">
+																						<div class="modal-dialog modal-dialog-centered">
+																							<div class="modal-content">
+																								<!-- Your custom styled header -->
+																								<div class="menu-title-header">
+																									<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+																										<!-- Title will be set by JavaScript -->
+																									</div>
 																								</div>
-																							</div>
-																							<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-																								<p id="resultModalBody"></p>
-																								<!-- Your custom styled button -->
-																								<button type="button" class="custom-tab-btn" onclick="closemodel()" data-bs-dismiss="modal">OK</button>
+																								<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+																									<p id="resultModalBody"></p>
+																									<!-- Your custom styled button -->
+																									<button type="button" class="custom-tab-btn" onclick="closemodels()"
+																										data-dismiss="modal">ok</button>
+																								</div>
 																							</div>
 																						</div>
 																					</div>
-																				</div>
+																					<!-- For Edit in Detail page -->
+																					<div class="modal fade" id="resultModal1">
+																						<div class="modal-dialog modal-dialog-centered">
+																							<div class="modal-content">
+																								<!-- Your custom styled header -->
+																								<div class="menu-title-header">
+																									<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
+																										<!-- Title will be set by JavaScript -->
+																									</div>
+																								</div>
+																								<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+																									<p id="resultModalBody1"></p>
+																									<!-- Your custom styled button -->
+																									<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
 
+																					<!-- Custom Cellresult Modal -->
+																					<div class="modal fade" id="cellresultModal">
+																						<div class="modal-dialog modal-dialog-centered">
+																							<div class="modal-content">
 
-				<div th:if="${displaymode == 'Details'}">
-					<div class="row">
-						<div class="col-sm-12">
-							<div class="table-responsive scrollable-table-container"
-								style="border-right: 1px solid #dee2e6;">
-								<table
-									class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
-									id="reports">
-									<thead class="thead-light">
-										<tr>
-											<th></th>
-											<th>CUST ID</th>
-											<th>ACCT NO</th>
-											<th>ACCT NAME</th>
-											<th style="text-align:right;">ACCT BALANCE</th>
-											<th>ROW ID</th>
-											<th>COLUMN ID</th>
-											<th>REPORT_DATE</th>
-										</tr>
+																								<!-- Custom header -->
+																								<div class="menu-title-header"
+																									style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+																									<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+																										Do you want to open the report?
+																									</div>
+																								</div>
 
-									</thead>
-
-									<tbody th:each="report: ${reportdetails}"
-										style="font-family: Arial;">
-										<tr>
-											<td><a data-toggle="tooltip" class="editrec"
-												title="Click to Edit this Record"> <i
-													class="fas fa-edit" onclick="editRecord(this)"></i>
-											</a></td>
-											<td th:text="${report.custId}"></td>
-											<td th:text="${report.acctNumber}"></td>
-											<td th:text="${report.acctName}"></td>
-											<td style="text-align:right;" th:text="${#numbers.formatDecimal(report.acctBalanceInPula, 1, 3, 'POINT')}"></td>
-											<td th:text="${report.rowId}"></td>
-											<td th:text="${report.columnId}"></td>
-											<td
-												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
-
-										</tr>
-									</tbody>
-								</table>
-															</div>
-															<div style="text-align: center; margin-top: 10px;">
-																
-																</div>
-															</form>
-														</div>
-													</div>
-												</div>
-												
-											</div>
-										</div>
-									</div>
-									
-									
-
+																								<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+																									<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+																										style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+																										Cancel
+																									</button>
+																									<button type="button" class="custom-tab-btn yes-btn"
+																										style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+																										Yes
+																									</button>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
 
 </body>
-<!-- <script>
-															  $(document).ready(function () {
-															    $('#BRFvalidation').DataTable({
-															      "paging": true,
-															      "pageLength": 10,
-															      "lengthChange": false,
-															      "searching": true,
-															      "ordering": true,
-															      "autoWidth": false,
-															      "language": {
-															        "search": "Search:"
-															      }
-															    });
-															  });
-															</script> -->
-<!-- <script>
-															  $(document).ready(function () {
-															    $('#BRFvalidation').DataTable({
-															      "paging": true,
-															      "info": false,       // turn off "Showing x of y"
-															      "searching": false,  // turn off search
-															      "ordering": false,   // turn off ordering
-															      "lengthChange": false // hide "Show x entries"
-															    });
-															  });
-															</script> -->
-
+<!-- <script> -->
+	
+															
 
 
 <style>

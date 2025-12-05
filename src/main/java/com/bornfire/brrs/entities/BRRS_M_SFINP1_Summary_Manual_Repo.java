@@ -15,4 +15,9 @@ public interface BRRS_M_SFINP1_Summary_Manual_Repo extends JpaRepository<M_SFINP
 
     @Query(value = "SELECT R34_MONTH_END FROM BRRS_M_SFINP1_SUMMARYTABLE_MANUAL WHERE REPORT_DATE = :reportDate", nativeQuery = true)
     BigDecimal getCurrentR34MonthEnd(@Param("reportDate") Date reportDate);
+    
+    @Query(value = "SELECT * "+
+    		"FROM BRRS_M_SFINP1_SUMMARYTABLE_MANUAL "+
+    		"WHERE TRUNC(REPORT_DATE) = TO_DATE(?1, 'DD-MON-YYYY')", nativeQuery = true)
+    List<M_SFINP1_Summary_Manual_Entity> getdatabydateList1(String reportDate);
 }
