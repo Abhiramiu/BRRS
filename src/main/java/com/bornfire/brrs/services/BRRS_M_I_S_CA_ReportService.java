@@ -236,7 +236,7 @@ public class BRRS_M_I_S_CA_ReportService {
 				if (reportLable != null && reportAddlCriteria_1 != null) {
 					T1Dt1 = brrs_m_i_s_ca_detail_repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1, parsedDate);
 				} else {
-					T1Dt1 = brrs_m_i_s_ca_detail_repo.getdatabydateList(parsedDate, currentPage, pageSize);
+					T1Dt1 = brrs_m_i_s_ca_detail_repo.getdatabydateList(parsedDate);
 					totalPages = brrs_m_i_s_ca_detail_repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 

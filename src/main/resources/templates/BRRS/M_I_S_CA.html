@@ -974,118 +974,233 @@ function cancelModify() {
 
 
 <script>
-	function getCellValue(selector) {
-		let el = $(selector);
-		if (!el.length) return 0;
+//===============================================
+//UNIVERSAL GET + SET HELPERS
+//===============================================
+function getCellValue(selector) {
+ let el = $(selector);
+ if (!el.length) return 0;
 
-		if (el.is("input")) {
-			return parseFloat(el.val()?.replace(/,/g, "")) || 0;
-		} else {
-			return parseFloat(el.text()?.replace(/,/g, "")) || 0;
-		}
-	}
+ let v = el.val() || el.text() || "0";
+ v = v.toString().replace(/,/g, "").trim();
 
-	function setCellValue(selector, value) {
-		let el = $(selector);
-		if (!el.length) return;
+ let num = parseFloat(v);
+ return isNaN(num) ? 0 : num;
+}
 
-		const formatted = value.toLocaleString('en-US', {
-			minimumFractionDigits: 0,
-			maximumFractionDigits: 0
-		});
+function setCellValue(selector, value) {
+ $(selector).val(value);
+ $(selector).text(value);
+}
 
-		if (el.is("input")) {
-			el.val(formatted);
-		} else {
-			el.text(formatted);
-		}
-	}
 
-	//--------------------------------------
-	// MONTH-ONLY CALCULATION FUNCTION
-	//--------------------------------------
-	function calculateMonthTotals() {
-		let cols = ["month"]; // Only the "_month" column
 
-		// ---------------------------- R44 = R45 + R46 ----------------------------
-		let R45_total = 0, R46_total = 0;
-		cols.forEach(col => {
-			let v45 = getCellValue("#r45_" + col);
-			let v46 = getCellValue("#r46_" + col);
-			setCellValue("#r44_" + col, v45 + v46);
+//===============================================
+//1️⃣ R15 = SUM(R16:R28)
+//===============================================
+function calcR15() {
+ let total = 0;
+ for (let r = 16; r <= 28; r++) {
+     total += getCellValue("#r" + r + "_write_offs");
+ }
+ setCellValue("#r15_write_offs", total);
+}
 
-			R45_total += v45;
-			R46_total += v46;
-		});
-		setCellValue("#r44_total", R45_total + R46_total);
 
-		// ---------------------------- R57 = R58 + R59 + R60 ----------------------------
-		let R58_total = 0, R59_total = 0, R60_total = 0;
-		cols.forEach(col => {
-			let v58 = getCellValue("#r58_" + col);
-			let v59 = getCellValue("#r59_" + col);
-			let v60 = getCellValue("#r60_" + col);
 
-			setCellValue("#r57_" + col, v58 + v59 + v60);
+//===============================================
+//2️⃣ R29 = SUM(R30:R37)
+//===============================================
+function calcR29() {
+ let total = 0;
+ for (let r = 30; r <= 37; r++) {
+     total += getCellValue("#r" + r + "_write_offs");
+ }
+ setCellValue("#r29_write_offs", total);
+}
 
-			R58_total += v58;
-			R59_total += v59;
-			R60_total += v60;
-		});
-		setCellValue("#r57_total", R58_total + R59_total + R60_total);
 
-		// ---------------------------- R62 = R63 + R64 + R65 + R66 + R67 + R68 + R69 ----------------------------
-		let R63_total = 0, R64_total = 0, R65_total = 0, R66_total = 0, R67_total = 0, R68_total = 0, R69_total = 0;
-		cols.forEach(col => {
-			let v63 = getCellValue("#r63_" + col);
-			let v64 = getCellValue("#r64_" + col);
-			let v65 = getCellValue("#r65_" + col);
-			let v66 = getCellValue("#r66_" + col);
-			let v67 = getCellValue("#r67_" + col);
-			let v68 = getCellValue("#r68_" + col);
-			let v69 = getCellValue("#r69_" + col);
 
-			setCellValue("#r62_" + col, v63 + v64 + v65 + v66 + v67 + v68 + v69);
-		});
-		setCellValue("#r62_total", getCellValue("#r63_month") + getCellValue("#r64_month") + getCellValue("#r65_month") + getCellValue("#r66_month") + getCellValue("#r67_month") + getCellValue("#r68_month") + getCellValue("#r69_month"));
+//===============================================
+//3️⃣ R38 = SUM(R39:R40)
+//===============================================
+function calcR38() {
+ let total =
+     getCellValue("#r39_write_offs") +
+     getCellValue("#r40_write_offs");
 
-		// ---------------------------- R70 = R71 + R72 + R73 + R74 + R75 + R80 ----------------------------
-		cols.forEach(col => {
-			let total = getCellValue("#r71_" + col) + getCellValue("#r72_" + col) + getCellValue("#r73_" + col) + getCellValue("#r74_" + col) + getCellValue("#r75_" + col) + getCellValue("#r80_" + col);
-			setCellValue("#r70_" + col, total);
-		});
-		setCellValue("#r70_total", getCellValue("#r71_month") + getCellValue("#r72_month") + getCellValue("#r73_month") + getCellValue("#r74_month") + getCellValue("#r75_month") + getCellValue("#r80_month"));
+ setCellValue("#r38_write_offs", total);
+}
 
-		// ---------------------------- R86 = R84 - R85 ----------------------------
-		cols.forEach(col => {
-			let total = getCellValue("#r84_" + col) - getCellValue("#r85_" + col);
-			setCellValue("#r86_" + col, total);
-		});
-		setCellValue("#r86_total", getCellValue("#r84_month") - getCellValue("#r85_month"));
-	}
 
-	//--------------------------------------
-	// EVENT LISTENERS (MONTH ONLY)
-	//--------------------------------------
-	$(document).ready(function () {
-		calculateMonthTotals();
 
-		let cols = ["month"]; // Only "_month" column
+//===============================================
+//4️⃣ R53 = SUM(R54:R56)
+//===============================================
+function calcR53() {
+ let total = 0;
+ for (let r = 54; r <= 56; r++) {
+     total += getCellValue("#r" + r + "_write_offs");
+ }
+ setCellValue("#r53_write_offs", total);
+}
 
-		cols.forEach(col => {
-			// R44 block
-			$("#r45_" + col + ", #r46_" + col).on("input", calculateMonthTotals);
-			// R57 block
-			$("#r58_" + col + ", #r59_" + col + ", #r60_" + col).on("input", calculateMonthTotals);
-			// R62 block
-			$("#r63_" + col + ", #r64_" + col + ", #r65_" + col + ", #r66_" + col + ", #r67_" + col + ", #r68_" + col + ", #r69_" + col).on("input", calculateMonthTotals);
-			// R70 block
-			$("#r71_" + col + ", #r72_" + col + ", #r73_" + col + ", #r74_" + col + ", #r75_" + col + ", #r80_" + col).on("input", calculateMonthTotals);
-			// R86 block
-			$("#r84_" + col + ", #r85_" + col).on("input", calculateMonthTotals);
-		});
-	});
+
+
+//===============================================
+//5️⃣ R57 = SUM(R58:R62)    ← NEW
+//===============================================
+function calcR57() {
+ let total = 0;
+ for (let r = 58; r <= 62; r++) {
+     total += getCellValue("#r" + r + "_write_offs");
+ }
+ setCellValue("#r57_write_offs", total);
+}
+
+//===============================================
+//R49 = C50 + C51 + C52 + C53 + C57
+//===============================================
+function calcR49() {
+
+ let total =
+     getCellValue("#r50_write_offs") +
+     getCellValue("#r51_write_offs") +
+     getCellValue("#r52_write_offs") +
+     getCellValue("#r53_write_offs") +   // ← already calculated earlier
+     getCellValue("#r57_write_offs");    // ← already calculated earlier
+
+ setCellValue("#r49_write_offs", total);
+}
+
+function calculateC11() {
+    let col = "write_offs";
+
+    let c12 = getCellValue("#r12_" + col);
+    let c13 = getCellValue("#r13_" + col);
+    let c14 = getCellValue("#r14_" + col);
+
+    // already computed by previous functions
+    let c15 = getCellValue("#r15_" + col);
+    let c29 = getCellValue("#r29_" + col);
+    let c38 = getCellValue("#r38_" + col);
+
+    let total = c12 + c13 + c14 + c15 + c29 + c38;
+
+    setCellValue("#r11_" + col, total);
+}
+
+
+function calculateC41() {
+    let col = "write_offs";
+
+    // manual fields
+    let c42 = getCellValue("#r42_" + col);
+    let c43 = getCellValue("#r43_" + col);
+    let c44 = getCellValue("#r44_" + col);
+
+    // already computed totals
+    let c49 = getCellValue("#r49_" + col);
+    
+    // manual fields
+    let c63 = getCellValue("#r63_" + col);
+
+    let total = c42 + c43 + c44 + c49 + c63;
+
+    setCellValue("#r41_" + col, total);
+}
+
+
+function calculateC64() {
+    let col = "write_offs";
+
+    let r11 = getCellValue("#r11_" + col); // already total
+    let r41 = getCellValue("#r41_" + col); // already total
+
+    let total = r11 + r41;
+
+    setCellValue("#r64_" + col, total);
+}
+
+// ================================================
+// R69_TOTAL = R67 + R68
+// ================================================
+function calcR69Total() {
+    let col = "total";
+    let total = getCellValue("#r67_" + col) + getCellValue("#r68_" + col);
+    setCellValue("#r69_total", total); // Note: target is r64_total
+}
+
+
+//===============================================
+//MASTER FUNCTION: run all calculations
+//===============================================
+function runAllWriteOffs() {
+ calcR15();
+ calcR29();
+ calcR38();
+ calcR53();
+ calcR57();   // NEW
+ calcR49();
+ calculateC11();  
+ calculateC41();
+ calculateC64();
+ calcR69Total();
+}
+
+
+
+//===============================================
+//EVENT BINDINGS
+//===============================================
+$(document).ready(function () {
+
+    // Run all calculations once on load
+    runAllWriteOffs();
+
+    // Array for manual input rows
+    let manualRows = [];
+
+    // R16–R28 → for R15
+    for (let r = 16; r <= 28; r++) manualRows.push(r);
+
+    // R30–R37 → for R29
+    for (let r = 30; r <= 37; r++) manualRows.push(r);
+
+    // R39–R40 → for R38
+    manualRows.push(39, 40);
+
+    // R54–R56 → for R53
+    manualRows.push(54, 55, 56);
+
+    // R58–R62 → for R57
+    for (let r = 58; r <= 62; r++) manualRows.push(r);
+
+    // R50–R52 → needed for R49
+    manualRows.push(50, 51, 52);
+    
+    manualRows.push(12, 13, 14);
+    
+    manualRows.push(42, 43, 44,63);  
+    
+    manualRows.push(67,68); 
+
+    // Attach listeners to each row
+    manualRows.forEach(function (r) {
+        $("#r" + r + "_write_offs").on("input", runAllWriteOffs);
+    });
+    
+ // ALSO attach listener for TOTAL fields (important)
+    ["67", "68"].forEach(function (r) {
+        $("#r" + r + "_total").on("input", runAllWriteOffs);
+    });
+
+
+});
+
 </script>
+
+
 
 
 
@@ -1378,7 +1493,7 @@ function cancelModify() {
 												th:text="${report?.r11_recoveries ?: ''}"
 												></td>
 
-											<td style="text-align: right; padding-right:10px; " class="green-cell" 
+											<td  id="r11_write_offs"style="text-align: right; padding-right:10px; " class="green-cell" 
 												th:text="${report?.r11_write_offs ?: ''}"
 												></td>
 
@@ -1514,11 +1629,11 @@ function cancelModify() {
        >
     </td>
 
-   	<td style="text-align: right; padding-right:10px; " class="green-cell" 
+   	<td  id="r15_write_offs" style="text-align: right; padding-right:10px; " class="green-cell" 
 												th:text="${report?.r15_write_offs ?: ''}"
 												></td>
 
-    <td style="text-align: right; padding-right:10px;" class="green-cell" 
+    <td  style="text-align: right; padding-right:10px;" class="green-cell" 
         th:text="${report?.r15_new_chars ?: ''}"
       >
     </td>
@@ -1996,7 +2111,7 @@ function cancelModify() {
        >
     </td>
 
-   <td style="text-align: right; padding-right:10px; " class="green-cell" 
+   <td    id="r29_write_offs" style="text-align: right; padding-right:10px; " class="green-cell" 
 												th:text="${report?.r29_write_offs ?: ''}"
 												></td>
 
@@ -2304,7 +2419,7 @@ function cancelModify() {
        >
     </td>
 
-   <td style="text-align: right; padding-right:10px; " class="green-cell" 
+   <td   id="r38_write_offs" style="text-align: right; padding-right:10px; " class="green-cell" 
 												th:text="${report?.r38_write_offs ?: ''}"
 												></td>
 
@@ -2403,7 +2518,7 @@ function cancelModify() {
         onclick="showdetailsbyRowAndColumn(this)">
     </td>
 
-   <td style="text-align: right; padding-right:10px; " class="green-cell" 
+   <td  id="r41_write_offs" style="text-align: right; padding-right:10px; " class="green-cell" 
 												th:text="${report?.r41_write_offs ?: ''}"
 												></td>
 
@@ -2676,7 +2791,7 @@ function cancelModify() {
        >
     </td>
 
-   <td style="text-align: right; padding-right:10px; " class="green-cell" 
+   <td id="r49_write_offs"style="text-align: right; padding-right:10px; " class="green-cell" 
 												th:text="${report?.r49_write_offs ?: ''}"
 												></td>
 
@@ -2809,7 +2924,7 @@ function cancelModify() {
        >
     </td>
 
-    <td style="text-align: right; padding-right:10px; " class="green-cell" 
+    <td   id="r53_write_offs" style="text-align: right; padding-right:10px; " class="green-cell" 
 												th:text="${report?.r53_write_offs ?: ''}"
 												></td>
 
@@ -2942,7 +3057,7 @@ function cancelModify() {
        >
     </td>
 
-   <td style="text-align: right; padding-right:10px; " class="green-cell" 
+   <td id="r57_write_offs"  style="text-align: right; padding-right:10px; " class="green-cell" 
 												th:text="${report?.r57_write_offs ?: ''}"
 												></td>
 
@@ -3180,7 +3295,7 @@ function cancelModify() {
        >
     </td>
 
-   <td style="text-align: right; padding-right:10px; " class="green-cell" 
+   <td   id="r64_write_offs"  style="text-align: right; padding-right:10px; " class="green-cell" 
 												th:text="${report?.r64_write_offs ?: ''}"
 												></td>
 
@@ -3221,7 +3336,7 @@ function cancelModify() {
         border-left:4px solid white !important;
       
         height:1px;
-        padding:0;
+        padding:10px;
     ">
 </td>
 										</tr>
@@ -3306,7 +3421,7 @@ function cancelModify() {
         onclick="showdetailsbyRowAndColumn(this)">
     </td> -->
 
-    <td style="text-align: right; padding-right:10px;" class="green-cell"
+    <td id="r69_total" style="text-align: right; padding-right:10px;" class="green-cell"
         th:text="${report?.r69_total ?: ''}">
     </td>
 
