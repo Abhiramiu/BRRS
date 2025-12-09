@@ -43,6 +43,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.*;
 import com.bornfire.brrs.services.BRRS_M_AIDP_ReportService;
+import com.bornfire.brrs.services.BRRS_BDISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_BOP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA3_ReportService;
@@ -85,6 +86,7 @@ import com.bornfire.brrs.services.BRRS_M_SIR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12A_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12C_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SRWA_12D_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12F_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12G_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService;
@@ -560,6 +562,36 @@ public class BRRS_ReportsController {
 	}
 	
 	
+	@Autowired
+	 private BRRS_M_SRWA_12D_ReportService SRWA12DreportService;
+	
+	
+	 @RequestMapping(value = "/SRWA12DupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	 @ResponseBody
+	 public ResponseEntity<String> updateAllReports(
+	         @RequestParam(required = false)
+	         @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	         @ModelAttribute M_SRWA_12D_Summary_Entity request1
+	         
+	 ) {
+	     try {
+	         System.out.println("Came to single controller");
+	         // set date into all 4 entities
+	         request1.setReport_date(asondate);
+	         
+	         // call services
+	         SRWA12DreportService.updateReport(request1);
+	         
+	         return ResponseEntity.ok("Updated Successfully");
+	     } catch (Exception e) {
+	         e.printStackTrace();
+	         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                              .body("Update Failed: " + e.getMessage());
+	     }
+	 }
+	 
+	
+	
 	
 
 	
@@ -1024,6 +1056,61 @@ return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("M_FXR Resubmission Update Failed: " + e.getMessage());
 		}
 	}
+	
+	
+	@Autowired
+	private BRRS_BDISB1_ReportService BDISB1reportService;
+
+	@RequestMapping(value = "/BDISB1updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllReports(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_BDISB1_Summary_Entity request1 
+
+	) {
+		try {
+			System.out.println("Came to single controller");
+			// set date into all 4 entities
+			request1.setReportDate(asondate);
+			
+
+			// call services
+			BDISB1reportService.updateReport(request1);
+			
+			return ResponseEntity.ok("Updated Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/UpdateM_BDISB1_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportReSubAll(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_BDISB1_Summary_Entity request1,
+			HttpServletRequest req) {
+
+		try {
+			System.out.println("Came to M_BDISB1 Resub Controller");
+
+			if (asondate != null) {
+				request1.setReportDate(asondate);
+				System.out.println("🗓 Set Report Date: " + asondate);
+			}
+
+			// ✅ Call service
+			BDISB1reportService.updateReportReSub(request1);
+
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("M_BDISB1 Resubmission Update Failed: " + e.getMessage());
+		}
+	}
+	
 
 	@Autowired
 	private BRRS_M_CR_ReportService BRRS_M_CR_ReportService;

@@ -248,6 +248,12 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_DEP4_ReportService BRRS_M_DEP4_ReportService;
+	
+	@Autowired
+	BRRS_M_SRWA_12D_ReportService brrs_m_srwa_12d_reportservice;
+	
+	@Autowired
+	BRRS_BDISB1_ReportService brrs_m_bdisb1_reportservice;
 
 	@Autowired
 	BRRS_M_SCI_E_ReportService brrs_m_sci_e_reportservice;
@@ -350,6 +356,15 @@ public class RegulatoryReportServices {
 						dtltype,
 						pageable, type, version);
 				break;
+				
+			case "M_SRWA_12D":
+				repsummary = brrs_m_srwa_12d_reportservice.getM_SRWA_12DView(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
+				break;
+				
+			case "BDISB1":
+				repsummary = brrs_m_bdisb1_reportservice.getM_BDISB1View(reportId, fromdate, todate, currency, dtltype, pageable,type, version);
+				break;
+				
 
 			case "M_SRWA_12C":
 				repsummary = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CView(reportId, fromdate, todate, currency,
@@ -979,6 +994,17 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "BDISB1":
+				try {
+					repfile = brrs_m_bdisb1_reportservice.getM_BDISB1Excel(filename, reportId, fromdate, todate,
+							currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "M_CA4":
 				try {
@@ -1005,6 +1031,16 @@ public class RegulatoryReportServices {
 				try {
 					repfile = brrs_m_sec_reportservice.getM_SECExcel(filename, reportId, fromdate, todate, currency,
 							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
+				
+			case "M_SRWA12D":
+				try {
+					repfile = brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel(filename, reportId, fromdate, todate, currency, dtltype,type,version);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1816,6 +1852,16 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+				
+			case "M_MRC":
+				try {
+					archivalData = BRRS_M_MRC_reportservice.getM_MRCArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 
 			case "M_CR":
 				try {
@@ -2144,6 +2190,7 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
 
 			case "M_GMIRT":
 				try {
@@ -2276,6 +2323,12 @@ public class RegulatoryReportServices {
 				List<Object[]> ca5List = BRRS_M_CA5_reportservice.getM_CA5Archival();
 				archivalData.addAll(ca5List);
 				System.out.println("Fetched M_CA6 archival data: " + ca5List.size());
+				break;
+				
+			case "BDISB1":
+				List<Object[]> bdisb1List = brrs_m_bdisb1_reportservice.getM_BDISB1Archival();
+				archivalData.addAll(bdisb1List);
+				System.out.println("Fetched M_C archival data: " + bdisb1List.size());
 				break;
 
 			case "M_CA7":
@@ -2629,6 +2682,12 @@ public class RegulatoryReportServices {
 					modelAndView = BRRS_M_LA4_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
 					break;
+					
+				case "M_MRC":
+					modelAndView = BRRS_M_MRC_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+							request.getParameter("formmode"));
+					break;
+
 
 				case "M_LA5":
 					modelAndView = BRRS_M_LA5_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -2794,6 +2853,10 @@ public class RegulatoryReportServices {
 
 				case "M_CA2":
 					response = BRRS_M_CA2_reportservice.updateDetailEdit(request);
+					break;
+					
+				case "M_MRC":
+					response = BRRS_M_MRC_reportservice.updateDetailEdit(request);
 					break;
 
 				case "M_OR1":
@@ -3107,6 +3170,17 @@ public class RegulatoryReportServices {
 					System.out.println("Resubmission data fetched for M_INT_RATES_FCA: " + resubList.size());
 				} catch (Exception e) {
 					System.err.println("Error fetching resubmission data for M_INT_RATES_FCA: " + e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+				
+			case "BDISB1":
+				try {
+					List<Object[]> resubList = brrs_m_bdisb1_reportservice.getM_BDISB1Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for M_BDISB1: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for M_BDISB1: " + e.getMessage());
 					e.printStackTrace();
 				}
 				break;
