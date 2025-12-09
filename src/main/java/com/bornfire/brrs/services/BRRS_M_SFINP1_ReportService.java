@@ -135,7 +135,7 @@ public class BRRS_M_SFINP1_ReportService {
 						.getdatabydateListarchival(reportDate);
 				
 				mv.addObject("reportsummary", mainList);
-				mv.addObject("reportsummary", archivalList);
+				mv.addObject("reportsummary1", archivalList);
 				
 				
 
@@ -1336,10 +1336,18 @@ public class BRRS_M_SFINP1_ReportService {
 	public byte[] getExcelM_SFINP1ARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, String version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
+		
+		DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
+		DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
+
+		LocalDate date = LocalDate.parse(todate, inputFormat);
+		String formattedDate = date.format(outputFormat);
+       Date parsedDate = dateformat.parse(todate);
 		if (type.equals("ARCHIVAL") & version != null) {
 		}
 		List<M_SFINP1_Archival_Summary_Entity> dataList = BRRS_M_SFINP1_Archival_Summary_Repo
 				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_SFINP1_Archival_Summary_Manual_Entity> dataList1 = BRRS_M_SFINP1_Archival_Summary_Manual_Repo.getdatabydateListarchival(parsedDate);
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_SFINP1 report. Returning empty result.");
 			return new byte[0];
@@ -1394,6 +1402,7 @@ public class BRRS_M_SFINP1_ReportService {
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
 					M_SFINP1_Archival_Summary_Entity record = dataList.get(i);
+					M_SFINP1_Archival_Summary_Manual_Entity record1 = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -1471,8 +1480,8 @@ public class BRRS_M_SFINP1_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
-					if (record.getR14_month_end() != null)
-						cellC.setCellValue(record.getR14_month_end().doubleValue());
+					if (record1.getR14_MONTH_END() != null)
+						cellC.setCellValue(record1.getR14_MONTH_END().doubleValue());
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -1786,8 +1795,8 @@ public class BRRS_M_SFINP1_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
-					if (record.getR34_month_end() != null)
-						cellC.setCellValue(record.getR34_month_end().doubleValue());
+					if (record1.getR34_MONTH_END() != null)
+						cellC.setCellValue(record1.getR34_MONTH_END().doubleValue());
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -1828,8 +1837,8 @@ public class BRRS_M_SFINP1_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
-					if (record.getR37_month_end() != null)
-						cellC.setCellValue(record.getR37_month_end().doubleValue());
+					if (record1.getR37_MONTH_END() != null)
+						cellC.setCellValue(record1.getR37_MONTH_END().doubleValue());
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -1912,8 +1921,8 @@ public class BRRS_M_SFINP1_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
-					if (record.getR43_month_end() != null)
-						cellC.setCellValue(record.getR43_month_end().doubleValue());
+					if (record1.getR43_MONTH_END() != null)
+						cellC.setCellValue(record1.getR43_MONTH_END().doubleValue());
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -2027,8 +2036,8 @@ public class BRRS_M_SFINP1_ReportService {
 					if (cellD == null)
 						cellD = row.createCell(3);
 					originalStyle = cellD.getCellStyle();
-					if (record.getR50_average() != null)
-						cellD.setCellValue(record.getR50_average().doubleValue());
+					if (record1.getR50_MONTH_END() != null)
+						cellD.setCellValue(record1.getR50_MONTH_END().doubleValue());
 					else
 						cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
@@ -2038,8 +2047,8 @@ public class BRRS_M_SFINP1_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
-					if (record.getR51_month_end() != null)
-						cellC.setCellValue(record.getR51_month_end().doubleValue());
+					if (record1.getR51_MONTH_END() != null)
+						cellC.setCellValue(record1.getR51_MONTH_END().doubleValue());
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -2059,8 +2068,8 @@ public class BRRS_M_SFINP1_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
-					if (record.getR52_month_end() != null)
-						cellC.setCellValue(record.getR52_month_end().doubleValue());
+					if (record1.getR52_MONTH_END() != null)
+						cellC.setCellValue(record1.getR52_MONTH_END().doubleValue());
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -2143,8 +2152,8 @@ public class BRRS_M_SFINP1_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
-					if (record.getR57_month_end() != null)
-						cellC.setCellValue(record.getR57_month_end().doubleValue());
+					if (record1.getR57_MONTH_END() != null)
+						cellC.setCellValue(record1.getR57_MONTH_END().doubleValue());
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -2185,8 +2194,8 @@ public class BRRS_M_SFINP1_ReportService {
 					if (cellC == null)
 						cellC = row.createCell(2);
 					originalStyle = cellC.getCellStyle();
-					if (record.getR59_month_end() != null)
-						cellC.setCellValue(record.getR59_month_end().doubleValue());
+					if (record1.getR59_MONTH_END() != null)
+						cellC.setCellValue(record1.getR59_MONTH_END().doubleValue());
 					else
 						cellC.setCellValue("");
 					cellC.setCellStyle(originalStyle);
@@ -2221,7 +2230,6 @@ public class BRRS_M_SFINP1_ReportService {
 					else
 						cellD.setCellValue("");
 					cellD.setCellStyle(originalStyle);
-
 				}
 				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			} else {
@@ -2236,6 +2244,8 @@ public class BRRS_M_SFINP1_ReportService {
 
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
+		
+
 		try {
 			logger.info("Generating Excel for BRRS_M_SFINP1 ARCHIVAL Details...");
 			System.out.println("came to Detail download service");
@@ -2278,7 +2288,7 @@ public class BRRS_M_SFINP1_ReportService {
 			balanceStyle.setBorderLeft(border);
 			balanceStyle.setBorderRight(border);
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "ROWID", "COLUMNID",
+			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA ", "ROWID", "COLUMNID",
 					"REPORT_DATE" };
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
@@ -2293,8 +2303,13 @@ public class BRRS_M_SFINP1_ReportService {
 			}
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_SFINP1_Archival_Detail_Entity> reportData = BRRS_M_SFINP1_Archival_Detail_Repo
-					.getdatabydateList(parsedToDate, version);
+			
+			logger.info("Parsed Date = {}", parsedToDate);
+			logger.info("Version = {}", version);
+
+			List<M_SFINP1_Archival_Detail_Entity> reportData = BRRS_M_SFINP1_Archival_Detail_Repo.getdatabydateList(parsedToDate, version);
+			
+			logger.info("ROWS FOUND IN DB = {}", reportData == null ? "NULL" : reportData.size());
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
 				for (M_SFINP1_Archival_Detail_Entity item : reportData) {
@@ -2337,6 +2352,9 @@ public class BRRS_M_SFINP1_ReportService {
 			return new byte[0];
 		}
 	}
+	
+	
+
 
 	private Rectangle getPageSizeForColumns(int columnCount) {
 

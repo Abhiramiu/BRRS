@@ -462,7 +462,7 @@ label.error {
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},,version=${version}, asondate=${asondate})}]]*/;
 			location.href = Callurl;
 		}
 
@@ -687,7 +687,7 @@ function cancelModify() {
 	        contentType: false,
 	        dataType: 'text',
 	        success: function () {
-	            $("#resultModalLabel").text("Success");
+	            $("#resultModalLabel").text("BRRS");
 	            $("#resultModalBody").text("Updated Successfully");
 	            $("#resultModal").modal("show");
 
@@ -1140,7 +1140,7 @@ function cancelModify() {
 		               class="custom-tab-btn"
 		               onclick="showmodify(this);"
 		               title="Click to EDIT Records"
-		               th:if="${type != 'ARCHIVAL'}"
+		               th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
 		               th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
 		               id="addRecord">
 		           Modify
@@ -1784,7 +1784,7 @@ function cancelModify() {
 																									<p id="resultModalBody"></p>
 																									<!-- Your custom styled button -->
 																									<button type="button" class="custom-tab-btn" onclick="closemodels()"
-																										data-dismiss="modal">ok</button>
+																										data-dismiss="modal">Ok</button>
 																								</div>
 																							</div>
 																						</div>
