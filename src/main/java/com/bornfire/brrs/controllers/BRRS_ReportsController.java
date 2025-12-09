@@ -98,6 +98,7 @@ import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
 import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_PD_ReportService;
 import com.bornfire.brrs.services.BRRS_M_PI_ReportService;
+import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
 
@@ -3249,5 +3250,62 @@ public ResponseEntity<String> updateReportReSub(
 					.body("Update Failed: " + e.getMessage());
 		}
 	}
+
+
+@Autowired
+BRRS_BDISB2_ReportService BRRS_BDISB2_ReportService;
+
+@RequestMapping(value = "/BDISB2updateAll", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateReport(
+		@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		@ModelAttribute BDISB2_Summary_Entity request) {
+
+	try {
+		System.out.println("came to single controller");
+
+		// ✅ set the asondate into entity
+		request.setReportDate(asondate);
+
+		// call services
+		BRRS_BDISB2_ReportService.updateReport(request);
+
+		return ResponseEntity.ok("Updated Successfully.");
+	} catch (Exception e) {
+		e.printStackTrace();
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+	}
+}
+
+@RequestMapping(value = "/UpdateBDISB2_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+@ResponseBody
+public ResponseEntity<String> updateReportReSub(
+		@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+		@ModelAttribute BDISB2_Summary_Entity request,
+		HttpServletRequest req) {
+
+	try {
+		System.out.println("Came to Resub Controller");
+
+		if (asondate != null) {
+			// Set the asondate into the entity
+			request.setReportDate(asondate);
+			System.out.println("Set Report Date: " + asondate);
+		} else {
+			System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+		}
+
+		// Call service to create a new versioned row
+		BRRS_BDISB2_ReportService.updateReportReSub(request);
+
+		return ResponseEntity.ok("Resubmission Updated Successfully");
+
+	} catch (Exception e) {
+		e.printStackTrace();
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body("Resubmission Update Failed: " + e.getMessage());
+	}
+}
+
 
 }

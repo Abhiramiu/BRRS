@@ -258,6 +258,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_M_I_S_CA_ReportService brrs_m_i_s_ca_reportservice;
+	
+	@Autowired
+	BRRS_BDISB2_ReportService BRRS_BDISB2_ReportService;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -674,6 +677,13 @@ public class RegulatoryReportServices {
 			case "M_I_S_CA":
 
 				repsummary = brrs_m_i_s_ca_reportservice.getM_I_S_CAView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
+				
+			case "BDISB2":
+				repsummary = BRRS_BDISB2_ReportService.getBDISB2View(reportId, fromdate, todate, currency,
+						dtltype,
 						pageable, type, version);
 
 				break;
@@ -1632,7 +1642,16 @@ public class RegulatoryReportServices {
 				}
 				break;
 								
-				
+			case "BDISB2":
+				try {
+					repfile = BRRS_BDISB2_ReportService.getBDISB2Excel(filename, reportId, fromdate, todate,
+							currency, dtltype, type, version);
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 				
 				
 				
@@ -2373,6 +2392,13 @@ public class RegulatoryReportServices {
 				archivalData.addAll(DEP4List);
 				System.out.println("Fetched DEP4 archival data: " + DEP4List.size());
 				break;
+				
+			case "BDISB2":
+				List<Object[]> bdisb2List = BRRS_BDISB2_ReportService.getBDISB2Archival();
+				archivalData.addAll(bdisb2List);
+				System.out.println("Fetched BDISB2 archival data: " + bdisb2List.size());
+				break;
+				
 			default:
 				System.out.println("No archival logic defined for report: " + rptcode);
 				break;
@@ -3240,6 +3266,19 @@ public class RegulatoryReportServices {
 				}
 
 				break;
+				
+			case "BDISB2":
+				try {
+					List<Object[]> resubList = BRRS_BDISB2_ReportService.getBDISB2Resub();
+					resubmissionData.addAll(resubList);
+					System.out.println("Resubmission data fetched for BDISB2: " + resubList.size());
+				} catch (Exception e) {
+					System.err.println("Error fetching resubmission data for BDISB2: " + e.getMessage());
+					e.printStackTrace();
+				}
+
+				break;
+				
 			default:
 				System.out.println("Unsupported report code: " + rptcode);
 		}
