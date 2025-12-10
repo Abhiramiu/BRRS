@@ -791,11 +791,16 @@ function downloadfile(button) {
 				document.body.removeChild(a);
 
 
-				showResultModal('BRRS', 'M_LIQGAP downloaded successfully.');
-			} else {
-				showResultModal('Information', 'No data was available to create a download.');
-			}
-		},
+				// ✅ BRRS style popup
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(filename + " downloaded successfully.");
+                $("#resultModal").modal("show");
+            } else {
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text("No data was available to create a download.");
+                $("#resultModal").modal("show");
+            }
+        },
 		error: function (jqXHR, textStatus, errorThrown) {
 			$('#loader').modal('hide');
 			console.error("Download failed:", textStatus, errorThrown);

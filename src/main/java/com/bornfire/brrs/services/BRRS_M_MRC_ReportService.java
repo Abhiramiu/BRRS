@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -40,9 +41,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -67,6 +72,7 @@ import com.bornfire.brrs.entities.M_SECA_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_SECA_Summary_Entity;
 import com.bornfire.brrs.entities.BRRS_M_MRC_Summary_Repo;
 import com.bornfire.brrs.entities.M_CA2_Manual_Summary_Entity;
+import com.bornfire.brrs.entities.M_LIQGAP_Detail_Entity;
 
 import java.math.BigDecimal;
 
@@ -1295,127 +1301,118 @@ logger.error("Error generating M_MRC Excel", e);
 return new byte[0];
 }
 }
-//	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-//										 String dtltype, String type, String version) {
-//		try {
-//			logger.info("Generating Excel for BRRS_M_SECA ARCHIVAL Details...");
-//			System.out.println("came to Detail download service");
-//			if (type.equals("ARCHIVAL") & version != null) {
-//
-//			}
-//			XSSFWorkbook workbook = new XSSFWorkbook();
-//			XSSFSheet sheet = workbook.createSheet("M_SECADetail");
-//
-//			// Common border style
-//			BorderStyle border = BorderStyle.THIN;
-//
-//			// Header style (left aligned)
-//			CellStyle headerStyle = workbook.createCellStyle();
-//			Font headerFont = workbook.createFont();
-//			headerFont.setBold(true);
-//			headerFont.setFontHeightInPoints((short) 10);
-//			headerStyle.setFont(headerFont);
-//			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-//			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-//			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-//			headerStyle.setBorderTop(border);
-//			headerStyle.setBorderBottom(border);
-//			headerStyle.setBorderLeft(border);
-//			headerStyle.setBorderRight(border);
-//
-//			// Right-aligned header style for ACCT BALANCE
-//			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-//			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-//			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-//
-//			// Default data style (left aligned)
-//			CellStyle dataStyle = workbook.createCellStyle();
-//			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-//			dataStyle.setBorderTop(border);
-//			dataStyle.setBorderBottom(border);
-//			dataStyle.setBorderLeft(border);
-//			dataStyle.setBorderRight(border);
-//
-//			// ACCT BALANCE style (right aligned with 3 decimals)
-//			CellStyle balanceStyle = workbook.createCellStyle();
-//			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-//			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
-//			balanceStyle.setBorderTop(border);
-//			balanceStyle.setBorderBottom(border);
-//			balanceStyle.setBorderLeft(border);
-//			balanceStyle.setBorderRight(border);
-//
-//			// Header row
-//			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "ROWID", "COLUMNID",
-//					"REPORT_DATE" };
-//
-//			XSSFRow headerRow = sheet.createRow(0);
-//			for (int i = 0; i < headers.length; i++) {
-//				Cell cell = headerRow.createCell(i);
-//				cell.setCellValue(headers[i]);
-//
-//				if (i == 3) { // ACCT BALANCE
-//					cell.setCellStyle(rightAlignedHeaderStyle);
-//				} else {
-//					cell.setCellStyle(headerStyle);
-//				}
-//
-//				sheet.setColumnWidth(i, 5000);
-//			}
-//
-//			// Get data
-//			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-//			List<BRRS_M_SECA_Archival_Detail_Entity> reportData = BRRS_M_SECA_Archival_Detail_Repo
-//					.getdatabydateList(parsedToDate, version);
-//
-//			if (reportData != null && !reportData.isEmpty()) {
-//				int rowIndex = 1;
-//				for (BRRS_M_SECA_Archival_Detail_Entity item : reportData) {
-//					XSSFRow row = sheet.createRow(rowIndex++);
-//
-//					row.createCell(0).setCellValue(item.getCUST_ID());
-//					row.createCell(1).setCellValue(item.getACCT_NUMBER());
-//					row.createCell(2).setCellValue(item.getACCT_NAME());
-//
-//					// ACCT BALANCE (right aligned, 3 decimal places)
-//					Cell balanceCell = row.createCell(3);
-//					if (item.getACCT_BALANCE_IN_PULA() != null) {
-//						balanceCell.setCellValue(item.getACCT_BALANCE_IN_PULA().doubleValue());
-//					} else {
-//						balanceCell.setCellValue(0.000);
-//					}
-//					balanceCell.setCellStyle(balanceStyle);
-//
-//					row.createCell(4).setCellValue(item.getROW_ID());
-//					row.createCell(5).setCellValue(item.getCOLUMN_ID());
-//					row.createCell(6)
-//							.setCellValue(item.getREPORT_DATE() != null
-//									? new SimpleDateFormat("dd-MM-yyyy").format(item.getREPORT_DATE())
-//									: "");
-//
-//					// Apply data style for all other cells
-//					for (int j = 0; j < 7; j++) {
-//						if (j != 3) {
-//							row.getCell(j).setCellStyle(dataStyle);
-//						}
-//					}
-//				}
-//			} else {
-//				logger.info("No data found for BRRS_M_SECA — only header will be written.");
-//			}
-//
-//			// Write to byte[]
-//			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//			workbook.write(bos);
-//			workbook.close();
-//
-//			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-//			return bos.toByteArray();
-//
-//		} catch (Exception e) {
-//			logger.error("Error generating BRRS_M_SECAExcel", e);
-//			return new byte[0];
-//		}
-//	}
 
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_MRC"); // ✅ match the report name
+	    System.out.println("Hello");
+	    if (acctNo != null) {
+	    	M_MRC_Detail_Entity mrcEntity = M_MRC_Detail_Repo.findByAcctnumber(acctNo);
+	        if (mrcEntity != null && mrcEntity.getReportDate() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(mrcEntity.getReportDate());
+	            mv.addObject("asondate", formattedDate);
+	        }
+	        mv.addObject("Data", mrcEntity);
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+
+
+
+
+
+	public ModelAndView updateDetailEdit(String acctNo, String formMode) {
+	    ModelAndView mv = new ModelAndView("BRRS/M_MRC"); // ✅ match the report name
+
+	    if (acctNo != null) {
+	        M_MRC_Detail_Entity mrcEntity = M_MRC_Detail_Repo.findByAcctnumber(acctNo);
+	        if (mrcEntity != null && mrcEntity.getReportDate() != null) {
+	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(mrcEntity.getReportDate());
+	            mv.addObject("asondate", formattedDate);
+	            System.out.println(formattedDate);
+	        }
+	        mv.addObject("Data", mrcEntity);
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+	    return mv;
+	}
+
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+	    try {
+	        String acctNo = request.getParameter("acctNumber");
+	        String provisionStr = request.getParameter("acctBalanceInpula");
+	        String acctName = request.getParameter("acctName");
+	        String reportDateStr = request.getParameter("reportDate");
+
+	        logger.info("Received update for ACCT_NO: {}", acctNo);
+
+	        M_MRC_Detail_Entity existing = M_MRC_Detail_Repo.findByAcctnumber(acctNo);
+	        if (existing == null) {
+	            logger.warn("No record found for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+	        }
+
+	        boolean isChanged = false;
+
+	        if (acctName != null && !acctName.isEmpty()) {
+	            if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+	                existing.setAcctName(acctName);
+	                isChanged = true;
+	                logger.info("Account name updated to {}", acctName);
+	            }
+	        }
+
+	        if (provisionStr != null && !provisionStr.isEmpty()) {
+	            BigDecimal newProvision = new BigDecimal(provisionStr);
+	            if (existing.getAcctBalanceInpula() == null ||
+	                existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
+	                existing.setAcctBalanceInpula(newProvision);
+	                isChanged = true;
+	                logger.info("Balance updated to {}", newProvision);
+	            }
+	        }
+	        
+	        
+
+	        if (isChanged) {
+	        	M_MRC_Detail_Repo.save(existing);
+	            logger.info("Record updated successfully for account {}", acctNo);
+
+	            // Format date for procedure
+	            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+	                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+	            // Run summary procedure after commit
+	            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+	                @Override
+	                public void afterCommit() {
+	                    try {
+	                        logger.info("Transaction committed — calling BRRS_M_MRC_SUMMARY_PROCEDURE({})",
+	                                formattedDate);
+	                        jdbcTemplate.update("BEGIN BRRS_M_MRC_SUMMARY_PROCEDURE(?); END;", formattedDate);
+	                        logger.info("Procedure executed successfully after commit.");
+	                    } catch (Exception e) {
+	                        logger.error("Error executing procedure after commit", e);
+	                    }
+	                }
+	            });
+
+	            return ResponseEntity.ok("Record updated successfully!");
+	        } else {
+	            logger.info("No changes detected for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.ok("No changes were made.");
+	        }
+
+	    } catch (Exception e) {
+	        logger.error("Error updating M_MRC record", e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error updating record: " + e.getMessage());
+	    }
+	}
+	
 }
