@@ -270,6 +270,10 @@ public class RegulatoryReportServices {
 	
 	@Autowired
 	BRRS_ADISB1_ReportService BRRS_ADISB1_ReportService;
+	
+	
+	@Autowired
+	BRRS_CAP_RATIO_BUFFER_ReportService   brrs_cap_ratio_buffer_reportservice;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -699,6 +703,15 @@ public class RegulatoryReportServices {
 
 				break;
 				
+				
+			case "CAP_RATIO_BUFFER":
+
+				repsummary = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERView(reportId, fromdate, todate, currency, dtltype,
+						pageable, type, version);
+
+				break;
+
+				
 			case "BDISB2":
 				repsummary = BRRS_BDISB2_ReportService.getBDISB2View(reportId, fromdate, todate, currency,
 						dtltype,
@@ -915,6 +928,15 @@ public class RegulatoryReportServices {
 							dtltype,
 							pageable, Filter, type, version);
 					break;
+					
+					
+			case "CAP_RATIO_BUFFER":
+
+				repdetail = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERcurrentDtl(reportId, fromdate, todate, currency,
+						dtltype,
+						pageable, Filter, type, version);
+				break;
+				
 					
 			case "ADISB1":
 
@@ -1694,6 +1716,18 @@ public class RegulatoryReportServices {
 					e.printStackTrace();
 				}
 				break;
+				
+			case "CAP_RATIO_BUFFER":
+				try {
+
+					repfile = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERExcel(filename, reportId, fromdate, todate, currency,
+							dtltype, type, version);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+
 								
 			case "BDISB2":
 				try {
@@ -2261,6 +2295,15 @@ public class RegulatoryReportServices {
 				}
 				break;
 				
+			case "CAP_RATIO_BUFFER":
+				try {
+					archivalData = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERArchival();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+				
 
 			// New Archival
 			case "M_SRWA_12H":
@@ -2644,6 +2687,12 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 		
+		else if ("CAP_RATIO_BUFFER".equals(filename)) {
+
+			fileData = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERDetailExcel(filename, fromdate, todate, currency,
+					dtltype, type, version);
+		}
+		
 		else if ("ADISB1".equals(filename)) {
 
 			fileData = BRRS_ADISB1_ReportService.getADISB1DetailExcel(filename, fromdate, todate, currency,
@@ -2853,6 +2902,12 @@ public class RegulatoryReportServices {
 							request.getParameter("formmode"));
 					break;
 					
+
+				case "CAP_RATIO_BUFFER":
+						modelAndView = brrs_cap_ratio_buffer_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+								request.getParameter("formmode"));
+						break;
+					
 				case "ADISB1":
 					modelAndView = BRRS_ADISB1_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 							request.getParameter("formmode"));
@@ -2974,6 +3029,11 @@ public class RegulatoryReportServices {
 				case "M_I_S_CA":
 					response = brrs_m_i_s_ca_reportservice.updateDetailEdit(request);
 					break;
+					
+				case "CAP_RATIO_BUFFER":
+					response = brrs_cap_ratio_buffer_reportservice.updateDetailEdit(request);
+					break;
+
 					
 					
 
