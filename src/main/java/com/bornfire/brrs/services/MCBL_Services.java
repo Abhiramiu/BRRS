@@ -39,6 +39,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bornfire.brrs.config.SequenceGenerator;
+import com.bornfire.brrs.entities.GeneralMasterEntity;
+import com.bornfire.brrs.entities.GeneralMasterRepo;
 import com.bornfire.brrs.entities.MCBL_Detail_Rep;
 import com.bornfire.brrs.entities.MCBL_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
@@ -54,6 +56,8 @@ public class MCBL_Services {
 	@Autowired
 	private MCBL_Main_Rep MCBL_Main_Reps;
 
+	@Autowired
+	GeneralMasterRepo GeneralMasterRepos;
 	@Autowired
 	private MCBL_Detail_Rep MCBL_Detail_Reps;
 
@@ -230,10 +234,10 @@ public class MCBL_Services {
 	                "CUST_FLG, MODIFY_TIME, VERIFY_TIME, MODIFY_USER, VERIFY_USER, ENTRY_FLG, MODIFY_FLG, VERIFY_FLG) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Y','N', 'N')";
 	        PreparedStatement insertStmt = conn.prepareStatement(insertMCBL);
 
-	        String insertGeneral = "INSERT INTO GENERAL_MASTER_TABLE (ID, MCBL_GL_CODE, GL_SUB_HEAD_CODE, " +
+	        String insertGeneral = "INSERT INTO GENERAL_MASTER_TABLE (MCBL_GL_CODE, GL_SUB_HEAD_CODE, " +
 	                "ACCOUNT_NO, MCBL_DESCRIPTION, CURRENCY, MCBL_DEBIT_BALANCE, MCBL_CREDIT_BALANCE, " +
 	                "MCBL_DEBIT_EQUIVALENT, MCBL_CREDIT_EQUIVALENT, REPORT_CODE, DEL_FLG, VERSION, ENTRY_USER, ENTRY_TIME, UPLOAD_DATE, REPORT_DATE, MCBL_FLG) " +
-	                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	        PreparedStatement insertGeneralStmt = conn.prepareStatement(insertGeneral);
 
 	        String insertTrack = "INSERT INTO BRRS_MCBL_ACCOUNT_TRACK " +
@@ -314,24 +318,23 @@ public class MCBL_Services {
 
 	           
 	                String generalKey = headAccNo + "|" + sqlReportDate;
-	                    insertGeneralStmt.setString(1, sequence.generateRequestUUId());
-	                    insertGeneralStmt.setString(2, glCode);
-	                    insertGeneralStmt.setString(3, glSubCode);
-	                    insertGeneralStmt.setString(4, headAccNo);
-	                    insertGeneralStmt.setString(5, description);
-	                    insertGeneralStmt.setString(6, currency);
-	                    insertGeneralStmt.setBigDecimal(7, debitBal);
-	                    insertGeneralStmt.setBigDecimal(8, creditBal);
-	                    insertGeneralStmt.setBigDecimal(9, debitEq);
-	                    insertGeneralStmt.setBigDecimal(10, creditEq);
-	                    insertGeneralStmt.setString(11, "MCBL");
-	                    insertGeneralStmt.setString(12, "N");
-	                    insertGeneralStmt.setInt(13, version); // VERSION
-	                    insertGeneralStmt.setString(14, userid);
-	                    insertGeneralStmt.setDate(15, new java.sql.Date(System.currentTimeMillis()));
-	                    insertGeneralStmt.setDate(16, new java.sql.Date(System.currentTimeMillis()));	//UPLOAD DATE
-	                    insertGeneralStmt.setDate(17, sqlReportDate);
-	                    insertGeneralStmt.setString(18, "Y");
+	                insertGeneralStmt.setString(1, glCode);
+	                insertGeneralStmt.setString(2, glSubCode);
+	                insertGeneralStmt.setString(3, headAccNo);
+	                insertGeneralStmt.setString(4, description);
+	                insertGeneralStmt.setString(5, currency);
+	                insertGeneralStmt.setBigDecimal(6, debitBal);
+	                insertGeneralStmt.setBigDecimal(7, creditBal);
+	                insertGeneralStmt.setBigDecimal(8, debitEq);
+	                insertGeneralStmt.setBigDecimal(9, creditEq);
+	                insertGeneralStmt.setString(10, "MCBL");
+	                insertGeneralStmt.setString(11, "N");
+	                insertGeneralStmt.setInt(12, version); // VERSION
+	                insertGeneralStmt.setString(13, userid);
+	                insertGeneralStmt.setDate(14, new java.sql.Date(System.currentTimeMillis()));
+	                insertGeneralStmt.setDate(15, new java.sql.Date(System.currentTimeMillis())); // UPLOAD DATE
+	                insertGeneralStmt.setDate(16, sqlReportDate);
+	                insertGeneralStmt.setString(17, "Y");
 	                    
 	                    insertGeneralStmt.addBatch();
 	                    existingGeneralKeys.add(generalKey);
@@ -478,58 +481,58 @@ public class MCBL_Services {
 			}
 
 			// ================= Fetch data from DB =================
-			List<MCBL_Entity> dataList = mcblRep.findRecordsByReportDate(todate);
+			List<GeneralMasterEntity> dataList = GeneralMasterRepos.findMCBLRecordsByReportDate(todate);
 
 			if (dataList != null && !dataList.isEmpty()) {
 				int rowIndex = 1;
-				for (MCBL_Entity rec : dataList) {
+				for (GeneralMasterEntity rec : dataList) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
 					// Text / Date cells
 					Cell cell0 = row.createCell(0);
-					cell0.setCellValue(rec.getMcbl_gl_code());
+					cell0.setCellValue(rec.getMcblGlCode());
 					cell0.setCellStyle(dataCellStyle);
 
 					Cell cell1 = row.createCell(1);
-					cell1.setCellValue(rec.getMcbl_gl_sub_code());
+					cell1.setCellValue(rec.getGlSubHeadCode());
 					cell1.setCellStyle(dataCellStyle);
 
 					Cell cell2 = row.createCell(2);
-					cell2.setCellValue(rec.getMcbl_head_acc_no());
+					cell2.setCellValue(rec.getAccountNo());
 					cell2.setCellStyle(dataCellStyle);
 
 					Cell cell3 = row.createCell(3);
-					cell3.setCellValue(rec.getMcbl_description());
+					cell3.setCellValue(rec.getMcblDescription());
 					cell3.setCellStyle(dataCellStyle);
 
 					Cell cell4 = row.createCell(4);
-					cell4.setCellValue(rec.getMcbl_currency());
+					cell4.setCellValue(rec.getCurrency());
 					cell4.setCellStyle(dataCellStyle);
 
 					// Numeric / Amount cells
 					Cell debitCell = row.createCell(5);
-					debitCell.setCellValue(rec.getMcbl_debit_balance() != null ? rec.getMcbl_debit_balance().doubleValue() : 0);
+					debitCell.setCellValue(rec.getMcblDebitBalance() != null ? rec.getMcblDebitBalance().doubleValue() : 0);
 					debitCell.setCellStyle(balanceStyle);
 
 					Cell creditCell = row.createCell(6);
 					creditCell
-							.setCellValue(rec.getMcbl_credit_balance() != null ? rec.getMcbl_credit_balance().doubleValue() : 0);
+							.setCellValue(rec.getMcblCreditBalance() != null ? rec.getMcblCreditBalance().doubleValue() : 0);
 					creditCell.setCellStyle(balanceStyle);
 
 					Cell debitEqCell = row.createCell(7);
 					debitEqCell.setCellValue(
-							rec.getMcbl_debit_equivalent() != null ? rec.getMcbl_debit_equivalent().doubleValue() : 0);
+							rec.getMcblDebitEquivalent() != null ? rec.getMcblDebitEquivalent().doubleValue() : 0);
 					debitEqCell.setCellStyle(balanceStyle);
 
 					Cell creditEqCell = row.createCell(8);
 					creditEqCell.setCellValue(
-							rec.getMcbl_credit_equivalent() != null ? rec.getMcbl_credit_equivalent().doubleValue() : 0);
+							rec.getMcblCreditEquivalent() != null ? rec.getMcblCreditEquivalent().doubleValue() : 0);
 					creditEqCell.setCellStyle(balanceStyle);
 
 					// Report Date cell
 					Cell cell9 = row.createCell(9);
-					cell9.setCellValue(rec.getReport_date() != null
-							? new SimpleDateFormat("dd-MM-yyyy").format(rec.getReport_date())
+					cell9.setCellValue(rec.getReportDate() != null
+							? new SimpleDateFormat("dd-MM-yyyy").format(rec.getReportDate())
 							: "");
 					cell9.setCellStyle(dataCellStyle);
 				}

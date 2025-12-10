@@ -126,44 +126,44 @@ public class AuditService {
 	    try {
 	            
 	            if ("add".equalsIgnoreCase(formmode)) {
-	                GeneralMasterEntity existing = GeneralMasterRepos.getdataBybdgf(newData.getAccount_no(), newData.getReport_date());
+	                GeneralMasterEntity existing = GeneralMasterRepos.getdataBybdgf(newData.getAccountNo(), newData.getReportDate());
 	                
 	                if (existing != null) {
 	                    logger.info("MCBL Data Already Exist...");
 	                    return "MCBL Data Already Exist, So can you Replace It";
 	                } else {
 	                    GeneralMasterEntity newAcc = new GeneralMasterEntity();
-	                    newAcc.setId(sequence.generateRequestUUId());
-	                    newAcc.setMcbl_gl_code(newData.getMcbl_gl_code());
-	                    newAcc.setGl_sub_head_code(newData.getGl_sub_head_code());
+	                    //newAcc.setId(sequence.generateRequestUUId());
+	                    newAcc.setMcblGlCode(newData.getMcblGlCode());
+	                    newAcc.setGlSubHeadCode(newData.getGlSubHeadCode());
 	                    newAcc.setCurrency(newData.getCurrency());
-	                    newAcc.setAccount_no(newData.getAccount_no());
-	                    newAcc.setMcbl_description(newData.getMcbl_description());
-	                    newAcc.setMcbl_debit_balance(newData.getMcbl_debit_balance());
-	                    newAcc.setMcbl_credit_balance(newData.getMcbl_credit_balance());
-	                    newAcc.setMcbl_debit_equivalent(newData.getMcbl_debit_equivalent());
-	                    newAcc.setMcbl_credit_equivalent(newData.getMcbl_credit_equivalent());
-	                    newAcc.setReport_date(newData.getReport_date());
-	                    newAcc.setEntry_user(userid);
-	                    newAcc.setEntry_date(new Date());
-	                    newAcc.setModify_flg("Y");
-	                    newAcc.setDel_flg("N");
-	                    newAcc.setMcbl_flg("Y");
+	                    newAcc.setAccountNo(newData.getAccountNo());
+	                    newAcc.setMcblDescription(newData.getMcblDescription());
+	                    newAcc.setMcblDebitBalance(newData.getMcblDebitBalance());
+	                    newAcc.setMcblCreditBalance(newData.getMcblCreditBalance());
+	                    newAcc.setMcblDebitEquivalent(newData.getMcblDebitEquivalent());
+	                    newAcc.setMcblCreditEquivalent(newData.getMcblCreditEquivalent());
+	                    newAcc.setReportDate(newData.getReportDate());
+	                    newAcc.setEntryUser(userid);
+	                    newAcc.setEntryTime(new Date());
+	                    newAcc.setMcblFlg("Y");
+	                    newAcc.setDelFlg("N");
+	                    newAcc.setMcblFlg("Y");
 
 	                    GeneralMasterRepos.save(newAcc);
 
 	                    MCBL_Entity mcblNew = new MCBL_Entity();
 	                    mcblNew.setId(sequence.generateRequestUUId());
-	                    mcblNew.setMcbl_gl_code(newData.getMcbl_gl_code());
-	                    mcblNew.setMcbl_gl_sub_code(newData.getGl_sub_head_code());
-	                    mcblNew.setMcbl_head_acc_no(newData.getAccount_no());
+	                    mcblNew.setMcbl_gl_code(newData.getMcblGlCode());
+	                    mcblNew.setMcbl_gl_sub_code(newData.getGlSubHeadCode());
+	                    mcblNew.setMcbl_head_acc_no(newData.getAccountNo());
 	                    mcblNew.setMcbl_currency(newData.getCurrency());
-	                    mcblNew.setMcbl_description(newData.getMcbl_description());
-	                    mcblNew.setMcbl_debit_balance(newData.getMcbl_debit_balance());
-	                    mcblNew.setMcbl_credit_balance(newData.getMcbl_credit_balance());
-	                    mcblNew.setMcbl_debit_equivalent(newData.getMcbl_debit_equivalent());
-	                    mcblNew.setMcbl_credit_equivalent(newData.getMcbl_credit_equivalent());
-	                    mcblNew.setReport_date(newData.getReport_date());
+	                    mcblNew.setMcbl_description(newData.getMcblDescription());
+	                    mcblNew.setMcbl_debit_balance(newData.getMcblDebitBalance());
+	                    mcblNew.setMcbl_credit_balance(newData.getMcblCreditBalance());
+	                    mcblNew.setMcbl_debit_equivalent(newData.getMcblDebitEquivalent());
+	                    mcblNew.setMcbl_credit_equivalent(newData.getMcblCreditEquivalent());
+	                    mcblNew.setReport_date(newData.getReportDate());
 	                    mcblNew.setEntry_user(userid);
 	                    mcblNew.setEntry_date(new Date());
 	                    mcblNew.setModify_flg("Y");
@@ -174,35 +174,35 @@ public class AuditService {
 	                    msg = "MCBL Data Added successfully";
 	                }
 	            }else if ("edit".equalsIgnoreCase(formmode)) {
-	                GeneralMasterEntity newAcc = GeneralMasterRepos.getdataBybdgf(newData.getAccount_no(), newData.getReport_date());
+	                GeneralMasterEntity newAcc = GeneralMasterRepos.getdataBybdgf(newData.getAccountNo(), newData.getReportDate());
 	                
 	                if (newAcc != null) {
-	                    newAcc.setMcbl_gl_code(newData.getMcbl_gl_code());
-	                    newAcc.setGl_sub_head_code(newData.getGl_sub_head_code());
+	                    newAcc.setMcblGlCode(newData.getMcblGlCode());
+	                    newAcc.setGlSubHeadCode(newData.getGlSubHeadCode());
 	                    newAcc.setCurrency(newData.getCurrency());
-	                    newAcc.setMcbl_description(newData.getMcbl_description());
-	                    newAcc.setMcbl_debit_balance(newData.getMcbl_debit_balance());
-	                    newAcc.setMcbl_credit_balance(newData.getMcbl_credit_balance());
-	                    newAcc.setMcbl_debit_equivalent(newData.getMcbl_debit_equivalent());
-	                    newAcc.setMcbl_credit_equivalent(newData.getMcbl_credit_equivalent());
-	                    newAcc.setModify_user(userid);
-	                    newAcc.setModify_flg("Y");
-	                    newAcc.setDel_flg("N");
-	                    newAcc.setMcbl_flg("Y");
+	                    newAcc.setMcblDescription(newData.getMcblDescription());
+	                    newAcc.setMcblDebitBalance(newData.getMcblDebitBalance());
+	                    newAcc.setMcblCreditBalance(newData.getMcblCreditBalance());
+	                    newAcc.setMcblDebitEquivalent(newData.getMcblDebitEquivalent());
+	                    newAcc.setMcblCreditEquivalent(newData.getMcblCreditEquivalent());
+	                    newAcc.setModifyUser(userid);
+	                    newAcc.setMcblFlg("Y");
+	                    newAcc.setDelFlg("N");
+	                    newAcc.setMcblFlg("Y");
 
 	                    GeneralMasterRepos.save(newAcc);
 
-	                    MCBL_Entity mcblNew = MCBL_Reps.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
+	                    MCBL_Entity mcblNew = MCBL_Reps.getdataByAcc(newData.getAccountNo(), newData.getReportDate());
 	                    if (mcblNew != null) {
-	                        mcblNew.setMcbl_gl_code(newData.getMcbl_gl_code());
-		                    mcblNew.setMcbl_gl_sub_code(newData.getGl_sub_head_code());
+	                        mcblNew.setMcbl_gl_code(newData.getMcblGlCode());
+		                    mcblNew.setMcbl_gl_sub_code(newData.getGlSubHeadCode());
 		                    mcblNew.setMcbl_currency(newData.getCurrency());
-		                    mcblNew.setMcbl_head_acc_no(newData.getAccount_no());
-	                        mcblNew.setMcbl_description(newData.getMcbl_description());
-	                        mcblNew.setMcbl_debit_balance(newData.getMcbl_debit_balance());
-	                        mcblNew.setMcbl_credit_balance(newData.getMcbl_credit_balance());
-	                        mcblNew.setMcbl_debit_equivalent(newData.getMcbl_debit_equivalent());
-	                        mcblNew.setMcbl_credit_equivalent(newData.getMcbl_credit_equivalent());
+		                    mcblNew.setMcbl_head_acc_no(newData.getAccountNo());
+	                        mcblNew.setMcbl_description(newData.getMcblDescription());
+	                        mcblNew.setMcbl_debit_balance(newData.getMcblDebitBalance());
+	                        mcblNew.setMcbl_credit_balance(newData.getMcblCreditBalance());
+	                        mcblNew.setMcbl_debit_equivalent(newData.getMcblDebitEquivalent());
+	                        mcblNew.setMcbl_credit_equivalent(newData.getMcblCreditEquivalent());
 	                        mcblNew.setModify_flg("Y");
 	                        mcblNew.setDelete_flg("N");
 
@@ -211,11 +211,11 @@ public class AuditService {
 
 	                    msg = "MCBL Data Edited Successfully";
 	                } else {
-	                    msg = "Error: MCBL Data not found for Account " + newData.getAccount_no();
+	                    msg = "Error: MCBL Data not found for Account " + newData.getAccountNo();
 	                }
 				} else if ("delete".equalsIgnoreCase(formmode)) {
-					GeneralMasterRepos.deleteById(newData.getId());
-					MCBL_Entity data = MCBL_Reps.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
+					GeneralMasterRepos.deleteById(newData.getSNO());
+					MCBL_Entity data = MCBL_Reps.getdataByAcc(newData.getAccountNo(), newData.getReportDate());
 					if (data != null) {
 						MCBL_Reps.delete(data);
 						msg = "Deleted successfully";
@@ -237,12 +237,12 @@ public class AuditService {
 	    String msg = null;
 	    logger.info("Enter BLBF Account method for {} mode...", formmode);
 
-	    try {System.out.println("DEBUG: account_no=" + newData.getAccount_no() + 
-                " reportDate=" + newData.getReport_date());
+	    try {System.out.println("DEBUG: account_no=" + newData.getAccountNo() + 
+                " reportDate=" + newData.getReportDate());
 
 	        // Fetch existing records
-	        GeneralMasterEntity existingGM = GeneralMasterRepos.getdataBybfbl(newData.getAccount_no(), newData.getReport_date());
-	        BLBF_Entity existingBLBF = BLBF_Reps.GetAll(newData.getAccount_no(), newData.getReport_date());
+	        GeneralMasterEntity existingGM = GeneralMasterRepos.getdataBybfbl(newData.getAccountNo(), newData.getReportDate());
+	        BLBF_Entity existingBLBF = BLBF_Reps.GetAll(newData.getAccountNo(), newData.getReportDate());
 
 	        switch (formmode.toLowerCase()) {
 	            case "add":
@@ -266,7 +266,7 @@ public class AuditService {
 	                    updateBLBFData(existingGM, newData, userid);
 	                    GeneralMasterRepos.save(existingGM);
 	                } else {
-	                    return "Error: BLBF Data not found for Account " + newData.getAccount_no();
+	                    return "Error: BLBF Data not found for Account " + newData.getAccountNo();
 	                }
 
 	                if (existingBLBF != null) {
@@ -298,234 +298,245 @@ public class AuditService {
 	// Helper methods
 	private GeneralMasterEntity copyBLBFDataToGeneralMaster(GeneralMasterEntity data, String userid) {
 	    GeneralMasterEntity gm = new GeneralMasterEntity();
-	    gm.setId(sequence.generateRequestUUId());
-	    gm.setAccount_no(data.getAccount_no());
-	    gm.setCustomer_id(data.getCustomer_id());
-	    gm.setSol_id(data.getSol_id());
-	    gm.setCustomer_name(data.getCustomer_name());
-	    gm.setSchm_code(data.getSchm_code());
-	    gm.setSchm_desc(data.getSchm_desc());
-	    gm.setAcct_open_date(data.getAcct_open_date());
-	    gm.setAcct_close_date(data.getAcct_close_date());
-	    gm.setApproved_limit(data.getApproved_limit());
-	    gm.setSanction_limit(data.getSanction_limit());
-	    gm.setDisbursed_amt(data.getDisbursed_amt());
-	    gm.setBalance_as_on(data.getBalance_as_on());
+	    //gm.setId(sequence.generateRequestUUId());
+	    gm.setAccountNo(data.getAccountNo());
+	    gm.setCustomerId(data.getCustomerId());
+	    gm.setSolId(data.getSolId());
+	    gm.setCustomerName(data.getCustomerName());
+	    gm.setSchmCode(data.getSchmCode());
+	    gm.setSchmDesc(data.getSchmDesc());
+	    gm.setAcctOpenDate(data.getAcctOpenDate());
+	    gm.setAcctCloseDate(data.getAcctCloseDate());
+	    gm.setApprovedLimit(data.getApprovedLimit());
+	    gm.setSanctionLimit(data.getSanctionLimit());
+	    gm.setDisbursedAmt(data.getDisbursedAmt());
+	    gm.setBalanceAsOn(data.getBalanceAsOn());
 	    
 	    gm.setHundred(data.getHundred());
 	    gm.setPeriod(data.getPeriod());
-	    gm.setEffective_interest_rate(data.getEffective_interest_rate());
-	    gm.setMat_bucket(data.getMat_bucket());
+	    gm.setEffectiveInterestRate(data.getEffectiveInterestRate());
+	    gm.setMatBucket(data.getMatBucket());
 	    
 	    gm.setCurrency(data.getCurrency());
-	    gm.setBal_equi_to_bwp(data.getBal_equi_to_bwp());
-	    gm.setRate_of_interest(data.getRate_of_interest());
-	    gm.setAccrued_int_amt(data.getAccrued_int_amt());
-	    gm.setMonthly_interest(data.getMonthly_interest());
-	    gm.setLast_interest_debit_date(data.getLast_interest_debit_date());
-	    gm.setAcct_cls_flg(data.getAcct_cls_flg());
+	    gm.setBalEquiToBwp(data.getBalEquiToBwp());
+	    gm.setRateOfInterest(data.getRateOfInterest());
+	    gm.setAccruedIntAmt(data.getAccruedIntAmt());
+	    gm.setMonthlyInterest(data.getMonthlyInterest());
+	    gm.setLastInterestDebitDate(data.getLastInterestDebitDate());
+	    gm.setAcctClsFlg(data.getAcctClsFlg());
 	    gm.setGender(data.getGender());
-	    gm.setClassification_code(data.getClassification_code());
-	    gm.setConstitution_code(data.getConstitution_code());
-	    gm.setMaturity_date(data.getMaturity_date());
-	    gm.setGl_sub_head_code(data.getGl_sub_head_code());
-	    gm.setGl_sub_head_desc(data.getGl_sub_head_desc());
-	    gm.setTenor_month(data.getTenor_month());
+	    gm.setClassificationCode(data.getClassificationCode());
+	    gm.setConstitutionCode(data.getConstitutionCode());
+	    gm.setMaturityDate(data.getMaturityDate());
+	    gm.setGlSubHeadCode(data.getGlSubHeadCode());
+	    gm.setGlSubHeadDesc(data.getGlSubHeadDesc());
+	    gm.setTenorMonth(data.getTenorMonth());
 	    gm.setEmi(data.getEmi());
 	    gm.setSegment(data.getSegment());
 	    gm.setFacility(data.getFacility());
-	    gm.setPast_due(data.getPast_due());
-	    gm.setPast_due_days(data.getPast_due_days());
+	    gm.setPastDue(data.getPastDue());
+	    gm.setPastDueDays(data.getPastDueDays());
 	    gm.setAsset(data.getAsset());
 	    gm.setProvision(data.getProvision());
 	    gm.setUnsecured(data.getUnsecured());
-	    gm.setInt_bucket(data.getInt_bucket());
+	    gm.setIntBucket(data.getIntBucket());
 	    gm.setStaff(data.getStaff());
 	    gm.setSmme(data.getSmme());
 	    gm.setLabod(data.getLabod());
-	    gm.setNew_ac(data.getNew_ac());
+	    gm.setNewAc(data.getNewAc());
 	    gm.setUndrawn(data.getUndrawn());
 	    gm.setSector(data.getSector());
 	    gm.setStage(data.getStage());
-	    gm.setEcl_provision(data.getEcl_provision());
-	    gm.setBranch_name(data.getBranch_name());
-	    gm.setBranch_code(data.getBranch_code());
-	    gm.setReport_date(data.getReport_date());
-	    gm.setEntry_date(new Date());
-	    gm.setEntry_user(userid);
-	    gm.setModify_flg("Y");
-	    gm.setBlbf_flg("Y");
-	    gm.setDel_flg("N");
+	    gm.setEclProvision(data.getEclProvision());
+	    gm.setBranchName(data.getBranchName());
+	    gm.setBranchCode(data.getBranchCode());
+	    gm.setReportDate(data.getReportDate());
+
+	    gm.setEntryTime(new Date());
+	    gm.setEntryUser(userid);
+
+	    gm.setMcblFlg("Y");
+	    gm.setBlbfFlg("Y");
+	    gm.setDelFlg("N");
+
 	    return gm;
 	}
 
 	private BLBF_Entity copyBLBFDataToBLBF(GeneralMasterEntity data, String userid) {
-	    BLBF_Entity blbf = new BLBF_Entity();
-	    blbf.setAccount_no(data.getAccount_no());
-	    blbf.setCustomer_id(data.getCustomer_id());
-	    blbf.setSol_id(data.getSol_id());
-	    blbf.setCustomer_name(data.getCustomer_name());
-	    blbf.setSchm_code(data.getSchm_code());
-	    blbf.setSchm_desc(data.getSchm_desc());
-	    blbf.setAcct_open_date(data.getAcct_open_date());
-	    blbf.setAcct_close_date(data.getAcct_close_date());
-	    blbf.setApproved_limit(data.getApproved_limit());
-	    blbf.setSanction_limit(data.getSanction_limit());
-	    blbf.setDisbursed_amt(data.getDisbursed_amt());
-	    blbf.setBalance_as_on(data.getBalance_as_on());
-	    blbf.setCurrency(data.getCurrency());
+		BLBF_Entity blbf = new BLBF_Entity();
 
-	    blbf.setHundred(data.getHundred());
-	    blbf.setPeriod(data.getPeriod());
-	    blbf.setEffective_interest_rate(data.getEffective_interest_rate());
-	    blbf.setMat_bucket(data.getMat_bucket());
-	    
-	    blbf.setBal_equi_to_bwp(data.getBal_equi_to_bwp());
-	    blbf.setRate_of_interest(data.getRate_of_interest());
-	    blbf.setAccrued_int_amt(data.getAccrued_int_amt());
-	    blbf.setMonthly_interest(data.getMonthly_interest());
-	    blbf.setLast_interest_debit_date(data.getLast_interest_debit_date());
-	    blbf.setAcct_cls_flg(data.getAcct_cls_flg());
-	    blbf.setGender(data.getGender());
-	    blbf.setClassification_code(data.getClassification_code());
-	    blbf.setConstitution_code(data.getConstitution_code());
-	    blbf.setMaturity_date(data.getMaturity_date());
-	    blbf.setGl_sub_head_code(data.getGl_sub_head_code());
-	    blbf.setGl_sub_head_desc(data.getGl_sub_head_desc());
-	    blbf.setTenor_month(data.getTenor_month());
-	    blbf.setEmi(data.getEmi());
-	    blbf.setSegment(data.getSegment());
-	    blbf.setFacility(data.getFacility());
-	    blbf.setPast_due(data.getPast_due());
-	    blbf.setPast_due_days(data.getPast_due_days());
-	    blbf.setAsset(data.getAsset());
-	    blbf.setProvision(data.getProvision());
-	    blbf.setUnsecured(data.getUnsecured());
-	    blbf.setInt_bucket(data.getInt_bucket());
-	    blbf.setStaff(data.getStaff());
-	    blbf.setSmme(data.getSmme());
-	    blbf.setLabod(data.getLabod());
-	    blbf.setNew_ac(data.getNew_ac());
-	    blbf.setUndrawn(data.getUndrawn());
-	    blbf.setSector(data.getSector());
-	    blbf.setStage(data.getStage());
-	    blbf.setEcl_provision(data.getEcl_provision());
-	    blbf.setBranch_name(data.getBranch_name());
-	    blbf.setBranch_code(data.getBranch_code());
-	    blbf.setReport_date(data.getReport_date());
-	    blbf.setEntry_date(new Date());
-	    blbf.setEntry_user(userid);
-	    return blbf;
+		blbf.setAccount_no(data.getAccountNo());
+		blbf.setCustomer_id(data.getCustomerId());
+		blbf.setSol_id(data.getSolId());
+		blbf.setCustomer_name(data.getCustomerName());
+		blbf.setSchm_code(data.getSchmCode());
+		blbf.setSchm_desc(data.getSchmDesc());
+		blbf.setAcct_open_date(data.getAcctOpenDate());
+		blbf.setAcct_close_date(data.getAcctCloseDate());
+		blbf.setApproved_limit(data.getApprovedLimit());
+		blbf.setSanction_limit(data.getSanctionLimit());
+		blbf.setDisbursed_amt(data.getDisbursedAmt());
+		blbf.setBalance_as_on(data.getBalanceAsOn());
+		blbf.setCurrency(data.getCurrency());
+
+		blbf.setHundred(data.getHundred());
+		blbf.setPeriod(data.getPeriod());
+		blbf.setEffective_interest_rate(data.getEffectiveInterestRate());
+		blbf.setMat_bucket(data.getMatBucket());
+
+		blbf.setBal_equi_to_bwp(data.getBalEquiToBwp());
+		blbf.setRate_of_interest(data.getRateOfInterest());
+		blbf.setAccrued_int_amt(data.getAccruedIntAmt());
+		blbf.setMonthly_interest(data.getMonthlyInterest());
+		blbf.setLast_interest_debit_date(data.getLastInterestDebitDate());
+		blbf.setAcct_cls_flg(data.getAcctClsFlg());
+		blbf.setGender(data.getGender());
+		blbf.setClassification_code(data.getClassificationCode());
+		blbf.setConstitution_code(data.getConstitutionCode());
+		blbf.setMaturity_date(data.getMaturityDate());
+		blbf.setGl_sub_head_code(data.getGlSubHeadCode());
+		blbf.setGl_sub_head_desc(data.getGlSubHeadDesc());
+		blbf.setTenor_month(data.getTenorMonth());
+		blbf.setEmi(data.getEmi());
+		blbf.setSegment(data.getSegment());
+		blbf.setFacility(data.getFacility());
+		blbf.setPast_due(data.getPastDue());
+		blbf.setPast_due_days(data.getPastDueDays());
+		blbf.setAsset(data.getAsset());
+		blbf.setProvision(data.getProvision());
+		blbf.setUnsecured(data.getUnsecured());
+		blbf.setInt_bucket(data.getIntBucket());
+		blbf.setStaff(data.getStaff());
+		blbf.setSmme(data.getSmme());
+		blbf.setLabod(data.getLabod());
+		blbf.setNew_ac(data.getNewAc());
+		blbf.setUndrawn(data.getUndrawn());
+		blbf.setSector(data.getSector());
+		blbf.setStage(data.getStage());
+		blbf.setEcl_provision(data.getEclProvision());
+		blbf.setBranch_name(data.getBranchName());
+		blbf.setBranch_code(data.getBranchCode());
+		blbf.setReport_date(data.getReportDate());
+
+		blbf.setEntry_date(new Date());
+		blbf.setEntry_user(userid);
+
+		return blbf;
+
 	}
 
 	private void updateBLBFData(GeneralMasterEntity existing, GeneralMasterEntity newData, String userid) {
-	    existing.setCustomer_id(newData.getCustomer_id());
-	    existing.setSol_id(newData.getSol_id());
-	    existing.setCustomer_name(newData.getCustomer_name());
-	    existing.setSchm_code(newData.getSchm_code());
-	    existing.setSchm_desc(newData.getSchm_desc());
-	    existing.setAcct_open_date(newData.getAcct_open_date());
-	    existing.setAcct_close_date(newData.getAcct_close_date());
-	    existing.setApproved_limit(newData.getApproved_limit());
-	    existing.setSanction_limit(newData.getSanction_limit());
-	    existing.setDisbursed_amt(newData.getDisbursed_amt());
-	    existing.setBalance_as_on(newData.getBalance_as_on());
+
+	    existing.setCustomerId(newData.getCustomerId());
+	    existing.setSolId(newData.getSolId());
+	    existing.setCustomerName(newData.getCustomerName());
+	    existing.setSchmCode(newData.getSchmCode());
+	    existing.setSchmDesc(newData.getSchmDesc());
+	    existing.setAcctOpenDate(newData.getAcctOpenDate());
+	    existing.setAcctCloseDate(newData.getAcctCloseDate());
+	    existing.setApprovedLimit(newData.getApprovedLimit());
+	    existing.setSanctionLimit(newData.getSanctionLimit());
+	    existing.setDisbursedAmt(newData.getDisbursedAmt());
+	    existing.setBalanceAsOn(newData.getBalanceAsOn());
 	    existing.setCurrency(newData.getCurrency());
-	    
+
 	    existing.setHundred(newData.getHundred());
 	    existing.setPeriod(newData.getPeriod());
-	    existing.setEffective_interest_rate(newData.getEffective_interest_rate());
-	    existing.setMat_bucket(newData.getMat_bucket());
-	    
-	    existing.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	    existing.setRate_of_interest(newData.getRate_of_interest());
-	    existing.setAccrued_int_amt(newData.getAccrued_int_amt());
-	    existing.setMonthly_interest(newData.getMonthly_interest());
-	    existing.setLast_interest_debit_date(newData.getLast_interest_debit_date());
-	    existing.setAcct_cls_flg(newData.getAcct_cls_flg());
+	    existing.setEffectiveInterestRate(newData.getEffectiveInterestRate());
+	    existing.setMatBucket(newData.getMatBucket());
+
+	    existing.setBalEquiToBwp(newData.getBalEquiToBwp());
+	    existing.setRateOfInterest(newData.getRateOfInterest());
+	    existing.setAccruedIntAmt(newData.getAccruedIntAmt());
+	    existing.setMonthlyInterest(newData.getMonthlyInterest());
+	    existing.setLastInterestDebitDate(newData.getLastInterestDebitDate());
+	    existing.setAcctClsFlg(newData.getAcctClsFlg());
 	    existing.setGender(newData.getGender());
-	    existing.setClassification_code(newData.getClassification_code());
-	    existing.setConstitution_code(newData.getConstitution_code());
-	    existing.setMaturity_date(newData.getMaturity_date());
-	    existing.setGl_sub_head_code(newData.getGl_sub_head_code());
-	    existing.setGl_sub_head_desc(newData.getGl_sub_head_desc());
-	    existing.setTenor_month(newData.getTenor_month());
+	    existing.setClassificationCode(newData.getClassificationCode());
+	    existing.setConstitutionCode(newData.getConstitutionCode());
+	    existing.setMaturityDate(newData.getMaturityDate());
+	    existing.setGlSubHeadCode(newData.getGlSubHeadCode());
+	    existing.setGlSubHeadDesc(newData.getGlSubHeadDesc());
+	    existing.setTenorMonth(newData.getTenorMonth());
 	    existing.setEmi(newData.getEmi());
 	    existing.setSegment(newData.getSegment());
 	    existing.setFacility(newData.getFacility());
-	    existing.setPast_due(newData.getPast_due());
-	    existing.setPast_due_days(newData.getPast_due_days());
+	    existing.setPastDue(newData.getPastDue());
+	    existing.setPastDueDays(newData.getPastDueDays());
 	    existing.setAsset(newData.getAsset());
 	    existing.setProvision(newData.getProvision());
 	    existing.setUnsecured(newData.getUnsecured());
-	    existing.setInt_bucket(newData.getInt_bucket());
+	    existing.setIntBucket(newData.getIntBucket());
 	    existing.setStaff(newData.getStaff());
 	    existing.setSmme(newData.getSmme());
 	    existing.setLabod(newData.getLabod());
-	    existing.setNew_ac(newData.getNew_ac());
+	    existing.setNewAc(newData.getNewAc());
 	    existing.setUndrawn(newData.getUndrawn());
 	    existing.setSector(newData.getSector());
 	    existing.setStage(newData.getStage());
-	    existing.setEcl_provision(newData.getEcl_provision());
-	    existing.setBranch_name(newData.getBranch_name());
-	    existing.setBranch_code(newData.getBranch_code());
-	    existing.setModify_user(userid);
-	    existing.setModify_flg("Y");
-	    existing.setDel_flg("N");
-	    existing.setBlbf_flg("Y");
+	    existing.setEclProvision(newData.getEclProvision());
+	    existing.setBranchName(newData.getBranchName());
+	    existing.setBranchCode(newData.getBranchCode());
+
+	    existing.setModifyUser(userid);
+	    existing.setModifyFlg("Y");
+	    existing.setDelFlg("N");
+	    existing.setBlbfFlg("Y");
 	}
+
 
 	private void updateBLBFData(BLBF_Entity existing, GeneralMasterEntity newData) {
-	    existing.setCustomer_id(newData.getCustomer_id());
-	    existing.setSol_id(newData.getSol_id());
-	    existing.setCustomer_name(newData.getCustomer_name());
-	    existing.setSchm_code(newData.getSchm_code());
-	    existing.setSchm_desc(newData.getSchm_desc());
-	    existing.setAcct_open_date(newData.getAcct_open_date());
-	    existing.setAcct_close_date(newData.getAcct_close_date());
-	    existing.setApproved_limit(newData.getApproved_limit());
-	    existing.setSanction_limit(newData.getSanction_limit());
-	    existing.setDisbursed_amt(newData.getDisbursed_amt());
-	    existing.setBalance_as_on(newData.getBalance_as_on());
+
+	    existing.setCustomer_id(newData.getCustomerId());
+	    existing.setSol_id(newData.getSolId());
+	    existing.setCustomer_name(newData.getCustomerName());
+	    existing.setSchm_code(newData.getSchmCode());
+	    existing.setSchm_desc(newData.getSchmDesc());
+	    existing.setAcct_open_date(newData.getAcctOpenDate());
+	    existing.setAcct_close_date(newData.getAcctCloseDate());
+	    existing.setApproved_limit(newData.getApprovedLimit());
+	    existing.setSanction_limit(newData.getSanctionLimit());
+	    existing.setDisbursed_amt(newData.getDisbursedAmt());
+	    existing.setBalance_as_on(newData.getBalanceAsOn());
 	    existing.setCurrency(newData.getCurrency());
 
 	    existing.setHundred(newData.getHundred());
 	    existing.setPeriod(newData.getPeriod());
-	    existing.setEffective_interest_rate(newData.getEffective_interest_rate());
-	    existing.setMat_bucket(newData.getMat_bucket());
-	    
-	    
-	    existing.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	    existing.setRate_of_interest(newData.getRate_of_interest());
-	    existing.setAccrued_int_amt(newData.getAccrued_int_amt());
-	    existing.setMonthly_interest(newData.getMonthly_interest());
-	    existing.setLast_interest_debit_date(newData.getLast_interest_debit_date());
-	    existing.setAcct_cls_flg(newData.getAcct_cls_flg());
+	    existing.setEffective_interest_rate(newData.getEffectiveInterestRate());
+	    existing.setMat_bucket(newData.getMatBucket());
+
+	    existing.setBal_equi_to_bwp(newData.getBalEquiToBwp());
+	    existing.setRate_of_interest(newData.getRateOfInterest());
+	    existing.setAccrued_int_amt(newData.getAccruedIntAmt());
+	    existing.setMonthly_interest(newData.getMonthlyInterest());
+	    existing.setLast_interest_debit_date(newData.getLastInterestDebitDate());
+	    existing.setAcct_cls_flg(newData.getAcctClsFlg());
 	    existing.setGender(newData.getGender());
-	    existing.setClassification_code(newData.getClassification_code());
-	    existing.setConstitution_code(newData.getConstitution_code());
-	    existing.setMaturity_date(newData.getMaturity_date());
-	    existing.setGl_sub_head_code(newData.getGl_sub_head_code());
-	    existing.setGl_sub_head_desc(newData.getGl_sub_head_desc());
-	    existing.setTenor_month(newData.getTenor_month());
+	    existing.setClassification_code(newData.getClassificationCode());
+	    existing.setConstitution_code(newData.getConstitutionCode());
+	    existing.setMaturity_date(newData.getMaturityDate());
+	    existing.setGl_sub_head_code(newData.getGlSubHeadCode());
+	    existing.setGl_sub_head_desc(newData.getGlSubHeadDesc());
+	    existing.setTenor_month(newData.getTenorMonth());
 	    existing.setEmi(newData.getEmi());
 	    existing.setSegment(newData.getSegment());
 	    existing.setFacility(newData.getFacility());
-	    existing.setPast_due(newData.getPast_due());
-	    existing.setPast_due_days(newData.getPast_due_days());
+	    existing.setPast_due(newData.getPastDue());
+	    existing.setPast_due_days(newData.getPastDueDays());
 	    existing.setAsset(newData.getAsset());
 	    existing.setProvision(newData.getProvision());
 	    existing.setUnsecured(newData.getUnsecured());
-	    existing.setInt_bucket(newData.getInt_bucket());
+	    existing.setInt_bucket(newData.getIntBucket());
 	    existing.setStaff(newData.getStaff());
 	    existing.setSmme(newData.getSmme());
 	    existing.setLabod(newData.getLabod());
-	    existing.setNew_ac(newData.getNew_ac());
+	    existing.setNew_ac(newData.getNewAc());
 	    existing.setUndrawn(newData.getUndrawn());
 	    existing.setSector(newData.getSector());
 	    existing.setStage(newData.getStage());
-	    existing.setEcl_provision(newData.getEcl_provision());
+	    existing.setEcl_provision(newData.getEclProvision());
 	}
+
 
 
 	public String createAccount_BDGF(String formmode, GeneralMasterEntity newData, String userid) {
@@ -533,12 +544,12 @@ public class AuditService {
 	    logger.info("Enter BDGF Account method for {} mode...", formmode);
 
 	    try {
-	        System.out.println("DEBUG: account_no=" + newData.getAccount_no() + 
-	                " reportDate=" + newData.getReport_date());
+	        System.out.println("DEBUG: account_no=" + newData.getAccountNo() + 
+	                " reportDate=" + newData.getReportDate());
 
 	        // Fetch existing records
-	        GeneralMasterEntity existingGM = GeneralMasterRepos.getdataBybdgf(newData.getAccount_no(), newData.getReport_date());
-	        BDGF_Entity existingBDGF = BDGF_Reps.getdataBybdgf(newData.getAccount_no(), newData.getReport_date());
+	        GeneralMasterEntity existingGM = GeneralMasterRepos.getdataBybdgf(newData.getAccountNo(), newData.getReportDate());
+	        BDGF_Entity existingBDGF = BDGF_Reps.getdataBybdgf(newData.getAccountNo(), newData.getReportDate());
 
 	        switch (formmode.toLowerCase()) {
 	            case "add":
@@ -562,7 +573,7 @@ public class AuditService {
 	                    updateBDGFData(existingGM, newData, userid);
 	                    GeneralMasterRepos.save(existingGM);
 	                } else {
-	                    return "Error: BDGF Data not found for Account " + newData.getAccount_no();
+	                    return "Error: BDGF Data not found for Account " + newData.getAccountNo();
 	                }
 
 	                if (existingBDGF != null) {
@@ -594,136 +605,149 @@ public class AuditService {
 	// Helper Methods
 	private GeneralMasterEntity copyBDGFDataToGeneralMaster(GeneralMasterEntity data, String userid) {
 	    GeneralMasterEntity gm = new GeneralMasterEntity();
-	    gm.setId(sequence.generateRequestUUId());
-	    gm.setSol_id(data.getSol_id());
-	    gm.setAccount_no(data.getAccount_no());
-	    gm.setCustomer_id(data.getCustomer_id());
-	    gm.setCustomer_name(data.getCustomer_name());
-	    gm.setAcct_open_date(data.getAcct_open_date());
-	    gm.setAmount_deposited(data.getAmount_deposited());
+
+	    //gm.setId(sequence.generateRequestUUId());
+	    gm.setSolId(data.getSolId());
+	    gm.setAccountNo(data.getAccountNo());
+	    gm.setCustomerId(data.getCustomerId());
+	    gm.setCustomerName(data.getCustomerName());
+	    gm.setAcctOpenDate(data.getAcctOpenDate());
+	    gm.setAmountDeposited(data.getAmountDeposited());
 	    gm.setCurrency(data.getCurrency());
 	    gm.setPeriod(data.getPeriod());
-	    gm.setRate_of_interest(data.getRate_of_interest());
+	    gm.setRateOfInterest(data.getRateOfInterest());
 	    gm.setHundred(data.getHundred());
-	    gm.setBal_equi_to_bwp(data.getBal_equi_to_bwp());
-	    gm.setOutstanding_balance(data.getOutstanding_balance());
-	    gm.setOustndng_bal_ugx(data.getOustndng_bal_ugx());
-	    gm.setMaturity_date(data.getMaturity_date());
-	    gm.setMaturity_amount(data.getMaturity_amount());
+	    gm.setBalEquiToBwp(data.getBalEquiToBwp());
+	    gm.setOutstandingBalance(data.getOutstandingBalance());
+	    gm.setOustndngBalUgx(data.getOustndngBalUgx());
+	    gm.setMaturityDate(data.getMaturityDate());
+	    gm.setMaturityAmount(data.getMaturityAmount());
 	    gm.setScheme(data.getScheme());
-	    gm.setCr_pref_int_rate(data.getCr_pref_int_rate());
+	    gm.setCrPrefIntRate(data.getCrPrefIntRate());
 	    gm.setSegment(data.getSegment());
-	    gm.setReference_date(data.getReference_date());
+	    gm.setReferenceDate(data.getReferenceDate());
 	    gm.setDifference(data.getDifference());
 	    gm.setDays(data.getDays());
-	    gm.setPeriod_days(data.getPeriod_days());
-	    gm.setEffective_interest_rate(data.getEffective_interest_rate());
-	    gm.setBranch_name(data.getBranch_name());
-	    gm.setBranch_code(data.getBranch_code());
-	    gm.setReport_date(data.getReport_date());
-	    gm.setEntry_date(new Date());
-	    gm.setEntry_user(userid);
-	    gm.setModify_flg("Y");
-	    gm.setDel_flg("N");
-	    gm.setBdgf_flg("Y");
+	    gm.setPeriodDays(data.getPeriodDays());
+	    gm.setEffectiveInterestRate(data.getEffectiveInterestRate());
+	    gm.setBranchName(data.getBranchName());
+	    gm.setBranchCode(data.getBranchCode());
+	    gm.setReportDate(data.getReportDate());
+	    gm.setEntryTime(new Date());
+	    gm.setEntryUser(userid);
+
+	    gm.setModifyFlg("Y");
+	    gm.setDelFlg("N");
+	    gm.setBdgfFlg("Y");
+
 	    return gm;
 	}
 
+
 	private BDGF_Entity copyBDGFDataToBDGF(GeneralMasterEntity data, String userid) {
 	    BDGF_Entity bdgf = new BDGF_Entity();
-	    bdgf.setSol_id(data.getSol_id());
-	    bdgf.setAccount_no(data.getAccount_no());
-	    bdgf.setCustomer_id(data.getCustomer_id());
-	    bdgf.setCustomer_name(data.getCustomer_name());
-	    bdgf.setAcct_open_date(data.getAcct_open_date());
-	    bdgf.setAmount_deposited(data.getAmount_deposited());
+
+	    bdgf.setSol_id(data.getSolId());
+	    bdgf.setAccount_no(data.getAccountNo());
+	    bdgf.setCustomer_id(data.getCustomerId());
+	    bdgf.setCustomer_name(data.getCustomerName());
+	    bdgf.setAcct_open_date(data.getAcctOpenDate());
+	    bdgf.setAmount_deposited(data.getAmountDeposited());
 	    bdgf.setCurrency(data.getCurrency());
 	    bdgf.setPeriod(data.getPeriod());
-	    bdgf.setRate_of_interest(data.getRate_of_interest());
+	    bdgf.setRate_of_interest(data.getRateOfInterest());
 	    bdgf.setHundred(data.getHundred());
-	    bdgf.setBal_equi_to_bwp(data.getBal_equi_to_bwp());
-	    bdgf.setOutstanding_balance(data.getOutstanding_balance());
-	    bdgf.setOustndng_bal_ugx(data.getOustndng_bal_ugx());
-	    bdgf.setMaturity_date(data.getMaturity_date());
-	    bdgf.setMaturity_amount(data.getMaturity_amount());
+	    bdgf.setBal_equi_to_bwp(data.getBalEquiToBwp());
+	    bdgf.setOutstanding_balance(data.getOutstandingBalance());
+	    bdgf.setOustndng_bal_ugx(data.getOustndngBalUgx());
+	    bdgf.setMaturity_date(data.getMaturityDate());
+	    bdgf.setMaturity_amount(data.getMaturityAmount());
 	    bdgf.setScheme(data.getScheme());
-	    bdgf.setCr_pref_int_rate(data.getCr_pref_int_rate());
+	    bdgf.setCr_pref_int_rate(data.getCrPrefIntRate());
 	    bdgf.setSegment(data.getSegment());
-	    bdgf.setReference_date(data.getReference_date());
+	    bdgf.setReference_date(data.getReferenceDate());
 	    bdgf.setDifference(data.getDifference());
 	    bdgf.setDays(data.getDays());
-	    bdgf.setPeriod_days(data.getPeriod_days());
-	    bdgf.setEffective_interest_rate(data.getEffective_interest_rate());
-	    bdgf.setBranch_name(data.getBranch_name());
-	    bdgf.setBranch_code(data.getBranch_code());
-	    bdgf.setReport_date(data.getReport_date());
+	    bdgf.setPeriod_days(data.getPeriodDays());
+	    bdgf.setEffective_interest_rate(data.getEffectiveInterestRate());
+	    bdgf.setBranch_name(data.getBranchName());
+	    bdgf.setBranch_code(data.getBranchCode());
+	    bdgf.setReport_date(data.getReportDate());
+
 	    bdgf.setEntry_date(new Date());
 	    bdgf.setEntry_user(userid);
 	    bdgf.setModify_flg("Y");
 	    bdgf.setDel_flg("N");
+
 	    return bdgf;
 	}
 
+
 	private void updateBDGFData(GeneralMasterEntity existing, GeneralMasterEntity newData, String userid) {
-	    existing.setSol_id(newData.getSol_id());
-	    existing.setCustomer_id(newData.getCustomer_id());
-	    existing.setCustomer_name(newData.getCustomer_name());
-	    existing.setAcct_open_date(newData.getAcct_open_date());
-	    existing.setAmount_deposited(newData.getAmount_deposited());
+
+	    existing.setSolId(newData.getSolId());
+	    existing.setCustomerId(newData.getCustomerId());
+	    existing.setCustomerName(newData.getCustomerName());
+	    existing.setAcctOpenDate(newData.getAcctOpenDate());
+	    existing.setAmountDeposited(newData.getAmountDeposited());
 	    existing.setCurrency(newData.getCurrency());
 	    existing.setPeriod(newData.getPeriod());
-	    existing.setRate_of_interest(newData.getRate_of_interest());
+	    existing.setRateOfInterest(newData.getRateOfInterest());
 	    existing.setHundred(newData.getHundred());
-	    existing.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	    existing.setOutstanding_balance(newData.getOutstanding_balance());
-	    existing.setOustndng_bal_ugx(newData.getOustndng_bal_ugx());
-	    existing.setMaturity_date(newData.getMaturity_date());
-	    existing.setMaturity_amount(newData.getMaturity_amount());
+	    existing.setBalEquiToBwp(newData.getBalEquiToBwp());
+	    existing.setOutstandingBalance(newData.getOutstandingBalance());
+	    existing.setOustndngBalUgx(newData.getOustndngBalUgx());
+	    existing.setMaturityDate(newData.getMaturityDate());
+	    existing.setMaturityAmount(newData.getMaturityAmount());
 	    existing.setScheme(newData.getScheme());
-	    existing.setCr_pref_int_rate(newData.getCr_pref_int_rate());
+	    existing.setCrPrefIntRate(newData.getCrPrefIntRate());
 	    existing.setSegment(newData.getSegment());
-	    existing.setReference_date(newData.getReference_date());
+	    existing.setReferenceDate(newData.getReferenceDate());
 	    existing.setDifference(newData.getDifference());
 	    existing.setDays(newData.getDays());
-	    existing.setPeriod_days(newData.getPeriod_days());
-	    existing.setEffective_interest_rate(newData.getEffective_interest_rate());
-	    existing.setBranch_name(newData.getBranch_name());
-	    existing.setBranch_code(newData.getBranch_code());
-	    existing.setModify_user(userid);
-	    existing.setModify_flg("Y");
-	    existing.setDel_flg("N");
-	    existing.setBdgf_flg("Y");
+	    existing.setPeriodDays(newData.getPeriodDays());
+	    existing.setEffectiveInterestRate(newData.getEffectiveInterestRate());
+	    existing.setBranchName(newData.getBranchName());
+	    existing.setBranchCode(newData.getBranchCode());
+
+	    existing.setModifyUser(userid);
+	    existing.setModifyFlg("Y");
+	    existing.setDelFlg("N");
+	    existing.setBdgfFlg("Y");
 	}
 
+
 	private void updateBDGFData(BDGF_Entity existing, GeneralMasterEntity newData, String userid) {
-	    existing.setSol_id(newData.getSol_id());
-	    existing.setCustomer_id(newData.getCustomer_id());
-	    existing.setCustomer_name(newData.getCustomer_name());
-	    existing.setAcct_open_date(newData.getAcct_open_date());
-	    existing.setAmount_deposited(newData.getAmount_deposited());
+
+	    existing.setSol_id(newData.getSolId());
+	    existing.setCustomer_id(newData.getCustomerId());
+	    existing.setCustomer_name(newData.getCustomerName());
+	    existing.setAcct_open_date(newData.getAcctOpenDate());
+	    existing.setAmount_deposited(newData.getAmountDeposited());
 	    existing.setCurrency(newData.getCurrency());
 	    existing.setPeriod(newData.getPeriod());
-	    existing.setRate_of_interest(newData.getRate_of_interest());
+	    existing.setRate_of_interest(newData.getRateOfInterest());
 	    existing.setHundred(newData.getHundred());
-	    existing.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	    existing.setOutstanding_balance(newData.getOutstanding_balance());
-	    existing.setOustndng_bal_ugx(newData.getOustndng_bal_ugx());
-	    existing.setMaturity_date(newData.getMaturity_date());
-	    existing.setMaturity_amount(newData.getMaturity_amount());
+	    existing.setBal_equi_to_bwp(newData.getBalEquiToBwp());
+	    existing.setOutstanding_balance(newData.getOutstandingBalance());
+	    existing.setOustndng_bal_ugx(newData.getOustndngBalUgx());
+	    existing.setMaturity_date(newData.getMaturityDate());
+	    existing.setMaturity_amount(newData.getMaturityAmount());
 	    existing.setScheme(newData.getScheme());
-	    existing.setCr_pref_int_rate(newData.getCr_pref_int_rate());
+	    existing.setCr_pref_int_rate(newData.getCrPrefIntRate());
 	    existing.setSegment(newData.getSegment());
-	    existing.setReference_date(newData.getReference_date());
+	    existing.setReference_date(newData.getReferenceDate());
 	    existing.setDifference(newData.getDifference());
 	    existing.setDays(newData.getDays());
-	    existing.setPeriod_days(newData.getPeriod_days());
-	    existing.setEffective_interest_rate(newData.getEffective_interest_rate());
-	    existing.setBranch_name(newData.getBranch_name());
-	    existing.setBranch_code(newData.getBranch_code());
+	    existing.setPeriod_days(newData.getPeriodDays());
+	    existing.setEffective_interest_rate(newData.getEffectiveInterestRate());
+	    existing.setBranch_name(newData.getBranchName());
+	    existing.setBranch_code(newData.getBranchCode());
 	    existing.setModify_user(userid);
 	    existing.setModify_flg("Y");
 	    existing.setDel_flg("N");
 	}
+
 
 
 	public String createAccount_BFDB(String formmode, GeneralMasterEntity newData, String userid) {
@@ -732,8 +756,8 @@ public class AuditService {
 
 	    try {
 	        // Fetch existing records
-	        GeneralMasterEntity existingGM = GeneralMasterRepos.getdataBybdgf(newData.getAccount_no(), newData.getReport_date());
-	        BFDB_Entity existingBFDB = BFDB_Reps.getdataByAcc(newData.getAccount_no(), newData.getReport_date());
+	        GeneralMasterEntity existingGM = GeneralMasterRepos.getdataBybdgf(newData.getAccountNo(), newData.getReportDate());
+	        BFDB_Entity existingBFDB = BFDB_Reps.getdataByAcc(newData.getAccountNo(), newData.getReportDate());
 
 	        switch (formmode.toLowerCase()) {
 	            case "add":
@@ -757,7 +781,7 @@ public class AuditService {
 	                    updateBFDBData(existingGM, newData, userid);
 	                    GeneralMasterRepos.save(existingGM);
 	                } else {
-	                    return "Error: BFDB Data not found for Account " + newData.getAccount_no();
+	                    return "Error: BFDB Data not found for Account " + newData.getAccountNo();
 	                }
 
 	                if (existingBFDB != null) {
@@ -787,125 +811,129 @@ public class AuditService {
 	}
 	private GeneralMasterEntity copyBFDBDataToGeneralMaster(GeneralMasterEntity data, String userid) {
 	    GeneralMasterEntity gm = new GeneralMasterEntity();
-	    gm.setId(sequence.generateRequestUUId());
-	    gm.setSol_id(data.getSol_id());
+	   // gm.setId(sequence.generateRequestUUId());
+	    gm.setSolId(data.getSolId());
 	    gm.setGender(data.getGender());
-	    gm.setAccount_no(data.getAccount_no());
-	    gm.setCustomer_id(data.getCustomer_id());
-	    gm.setCustomer_name(data.getCustomer_name());
-	    gm.setSchm_code(data.getSchm_code());
-	    gm.setSchm_desc(data.getSchm_desc());
-	    gm.setAcct_open_date(data.getAcct_open_date());
-	    gm.setAcct_close_date(data.getAcct_close_date());
-	    gm.setBalance_as_on(data.getBalance_as_on());
+	    gm.setAccountNo(data.getAccountNo());
+	    gm.setCustomerId(data.getCustomerId());
+	    gm.setCustomerName(data.getCustomerName());
+	    gm.setSchmCode(data.getSchmCode());
+	    gm.setSchmDesc(data.getSchmDesc());
+	    gm.setAcctOpenDate(data.getAcctOpenDate());
+	    gm.setAcctCloseDate(data.getAcctCloseDate());
+	    gm.setBalanceAsOn(data.getBalanceAsOn());
 	    gm.setCurrency(data.getCurrency());
-	    gm.setBal_equi_to_bwp(data.getBal_equi_to_bwp());
-	    gm.setRate_of_interest(data.getRate_of_interest());
+	    gm.setBalEquiToBwp(data.getBalEquiToBwp());
+	    gm.setRateOfInterest(data.getRateOfInterest());
 	    gm.setHundred(data.getHundred());
 	    gm.setStatus(data.getStatus());
-	    gm.setMaturity_date(data.getMaturity_date());
-	    gm.setGl_sub_head_code(data.getGl_sub_head_code());
-	    gm.setGl_sub_head_desc(data.getGl_sub_head_desc());
-	    gm.setType_of_accounts(data.getType_of_accounts());
+	    gm.setMaturityDate(data.getMaturityDate());
+	    gm.setGlSubHeadCode(data.getGlSubHeadCode());
+	    gm.setGlSubHeadDesc(data.getGlSubHeadDesc());
+	    gm.setTypeOfAccounts(data.getTypeOfAccounts());
 	    gm.setSegment(data.getSegment());
 	    gm.setPeriod(data.getPeriod());
-	    gm.setEffective_interest_rate(data.getEffective_interest_rate());
-	    gm.setBranch_name(data.getBranch_name());
-	    gm.setBranch_code(data.getBranch_code());
-	    gm.setReport_date(data.getReport_date());
-	    gm.setEntry_user(userid);
-	    gm.setEntry_date(new Date());
-	    gm.setModify_flg("Y");
-	    gm.setDel_flg("N");
-	    gm.setBfdb_flg("Y");
+	    gm.setEffectiveInterestRate(data.getEffectiveInterestRate());
+	    gm.setBranchName(data.getBranchName());
+	    gm.setBranchCode(data.getBranchCode());
+	    gm.setReportDate(data.getReportDate());
+	    gm.setEntryUser(userid);
+	    gm.setEntryTime(new Date());
+	    gm.setModifyFlg("Y");
+	    gm.setDelFlg("N");
+	    gm.setBfdbFlg("Y");
 	    return gm;
 	}
+
 	private BFDB_Entity copyBFDBDataToBFDB(GeneralMasterEntity data, String userid) {
 	    BFDB_Entity bfdb = new BFDB_Entity();
-	    bfdb.setSol_id(data.getSol_id());
+	    bfdb.setSol_id(data.getSolId());
 	    bfdb.setGender(data.getGender());
-	    bfdb.setAccount_no(data.getAccount_no());
-	    bfdb.setCustomer_id(data.getCustomer_id());
-	    bfdb.setCustomer_name(data.getCustomer_name());
-	    bfdb.setSchm_code(data.getSchm_code());
-	    bfdb.setSchm_desc(data.getSchm_desc());
-	    bfdb.setAcct_open_date(data.getAcct_open_date());
-	    bfdb.setAcct_close_date(data.getAcct_close_date());
-	    bfdb.setBalance_as_on(data.getBalance_as_on());
+	    bfdb.setAccount_no(data.getAccountNo());
+	    bfdb.setCustomer_id(data.getCustomerId());
+	    bfdb.setCustomer_name(data.getCustomerName());
+	    bfdb.setSchm_code(data.getSchmCode());
+	    bfdb.setSchm_desc(data.getSchmDesc());
+	    bfdb.setAcct_open_date(data.getAcctOpenDate());
+	    bfdb.setAcct_close_date(data.getAcctCloseDate());
+	    bfdb.setBalance_as_on(data.getBalanceAsOn());
 	    bfdb.setCurrency(data.getCurrency());
-	    bfdb.setBal_equi_to_bwp(data.getBal_equi_to_bwp());
-	    bfdb.setRate_of_interest(data.getRate_of_interest());
+	    bfdb.setBal_equi_to_bwp(data.getBalEquiToBwp());
+	    bfdb.setRate_of_interest(data.getRateOfInterest());
 	    bfdb.setHundred(data.getHundred());
 	    bfdb.setStatus(data.getStatus());
-	    bfdb.setMaturity_date(data.getMaturity_date());
-	    bfdb.setGl_sub_head_code(data.getGl_sub_head_code());
-	    bfdb.setGl_sub_head_desc(data.getGl_sub_head_desc());
-	    bfdb.setType_of_accounts(data.getType_of_accounts());
+	    bfdb.setMaturity_date(data.getMaturityDate());
+	    bfdb.setGl_sub_head_code(data.getGlSubHeadCode());
+	    bfdb.setGl_sub_head_desc(data.getGlSubHeadDesc());
+	    bfdb.setType_of_accounts(data.getTypeOfAccounts());
 	    bfdb.setSegment(data.getSegment());
 	    bfdb.setPeriod(data.getPeriod());
-	    bfdb.setEffective_interest_rate(data.getEffective_interest_rate());
-	    bfdb.setBranch_name(data.getBranch_name());
-	    bfdb.setBranch_code(data.getBranch_code());
-	    bfdb.setReport_date(data.getReport_date());
+	    bfdb.setEffective_interest_rate(data.getEffectiveInterestRate());
+	    bfdb.setBranch_name(data.getBranchName());
+	    bfdb.setBranch_code(data.getBranchCode());
+	    bfdb.setReport_date(data.getReportDate());
 	    bfdb.setEntry_user(userid);
 	    bfdb.setEntry_date(new Date());
 	    bfdb.setModify_flg("Y");
 	    bfdb.setDel_flg("N");
 	    return bfdb;
 	}
+
 	private void updateBFDBData(GeneralMasterEntity existing, GeneralMasterEntity newData, String userid) {
-	    existing.setSol_id(newData.getSol_id());
+	    existing.setSolId(newData.getSolId());
 	    existing.setGender(newData.getGender());
-	    existing.setCustomer_id(newData.getCustomer_id());
-	    existing.setCustomer_name(newData.getCustomer_name());
-	    existing.setSchm_code(newData.getSchm_code());
-	    existing.setSchm_desc(newData.getSchm_desc());
-	    existing.setAcct_open_date(newData.getAcct_open_date());
-	    existing.setAcct_close_date(newData.getAcct_close_date());
-	    existing.setBalance_as_on(newData.getBalance_as_on());
+	    existing.setCustomerId(newData.getCustomerId());
+	    existing.setCustomerName(newData.getCustomerName());
+	    existing.setSchmCode(newData.getSchmCode());
+	    existing.setSchmDesc(newData.getSchmDesc());
+	    existing.setAcctOpenDate(newData.getAcctOpenDate());
+	    existing.setAcctCloseDate(newData.getAcctCloseDate());
+	    existing.setBalanceAsOn(newData.getBalanceAsOn());
 	    existing.setCurrency(newData.getCurrency());
-	    existing.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	    existing.setRate_of_interest(newData.getRate_of_interest());
+	    existing.setBalEquiToBwp(newData.getBalEquiToBwp());
+	    existing.setRateOfInterest(newData.getRateOfInterest());
 	    existing.setHundred(newData.getHundred());
 	    existing.setStatus(newData.getStatus());
-	    existing.setMaturity_date(newData.getMaturity_date());
-	    existing.setGl_sub_head_code(newData.getGl_sub_head_code());
-	    existing.setGl_sub_head_desc(newData.getGl_sub_head_desc());
-	    existing.setType_of_accounts(newData.getType_of_accounts());
+	    existing.setMaturityDate(newData.getMaturityDate());
+	    existing.setGlSubHeadCode(newData.getGlSubHeadCode());
+	    existing.setGlSubHeadDesc(newData.getGlSubHeadDesc());
+	    existing.setTypeOfAccounts(newData.getTypeOfAccounts());
 	    existing.setSegment(newData.getSegment());
 	    existing.setPeriod(newData.getPeriod());
-	    existing.setEffective_interest_rate(newData.getEffective_interest_rate());
-	    existing.setBranch_name(newData.getBranch_name());
-	    existing.setBranch_code(newData.getBranch_code());
-	    existing.setModify_user(userid);
-	    existing.setModify_date(new Date());
-	    existing.setModify_flg("Y");
-	    existing.setDel_flg("N");
-	    existing.setBfdb_flg("Y");
+	    existing.setEffectiveInterestRate(newData.getEffectiveInterestRate());
+	    existing.setBranchName(newData.getBranchName());
+	    existing.setBranchCode(newData.getBranchCode());
+	    existing.setModifyUser(userid);
+	    existing.setModifyTime(new Date());
+	    existing.setModifyFlg("Y");
+	    existing.setDelFlg("N");
+	    existing.setBfdbFlg("Y");
 	}
+
+
 	private void updateBFDBData(BFDB_Entity existing, GeneralMasterEntity newData, String userid) {
-	    existing.setSol_id(newData.getSol_id());
+	    existing.setSol_id(newData.getSolId());
 	    existing.setGender(newData.getGender());
-	    existing.setCustomer_name(newData.getCustomer_name());
-	    existing.setSchm_code(newData.getSchm_code());
-	    existing.setSchm_desc(newData.getSchm_desc());
-	    existing.setAcct_open_date(newData.getAcct_open_date());
-	    existing.setAcct_close_date(newData.getAcct_close_date());
-	    existing.setBalance_as_on(newData.getBalance_as_on());
+	    existing.setCustomer_name(newData.getCustomerName());
+	    existing.setSchm_code(newData.getSchmCode());
+	    existing.setSchm_desc(newData.getSchmDesc());
+	    existing.setAcct_open_date(newData.getAcctOpenDate());
+	    existing.setAcct_close_date(newData.getAcctCloseDate());
+	    existing.setBalance_as_on(newData.getBalanceAsOn());
 	    existing.setCurrency(newData.getCurrency());
-	    existing.setBal_equi_to_bwp(newData.getBal_equi_to_bwp());
-	    existing.setRate_of_interest(newData.getRate_of_interest());
+	    existing.setBal_equi_to_bwp(newData.getBalEquiToBwp());
+	    existing.setRate_of_interest(newData.getRateOfInterest());
 	    existing.setHundred(newData.getHundred());
 	    existing.setStatus(newData.getStatus());
-	    existing.setMaturity_date(newData.getMaturity_date());
-	    existing.setGl_sub_head_code(newData.getGl_sub_head_code());
-	    existing.setGl_sub_head_desc(newData.getGl_sub_head_desc());
-	    existing.setType_of_accounts(newData.getType_of_accounts());
+	    existing.setMaturity_date(newData.getMaturityDate());
+	    existing.setGl_sub_head_code(newData.getGlSubHeadCode());
+	    existing.setGl_sub_head_desc(newData.getGlSubHeadDesc());
+	    existing.setType_of_accounts(newData.getTypeOfAccounts());
 	    existing.setSegment(newData.getSegment());
 	    existing.setPeriod(newData.getPeriod());
-	    existing.setEffective_interest_rate(newData.getEffective_interest_rate());
-	    existing.setBranch_name(newData.getBranch_name());
-	    existing.setBranch_code(newData.getBranch_code());
+	    existing.setEffective_interest_rate(newData.getEffectiveInterestRate());
+	    existing.setBranch_name(newData.getBranchName());
+	    existing.setBranch_code(newData.getBranchCode());
 	    existing.setModify_user(userid);
 	    existing.setModify_date(new Date());
 	    existing.setModify_flg("Y");

@@ -40,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.bornfire.brrs.config.SequenceGenerator;
 import com.bornfire.brrs.entities.BLBF_Entity;
 import com.bornfire.brrs.entities.BLBF_Rep;
+import com.bornfire.brrs.entities.GeneralMasterEntity;
 import com.bornfire.brrs.entities.GeneralMasterRepo;
 
 @Service
@@ -507,76 +508,76 @@ public class BLBF_Services {
 			}
 
 			// ======== Fetch Data from DB ========
-			List<BLBF_Entity> dataList = BLBF_Reps.findRecordsByReportDate(todate);
+			List<GeneralMasterEntity> dataList = GeneralMasterRepos.findLoanBRecordsByReportDate(todate);
 
 			if (dataList != null && !dataList.isEmpty()) {
 				int rowIndex = 1;
 				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
-				for (BLBF_Entity rec : dataList) {
+				for (GeneralMasterEntity rec : dataList) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 					int col = 0;
 
 					// ======== Text / Date Cells ========
-					createTextCell(row, col++, rec.getCustomer_id(), dataCellStyle);
-					createTextCell(row, col++, rec.getSol_id(), dataCellStyle);
-					createTextCell(row, col++, rec.getAccount_no(), dataCellStyle);
-					createTextCell(row, col++, rec.getCustomer_name(), dataCellStyle);
-					createTextCell(row, col++, rec.getSchm_code(), dataCellStyle);
-					createTextCell(row, col++, rec.getSchm_desc(), dataCellStyle);
-					createTextCell(row, col++, rec.getAcct_open_date() != null ? sdf.format(rec.getAcct_open_date()) : "",
+					createTextCell(row, col++, rec.getCustomerId(), dataCellStyle);
+					createTextCell(row, col++, rec.getSolId(), dataCellStyle);
+					createTextCell(row, col++, rec.getAccountNo(), dataCellStyle);
+					createTextCell(row, col++, rec.getCustomerName(), dataCellStyle);
+					createTextCell(row, col++, rec.getSchmCode(), dataCellStyle);
+					createTextCell(row, col++, rec.getSchmDesc(), dataCellStyle);
+					createTextCell(row, col++, rec.getAcctOpenDate() != null ? sdf.format(rec.getAcctOpenDate()) : "",
 							dataCellStyle);
 
 					// ======== Numeric Cells ========
-					createNumericCell(row, col++, rec.getApproved_limit(), numericStyle);
-					createNumericCell(row, col++, rec.getSanction_limit(), numericStyle);
-					createNumericCell(row, col++, rec.getDisbursed_amt(), numericStyle);
-					createNumericCell(row, col++, rec.getBalance_as_on(), numericStyle);
+					createNumericCell(row, col++, rec.getApprovedLimit(), numericStyle);
+					createNumericCell(row, col++, rec.getSanctionLimit(), numericStyle);
+					createNumericCell(row, col++, rec.getDisbursedAmt(), numericStyle);
+					createNumericCell(row, col++, rec.getBalanceAsOn(), numericStyle);
 
 					createTextCell(row, col++, rec.getCurrency(), dataCellStyle);
-					createNumericCell(row, col++, rec.getBal_equi_to_bwp(), numericStyle);
-					createNumericCell(row, col++, rec.getRate_of_interest(), numericStyle);
-					createNumericCell(row, col++, rec.getAccrued_int_amt(), numericStyle);
-					createNumericCell(row, col++, rec.getMonthly_interest(), numericStyle);
+					createNumericCell(row, col++, rec.getBalEquiToBwp(), numericStyle);
+					createNumericCell(row, col++, rec.getRateOfInterest(), numericStyle);
+					createNumericCell(row, col++, rec.getAccruedIntAmt(), numericStyle);
+					createNumericCell(row, col++, rec.getMonthlyInterest(), numericStyle);
 					createTextCell(row, col++,
-							rec.getLast_interest_debit_date() != null ? sdf.format(rec.getLast_interest_debit_date())
+							rec.getLastInterestDebitDate() != null ? sdf.format(rec.getLastInterestDebitDate())
 									: "",
 							dataCellStyle);
-					createTextCell(row, col++, rec.getAcct_cls_flg(), dataCellStyle);
-					createTextCell(row, col++, rec.getAcct_close_date() != null ? sdf.format(rec.getAcct_close_date()) : "",
+					createTextCell(row, col++, rec.getAcctClsFlg(), dataCellStyle);
+					createTextCell(row, col++, rec.getAcctOpenDate() != null ? sdf.format(rec.getAcctOpenDate()) : "",
 							dataCellStyle);
 					createTextCell(row, col++, rec.getGender(), dataCellStyle);
-					createTextCell(row, col++, rec.getClassification_code(), dataCellStyle);
-					createTextCell(row, col++, rec.getConstitution_code(), dataCellStyle);
-					createTextCell(row, col++, rec.getMaturity_date() != null ? sdf.format(rec.getMaturity_date()) : "",
+					createTextCell(row, col++, rec.getClassificationCode(), dataCellStyle);
+					createTextCell(row, col++, rec.getConstitutionCode(), dataCellStyle);
+					createTextCell(row, col++, rec.getMaturityDate() != null ? sdf.format(rec.getMaturityDate()) : "",
 							dataCellStyle);
-					createTextCell(row, col++, rec.getGl_sub_head_code(), dataCellStyle);
-					createTextCell(row, col++, rec.getGl_sub_head_desc(), dataCellStyle);
+					createTextCell(row, col++, rec.getGlSubHeadCode(), dataCellStyle);
+					createTextCell(row, col++, rec.getGlSubHeadDesc(), dataCellStyle);
 
 					// ======== Mixed Numeric & Text ========
-					createNumericCell(row, col++, rec.getTenor_month(), numericStyle);
+					createNumericCell(row, col++, rec.getTenorMonth(), numericStyle);
 					createNumericCell(row, col++, rec.getEmi(), numericStyle);
 					createTextCell(row, col++, rec.getSegment(), dataCellStyle);
 					createTextCell(row, col++, rec.getFacility(), dataCellStyle);
-					createTextCell(row, col++, rec.getPast_due(), dataCellStyle);
-					createNumericCell(row, col++, rec.getPast_due_days(), numericStyle);
+					createTextCell(row, col++, rec.getPastDue(), dataCellStyle);
+					createNumericCell(row, col++, rec.getPastDueDays(), numericStyle);
 					createTextCell(row, col++, rec.getAsset(), dataCellStyle);
 					createNumericCell(row, col++, rec.getProvision(), numericStyle);
 					createTextCell(row, col++, rec.getUnsecured(), dataCellStyle);
-					createTextCell(row, col++, rec.getInt_bucket(), dataCellStyle);
+					createTextCell(row, col++, rec.getIntBucket(), dataCellStyle);
 					createTextCell(row, col++, rec.getStaff(), dataCellStyle);
 					createTextCell(row, col++, rec.getSmme(), dataCellStyle);
 					createTextCell(row, col++, rec.getLabod(), dataCellStyle);
-					createTextCell(row, col++, rec.getNew_ac(), dataCellStyle);
+					createTextCell(row, col++, rec.getNewAc(), dataCellStyle);
 					createNumericCell(row, col++, rec.getUndrawn(), numericStyle);
 					createTextCell(row, col++, rec.getSector(), dataCellStyle);
 					createTextCell(row, col++, rec.getPeriod(), dataCellStyle);
-					createNumericCell(row, col++, rec.getEffective_interest_rate(), numericStyle);
+					createNumericCell(row, col++, rec.getEffectiveInterestRate(), numericStyle);
 					createTextCell(row, col++, rec.getStage(), dataCellStyle);
-					createNumericCell(row, col++, rec.getEcl_provision(), numericStyle);
-					createTextCell(row, col++, rec.getBranch_name(), dataCellStyle);
-					createTextCell(row, col++, rec.getBranch_code(), dataCellStyle);
-					createTextCell(row, col++, rec.getReport_date() != null ? sdf.format(rec.getReport_date()) : "",
+					createNumericCell(row, col++, rec.getEclProvision(), numericStyle);
+					createTextCell(row, col++, rec.getBranchName(), dataCellStyle);
+					createTextCell(row, col++, rec.getBranchCode(), dataCellStyle);
+					createTextCell(row, col++, rec.getReportDate() != null ? sdf.format(rec.getReportDate()) : "",
 							dataCellStyle);
 				}
 			}

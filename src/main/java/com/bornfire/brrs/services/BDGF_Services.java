@@ -41,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.bornfire.brrs.config.SequenceGenerator;
 import com.bornfire.brrs.entities.BDGF_Entity;
 import com.bornfire.brrs.entities.BDGF_Rep;
+import com.bornfire.brrs.entities.GeneralMasterEntity;
 import com.bornfire.brrs.entities.GeneralMasterRepo;
 
 @Service
@@ -127,7 +128,7 @@ public class BDGF_Services {
 	        PreparedStatement stmtGetMaxVersionMaster = conn.prepareStatement(getMaxVersionMaster);
 	        
 	        // 🟢 Insert new record in GENERAL_MASTER_TABLE with VERSION
-	        String insertMaster = "INSERT INTO GENERAL_MASTER_TABLE (ID, SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, ACCOUNT_NO, " +
+	        String insertMaster = "INSERT INTO GENERAL_MASTER_TABLE (SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, ACCOUNT_NO, " +
 	                "ACCT_OPEN_DATE, AMOUNT_DEPOSITED, CURRENCY, PERIOD, RATE_OF_INTEREST, HUNDRED, BAL_EQUI_TO_BWP, " +
 	                "OUTSTANDING_BALANCE, OUSTNDNG_BAL_UGX, MATURITY_DATE, MATURITY_AMOUNT, SCHEME, CR_PREF_INT_RATE, " +
 	                "SEGMENT, REFERENCE_DATE, DIFFERENCE, LIQGAP_BUCKET, MDEP2A_BUCKET, MDEP_BUCKET, PERIOD_DAYS, " +
@@ -135,7 +136,7 @@ public class BDGF_Services {
 	                "ENTRY_TIME, MODIFY_TIME, VERIFY_TIME, UPLOAD_DATE, " +
 	                "ENTRY_USER, MODIFY_USER, VERIFY_USER, DEL_USER, " +
 	                "ENTRY_FLG, MODIFY_FLG, VERIFY_FLG, DEL_FLG, BDGF_FLG) " +
-	                "VALUES (" + String.join(",", Collections.nCopies(42, "?")) + ")";
+	                "VALUES (" + String.join(",", Collections.nCopies(41, "?")) + ")";
 	        PreparedStatement stmtInsertMaster = conn.prepareStatement(insertMaster);
 	        
 	        // 🟩 Insert SQL for DEP_GENERAL with VERSION
@@ -254,7 +255,7 @@ public class BDGF_Services {
 	                
 	                // 🟢 Step 6: Insert new record in GENERAL_MASTER_TABLE with VERSION
 	                col = 0;
-	                stmtInsertMaster.setString(++col, sequence.generateRequestUUId());
+	                //stmtInsertMaster.setString(++col, sequence.generateRequestUUId());
 	                stmtInsertMaster.setString(++col, getCellStringSafe(row, 0, formatter, evaluator));
 	                stmtInsertMaster.setString(++col, getCellStringSafe(row, 3, formatter, evaluator));
 	                stmtInsertMaster.setString(++col, getCellStringSafe(row, 4, formatter, evaluator));
@@ -515,7 +516,7 @@ public class BDGF_Services {
 			dataCellStyle.setBorderRight(BorderStyle.THIN);
 
 			// ================= Header Row =================
-			String[] headers = { "S No", "SOL ID", "Account No", "Customer ID", "Customer Name", "Open Date",
+			String[] headers = {"SOL ID", "Account No", "Customer ID", "Customer Name", "Open Date",
 					"Amount Deposited", "Currency", "Period", "Rate of Interest", "100%", "Bal Equiv to BWP",
 					"Outstanding Balance", "Outstanding Balance UGX", "Maturity Date", "Maturity Amount", "Scheme",
 					"CR Pref Int Rate", "Segment", "Reference Date", "Difference", "Days", "Period Days",
@@ -530,45 +531,45 @@ public class BDGF_Services {
 			}
 
 			// ================= Fetch data from DB =================
-			List<BDGF_Entity> dataList = BDGF_Reps.findRecordsByReportDate(todate);
+			List<GeneralMasterEntity> dataList = GeneralMasterRepos.findDepGRecordsByReportDate(todate);
 
 			if (dataList != null && !dataList.isEmpty()) {
 				int rowIndex = 1;
 				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
-				for (BDGF_Entity rec : dataList) {
+				for (GeneralMasterEntity rec : dataList) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 					int col = 0;
 
 					// All numeric/text/date cells use either numericStyle or dataCellStyle
-					createNumericCell(row, col++, rec.getS_no(), dataCellStyle);
-					createTextCell(row, col++, rec.getSol_id(), dataCellStyle);
-					createTextCell(row, col++, rec.getAccount_no(), dataCellStyle);
-					createTextCell(row, col++, rec.getCustomer_id(), dataCellStyle);
-					createTextCell(row, col++, rec.getCustomer_name(), dataCellStyle);
-					createDateCell(row, col++, rec.getAcct_open_date(), sdf, dataCellStyle);
+					//createNumericCell(row, col++, rec.getS_no(), dataCellStyle);
+					createTextCell(row, col++, rec.getSolId(), dataCellStyle);
+					createTextCell(row, col++, rec.getAccountNo(), dataCellStyle);
+					createTextCell(row, col++, rec.getCustomerId(), dataCellStyle);
+					createTextCell(row, col++, rec.getCustomerName(), dataCellStyle);
+					createDateCell(row, col++, rec.getAcctOpenDate(), sdf, dataCellStyle);
 
-					createNumericCell(row, col++, rec.getAmount_deposited(), numericStyle);
+					createNumericCell(row, col++, rec.getAmountDeposited(), numericStyle);
 					createTextCell(row, col++, rec.getCurrency(), dataCellStyle);
 					createTextCell(row, col++, rec.getPeriod(), dataCellStyle);
-					createNumericCell(row, col++, rec.getRate_of_interest(), numericStyle);
+					createNumericCell(row, col++, rec.getRateOfInterest(), numericStyle);
 					createNumericCell(row, col++, rec.getHundred(), numericStyle);
-					createNumericCell(row, col++, rec.getBal_equi_to_bwp(), numericStyle);
-					createNumericCell(row, col++, rec.getOutstanding_balance(), numericStyle);
-					createNumericCell(row, col++, rec.getOustndng_bal_ugx(), numericStyle);
-					createDateCell(row, col++, rec.getMaturity_date(), sdf, dataCellStyle);
-					createNumericCell(row, col++, rec.getMaturity_amount(), numericStyle);
+					createNumericCell(row, col++, rec.getBalEquiToBwp(), numericStyle);
+					createNumericCell(row, col++, rec.getOutstandingBalance(), numericStyle);
+					createNumericCell(row, col++, rec.getOustndngBalUgx(), numericStyle);
+					createDateCell(row, col++, rec.getMaturityDate(), sdf, dataCellStyle);
+					createNumericCell(row, col++, rec.getMaturityAmount(), numericStyle);
 					createTextCell(row, col++, rec.getScheme(), dataCellStyle);
-					createNumericCell(row, col++, rec.getCr_pref_int_rate(), numericStyle);
+					createNumericCell(row, col++, rec.getCrPrefIntRate(), numericStyle);
 					createTextCell(row, col++, rec.getSegment(), dataCellStyle);
-					createDateCell(row, col++, rec.getReference_date(), sdf, dataCellStyle);
+					createDateCell(row, col++, rec.getReferenceDate(), sdf, dataCellStyle);
 					createNumericCell(row, col++, rec.getDifference(), numericStyle);
 					createNumericCell(row, col++, rec.getDays(), numericStyle);
-					createNumericCell(row, col++, rec.getPeriod_days(), numericStyle);
-					createNumericCell(row, col++, rec.getEffective_interest_rate(), numericStyle);
-					createTextCell(row, col++, rec.getBranch_name(), dataCellStyle);
-					createTextCell(row, col++, rec.getBranch_code(), dataCellStyle);
-					createDateCell(row, col++, rec.getReport_date(), sdf, dataCellStyle);
+					createNumericCell(row, col++, rec.getPeriodDays(), numericStyle);
+					createNumericCell(row, col++, rec.getEffectiveInterestRate(), numericStyle);
+					createTextCell(row, col++, rec.getBranchName(), dataCellStyle);
+					createTextCell(row, col++, rec.getBranchCode(), dataCellStyle);
+					createDateCell(row, col++, rec.getReportDate(), sdf, dataCellStyle);
 				}
 			}
 

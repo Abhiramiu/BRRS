@@ -1,6 +1,7 @@
 package com.bornfire.brrs.controllers;
 
 import java.io.ByteArrayOutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -1041,17 +1042,17 @@ public class NavigationController {
 
 		switch (fileType) {
 			case "MCBL":
-				reportDates = mcblRep.findDistinctReportDates();
+				reportDates = GeneralMasterRepos.findDistinctReportDatesMCBL();
 				break;
 			case "DEPOSIT_GENERAL":
-				reportDates = bdgfRep.findDistinctReportDates();
+				reportDates = GeneralMasterRepos.findDistinctReportDatesDepG();
 				break;
 			case "LOAN_BOOK":
-				reportDates = blbfRep.findDistinctReportDates();
+				reportDates = GeneralMasterRepos.findDistinctReportDatesLoan();
 				break;
 
 			case "DEPOSIT_BOOK":
-				reportDates = bfdbRep.findDistinctReportDates();
+				reportDates = GeneralMasterRepos.findDistinctReportDatesDepB();
 				break;
 		}
 
@@ -1084,45 +1085,61 @@ public class NavigationController {
 	 */
 
 	@GetMapping("/fetchRecords")
-	public String fetchRecords(@RequestParam String reportDate, @RequestParam String fileType, Model md) {
-		System.out.println("Fetching records for type: " + fileType + " and date: " + reportDate);
+	public String fetchRecords(@RequestParam String reportDate,
+	                           @RequestParam String fileType,
+	                           Model md) throws ParseException {
+		 System.out.println("Fetching records for type: " + fileType + " and date: " + reportDate);
 
-		md.addAttribute("selectedReportDate", reportDate);
-		md.addAttribute("selectedFileType", fileType);
-		md.addAttribute("formmode", "list");
+		    // 1. Input from UI = yyyy-MM-dd
+		    SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-		switch (fileType) {
-			case "MCBL":
-				List<MCBL_Entity> mcblList = mcblRep.findRecordsByReportDate(reportDate);
-				md.addAttribute("MCBL_List", mcblList);
-				List<Date> mcblDates = mcblRep.findDistinctReportDates();
-				md.addAttribute("reportDates", mcblDates);
-				break;
+		    // 2. DB format = dd-MM-yyyy  (you said you want 31-10-2025)
+		    SimpleDateFormat dbFormat = new SimpleDateFormat("dd-MM-yyyy");
 
-			case "DEPOSIT_GENERAL":
-				List<BDGF_Entity> bdgfList = bdgfRep.findRecordsByReportDate(reportDate);
-				md.addAttribute("BDGF_List", bdgfList);
-				List<Date> bdgfDates = bdgfRep.findDistinctReportDates();
-				md.addAttribute("reportDates", bdgfDates);
-				break;
+		    Date parsedDate = inputFormat.parse(reportDate);
+		    String formattedDate = dbFormat.format(parsedDate);
 
-			case "DEPOSIT_BOOK":
-				List<BFDB_Entity> bfdbList = bfdbRep.findRecordsByReportDate(reportDate);
-				md.addAttribute("BFDB_List", bfdbList);
-				List<Date> bfdbDates = bfdbRep.findDistinctReportDates();
-				md.addAttribute("reportDates", bfdbDates);
-				break;
+		    System.out.println("date going to pass : " + formattedDate);
 
-			case "LOAN_BOOK":
-				List<BLBF_Entity> blbfList = blbfRep.findRecordsByReportDate(reportDate);
-				md.addAttribute("BLBF_List", blbfList);
-				List<Date> blbfDates = blbfRep.findDistinctReportDates();
-				md.addAttribute("reportDates", blbfDates);
-				break;
-		}
+		    md.addAttribute("selectedReportDate", formattedDate);
+		    md.addAttribute("selectedFileType", fileType);
+		    md.addAttribute("formmode", "list");
 
-		return "MCBL"; // all tables in one page
+	    switch (fileType) {
+	    case "MCBL":
+	        List<GeneralMasterEntity> mcblList = GeneralMasterRepos.findMCBLRecordsByReportDate(formattedDate);
+	        System.out.println("MCBL Size is :" + mcblList.size());
+	        md.addAttribute("MCBL_List", mcblList);
+	        md.addAttribute("reportDates", GeneralMasterRepos.findDistinctReportDatesMCBL());
+	        break;
+
+	    case "DEPOSIT_BOOK":
+	        List<GeneralMasterEntity> bfdbList = GeneralMasterRepos.findDepBRecordsByReportDate(formattedDate);
+	        System.out.println("Deposit Book Size is :" + bfdbList.size());
+	        md.addAttribute("BFDB_List", bfdbList);
+	        md.addAttribute("reportDates", GeneralMasterRepos.findDistinctReportDatesDepB());
+	        break;
+
+	    case "DEPOSIT_GENERAL":
+	        List<GeneralMasterEntity> bdgfList = GeneralMasterRepos.findDepGRecordsByReportDate(formattedDate);
+	        System.out.println("Deposit General Size is :" + bdgfList.size());
+	        md.addAttribute("BDGF_List", bdgfList);
+	        md.addAttribute("reportDates", GeneralMasterRepos.findDistinctReportDatesDepG());
+	        break;
+
+	    case "LOAN_BOOK":
+	        List<GeneralMasterEntity> blbfList =
+	        GeneralMasterRepos.findLoanBRecordsByReportDate(formattedDate);
+	        System.out.println("Loan book size = " + blbfList.size());
+	        md.addAttribute("BLBF_List", blbfList);
+	        md.addAttribute("reportDates", GeneralMasterRepos.findDistinctReportDatesLoan());
+	        break;
 	}
+
+	    return "MCBL";
+	}
+
+
 
 	@GetMapping("/vieAddDel")
 	public String viewAddDel(Model model) {

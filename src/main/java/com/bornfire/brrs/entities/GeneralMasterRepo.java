@@ -18,7 +18,45 @@ public interface GeneralMasterRepo extends JpaRepository<GeneralMasterEntity, St
     @Query(value = "SELECT * FROM GENERAL_MASTER_TABLE Where ID=?1", nativeQuery = true)
     GeneralMasterEntity getById(String ID);
     
+    
+    //Getting dates of Reports from General master table
+   
+    //MCBL
+    @Query(value ="SELECT DISTINCT m.report_date FROM GENERAL_MASTER_TABLE m WHERE REPORT_CODE='MCBL' AND DEL_FLG ='N' ORDER BY m.report_date DESC ",nativeQuery = true)
+    List<Date> findDistinctReportDatesMCBL();
+    
+    //LOAN BOOK
+    @Query(value = "SELECT DISTINCT m.REPORT_DATE FROM GENERAL_MASTER_TABLE m WHERE REPORT_CODE='LOANB' AND DEL_FLG ='N' ORDER BY m.REPORT_DATE DESC ", nativeQuery = true)
+    List<Date> findDistinctReportDatesLoan();
 
+    //DEPOSIT BOOK
+    @Query(value = "SELECT DISTINCT m.REPORT_DATE FROM GENERAL_MASTER_TABLE m WHERE REPORT_CODE='DEPB' AND DEL_FLG ='N' ORDER BY m.REPORT_DATE DESC ", nativeQuery = true)
+    List<Date> findDistinctReportDatesDepB();
+
+   //DEPOSIT GENERAL
+    @Query(value = "SELECT DISTINCT m.REPORT_DATE FROM GENERAL_MASTER_TABLE m WHERE REPORT_CODE='DEPG' AND DEL_FLG ='N' ORDER BY m.REPORT_DATE DESC ", nativeQuery = true)
+    List<Date> findDistinctReportDatesDepG();
+
+    
+    //fetching Records by Report date
+   
+    //MCBL
+    @Query(value = "SELECT * FROM GENERAL_MASTER_TABLE WHERE REPORT_DATE = ?1 AND REPORT_CODE='MCBL' AND DEL_FLG='N'", nativeQuery = true)
+    List<GeneralMasterEntity> findMCBLRecordsByReportDate(String reportDate);
+
+	//DEPB
+    @Query(value = "SELECT * FROM GENERAL_MASTER_TABLE WHERE REPORT_DATE = ?1 AND REPORT_CODE='DEPB' AND DEL_FLG='N'", nativeQuery = true)
+    List<GeneralMasterEntity> findDepBRecordsByReportDate(String reportDate);
+
+	//DEPG
+    @Query(value = "SELECT * FROM GENERAL_MASTER_TABLE WHERE REPORT_DATE = ?1 AND REPORT_CODE='DEPG' AND DEL_FLG='N'", nativeQuery = true)
+    List<GeneralMasterEntity> findDepGRecordsByReportDate(String reportDate);
+
+    //LOAN
+    @Query(value = "SELECT * FROM GENERAL_MASTER_TABLE WHERE REPORT_DATE = ?1 AND REPORT_CODE='LOANB' AND DEL_FLG='N'", nativeQuery = true)
+    List<GeneralMasterEntity> findLoanBRecordsByReportDate(String reportDate);
+
+    
     // Count all records
     @Query(value = "SELECT COUNT(*) FROM GENERAL_MASTER_TABLE", nativeQuery = true)
     int countAll();
@@ -52,9 +90,10 @@ public interface GeneralMasterRepo extends JpaRepository<GeneralMasterEntity, St
    
 
     
-    @Query("SELECT g FROM GeneralMasterEntity g WHERE g.account_no = :accNo AND g.report_date = :repDate")
+    @Query("SELECT g FROM GeneralMasterEntity g WHERE g.accountNo = :accNo AND g.reportDate = :repDate")
     GeneralMasterEntity getdataBybdgf(@Param("accNo") String accountNo,
                                       @Param("repDate") Date reportDate);
+
 
     @Query(value = "SELECT * FROM GENERAL_MASTER_TABLE "
             + "WHERE account_no=?1 "

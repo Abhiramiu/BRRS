@@ -41,8 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bornfire.brrs.config.SequenceGenerator;
-import com.bornfire.brrs.entities.BFDB_Entity;
 import com.bornfire.brrs.entities.BFDB_Rep;
+import com.bornfire.brrs.entities.GeneralMasterEntity;
 import com.bornfire.brrs.entities.GeneralMasterRepo;
 
 @Service
@@ -157,13 +157,13 @@ public class BFDB_Services {
 
 	        // GENERAL_MASTER_TABLE insert query (VERSION and DEL_FLG added)
 	        String insertMaster = "INSERT INTO GENERAL_MASTER_TABLE (" +
-	                "ID, SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, ACCOUNT_NO, GENDER, SCHM_CODE, SCHM_DESC, " +
+	                "SOL_ID, CUSTOMER_ID, CUSTOMER_NAME, ACCOUNT_NO, GENDER, SCHM_CODE, SCHM_DESC, " +
 	                "ACCT_OPEN_DATE, ACCT_CLOSE_DATE, BALANCE_AS_ON, CURRENCY, BAL_EQUI_TO_BWP, " +
 	                "RATE_OF_INTEREST, HUNDRED, STATUS, MATURITY_DATE, GL_SUB_HEAD_CODE, " +
 	                "GL_SUB_HEAD_DESC, TYPE_OF_ACCOUNTS, SEGMENT, PERIOD, EFFECTIVE_INTEREST_RATE, " +
 	                "REPORT_DATE, ENTRY_TIME, MODIFY_TIME, VERIFY_TIME, UPLOAD_DATE, ENTRY_USER, MODIFY_USER, VERIFY_USER, " +
 	                "ENTRY_FLG, MODIFY_FLG, VERIFY_FLG, DEL_FLG, BFDB_FLG, REPORT_CODE, VERSION" +
-	                ") VALUES (" + String.join(",", Collections.nCopies(38, "?")) + ")";  // 38 params now
+	                ") VALUES (" + String.join(",", Collections.nCopies(37, "?")) + ")";  // 38 params now
 	        stmtMaster = conn.prepareStatement(insertMaster);
 
 	        int count = 0;
@@ -275,7 +275,7 @@ public class BFDB_Services {
 
 	                // 4. GENERAL_MASTER_TABLE INSERT (always new version, no UPDATE)
 	                col = 0;
-	                stmtMaster.setString(++col, sequence.generateRequestUUId());                      // ID
+	                //stmtMaster.setString(++col, sequence.generateRequestUUId());                      // ID
 	                stmtMaster.setString(++col, getCellStringSafe(row, 0, formatter, evaluator));    // SOL_ID
 	                stmtMaster.setString(++col, getCellStringSafe(row, 1, formatter, evaluator));    // CUSTOMER_ID
 	                stmtMaster.setString(++col, getCellStringSafe(row, 4, formatter, evaluator));    // CUSTOMER_NAME
@@ -557,43 +557,43 @@ public class BFDB_Services {
 	        }
 
 	        // ================= Fetch data from DB =================
-	        List<BFDB_Entity> dataList = BFDB_Reps.findRecordsByReportDate(todate);
+	        List<GeneralMasterEntity> dataList = GeneralMasterRepos.findDepBRecordsByReportDate(todate);
 
 	        if (dataList != null && !dataList.isEmpty()) {
 	            int rowIndex = 1;
 	            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
-	            for (BFDB_Entity rec : dataList) {
+	            for (GeneralMasterEntity rec : dataList) {
 	                XSSFRow row = sheet.createRow(rowIndex++);
 	                int col = 0;
 
 	                // ======= All cells with borders =======
-	                createDataCell(row, col++, rec.getCustomer_id(), dataCellStyle);
-	                createDataCell(row, col++, rec.getSol_id(), dataCellStyle);
+	                createDataCell(row, col++, rec.getCustomerId(), dataCellStyle);
+	                createDataCell(row, col++, rec.getSolId(), dataCellStyle);
 	                createDataCell(row, col++, rec.getGender(), dataCellStyle);
-	                createDataCell(row, col++, rec.getAccount_no(), dataCellStyle);
-	                createDataCell(row, col++, rec.getCustomer_name(), dataCellStyle);
-	                createDataCell(row, col++, rec.getSchm_code(), dataCellStyle);
-	                createDataCell(row, col++, rec.getSchm_desc(), dataCellStyle);
-	                createDataCell(row, col++, rec.getAcct_open_date() != null ? sdf.format(rec.getAcct_open_date()) : "", dataCellStyle);
-	                createDataCell(row, col++, rec.getAcct_close_date() != null ? sdf.format(rec.getAcct_close_date()) : "", dataCellStyle);
+	                createDataCell(row, col++, rec.getAccountNo(), dataCellStyle);
+	                createDataCell(row, col++, rec.getCustomerName(), dataCellStyle);
+	                createDataCell(row, col++, rec.getSchmCode(), dataCellStyle);
+	                createDataCell(row, col++, rec.getSchmDesc(), dataCellStyle);
+	                createDataCell(row, col++, rec.getAcctOpenDate() != null ? sdf.format(rec.getAcctOpenDate()) : "", dataCellStyle);
+	                createDataCell(row, col++, rec.getAcctCloseDate() != null ? sdf.format(rec.getAcctCloseDate()) : "", dataCellStyle);
 
-	                createNumericCell(row, col++, rec.getBalance_as_on(), numericStyle);
+	                createNumericCell(row, col++, rec.getBalanceAsOn(), numericStyle);
 	                createDataCell(row, col++, rec.getCurrency(), dataCellStyle);
-	                createNumericCell(row, col++, rec.getBal_equi_to_bwp(), numericStyle);
-	                createNumericCell(row, col++, rec.getRate_of_interest(), numericStyle);
+	                createNumericCell(row, col++, rec.getBalEquiToBwp(), numericStyle);
+	                createNumericCell(row, col++, rec.getRateOfInterest(), numericStyle);
 	                createNumericCell(row, col++, rec.getHundred(), numericStyle);
 	                createDataCell(row, col++, rec.getStatus(), dataCellStyle);
-	                createDataCell(row, col++, rec.getMaturity_date() != null ? sdf.format(rec.getMaturity_date()) : "", dataCellStyle);
-	                createDataCell(row, col++, rec.getGl_sub_head_code(), dataCellStyle);
-	                createDataCell(row, col++, rec.getGl_sub_head_desc(), dataCellStyle);
-	                createDataCell(row, col++, rec.getType_of_accounts(), dataCellStyle);
+	                createDataCell(row, col++, rec.getMaturityDate() != null ? sdf.format(rec.getMaturityDate()) : "", dataCellStyle);
+	                createDataCell(row, col++, rec.getGlSubHeadCode(), dataCellStyle);
+	                createDataCell(row, col++, rec.getGlSubHeadDesc(), dataCellStyle);
+	                createDataCell(row, col++, rec.getTypeOfAccounts(), dataCellStyle);
 	                createDataCell(row, col++, rec.getSegment(), dataCellStyle);
 	                createDataCell(row, col++, rec.getPeriod(), dataCellStyle);
-	                createNumericCell(row, col++, rec.getEffective_interest_rate(), numericStyle);
-	                createDataCell(row, col++, rec.getBranch_name(), dataCellStyle);
-	                createDataCell(row, col++, rec.getBranch_code(), dataCellStyle);
-	                createDataCell(row, col++, rec.getReport_date() != null ? sdf.format(rec.getReport_date()) : "", dataCellStyle);
+	                createNumericCell(row, col++, rec.getEffectiveInterestRate(), numericStyle);
+	                createDataCell(row, col++, rec.getBranchName(), dataCellStyle);
+	                createDataCell(row, col++, rec.getBranchCode(), dataCellStyle);
+	                createDataCell(row, col++, rec.getReportDate() != null ? sdf.format(rec.getReportDate()) : "", dataCellStyle);
 	            }
 	        }
 
