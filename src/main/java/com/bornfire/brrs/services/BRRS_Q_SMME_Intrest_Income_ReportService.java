@@ -1667,7 +1667,7 @@ public byte[] getDetailExcelARCHIVAL(String filename,
 	private JdbcTemplate jdbcTemplate;
 
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/M_SRWA_12A"); 
+		ModelAndView mv = new ModelAndView("BRRS/Q_SMME"); 
 
 		if (acctNo != null) {
 			Q_SMME_Intrest_Income_Detail_Entity q_smmeIi = q_SMME_Detail_Repo.findByAcctnumber(acctNo);
